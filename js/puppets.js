@@ -58,6 +58,9 @@
       g.drawImage(face,cx-dw/2,base-dh,dw,dh);
     } else if(d.variant==='belal'){
       const data=g.getImageData(0,0,c.width,c.height),p=data.data,source=new Uint8ClampedArray(p),removed=new Uint8Array(c.width*c.height);
+      const luminance=new Float32Array(c.width*c.height);
+      for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){let sum=0,count=0;for(let oy=-2;oy<=2;oy++)for(let ox=-2;ox<=2;ox++){const xx=x+ox,yy=y+oy;if(xx<0||yy<0||xx>=c.width||yy>=c.height)continue;const j=(yy*c.width+xx)*4;sum+=.2126*source[j]+.7152*source[j+1]+.0722*source[j+2];count++;}luminance[y*c.width+x]=sum/count;}
+      const ease=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);},mix=(a,b,t)=>a+(b-a)*t;
       for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){const i=(y*c.width+x)*4,r=p[i],gg=p[i+1],b=p[i+2];
         // Remove the orange weave and its soft halo in the extended-hand corner.
         if(x<c.width*.36&&y<c.height*.36){
@@ -65,10 +68,13 @@
           const skin=r>95&&r>gg*1.08&&gg>b*1.18&&r-b<105;
           if(!skin&&(warm||green||white)){p[i+3]=0;removed[y*c.width+x]=1;continue;}
         }
-        // Hue-selective coat/trim/hair grade: preserve texture and illumination.
+        // Smooth luminance-driven crimson cloth; soft masks avoid posterised
+        // thresholds while skin, silver trim and hair retain their own colour.
         const max=Math.max(r,gg,b),min=Math.min(r,gg,b),sat=max-min;
+        const skin=ease((r-gg*1.04)/28)*ease((gg-b*1.08)/25)*ease((130-(r-b))/45),body=ease((y/c.height-.15)/.12),dark=ease((175-max)/55),coat=body*dark*(1-skin);
+        const L=ease((luminance[y*c.width+x]-18)/175),upper=ease((L-.48)/.52),lower=ease(L/.48),ramp=upper?[mix(106,192,upper),mix(20,72,upper),mix(32,90,upper)]:[mix(26,106,lower),mix(5,20,lower),mix(8,32,lower)],blend=.70*coat;
+        p[i]=mix(r,ramp[0],blend);p[i+1]=mix(gg,ramp[1],blend);p[i+2]=mix(b,ramp[2],blend);
         if(sat<35&&y<c.height*.29&&max>95){p[i]=Math.min(220,max*1.05);p[i+1]=Math.min(215,max*.98);p[i+2]=Math.min(210,max*.91);}
-        else if(y>c.height*.18&&r<145&&b<155){let light=0,count=0;for(let oy=-2;oy<=2;oy++)for(let ox=-2;ox<=2;ox++){const xx=x+ox,yy=y+oy;if(xx<0||yy<0||xx>=c.width||yy>=c.height)continue;const j=(yy*c.width+xx)*4;light+=.2126*source[j]+.7152*source[j+1]+.0722*source[j+2];count++;}light=light/count*.72+42*.28;const cr=Math.min(158,28+light*.98),cg=12+light*.20,cb=22+light*.28;p[i]=r*.38+cr*.62;p[i+1]=gg*.38+cg*.62;p[i+2]=b*.38+cb*.62;}
         else if(sat<28&&max>75){p[i]=max*.82;p[i+1]=max*.86;p[i+2]=max*.91;}
       }
       // Fade the antialiased glow surrounding every removed weave pixel.
@@ -119,7 +125,7 @@
         for(let xx=0;xx<texture.width;xx++){const px=xx*w/texture.width,j=(yy*texture.width+xx)*4,isKick=py>hip.y+h*.02&&px>=mid;if(isKick)bd.data[j+3]=0;else kd.data[j+3]=0;}}
       kick.getContext('2d').putImageData(kd,0,0);body.getContext('2d').putImageData(bd,0,0);split={kick,body};
     }
-    const rig={image,w,h,neck,hip,arms,legs,bones,root,vertices,triangles,texture,soles,cols,rows,split,height:d.height};rigs.set(cacheKey,rig);return rig;
+    const rig={image,w,h,neck,hip,arms,legs,bones,root,vertices,triangles,texture,soles,cols,rows,split,height:d.height,sword:!!d.sword};rigs.set(cacheKey,rig);return rig;
   }
 
   function targets(a,d,r,pose){
@@ -129,6 +135,8 @@
       const [sh,el,wr]=r.arms[i],s=shift(sh);let hand=shift(wr);
       if(!pose.walking&&!pose.attack&&!pose.hurt&&a.state!=='channel'&&a.ai!=='telegraph'){bones.push([s,shift(el)],[shift(el),hand]);continue;}
       if(pose.walking){const f=pose.feet[i];hand.x-=f.x*native*unit*.75;hand.y-=Math.abs(f.x)*unit*.12;}
+      if(d.sword&&i===0&&(pose.attack||a.ai==='telegraph')){bones.push([s,shift(el)],[shift(el),hand]);continue;}
+      // Be'lal's sword arm keeps its painted fist; SWORD FLURRY swings the blade about it.
       if(pose.attack||a.state==='channel'||a.ai==='telegraph'){hand={x:s.x+native*((d.sword?!i:i)?26:-6)*unit,y:s.y+(a.ai==='telegraph'?-16:7)*unit};}
       if(pose.hurt)hand={x:s.x-native*(i?7:20)*unit,y:s.y-5*unit};
       const e=knee(s,hand,Math.hypot(el.x-sh.x,el.y-sh.y),Math.hypot(wr.x-el.x,wr.y-el.y),native*(i?1:-1));bones.push([s,e],[e,hand]);
@@ -159,8 +167,9 @@
       const elbow=r.arms[i][1],hand=r.arms[i][2];let dx=0,dy=0,total=1;
       for(const [source,target] of [[elbow,bones[2+i*2][1]],[hand,bones[3+i*2][1]]]){
         const distance=Math.hypot(x-source.x,y-source.y),weight=Math.exp(-distance*distance/(r.h*r.h*.004));
-        dx+=Math.max(-r.h*.12,Math.min(r.h*.12,target.x-source.x))*weight;
-        dy+=Math.max(-r.h*.08,Math.min(r.h*.08,target.y-source.y))*weight;total+=weight;
+        const capX=r.sword&&i===0?Infinity:r.h*.12,capY=r.sword&&i===0?Infinity:r.h*.08;
+        dx+=Math.max(-capX,Math.min(capX,target.x-source.x))*weight;
+        dy+=Math.max(-capY,Math.min(capY,target.y-source.y))*weight;total+=weight;
       }
       X+=dx/total;Y+=dy/total;
     }
@@ -209,9 +218,8 @@
     // Anchor to the painted fist as actually skinned (bones[3] wrist), not the
     // raw IK target, which the clamped arm skin can lag behind.
     if(!d.sword)return;const skin=p=>{const gx=p.x/r.w*r.cols,gy=p.y/r.h*r.rows,col=Math.max(0,Math.min(r.cols-1,Math.floor(gx))),row=Math.max(0,Math.min(r.rows-1,Math.floor(gy))),u=gx-col,v=gy-row,n=row*(r.cols+1)+col,ids=u+v<=1?[n,n+1,n+r.cols+1]:[n+1,n+r.cols+2,n+r.cols+1],wt=u+v<=1?[1-u-v,u,v]:[1-v,u+v-1,1-u];let X=0,Y=0;ids.forEach((k,j)=>{const q=skinPoint(r.vertices[k],r,bones,pose);X+=q.X*wt[j];Y+=q.Y*wt[j];});return{x:X,y:Y};},hand=pose?skin(r.arms[0][2]):bones[3][1],elbow=pose?skin(r.arms[0][1]):bones[2][1],dx=hand.x-elbow.x,dy=hand.y-elbow.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l;
-    const flourish=a.ai==='attack'?Math.sin(Math.min(1,(a.stateT||.2)/.55)*Math.PI)*.75:0,cs=Math.cos(flourish),sn=Math.sin(flourish),vx=ux*cs-uy*sn,vy=ux*sn+uy*cs,len=r.h*d.sword.length;
+    const flourish=a.ai==='attack'?Math.sin(Math.min(1,(a.stateT||.2)/.55)*Math.PI*2)*.9:0,cs=Math.cos(flourish),sn=Math.sin(flourish),vx=ux*cs-uy*sn,vy=ux*sn+uy*cs,len=r.h*d.sword.length;
     ctx.save();ctx.lineCap='round';ctx.translate(hand.x,hand.y);ctx.rotate(Math.atan2(vy,vx));
-    ctx.fillStyle='#6d5540';ctx.beginPath();ctx.arc(-r.h*.09,0,r.h*.022,0,Math.PI*2);ctx.fill();
     ctx.strokeStyle='#39281f';ctx.lineWidth=r.h*.018;ctx.beginPath();ctx.moveTo(-r.h*.085,0);ctx.lineTo(r.h*.045,0);ctx.stroke();
     ctx.strokeStyle='#b9a16c';ctx.lineWidth=r.h*.012;ctx.beginPath();ctx.moveTo(r.h*.045,-r.h*.06);ctx.lineTo(r.h*.045,r.h*.06);ctx.stroke();
     ctx.fillStyle='#798896';ctx.strokeStyle='#303a46';ctx.lineWidth=r.h*.009;ctx.beginPath();ctx.moveTo(r.h*.045,-r.h*.018);ctx.lineTo(len,0);ctx.lineTo(r.h*.045,r.h*.018);ctx.closePath();ctx.fill();ctx.stroke();

@@ -9,6 +9,8 @@
     ['#101628', '#5b6882', '#323c52', '#1f293b'],
   ];
   const seamless = new Map();
+  const strips = new Map();
+  const CAMERA_RANGE=2360;
   const LOOP_CROPS={
     'stage1-mid':[196,1492],'stage1-near':[194,1623],
     'stage2-mid':[306,1472],'stage2-near':[544,1417],
@@ -38,14 +40,21 @@
     c.loopKind='painted';seamless.set(id,c);return c;
   }
   function tiled(ctx, key, cam, factor, y, h, topFeather=false, mistColor='#c9d7df') {
-    const img = seamlessPlate(key,topFeather);
-    if (!img) return false;
-    // Every plate is at least 1.4 view widths. Anchor its bottom at the old
-    // layer baseline and crop/overflow the source top rather than shrinking it
-    // into the narrow repeating strips that caused the regression.
-    const drawH=Math.max(h,896*img.height/img.width),width=drawH*img.width/img.height,drawY=y+h-drawH;
-    const offset=((cam*factor)%width+width)%width;
-    for(let x=-offset;x<640;x+=width){ctx.drawImage(img,x,drawY,width,drawH);const join=x+width,band=Math.min(28,width*.035),m=ctx.createLinearGradient(join-band,0,join+band,0);m.addColorStop(0,mistColor+'00');m.addColorStop(.5,mistColor+'28');m.addColorStop(1,mistColor+'00');ctx.fillStyle=m;ctx.fillRect(join-band,drawY,band*2,drawH);}
+    const tile = seamlessPlate(key,topFeather);
+    if (!tile) return false;
+    // Keep the paintings near their authored 222px skyline scale. Two copies
+    // form one non-mirrored strip when a crop is narrower than the viewport;
+    // the capped parallax keeps its outer repeat beyond the complete arena.
+    const drawH=Math.max(h,320*tile.height/tile.width),tileWidth=drawH*tile.width/tile.height,copies=tileWidth<640?2:1,width=tileWidth*copies,drawY=y+h-drawH;
+    let plate=tile;
+    if(copies===2){const id=key+':'+!!topFeather+':strip';plate=strips.get(id);if(!plate){plate=document.createElement('canvas');plate.width=tile.width*2;plate.height=tile.height;const pg=plate.getContext('2d');pg.drawImage(tile,0,0);pg.drawImage(tile,tile.width,0);strips.set(id,plate);}}
+    factor=Math.min(factor,Math.max(0,(width-640)/CAMERA_RANGE));
+    const offset=cam*factor;
+    for(let stripX=-offset;stripX<640;stripX+=width){
+      ctx.drawImage(plate,stripX,drawY,width,drawH);
+      // Only the internal continuation can enter the viewport; soften it once.
+      if(copies===2){const join=stripX+tileWidth,band=Math.min(28,tileWidth*.035),m=ctx.createLinearGradient(join-band,0,join+band,0);m.addColorStop(0,mistColor+'00');m.addColorStop(.5,mistColor+'28');m.addColorStop(1,mistColor+'00');ctx.fillStyle=m;ctx.fillRect(join-band,drawY,band*2,drawH);}
+    }
     return true;
   }
   function haze(ctx,y,color='#c9d7df') {const f=ctx.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');ctx.fillStyle=f;ctx.fillRect(0,y-9,640,21);}
@@ -162,7 +171,8 @@
       }
       const roof = n === 5 && scene.wave === 5;
       tiled(ctx, roof ? 'stage5-roof-far' : 'stage' + n + '-far', cam, 0.10, 0, 244);
-      if (!roof && !tiled(ctx, 'stage' + n + '-mid', cam, 0.42, 10, 222, true,stagePalette[1])) { if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam); }
+      const midHeights=[260,256,252,248,222];
+      if (!roof && !tiled(ctx, 'stage' + n + '-mid', cam, 0.42, 10, midHeights[n-1], true,stagePalette[1])) { if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam); }
       if(!roof)haze(ctx,20);
       if (n > 1) {
         ctx.fillStyle = PALETTES[n - 1][3];

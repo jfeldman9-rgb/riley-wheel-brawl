@@ -22,3 +22,11 @@
 - All review JPEGs in this directory were regenerated from this commit with `node tools/review.cjs` in headless Chromium (Playwright). `node tools/check.cjs`: all 62 checks pass. `node tools/soak.cjs`: 50/50 assisted clears.
 
 Known remaining weaknesses: during SWORD FLURRY the hilt can sit a few pixels past Be'lal's fist; his crimson coat re-grade still shows some striping; Riley is baked from the supplied model sheet at runtime. He reads as a boy in a short jacket, but his face is the sheet's face scaled up, not new child art.
+
+## w3c follow-up
+
+- Zoomed stages 1-5 back to natural skyline scale (222-260px), using a non-mirrored two-tile continuation only where needed and capping parallax across the arena to keep at most one feathered join visible.
+- Be'lal's sword grip now comes from the same barycentrically skinned wrist position as the painted fist, with unrestricted sword-arm skin displacement. The check samples eleven SWORD FLURRY times and enforces a sub-1.5-source-pixel attachment.
+- Be'lal's coat now uses blurred luminance and a continuous dark-crimson/mid-crimson/highlight ramp with a 70% grade / 30% original blend, smooth skin protection, and retained silver/hair handling.
+- The Be'lal review board now contains idle, walk, and SWORD FLURRY at `t=.2`, `.5`, and `.8`. All runtime resources and audits use `?v=20260926-w3c`. No binary review files changed in this text-only round.
+- Local limitation: `node tools/review.cjs` cannot regenerate the boards in this checkout because `playwright` is not installed; run it in the documented browser-review environment for visual sign-off.

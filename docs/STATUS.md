@@ -2,7 +2,7 @@
 
 Branch `rwb-w2`, based on the latest supplied-art commit on `rwb-w1`:
 `5a576d4ca36a1054e5b7f41a4489e7141ae91a54`.
-Runtime cache stamp: `?v=20260926-w3b`. No changes to `main`; no merge.
+Runtime cache stamp: `?v=20260926-w3c`. No changes to `main`; no merge.
 
 ## Changed
 
@@ -62,7 +62,7 @@ Full seed rows: [natural](review/soak-natural.txt), [assisted](review/soak-assis
 - Re-authored the 64-unit Riley rig around the sheet's top-middle side figure. Runtime baking soft-keys the grey, removes coat pixels below the hip, continues trousers beneath a short tunic, and enlarges the head beyond 1/4.6 height. `rig-riley.png` is fallback only.
 - Removed the duplicate blurred actor composite; each freshly cleared transparent surface now reaches gameplay/review exactly once.
 - Bound Be'lal's sword to the front hand and removed its dot-like pivot/pommel marker.
-- Reworked oversized review captures to use offscreen-canvas data URLs, creates the correct stage for each seam board, preserves every requested output at JPEG quality 85, and stamps runtime requests `20260926-w3b`.
+- Reworked oversized review captures to use offscreen-canvas data URLs, creates the correct stage for each seam board, preserves every requested output at JPEG quality 85, and stamps runtime requests `20260926-w3c`.
 - `node tools/check.cjs` passes and the refreshed assisted soak is 50/50. No binary evidence changed. Playwright is unavailable locally, so refreshed visual evidence remains explicitly pending.
 
 ## Headless-render follow-up
@@ -70,3 +70,12 @@ Full seed rows: [natural](review/soak-natural.txt), [assisted](review/soak-assis
 - Riley now uses the measured 320x1140 side-figure crop. An edge-connected flood fill removes only the noisy neutral-grey exterior with a 28-40 colour-distance ramp; the short-jacket fill and 1.45x round-cheek head overlay both read back from that keyed canvas. Bind points, ankle contacts, and the authored 0.985 sole line match the measured figure.
 - Be'lal's complete sword is attached to front-arm bones 2/3, painted over the body, and rotated as one wrist-local pommel/grip/crossguard/blade assembly during SWORD FLURRY. His crimson coat grade uses locally blurred luminance and a gentler blend to suppress posterised striping.
 - The automated check now explicitly rejects a sword attachment other than `bones[3]`. Checks pass and the refreshed assisted soak clears 50/50. Visual regeneration remains pending solely because Playwright is not installed; no binary review evidence was changed.
+
+## Fixes in this round (`w3c`)
+
+- Restored the five skyline plates to their natural 222-260px height range. Narrow crops use one forward-only two-tile strip, and their per-layer parallax is capped so the full 2,360px camera range exposes no more than one soft internal join. Floor feathering, near clipping, haze, and non-mirrored rendering remain.
+- Locked Be'lal's sword grip to the same barycentrically skinned front-wrist point used by the painted mesh and removed the sword-arm displacement caps. The headless regression samples SWORD FLURRY from `t=0` through `t=1` in 0.1 increments and requires less than 1.5 source pixels of separation.
+- Replaced the coat recolour with a 5x5 blurred-luminance, smooth crimson ramp blended 70/30 with the source. Smooth masks protect skin while the existing silver-trim/hair treatment remains.
+- Expanded `belal-closeup.jpeg` generation to idle, walk, and SWORD FLURRY at `t=.2`, `.5`, and `.8`; all previous review outputs remain in the script. Runtime resource and audit stamps are now `20260926-w3c`.
+- This remains a text-only change: review binaries were deliberately not regenerated.
+- Not achieved locally: Chromium evidence regeneration could not run because the checkout does not provide the `playwright` module. The review script and its under-two-minute timeout target are updated, but visual sign-off remains pending in the documented Playwright environment.
