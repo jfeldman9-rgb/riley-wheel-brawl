@@ -17,7 +17,7 @@ let failed = 0;
 const check = (ok, what, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + what + (extra ? '  ' + extra : '')); if (!ok) failed++; };
 
 const server = spawn('python3', ['-m', 'http.server', String(HTTP), '--bind', '127.0.0.1'], { cwd: root, stdio: 'ignore' });
-const profile = fs.mkdtempSync('/tmp/wl-chrome-');
+const profile = fs.mkdtempSync('/tmp/rwb-chrome-');
 const chrome = spawn('google-chrome', ['--headless=new', '--disable-gpu', '--no-sandbox', '--no-first-run', '--mute-audio',
   '--autoplay-policy=no-user-gesture-required', `--remote-debugging-port=${CDP}`, `--user-data-dir=${profile}`,
   '--window-size=1280,720', 'about:blank'], { stdio: 'ignore' });
@@ -55,9 +55,9 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   check(await js('return RWB.game.scene instanceof RWB.scenes.Title'), 'boots to the title');
   check(await js(`return !!RWB.art.plate('village-far') && RWB.art.has('riley')`), 'painted atlases and urn load over HTTP');
   const stamp = await js(`return [...document.scripts].map(s => (s.src.match(/v=([\\w-]+)/) || [])[1]).filter(Boolean)`);
-  check(stamp.length > 5 && stamp.every(v => v === '20260926-s2'), 'every script served with ?v=20260926-s2');
+  check(stamp.length > 5 && stamp.every(v => v === '20260926-g1'), 'every script served with ?v=20260926-g1');
   const imgs = await js(`return performance.getEntriesByType('resource').map(e => e.name).filter(n => /assets\\/art\\//.test(n))`);
-  check(imgs.length >= 15 && imgs.every(n => /\\?v=20260926-s2/.test(n)), 'painted art requested with ?v=20260926-s2', imgs.length + ' art requests');
+  check(imgs.length >= 15 && imgs.every(n => /\\?v=20260926-g1/.test(n)), 'painted art requested with ?v=20260926-g1', imgs.length + ' art requests');
   check((await js('return RWB.assets.criticalMissing().length')) === 0, 'no critical painted art missing, no failure banner');
 
   // Watch what the touch/mouse layer draws so the BOX badge can be checked.
@@ -143,7 +143,7 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   // master bus, not just calls), keys advance and skip, and the reel holds frame rate.
   await js(`await RWB.assets.ready(['story'])`);
   const story = await js(`return performance.getEntriesByType('resource').map(e => e.name).filter(n => /assets\\/cutscenes\\//.test(n))`);
-  check(story.length >= 15 && story.every(n => /\\?v=20260926-s2/.test(n)), 'story urn requested with ?v=20260926-s2', story.length + ' plate requests');
+  check(story.length >= 15 && story.every(n => /\\?v=20260926-g1/.test(n)), 'story urn requested with ?v=20260926-g1', story.length + ' plate requests');
   check(await js(`return RWB.assets.STORY.every(n => !!RWB.assets.get('story:' + n))`), 'every story plate decoded');
   check(await js('return RWB.audio.unlocked'), 'audio unlocked by a real key press');
   await js('RWB.audio.trace.length = 0; RWB.game.startNewGame(true);');
@@ -178,7 +178,7 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   for (let i = 0; i < 60; i++) { if (await js('return RWB.game.scene instanceof RWB.scenes.StoryBeat && RWB.game.fadeDir === 0')) break; await sleep(50); }
   await sleep(2500);
   const beat = await js(`const s = RWB.game.scene; return { urn: s.beats.map(b => b.plate).join(), cues: RWB.audio.trace.map(c => c.name).slice(-40), song: RWB.audio.song, peak: (() => { let p = 0; for (let i = 0; i < 20; i++) p = Math.max(p, RWB.audio.level()); return p; })() }`);
-  check(beat.urn === 'st1-village-outro,st2-shrine-intro', 'stage clear plays the repair log, then the next stage intro', beat.urn);
+  check(beat.urn === 'stage1-clear,stage2-caemlyn', 'stage clear plays the outro, then the next stage intro', beat.urn);
   check(beat.cues.includes('stinger:fixed') && beat.song === 'story', 'StoryBeat is scored: stinger + music bed', beat.song);
   await shot('story-storybeat');
   const errs = await js('return window.__errors');

@@ -6,9 +6,9 @@ These are the complete short lines intended for spoken playback and matching sub
 
 | ID | Character | Exact line | When it plays |
 | --- | --- | --- | --- |
-| `op_moiraine_01` | Moiraine | “Riley, the Shadow has taken Kenzie.” | Opening: Moiraine finds Riley. |
+| `op_moiraine_01` | Moiraine | “Riley, the Shadow has taken Twinkle Toes.” | Opening: Moiraine finds Riley. |
 | `op_riley_01` | Riley | “Then we bring her home.” | Opening: Riley accepts the rescue. |
-| `op_kenzie_01` | Twinkle Toes | “You picked the wrong dancer!” | Opening: Kenzie faces her captors. |
+| `op_kenzie_01` | Twinkle Toes | “You picked the wrong dancer!” | Opening: Twinkle Toes faces her captors. |
 | `op_taim_01` | Mazrim Taim | “Bring the child to the Black Tower.” | Opening: Taim orders the capture. |
 | `st1_moiraine_01` | Moiraine | “Winternight has begun. Stay sharp.” | Stage 1 sequence: Emond's Field reveal. |
 | `st1_riley_01` | Riley | “I'll guard our home.” | Stage 1 sequence: before the tutorial fight. |
@@ -21,15 +21,15 @@ These are the complete short lines intended for spoken playback and matching sub
 | `st4_forsaken_01` | Forsaken | “Callandor belongs to me.” | Stage 4 sequence: Forsaken confronts Riley. |
 | `st4_riley_01` | Riley | “Not today.” | Stage 4 sequence: Riley answers the Forsaken. |
 | `st4_kenzie_01` | Twinkle Toes | “Riley! I can see the lightning!” | Stage 4: her channeling ability is revealed. |
-| `st4_moiraine_01` | Moiraine | “Twinkle Toes, guide the spark.” | Stage 4: Moiraine steadies Kenzie. |
-| `st4_kenzie_02` | Twinkle Toes | “Like a dance step. Got it!” | Stage 4: Kenzie takes control. |
+| `st4_moiraine_01` | Moiraine | “Twinkle Toes, guide the spark.” | Stage 4: Moiraine steadies Twinkle Toes. |
+| `st4_kenzie_02` | Twinkle Toes | “Like a dance step. Got it!” | Stage 4: Twinkle Toes takes control. |
 | `st5_taim_01` | Mazrim Taim | “The Black Tower is mine.” | Stage 5 sequence: Taim appears on the roof. |
-| `st5_riley_01` | Riley | “Kenzie is not.” | Stage 5 sequence: Riley answers Taim. |
+| `st5_riley_01` | Riley | “Twinkle Toes is not.” | Stage 5 sequence: Riley answers Taim. |
 | `st5_kenzie_01` | Twinkle Toes | “Ready when you are, big brother!” | Finale: joint finish becomes available. |
 | `st5_riley_02` | Riley | “Together!” | Finale: Riley begins the joint finish. |
-| `st5_kenzie_02` | Twinkle Toes | “Twinkle Toes thunder!” | Finale: Kenzie calls down lightning. |
+| `st5_kenzie_02` | Twinkle Toes | “Twinkle Toes thunder!” | Finale: Twinkle Toes calls down lightning. |
 | `end_moiraine_01` | Moiraine | “The Wheel turned in our favor.” | Ending: after Taim falls. |
-| `end_riley_01` | Riley | “Let's go home.” | Ending: Riley and Kenzie reunite. |
+| `end_riley_01` | Riley | “Let's go home.” | Ending: Riley and Twinkle Toes reunite. |
 | `end_kenzie_01` | Twinkle Toes | “After one victory dance!” | Ending: final joke before the victory screen. |
 
 ## Combat and system lines
@@ -56,7 +56,7 @@ These are the complete short lines intended for spoken playback and matching sub
 | `riley_call_spent_01` | Riley | “Loial needs a rest.” | First attempted second call in a stage; once per stage. |
 | `riley_callandor_01` | Riley | “Callandor answers!” | First upgraded super after obtaining Callandor. |
 | `riley_victory_01` | Riley | “The way is clear.” | Stage 1–4 clear pose. |
-| `riley_victory_02` | Riley | “Kenzie, I'm coming.” | Alternate Stage 1–4 clear line. |
+| `riley_victory_02` | Riley | “Twinkle Toes, I'm coming.” | Alternate Stage 1–4 clear line. |
 
 ## Enemy entrance lines
 

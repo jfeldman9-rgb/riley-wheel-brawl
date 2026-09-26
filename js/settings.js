@@ -173,6 +173,7 @@ RWB.settings = (function () {
       r.score = Math.max(0, r.score | 0);
       r.saidin = Math.max(0, Math.min(100, r.saidin | 0));
       r.callandor = !!r.callandor;
+      r.loial = r.loial !== false;
       return r;
     } catch (e) { return null; }
   }

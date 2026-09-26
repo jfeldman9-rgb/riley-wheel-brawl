@@ -43,7 +43,7 @@ const pad={connected:true,index:0,axes:[0,0],buttons:Array.from({length:16},()=>
 for(const [idx,act] of Object.entries({0:'jump',1:'saidin',2:'attack',3:'special',4:'tool',5:'tool',8:'pause',9:'start'})){pad.buttons[idx].pressed=true;RWB.input.beginFrame();assert.equal(RWB.input.pressed[act],true);pad.buttons[idx].pressed=false;RWB.input.beginFrame();assert.equal(RWB.input.held[act],false)}
 context.navigator.getGamepads=()=>[];RWB.input.beginFrame();
 console.log('PASS keyboard aliases, all touch targets and standard gamepad bindings');
-for(let i=0;i<4;i++){
+for(let i=0;i<5;i++){
  const scene=new RWB.scenes.Play(RWB.game,i,{});scene.enter?.();scene.phase='play';scene.bannerT=0;scene.player.x=270;scene.player.y=275;
  scene.spawnEnemy(i===0?'trolloc':i===1?'assassin':i===2?'stoneDefender':'turnedAshaman',360,280,{});
  if(i===3)scene.spawnBoss();
@@ -62,6 +62,7 @@ for (const pointerType of ['mouse', 'pen', 'touch']) {
   const {RWB,canvas,clisteners} = env;
   const scene = new RWB.scenes.Play(RWB.game,0,{}); scene.enter();
   scene.phase='play'; scene.bannerT=0; scene.objects=[]; scene.enemies=[];
+  scene.player.hasRelic = true; scene.player.loialReady = false;
   RWB.game.scene=scene;
   const rect=canvas.getBoundingClientRect();
   const event=(id,x,y)=>({pointerId:id,pointerType,clientX:x/640*rect.width,clientY:y/360*rect.height});

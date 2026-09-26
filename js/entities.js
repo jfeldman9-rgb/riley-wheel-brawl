@@ -58,7 +58,7 @@
       this.maxHp = 100; this.hp = 100;
       this.lives = 3; this.score = 0;
       this.saidin = 0; this.saidinMax = 100; this.angrealT = 0; this.loialReady = true;
-      this.hasRelic = true;
+      this.hasRelic = false;
       this.state = 'idle'; this.stateT = 0; this.t = 0;
       this.invuln = 0; this.flash = 0;
       this.attack = null; this.hitDone = false; this.comboTimer = 0; this.nextCombo = 'jab';
@@ -136,7 +136,10 @@
           }
           if (pressed.jump) { this.vz = 330; this.z = 0.01; this.setState('jump'); RWB.audio.sfx.jump(); break; }
           if (pressed.special && this.specialCd <= 0) { this.startFireball(); break; }
-          if (pressed.tool && this.loialReady) { this.loialReady = false; this.g.callLoial(); break; }
+          if (pressed.tool) {
+            if (this.hasRelic) { this.startThrow(); break; }
+            if (this.loialReady) { this.loialReady = false; this.g.callLoial(); break; }
+          }
           break;
         }
         case 'attack': {
@@ -180,7 +183,8 @@
           if (!this.hitDone && this.stateT >= 0.1) {
             this.hitDone = true;
             const lanes = this.angrealT > 0 ? [-28, 0, 28] : [0];
-            for (const lane of lanes) this.g.projectiles.push(new Projectile(this.g, { kind: 'fireball', owner: 'player', x: this.x + this.facing * 24, y: this.y + lane, z: 38, vx: this.facing * 330, dmg: this.angrealT > 0 ? 10 : 8, knockdown: true, pierce: 1, life: 1.8 }));
+            const big = this.angrealT > 0;
+            for (const lane of lanes) this.g.projectiles.push(new Projectile(this.g, { kind: 'fireball', owner: 'player', x: this.x + this.facing * 24, y: this.y + lane, z: 38, vx: this.facing * (big ? 300 : 340), dmg: big ? 11 : 8, knockdown: true, pierce: 1, life: 1.8, big }));
           }
           if (this.stateT >= 0.6) { this.setState('idle'); this.specialCd = 0.7; }
           break;
@@ -361,10 +365,10 @@
       p.dead = true;
       switch (p.kind) {
         case 'saidinSpark': this.addSurge(35, 'SAIDIN SPARK +35'); break;
-        case 'saidinSurge': this.addSurge(50, 'THE saidinSurge +50'); break;
+        case 'saidinSurge': this.addSurge(50, 'SAIDIN SURGE +50'); break;
         case 'power': this.addSurge(25, 'SAIDIN +25'); break;
         case 'angreal': this.angrealT = 12; this.g.fx.text(this.x, this.y - 90, 'ANGREAL: TRIPLE FIRE', '#ffcf68'); RWB.audio.sfx.pickup(); break;
-        case 'heal': this.heal(30, 'Rise, Riley, Rise!'); break;
+        case 'heal': this.heal(30, 'Rise, Riley, Rise!'); if (this.g.bannerT <= 0) this.g.showBanner('MOIRAINE', 'Rise, Riley, Rise!', 1.4); break;
         case 'trolloc': this.heal(60, 'MOIRAINE HEALS +60'); break;
         case 'mark': this.addScore(500); this.g.fx.text(this.x, this.y - 90, 'SIGIL +500', '#ffe14a'); RWB.audio.sfx.pickup(); break;
         case 'relic': this.hasRelic = true; this.g.fx.text(this.x, this.y - 90, 'RELIC RECOVERED', '#f66'); RWB.audio.sfx.pickup(); break;
@@ -413,7 +417,7 @@
 
     respawn(x, y) {
       this.hp = this.maxHp; this.x = x; this.y = y; this.z = 0; this.vx = this.vy = this.vz = 0;
-      this.setState('idle'); this.invuln = 2.5; this.grab = null; this.hasRelic = true; this.lowBarked = false; this.bufferAttack = false;
+      this.setState('idle'); this.invuln = 2.5; this.grab = null; this.hasRelic = false; this.lowBarked = false; this.bufferAttack = false;
       this.hitStreak = 0; this.hitStreakT = 0; this.wakeT = 1.2;
     }
 
@@ -483,13 +487,13 @@
   const ENEMY_DEFS = {
     // hurtW: half width riley's swings test against, matched to each sprite's body.
     // agile: may side-step out of a swing it sees coming (never mid-combo).
-    trolloc: { hp: 26, speed: 58, dmg: 7, reach: 36, score: 100, height: 66, windup: 0.42, attackDur: 0.28, ranged: false, hurtW: 14, plate: '#3f8f28', name: 'trolloc GOON' },
-    trollocCaptain: { hp: 52, speed: 48, dmg: 11, reach: 26, score: 50, height: 40, windup: 0.32, attackDur: 0.22, roll: true, hurtW: 11, agile: true, plate: '#e2d24a', name: 'TROLLOC CAPTAIN' },
-    Darkfriend: { hp: 22, speed: 62, dmg: 8, reach: 56, score: 120, height: 84, windup: 0.48, attackDur: 0.3, hurtW: 11, agile: true, plate: '#e7f6b0', name: 'Darkfriend STALKER' },
-    assassin: { hp: 24, speed: 125, dmg: 8, reach: 34, score: 150, height: 62, windup: 0.32, attackDur: 0.24, dash: true, ranged: 'shuriken', hurtW: 12, agile: true, plate: '#f08a1e', name: 'CAEMLYN ASSASSIN' },
-    mashadarCultist: { hp: 48, speed: 46, dmg: 12, reach: 40, score: 200, height: 70, windup: 0.62, attackDur: 0.32, knockdown: true, armor: true, hurtW: 15, plate: '#2a4ad0', name: 'MASHADAR-TOUCHED' },
-    stoneDefender: { hp: 75, speed: 52, dmg: 14, reach: 44, score: 300, height: 84, windup: 0.58, attackDur: 0.32, knockdown: true, armor: true, charge: true, hurtW: 17, plate: '#143528', name: 'STONE DEFENDER' },
-    turnedAshaman: { hp: 32, speed: 72, dmg: 6, reach: 32, score: 400, height: 60, windup: 0.38, attackDur: 0.28, ranged: 'shadowBolt', keepAway: true, hurtW: 13, plate: '#f7a7c7', name: 'turnedAshaman' }
+    trolloc: { hp: 24, speed: 54, dmg: 6, reach: 36, score: 100, height: 66, windup: 0.48, attackDur: 0.28, ranged: false, hurtW: 14, plate: '#6b5340', name: 'TROLLOC' },
+    trollocCaptain: { hp: 44, speed: 46, dmg: 9, reach: 26, score: 150, height: 70, windup: 0.4, attackDur: 0.22, roll: true, hurtW: 14, agile: true, plate: '#c4552a', name: 'TROLLOC CAPTAIN' },
+    Darkfriend: { hp: 22, speed: 62, dmg: 7, reach: 56, score: 120, height: 84, windup: 0.5, attackDur: 0.3, hurtW: 11, agile: true, plate: '#3a3a48', name: 'DARKFRIEND' },
+    assassin: { hp: 22, speed: 118, dmg: 7, reach: 34, score: 150, height: 62, windup: 0.36, attackDur: 0.24, dash: true, ranged: 'shuriken', hurtW: 12, agile: true, plate: '#1c1c28', name: 'CAEMLYN ASSASSIN' },
+    mashadarCultist: { hp: 40, speed: 44, dmg: 10, reach: 40, score: 200, height: 70, windup: 0.62, attackDur: 0.32, knockdown: true, armor: true, hurtW: 15, plate: '#6a6888', name: 'MASHADAR-TOUCHED' },
+    stoneDefender: { hp: 56, speed: 48, dmg: 11, reach: 44, score: 300, height: 84, windup: 0.62, attackDur: 0.32, knockdown: true, armor: true, charge: true, hurtW: 17, plate: '#8a8478', name: 'STONE DEFENDER' },
+    turnedAshaman: { hp: 30, speed: 68, dmg: 6, reach: 32, score: 400, height: 68, windup: 0.42, attackDur: 0.28, ranged: 'shadowBolt', keepAway: true, hurtW: 13, plate: '#14141c', name: "TURNED ASHA'MAN" }
   };
   const ATTACKING = ['windup', 'prime', 'attack', 'dash', 'charge', 'roll'];
 
@@ -756,7 +760,7 @@
       this.g.player.addScore(Math.round(dmg * (this.type === 'turnedAshaman' ? 4 : 2)));
       const dir = this.x < fromX ? -1 : 1;
       if (this.hp <= 0) { this.die(dir); return; }
-      if (opts.stun) { this.stun = opts.stun; this.setState('stunned'); this.vx = dir * 20; RWB.audio.sfx.blip(); this.g.fx.text(this.x, this.y - this.height - 10, 'FROZEN!', '#8ff'); return; }
+      if (opts.stun) { this.stun = opts.stun; this.setState('stunned'); this.vx = dir * 20; RWB.audio.sfx.blip(); this.g.fx.text(this.x, this.y - this.height - 10, 'STUNNED!', '#8ff'); return; }
       if (opts.noInterrupt || this.state === 'grabbed') return;
       if (juggling) {
         // Each follow-up re-pops a little; out of budget (or a heavy) sends it down.
@@ -768,11 +772,11 @@
         }
         this.juggleLeft = 0;
         this.setState('down'); this.vx = dir * (opts.kb || 140); this.vz = Math.max(120, this.vz); this.z = Math.max(this.z, 0.01);
-        if (opts.knockdown) this.g.fx.text(this.x, this.y - this.height - this.z - 8, 'AIR MAIL', '#ffe14a', 0.8);
+        if (opts.knockdown) this.g.fx.text(this.x, this.y - this.height - this.z - 8, 'LAUNCHED!', '#ffe14a', 0.8);
         return;
       }
       const armored = this.def.armor && ['windup', 'attack', 'charge'].includes(this.state) && !opts.knockdown && !opts.launch;
-      if (armored) { this.g.fx.text(this.x, this.y - this.height - 6, 'TOO LEAFY', '#c8e89a', 0.6); return; }
+      if (armored) { this.g.fx.text(this.x, this.y - this.height - 6, 'BLOCKED', '#c8e0ff', 0.6); return; }
       if (opts.launch && !this.isBoss) {
         this.streak = 0; this.streakT = 0;
         this.juggleLeft = FAIR.juggleHits;
@@ -793,7 +797,7 @@
       this.dead = true; this.setState('dead'); this.vx = (dir || 1) * 120; this.vz = 220; this.z = Math.max(this.z, 0.01);
       const pts = this.def.score * (this.elite ? 2 : 1);
       this.g.player.addScore(pts);
-      this.g.fx.text(this.x, this.y - this.height, this.type === 'turnedAshaman' ? `+${pts}  STILL GROSS` : `+${pts}`, this.type === 'turnedAshaman' ? '#f9c' : '#ffe14a');
+      this.g.fx.text(this.x, this.y - this.height, `+${pts}`, '#ffe14a');
       if (this.type === 'turnedAshaman') this.g.player.addScore(pts);
       if (!this.isBoss && this.g.bark && !(this.g.surgeT >= 0)) {
         if (this.type === 'turnedAshaman') this.g.bark('turnedAshaman');
@@ -871,16 +875,16 @@
       super(g, 'turnedAshaman', x, y);
       this.bossType = bossType || 'myrddraal';
       const profiles = {
-        myrddraal: { name:'MYRDDRAAL', hp:420, speed:72, dmg:11, height:116 },
-        draghkar: { name:'DRAGHKAR', hp:470, speed:64, dmg:10, height:128 },
-        forsaken: { name:'FORSAKEN', hp:520, speed:55, dmg:12, height:124 },
-        callandorGuardian: { name:'CALLANDOR GUARDIAN', hp:560, speed:48, dmg:14, height:138 },
-        taim: { name:'MAZRIM TAIM', hp:680, speed:58, dmg:14, height:126 }
+        trollocChief: { name:'TROLLOC CHIEFTAIN', hp:260, speed:42, dmg:8, height:132, armor:36 },
+        myrddraal: { name:'MYRDDRAAL', hp:380, speed:70, dmg:10, height:116, armor:48 },
+        draghkar: { name:'DRAGHKAR', hp:440, speed:62, dmg:10, height:128, armor:44 },
+        forsaken: { name:'THE FORSAKEN', hp:500, speed:52, dmg:11, height:124, armor:56 },
+        taim: { name:'MAZRIM TAIM', hp:600, speed:56, dmg:12, height:126, armor:64 }
       };
-      const profile = profiles[this.bossType];
+      const profile = profiles[this.bossType] || profiles.myrddraal;
       this.isBoss = true; this.def = { ...ENEMY_DEFS.turnedAshaman, name: profile.name, reach: 96, dmg: profile.dmg, score: 5000, height: profile.height, knockdown: true };
       this.maxHp = profile.hp; this.hp = this.maxHp; this.height = profile.height; this.speed = profile.speed;
-      this.armorMax = 70; this.armorHp = this.armorMax; this.armorRegen = 0;
+      this.armorMax = profile.armor; this.armorHp = this.armorMax; this.armorRegen = 0;
       this.phase = 1; this.summoned = false; this.puddleT = 0;
       this.FURY = 0; this.dropChance = 0;
       this.intro = 2.2; this.state = 'intro';
@@ -903,7 +907,7 @@
         this.phase = np; this.g.onBossPhase(np);
         this.setState('stagger'); this.staggerT = 1.4;
       }
-      if (this.phase === 1 && this.armorHp <= 0 && this.state !== 'stagger') { this.armorRegen += dt; if (this.armorRegen > 7) { this.armorHp = this.armorMax; this.armorRegen = 0; this.g.fx.text(this.x, this.y - 170, 'THE WARD RETURNS.', '#bff', 1.6); } }
+      if (this.phase === 1 && this.armorHp <= 0 && this.state !== 'stagger' && this.bossType !== 'trollocChief') { this.armorRegen += dt; if (this.armorRegen > 12) { this.armorHp = this.armorMax; this.armorRegen = 0; this.g.fx.text(this.x, this.y - 170, 'THE SHIELD RETURNS', '#bff', 1.6); } }
 
       if (this.z > 0 || this.vz !== 0) {
         this.vz -= GRAV * dt; this.z += this.vz * dt;
@@ -931,22 +935,54 @@
           if (this.phase >= 3) { this.puddleT += dt; if (this.puddleT > 2.4) { this.puddleT = 0; this.g.puddles.push({ x: this.x, y: this.y + 4, r: 34, t: 0, life: 9, arm: 0.55 }); } }
           if (this.attackCd <= 0) {
             const pDown = ['down', 'dead', 'gone'].includes(p.state);
-            if (pDown || p.open) { this.attackCd = 0.5; break; }
-            if (this.bossType === 'myrddraal' && adx > 120) { this.x = U.clamp(p.x - (p.facing || 1) * 90, this.g.camX + 40, this.g.camX + RWB.W - 40); this.facing = p.x > this.x ? 1 : -1; this.startTell('slamWind'); this.g.fx.text(this.x, this.y - 130, 'FADE STRIKE!', '#c9c4e8', .8); break; }
-            if (adx < 110 && Math.abs(dy) < 30) { this.startTell('slamWind'); RWB.audio.sfx.tellSlam(); break; }
+            if (pDown || p.open) { this.attackCd = 0.55; break; }
+            const type = this.bossType;
             const roll = Math.random();
-            if (this.phase >= 2 && !this.summoned && roll >= 0.75) { this.summoned = true; this.summonNext = true; this.startTell('rainWind'); RWB.audio.sfx.tellSummon(); break; }
-            if (this.phase >= 2 && roll < 0.4) { this.startTell('rainWind'); RWB.audio.sfx.tellRain(); break; }
-            if ((this.bossType === 'draghkar' || this.phase >= 2) && roll < 0.75 && adx > 90) {
-              // The mark is locked here and he lands exactly on it.
-              const cam = this.g.camX;
-              this.jumpTargetX = U.clamp(p.x, cam + 40, cam + RWB.W - 40);
-              this.jumpTargetY = U.clamp(p.y, RWB.FLOOR_TOP, RWB.FLOOR_BOTTOM);
+            const cam = this.g.camX;
+            const lockJump = () => {
+              this.jumpTargetX = U.clamp(p.x, cam + 50, cam + RWB.W - 50);
+              this.jumpTargetY = U.clamp(p.y, RWB.FLOOR_TOP + 8, RWB.FLOOR_BOTTOM - 8);
               this.startTell('jumpWind');
               RWB.audio.sfx.tellJump();
+            };
+            if (type === 'trollocChief') {
+              this.startTell('slamWind'); this.tellDur = 1.05;
+              RWB.audio.sfx.tellSlam();
+              this.g.fx.text(this.x, this.y - 140, 'AXE SWING!', '#e8c070', 0.9);
               break;
             }
-            this.attackCd = 0.4;
+            if (type === 'myrddraal') {
+              if (adx > 70) {
+                this.x = U.clamp(p.x - (p.facing || 1) * 96, cam + 48, cam + RWB.W - 48);
+                this.y = U.clamp(p.y, RWB.FLOOR_TOP, RWB.FLOOR_BOTTOM);
+                this.facing = p.x > this.x ? 1 : -1;
+              }
+              this.startTell('slamWind'); this.tellDur = Math.max(this.tellDur, 0.9);
+              RWB.audio.sfx.tellSlam();
+              this.g.fx.text(this.x, this.y - 140, 'FADE STRIKE!', '#c9c4e8', 0.9);
+              break;
+            }
+            if (type === 'draghkar') {
+              if (this.phase >= 2 && roll < 0.28) { this.startTell('rainWind'); RWB.audio.sfx.tellRain(); this.g.fx.text(this.x, this.y - 150, 'SHRIEK!', '#e8a0b0', 0.9); break; }
+              lockJump();
+              this.g.fx.text(this.x, this.y - 150, 'SCREAM DIVE!', '#e8a0b0', 0.9);
+              break;
+            }
+            if (type === 'forsaken') {
+              if (this.phase >= 2 && !this.summoned && roll > 0.82) { this.summoned = true; this.summonNext = true; this.startTell('rainWind'); RWB.audio.sfx.tellSummon(); break; }
+              if (this.phase >= 2 && roll < 0.28 && adx > 80) { lockJump(); this.g.fx.text(this.x, this.y - 150, 'SHADOW LEAP!', '#c9a0ff', 0.9); break; }
+              this.startTell('rainWind'); RWB.audio.sfx.tellRain();
+              this.g.fx.text(this.x, this.y - 150, 'CHANNELING!', '#c9a0ff', 0.9);
+              break;
+            }
+            if (this.phase >= 3 && roll < 0.22) { lockJump(); this.g.fx.text(this.x, this.y - 150, 'ROOF STRIKE!', '#9eeaff', 0.9); break; }
+            if (this.phase >= 2 && roll < 0.5) {
+              if (!this.summoned && roll < 0.16) { this.summoned = true; this.summonNext = true; this.startTell('rainWind'); RWB.audio.sfx.tellSummon(); }
+              else { this.startTell('rainWind'); RWB.audio.sfx.tellRain(); this.g.fx.text(this.x, this.y - 150, 'BLACK BOLTS!', '#9eeaff', 0.9); }
+              break;
+            }
+            this.startTell('slamWind'); RWB.audio.sfx.tellSlam();
+            this.g.fx.text(this.x, this.y - 140, this.phase >= 3 ? 'LIGHTNING BLADE!' : 'BLADE!', '#f0d0d8', 0.9);
           }
           break;
         }
@@ -1047,8 +1083,8 @@
       if (this.armor > 0) {
         real = Math.round(dmg * 0.35);
         this.armorHp -= dmg;
-        if (this.armorHp <= 0) { this.armorHp = 0; this.armorRegen = 0; this.setState('stagger'); this.staggerT = 3.2; this.g.fx.text(this.x, this.y - 170, 'THE WARD BREAKS', '#fff', 1.6); RWB.audio.sfx.break(); if (this.g.impact) this.g.impact(1, 'heavy'); else this.g.shake(5, 0.3); }
-        else this.g.fx.text(this.x + U.rand(-20, 20), this.y - 150, 'WARD', '#bff', 0.45);
+        if (this.armorHp <= 0) { this.armorHp = 0; this.armorRegen = 0; this.setState('stagger'); this.staggerT = 2.4; this.g.fx.text(this.x, this.y - 170, 'SHIELD BREAKS!', '#fff', 1.6); RWB.audio.sfx.break(); if (this.g.impact) this.g.impact(1, 'heavy'); else this.g.shake(5, 0.3); }
+        else this.g.fx.text(this.x + U.rand(-20, 20), this.y - 150, 'SHIELD', '#bff', 0.45);
       }
       if (opts.saidin) real = dmg;
       this.hp -= real; this.flash = 0.1;
@@ -1196,6 +1232,7 @@
     }
     expire() {
       this.remove = true;
+      if (this.kind === 'fireball') this.g.fx.impactRing(this.x, this.y - 20, !!this.big);
       if (this.dropAsPickup) this.g.spawnPickup('relic', U.clamp(this.x, this.g.camX + 20, this.g.camX + RWB.W - 20), this.y, true);
     }
     land() {

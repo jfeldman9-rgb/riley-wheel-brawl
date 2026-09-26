@@ -7,7 +7,7 @@ RWB.assets = (function () {
   // Image URLs carry the same ?v= stamp as the scripts, so a cached 404 or stale
   // file from an older deploy can't pin the procedural fallback.
   const cs = typeof document !== 'undefined' && document.currentScript;
-  const VER = RWB.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || '20260926-s2';
+  const VER = RWB.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || '20260926-g1';
   const manifest = {
     "art:riley": "assets/art/atlas-riley.webp",
     "plate:stage1": "assets/art/stage1-emonds-field-far.webp"
