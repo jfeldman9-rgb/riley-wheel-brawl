@@ -2,9 +2,11 @@
 
 Branch `rwb-w2`, based on the latest supplied-art commit on `rwb-w1`:
 `5a576d4ca36a1054e5b7f41a4489e7141ae91a54`.
-Runtime cache stamp: `?v=20260926-w3c`. No changes to `main`; no merge.
+Runtime cache stamp: `?v=20260926-w3e`. No changes to `main`; no merge.
 
 ## Changed
+
+- w3e: Be'lal is drawn from the ten frames of his painted sheet, with the sword painted in his hand, so SWORD FLURRY cannot detach it. Floors use offline-quilted seamless loops of 1100 units. Mid/near/far plates on stages 2-5 are drawn as one full-width painting, so no landmark repeats on screen and there are no vertical joins. See `review/PR_W3.md`.
 
 - All supplied paintings and all twelve Riley 16 resources are allowlisted and registered. Five painted far/mid/near/floor compositions replace procedural scenery when files are available. Measured best-match source crops, narrow non-mirrored joins, transparent mid-layer edge feathers, and stage-tinted join mist eliminate the broad double exposures and hard repeat seams. The Black Tower uses its interior art for regular encounters and the roof background/floor for Taim.
 - All enemy/boss cutouts, Loial, dialogue portraits, ten story stills, title key art and logo are connected. Missing boss portraits use face crops of their cutouts. Twinkle uses her supplied rig art. Riley uses ten purpose-made, anchor-aligned animation frames and the matching portrait; the old sheet/rig remain unused.

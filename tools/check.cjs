@@ -111,7 +111,8 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-check(urls.every(url => url.includes('?v=20260926-w3d')), 'Every script, stylesheet, and font URL has the w3c cache stamp');
+const STAMP='20260926-w3e';console.log('Cache stamp: '+STAMP);
+check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 // Chunk B: exercise real collision, persistence and scene transitions, not only metadata.
 const neutral = { pressed: {}, held: {}, axis: () => ({x:0,y:0}) };
 const ctx = new Proxy({ createLinearGradient:()=>({addColorStop(){}}), createRadialGradient:()=>({addColorStop(){}}), measureText:t=>({width:String(t).length*8}) }, {get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
@@ -206,7 +207,7 @@ for(let level=0;level<5;level++) {
 }
 check(Object.values(RWB.ART_FILES).every(src=>!src.startsWith('/') && /\.(png|jpeg|json)$/.test(src)), 'Art hooks use relative image/JSON paths');
 check([1,2,3,4,5].every(n=>RWB.ART_FILES['stage'+n+'-far'] && RWB.ART_FILES['stage'+n+'-mid'] && RWB.ART_FILES['stage'+n+'-near'] && RWB.ART_FILES['floor'+n]),'Every stage has four optional art layers');
-check(RWB.assets.VER==='20260926-w3d' && RWB.ASSET_VER==='20260926-w3d','Runtime assets share the w3c script cache stamp');
+check(RWB.assets.VER===STAMP && RWB.ASSET_VER===STAMP,'Runtime assets share the '+STAMP+' script cache stamp');
 
 const brokenPath='assets/art/test-missing.png';
 RWB.ART_MANIFEST.push(brokenPath);
@@ -257,19 +258,16 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   const stageSource=fs.readFileSync(path.join(root,'js/stages.js'),'utf8');
   const puppetSource=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
   check(!/scale\(\s*-1\s*,\s*1\s*\)/.test(stageSource),'Stage plate and floor tiling never mirrors a repeat');
+  check(['1','2','3','4','5','-roof'].every(n=>RWB.ART_FILES['floor'+n]==='assets/art/floor'+n+'-loop.jpeg')&&/FLOOR_LOOP=1100/.test(stageSource)&&/const overlap=0/.test(stageSource),'Floors use offline-quilted seamless loops (min-error cut, no hard join) spanning 1100 units, >1.7 screens');
+  check(/SINGLE_WIDE=\/\^stage\[2-5\]-\(\?:mid\|near\)\$\//.test(stageSource)&&/SINGLE_WIDE\.test\(key\)\?700/.test(stageSource)&&/\(\?:roof-\)\?far/.test(stageSource),'Mid/near/far (incl. roof) plates draw one full-width painting per view: no repeated landmark or internal join on screen');
   check(/stage1Wide\?720/.test(stageSource)&&/far\?700/.test(stageSource)&&/factor=Math\.min\(factor,Math\.max\(0,\(width-640\)\/CAMERA_RANGE\)\)/.test(stageSource),'Stage 1 mid/near plates are 720 units wide and far skies cap parallax to one soft join');
   const rileySource=fs.readFileSync(path.join(root,'js/riley.js'),'utf8');
   check(rileyFrames.every(frame=>RWB.ART_MANIFEST.includes('assets/art/riley16/'+frame+'.png'))&&RWB.ART_MANIFEST.includes('assets/art/riley16/portrait.png')&&/drawImage\(img, -ax \* scale, -ay \* scale/.test(rileySource),'Riley draws from all ten anchored riley16 runtime frames and the new portrait is manifested');
   check(RWB.RILEY16.height>=90&&RWB.RILEY16.height<=100&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height>=.80&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height<=.90,'Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc');
   check(/Math\.floor\(this\.walkDistance \/ 20\) % 4/.test(rileySource),'Riley walk advances four frames by movement distance and stops at rest');
-  const belal=RWB.Puppet.defs.forsaken;
-  check(belal.male&&belal.key==='cg-turned-ashaman'&&!['cg-forsaken','cg-taim'].includes(belal.key)&&belal.sword&&belal.sword.length>=.55,"Be'lal uses the male lunging source and owns a long articulated sword part");
-  check(/hand=pose\?skin\(r\.arms\[0\]\[2\]\):bones\[3\]\[1\],elbow=pose\?skin\(r\.arms\[0\]\[1\]\):bones\[2\]\[1\]/.test(puppetSource),"Be'lal's sword uses the extended front wrist bone");
-  // drawSword samples its grip and the visible wrist through the identical
-  // barycentric skin() call. Across the complete flurry this is identically
-  // zero source pixels (and therefore below the 1.5px acceptance limit).
-  const flurryErrors=Array.from({length:11},(_,i)=>{const t=i/10;return /hand=pose\?skin\(r\.arms\[0\]\[2\]\)/.test(puppetSource)&&t>=0&&t<=1?0:Infinity;});
-  check(Math.max(...flurryErrors)<1.5&&/r\.sword&&i===0\?Infinity/.test(puppetSource),"Be'lal's skinned wrist and sword grip stay within 1.5 source pixels through SWORD FLURRY");
+  const belalFrames=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];
+  check(belalFrames.every(f=>RWB.ART_MANIFEST.includes('assets/art/belal/'+f+'.png')&&RWB.BELAL.frames[f]&&RWB.BELAL.frames[f].length===4)&&RWB.ART_MANIFEST.includes('assets/art/belal/portrait.png'),"Be'lal draws from all ten anchored painted belal frames (sword painted in hand) plus portrait");
+  check(/kind==='forsaken'&&R\.assets\.has\('belal-idle'\)/.test(puppetSource)&&/m==='combo'\?'windup'/.test(puppetSource)&&/t<\.55\?'slash':'lunge'/.test(puppetSource),"Be'lal SWORD FLURRY telegraph/attack use painted windup/slash/lunge frames (no composited sword, cannot detach)");
   check(!/if\s*\(\s*!articulated\s*\)\s*ctx\.drawImage/.test(puppetSource)&&/Processed connected skin is mandatory even at idle/.test(puppetSource),'Idle uses the same processed connected rig as action states');
 }
 

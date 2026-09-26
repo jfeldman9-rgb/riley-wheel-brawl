@@ -246,6 +246,7 @@
     if(hurt){arms[0]={x:-23,y:-49};arms[1]={x:18,y:-55};}
     return {feet,arms,bob,lean,walking,attack,hurt};
   },draw(ctx,a,cam,kind){
+    if(kind==='forsaken'&&R.drawBelal&&R.assets.has('belal-idle'))return R.drawBelal(ctx,a,cam,defs.forsaken.height);
     const d=defs[kind];if(!d)return false;const r=getRig(d);if(!r)return false;
     a.visualHeight=d.height;const pose=this.pose(a,d.height),bones=targets(a,d,r,pose);
 
@@ -267,9 +268,34 @@
   R.scenes.Play.prototype.updateObjects=function(dt){update.call(this,dt);for(const a of [this.player,...this.enemies,...this.allies])updateGait(a,dt);};
   const troll=R.Trolloc.prototype.draw;
   R.Trolloc.prototype.draw=function(ctx,cam){const kind=this.boss?'chieftain':'trolloc';if(R.assets.has(defs[kind].key)){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?28:21);R.Puppet.draw(ctx,this,cam,kind);}else troll.call(this,ctx,cam);};
+  // Be'lal: frame-based painted sheet (assets/art/belal, source faces LEFT).
+  const BELAL=R.BELAL={frames:{idle:[238,222,149,221], walk1:[204,220,117,220], walk2:[199,220,117,220], walk3:[212,221,125,221], walk4:[233,221,140,220], windup:[224,221,106,220], slash:[236,201,115,200], lunge:[304,193,173,193], hurt:[179,197,60,197], cast:[260,197,140,197]}};
+  function belalFrame(a){
+    if(a.dead||['hurt','knockback','knockdown','lying','rise','getup','death'].includes(a.state))return 'hurt';
+    const m=a.attack&&a.attack.mode;
+    if(a.ai==='telegraph')return m==='combo'?'windup':'cast';
+    if(a.ai==='attack'){if(m!=='combo')return 'cast';const t=1-Math.max(0,a.aiTimer)/(a.attack.active||1);return t<.18?'windup':t<.55?'slash':'lunge';}
+    if(a.ai==='recover'&&m==='combo'&&a.aiTimer>(a.attack.recover||0)*.5)return 'lunge';
+    if(a.ai==='recover'&&m&&m!=='combo'&&a.aiTimer>(a.attack.recover||0)*.6)return 'cast';
+    if(a.state==='walk'||Math.hypot(a.vx||0,a.vy||0)>12)return 'walk'+(1+Math.floor((a.walkDistance||0)/15)%4);
+    return 'idle';
+  }
+  R.drawBelal=function(ctx,a,cam,height){
+    const name=a.belalFrame||belalFrame(a),img=R.assets.get('belal-'+name);if(!img)return false;
+    const [w,h,ax,ay]=BELAL.frames[name],s=(height||116)/BELAL.frames.idle[1];
+    ctx.save();
+    if(a.dead)ctx.globalAlpha*=Math.max(0,a.deathTimer/0.75);
+    ctx.translate(a.x-cam,a.y-(a.z||0));
+    if(['knockdown','lying'].includes(a.state)||a.dead)ctx.rotate(-(a.facing||-1)*Math.min(1,(a.stateT||0)*4)*1.25);
+    ctx.scale(a.facing===1?-s:s,s);
+    if(a.hitFlash>0)ctx.filter='brightness('+(1+Math.min(1,a.hitFlash*6))+')';
+    ctx.drawImage(img,-ax,-ay,w,h);
+    ctx.restore();
+    return true;
+  };
   for(const Type of [R.ShadowSoldier,R.ShadowBoss]){const draw=Type.prototype.draw;Type.prototype.draw=function(ctx,cam){
     if(this.kind==='draghkar') {const img=R.assets.get('cg-draghkar');if(img){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,30);ctx.save();ctx.translate(this.x-cam,this.y-this.z-28);ctx.scale(-this.facing,1);const flap=Math.sin(this.flightTime*9)*.10;ctx.rotate(this.ai==='attack'?-.18:flap*.4);ctx.drawImage(img,-64,-45,128,86*(1+flap));ctx.restore();return;}}
-    const kind=this.kind;if(defs[kind]&&R.assets.has(defs[kind].key)){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?25:19);R.Puppet.draw(ctx,this,cam,kind);}else draw.call(this,ctx,cam);
+    const kind=this.kind;if(kind==='forsaken'&&R.assets.has('belal-idle')){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?25:19);R.drawBelal(ctx,this,cam,defs.forsaken.height);}else if(defs[kind]&&R.assets.has(defs[kind].key)){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?25:19);R.Puppet.draw(ctx,this,cam,kind);}else draw.call(this,ctx,cam);
   };}
   const loial=R.Loial.prototype.draw;R.Loial.prototype.draw=function(ctx,cam){if(R.assets.has('cg-loial')){R.draw.shadow(ctx,this.x-cam,this.y,28);R.Puppet.draw(ctx,this,cam,'loial');}else loial.call(this,ctx,cam);};
   const twinkle=R.drawTwinkle;R.drawTwinkle=function(ctx,x,y,casting,time){if(!R.Puppet.draw(ctx,{x,y,z:0,facing:1,state:casting?'channel':'idle',stateT:time},0,'twinkle'))twinkle(ctx,x,y,casting,time);};

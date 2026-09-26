@@ -11,6 +11,11 @@
   const seamless = new Map();
   const strips = new Map();
   const CAMERA_RANGE=2360;
+  // One quilted floor loop spans ~1.7 screens, so no floor landmark repeats inside a view.
+  const FLOOR_LOOP=1100;
+  // Stages 2-5 mid/near plates: one full-width painting per view (no second copy,
+  // so no landmark ever appears twice on screen and no internal join exists).
+  const SINGLE_WIDE=/^stage[2-5]-(?:mid|near)$/;
   const LOOP_CROPS={
     'stage1-mid':[196,1492],'stage1-near':[194,1623],
     'stage2-mid':[306,1472],'stage2-near':[544,1417],
@@ -25,10 +30,13 @@
     const img = R.assets.get(key);
     if (!img) return null;
     const id=key+':'+!!topFeather;if(seamless.has(id))return seamless.get(id);
-    const crop=LOOP_CROPS[key]||[0,img.width-44],start=crop[0],end=Math.min(img.width,crop[1]),sourceWidth=end-start;
+    // floorN-loop plates are pre-quilted offline (min-error cut through a 260px
+    // overlap), so they wrap with no dissolve at all. SINGLE_WIDE plates are
+    // drawn once, full source width, and never wrap inside the camera range.
+    const prelooped=/^floor/.test(key)||SINGLE_WIDE.test(key),crop=prelooped?[0,img.width]:LOOP_CROPS[key]||[0,img.width-44],start=crop[0],end=Math.min(img.width,crop[1]),sourceWidth=end-start;
     // The measured loop columns are dissolved into one another.  The resulting
     // plate is still a single painting (never a flipped/ghosted second pass).
-    const overlap=Math.max(12,Math.round(sourceWidth*.045)),step=sourceWidth-overlap;
+    const overlap=0 /* every non-floor plate is drawn as a single copy; floors are pre-quilted */,step=sourceWidth-overlap;
     const c=document.createElement('canvas');c.width=step;c.height=img.height;
     const g=c.getContext('2d');g.drawImage(img,start,0,step,img.height,0,0,step,img.height);
     if(overlap){
@@ -45,8 +53,8 @@
     // Stage 1 uses a 720-unit, bottom-anchored plate, so its inn cannot repeat
     // inside one 640-unit view. Far skies use one wide copy and tiny capped
     // parallax; other stages retain their measured non-mirrored loop crops.
-    const stage1Wide=/^stage1-(?:mid|near)$/.test(key),far=/^stage\d-far$/.test(key);
-    const targetWidth=stage1Wide?720:far?700:0;
+    const stage1Wide=/^stage1-(?:mid|near)$/.test(key),far=/^stage\d-(?:roof-)?far$/.test(key);
+    const targetWidth=stage1Wide?720:far?700:SINGLE_WIDE.test(key)?700:0;
     const drawH=targetWidth?targetWidth*tile.height/tile.width:Math.max(h,320*tile.height/tile.width),tileWidth=targetWidth||drawH*tile.width/tile.height,copies=tileWidth<640?2:1,width=tileWidth*copies,drawY=y+h-drawH;
     let plate=tile;
     if(copies===2){const id=key+':'+!!topFeather+':strip';plate=strips.get(id);if(!plate){plate=document.createElement('canvas');plate.width=tile.width*2;plate.height=tile.height;const pg=plate.getContext('2d');pg.drawImage(tile,0,0);pg.drawImage(tile,tile.width,0);strips.set(id,plate);}}
@@ -199,7 +207,7 @@
       // Wide floor plates are compressed in depth, not tiled into tiny squares.
       const floorKey=roof ? 'floor-roof' : 'floor' + n;
       const floor = seamlessPlate(floorKey,true);
-      if (floor){const fw=640*floor.width/(R.assets.get(floorKey).width*.76);const off=((cam%fw)+fw)%fw;for(let x=-off-fw;x<640+fw;x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
+      if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off-fw;x<640+fw;x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
       else if(n===1)R.Stage1.layers.floor(ctx,cam);
       const depth=ctx.createLinearGradient(0,218,0,360);
       depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');ctx.fillStyle=depth;ctx.fillRect(0,218,640,142);

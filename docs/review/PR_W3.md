@@ -53,3 +53,17 @@ Known remaining weaknesses: during SWORD FLURRY the hilt can sit a few pixels pa
 - Stage 3's Mashadar fog is now drifting ground mist with soft animated lane seams, replacing the dashed debug rectangle.
 - Review fight captures use the first natural frame where Riley is on screen, not hurt or invulnerable, and not covered by a nearer enemy. `riley-closeup` is wider and shows Riley idle beside a full Trolloc at the same world scale.
 - Stamp `?v=20260926-w3d`.
+
+### w3e
+
+- Be'lal now uses frames from the supplied painted sheet (`assets/art/belal/`). There are ten frames: idle, walk1-4, windup, slash, lunge, hurt and cast. They share one scale, one foot baseline and a body anchor. The sheet faces left and is mirrored when he faces right. The sword is part of the painting, so it can never separate from his hand.
+  - SWORD FLURRY: the tell uses the windup frame. The active window goes windup → slash → lunge.
+  - BALEFIRE and WEAVE SNARE use the cast frame.
+  - Hurt, knockdown and death use the hurt frame (rotated when he is down, and fading on death).
+  - Walk steps through four frames by distance travelled.
+  - His dialogue portrait is a crop of the idle face. The composited rig sword is no longer drawn for him.
+  - `belal-closeup.jpeg` renders every state through the runtime `RWB.drawBelal`.
+- Floors: each floor painting is pre-quilted offline into a seamless loop (`floorN-loop.jpeg`). The loop is cut along a minimum-error path through a 260px overlap, so the join follows cracks and snow edges instead of a straight vertical line. Each loop spans 1100 units (over 1.7 screens), so no floor landmark repeats inside one view. The original non-looping floor files were removed.
+- Mid, near and far plates on stages 2-5, including the Black Tower roof sky, are drawn once at full source width (700 units), so no building or ruin appears twice on screen. The old loop dissolve was removed because no plate wraps inside the camera range anymore.
+- `seams-stage*.jpeg` now shows the full 640-unit view at four camera positions. Stage 5 shows both the interior (wave 3) and the roof (wave 5).
+- `check.txt` prints the cache stamp. Stamp `?v=20260926-w3e`.
