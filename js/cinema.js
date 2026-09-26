@@ -1,13 +1,13 @@
-/* Cinematic story player. A reel is a list of beats (WL.STORY in js/levels.js):
+/* Cinematic story player. A reel is a list of beats (RWB.STORY in js/levels.js):
    a painted plate under a camera move, a location card, name cards pinned to the
    characters, hit accents, a slam title, typed dialogue with a speaker portrait
-   and a VO chirp, and a wipe / flash / fade into the next beat. The opening
+   and a VO chirp, and a wipe / flash / assassin into the next beat. The opening
    Cutscene and the between-stage / ending StoryBeat are both reels. */
 'use strict';
 
-WL.cinema = (function () {
-  const U = WL.util, D = WL.draw, T = WL.text, A = WL.audio, S = WL.sprites;
-  const W = WL.W, H = WL.H;
+RWB.cinema = (function () {
+  const U = RWB.util, D = RWB.draw, T = RWB.text, A = RWB.audio, S = RWB.sprites;
+  const W = RWB.W, H = RWB.H;
   const BAR = 22;            // letterbox bar height
   const BOX_H = 50;          // dialogue box
   const BOX_Y = H - BAR - BOX_H + 12;
@@ -24,8 +24,8 @@ WL.cinema = (function () {
   const backOut = t => { const c = 1.7; t = clamp01(t) - 1; return 1 + (c + 1) * t * t * t + c * t * t; };
 
   const SPEAKERS = {
-    riley: { name: 'shadow riley', color: '#d8321f', side: -1, img: () => WL.art.plate('riley-portrait') || WL.assets.get('rileyPortrait') },
-    chieftain: { name: 'chieftain ANDERSEN', color: '#2462c4', side: 1, img: () => WL.assets.get('story:chieftain-portrait') }
+    riley: { name: 'Riley', color: '#d8321f', side: -1, img: () => RWB.art.plate('riley-portrait') || RWB.assets.get('rileyPortrait') },
+    chieftain: { name: 'chieftain ANDERSEN', color: '#2462c4', side: 1, img: () => RWB.assets.get('story:chieftain-portrait') }
   };
 
   const lineHold = text => 1.25 + text.length * 0.03;
@@ -44,14 +44,14 @@ WL.cinema = (function () {
 
   /* ---------------- cached bits ---------------- */
   function vignette() {
-    return WL.gfx.layer('cine-vignette', W, H, 2, g => {
+    return RWB.gfx.layer('cine-vignette', W, H, 2, g => {
       const r = g.createRadialGradient(W / 2, H * 0.48, H * 0.35, W / 2, H * 0.5, W * 0.62);
       r.addColorStop(0, 'rgba(0,0,0,0)'); r.addColorStop(1, 'rgba(8,4,16,0.5)');
       g.fillStyle = r; g.fillRect(0, 0, W, H);
     });
   }
   function dot(color) {
-    return WL.gfx.layer('cine-dot-' + color, 32, 32, 3, g => {
+    return RWB.gfx.layer('cine-dot-' + color, 32, 32, 3, g => {
       const r = g.createRadialGradient(16, 16, 0, 16, 16, 16);
       r.addColorStop(0, color); r.addColorStop(1, 'rgba(0,0,0,0)');
       g.fillStyle = r; g.fillRect(0, 0, 32, 32);
@@ -60,7 +60,7 @@ WL.cinema = (function () {
   function medallion(who, r) {
     const sp = SPEAKERS[who], img = sp && sp.img();
     const size = r * 2 + 8;
-    return WL.gfx.layer('cine-medal-' + who + '-' + r + (img ? '' : '-drawn'), size, size, undefined, g => {
+    return RWB.gfx.layer('cine-medal-' + who + '-' + r + (img ? '' : '-drawn'), size, size, undefined, g => {
       const c = size / 2;
       g.save();
       g.beginPath(); g.arc(c, c, r, 0, Math.PI * 2); g.clip();
@@ -99,7 +99,7 @@ WL.cinema = (function () {
   function hash(i) { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
   function ambient(ctx, fx, t, view) {
     if (!fx) return;
-    const lite = WL.perf.lite;
+    const lite = RWB.perf.lite;
     const n = lite ? 0.5 : 1;
     const at = (px, py) => [(px - view.x) / view.w * W, (py - view.y) / view.h * H];
     ctx.save();
@@ -171,7 +171,7 @@ WL.cinema = (function () {
         ctx.fillRect(-2.5, -1.2, 5, 2.4 * Math.abs(Math.cos(t * 6 + i)) + 0.4);
         ctx.restore();
       }
-    } else if (fx === 'debris' && WL.art.has('props')) {
+    } else if (fx === 'debris' && RWB.art.has('props')) {
       const bits = ['floret', 'floret2', 'lettuce'];
       for (let i = 0; i < 12 * n; i++) {
         const k = (t * (0.35 + hash(i) * 0.3) + hash(i + 5)) % 1;
@@ -179,9 +179,9 @@ WL.cinema = (function () {
         const ang = hash(i + 6) * Math.PI * 2, sp = 180 + hash(i + 7) * 260;
         const x = ox + Math.cos(ang) * sp * k, y = oy + Math.sin(ang) * sp * k * 0.7 + 160 * k * k;
         const f = bits[i % bits.length];
-        if (!WL.art.frame('props', f)) continue;
+        if (!RWB.art.frame('props', f)) continue;
         ctx.globalAlpha = 1 - k * 0.6;
-        WL.art.draw(ctx, 'props', f, x, y, { rot: t * 6 + i, sx: 0.8 + hash(i) * 0.6, sy: 0.8 + hash(i) * 0.6 });
+        RWB.art.draw(ctx, 'props', f, x, y, { rot: t * 6 + i, sx: 0.8 + hash(i) * 0.6, sy: 0.8 + hash(i) * 0.6 });
       }
     }
     ctx.restore();
@@ -189,7 +189,7 @@ WL.cinema = (function () {
 
   /* ---------------- the reel ---------------- */
   class Reel {
-    /** beats: WL.STORY entries. o: { music, onDone, game } */
+    /** beats: RWB.STORY entries. o: { music, onDone, game } */
     constructor(game, beats, o) {
       this.game = game;
       this.beats = beats.filter(Boolean);
@@ -205,13 +205,13 @@ WL.cinema = (function () {
       this.i = i; this.t = 0; this.fired = new Set(); this.lastTyped = -1; this.lastLine = -1;
       this.tl = timeline(this.beat);
       const key = this.plateKey(this.beat);
-      this.waiting = !!key && !WL.assets.settled(key);
+      this.waiting = !!key && !RWB.assets.settled(key);
       this.waitT = 0;
-      if (this.waiting) WL.assets.ready([key]);
+      if (this.waiting) RWB.assets.ready([key]);
     }
     enter() {
       if (this.music) A.playMusic(this.music);
-      WL.assets.ready(this.beats.map(b => this.plateKey(b)).filter(Boolean));
+      RWB.assets.ready(this.beats.map(b => this.plateKey(b)).filter(Boolean));
       this.onBeatStart();
     }
     onBeatStart() {
@@ -258,7 +258,7 @@ WL.cinema = (function () {
       }
       if (this.waiting) {
         this.waitT += dt;
-        if (WL.assets.settled(this.plateKey(this.beat)) || this.waitT > PLATE_WAIT) this.waiting = false;
+        if (RWB.assets.settled(this.plateKey(this.beat)) || this.waitT > PLATE_WAIT) this.waiting = false;
         return;
       }
       const press = inp.pressed.start || inp.pressed.attack || inp.pressed.jump || inp.pressed.click;
@@ -285,8 +285,8 @@ WL.cinema = (function () {
       this.tl.lines.forEach((l, k) => { if (fire('line' + k, l.start)) { A.sfx.voLine(l.who); this.lastTyped = 0; } });
     }
     accent(h, quiet) {
-      this.shake = Math.max(this.shake, (h.shake || 5) * (WL.settings.data.shake === 'reduced' ? 0.4 : 1));
-      this.flash = Math.max(this.flash, WL.settings.data.shake === 'reduced' ? 0.25 : 0.6);
+      this.shake = Math.max(this.shake, (h.shake || 5) * (RWB.settings.data.shake === 'reduced' ? 0.4 : 1));
+      this.flash = Math.max(this.flash, RWB.settings.data.shake === 'reduced' ? 0.25 : 0.6);
       this.punch = Math.max(this.punch, 0.03);
       if (h.text) this.hits.push({ text: h.text, x: h.x, y: h.y, t: 0 });
       if (!quiet) A.sfx.impact();
@@ -315,11 +315,11 @@ WL.cinema = (function () {
     }
     drawPlate(ctx, b, tl, t) {
       const v = this.view(b, tl, t);
-      const img = WL.assets.get(this.plateKey(b));
+      const img = RWB.assets.get(this.plateKey(b));
       if (img) {
         const iw = img.width, ih = img.height;
         ctx.drawImage(img, v.x * iw, v.y * ih, v.w * iw, v.h * ih, -2, -2, W + 4, H + 4);
-        if (b.fx === 'heat' && !WL.perf.lite && WL.display.mode !== 'classic') {
+        if (b.fx === 'heat' && !RWB.perf.lite && RWB.display.mode !== 'classic') {
           // Heat haze over the horizon band: thin strips nudged sideways.
           const y0 = 0.3, y1 = 0.58, n = 18;
           for (let s = 0; s < n; s++) {
@@ -387,9 +387,9 @@ WL.cinema = (function () {
       const band = ctx.createLinearGradient(0, y - 18, 0, y + size + 22);
       band.addColorStop(0, 'rgba(0,0,0,0)'); band.addColorStop(0.5, 'rgba(10,0,20,0.55)'); band.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = band; ctx.fillRect(0, y - 18, W, size + 40);
-      if (b.slam.end && WL.art.plate('logo')) {
-        const P = WL.ARTDATA.urn.logo, lw = 300, lh = lw * P.h / P.w;
-        ctx.drawImage(WL.art.plate('logo'), W / 2 - lw / 2, y - lh - 14, lw, lh);
+      if (b.slam.end && RWB.art.plate('logo')) {
+        const P = RWB.ARTDATA.urn.logo, lw = 300, lh = lw * P.h / P.w;
+        ctx.drawImage(RWB.art.plate('logo'), W / 2 - lw / 2, y - lh - 14, lw, lh);
       }
       ctx.translate(W / 2, y + size / 2);
       const s = 1 + (1 - k) * 1.4;
@@ -500,7 +500,7 @@ WL.cinema = (function () {
         const r = 27, pop = backOut(age / 0.28), mx = left ? 40 : W - 40, my = BOX_Y + 10;
         const e = medallion(l.who, r);
         ctx.save(); ctx.translate(mx, my); ctx.scale(pop, pop);
-        WL.gfx.blit(ctx, e, -e.w / 2, -e.h / 2);
+        RWB.gfx.blit(ctx, e, -e.w / 2, -e.h / 2);
         ctx.restore();
       }
       if (typed.length >= l.text.length && Math.floor(this.clock * 3) % 2 === 0) {
@@ -519,13 +519,13 @@ WL.cinema = (function () {
       // skip mark (clickable) and progress pips
       const sx = W - 88;
       D.fillRRect(ctx, sx, 5, 80, 12, 6, 'rgba(255,255,255,0.1)', 'rgba(255,255,255,0.35)');
-      T.draw(ctx, WL.input.touchEnabled ? 'SKIP ▶▶' : `${WL.input.hint('pause', 1)}  SKIP ▶▶`, sx + 40, 8, { size: 5, align: 'center', color: '#dfe8f4', shadow: false });
+      T.draw(ctx, RWB.input.touchEnabled ? 'SKIP ▶▶' : `${RWB.input.hint('pause', 1)}  SKIP ▶▶`, sx + 40, 8, { size: 5, align: 'center', color: '#dfe8f4', shadow: false });
       const n = this.beats.length;
       for (let j = 0; j < n; j++) {
         const x = W / 2 - (n - 1) * 6 + j * 12;
         D.circle(ctx, x, H - BAR / 2, j === this.i ? 3 : 2, j === this.i ? '#ffd23f' : j < this.i ? '#b89a40' : 'rgba(255,255,255,0.3)');
       }
-      T.draw(ctx, WL.input.touchEnabled ? 'TAP: NEXT' : 'ENTER / ATTACK: NEXT', W - 10, H - BAR / 2 - 3, { size: 5, align: 'right', color: '#9aabbd', shadow: false });
+      T.draw(ctx, RWB.input.touchEnabled ? 'TAP: NEXT' : 'ENTER / ATTACK: NEXT', W - 10, H - BAR / 2 - 3, { size: 5, align: 'right', color: '#9aabbd', shadow: false });
     }
     draw(ctx) {
       ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
@@ -548,7 +548,7 @@ WL.cinema = (function () {
           if (p < 0.4) this.drawPlate(ctx, tr.prev.b, tr.prev.tl, tr.prev.t);
           else v = this.drawPlate(ctx, b, this.tl, t);
           ctx.fillStyle = `rgba(255,255,255,${(p < 0.4 ? p / 0.4 : 1 - (p - 0.4) / 0.6).toFixed(3)})`; ctx.fillRect(-10, -10, W + 20, H + 20);
-        } else if (tr.via === 'fade') {
+        } else if (tr.via === 'assassin') {
           this.drawPlate(ctx, tr.prev.b, tr.prev.tl, tr.prev.t);
           ctx.save(); ctx.globalAlpha = easeInOut(p); v = this.drawPlate(ctx, b, this.tl, t); ctx.restore();
         } else {
@@ -568,7 +568,7 @@ WL.cinema = (function () {
       v = v || this.view(b, this.tl, t);
       this.drawHits(ctx, v);
       ctx.restore();
-      if (WL.display.mode !== 'classic') WL.gfx.blit(ctx, vignette(), 0, 0);
+      if (RWB.display.mode !== 'classic') RWB.gfx.blit(ctx, vignette(), 0, 0);
       if (this.flash > 0) { ctx.fillStyle = `rgba(255,248,230,${(this.flash * 0.7).toFixed(3)})`; ctx.fillRect(0, 0, W, H); }
       const settled = !tr || tr.t / TRANS > 0.5;
       if (settled) {

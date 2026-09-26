@@ -3,16 +3,16 @@
    file is missing), callers fall back to the procedural Canvas 2D drawing. */
 'use strict';
 
-WL.art = (function () {
-  const DATA = WL.ARTDATA || {};
+RWB.art = (function () {
+  const DATA = RWB.ARTDATA || {};
   const urn = DATA.urn || {};
   const cache = new Map();
 
-  function atlas(name) { return WL.assets.get('art:' + name); }
-  function plate(name) { return urn[name] ? WL.assets.get('plate:' + name) : null; }
+  function atlas(name) { return RWB.assets.get('art:' + name); }
+  function plate(name) { return urn[name] ? RWB.assets.get('plate:' + name) : null; }
   function has(name) { return !!(DATA[name] && DATA[name].f && atlas(name)); }
   function frame(name, f) { const A = DATA[name]; return A && A.f[f] ? A.f[f] : null; }
-  function rs() { return WL.display.mode === 'classic' ? 1 : (WL.display.renderScale || 1); }
+  function rs() { return RWB.display.mode === 'classic' ? 1 : (RWB.display.renderScale || 1); }
   function canvas(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; }
 
   /* A frame resampled once to the live render scale, so the per-frame draw is a
@@ -51,11 +51,11 @@ WL.art = (function () {
     g.globalCompositeOperation = 'source-in';
     if (kind === 'shadow') { g.fillStyle = '#1a0c20'; g.fillRect(0, 0, c.width, c.height); }
     else {
-      // Keep the colours, fade from the feet down.
+      // Keep the colours, assassin from the feet down.
       g.globalCompositeOperation = 'destination-in';
-      const fade = g.createLinearGradient(0, c.height, 0, c.height * 0.35);
-      fade.addColorStop(0, 'rgba(0,0,0,1)'); fade.addColorStop(1, 'rgba(0,0,0,0)');
-      g.fillStyle = fade; g.fillRect(0, 0, c.width, c.height);
+      const assassin = g.createLinearGradient(0, c.height, 0, c.height * 0.35);
+      assassin.addColorStop(0, 'rgba(0,0,0,1)'); assassin.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = assassin; g.fillRect(0, 0, c.width, c.height);
     }
     g.globalCompositeOperation = 'source-over';
     e = { c, q };
@@ -101,8 +101,8 @@ WL.art = (function () {
   /* Hard sun shadow: the silhouette laid down on the stage away from the key light. */
   function castShadow(ctx, name, f, x, floorY, z, o) {
     const A = DATA[name], F = A && A.f[f];
-    if (!F || !atlas(name) || WL.perf.lite || WL.display.mode === 'classic') return;
-    const L = WL.light;
+    if (!F || !atlas(name) || RWB.perf.lite || RWB.display.mode === 'classic') return;
+    const L = RWB.light;
     if (!(L.cast > 0)) return;
     const e = derived(name, f, 'shadow');
     const k = A.k, painted = F[7] || 1, mirror = (o.facing || 1) * painted < 0;
@@ -121,7 +121,7 @@ WL.art = (function () {
   /* Lacquered-stage reflection: the frame mirrored under the feet, fading out. */
   function reflect(ctx, name, f, x, floorY, z, o) {
     const A = DATA[name], F = A && A.f[f];
-    if (!F || !atlas(name) || WL.perf.lite) return;
+    if (!F || !atlas(name) || RWB.perf.lite) return;
     const e = derived(name, f, 'reflect');
     const k = A.k, painted = F[7] || 1, mirror = (o.facing || 1) * painted < 0;
     const w = F[2] * k, h = F[3] * k, ax = F[4] * k, ay = F[5] * k;
@@ -133,11 +133,11 @@ WL.art = (function () {
     ctx.restore();
   }
 
-  /* A plate painted into a WL.gfx layer (cached per render scale). */
+  /* A plate painted into a RWB.gfx layer (cached per render scale). */
   function plateLayer(name, w, h, maxScale, blur, paint, tag) {
     const img = plate(name);
     if (!img) return null;
-    return WL.gfx.layer('plate-' + name + (tag || '') + '-' + w + 'x' + h, w, h, maxScale, (g, lw, lh) => {
+    return RWB.gfx.layer('plate-' + name + (tag || '') + '-' + w + 'x' + h, w, h, maxScale, (g, lw, lh) => {
       g.imageSmoothingQuality = 'high';
       if (paint) paint(g, img, lw, lh); else g.drawImage(img, 0, 0, lw, lh);
     }, blur);

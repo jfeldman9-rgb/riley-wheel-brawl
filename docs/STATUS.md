@@ -1,35 +1,29 @@
 # Current Repository Status
 
-## First-pass completion report — 2026-09-26
+## Second-pass implementation report — 2026-09-26
 
-The procedural first pass is playable from the opening through all five stages. Painted art and recorded voice remain intentionally deferred.
+### Built and playable
 
-| Task | State | Notes |
-| ---: | :--- | --- |
-| 1 | Complete | Public identity, metadata, and project documentation use Riley Wheel Brawl. |
-| 2 | Complete | Legacy assets and sources were removed; runtime and tooling use fantasy or neutral names. |
-| 3 | Complete | Five stage slots, debug jumps, optional-art retry, fallback, and critical-art warning are present. |
-| 4 | Complete | Procedural Riley has a muscular silhouette, short dark hair, blue glasses, black coat, pins, and distinct Tae Kwon Do poses. |
-| 5 | Complete | Procedural Riley walking uses a four-phase contact/passing cycle; `atlas-riley.webp` is the optional future atlas contract. |
-| 6 | Complete | Ground enemies share movement-driven four-phase procedural walks; the flying boss cycle is separate. |
-| 7 | Complete | FIRE launches lane-sensitive projectiles without an HP cost. |
-| 8 | Complete | Saidin, magical power pickups, Continue state, and Moiraine healing are implemented. |
-| 9 | Complete | Full saidin has a grace period, edge warning, paused timer, and nonlethal periodic taint damage. |
-| 10 | Complete | The super consumes saidin, grants invulnerability, clears regular foes, damages bosses, and draws lightning plus balefire. |
-| 11 | Complete | Emond's Field is playable start to finish with tutorials and procedural winter-night scenery. |
-| 12 | Complete | Caemlyn and its telegraphed Fade encounter are playable. |
-| 13 | Complete | Shadar Logoth has visible fog-lane hazards and its aerial Draghkar encounter. |
-| 14 | Complete | Stone of Tear awards the persistent Callandor upgrade and includes Kenzie's lightning reveal. |
-| 15 | Complete | Black Tower waves lead to Taim and a scripted lightning/balefire finale. |
-| 16 | Complete | Angreal grants a timed, refreshing triple-fireball spread with a HUD-visible timer. |
-| 17 | Complete | CALL triggers Loial once per stage; the neutral BOX/ATK/PICK UP pointer fixture remains testable. |
-| 18 | Complete | Opening, five stage sequences, reveal, finale, and ending use subtitle-first procedural scenes. |
-| 19 | Not started | Recorded voice assets are out of scope; subtitles and synthesized cues are the fallback. |
-| 20 | Not started | Final painted-art and release-polish gate is out of scope. |
+- A five-stage campaign with six encounters per stage, unique wave compositions, stage-specific breakables and power/healing pickups.
+- Stage rosters are separated by location: Trollocs and a captain; Darkfriends and assassins; Mashadar-touched fighters; Stone Defenders; and turned Asha'man.
+- Each location has a canvas-rendered sky, distant silhouette, middle architecture, ground plane, and near props moving at different parallax rates.
+- Five named procedural bosses use individual health/speed/damage profiles and silhouettes. The Myrddraal relocates into a telegraphed strike, the Draghkar favors aerial attacks, the two Forsaken-style guardians use ranged channeling patterns, and Taim uses the full three-phase controller.
+- Shadar Logoth has two timed Mashadar fog lanes which telegraph, become active, and damage Riley on contact.
+- Full saidin produces a grace period, escalating vignette, deterministic screen wobble, and nonlethal HP loss. Reduced Shake greatly reduces the wobble while retaining the warning.
+- Stone of Tear awards Callandor after its boss. The upgraded boss damage is passed into the following level and written to Continue data.
+- Taim's third phase hands off at its finish threshold to the Twinkle Toes and Riley joint lightning/balefire sequence before the ending.
+- Keyboard, touch controls, gamepad mapping, pause, accessibility options, procedural fallback art, Continue checkpoints, Loial, angreal, fireballs, saidin, and the screen-clearing super remain integrated.
 
-## Known first-pass limitations
+### Partial
 
-- Bosses share the common telegraph/phase controller and procedural base rig; their final painted silhouettes and bespoke animation will arrive with final art.
-- Optional painted files are intentionally absent, so the critical-art banner demonstrates the required fallback state.
-- Recorded dialogue is absent by design; all required story information remains visible as subtitles.
-- Final manual gamepad and physical-device touch passes remain part of Task 20.
+- Bosses have bespoke procedural silhouettes, stats, attack selection, and presentation, but share the proven common tell/state machinery for consistent fairness.
+- Enemy families have distinct stats, movement logic, colors, bodies, and equipment; final painted atlases are not present.
+- Story is complete through subtitle-first procedural scenes. Recorded dialogue is not present.
+- The final team attack is scripted and visible with lightning/balefire effects; it does not yet have a painted Twinkle Toes animation.
+
+### Missing / not claimed complete
+
+- Final painted stage plates and character atlases.
+- Recorded voice assets.
+- A physical-device touch and gamepad certification pass.
+- Final art-direction and release-polish approval.

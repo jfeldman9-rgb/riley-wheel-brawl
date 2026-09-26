@@ -4,7 +4,7 @@
    older save still restores its display mode and volume. */
 'use strict';
 
-WL.settings = (function () {
+RWB.settings = (function () {
   const KEY = 'wl-settings';
   const RUN_KEY = 'wl-run';
 
@@ -167,8 +167,8 @@ WL.settings = (function () {
   function loadRun() {
     try {
       const r = JSON.parse(localStorage.getItem(RUN_KEY) || 'null');
-      if (!r || r.v !== 1 || !Number.isInteger(r.level) || !WL.LEVELS || !WL.LEVELS[r.level]) return null;
-      const waves = WL.LEVELS[r.level].waves.length;
+      if (!r || r.v !== 1 || !Number.isInteger(r.level) || !RWB.LEVELS || !RWB.LEVELS[r.level]) return null;
+      const waves = RWB.LEVELS[r.level].waves.length;
       r.wave = Math.max(0, Math.min(waves - 1, r.wave | 0));
       r.score = Math.max(0, r.score | 0);
       r.saidin = Math.max(0, Math.min(100, r.saidin | 0));
@@ -192,15 +192,15 @@ WL.settings = (function () {
 
 /* Frame budget. Coarse pointers get a smaller particle budget; `lite` halves
    burst sizes and is switched on automatically when a phone can't hold ~50fps. */
-WL.perf = {
+RWB.perf = {
   coarse: false,
   runtimeLite: false,
   get lite() {
-    const fx = WL.settings.data.fx;
+    const fx = RWB.settings.data.fx;
     if (fx === 'lite') return true;
     if (fx === 'full') return false;
-    return this.runtimeLite || (this.coarse && (WL.display.dpr || 1) < 2);
+    return this.runtimeLite || (this.coarse && (RWB.display.dpr || 1) < 2);
   },
-  get fxCap() { return this.lite ? 110 : (this.coarse && WL.settings.data.fx !== 'full') ? 180 : 320; },
-  get fxScale() { return this.lite ? 0.5 : (this.coarse && WL.settings.data.fx !== 'full') ? 0.75 : 1; }
+  get fxCap() { return this.lite ? 110 : (this.coarse && RWB.settings.data.fx !== 'full') ? 180 : 320; },
+  get fxScale() { return this.lite ? 0.5 : (this.coarse && RWB.settings.data.fx !== 'full') ? 0.75 : 1; }
 };

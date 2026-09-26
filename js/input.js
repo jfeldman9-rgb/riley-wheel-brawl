@@ -3,11 +3,11 @@
    Movement: axis.x / axis.y in [-1, 1]. */
 'use strict';
 
-WL.input = (function () {
+RWB.input = (function () {
   // Two layouts on purpose:
   //   arcade (right hand on JKL) and PC (left hand on WASD, nearby Q/E/R/F/Space).
-  // The live tables (and any player remaps) live in WL.settings.
-  const ST = WL.settings;
+  // The live tables (and any player remaps) live in RWB.settings.
+  const ST = RWB.settings;
   const KEYMAP = ST.keyMap;
   const PAD_BUTTONS = ST.padMap;
 
@@ -42,7 +42,7 @@ WL.input = (function () {
   };
 
   function layoutButtons() {
-    const W = WL.W, H = WL.H;
+    const W = RWB.W, H = RWB.H;
     touch.buttons = [
       { id: 'attack', label: 'ATK', x: W - 118, y: H - 62, r: 30, color: '#e33' },
       { id: 'jump', label: 'JMP', x: W - 48, y: H - 96, r: 24, color: '#39f' },
@@ -132,8 +132,8 @@ WL.input = (function () {
     const p = toCanvas(e.clientX, e.clientY);
     pointer.x = p.x; pointer.y = p.y; pointer.type = e.pointerType || 'mouse';
     if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
-      const scene = WL.game && WL.game.scene;
-      const b = scene && scene instanceof WL.scenes.Play && !scene.paused && scene.phase === 'play' && buttonAt(p);
+      const scene = RWB.game && RWB.game.scene;
+      const b = scene && scene instanceof RWB.scenes.Play && !scene.paused && scene.phase === 'play' && buttonAt(p);
       if (b) {
         touch.pointers.set(e.pointerId, { x: p.x, y: p.y, button: b.id });
         if (e.currentTarget && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId);
@@ -156,7 +156,7 @@ WL.input = (function () {
       press(b.id);
       return;
     }
-    if (p.x < WL.W * 0.55 && !touch.joy.active) {
+    if (p.x < RWB.W * 0.55 && !touch.joy.active) {
       touch.joy.active = true;
       touch.joy.id = e.pointerId;
       touch.joy.ox = p.x; touch.joy.oy = p.y;
@@ -200,7 +200,7 @@ WL.input = (function () {
     }
   }
 
-  // Default mapping lives in WL.settings: A jump, B saidin, X attack, Y fire,
+  // Default mapping lives in RWB.settings: A jump, B saidin, X attack, Y fire,
   // LB/RB relic, Back pause. Triggers (6, 7) are analog and easy to brush,
   // so they are only bound if the player remaps onto them.
   // Start (9) confirms menus and, during a fight, opens pause.
@@ -368,7 +368,7 @@ WL.input = (function () {
   const TOUCH_LABEL = { attack: 'ATK', jump: 'JMP', special: 'FIRE', tool: 'CALL', saidin: 'SUPER', pause: 'II' };
   /** Short control name for prompts: "E/J" on keyboard, "X" on a pad, "ATK" on touch. */
   function hint(id, n) {
-    if (touch.enabled && !(WL.display && WL.display.pc) && !gamepad.connected) return TOUCH_LABEL[id] || id.toUpperCase();
+    if (touch.enabled && !(RWB.display && RWB.display.pc) && !gamepad.connected) return TOUCH_LABEL[id] || id.toUpperCase();
     if (gamepad.connected) return id === 'pause' ? 'START' : ST.padFor(id);
     return ST.keysFor(id, n || 2).join('/') || '--';
   }
@@ -414,10 +414,10 @@ WL.input = (function () {
   function drawKeycap(ctx, x, y, label, down) {
     const w = Math.max(16, label.length * 7 + 8), h = 15;
     // Glossy keycap: a raised face over a darker skirt, highlight on the top edge.
-    WL.draw.fillRRect(ctx, x - w / 2, y - h / 2 + 1.5, w, h, 3, down ? '#8a6a00' : 'rgba(2,4,12,0.9)');
-    WL.draw.fillRRect(ctx, x - w / 2, y - h / 2, w, h, 3, down ? '#ffd23a' : 'rgba(18,24,44,0.95)', down ? '#fff6c8' : 'rgba(255,255,255,0.85)');
+    RWB.draw.fillRRect(ctx, x - w / 2, y - h / 2 + 1.5, w, h, 3, down ? '#8a6a00' : 'rgba(2,4,12,0.9)');
+    RWB.draw.fillRRect(ctx, x - w / 2, y - h / 2, w, h, 3, down ? '#ffd23a' : 'rgba(18,24,44,0.95)', down ? '#fff6c8' : 'rgba(255,255,255,0.85)');
     ctx.fillStyle = down ? 'rgba(255,255,255,0.5)' : 'rgba(120,140,190,0.45)'; ctx.fillRect(x - w / 2 + 2, y - h / 2 + 1, w - 4, h * 0.4);
-    WL.text.draw(ctx, label, x, y - 5, {
+    RWB.text.draw(ctx, label, x, y - 5, {
       size: label.length > 2 ? 5 : 7, align: 'center',
       color: down ? '#1a1204' : '#fff', shadow: false
     });
@@ -439,7 +439,7 @@ WL.input = (function () {
   }
 
   function drawStickGlyph(ctx, cx, cy, r, live) {
-    WL.draw.circle(ctx, cx, cy, r, 'rgba(255,255,255,0.12)', 'rgba(255,255,255,0.88)');
+    RWB.draw.circle(ctx, cx, cy, r, 'rgba(255,255,255,0.12)', 'rgba(255,255,255,0.88)');
     drawArrow(ctx, cx, cy - r + 1, 0);
     drawArrow(ctx, cx, cy + r - 1, Math.PI);
     drawArrow(ctx, cx - r + 1, cy, -Math.PI / 2);
@@ -449,7 +449,7 @@ WL.input = (function () {
     const len = Math.hypot(dx, dy);
     const reach = r * 0.62;
     if (len > reach) { dx = dx / len * reach; dy = dy / len * reach; }
-    WL.draw.circle(ctx, cx + dx, cy + dy, Math.max(8, r * 0.42), live ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.7)', '#141428');
+    RWB.draw.circle(ctx, cx + dx, cy + dy, Math.max(8, r * 0.42), live ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.7)', '#141428');
   }
 
   /* Persistent control picture. Stays for the whole stage on phones and
@@ -457,7 +457,7 @@ WL.input = (function () {
      Nothing in here is on a timer. */
   function drawControlChrome(ctx, opts) {
     const pad = !!gamepad.connected;
-    const H = WL.H;
+    const H = RWB.H;
     // Player-chosen overlay strength, capped so the urn never go opaque.
     const base = Math.max(0.2, Math.min(0.85, opts.opacity != null ? opts.opacity : ST.data.overlay));
     ctx.save();
@@ -468,7 +468,7 @@ WL.input = (function () {
     // walking the rail is still visible behind the diagram. ----
     const mx = 8, my = H - 138, mw = 112, mh = 130;
     glassPlate(ctx, mx, my, mw, mh);
-    WL.text.draw(ctx, pad ? 'PAD' : 'MOVE', mx + mw / 2, my + 4, {
+    RWB.text.draw(ctx, pad ? 'PAD' : 'MOVE', mx + mw / 2, my + 4, {
       size: 7, align: 'center', color: '#ffe14a', stroke: '#000', strokeWidth: 3
     });
     if (pad) {
@@ -476,7 +476,7 @@ WL.input = (function () {
       drawKeycap(ctx, mx + 36, my + 46, '<', held.left);
       drawKeycap(ctx, mx + 56, my + 46, 'v', held.down);
       drawKeycap(ctx, mx + 76, my + 46, '>', held.right);
-      WL.text.draw(ctx, 'STICK OR PAD', mx + mw / 2, my + 58, {
+      RWB.text.draw(ctx, 'STICK OR PAD', mx + mw / 2, my + 58, {
         size: 5, align: 'center', color: '#d5e6ff', stroke: '#000', strokeWidth: 2
       });
     } else {
@@ -487,7 +487,7 @@ WL.input = (function () {
       drawKeycap(ctx, mx + 56 - gap, my + 44, cap('left'), held.left);
       drawKeycap(ctx, mx + 56, my + 44, cap('down'), held.down);
       drawKeycap(ctx, mx + 56 + gap, my + 44, cap('right'), held.right);
-      WL.text.draw(ctx, arrowsIntact() && cap('up') !== 'UP' ? 'OR ARROWS' : 'REMAPPED', mx + mw / 2, my + 56, {
+      RWB.text.draw(ctx, arrowsIntact() && cap('up') !== 'UP' ? 'OR ARROWS' : 'REMAPPED', mx + mw / 2, my + 56, {
         size: 5, align: 'center', color: '#d5e6ff', stroke: '#000', strokeWidth: 2
       });
     }
@@ -498,11 +498,11 @@ WL.input = (function () {
     if (touch.joy.active) {
       ctx.save(); ctx.globalAlpha = 0.85;
       const j = touch.joy;
-      WL.draw.circle(ctx, j.ox, j.oy, 34, 'rgba(255,255,255,0.16)', 'rgba(255,255,255,0.9)');
+      RWB.draw.circle(ctx, j.ox, j.oy, 34, 'rgba(255,255,255,0.16)', 'rgba(255,255,255,0.9)');
       let dx = j.x - j.ox, dy = j.y - j.oy;
       const len = Math.hypot(dx, dy);
       if (len > 34) { dx = dx / len * 34; dy = dy / len * 34; }
-      WL.draw.circle(ctx, j.ox + dx, j.oy + dy, 16, 'rgba(255,255,255,0.92)', '#141428');
+      RWB.draw.circle(ctx, j.ox + dx, j.oy + dy, 16, 'rgba(255,255,255,0.92)', '#141428');
       ctx.restore();
     }
 
@@ -516,7 +516,7 @@ WL.input = (function () {
       }
       const plateX = x0 - 10, plateY = y0 - 16, plateW = (x1 - x0) + 20, plateH = (y1 - y0) + 26;
       glassPlate(ctx, plateX, plateY, plateW, plateH);
-      WL.text.draw(ctx, pad ? 'CONTROLLER' : 'KEYS', plateX + plateW / 2, plateY + 3, {
+      RWB.text.draw(ctx, pad ? 'CONTROLLER' : 'KEYS', plateX + plateW / 2, plateY + 3, {
         size: 6, align: 'center', color: '#ffe14a', stroke: '#000', strokeWidth: 3
       });
       for (const b of touch.buttons) {
@@ -527,7 +527,7 @@ WL.input = (function () {
         const armed = b.id === 'saidin' && opts.surgeReady;
         const col = armed ? '#88ff66' : b.color;
         // Glass button: tinted see-through core, colored rim, gloss on top.
-        WL.draw.circle(ctx, b.x, b.y, b.r, disabled ? 'rgba(90,90,100,0.16)' : hexAlpha(col, down ? 0.55 : 0.2), 'rgba(0,0,0,0.55)');
+        RWB.draw.circle(ctx, b.x, b.y, b.r, disabled ? 'rgba(90,90,100,0.16)' : hexAlpha(col, down ? 0.55 : 0.2), 'rgba(0,0,0,0.55)');
         ctx.beginPath(); ctx.arc(b.x, b.y, b.r - 1.5, 0, Math.PI * 2);
         ctx.strokeStyle = disabled ? 'rgba(200,200,210,0.45)' : (down ? '#ffffff' : hexAlpha(col, 0.95)); ctx.lineWidth = 2; ctx.stroke();
         ctx.beginPath(); ctx.ellipse(b.x, b.y - b.r * 0.45, b.r * 0.62, b.r * 0.3, 0, Math.PI, Math.PI * 2);
@@ -543,15 +543,15 @@ WL.input = (function () {
         }
         const badge = boxMissing ? 'PICK UP' : badgeFor(b.id);
         if (b.id === 'pause') {
-          WL.text.draw(ctx, b.label, b.x, b.y - 5, { size: 7, align: 'center', color: '#fff', stroke: '#000', strokeWidth: 2 });
-          WL.text.draw(ctx, badge, b.x + b.r + 4, b.y - 4, { size: 6, color: '#ffe14a', stroke: '#000', strokeWidth: 2 });
+          RWB.text.draw(ctx, b.label, b.x, b.y - 5, { size: 7, align: 'center', color: '#fff', stroke: '#000', strokeWidth: 2 });
+          RWB.text.draw(ctx, badge, b.x + b.r + 4, b.y - 4, { size: 6, color: '#ffe14a', stroke: '#000', strokeWidth: 2 });
         } else {
-          WL.text.draw(ctx, b.label, b.x, b.y - 10, { size: 7, align: 'center', color: '#fff', stroke: '#000', strokeWidth: 3 });
+          RWB.text.draw(ctx, b.label, b.x, b.y - 10, { size: 7, align: 'center', color: '#fff', stroke: '#000', strokeWidth: 3 });
           // Key / pad badge on a colored mark, like a console glyph.
           const bs = boxMissing ? 5 : 6;
-          const cw = Math.max(12, WL.text.width(ctx, badge, bs) + 7), ch = bs + 5;
-          WL.draw.fillRRect(ctx, b.x - cw / 2, b.y - 1.5, cw, ch, ch / 2, boxMissing ? 'rgba(120,70,0,0.75)' : 'rgba(6,8,20,0.7)', disabled && !boxMissing ? 'rgba(200,200,210,0.5)' : hexAlpha(col, 0.95));
-          WL.text.draw(ctx, badge, b.x, b.y + 1, { size: bs, align: 'center', color: boxMissing ? '#ffe9a0' : '#ffe14a', stroke: '#000', strokeWidth: 2 });
+          const cw = Math.max(12, RWB.text.width(ctx, badge, bs) + 7), ch = bs + 5;
+          RWB.draw.fillRRect(ctx, b.x - cw / 2, b.y - 1.5, cw, ch, ch / 2, boxMissing ? 'rgba(120,70,0,0.75)' : 'rgba(6,8,20,0.7)', disabled && !boxMissing ? 'rgba(200,200,210,0.5)' : hexAlpha(col, 0.95));
+          RWB.text.draw(ctx, badge, b.x, b.y + 1, { size: bs, align: 'center', color: boxMissing ? '#ffe9a0' : '#ffe14a', stroke: '#000', strokeWidth: 2 });
         }
       }
     }
@@ -559,7 +559,7 @@ WL.input = (function () {
   }
 
   function glassPlate(ctx, x, y, w, h) {
-    WL.draw.fillRRect(ctx, x, y, w, h, 9, 'rgba(8,12,30,0.08)', 'rgba(255,255,255,0.32)');
+    RWB.draw.fillRRect(ctx, x, y, w, h, 9, 'rgba(8,12,30,0.08)', 'rgba(255,255,255,0.32)');
     ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fillRect(x + 8, y + 1, w - 16, 1);
   }
 
@@ -572,20 +572,20 @@ WL.input = (function () {
       return;
     }
     if (!touch.enabled) return;
-    const pc = WL.display && WL.display.pc;
+    const pc = RWB.display && RWB.display.pc;
     if (pc && !touch.joy.active && touch.pointers.size === 0) return;
     ctx.save();
     ctx.globalAlpha = 0.55;
     if (touch.joy.active) {
       const j = touch.joy;
-      WL.draw.circle(ctx, j.ox, j.oy, 34, 'rgba(255,255,255,0.12)', 'rgba(255,255,255,0.6)');
+      RWB.draw.circle(ctx, j.ox, j.oy, 34, 'rgba(255,255,255,0.12)', 'rgba(255,255,255,0.6)');
       let dx = j.x - j.ox, dy = j.y - j.oy;
       const len = Math.hypot(dx, dy);
       if (len > 34) { dx = dx / len * 34; dy = dy / len * 34; }
-      WL.draw.circle(ctx, j.ox + dx, j.oy + dy, 16, 'rgba(255,255,255,0.7)');
+      RWB.draw.circle(ctx, j.ox + dx, j.oy + dy, 16, 'rgba(255,255,255,0.7)');
     } else if (opts.hintJoy) {
-      WL.draw.circle(ctx, 70, WL.H - 70, 34, 'rgba(255,255,255,0.08)', 'rgba(255,255,255,0.35)');
-      WL.text.draw(ctx, 'MOVE', 70, WL.H - 74, { size: 8, align: 'center', color: 'rgba(255,255,255,0.7)' });
+      RWB.draw.circle(ctx, 70, RWB.H - 70, 34, 'rgba(255,255,255,0.08)', 'rgba(255,255,255,0.35)');
+      RWB.text.draw(ctx, 'MOVE', 70, RWB.H - 74, { size: 8, align: 'center', color: 'rgba(255,255,255,0.7)' });
     }
     if (opts.buttons !== false) {
       for (const b of touch.buttons) {
@@ -594,14 +594,14 @@ WL.input = (function () {
         ctx.globalAlpha = down ? 0.9 : 0.5;
         const disabled = b.id === 'saidin' && opts.surgeReady === false;
         const armed = b.id === 'saidin' && opts.surgeReady;
-        WL.draw.circle(ctx, b.x, b.y, b.r, disabled ? '#333' : (armed ? '#8f6' : b.color), 'rgba(255,255,255,0.8)');
+        RWB.draw.circle(ctx, b.x, b.y, b.r, disabled ? '#333' : (armed ? '#8f6' : b.color), 'rgba(255,255,255,0.8)');
         if (armed) {
           ctx.globalAlpha = 0.95;
           ctx.strokeStyle = '#f4ffe0'; ctx.lineWidth = 3;
           ctx.beginPath(); ctx.arc(b.x, b.y, b.r + 6, 0, Math.PI * 2); ctx.stroke();
         }
         ctx.globalAlpha = 0.95;
-        WL.text.draw(ctx, b.label, b.x, b.y - 4, { size: 8, align: 'center', color: '#fff' });
+        RWB.text.draw(ctx, b.label, b.x, b.y - 4, { size: 8, align: 'center', color: '#fff' });
       }
     }
     ctx.restore();
@@ -612,7 +612,7 @@ WL.input = (function () {
     held, pressed, touch, pointer, gamepad,
     badgeFor, hint, fillKeys, legend, moveHint, beginCapture, cancelCapture,
     get capturing() { return capture ? capture.kind : null; },
-    get touchEnabled() { return touch.enabled && !(WL.display && WL.display.pc); },
+    get touchEnabled() { return touch.enabled && !(RWB.display && RWB.display.pc); },
     set touchEnabled(v) { touch.enabled = v; }
   };
 })();

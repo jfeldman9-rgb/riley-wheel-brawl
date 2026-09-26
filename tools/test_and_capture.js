@@ -43,7 +43,7 @@ async function main() {
 
   // Wait until assets are loaded
   while (true) {
-    const ready = await evalJs('return !!(window.WL && window.WL.assets && window.WL.assets.done && window.WL.game);');
+    const ready = await evalJs('return !!(window.RWB && window.RWB.assets && window.RWB.assets.done && window.RWB.game);');
     if (ready) break;
     await sleep(100);
   }
@@ -51,9 +51,9 @@ async function main() {
 
   // Transition into Play scene cleanly
   async function transitionToPlay() {
-    await evalJs('WL.game.debug.play(0);');
+    await evalJs('RWB.game.debug.play(0);');
     while (true) {
-      const res = await evalJs('return { isPlay: WL.game.scene instanceof WL.scenes.Play, fadeDir: WL.game.fadeDir };');
+      const res = await evalJs('return { isPlay: RWB.game.scene instanceof RWB.scenes.Play, fadeDir: RWB.game.fadeDir };');
       if (res && res.isPlay && res.fadeDir === 0) break;
       await sleep(50);
     }
@@ -69,7 +69,7 @@ async function main() {
     deviceScaleFactor: 2,
     mobile: false
   });
-  await evalJs('WL.input.touchEnabled = false; WL.display.mode = "auto"; window.dispatchEvent(new Event("resize")); WL.display.resize();');
+  await evalJs('RWB.input.touchEnabled = false; RWB.display.mode = "auto"; window.dispatchEvent(new Event("resize")); RWB.display.resize();');
   await sleep(200);
 
   await transitionToPlay();
@@ -77,7 +77,7 @@ async function main() {
 
   // Configure exact mid-fight punch frame
   await evalJs(`
-    const scene = WL.game.scene;
+    const scene = RWB.game.scene;
     scene.banner = null;
     scene.bannerT = 0;
     scene.phase = 'play';
@@ -108,20 +108,20 @@ async function main() {
     broc.flash = 0.1;
     broc.hp = 12;
 
-    const trollocHeavy = scene.spawnEnemy('trollocHeavy', 435, 240, { side: 1 });
-    trollocHeavy.setState('approach');
-    trollocHeavy.stateT = 0.5;
+    const trollocCaptain = scene.spawnEnemy('trollocCaptain', 435, 240, { side: 1 });
+    trollocCaptain.setState('approach');
+    trollocCaptain.stateT = 0.5;
 
     scene.objects = [
-      new WL.entities.Breakable(scene, 'urn', 185, 255),
-      new WL.entities.Breakable(scene, 'rack', 225, 315),
-      new WL.entities.Breakable(scene, 'cart', 390, 305),
-      new WL.entities.Breakable(scene, 'stool', 490, 235)
+      new RWB.entities.Breakable(scene, 'urn', 185, 255),
+      new RWB.entities.Breakable(scene, 'rack', 225, 315),
+      new RWB.entities.Breakable(scene, 'cart', 390, 305),
+      new RWB.entities.Breakable(scene, 'stool', 490, 235)
     ];
 
     scene.fx.list = [];
-    scene.fx.ashaman(325, 235, true);
-    scene.fx.foodDebris(325, 235, 'trolloc');
+    scene.fx.turnedAshaman(325, 235, true);
+    scene.fx.battleDebris(325, 235, 'trolloc');
     scene.fx.impactRing(325, 235, true);
 
     scene.update = function() {};
@@ -144,14 +144,14 @@ async function main() {
     deviceScaleFactor: 3,
     mobile: true
   });
-  await evalJs('WL.input.touchEnabled = true; WL.display.mode = "auto"; window.dispatchEvent(new Event("resize")); WL.display.resize();');
+  await evalJs('RWB.input.touchEnabled = true; RWB.display.mode = "auto"; window.dispatchEvent(new Event("resize")); RWB.display.resize();');
   await sleep(200);
 
   await transitionToPlay();
   await sleep(200);
 
   await evalJs(`
-    const scene = WL.game.scene;
+    const scene = RWB.game.scene;
     scene.banner = null;
     scene.bannerT = 0;
     scene.phase = 'play';
@@ -183,19 +183,19 @@ async function main() {
     broc.flash = 0.1;
     broc.hp = 5;
 
-    const trollocHeavy = scene.spawnEnemy('trollocHeavy', 430, 245, { side: 1 });
-    trollocHeavy.setState('approach');
-    trollocHeavy.stateT = 0.5;
+    const trollocCaptain = scene.spawnEnemy('trollocCaptain', 430, 245, { side: 1 });
+    trollocCaptain.setState('approach');
+    trollocCaptain.stateT = 0.5;
 
     scene.objects = [
-      new WL.entities.Breakable(scene, 'urn', 185, 250),
-      new WL.entities.Breakable(scene, 'rack', 225, 315),
-      new WL.entities.Breakable(scene, 'cart', 390, 305)
+      new RWB.entities.Breakable(scene, 'urn', 185, 250),
+      new RWB.entities.Breakable(scene, 'rack', 225, 315),
+      new RWB.entities.Breakable(scene, 'cart', 390, 305)
     ];
 
     scene.fx.list = [];
-    scene.fx.ashaman(325, 230, true);
-    scene.fx.foodDebris(325, 230, 'trolloc');
+    scene.fx.turnedAshaman(325, 230, true);
+    scene.fx.battleDebris(325, 230, 'trolloc');
     scene.fx.impactRing(325, 230, true);
 
     scene.update = function() {};
@@ -213,7 +213,7 @@ async function main() {
   // ==========================================
   console.log('Testing wave clear presentation and prop shatter...');
   await evalJs(`
-    const scene = WL.game.scene;
+    const scene = RWB.game.scene;
     scene.player.state = 'victory';
     scene.player.stateT = 0.5;
     scene.fx.debris(320, 270, 'urn');
@@ -231,11 +231,11 @@ async function main() {
   // ==========================================
   console.log('Testing Classic mode toggle...');
   await evalJs(`
-    WL.display.setMode('classic');
+    RWB.display.setMode('classic');
   `);
   await sleep(200);
-  const classicMode = await evalJs('return WL.display.mode;');
-  const classicScale = await evalJs('return WL.display.renderScale;');
+  const classicMode = await evalJs('return RWB.display.mode;');
+  const classicScale = await evalJs('return RWB.display.renderScale;');
   console.log('Display mode:', classicMode, 'renderScale:', classicScale);
 
   const classicShot = await send('Page.captureScreenshot', { format: 'png' });
@@ -245,7 +245,7 @@ async function main() {
 
   // Restore auto mode
   await evalJs(`
-    WL.display.setMode('auto');
+    RWB.display.setMode('auto');
   `);
 
   ws.close();

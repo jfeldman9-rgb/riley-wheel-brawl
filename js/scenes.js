@@ -3,10 +3,10 @@
 'use strict';
 
 (function () {
-  const U = WL.util, D = WL.draw, T = WL.text, S = WL.sprites;
-  const W = WL.W, H = WL.H, FT = WL.FLOOR_TOP, FB = WL.FLOOR_BOTTOM;
-  const E = WL.entities;
-  const A = WL.audio;
+  const U = RWB.util, D = RWB.draw, T = RWB.text, S = RWB.sprites;
+  const W = RWB.W, H = RWB.H, FT = RWB.FLOOR_TOP, FB = RWB.FLOOR_BOTTOM;
+  const E = RWB.entities;
+  const A = RWB.audio;
 
   const anyPress = (inp) => inp.pressed.start || inp.pressed.attack || inp.pressed.jump || inp.pressed.click;
   // In-place removal: no fresh array per list per frame.
@@ -18,18 +18,18 @@
   }
   /** Health colors: classic green/yellow/red, or blue/yellow/vermilion (Okabe-Ito). */
   function hpColor(pct) {
-    if (WL.settings.data.colorblind) return pct > 0.5 ? '#56b4e9' : pct > 0.25 ? '#f0e442' : '#d55e00';
+    if (RWB.settings.data.colorblind) return pct > 0.5 ? '#56b4e9' : pct > 0.25 ? '#f0e442' : '#d55e00';
     return pct > 0.5 ? '#3cdb3c' : pct > 0.25 ? '#f0c020' : '#e03020';
   }
   function tellColor(late) {
-    if (WL.settings.data.colorblind) return late ? '#d55e00' : '#f0e442';
+    if (RWB.settings.data.colorblind) return late ? '#d55e00' : '#f0e442';
     return late ? '#ff2438' : '#ff9a1f';
   }
 
   /* ---- HUD art ---- */
   function drawHudPortrait(ctx, cx, cy, mood) {
-    const painted = WL.art.plate('riley-portrait');
-    const e = painted ? WL.gfx.layer('hud-portrait-painted-' + mood, 40, 40, undefined, g => {
+    const painted = RWB.art.plate('riley-portrait');
+    const e = painted ? RWB.gfx.layer('hud-portrait-painted-' + mood, 40, 40, undefined, g => {
       g.save();
       g.beginPath(); g.arc(20, 20, 18.6, 0, Math.PI * 2); g.clip();
       g.imageSmoothingQuality = 'high';
@@ -41,7 +41,7 @@
       sh.addColorStop(0, 'rgba(255,255,255,0.28)'); sh.addColorStop(0.35, 'rgba(255,255,255,0)'); sh.addColorStop(0.85, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,0.35)');
       g.fillStyle = sh; g.fillRect(0, 0, 40, 40);
       g.restore();
-    }) : WL.gfx.layer('hud-portrait-' + mood, 40, 40, undefined, g => {
+    }) : RWB.gfx.layer('hud-portrait-' + mood, 40, 40, undefined, g => {
       S.setLight(1);
       g.save();
       g.beginPath(); g.arc(20, 20, 18, 0, Math.PI * 2); g.clip();
@@ -56,8 +56,8 @@
       g.restore();
     });
     const smooth = ctx.imageSmoothingEnabled;
-    ctx.imageSmoothingEnabled = WL.display.mode !== 'classic';
-    WL.gfx.blit(ctx, e, cx - 20, cy - 20);
+    ctx.imageSmoothingEnabled = RWB.display.mode !== 'classic';
+    RWB.gfx.blit(ctx, e, cx - 20, cy - 20);
     ctx.imageSmoothingEnabled = smooth;
   }
   function drawBezel(ctx, cx, cy, r, alarm) {
@@ -83,7 +83,7 @@
     ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect(x - 3, y - 3.6, 1.6, 1);
     ctx.restore();
   }
-  /* Title logo, cached per scale: extruded shadow riley: over battle BRAWL, with hibiscus. */
+  /* Title logo, cached per scale: extruded Riley: over battle BRAWL, with hibiscus. */
   function paintLogo(g) {
     const cx = 190;
     const layer = (str, y, size, grad, depth) => {
@@ -111,24 +111,24 @@
       g.fillStyle = '#ffe070'; g.beginPath(); g.arc(r * 0.52, -r * 0.58, 1.8, 0, 7); g.fill();
       g.restore();
     };
-    layer('shadow riley:', 6, 24, ['#f2fbff', '#6cc4ff', '#1a5ad8'], 4);
-    layer('battle BRAWL', 40, 30, ['#fff6b0', '#ffc21a', '#ff5a00', '#d0200a'], 5);
+    layer('Riley:', 6, 24, ['#f2fbff', '#6cc4ff', '#1a5ad8'], 4);
+    layer('WHEEL BRAWL', 40, 30, ['#fff6b0', '#ffc21a', '#ff5a00', '#d0200a'], 5);
     flower(30, 16, 15, 0.3);
     flower(352, 14, 13, -0.4);
   }
   /** Logo by width (world px); returns its height. The painted logo is used when it loaded. */
   function drawLogo(ctx, cx, y, width) {
-    const P = WL.ARTDATA && WL.ARTDATA.urn && WL.ARTDATA.urn.logo;
-    const img = WL.art.plate('logo');
+    const P = RWB.ARTDATA && RWB.ARTDATA.urn && RWB.ARTDATA.urn.logo;
+    const img = RWB.art.plate('logo');
     if (img && P) {
       const h = Math.round(width * P.h / P.w);
-      const e = WL.gfx.layer('logo-painted-' + width, width, h, undefined, g => { g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, width, h); });
-      WL.gfx.blit(ctx, e, cx - e.w / 2, y);
+      const e = RWB.gfx.layer('logo-painted-' + width, width, h, undefined, g => { g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, width, h); });
+      RWB.gfx.blit(ctx, e, cx - e.w / 2, y);
       return h;
     }
     const scale = width / 380;
-    const e = WL.gfx.layer('logo-' + scale, 380 * scale, 88 * scale, undefined, g => { g.scale(scale, scale); paintLogo(g); });
-    WL.gfx.blit(ctx, e, cx - e.w / 2, y);
+    const e = RWB.gfx.layer('logo-' + scale, 380 * scale, 88 * scale, undefined, g => { g.scale(scale, scale); paintLogo(g); });
+    RWB.gfx.blit(ctx, e, cx - e.w / 2, y);
     return 88 * scale;
   }
   /* "12 HIT COMBO": slanted fire lettering with flames licking up behind the number. */
@@ -136,13 +136,13 @@
   function drawComboPainted(ctx, n, t) {
     const str = String(n);
     const h = n >= 10 ? 32 : 29, sc = h / 24, ws = 1.05;
-    const F = WL.art.frame.bind(null, 'props'), k = WL.ARTDATA.props.k;
+    const F = RWB.art.frame.bind(null, 'props'), k = RWB.ARTDATA.props.k;
     const dw = [...str].map(c => F('d' + c)[2] * k * sc * 0.9);
     const hw = F('hit')[2] * k * ws, cw = F('combo')[2] * k * ws;
     const total = dw.reduce((a, b) => a + b, 0);
     let x = -total / 2;
     ctx.save();
-    if (!WL.perf.lite) {
+    if (!RWB.perf.lite) {
       // flames licking up behind the number
       ctx.globalCompositeOperation = 'lighter';
       const heat = Math.min(1, 0.45 + n / 20), nw = total;
@@ -159,17 +159,17 @@
       S.drawGlow(ctx, x + nw / 2, h * 0.5, h * 1.6, 0.4);
     }
     for (let i = 0; i < str.length; i++) {
-      WL.art.draw(ctx, 'props', 'd' + str[i], x + dw[i] / 2, h, { sx: sc, sy: sc });
+      RWB.art.draw(ctx, 'props', 'd' + str[i], x + dw[i] / 2, h, { sx: sc, sy: sc });
       x += dw[i];
     }
     // HIT COMBO on one slanted line under the number
     const wy = h + 13, wx = -(hw + 3 + cw) / 2 + 4;
-    WL.art.draw(ctx, 'props', 'hit', wx + hw / 2, wy, { sx: ws, sy: ws, rot: -0.06 });
-    WL.art.draw(ctx, 'props', 'combo', wx + hw + 3 + cw / 2, wy - 1, { sx: ws, sy: ws, rot: -0.06 });
+    RWB.art.draw(ctx, 'props', 'hit', wx + hw / 2, wy, { sx: ws, sy: ws, rot: -0.06 });
+    RWB.art.draw(ctx, 'props', 'combo', wx + hw + 3 + cw / 2, wy - 1, { sx: ws, sy: ws, rot: -0.06 });
     ctx.restore();
   }
   function drawCombo(ctx, n, t) {
-    if (WL.art.has('props') && WL.art.frame('props', 'd0')) { drawComboPainted(ctx, n, t); return; }
+    if (RWB.art.has('props') && RWB.art.frame('props', 'd0')) { drawComboPainted(ctx, n, t); return; }
     const str = String(n);
     const sz = n >= 10 ? 26 : 22;
     const nw = T.width(ctx, str, sz);
@@ -177,7 +177,7 @@
     const x0 = -total / 2;
     ctx.save();
     ctx.transform(1, 0, -0.2, 1, sz * 0.2, 0);
-    if (!WL.perf.lite) {
+    if (!RWB.perf.lite) {
       ctx.globalCompositeOperation = 'lighter';
       const heat = Math.min(1, 0.45 + n / 20);
       for (let i = 0; i < 7; i++) {
@@ -207,13 +207,13 @@
   /* ================================================================== */
   const TITLE_Y0 = 198, TITLE_STEP = 18;
   // The painted key art keeps riley centre stage, so the menu moves to a glass plate on the left.
-  const titleArt = () => !!WL.art.plate('title-art');
+  const titleArt = () => !!RWB.art.plate('title-art');
   const menuX = () => (titleArt() ? 116 : W / 2 - 80);
   const menuY0 = () => (titleArt() ? 184 : TITLE_Y0);
   class Title {
     constructor(game) {
       this.game = game; this.t = 0; this.sel = 0; this.showHelp = false; this.sub = null;
-      this.run = WL.settings.loadRun();
+      this.run = RWB.settings.loadRun();
       this.buildItems();
     }
     buildItems() {
@@ -233,8 +233,8 @@
       this.t += dt;
       if (this.sub) {
         const r = this.sub.update(inp, dt);
-        if (r === 'settings') this.sub = new WL.OptionsPanel('options', { full: true });
-        else if (r === 'controls') this.sub = new WL.OptionsPanel('controls');
+        if (r === 'settings') this.sub = new RWB.OptionsPanel('options', { full: true });
+        else if (r === 'controls') this.sub = new RWB.OptionsPanel('controls');
         else if (r === 'back') this.sub = this.sub instanceof SettingsHub ? null : this.hub;
         return;
       }
@@ -245,7 +245,7 @@
         const i = this.rowAt(inp.pointer);
         if (i >= 0) { this.sel = i; this.choose(); return; }
         // A tap anywhere else still starts (the old phone behavior); a stray mouse click doesn't.
-        if (WL.input.touchEnabled) { this.choose(); return; }
+        if (RWB.input.touchEnabled) { this.choose(); return; }
         return;
       }
       if (inp.pressed.start || inp.pressed.attack || inp.pressed.jump) this.choose();
@@ -254,17 +254,17 @@
       A.sfx.select();
       const id = this.items[this.sel].id;
       if (id === 'continue') this.game.continueRun(this.run);
-      else if (id === 'new') { WL.settings.clearRun(); this.game.startNewGame(true); }
-      else if (id === 'skip') { WL.settings.clearRun(); this.game.startNewGame(false); }
+      else if (id === 'new') { RWB.settings.clearRun(); this.game.startNewGame(true); }
+      else if (id === 'skip') { RWB.settings.clearRun(); this.game.startNewGame(false); }
       else if (id === 'settings') this.sub = this.hub = new SettingsHub();
       else this.showHelp = true;
     }
     drawPainted(ctx) {
       const t = this.t, mx = menuX(), y0 = menuY0();
-      const art = WL.art.plateLayer('title-art', W, H, 2.5, 0);
-      WL.gfx.blit(ctx, art, 0, 0);
+      const art = RWB.art.plateLayer('title-art', W, H, 2.5, 0);
+      RWB.gfx.blit(ctx, art, 0, 0);
       // sun glints drifting across the stage lacquer
-      if (!WL.perf.lite) {
+      if (!RWB.perf.lite) {
         ctx.save(); ctx.globalCompositeOperation = 'lighter';
         for (let i = 0; i < 5; i++) {
           const k = (t * 0.12 + i * 0.21) % 1;
@@ -280,7 +280,7 @@
       const foot = ctx.createLinearGradient(0, 306, 0, H);
       foot.addColorStop(0, 'rgba(4,10,30,0)'); foot.addColorStop(0.45, 'rgba(4,10,30,0.6)'); foot.addColorStop(1, 'rgba(4,10,30,0.8)');
       ctx.fillStyle = foot; ctx.fillRect(0, 306, W, H - 306);
-      T.draw(ctx, 'shadow riley AIR CONDITIONING AND HEATING PRESENTS', W / 2, 3, { size: 5, align: 'center', color: '#fffbe8', stroke: '#0b1d4a', strokeWidth: 3 });
+      T.draw(ctx, 'Riley PRESENTS', W / 2, 3, { size: 5, align: 'center', color: '#fffbe8', stroke: '#0b1d4a', strokeWidth: 3 });
       drawLogo(ctx, W / 2, 12 + Math.sin(t * 2) * 2, 330);
       if (this.sub) { this.sub.draw(ctx); D.scanlines(ctx, 0.08); return; }
       if (this.showHelp) { this.drawHelp(ctx); D.scanlines(ctx, 0.08); return; }
@@ -291,7 +291,7 @@
       D.fillRRect(ctx, mx - 100, pTop, 200, pH, 10, pg, 'rgba(255,255,255,0.45)');
       ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fillRect(mx - 90, pTop + 1, 180, 1);
       T.draw(ctx, '"WE SPEAR THE COMPETITION"', mx, pTop + 7, { size: 6, align: 'center', color: '#ffffff', stroke: '#0b1d4a', strokeWidth: 3 });
-      T.draw(ctx, this.run ? (() => { const L = WL.LEVELS[this.run.level]; return `SAVED: STAGE ${L.id} WAVE ${this.run.wave + 1}/${L.waves.length}`; })() : 'THE SHADOW HAS RISEN.', mx, pTop + 18, { size: 5, align: 'center', color: this.run ? '#8ff' : '#ffe98a', stroke: '#0b1d4a', strokeWidth: 3 });
+      T.draw(ctx, this.run ? (() => { const L = RWB.LEVELS[this.run.level]; return `SAVED: STAGE ${L.id} WAVE ${this.run.wave + 1}/${L.waves.length}`; })() : 'THE SHADOW HAS RISEN.', mx, pTop + 18, { size: 5, align: 'center', color: this.run ? '#8ff' : '#ffe98a', stroke: '#0b1d4a', strokeWidth: 3 });
       this.items.forEach((it, i) => {
         const seld = i === this.sel;
         const y = y0 + i * TITLE_STEP;
@@ -304,24 +304,24 @@
         }
         T.draw(ctx, it.label, mx, y, { size: 10, align: 'center', color: seld ? (Math.floor(t * 6) % 2 ? '#ffe14a' : '#fff') : '#d8f0ff', stroke: '#0b1d4a', strokeWidth: 3 });
       });
-      if (Math.floor(t * 2) % 2 === 0) T.draw(ctx, WL.input.touchEnabled ? 'TAP A ROW TO START' : 'PRESS ENTER OR CLICK', mx, y0 + n * TITLE_STEP + 6, { size: 6, align: 'center', color: '#fff', stroke: '#0b1d4a', strokeWidth: 3 });
-      T.draw(ctx, WL.input.legend(), W / 2, 320, { size: 6, align: 'center', color: '#dde8f4', stroke: '#050a18', strokeWidth: 2 });
-      T.draw(ctx, `${WL.input.hint('pause', 1)} PAUSE    M MUTE    \\ FULLSCREEN    CLICK A MENU ROW`, W / 2, 333, { size: 6, align: 'center', color: '#b8c8da', stroke: '#050a18', strokeWidth: 2 });
-      T.draw(ctx, '(c) 2026 shadow riley POWER & HEATING. INSERT COIN. A FAMILY ROAST.', W / 2, 347, { size: 5, align: 'center', color: '#9aabbd' });
-      if (WL.display.pc) T.draw(ctx, WL.display.modeLabel(), 8, 6, { size: 6, color: '#cde' });
+      if (Math.floor(t * 2) % 2 === 0) T.draw(ctx, RWB.input.touchEnabled ? 'TAP A ROW TO START' : 'PRESS ENTER OR CLICK', mx, y0 + n * TITLE_STEP + 6, { size: 6, align: 'center', color: '#fff', stroke: '#0b1d4a', strokeWidth: 3 });
+      T.draw(ctx, RWB.input.legend(), W / 2, 320, { size: 6, align: 'center', color: '#dde8f4', stroke: '#050a18', strokeWidth: 2 });
+      T.draw(ctx, `${RWB.input.hint('pause', 1)} PAUSE    M MUTE    \\ FULLSCREEN    CLICK A MENU ROW`, W / 2, 333, { size: 6, align: 'center', color: '#b8c8da', stroke: '#050a18', strokeWidth: 2 });
+      T.draw(ctx, '(c) 2026 Riley HEROES OF THE LIGHT. INSERT COIN. A FAMILY ADVENTURE.', W / 2, 347, { size: 5, align: 'center', color: '#9aabbd' });
+      if (RWB.display.pc) T.draw(ctx, RWB.display.modeLabel(), 8, 6, { size: 6, color: '#cde' });
       D.scanlines(ctx, 0.08);
     }
     draw(ctx) {
       if (titleArt()) { this.drawPainted(ctx); return; }
       const t = this.t;
       // The village stage itself, drifting slowly, is the backdrop.
-      WL.light.set({ side: 1, cast: 0.34 });
-      WL.LEVELS[0].bg(ctx, (t * 14) % 1900, t);
-      // Hero: riley mid-brag on the stage, a trollocHeavy still seeing stars.
+      RWB.light.set({ side: 1, cast: 0.34 });
+      RWB.LEVELS[0].bg(ctx, (t * 14) % 1900, t);
+      // Hero: riley mid-brag on the stage, a trollocCaptain still seeing stars.
       ctx.save(); ctx.translate(596, 350); ctx.scale(1.35, 1.35);
-      S.drawEnemy(ctx, 0, 0, { type: 'trollocHeavy', pose: 'stunned', t, facing: -1 });
+      S.drawEnemy(ctx, 0, 0, { type: 'trollocCaptain', pose: 'stunned', t, facing: -1 });
       ctx.restore();
-      const img = WL.assets.get('rileyPortrait');
+      const img = RWB.assets.get('rileyPortrait');
       if (img) { const s = 190 / img.height; ctx.drawImage(img, W - 30 - img.width * s, 110 + Math.sin(t * 2) * 2, img.width * s, img.height * s); }
       else {
         D.shadow(ctx, 516, 350, 44, 10, 0);
@@ -338,7 +338,7 @@
       ctx.fillStyle = top; ctx.fillRect(0, 0, W, 26);
       // logo
       const bounce = Math.sin(t * 2) * 2.5;
-      T.draw(ctx, 'shadow riley AIR CONDITIONING AND HEATING PRESENTS', W / 2, 8, { size: 6, align: 'center', color: '#fffbe8', stroke: '#0b1d4a', strokeWidth: 3 });
+      T.draw(ctx, 'Riley PRESENTS', W / 2, 8, { size: 6, align: 'center', color: '#fffbe8', stroke: '#0b1d4a', strokeWidth: 3 });
       drawLogo(ctx, W / 2 - 80, 20 + bounce, 380);
       T.draw(ctx, '"WE SPEAR THE COMPETITION"', W / 2 - 80, 114, { size: 7, align: 'center', color: '#ffffff', stroke: '#0b1d4a', strokeWidth: 3 });
       T.draw(ctx, 'THE SHADOW HAS RISEN.', W / 2 - 80, 127, { size: 6, align: 'center', color: '#ffe98a', stroke: '#0b1d4a', strokeWidth: 3 });
@@ -352,7 +352,7 @@
       if (this.sub) { this.sub.draw(ctx); D.scanlines(ctx, 0.08); return; }
       if (!this.showHelp) {
         if (this.run) {
-          const L = WL.LEVELS[this.run.level];
+          const L = RWB.LEVELS[this.run.level];
           T.draw(ctx, `SAVED: STAGE ${L.id} WAVE ${this.run.wave + 1}/${L.waves.length}  ${U.pad(this.run.score, 7)}`, W / 2 - 80, 180, { size: 6, align: 'center', color: '#8ff' });
         }
         this.items.forEach((it, i) => {
@@ -367,30 +367,30 @@
           }
           T.draw(ctx, it.label, W / 2 - 80, y, { size: 10, align: 'center', color: seld ? (Math.floor(t * 6) % 2 ? '#ffe14a' : '#fff') : '#d8f0ff', stroke: '#0b1d4a', strokeWidth: 3 });
         });
-        if (Math.floor(t * 2) % 2 === 0) T.draw(ctx, WL.input.touchEnabled ? 'TAP A ROW TO START' : 'PRESS ENTER OR CLICK', W / 2 - 80, 292, { size: 7, align: 'center', color: '#fff', stroke: '#0b1d4a', strokeWidth: 3 });
-        T.draw(ctx, WL.input.legend(), W / 2, 318, { size: 6, align: 'center', color: '#bcd' });
-        T.draw(ctx, `${WL.input.hint('pause', 1)} PAUSE    M MUTE    \\ FULLSCREEN    CLICK A MENU ROW`, W / 2, 332, { size: 6, align: 'center', color: '#9ab' });
-        T.draw(ctx, '(c) 2026 shadow riley POWER & HEATING. INSERT COIN. A FAMILY ROAST.', W / 2, 346, { size: 5, align: 'center', color: '#89a' });
-        if (WL.display.pc) T.draw(ctx, WL.display.modeLabel(), 8, 6, { size: 6, color: '#cde' });
+        if (Math.floor(t * 2) % 2 === 0) T.draw(ctx, RWB.input.touchEnabled ? 'TAP A ROW TO START' : 'PRESS ENTER OR CLICK', W / 2 - 80, 292, { size: 7, align: 'center', color: '#fff', stroke: '#0b1d4a', strokeWidth: 3 });
+        T.draw(ctx, RWB.input.legend(), W / 2, 318, { size: 6, align: 'center', color: '#bcd' });
+        T.draw(ctx, `${RWB.input.hint('pause', 1)} PAUSE    M MUTE    \\ FULLSCREEN    CLICK A MENU ROW`, W / 2, 332, { size: 6, align: 'center', color: '#9ab' });
+        T.draw(ctx, '(c) 2026 Riley HEROES OF THE LIGHT. INSERT COIN. A FAMILY ADVENTURE.', W / 2, 346, { size: 5, align: 'center', color: '#89a' });
+        if (RWB.display.pc) T.draw(ctx, RWB.display.modeLabel(), 8, 6, { size: 6, color: '#cde' });
       } else this.drawHelp(ctx);
       D.scanlines(ctx, 0.08);
     }
     drawHelp(ctx) {
       D.fillRRect(ctx, 30, 24, W - 60, H - 48, 6, 'rgba(0,0,20,0.9)', '#ffe14a');
-      const k = (a, n) => WL.settings.keysFor(a, n || 3).join(', ').padEnd(14, ' ');
-      const I = WL.input;
+      const k = (a, n) => RWB.settings.keysFor(a, n || 3).join(', ').padEnd(14, ' ');
+      const I = RWB.input;
       const lines = [
         ['HOW TO PLAY', '#ffe14a'],
         [`MOVE      ${I.moveHint(true)}. Gamepad stick or d-pad. Touch stick on phones.`, '#fff'],
         [`ATTACK    ${k('attack')}wand, staff, pipe staff`, '#fff'],
-        ['COMBO     Mash = sweep knockdown. Wait a beat before the 3rd hit = staff POP', '#bff'],
+        ['COMBO     Mash = sweep knockdown. Wait a beat before the 3rd hit = RISING KICK', '#bff'],
         ['          launcher; hit it again in the air (up to 3) or flying-boot it.', '#bff'],
         ['GRAB      Walk into an enemy = duct-tape grab. ATTACK = knee. Back+ATTACK = throw', '#fff'],
         [`JUMP      ${k('jump')}ATTACK in the air = flying boot`, '#fff'],
         [`fire     ${k('special')}saidin. Freezes. Costs a little HP.`, '#fff'],
         [`relic   ${k('tool')}Throw the relic. Pick it back up!`, '#fff'],
         [`saidin      ${k('saidin', 2)}SAIDIN when the green meter is full`, '#9f3'],
-        [`PAD       ${WL.settings.padFor('attack')} atk  ${WL.settings.padFor('jump')} jump  ${WL.settings.padFor('special')} fire  ${WL.settings.padFor('tool')} box  ${WL.settings.padFor('saidin')} saidin`, '#bcd'],
+        [`PAD       ${RWB.settings.padFor('attack')} atk  ${RWB.settings.padFor('jump')} jump  ${RWB.settings.padFor('special')} fire  ${RWB.settings.padFor('tool')} box  ${RWB.settings.padFor('saidin')} saidin`, '#bcd'],
         ['SETTINGS  Remap keys / pad, overlay opacity, large HUD, colorblind health.', '#bcd'],
         ['Press any key to go back', '#aaa']
       ];
@@ -425,19 +425,19 @@
 
   /* Cutscene (the opening) and StoryBeat (between stages, the ending) are
      cinematic reels: see js/cinema.js. */
-  const { Cutscene, StoryBeat } = WL.cinema;
+  const { Cutscene, StoryBeat } = RWB.cinema;
 
   /* ================================================================== */
   /* FX manager                                                         */
   /* ================================================================== */
   /* Particles are pooled: dead ones go back on a free list instead of
-     becoming garbage, and the live list is compacted in place. WL.perf sets
+     becoming garbage, and the live list is compacted in place. RWB.perf sets
      the concurrent cap (smaller on coarse pointers, smaller still in LITE)
      and scales burst sizes. Sparks and callout text are never dropped. */
   class FX {
     constructor() { this.list = []; this.pool = []; }
     _p(kind, x, y, life, force) {
-      if (!force && this.list.length >= WL.perf.fxCap) return null;
+      if (!force && this.list.length >= RWB.perf.fxCap) return null;
       const f = this.pool.pop() || {};
       f.kind = kind; f.x = x; f.y = y; f.t = 0; f.life = life;
       f.vx = 0; f.vy = 0; f.r = 0; f.big = false; f.color = '#fff';
@@ -446,7 +446,7 @@
       this.list.push(f);
       return f;
     }
-    _n(count) { return Math.max(1, Math.round(count * WL.perf.fxScale)); }
+    _n(count) { return Math.max(1, Math.round(count * RWB.perf.fxScale)); }
     _chunk(x, y, vx, vy, life, color, r, square, shard) {
       const f = this._p('chunk', x, y, life);
       if (!f) return false;
@@ -461,9 +461,9 @@
       f.rot = U.rand(0, 6.28); f.vr = U.rand(-14, 14); f.floor = floor ? floor + U.rand(-8, 10) : 0;
       return true;
     }
-    ashaman(x, y, big) {
-      const f = this._p('ashaman', x, y, 0.22, true); f.big = !!big;
-      if (WL.perf.lite) return;
+    turnedAshaman(x, y, big) {
+      const f = this._p('turnedAshaman', x, y, 0.22, true); f.big = !!big;
+      if (RWB.perf.lite) return;
       // hot saidinSpark that fly off the contact point and fall
       for (let i = 0, n = this._n(big ? 10 : 6); i < n; i++) {
         const e = this._p('ember', x, y, U.rand(0.22, 0.42));
@@ -474,12 +474,12 @@
     }
     /** A squashed cache splat left on the stage after a heavy hit; it fades out. */
     splat(x, floor) {
-      if (WL.perf.lite || !WL.art.has('props')) return;
+      if (RWB.perf.lite || !RWB.art.has('props')) return;
       const f = this._p('splat', x, floor, 4.5);
       if (f) { f.r = U.rand(0.9, 1.3); f.rot = U.rand(-0.3, 0.3); }
     }
     dust(x, y, r) {
-      const n = WL.perf.lite ? 2 : 4;
+      const n = RWB.perf.lite ? 2 : 4;
       for (let i = 0; i < n; i++) {
         const f = this._p('dust', x + U.rand(-8, 8), y + U.rand(-3, 3), 0.5);
         if (!f) return;
@@ -491,28 +491,28 @@
       f.str = str; f.color = color || '#fff'; f.vy = -30;
     }
     /* What each green sheds when it gets hit: [shape, color] pairs. */
-    static foodBits(type) {
+    static battleBits(type) {
       switch (type) {
         case 'trolloc': return [['floret', '#4f9a2c'], ['floret', '#5aa83a'], ['leaf', '#6ab83a'], ['tomato', '#d8281e'], ['coin', '#f08a1e']];
-        case 'trollocHeavy': return [['leaf', '#95d650'], ['leaf', '#7bbf3a'], ['floret', '#6ab83a']];
-        case 'darkfriend': return [['leaf', '#a6d46a'], ['splinter', '#c6e88a'], ['leaf', '#5aa83a']];
-        case 'fade': return [['coin', '#f08a1e'], ['coin', '#f08a1e'], ['leaf', '#3f9b2f'], ['splinter', '#f08a1e']];
-        case 'cultist': return [['leaf', '#2f6b2a'], ['leaf', '#3f8a36'], ['tomato', '#d8281e']];
-        case 'stoneGuard': return [['leaf', '#1f4d3a'], ['leaf', '#3e8a5e'], ['floret', '#3e8a5e']];
-        case 'ashaman': return [['crumb', '#f7a7c7'], ['crumb', '#f6f2ea'], ['crumb', '#e82a3a'], ['spoon', '#c9cfd9']];
+        case 'trollocCaptain': return [['leaf', '#95d650'], ['leaf', '#7bbf3a'], ['floret', '#6ab83a']];
+        case 'Darkfriend': return [['leaf', '#a6d46a'], ['splinter', '#c6e88a'], ['leaf', '#5aa83a']];
+        case 'assassin': return [['coin', '#f08a1e'], ['coin', '#f08a1e'], ['leaf', '#3f9b2f'], ['splinter', '#f08a1e']];
+        case 'mashadarCultist': return [['leaf', '#2f6b2a'], ['leaf', '#3f8a36'], ['tomato', '#d8281e']];
+        case 'stoneDefender': return [['leaf', '#1f4d3a'], ['leaf', '#3e8a5e'], ['floret', '#3e8a5e']];
+        case 'turnedAshaman': return [['crumb', '#f7a7c7'], ['crumb', '#f6f2ea'], ['crumb', '#e82a3a'], ['BLADE', '#c9cfd9']];
       }
       return [['leaf', '#6ab83a'], ['tomato', '#d8281e'], ['coin', '#f08a1e']];
     }
     burst(x, y, type, floor) {
-      const bits = FX.foodBits(type);
+      const bits = FX.battleBits(type);
       for (let i = 0, n = this._n(12); i < n; i++) {
         const [shape, col] = bits[i % bits.length];
         if (!this._bit(x, y, U.rand(-170, 170), U.rand(-300, -80), U.rand(1.0, 1.4), shape, col, U.rand(3, 4.6), floor || y + 36)) return;
       }
     }
-    foodDebris(x, y, type, floor, big) {
+    battleDebris(x, y, type, floor, big) {
       // cache-bar chaos: the goon's own greens plus whatever it had for lunch
-      const bits = FX.foodBits(type).concat([['tomato', '#d8281e'], ['leaf', '#8fd04a']]);
+      const bits = FX.battleBits(type).concat([['tomato', '#d8281e'], ['leaf', '#8fd04a']]);
       if (big && floor) this.splat(x + U.rand(-10, 10), floor + 4);
       for (let i = 0, n = this._n(big ? 13 : 8); i < n; i++) {
         const [shape, col] = U.pick(bits);
@@ -528,8 +528,8 @@
       for (let i = 0, n = this._n(22); i < n; i++) if (!this._chunk(x, y, U.rand(-420, 420), U.rand(-460, -40), 0.85, U.pick(cols), U.rand(2, 6), i % 3 === 0)) return;
     }
     debris(x, y, kind, floor) {
-      const kit = { urn: [['shard', '#ffffff'], ['shard', '#ffffff'], ['fork', '#c9cfd9'], ['spoon', '#c9cfd9']], rack: [['fork', '#c9cfd9'], ['spoon', '#c9cfd9'], ['tomato', '#d8281e'], ['leaf', '#8fd04a'], ['shard', '#ffffff']],
-        cart: [['fork', '#c9cfd9'], ['spoon', '#c9cfd9'], ['tomato', '#d8281e'], ['coin', '#f08a1e'], ['floret', '#5aa83a']], stool: [['splinter', '#5c2f15'], ['splinter', '#7a421c'], ['crumb', '#881b24']],
+      const kit = { urn: [['shard', '#ffffff'], ['shard', '#ffffff'], ['fork', '#c9cfd9'], ['BLADE', '#c9cfd9']], rack: [['fork', '#c9cfd9'], ['BLADE', '#c9cfd9'], ['tomato', '#d8281e'], ['leaf', '#8fd04a'], ['shard', '#ffffff']],
+        cart: [['fork', '#c9cfd9'], ['BLADE', '#c9cfd9'], ['tomato', '#d8281e'], ['coin', '#f08a1e'], ['floret', '#5aa83a']], stool: [['splinter', '#5c2f15'], ['splinter', '#7a421c'], ['crumb', '#881b24']],
         crate: [['splinter', '#b07a3a'], ['splinter', '#6a4218']], chest: [['crumb', '#3a78c8'], ['crumb', '#f0f0f0'], ['coin', '#f08a1e']] }[kind];
       if (kit) {
         for (let i = 0, n = this._n(kind === 'urn' ? 18 : 15); i < n; i++) {
@@ -589,17 +589,17 @@
         if (f.kind !== 'splat') continue;
         ctx.save(); ctx.globalAlpha = Math.min(1, (f.life - f.t) / 1.2) * 0.9;
         ctx.translate(f.x - camX, f.y); ctx.rotate(f.rot);
-        WL.art.draw(ctx, 'props', 'splash', 0, 0, { sx: 1.9 * f.r, sy: 0.55 * f.r });
+        RWB.art.draw(ctx, 'props', 'splash', 0, 0, { sx: 1.9 * f.r, sy: 0.55 * f.r });
         ctx.restore();
       }
     }
     draw(ctx, camX) {
-      const textSize = WL.settings.data.bigHud ? 10 : 8;
+      const textSize = RWB.settings.data.bigHud ? 10 : 8;
       for (const f of this.list) {
         if (f.t < 0) continue;
         const sx = f.x - camX;
         switch (f.kind) {
-          case 'ashaman': S.drawHitSpark(ctx, sx, f.y, f.t, f.big); break;
+          case 'turnedAshaman': S.drawHitSpark(ctx, sx, f.y, f.t, f.big); break;
           case 'ember': {
             const k = f.t / f.life;
             ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1 - k;
@@ -615,7 +615,7 @@
             const k = f.t / f.life;
             ctx.globalAlpha = Math.max(0, 1 - k);
             const r = (f.big ? 28 : 16) + k * (f.big ? 40 : 26);
-            if (!WL.perf.lite) {
+            if (!RWB.perf.lite) {
               ctx.globalCompositeOperation = 'lighter';
               ctx.strokeStyle = f.big ? 'rgba(255,120,30,0.7)' : 'rgba(255,220,150,0.5)';
               ctx.lineWidth = Math.max(1, (1 - k) * 7);
@@ -635,8 +635,8 @@
             const left = f.life - f.t;
             ctx.globalAlpha = f.shape ? Math.max(0, Math.min(1, left / (f.life * 0.35))) : Math.max(0, 1 - f.t / f.life);
             if (f.shape) {
-              if (f.floor && !WL.perf.lite) { ctx.save(); ctx.globalAlpha *= 0.25 * Math.max(0, 1 - (f.floor - f.y) / 60); D.ellipse(ctx, sx, f.floor + 1, f.r * 1.1, f.r * 0.35, '#000'); ctx.restore(); }
-              S.drawDebris(ctx, sx, f.y, WL.perf.lite && f.shape !== 'shard' ? 'crumb' : f.shape, f.color || '#6ab83a', f.r, f.rot);
+              if (f.floor && !RWB.perf.lite) { ctx.save(); ctx.globalAlpha *= 0.25 * Math.max(0, 1 - (f.floor - f.y) / 60); D.ellipse(ctx, sx, f.floor + 1, f.r * 1.1, f.r * 0.35, '#000'); ctx.restore(); }
+              S.drawDebris(ctx, sx, f.y, RWB.perf.lite && f.shape !== 'shard' ? 'crumb' : f.shape, f.color || '#6ab83a', f.r, f.rot);
             } else if (f.shard) {
               ctx.fillStyle = f.color;
               ctx.beginPath();
@@ -672,7 +672,7 @@
   };
   class Play {
     constructor(game, levelIndex, carry) {
-      this.game = game; this.levelIndex = levelIndex; this.level = WL.LEVELS[levelIndex];
+      this.game = game; this.levelIndex = levelIndex; this.level = RWB.LEVELS[levelIndex];
       this.carry = carry || {};
       this.t = 0; this.camX = 0; this.locked = false; this.waveIdx = 0; this.groupIdx = 0;
       this.enemies = []; this.pickups = []; this.objects = []; this.projectiles = []; this.puddles = []; this.hazards = [];
@@ -714,7 +714,7 @@
         // Continue: start where the last cleared wave was fought.
         this.waveIdx = rw;
         this.player.x = L.waves[rw - 1].x + 40;
-        const lead = WL.display.pc ? 0.33 : 0.42;
+        const lead = RWB.display.pc ? 0.33 : 0.42;
         this.camX = U.clamp(this.player.x - W * lead, 0, L.length - W);
         this.objects = this.objects.filter(o => o.x > this.camX + 24);
         this.pickups = this.pickups.filter(p => p.x > this.camX + 24);
@@ -728,7 +728,7 @@
     /** Light save for Continue: stage, next wave, score, meter. */
     checkpoint() {
       const p = this.player;
-      WL.settings.saveRun({ level: this.levelIndex, wave: this.waveIdx, score: p.score, saidin: Math.round(p.saidin), callandor: this.callandor });
+      RWB.settings.saveRun({ level: this.levelIndex, wave: this.waveIdx, score: p.score, saidin: Math.round(p.saidin), callandor: this.callandor });
     }
     /* ---- AI director ---- */
     // Two attackers max, never from both sides at once, and a beat between
@@ -772,7 +772,7 @@
       return { min: this.camX + 14, max };
     }
     attackers() { let n = 0; for (const e of this.enemies) if (!e.dead && ['windup', 'prime', 'attack', 'dash', 'charge'].includes(e.state)) n++; return n; }
-    get reducedMotion() { return WL.settings.data.shake === 'reduced'; }
+    get reducedMotion() { return RWB.settings.data.shake === 'reduced'; }
     shake(a, d) { a *= this.reducedMotion ? 0.35 : 1; this.shakeAmt = Math.max(this.shakeAmt, a); this.shakeT = Math.max(this.shakeT, d); }
     triggerHitFlash(dur) {
       this.flashT = Math.max(this.flashT, (dur || 0.035) * (this.reducedMotion ? 0.4 : 1));
@@ -793,7 +793,7 @@
       this.shake(s.shake, s.shakeT);
       if (s.flash) { this.flashT = Math.max(this.flashT, s.flash * (this.reducedMotion ? 0.4 : 1)); this.flashColor = s.flashColor; }
       this.lightingPulse = Math.min(1, this.lightingPulse + (kind === 'saidin' ? 1.0 : kind === 'boss' ? 0.75 : kind === 'heavy' ? 0.5 : 0.2) * motion);
-      if (kind === 'heavy' || kind === 'boss') { if (WL.input.rumble) WL.input.rumble(kind === 'boss' ? 90 : 50, 0.55, 0.3); }
+      if (kind === 'heavy' || kind === 'boss') { if (RWB.input.rumble) RWB.input.rumble(kind === 'boss' ? 90 : 50, 0.55, 0.3); }
       // Music gets out of the way of the big ones.
       if (kind === 'heavy') A.duck(0.62, 0.06, 0.3);
       else if (kind === 'boss') A.duck(0.42, 0.16, 0.55);
@@ -801,7 +801,7 @@
     }
     bark(id) {
       if (this.barkCd > 0 || !this.player) return;
-      const line = WL.voice && WL.voice.bark(id);
+      const line = RWB.voice && RWB.voice.bark(id);
       if (!line) return;
       this.fx.text(this.player.x, this.player.y - 116, line, '#fff4c2', 1.25);
       this.barkCd = 2.05;
@@ -809,7 +809,7 @@
       A.duck(0.55, 0.9, 0.5);
     }
     onCombo(before, after) {
-      const rank = WL.voice && WL.voice.comboCross(before, after);
+      const rank = RWB.voice && RWB.voice.comboCross(before, after);
       if (!rank) return;
       this.comboRank = rank; this.comboRankT = 1.55;
       if (after >= 8) this.hitstop = Math.max(this.hitstop, 0.07);
@@ -818,7 +818,7 @@
     noteEnemy(type) {
       if (this.seen[type]) return;
       this.seen[type] = true;
-      const card = WL.voice && WL.voice.enemyIntro(type);
+      const card = RWB.voice && RWB.voice.enemyIntro(type);
       if (card) { this.cards.push({ name: card.name, line: card.line, t: 2.45 }); A.duck(0.72, 0.8, 0.5); }
     }
     spawnEnemy(type, x, y, opts = {}) {
@@ -834,17 +834,17 @@
     onBossPhase(n) {
       // Banner only. A floating quote was landing on the cone's face.
       // The sub-line names what's new and the shape each move draws on the floor.
-      if (n === 2) this.showBanner('PHASE 2: TOPPINGS', 'NEW: BELLY FLOP = RING + CROSS.  RAIN = DASHED DROPS.', 2.6);
-      if (n === 3) this.showBanner('PHASE 3: MELTDOWN', 'FASTER SPOON. PUDDLES FLASH PINK FIRST.', 2.6);
+      if (n === 2) this.showBanner('PHASE 2: STORM', 'NEW: SKY STRIKE = RING + CROSS. BOLTS = DASHED DROPS.', 2.6);
+      if (n === 3) this.showBanner('PHASE 3: FURY', 'FASTER BLADE. SHADOW POOLS FLASH FIRST.', 2.6);
       this.phaseCard = { n, t: 2.6 };
       A.duck(0.3, 1.2, 0.8);
       A.sfx.bossRoar(); this.impact(this.boss && this.boss.facing || 1, 'boss');
-      // the dessert station coughs up some real magic between phases
+      // the Shadow champion coughs up some real magic between phases
       this.spawnPickup('heal', this.camX + 120, U.rand(FT + 20, FB - 20), true);
       this.spawnPickup(n === 2 ? 'saidinSurge' : 'saidinSpark', this.camX + W - 120, U.rand(FT + 20, FB - 20), true);
     }
     bossDefeated() {
-      if (this.levelIndex === 4) { this.showBanner('TOGETHER!', 'TWINKLE TOES THUNDER!  BALEFIRE!', 4, true); this.flashT = 1; this.flashColor = '#bfeaff'; }
+      if (this.levelIndex === 4) { this.showBanner('TOGETHER!', 'TWINKLE TOES: LIGHTNING!  RILEY: BALEFIRE!', 4, true); this.jointFinishT = 4; this.surgeT = 0; this.surgeX = this.player.x; this.surgeY = this.player.y; this.flashT = 1; this.flashColor = '#bfeaff'; }
       this.phase = 'bossdead'; this.phaseT = 0; this.player.won = true; this.player.setState('victory');
       if (this.levelIndex === 3) { this.callandor = true; this.carry.callandor = true; this.showBanner('CALLANDOR CLAIMED', 'BALEFIRE GROWS BRIGHTER!', 4); }
       A.stopMusic(); A.sfx.levelClear();
@@ -854,7 +854,7 @@
     playerDied() {
       const p = this.player;
       p.lives--;
-      if (p.lives > 0) { p.respawn(this.camX + 80, (FT + FB) / 2); this.fx.text(p.x, p.y - 100, (WL.voice && WL.voice.bark('respawn')) || 'STILL ON THE CLOCK.', '#ffe14a', 2); A.sfx.oneUp(); }
+      if (p.lives > 0) { p.respawn(this.camX + 80, (FT + FB) / 2); this.fx.text(p.x, p.y - 100, (RWB.voice && RWB.voice.bark('respawn')) || 'STILL ON THE CLOCK.', '#ffe14a', 2); A.sfx.oneUp(); }
       else { this.phase = 'dead'; this.phaseT = 0; A.stopMusic(); A.sfx.gameOver(); }
     }
     triggerSurge() {
@@ -862,8 +862,8 @@
       this.surgeT = 0; this.surgeX = p.x; this.surgeY = p.y;
       this.flashT = 0.32; this.flashColor = '#e7ff9a';
       A.sfx.saidin(); p.saidin = 0;
-      if (WL.input.rumble) WL.input.rumble(240, 1, 0.45);
-      const sub = (WL.voice && WL.voice.surgeLine()) || 'THE POWERing SPECIAL.';
+      if (RWB.input.rumble) RWB.input.rumble(240, 1, 0.45);
+      const sub = (RWB.voice && RWB.voice.surgeLine()) || 'THE POWERing SPECIAL.';
       this.showBanner('BALEFIRE!', 'LIGHTNING ANSWERS THE DRAGON!', 1.7, true);
       this.fx.surgeBurst(p.x, p.y - 20);
       let n = 0;
@@ -893,7 +893,7 @@
       }
     }
     spawnBoss() {
-      this.boss = new E.Boss(this, this.camX + W - 110, (FT + FB) / 2);
+      this.boss = new E.Boss(this, this.camX + W - 110, (FT + FB) / 2, this.level.bossType);
       this.enemies.push(this.boss);
       A.playMusic('boss'); A.sfx.bossRoar(); this.impact(-1, 'boss');
       this.showBanner(this.level.bossName || 'SHADOW BOSS', 'WATCH THE FLOOR TELLS!', 2.8);
@@ -965,7 +965,7 @@
       const p = this.player;
       const L = this.level;
       if (!this.locked) {
-        const lead = WL.display.pc ? 0.33 : 0.42;
+        const lead = RWB.display.pc ? 0.33 : 0.42;
         const target = p.x - W * lead;
         this.camX = Math.max(this.camX, Math.min(target, L.length - W));
         const wv = this.currentWave();
@@ -1006,7 +1006,7 @@
         if (active && !h.wasActive) { h.hit.clear(); if (Math.abs(h.x - this.camX - W / 2) < W) A.sfx.steam(); }
         h.wasActive = active;
         if (active && cyc > 0.15) {
-          if (!h.hit.has(p) && Math.abs(p.x - h.x) < 24 && Math.abs(p.y - h.y) < 20 && p.z < 30) { h.hit.add(p); if (p.hurt(7, h.x + 1, true)) this.fx.text(p.x, p.y - 90, 'STEAM!', '#fff'); }
+          if (!h.hit.has(p) && Math.abs(p.x - h.x) < 52 && Math.abs(p.y - h.y) < 24 && p.z < 30) { h.hit.add(p); if (p.hurt(7, h.x + 1, false)) this.fx.text(p.x, p.y - 90, 'MASHADAR!', '#ded8ff'); }
           for (const e of this.enemies) if (!h.hit.has(e) && e.hittable && !e.isBoss && Math.abs(e.x - h.x) < 24 && Math.abs(e.y - h.y) < 20) { h.hit.add(e); e.hurt(8, h.x + 1, { knockdown: true }); }
         }
       }
@@ -1030,23 +1030,23 @@
       compact(this.enemies); compact(this.projectiles); compact(this.pickups); compact(this.objects);
     }
     pauseItems() {
-      const fs = WL.display.fullscreen || !!document.fullscreenElement;
+      const fs = RWB.display.fullscreen || !!document.fullscreenElement;
       return [
         { id: 'resume', label: 'RESUME' },
         { id: 'sound', label: 'SOUND: ' + A.volumeLabel(), adj: true },
         { id: 'music', label: 'MUSIC: ' + A.musicLabel(), adj: true },
         { id: 'fullscreen', label: 'FULLSCREEN: ' + (fs ? 'ON' : 'OFF'), adj: true },
-        { id: 'display', label: 'DISPLAY: ' + WL.display.modeLabel(), adj: true },
+        { id: 'display', label: 'DISPLAY: ' + RWB.display.modeLabel(), adj: true },
         { id: 'options', label: 'OPTIONS: OVERLAY, HUD, COLORS >' },
         { id: 'controls', label: 'CONTROLS: REMAP KEYS + PAD >' },
         { id: 'quit', label: 'QUIT TO TITLE' }
       ];
     }
     adjustPause(id, dir) {
-      if (id === 'sound') { A.cycleVolume(dir); if (WL.display.save) WL.display.save(); }
-      else if (id === 'music') { A.cycleMusic(dir); if (WL.display.save) WL.display.save(); }
-      else if (id === 'fullscreen') WL.display.toggleFullscreen();
-      else if (id === 'display') WL.display.cycleMode(dir);
+      if (id === 'sound') { A.cycleVolume(dir); if (RWB.display.save) RWB.display.save(); }
+      else if (id === 'music') { A.cycleMusic(dir); if (RWB.display.save) RWB.display.save(); }
+      else if (id === 'fullscreen') RWB.display.toggleFullscreen();
+      else if (id === 'display') RWB.display.cycleMode(dir);
       else return false;
       return true;
     }
@@ -1057,7 +1057,7 @@
       if (inp.pressed.up) { this.pauseSel = (this.pauseSel + n - 1) % n; A.sfx.blip(); }
       const dir = inp.pressed.right ? 1 : inp.pressed.left ? -1 : 0;
       if (dir && this.adjustPause(items[this.pauseSel].id, dir)) A.sfx.blip();
-      if (inp.pressed.mute) { A.toggleMute(); if (WL.display.save) WL.display.save(); }
+      if (inp.pressed.mute) { A.toggleMute(); if (RWB.display.save) RWB.display.save(); }
       if (inp.pressed.click && inp.pointer) {
         const y0 = PAUSE_Y0;
         for (let i = 0; i < n; i++) {
@@ -1073,8 +1073,8 @@
       A.sfx.select();
       const id = this.pauseItems()[this.pauseSel].id;
       if (id === 'resume') this.paused = false;
-      else if (id === 'options') this.sub = new WL.OptionsPanel('options');
-      else if (id === 'controls') this.sub = new WL.OptionsPanel('controls');
+      else if (id === 'options') this.sub = new RWB.OptionsPanel('options');
+      else if (id === 'controls') this.sub = new RWB.OptionsPanel('controls');
       else if (id === 'quit') { A.stopMusic(); this.game.toTitle(); }
       else this.adjustPause(id, 1);
     }
@@ -1083,17 +1083,20 @@
     draw(ctx) {
       const L = this.level, p = this.player;
       ctx.save();
-      const snap = WL.display.mode === 'classic' ? 1 : WL.display.renderScale;
-      ctx.translate(Math.round((this.shakeX + this.punchX) * snap) / snap, Math.round((this.shakeY + this.punchY) * snap) / snap);
-      WL.light.set(STAGE_LIGHT[L.id]);
+      const snap = RWB.display.mode === 'classic' ? 1 : RWB.display.renderScale;
+      const taintPower = Math.max(0, Math.min(1, (this.taintT - 3) / 8));
+      const taintMotion = taintPower * (this.reducedMotion ? 0.8 : 3.2);
+      const wobbleX = Math.sin(this.t * 5.1) * taintMotion, wobbleY = Math.sin(this.t * 3.7 + 1.2) * taintMotion * .55;
+      ctx.translate(Math.round((this.shakeX + this.punchX + wobbleX) * snap) / snap, Math.round((this.shakeY + this.punchY + wobbleY) * snap) / snap);
+      RWB.light.set(STAGE_LIGHT[L.id]);
       L.bg(ctx, this.camX, this.t);
-      // hazards (steam vents)
+      // Mashadar rolls through a lane, fades, then gathers again.
       for (const h of this.hazards) {
         const sx = h.x - this.camX; if (sx < -60 || sx > W + 60) continue;
-        D.fillRRect(ctx, sx - 22, h.y - 6, 44, 10, 3, '#5b6b7c', S.OUT); ctx.fillStyle = '#222'; for (let i = 0; i < 5; i++) ctx.fillRect(sx - 18 + i * 8, h.y - 3, 4, 4);
         const cyc = ((this.t + h.offset) % h.period);
-        if (h.active) { ctx.save(); ctx.globalAlpha = 0.7; for (let i = 0; i < 8; i++) { const k = (cyc * 3 + i * 0.3) % 1; D.circle(ctx, sx + Math.sin(i * 2 + this.t * 8) * 12, h.y - 10 - k * 90, 8 + k * 14, `rgba(230,240,255,${0.8 - k * 0.7})`); } ctx.restore(); }
-        else if (h.period - cyc < 0.6 || cyc > h.period - 0.6) { if (Math.floor(this.t * 12) % 2 === 0) ctx.fillStyle = '#f44', ctx.fillRect(sx - 20, h.y - 5, 40, 2); }
+        ctx.save(); ctx.globalAlpha = h.active ? .75 : .25; D.ellipse(ctx, sx, h.y, 58, 16, 'rgba(205,200,235,.5)');
+        if (h.active) for (let i = 0; i < 9; i++) { const k = (cyc * .7 + i * .17) % 1; D.circle(ctx, sx - 50 + k * 100, h.y - 5 - Math.sin(k * 9 + this.t * 2) * 9, 8 + i % 3 * 4, `rgba(220,216,245,${.18 + k * .3})`); }
+        else { ctx.strokeStyle='#cfc9ef';ctx.setLineDash([5,5]);ctx.beginPath();ctx.ellipse(sx,h.y,58,16,0,0,7);ctx.stroke();ctx.setLineDash([]); } ctx.restore();
       }
       // puddles — a beat of pink warning before the stick
       for (const pu of this.puddles) {
@@ -1136,17 +1139,17 @@
       }
       if (this.taintT > 0) { const q=Math.min(.7,Math.max(0,(this.taintT-3)/10)); ctx.save(); ctx.fillStyle=`rgba(12,0,22,${q})`; ctx.fillRect(0,0,W,18+q*55); ctx.fillRect(0,H-18-q*55,W,18+q*55); ctx.fillRect(0,0,18+q*38,H); ctx.fillRect(W-18-q*38,0,18+q*38,H); ctx.restore(); }
       if (this.flashT > 0) { ctx.save(); ctx.globalAlpha = Math.min(0.8, this.flashT * 2.5); ctx.fillStyle = this.flashColor; ctx.fillRect(0, 0, W, H); ctx.restore(); }
-      WL.draw.stageLighting(ctx, L.id, this.lightingPulse, this.t);
+      RWB.draw.stageLighting(ctx, L.id, this.lightingPulse, this.t);
       this.drawHUD(ctx);
       // Control picture stays for the whole stage — intro, fight, clear —
       // on a phone and on a desktop. It is not tied to the tutorial timer.
-      WL.input.drawTouch(ctx, { always: true, surgeReady: p.saidin >= p.saidinMax, hasRelic: p.hasRelic || p.state === 'grab' });
+      RWB.input.drawTouch(ctx, { always: true, surgeReady: p.saidin >= p.saidinMax, hasRelic: p.hasRelic || p.state === 'grab' });
       if (p.saidin >= p.saidinMax && (this.phase === 'play' || this.phase === 'intro')) this.drawSurgeReady(ctx);
       if (this.paused) this.drawPause(ctx);
       D.scanlines(ctx, 0.07);
     }
     drawTells(ctx, pass) {
-      const cb = WL.settings.data.colorblind;
+      const cb = RWB.settings.data.colorblind;
       for (const e of this.enemies) {
         if (!e || e.dead) continue;
         const sx = e.x - this.camX, sy = e.y;
@@ -1198,8 +1201,8 @@
     /* Boss tell language. Each move has its own floor shape, a phase color,
        a countdown clock under the cone, and the same "last call" in the final
        0.2 s: the outline goes solid white and a click plays.
-         SPOON (slam)      rectangle = exact hit box, fill sweeps outPOWER
-         BELLY FLOP (jump) ring + cross = exact landing radius, outer ring closes in
+         BLADE (slam)      rectangle = exact hit box, fill sweeps outPOWER
+         SKY STRIKE (jump) ring + cross = exact landing radius, outer ring closes in
          RAIN / BACKUP     dashed rings per drop / arrows at the spawn edges */
     drawBossTells(ctx, e, pass, sx, sy) {
       const F = E.FAIR;
@@ -1226,7 +1229,7 @@
         ctx.fillStyle = tellColor(tp.last);
         const fw = len * tp.k;
         ctx.fillRect(dir > 0 ? x0 : x0 - fw, sy - F.slamDepth, fw, F.slamDepth * 2);
-        // chevrons point the way the spoon comes down
+        // chevrons point the way the BLADE comes down
         ctx.globalAlpha = 0.75;
         ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
         for (let i = 0; i < 3; i++) {
@@ -1272,12 +1275,12 @@
       }
       if (pass === 'label' && e.state === 'slamWind') {
         const dir = e.facing || 1;
-        T.draw(ctx, 'SPOON', sx + dir * 72, sy - F.slamDepth - 14, { size: 8, align: 'center', color: tp.last ? '#fff' : phaseCol, stroke: '#000', strokeWidth: 3 });
+        T.draw(ctx, 'BLADE', sx + dir * 72, sy - F.slamDepth - 14, { size: 8, align: 'center', color: tp.last ? '#fff' : phaseCol, stroke: '#000', strokeWidth: 3 });
       }
-      if (pass === 'label' && e.state === 'jumpWind' && e.jumpTargetX != null) T.draw(ctx, 'BELLY FLOP', e.jumpTargetX - this.camX, e.jumpTargetY - F.flopRadius / 1.6 - 14, { size: 7, align: 'center', color: phaseCol, stroke: '#000', strokeWidth: 3 });
+      if (pass === 'label' && e.state === 'jumpWind' && e.jumpTargetX != null) T.draw(ctx, 'SKY STRIKE', e.jumpTargetX - this.camX, e.jumpTargetY - F.flopRadius / 1.6 - 14, { size: 7, align: 'center', color: phaseCol, stroke: '#000', strokeWidth: 3 });
       if (pass === 'label' && e.state === 'rainWind') {
         const backup = !!e.summonNext;
-        T.draw(ctx, backup ? 'BACKUP CUPS' : 'LOOK UP', sx, sy - 190, { size: 9, align: 'center', color: tp && tp.last ? '#fff' : phaseCol, stroke: '#000', strokeWidth: 3 });
+        T.draw(ctx, backup ? 'REINFORCEMENTS' : 'LOOK UP', sx, sy - 190, { size: 9, align: 'center', color: tp && tp.last ? '#fff' : phaseCol, stroke: '#000', strokeWidth: 3 });
         ctx.save();
         ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5; ctx.globalAlpha = 0.9;
         if (backup) {
@@ -1290,7 +1293,7 @@
             }
           }
         } else {
-          // three falling-drop dashes above the swirl
+          // three falling-drop dashes above the WARD
           for (let i = -1; i <= 1; i++) {
             const dx = sx + i * 26, dy = sy - 176 + ((this.t * 60 + i * 9) % 18);
             ctx.setLineDash([3, 3]);
@@ -1316,8 +1319,8 @@
     }
     drawHUD(ctx) {
       const p = this.player, L = this.level;
-      const big = WL.settings.data.bigHud;
-      const cb = WL.settings.data.colorblind;
+      const big = RWB.settings.data.bigHud;
+      const cb = RWB.settings.data.colorblind;
       // LARGE scales the left (riley) and right (score) blocks from their
       // corners; the stage/wave line moves into the gap between them.
       const s = big ? 1.25 : 1;
@@ -1330,7 +1333,7 @@
       D.fillRRect(ctx, 2, 1, 232, 40, 12, 'rgba(6,12,32,0.34)');
       // circular portrait with a gold bezel; it flushes red when riley is low
       const hpPct = p.hp / p.maxHp;
-      const hud = WL.assets.get('rileyHud');
+      const hud = RWB.assets.get('rileyHud');
       if (hud) { ctx.save(); ctx.beginPath(); ctx.arc(22, 22, 18, 0, Math.PI * 2); ctx.clip(); ctx.drawImage(hud, 4, 4, 36, 36); ctx.restore(); }
       else drawHudPortrait(ctx, 22, 22, hpPct < 0.3 ? 'hurt' : (p.state === 'attack' ? 'fight' : 'neutral'));
       drawBezel(ctx, 22, 22, 18, hpPct <= 0.25 && Math.floor(this.t * 4) % 2 === 0);
@@ -1359,7 +1362,7 @@
       // relic indicator
       if (p.hasRelic) {
         S.drawGlow(ctx, 216, 17, 12, 0.35);
-        if (WL.art.has('props')) WL.art.draw(ctx, 'props', 'relic', 216, 25, { sx: 1.1, sy: 1.1 });
+        if (RWB.art.has('props')) RWB.art.draw(ctx, 'props', 'relic', 216, 25, { sx: 1.1, sy: 1.1 });
         else S.tool(ctx, 'relic', 216, 18, 0);
       }
       ctx.restore();
@@ -1371,7 +1374,7 @@
       const stageLine = `STAGE ${L.id} • WAVE ${currentWaveNum}/${totalWaves}`;
       let logoH = 33, hudFloor = 0;
       if (!big) {
-        logoH = drawLogo(ctx, W / 2, 1, WL.art.plate('logo') ? (this.boss ? 118 : 150) : 144);
+        logoH = drawLogo(ctx, W / 2, 1, RWB.art.plate('logo') ? (this.boss ? 118 : 150) : 144);
         const ly = Math.max(this.boss ? 28 : 35, logoH + 1);
         hudFloor = ly + 10;
         T.cached(ctx, stageLine, W / 2, ly, { size: 5, align: 'center', color: '#ffe14a', stroke: '#000', strokeWidth: 2 });
@@ -1417,14 +1420,14 @@
       const comboY = (this.boss ? 124 : Math.max(52, logoH + 18)) + dy;
       if (this.bannerT <= 0 && p.comboCount >= 2 && p.comboDisplayT > 0) {
         const pop = 1 + (p.comboPop || 0) * 0.35;
-        const rank = (WL.voice && WL.voice.comboRank(p.comboCount)) || '';
-        const tool = p.lastToolT > 0 && WL.voice ? (p.lastTool === 'uppercut' ? 'staff POP' : WL.voice.toolName(p.lastTool)) : '';
+        const rank = (RWB.voice && RWB.voice.comboRank(p.comboCount)) || '';
+        const tool = p.lastToolT > 0 && RWB.voice ? (p.lastTool === 'uppercut' ? 'RISING KICK' : RWB.voice.toolName(p.lastTool)) : '';
         ctx.save();
         // Center stage, like the concept; with a boss up it moves left, off the cone's face.
         ctx.translate(this.boss ? 118 : W / 2 + 6, comboY);
         ctx.scale(pop, pop);
         drawCombo(ctx, p.comboCount, this.t);
-        let ry = WL.art.has('props') ? 47 : 34;
+        let ry = RWB.art.has('props') ? 47 : 34;
         if (rank) {
           const rw = T.width(ctx, rank, 7) + 10;
           D.fillRRect(ctx, -rw / 2, ry, rw, 12, 3, 'rgba(40,0,30,0.72)', '#ff7ad4');
@@ -1451,7 +1454,7 @@
       if (this.boss && !this.boss.remove) {
         const b = this.boss;
         const bw = 268, bx = W / 2 - bw / 2, by = Math.max(58 + dy, hudFloor + 13);
-        const phaseName = b.phase === 1 ? 'SWIRL' : b.phase === 2 ? 'TOPPINGS' : 'MELT';
+        const phaseName = b.phase === 1 ? 'WARD' : b.phase === 2 ? 'STORM' : 'FURY';
         const phaseCol = b.phase === 1 ? '#bfefff' : b.phase === 2 ? '#ffe14a' : '#ff6fa8';
         T.draw(ctx, 'SHADOW CHAMPION', W / 2, by - 10, { size: 6, align: 'center', color: '#f9c', stroke: '#000', strokeWidth: 3 });
         D.arcadeBar(ctx, bx, by, bw, 8, b.hp / b.maxHp, b.hp / b.maxHp, b.phase === 3 ? '#e02040' : '#e85a8a', null, '#3a0a1a');
@@ -1467,7 +1470,7 @@
       // tutorial
       if (this.tutorialT > 0 && this.tutorial) {
         const ts = big ? 9 : 7;
-        const lines = T.wrap(ctx, WL.input.fillKeys(this.tutorial), ts, W - 80);
+        const lines = T.wrap(ctx, RWB.input.fillKeys(this.tutorial), ts, W - 80);
         const bh = 14 + lines.length * (ts + 4);
         const lift = 158;
         D.fillRRect(ctx, 30, H - lift - bh, W - 60, bh, 4, 'rgba(0,0,30,0.85)', '#39f');
@@ -1504,7 +1507,7 @@
        Moves unlocked in later phases are listed dim so the next phase isn't a surprise. */
     drawBossMoves(ctx, b, cx, y, phaseCol) {
       const moves = [
-        { name: 'SPOON', icon: 'rect', from: 1 },
+        { name: 'BLADE', icon: 'rect', from: 1 },
         { name: 'FLOP', icon: 'ring', from: 2 },
         { name: 'RAIN', icon: 'drops', from: 2 },
         { name: 'PUDDLES', icon: 'puddle', from: 3 }
@@ -1532,12 +1535,12 @@
         T.draw(ctx, (sel ? '> ' : '  ') + it.label + (it.adj ? '   < >' : ''), W / 2, PAUSE_Y0 + i * PAUSE_STEP, { size: 9, align: 'center', color: sel ? '#ffe14a' : '#ddd' });
       });
       // Legend comes from the live bindings, so it stays honest after a remap.
-      T.draw(ctx, WL.input.legend(), W / 2, 256, { size: 6, align: 'center', color: '#bcd' });
+      T.draw(ctx, RWB.input.legend(), W / 2, 256, { size: 6, align: 'center', color: '#bcd' });
       T.draw(ctx, 'Walk into an enemy = duct-tape grab. Attack = knee. Back+Attack or Jump = throw.', W / 2, 270, { size: 6, align: 'center', color: '#bcd' });
-      T.draw(ctx, 'COMBO: ATK ATK ... (beat) ATK = staff POP launcher. Juggle with ATK or the flying boot.', W / 2, 284, { size: 6, align: 'center', color: '#bff' });
+      T.draw(ctx, 'COMBO: ATK ATK ... (beat) ATK = RISING KICK launcher. Juggle with ATK or the flying boot.', W / 2, 284, { size: 6, align: 'center', color: '#bff' });
       T.draw(ctx, 'Left / right changes the highlighted setting. \\ toggles fullscreen.', W / 2, 298, { size: 6, align: 'center', color: '#9ab' });
       T.draw(ctx, `KILLS: ${this.kills}   HITS: ${this.player.hits}   STAGE ${this.level.id} WAVE ${Math.min(this.waveIdx + 1, this.level.waves.length)}`, W / 2, 318, { size: 7, align: 'center', color: '#9ab' });
-      if (WL.input.touchEnabled) WL.input.drawTouch(ctx, { buttons: false });
+      if (RWB.input.touchEnabled) RWB.input.drawTouch(ctx, { buttons: false });
     }
   }
 
@@ -1547,7 +1550,7 @@
   class GameOver {
     constructor(game, levelIndex, score, waveIdx) {
       this.game = game; this.levelIndex = levelIndex; this.score = score; this.t = 0; this.count = 9;
-      const L = WL.LEVELS[levelIndex];
+      const L = RWB.LEVELS[levelIndex];
       this.wave = Math.max(0, Math.min((L.waves.length || 1) - 1, waveIdx | 0));
       this.sel = 0;
       this.items = [
@@ -1558,7 +1561,7 @@
     }
     enter() {
       // Keep the checkpoint on disk so Continue also works after a reload.
-      WL.settings.saveRun({ level: this.levelIndex, wave: this.wave, score: Math.floor(this.score / 2), saidin: 0 });
+      RWB.settings.saveRun({ level: this.levelIndex, wave: this.wave, score: Math.floor(this.score / 2), saidin: 0 });
     }
     rowAt(pt) {
       for (let i = 0; i < this.items.length; i++) {
@@ -1593,8 +1596,8 @@
       ctx.fillStyle = '#05050f'; ctx.fillRect(0, 0, W, H);
       D.vignette(ctx, 0.7);
       S.drawRiley(ctx, W / 2 - 60, 194, { pose: 'down', t: this.t, facing: 1 });
-      // ashaman taunting
-      S.drawEnemy(ctx, W / 2 + 60, 194, { type: 'ashaman', pose: 'idle', t: this.t, facing: -1 });
+      // turnedAshaman taunting
+      S.drawEnemy(ctx, W / 2 + 60, 194, { type: 'turnedAshaman', pose: 'idle', t: this.t, facing: -1 });
       T.draw(ctx, 'GAME OVER', W / 2, 44, { size: 28, align: 'center', gradient: ['#fff', '#e03020'], stroke: '#000', strokeWidth: 6 });
       T.draw(ctx, '"The battle sends its regards."', W / 2, 86, { size: 7, align: 'center', color: '#f9c' });
       T.draw(ctx, `SCORE ${U.pad(this.score, 7)}`, W / 2, 104, { size: 10, align: 'center', color: '#ffe14a' });
@@ -1604,7 +1607,7 @@
         T.draw(ctx, (sel ? '> ' : '  ') + it.label, W / 2, 246 + i * 18, { size: 8, align: 'center', color: sel ? '#ffe14a' : '#ccd' });
       });
       T.draw(ctx, 'CONTINUE KEEPS YOUR STAGE AND WAVE. HALF SCORE, 3 LIVES.', W / 2, 310, { size: 6, align: 'center', color: '#9ab' });
-      T.draw(ctx, WL.input.touchEnabled ? 'TAP A ROW TO INSERT COIN' : 'CLICK OR ENTER TO INSERT COIN', W / 2, 326, { size: 7, align: 'center', color: '#bcd' });
+      T.draw(ctx, RWB.input.touchEnabled ? 'TAP A ROW TO INSERT COIN' : 'CLICK OR ENTER TO INSERT COIN', W / 2, 326, { size: 7, align: 'center', color: '#bcd' });
       D.scanlines(ctx, 0.1);
     }
   }
@@ -1642,26 +1645,26 @@
         T.draw(ctx, 'AFTER', W - 150, 262, { size: 9, align: 'center', color: '#fff', stroke: '#000' });
         T.draw(ctx, '"Svelte riley"', W - 150, 276, { size: 6, align: 'center', color: '#333', shadow: false });
         if (t > 2) T.draw(ctx, 'chieftain: "riley. You look... svelte."', W / 2, 296, { size: 7, align: 'center', color: '#fff', stroke: '#000' });
-        if (t > 3.5) T.draw(ctx, 'riley: "The invoice says cardio. Open the battle."', W / 2, 310, { size: 7, align: 'center', color: '#ffe14a', stroke: '#000' });
-        if (Math.floor(t * 2) % 2 === 0 && t > 1) T.draw(ctx, WL.input.touchEnabled ? 'TAP' : 'ENTER', W - 18, H - 16, { size: 7, align: 'right', color: '#fff' });
+        if (t > 3.5) T.draw(ctx, 'riley: "The invoice says cardio. Open the gate."', W / 2, 310, { size: 7, align: 'center', color: '#ffe14a', stroke: '#000' });
+        if (Math.floor(t * 2) % 2 === 0 && t > 1) T.draw(ctx, RWB.input.touchEnabled ? 'TAP' : 'ENTER', W - 18, H - 16, { size: 7, align: 'right', color: '#fff' });
       } else {
         T.draw(ctx, 'THANKS FOR PLAYING', W / 2, 24, { size: 16, align: 'center', gradient: ['#fff3a0', '#ffb300', '#e0301e'], stroke: '#000', strokeWidth: 5 });
         T.draw(ctx, `FINAL SCORE ${U.pad(this.score, 7)}`, W / 2, 54, { size: 11, align: 'center', color: '#fff', stroke: '#000' });
-        const img = WL.assets.get('rileyPortrait');
+        const img = RWB.assets.get('rileyPortrait');
         if (img) { const s = 150 / img.height; ctx.drawImage(img, W / 2 - img.width * s / 2, 80, img.width * s, img.height * s); }
         else S.drawRileyBust(ctx, W / 2, 130, 84, { mood: 'grin' });
         S.drawRiley(ctx, 110, 250, { pose: 'victory', t, facing: 1, thin: true });
         S.drawEnemy(ctx, W - 130, 250, { type: 'trolloc', pose: 'down', t, facing: 1 });
-        S.drawEnemy(ctx, W - 90, 262, { type: 'ashaman', pose: 'down', t, facing: 1 });
-        T.draw(ctx, 'shadow riley AIR CONDITIONING AND HEATING', W / 2, 240, { size: 8, align: 'center', color: '#fff', stroke: '#000' });
+        S.drawEnemy(ctx, W - 90, 262, { type: 'turnedAshaman', pose: 'down', t, facing: 1 });
+        T.draw(ctx, 'Riley AIR CONDITIONING AND HEATING', W / 2, 240, { size: 8, align: 'center', color: '#fff', stroke: '#000' });
         T.draw(ctx, '"WE SPEAR THE COMPETITION"', W / 2, 254, { size: 7, align: 'center', color: '#ffe14a', stroke: '#000' });
         T.draw(ctx, 'Starring riley as himself. No vegetables were harmed. Several were eaten.', W / 2, 290, { size: 6, align: 'center', color: '#fff', stroke: '#000' });
         T.draw(ctx, 'Happy cruising, Dad.', W / 2, 306, { size: 7, align: 'center', color: '#fff', stroke: '#000' });
-        if (Math.floor(t * 2) % 2 === 0 && t > 1) T.draw(ctx, WL.input.touchEnabled ? 'TAP FOR TITLE' : 'ENTER FOR TITLE', W / 2, 336, { size: 7, align: 'center', color: '#fff' });
+        if (Math.floor(t * 2) % 2 === 0 && t > 1) T.draw(ctx, RWB.input.touchEnabled ? 'TAP FOR TITLE' : 'ENTER FOR TITLE', W / 2, 336, { size: 7, align: 'center', color: '#fff' });
       }
       D.scanlines(ctx, 0.07);
     }
   }
 
-  WL.scenes = { Title, Cutscene, StoryBeat, Play, GameOver, Victory };
+  RWB.scenes = { Title, Cutscene, StoryBeat, Play, GameOver, Victory };
 })();

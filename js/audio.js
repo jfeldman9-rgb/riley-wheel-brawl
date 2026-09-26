@@ -2,7 +2,7 @@
    No audio files required. */
 'use strict';
 
-WL.audio = (function () {
+RWB.audio = (function () {
   let ctx = null, master = null, musicGain = null, duckGain = null, sfxGain = null, comp = null;
   let muted = false;
   let unlocked = false;
@@ -181,7 +181,7 @@ WL.audio = (function () {
     jump() { tone({ f0: 300, f1: 700, dur: 0.15, vol: 0.2, type: 'square' }); },
     pickup() { tone({ f0: 660, f1: 660, dur: 0.07, vol: 0.2 }); tone({ f0: 880, dur: 0.08, delay: 0.07, vol: 0.2 }); tone({ f0: 1320, dur: 0.12, delay: 0.14, vol: 0.2 }); },
     heal() { for (let i = 0; i < 4; i++) tone({ f0: 523 * Math.pow(1.25, i), dur: 0.12, delay: i * 0.06, vol: 0.18, type: 'triangle' }); },
-    chomp() { noise({ f0: 900, f1: 200, dur: 0.12, vol: 0.3 }); tone({ f0: 200, f1: 120, dur: 0.1, vol: 0.2, type: 'square' }); },
+    pickupTone() { noise({ f0: 900, f1: 200, dur: 0.12, vol: 0.3 }); tone({ f0: 200, f1: 120, dur: 0.1, vol: 0.2, type: 'square' }); },
     fire() { noise({ f0: 4000, f1: 2500, dur: 0.55, vol: 0.35, filter: 'highpass', attack: 0.02 }); tone({ f0: 2400, f1: 1800, dur: 0.5, vol: 0.05, type: 'sine' }); },
     throwSfx() { noise({ f0: 1200, f1: 3000, dur: 0.2, vol: 0.2, filter: 'bandpass' }); },
     grab() { noise({ f0: 2500, f1: 600, dur: 0.18, vol: 0.25, filter: 'bandpass', q: 2 }); tone({ f0: 400, f1: 500, dur: 0.1, vol: 0.15 }); },
@@ -332,7 +332,7 @@ WL.audio = (function () {
     village: { bpm: 126, bass: [38, 38, 0, 38, 45, 0, 38, 0, 41, 41, 0, 41, 43, 0, 45, 0], lead: [62, 0, 65, 69, 0, 67, 0, 65, 0, 62, 0, 65, 67, 0, 69, 0], kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0] },
     shrine: { bpm: 132, bass: [33, 33, 0, 33, 33, 0, 36, 0, 31, 31, 0, 31, 31, 0, 35, 36], lead: [57, 0, 0, 60, 0, 57, 0, 0, 55, 0, 0, 59, 0, 60, 0, 62], kick: [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0] },
     spa: { bpm: 120, bass: [40, 0, 0, 40, 0, 47, 0, 0, 38, 0, 0, 38, 0, 45, 0, 0], lead: [64, 67, 0, 71, 0, 0, 67, 0, 62, 66, 0, 69, 0, 0, 66, 0], kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1] },
-    freezer: { bpm: 138, bass: [31, 31, 0, 31, 0, 31, 34, 0, 30, 30, 0, 30, 0, 30, 33, 0], lead: [55, 0, 58, 0, 62, 0, 58, 55, 54, 0, 57, 0, 61, 0, 57, 54], kick: [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0] },
+    tower: { bpm: 138, bass: [31, 31, 0, 31, 0, 31, 34, 0, 30, 30, 0, 30, 0, 30, 33, 0], lead: [55, 0, 58, 0, 62, 0, 58, 55, 54, 0, 57, 0, 61, 0, 57, 54], kick: [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0] },
     boss: { bpm: 150, bass: [29, 29, 29, 0, 32, 0, 29, 0, 27, 27, 27, 0, 30, 0, 28, 0], lead: [53, 0, 56, 60, 0, 56, 53, 0, 51, 0, 54, 58, 0, 54, 51, 0], kick: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], snare: [0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1] },
     // Story bed: slower, half-time drums so VO chirps and stingers sit on top.
     story: { bpm: 92, bass: [33, 0, 0, 33, 0, 0, 40, 0, 38, 0, 0, 38, 0, 0, 36, 35], lead: [69, 0, 0, 0, 72, 0, 71, 0, 67, 0, 0, 0, 64, 0, 0, 0], kick: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0], snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0] },

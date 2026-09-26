@@ -3,7 +3,7 @@
    opening card 1, a between-stage StoryBeat and an ending beat, taken at a fixed
    time into each beat. With --video it also records a live-feel clip of the
    opening and the first StoryBeat through the CDP screencast (needs ffmpeg).
-   --all shoots every opening beat, --beats one shot per WL.STORY beat.
+   --all shoots every opening beat, --beats one shot per RWB.STORY beat.
    Usage: node tools/story-shots.cjs outDir [--video] [--all] [--beats] [--at=2.6] */
 'use strict';
 const { spawn, spawnSync } = require('child_process');
@@ -53,13 +53,13 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   await send('Emulation.setDeviceMetricsOverride', { width: 1920, height: 1080, deviceScaleFactor: 1, mobile: false });
   await send('Page.enable');
   await send('Page.navigate', { url: `http://127.0.0.1:${HTTP}/index.html` });
-  for (let i = 0; i < 200; i++) { if (await js('return !!(window.WL && WL.game && WL.game.scene instanceof WL.scenes.Title)').catch(() => false)) break; await sleep(100); }
+  for (let i = 0; i < 200; i++) { if (await js('return !!(window.RWB && RWB.game && RWB.game.scene instanceof RWB.scenes.Title)').catch(() => false)) break; await sleep(100); }
   await js('window.__errors = []; window.addEventListener("error", e => window.__errors.push(String(e.message)));');
   // Background story urn (when the build has them) finish before the timed shots.
-  await js('if (WL.assets.ready) await WL.assets.ready(["story"]);');
-  const settle = async () => { for (let i = 0; i < 100; i++) { if (await js('return WL.game.fadeDir === 0 && !WL.game.nextScene')) break; await sleep(30); } };
+  await js('if (RWB.assets.ready) await RWB.assets.ready(["story"]);');
+  const settle = async () => { for (let i = 0; i < 100; i++) { if (await js('return RWB.game.fadeDir === 0 && !RWB.game.nextScene')) break; await sleep(30); } };
   /* Wall-clock time inside the current scene, so both old and new scene classes work. */
-  const sceneTime = () => js('return (performance.now() - WL.game.sceneAt) / 1000');
+  const sceneTime = () => js('return (performance.now() - RWB.game.sceneAt) / 1000');
   const waitScene = async secs => { while (await sceneTime() < secs) await sleep(30); };
   const waitUntil = async (cond, ms) => { for (const end = Date.now() + ms; Date.now() < end && !(await js('return !!(' + cond + ')')); ) await sleep(30); };
   /* Resample the screencast (variable rate) onto a constant 30 fps clip and start a new one. */
@@ -81,12 +81,12 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   };
 
   if (BEATS) {
-    // One shot per beat in WL.STORY, each in its own reel.
-    const keys = await js('return Object.keys(WL.STORY)');
+    // One shot per beat in RWB.STORY, each in its own reel.
+    const keys = await js('return Object.keys(RWB.STORY)');
     for (const k of keys) {
-      await js(`WL.game.setScene(new WL.scenes.StoryBeat(WL.game, { beats: [WL.STORY.${k}] }))`);
+      await js(`RWB.game.setScene(new RWB.scenes.StoryBeat(RWB.game, { beats: [RWB.STORY.${k}] }))`);
       await sleep(250); await settle();
-      while (await js('return WL.game.scene.waiting || WL.game.scene.t < ' + AT)) await sleep(30);
+      while (await js('return RWB.game.scene.waiting || RWB.game.scene.t < ' + AT)) await sleep(30);
       await shot('beat-' + k);
     }
     ws.close();
@@ -96,36 +96,36 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   // Headless Chrome only paints while the screencast runs, so it stays on for the whole run
   // and each clip starts from a cleared frame buffer.
   if (VIDEO) await send('Page.startScreencast', { format: 'jpeg', quality: 88, maxWidth: 1920, maxHeight: 1080, everyNthFrame: 1 });
-  await js('WL.game.startNewGame(true)');
+  await js('RWB.game.startNewGame(true)');
   await settle();
   frames.length = 0;
   await waitScene(AT);
   await shot('opening-1');
   if (VIDEO) {
     // Let beat 1 play out and carry into beat 2 through the reel's own transition.
-    await waitUntil('WL.game.scene.i >= 1 && WL.game.scene.t > 4', 20000);
+    await waitUntil('RWB.game.scene.i >= 1 && RWB.game.scene.t > 4', 20000);
     encode('story-live-feel-opening');
   }
   if (ALL) {
     // Every remaining beat of the opening reel, at the same time into the beat.
-    for (let k = 2; await js('return WL.game.scene.i + 1 < WL.game.scene.beats.length'); k++) {
-      await js('const s = WL.game.scene; s.next(); s.trans = null;');
-      while (await js('return WL.game.scene.waiting || WL.game.scene.t < ' + AT)) await sleep(30);
+    for (let k = 2; await js('return RWB.game.scene.i + 1 < RWB.game.scene.beats.length'); k++) {
+      await js('const s = RWB.game.scene; s.next(); s.trans = null;');
+      while (await js('return RWB.game.scene.waiting || RWB.game.scene.t < ' + AT)) await sleep(30);
       await shot('opening-' + k);
     }
   }
-  await js('WL.game.levelComplete(0, { score: 48250, lives: 3, saidin: 40 })');
+  await js('RWB.game.levelComplete(0, { score: 48250, lives: 3, saidin: 40 })');
   await sleep(250); await settle();
   frames.length = 0;
   await waitScene(AT);
   await shot('storybeat-village-outro');
   if (VIDEO) {
     // Stage clear: the repair log carries into the next stage's intro.
-    await waitUntil('WL.game.scene.i >= 1 && WL.game.scene.t > 4', 20000);
+    await waitUntil('RWB.game.scene.i >= 1 && RWB.game.scene.t > 4', 20000);
     await send('Page.stopScreencast');
     encode('story-live-feel-storybeat');
   }
-  await js('WL.game.showEnding(98765)');
+  await js('RWB.game.showEnding(98765)');
   await sleep(250); await settle();
   await waitScene(AT);
   await shot('ending-1');

@@ -1,21 +1,21 @@
-/* shadow riley: battle Brawl — shared helpers */
+/* Riley: battle Brawl — shared helpers */
 'use strict';
 
-const WL = window.WL = window.WL || {};
+const RWB = window.RWB = window.RWB || {};
 
-WL.W = 640;
-WL.H = 360;
-WL.FLOOR_TOP = 205;     // highest walkable foot position (far)
-WL.FLOOR_BOTTOM = 345;  // lowest walkable foot position (near)
-WL.FONT = "'Press Start 2P', 'Courier New', monospace";
+RWB.W = 640;
+RWB.H = 360;
+RWB.FLOOR_TOP = 205;     // highest walkable foot position (far)
+RWB.FLOOR_BOTTOM = 345;  // lowest walkable foot position (near)
+RWB.FONT = "'Press Start 2P', 'Courier New', monospace";
 // Story dialogue: a heavy sans that stays readable in long lines at 1080p.
-WL.FONT_UI = "'Trebuchet MS', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif";
+RWB.FONT_UI = "'Trebuchet MS', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif";
 
 /* Display presentation. main.js fills renderScale / pc / dpr from the window.
    mode: 'auto' (device pixels on every screen, up to 4K),
    'sharp' (at least 2x device density, up to 4K), 'classic' (640x360, nearest-neighbor).
    renderScale is the world-to-backing-store scale, including devicePixelRatio. */
-WL.display = {
+RWB.display = {
   mode: 'auto',
   pc: false,
   renderScale: 1,
@@ -27,7 +27,7 @@ WL.display = {
 /* World light for the current stage. side: +1 = key light from screen right.
    Sprites flip with ctx.scale(-1, 1), so they use side * facing locally.
    cast: opacity of the hard sun shadow (0 = overhead / soft only). */
-WL.light = {
+RWB.light = {
   side: 1, cast: 0.3, gloss: 0, key: 'rgba(255,244,210,0.55)', rim: 'rgba(255,250,225,0.9)', shade: 'rgba(40,18,60,0.26)',
   set(o) { Object.assign(this, { side: 1, cast: 0.3, gloss: 0, key: 'rgba(255,244,210,0.55)', rim: 'rgba(255,250,225,0.9)', shade: 'rgba(40,18,60,0.26)' }, o || {}); }
 };
@@ -36,10 +36,10 @@ WL.light = {
    painted once per render scale and blitted, instead of re-running hundreds
    of path ops per frame on a 4K backing store. maxScale caps resolution:
    distant layers are cached softer on purpose, which reads as depth of field. */
-WL.gfx = {
+RWB.gfx = {
   _c: {},
   scale(maxScale) {
-    const rs = WL.display.mode === 'classic' ? 1 : (WL.display.renderScale || 1);
+    const rs = RWB.display.mode === 'classic' ? 1 : (RWB.display.renderScale || 1);
     return Math.max(1, Math.min(rs, maxScale || rs));
   },
   /** blur (world px) softens distant layers once at paint time, for depth of field. */
@@ -57,7 +57,7 @@ WL.gfx = {
       g.setTransform(s, 0, 0, s, 0, 0);
       g.imageSmoothingEnabled = true;
       paint(g, w, h);
-      if (blur && WL.display.mode !== 'classic' && 'filter' in g) {
+      if (blur && RWB.display.mode !== 'classic' && 'filter' in g) {
         const out = make();
         const o = out.getContext('2d');
         o.filter = `blur(${(blur * s).toFixed(2)}px)`;
@@ -69,7 +69,7 @@ WL.gfx = {
     return e;
   },
   snap(v) {
-    const rs = WL.display.mode === 'classic' ? 1 : (WL.display.renderScale || 1);
+    const rs = RWB.display.mode === 'classic' ? 1 : (RWB.display.renderScale || 1);
     return Math.round(v * rs) / rs;
   },
   /* A layer cached at the live render scale is copied 1:1 onto device
@@ -77,11 +77,11 @@ WL.gfx = {
      are stretched with bilinear ('low') filtering, which is far cheaper than
      the 'high' quality the main context uses for sprites. */
   _begin(ctx, e) {
-    const rs = WL.display.mode === 'classic' ? 1 : (WL.display.renderScale || 1);
+    const rs = RWB.display.mode === 'classic' ? 1 : (RWB.display.renderScale || 1);
     const exact = Math.abs(e.s - rs) < 1e-6;
     this._sm = ctx.imageSmoothingEnabled; this._q = ctx.imageSmoothingQuality;
     if (exact) ctx.imageSmoothingEnabled = false;
-    else { ctx.imageSmoothingEnabled = WL.display.mode !== 'classic'; ctx.imageSmoothingQuality = 'low'; }
+    else { ctx.imageSmoothingEnabled = RWB.display.mode !== 'classic'; ctx.imageSmoothingQuality = 'low'; }
     return exact ? { w: e.c.width / rs, h: e.c.height / rs } : { w: e.w + 1 / rs, h: e.h };
   },
   _end(ctx) { ctx.imageSmoothingEnabled = this._sm; ctx.imageSmoothingQuality = this._q; },
@@ -95,12 +95,12 @@ WL.gfx = {
     let x = -(((scroll % e.w) + e.w) % e.w);
     const d = this._begin(ctx, e);
     const sy = this.snap(y);
-    for (; x < WL.W; x += e.w) ctx.drawImage(e.c, this.snap(x), sy, d.w, d.h);
+    for (; x < RWB.W; x += e.w) ctx.drawImage(e.c, this.snap(x), sy, d.w, d.h);
     this._end(ctx);
   }
 };
 
-const U = WL.util = {
+const U = RWB.util = {
   clamp(v, a, b) { return v < a ? a : v > b ? b : v; },
   lerp(a, b, t) { return a + (b - a) * t; },
   rand(a, b) { return a + Math.random() * (b - a); },
@@ -133,11 +133,11 @@ const U = WL.util = {
 };
 
 /* ---- canvas text helpers ---- */
-WL.text = {
+RWB.text = {
   draw(ctx, str, x, y, opts = {}) {
     const size = opts.size || 8;
     ctx.save();
-    ctx.font = WL.text.font(size, opts);
+    ctx.font = RWB.text.font(size, opts);
     ctx.textAlign = opts.align || 'left';
     ctx.textBaseline = opts.baseline || 'top';
     if (opts.shadow !== false) {
@@ -169,21 +169,21 @@ WL.text = {
     const cache = this._cache || (this._cache = new Map());
     if (cache.size > 160) cache.clear();
     let e = cache.get(key);
-    const s = WL.gfx.scale();
+    const s = RWB.gfx.scale();
     if (!e || e.s !== s) {
       const pad = Math.ceil((opts.stroke ? (opts.strokeWidth || Math.max(2, size / 4)) : 0) / 2 + Math.max(1, size / 8) + 1);
       const w = Math.ceil(this.width(ctx, str, size)) + pad * 2, h = Math.ceil(size * 1.25) + pad * 2;
-      e = WL.gfx.layer('txt' + key, w, h, undefined, g => this.draw(g, str, pad, pad, Object.assign({}, opts, { align: 'left' })));
+      e = RWB.gfx.layer('txt' + key, w, h, undefined, g => this.draw(g, str, pad, pad, Object.assign({}, opts, { align: 'left' })));
       e = { c: e.c, s: e.s, w: e.w, h: e.h, pad };
-      delete WL.gfx._c['txt' + key];
+      delete RWB.gfx._c['txt' + key];
       cache.set(key, e);
     }
     const tw = e.w - e.pad * 2;
     const ax = opts.align === 'center' ? x - tw / 2 : opts.align === 'right' ? x - tw : x;
-    WL.gfx.blit(ctx, e, ax - e.pad, y - e.pad);
+    RWB.gfx.blit(ctx, e, ax - e.pad, y - e.pad);
   },
   /** opts.ui = the dialogue face; opts.weight = CSS weight (ui only). */
-  font(size, opts) { return opts && opts.ui ? `${opts.weight || 700} ${size}px ${WL.FONT_UI}` : `${size}px ${WL.FONT}`; },
+  font(size, opts) { return opts && opts.ui ? `${opts.weight || 700} ${size}px ${RWB.FONT_UI}` : `${size}px ${RWB.FONT}`; },
   width(ctx, str, size, opts) {
     ctx.save();
     ctx.font = this.font(size, opts);
@@ -212,7 +212,7 @@ WL.text = {
 };
 
 /* ---- drawing helpers ---- */
-WL.draw = {
+RWB.draw = {
   rrect(ctx, x, y, w, h, r) {
     r = Math.min(r, w / 2, h / 2);
     ctx.beginPath();
@@ -224,7 +224,7 @@ WL.draw = {
     ctx.closePath();
   },
   fillRRect(ctx, x, y, w, h, r, color, stroke) {
-    WL.draw.rrect(ctx, x, y, w, h, r);
+    RWB.draw.rrect(ctx, x, y, w, h, r);
     ctx.fillStyle = color;
     ctx.fill();
     if (stroke) { ctx.strokeStyle = stroke; ctx.stroke(); }
@@ -259,13 +259,13 @@ WL.draw = {
     const a = Math.min(0.5, 0.42 * s);
     // One cached radial sprite, stretched per entity, instead of a new
     // gradient object for every body every frame.
-    const spr = WL.draw._shadowSprite();
+    const spr = RWB.draw._shadowSprite();
     if (spr) {
       const a0 = ctx.globalAlpha;
-      const L = WL.light;
+      const L = RWB.light;
       // Hard-edged cast shadow thrown away from the sun, under the soft contact blob.
-      if (L.cast > 0 && !WL.perf.lite && !(noCast && WL.display.mode !== 'classic')) {
-        const hard = WL.draw._hardShadowSprite();
+      if (L.cast > 0 && !RWB.perf.lite && !(noCast && RWB.display.mode !== 'classic')) {
+        const hard = RWB.draw._hardShadowSprite();
         if (hard) {
           const len = (1.2 + (z || 0) / 90) * srx;
           const cx = x - L.side * len * 0.55 + (z || 0) * -L.side * 0.2;
@@ -357,10 +357,10 @@ WL.draw = {
     // Brushed-metal bezel, then a recessed glass track.
     const bez = ctx.createLinearGradient(0, y - 3, 0, y + h + 3);
     bez.addColorStop(0, '#f3f5f8'); bez.addColorStop(0.45, '#8f97a6'); bez.addColorStop(1, '#3b4150');
-    WL.draw.rrect(ctx, x - 3, y - 3, w + 6, h + 6, r + 2); ctx.fillStyle = '#0b0d16'; ctx.fill();
-    WL.draw.rrect(ctx, x - 2, y - 2, w + 4, h + 4, r + 1); ctx.fillStyle = bez; ctx.fill();
+    RWB.draw.rrect(ctx, x - 3, y - 3, w + 6, h + 6, r + 2); ctx.fillStyle = '#0b0d16'; ctx.fill();
+    RWB.draw.rrect(ctx, x - 2, y - 2, w + 4, h + 4, r + 1); ctx.fillStyle = bez; ctx.fill();
     ctx.save();
-    WL.draw.rrect(ctx, x, y, w, h, r); ctx.clip();
+    RWB.draw.rrect(ctx, x, y, w, h, r); ctx.clip();
     ctx.fillStyle = bg || '#1e080a'; ctx.fillRect(x, y, w, h);
     ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.fillRect(x, y, w, Math.max(1, h * 0.3));
     if (ghostPct > 0) {
@@ -387,7 +387,7 @@ WL.draw = {
   // [rgb, mid stop, mid alpha, edge alpha, pulse boost]
   VIGNETTE: { 1: ['30,14,6', 0.75, 0.08, 0.26, 0.2], 2: ['5,15,22', 0.7, 0.32, 0.62, 0.25], 3: ['10,35,30', 0.7, 0.22, 0.52, 0.25], 4: ['10,20,45', 0.7, 0.32, 0.65, 0.25] },
   stageLighting(ctx, stageId, pulse, t) {
-    const W = WL.W, H = WL.H;
+    const W = RWB.W, H = RWB.H;
     pulse = U.clamp(pulse || 0, 0, 1);
     const V = this.VIGNETTE[stageId];
     if (!V) return;
@@ -417,26 +417,26 @@ WL.draw = {
   },
   scanlines(ctx, alpha) {
     // CRT stripes intentionally belong to Classic, never the HD presentation.
-    if (WL.display.mode !== 'classic') return;
+    if (RWB.display.mode !== 'classic') return;
     // One path instead of a fillRect per stripe. The stripe is one device
     // pixel so a retina backing store doesn't turn the CRT mask into thick
     // bars that soften riley and the HUD.
-    const rs = Math.max(1, (WL.display && WL.display.renderScale) || 1);
+    const rs = Math.max(1, (RWB.display && RWB.display.renderScale) || 1);
     ctx.save();
     ctx.globalAlpha = alpha || 0.12;
     ctx.fillStyle = '#000';
     ctx.beginPath();
     const thick = 1 / rs;
-    for (let y = 0; y < WL.H; y += 3) ctx.rect(0, y, WL.W, thick);
+    for (let y = 0; y < RWB.H; y += 3) ctx.rect(0, y, RWB.W, thick);
     ctx.fill();
     ctx.restore();
   },
   vignette(ctx, strength) {
-    const g = ctx.createRadialGradient(WL.W / 2, WL.H / 2, WL.H * 0.45, WL.W / 2, WL.H / 2, WL.W * 0.72);
+    const g = ctx.createRadialGradient(RWB.W / 2, RWB.H / 2, RWB.H * 0.45, RWB.W / 2, RWB.H / 2, RWB.W * 0.72);
     g.addColorStop(0, 'rgba(0,0,0,0)');
     g.addColorStop(1, `rgba(0,0,0,${strength || 0.5})`);
     ctx.fillStyle = g;
-    ctx.fillRect(0, 0, WL.W, WL.H);
+    ctx.fillRect(0, 0, RWB.W, RWB.H);
   },
   // Draw an image scaled to fit inside a box, centered, preserving aspect
   fitImage(ctx, img, x, y, w, h) {

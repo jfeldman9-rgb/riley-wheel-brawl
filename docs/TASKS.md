@@ -7,7 +7,7 @@ Each task is scoped to one focused session. Do them in order; do not begin conte
 ### 1. Rename the public product and repository documentation — **Easy**
 
 - **Files to touch:** `index.html`, `README.md`, `css/style.css`, `.gitignore` only if it names old outputs.
-- **Expected behavior:** The browser title, metadata, loading/no-script copy, README title, setup instructions, controls, and project description say Riley Wheel Brawl. Document only the intended fantasy actions and five-stage story. All links and relative serving instructions continue to work beneath `/riley-wheel-brawl/`.
+- **Expected behavior:** The browser title, metadata, loading/no-script copy, README title, setup instructions, controls, and project description say Riley Wheel Brawl — Document only the intended fantasy actions and five-stage story. All links and relative serving instructions continue to work beneath `/riley-wheel-brawl/`.
 - **Acceptance check:** Serve the root with `python3 -m http.server 8000`, load `http://localhost:8000/riley-wheel-brawl/` from an appropriate parent-root server (or load the repo root directly), and confirm the tab, no-script text inspection, and README contain the new identity while the game reaches its title screen.
 
 ### 2. Perform the complete semantic and asset-name scrub — **Hard**
@@ -59,8 +59,8 @@ Each task is scoped to one focused session. Do them in order; do not begin conte
 ### 9. Implement full-meter taint pressure — **Hard**
 
 - **Files to touch:** `js/entities.js`, `js/scenes.js`, `js/util.js`, `js/audio.js`, `js/settings.js`.
-- **Expected behavior:** A full meter starts a visible grace countdown, then ramps a dark vignette and deterministic wobble and chips HP at a telegraphed cadence. Spending saidin clears it. Pause/cutscene/death/victory stop the timer. Reduced Shake lowers motion while retaining the vignette and warning; taint cannot deliver an unfair unannounced final hit.
-- **Acceptance check:** Fill saidin, wait through the grace period, and observe warning → darkening/wobble → spaced HP chips. Pause for five seconds and see no progression. Resume, spend the meter, and see the effect end immediately; repeat under Reduced Shake.
+- **Expected behavior:** A full meter starts a visible grace countdown, then ramps a dark vignette and deterministic wobble and marks HP at a telegraphed cadence. Spending saidin clears it. Pause/cutscene/death/victory stop the timer. Reduced Shake lowers motion while retaining the vignette and warning; taint cannot deliver an unfair unannounced final hit.
+- **Acceptance check:** Fill saidin, wait through the grace period, and observe warning → darkening/wobble → spaced HP marks. Pause for five seconds and see no progression. Resume, spend the meter, and see the effect end immediately; repeat under Reduced Shake.
 
 ### 10. Replace the screen-clear with lightning and balefire — **Hard**
 

@@ -1,11 +1,11 @@
-/* Game entities: Player (riley), Enemy (healthy magic), Boss (Giant ashaman Cone),
-   Pickup, Breakable, Projectile, Particle. The Play scene (WL.scenes.Play)
+/* Game entities: Player (riley), Enemy (healthy magic), Boss (five bespoke champions),
+   Pickup, Breakable, Projectile, Particle. The Play scene (RWB.scenes.Play)
    owns them and is passed in as `g` for spawning FX/sounds/score. */
 'use strict';
 
 (function () {
-  const U = WL.util;
-  const S = WL.sprites;
+  const U = RWB.util;
+  const S = RWB.sprites;
   const GRAV = 900;
 
   /* ------------------------------------------------------------------ */
@@ -15,7 +15,7 @@
     jab: { pose: 'jab', dur: 0.18, hitAt: 0.045, reach: 44, dmg: 5, kb: 78, lunge: 120, next: 'smash', sfx: 'hit', stop: 'light' },
     smash: { pose: 'smash', windPose: 'smashWind', windUntil: 0.08, dur: 0.26, hitAt: 0.09, reach: 48, dmg: 7, kb: 110, lunge: 90, next: 'sweep', sfx: 'clank', stop: 'light' },
     sweep: { pose: 'sweep', windPose: 'sweepWind', windUntil: 0.1, dur: 0.36, hitAt: 0.12, reach: 58, back: 36, dmg: 11, kb: 190, lunge: 60, knockdown: true, next: null, sfx: 'hitHeavy', stop: 'heavy' },
-    // staff Pop: the timed third hit. Pause a beat after the staff instead of
+    // rising kick: the timed third hit. Pause a beat after the kick instead of
     // mashing and riley uppercuts; the enemy floats for a short juggle.
     pop: { pose: 'uppercut', windPose: 'popWind', windUntil: 0.07, dur: 0.3, hitAt: 0.1, reach: 48, dmg: 8, kb: 30, lunge: 80, launch: true, next: 'jab', slash: 'pop', sfx: 'pop', stop: 'heavy' }
   };
@@ -41,9 +41,9 @@
     // Enemies getting hit.
     enemyStreakLimit: 5,  // 5 light hits without a knockdown and the enemy tumbles
     enemyGetupIframes: 0.35,
-    juggleHits: 3,        // follow-ups a staff Pop allows before the enemy drops
+    juggleHits: 3,        // follow-ups a rising kick allows before the enemy drops
     juggleDamage: 0.8,
-    popDelay: 0.07,       // wait at least this long after the staff (mash = sweep, rhythm = pop)
+    popDelay: 0.07,       // wait at least this long after the kick (mash = sweep, rhythm = pop)
     // Boss.
     slamDepth: 34, slamReach: 130, flopRadius: 78,
     rainRx: 26, rainRy: 13
@@ -75,7 +75,7 @@
       this.whiffed = false;
       this.juggleCount = 0;
     }
-    /** True while the staff Pop timing window is open (for the HUD glint). */
+    /** True while the rising kick timing window is open (for the HUD glint). */
     get popReady() {
       return (this.state === 'idle' || this.state === 'walk') && this.nextCombo === 'sweep' && this.comboTimer > 0 && (0.42 - this.comboTimer) >= FAIR.popDelay;
     }
@@ -108,7 +108,7 @@
         if (this.z <= 0) {
           this.z = 0; this.vz = 0;
           if (this.state === 'jump' || this.state === 'jumpkick') { this.setState('idle'); this.g.fx.dust(this.x, this.y); }
-          else if (this.state === 'down') { this.g.fx.dust(this.x, this.y, 10); WL.audio.sfx.thud(); this.vx = 0; }
+          else if (this.state === 'down') { this.g.fx.dust(this.x, this.y, 10); RWB.audio.sfx.thud(); this.vx = 0; }
           else if (this.state === 'dead') { this.vx = 0; }
         }
       }
@@ -123,7 +123,7 @@
           if ((pressed.saidin || this.bufferSurge) && this.saidin >= this.saidinMax) { this.bufferSurge = false; this.startSurge(); break; }
           if (pressed.attack || this.bufferAttack) {
             // Buffered (mashed) presses keep the classic sweep; a deliberate
-            // beat after the staff gets the launcher instead.
+            // beat after the kick gets the launcher instead.
             const timed = !this.bufferAttack && this.popReady;
             this.bufferAttack = false;
             this.startAttack(timed ? 'pop' : (this.comboTimer > 0 ? this.nextCombo : 'jab'));
@@ -134,8 +134,8 @@
             const target = this.findGrabTarget(22);
             if (target) { this.startGrab(target); break; }
           }
-          if (pressed.jump) { this.vz = 330; this.z = 0.01; this.setState('jump'); WL.audio.sfx.jump(); break; }
-          if (pressed.special && this.specialCd <= 0) { this.startSpray(); break; }
+          if (pressed.jump) { this.vz = 330; this.z = 0.01; this.setState('jump'); RWB.audio.sfx.jump(); break; }
+          if (pressed.special && this.specialCd <= 0) { this.startFireball(); break; }
           if (pressed.tool && this.loialReady) { this.loialReady = false; this.g.callLoial(); break; }
           break;
         }
@@ -168,10 +168,10 @@
         case 'jump': case 'jumpkick': {
           this.vx = ax.x !== 0 ? ax.x * this.speed * 0.9 : this.vx * 0.99;
           this.vy = ax.y * this.speed * 0.5;
-          if (this.state === 'jump' && pressed.attack) { this.setState('jumpkick'); this.hitDone = false; WL.audio.sfx.swing(); }
+          if (this.state === 'jump' && pressed.attack) { this.setState('jumpkick'); this.hitDone = false; RWB.audio.sfx.swing(); }
           if (this.state === 'jumpkick' && !this.hitDone) {
             const hit = this.hitEnemies({ reach: 46, back: 0, dmg: 9, kb: 120, knockdown: true, zTol: 60 });
-            if (hit) { this.hitDone = true; WL.audio.sfx.hit(true); if (this.g.impact) this.g.impact(this.facing, 'heavy'); }
+            if (hit) { this.hitDone = true; RWB.audio.sfx.hit(true); if (this.g.impact) this.g.impact(this.facing, 'heavy'); }
           }
           break;
         }
@@ -190,7 +190,7 @@
           if (!this.hitDone && this.stateT >= 0.1) {
             this.hitDone = true; this.hasRelic = false;
             this.g.projectiles.push(new Projectile(this.g, { kind: 'relic', owner: 'player', x: this.x + this.facing * 20, y: this.y, z: 44, vx: this.facing * 430, vz: 40, dmg: 15, knockdown: true, pierce: 3, life: 0.9, dropAsPickup: true }));
-            WL.audio.sfx.throwSfx();
+            RWB.audio.sfx.throwSfx();
           }
           if (this.stateT >= 0.32) this.setState('idle');
           break;
@@ -208,7 +208,7 @@
             else {
               this.grabHits++; this.setState('grabHit');
               e.hurt(6, this.x, { noInterrupt: true, kb: 0 }); this.registerHits(1);
-              this.g.fx.ashaman(e.x, e.y - 30); WL.audio.sfx.hit(false);
+              this.g.fx.turnedAshaman(e.x, e.y - 30); RWB.audio.sfx.hit(false);
               if (this.g.impact) this.g.impact(this.facing, 'light'); else { this.g.hitstop = 0.05; this.g.shake(2, 0.08); }
             }
           } else if (pressed.jump || pressed.tool) this.throwGrabbed();
@@ -249,7 +249,7 @@
 
       // integrate
       this.x += this.vx * dt; this.y += this.vy * dt;
-      this.y = U.clamp(this.y, WL.FLOOR_TOP, WL.FLOOR_BOTTOM);
+      this.y = U.clamp(this.y, RWB.FLOOR_TOP, RWB.FLOOR_BOTTOM);
       const b = this.g.playerBounds();
       this.x = U.clamp(this.x, b.min, b.max);
       // pickups
@@ -266,7 +266,7 @@
       this.attack = a; this.hitDone = false; this.comboTimer = 0; this.bufferAttack = false;
       this.hitSet.clear(); this.whiffed = false;
       this.setState('attack');
-      WL.audio.sfx.swing();
+      RWB.audio.sfx.swing();
     }
     doAttackHit(a, first) {
       const n = this.hitEnemies({ reach: a.reach, back: a.back || 0, dmg: a.dmg, kb: a.kb, knockdown: a.knockdown, launch: a.launch, zTol: 40, exclude: this.hitSet });
@@ -275,14 +275,14 @@
         for (const o of this.g.objects) {
           if (o.dead) continue;
           const dx = (o.x - this.x) * this.facing;
-          if (dx > -(a.back || 0) - 10 && dx < a.reach + 10 && Math.abs(o.y - this.y) < 34) { o.hit(this.g, 1); this.g.fx.ashaman(o.x, o.y - 20); }
+          if (dx > -(a.back || 0) - 10 && dx < a.reach + 10 && Math.abs(o.y - this.y) < 34) { o.hit(this.g, 1); this.g.fx.turnedAshaman(o.x, o.y - 20); }
         }
       }
       if (n) {
         const firstHit = this.hitSet.size === n;
         if (firstHit) {
-          if (a.sfx === 'pop') { WL.audio.sfx.pop(); WL.audio.sfx.hit(true); }
-          else if (a.sfx === 'hitHeavy') WL.audio.sfx.hit(true); else if (a.sfx === 'clank') WL.audio.sfx.clank(); else WL.audio.sfx.hit(false);
+          if (a.sfx === 'pop') { RWB.audio.sfx.pop(); RWB.audio.sfx.hit(true); }
+          else if (a.sfx === 'hitHeavy') RWB.audio.sfx.hit(true); else if (a.sfx === 'clank') RWB.audio.sfx.clank(); else RWB.audio.sfx.hit(false);
           if (this.g.impact) this.g.impact(this.facing, a.stop || 'light');
           else { this.g.hitstop = a.knockdown ? 0.09 : 0.05; this.g.shake(a.knockdown ? 5 : 2, 0.1); }
         }
@@ -306,8 +306,8 @@
           if (juggled || e.state === 'juggle') this.juggleCount++;
           const hitX = e.x - this.facing * 6;
           const hitY = e.y - e.height * 0.55 - e.z;
-          this.g.fx.ashaman(hitX, hitY, box.knockdown);
-          this.g.fx.foodDebris(hitX, hitY, e.type, e.y, box.knockdown);
+          this.g.fx.turnedAshaman(hitX, hitY, box.knockdown);
+          this.g.fx.battleDebris(hitX, hitY, e.type, e.y, box.knockdown);
           this.g.fx.impactRing(hitX, hitY, box.knockdown);
           if (this.g.triggerHitFlash) this.g.triggerHitFlash(box.knockdown ? 0.05 : 0.03);
           n++;
@@ -334,7 +334,7 @@
       this.grab = e; this.grabHits = 0; this.grabT = 0;
       e.getGrabbed(this);
       this.setState('grab');
-      WL.audio.sfx.tape();
+      RWB.audio.sfx.tape();
       if (this.g.bark) this.g.bark('grab');
     }
     releaseGrab(broken) {
@@ -346,38 +346,38 @@
       const e = this.grab; this.grab = null; this.grabCd = 0.5;
       if (e) { e.thrown(this.facing, this); this.registerHits(1); }
       this.setState('throw'); this.hitDone = true;
-      WL.audio.sfx.throwSfx();
+      RWB.audio.sfx.throwSfx();
       if (this.g.impact) this.g.impact(this.facing, 'light'); else this.g.shake(2, 0.1);
       if (this.g.bark) this.g.bark('throw');
     }
-    startSpray() { this.setState('fire'); this.hitDone = false; WL.audio.sfx.fire(); if (this.g.bark) this.g.bark('fire'); }
+    startFireball() { this.setState('fire'); this.hitDone = false; RWB.audio.sfx.fire(); if (this.g.bark) this.g.bark('fire'); }
     startThrow() { this.setState('throw'); this.hitDone = false; if (this.g.bark) this.g.bark('box'); }
     startSurge() {
       if (this.grab) this.releaseGrab(false);
       this.setState('surgeCharge'); this.invuln = 2;
-      WL.audio.sfx.blip();
+      RWB.audio.sfx.blip();
     }
     collect(p) {
       p.dead = true;
       switch (p.kind) {
-        case 'saidinSpark': this.addSurge(35, 'NAVY saidinSpark +35'); break;
+        case 'saidinSpark': this.addSurge(35, 'SAIDIN SPARK +35'); break;
         case 'saidinSurge': this.addSurge(50, 'THE saidinSurge +50'); break;
-        case 'power': this.addSurge(25, 'LAST NIGHT +25'); break;
-        case 'angreal': this.angrealT = 12; this.g.fx.text(this.x, this.y - 90, 'ANGREAL: TRIPLE FIRE', '#ffcf68'); WL.audio.sfx.pickup(); break;
+        case 'power': this.addSurge(25, 'SAIDIN +25'); break;
+        case 'angreal': this.angrealT = 12; this.g.fx.text(this.x, this.y - 90, 'ANGREAL: TRIPLE FIRE', '#ffcf68'); RWB.audio.sfx.pickup(); break;
         case 'heal': this.heal(30, 'Rise, Riley, Rise!'); break;
-        case 'trolloc': this.heal(60, 'trolloc. FINALLY. +60'); break;
-        case 'mark': this.addScore(500); this.g.fx.text(this.x, this.y - 90, 'CHIPS +500', '#ffe14a'); WL.audio.sfx.pickup(); break;
-        case 'relic': this.hasRelic = true; this.g.fx.text(this.x, this.y - 90, 'BOX RECOVERED', '#f66'); WL.audio.sfx.pickup(); break;
+        case 'trolloc': this.heal(60, 'MOIRAINE HEALS +60'); break;
+        case 'mark': this.addScore(500); this.g.fx.text(this.x, this.y - 90, 'SIGIL +500', '#ffe14a'); RWB.audio.sfx.pickup(); break;
+        case 'relic': this.hasRelic = true; this.g.fx.text(this.x, this.y - 90, 'RELIC RECOVERED', '#f66'); RWB.audio.sfx.pickup(); break;
       }
     }
     addSurge(n, label) {
       const was = this.saidin;
       this.saidin = Math.min(this.saidinMax, this.saidin + n);
       this.g.fx.text(this.x, this.y - 90, label, '#9f3');
-      WL.audio.sfx.chomp();
-      if (this.saidin >= this.saidinMax && was < this.saidinMax) { this.g.fx.text(this.x, this.y - 106, 'SAIDIN IS FULL!', '#b6ff4a', 2.2); WL.audio.sfx.oneUp(); }
+      RWB.audio.sfx.pickupTone();
+      if (this.saidin >= this.saidinMax && was < this.saidinMax) { this.g.fx.text(this.x, this.y - 106, 'SAIDIN IS FULL!', '#b6ff4a', 2.2); RWB.audio.sfx.oneUp(); }
     }
-    heal(n, label) { this.hp = Math.min(this.maxHp, this.hp + n); if (this.hp > 55) this.lowBarked = false; this.g.fx.text(this.x, this.y - 90, label, '#6f6'); WL.audio.sfx.heal(); }
+    heal(n, label) { this.hp = Math.min(this.maxHp, this.hp + n); if (this.hp > 55) this.lowBarked = false; this.g.fx.text(this.x, this.y - 90, label, '#6f6'); RWB.audio.sfx.heal(); }
     addScore(n) { this.score += n; }
 
     hurt(dmg, fromX, knockdown) {
@@ -385,12 +385,12 @@
       if (this.g.cheatInvuln) return false;
       if (this.grab) this.releaseGrab(false);
       this.hp -= dmg; this.flash = 0.12;
-      if (WL.input.rumble) WL.input.rumble(knockdown ? 120 : 60, knockdown ? 0.7 : 0.35, 0.25);
+      if (RWB.input.rumble) RWB.input.rumble(knockdown ? 120 : 60, knockdown ? 0.7 : 0.35, 0.25);
       const dir = this.x < fromX ? -1 : 1; // pushed away from attacker
       this.comboCount = 0; this.juggleCount = 0;
       if (this.hp <= 0) {
         this.hp = 0; this.setState('dead'); this.vx = dir * 120; this.vz = 200; this.z = 0.01;
-        WL.audio.sfx.hurt(); WL.audio.sfx.thud();
+        RWB.audio.sfx.hurt(); RWB.audio.sfx.thud();
         if (this.g.impact) this.g.impact(dir, 'heavy'); else this.g.shake(6, 0.3);
         return true;
       }
@@ -402,8 +402,8 @@
         // iframes: a way out of a crowd instead of a stun-lock.
         if (this.hitStreak >= FAIR.streakLimit) { knockdown = true; this.hitStreak = 0; this.hitStreakT = 0; }
       }
-      if (knockdown) { this.setState('down'); this.vx = dir * 160; this.vz = 210; this.z = 0.01; WL.audio.sfx.hurt(); if (this.g.impact) this.g.impact(dir, 'heavy'); else this.g.shake(4, 0.2); }
-      else { this.setState('hurt'); this.vx = dir * 110; this.invuln = FAIR.lightIframes; WL.audio.sfx.hurt(); if (this.g.impact) this.g.impact(dir, 'light'); else this.g.shake(2, 0.1); }
+      if (knockdown) { this.setState('down'); this.vx = dir * 160; this.vz = 210; this.z = 0.01; RWB.audio.sfx.hurt(); if (this.g.impact) this.g.impact(dir, 'heavy'); else this.g.shake(4, 0.2); }
+      else { this.setState('hurt'); this.vx = dir * 110; this.invuln = FAIR.lightIframes; RWB.audio.sfx.hurt(); if (this.g.impact) this.g.impact(dir, 'light'); else this.g.shake(2, 0.1); }
       return true;
     }
     /** Enemies hold their attacks while riley is stunned, down, or just back up. */
@@ -444,7 +444,7 @@
     draw(ctx, camX) {
       const sx = Math.round(this.x - camX), sy = Math.round(this.y);
       if (this.state === 'gone') return;
-      WL.draw.shadow(ctx, sx, sy, 20, 6, this.z, WL.art.has('riley'));
+      RWB.draw.shadow(ctx, sx, sy, 20, 6, this.z, RWB.art.has('riley'));
       const blink = this.invuln > 0 && !['down', 'dead', 'saidin', 'surgeCharge'].includes(this.state) && Math.floor(this.t * 20) % 2 === 0;
       S.drawRiley(ctx, sx, sy - this.z, { pose: this.pose(), t: this.t, facing: this.facing, flash: this.flash > 0, alpha: blink ? 0.45 : 1, floorY: sy });
       if (this.state === 'attack' && this.attack) {
@@ -452,7 +452,7 @@
         const u = (this.stateT - (a.windUntil || 0)) / Math.max(0.05, a.dur - (a.windUntil || 0));
         if (u > 0 && u < 1) S.drawSlash(ctx, sx, sy - 48 - this.z, this.facing, a.slash || a.pose, u);
       }
-      // staff Pop window: a rising chevron over the staff says "now".
+      // rising kick window: a rising chevron over the kick says "now".
       if (this.popReady) {
         const k = U.clamp((0.42 - this.comboTimer - FAIR.popDelay) / 0.12, 0, 1);
         ctx.save();
@@ -467,7 +467,7 @@
       if (this.state === 'jumpkick') {
         S.drawSlash(ctx, sx + this.facing * 16, sy - 30 - this.z, this.facing, 'jumpkick', 0.5);
       }
-      if (this.state === 'fire' && this.stateT > 0.08) S.drawSprayCone(ctx, sx + this.facing * 30, sy - 56, this.facing, this.t, 100);
+      if (this.state === 'fire' && this.stateT > 0.08) S.drawFireBurst(ctx, sx + this.facing * 30, sy - 56, this.facing, this.t, 100);
       if (this.state === 'surgeCharge') {
         // rumble lines
         ctx.save(); ctx.strokeStyle = '#9f3'; ctx.lineWidth = 2;
@@ -484,12 +484,12 @@
     // hurtW: half width riley's swings test against, matched to each sprite's body.
     // agile: may side-step out of a swing it sees coming (never mid-combo).
     trolloc: { hp: 26, speed: 58, dmg: 7, reach: 36, score: 100, height: 66, windup: 0.42, attackDur: 0.28, ranged: false, hurtW: 14, plate: '#3f8f28', name: 'trolloc GOON' },
-    trollocHeavy: { hp: 12, speed: 95, dmg: 5, reach: 26, score: 50, height: 40, windup: 0.32, attackDur: 0.22, roll: true, hurtW: 11, agile: true, plate: '#e2d24a', name: 'BRUSSELS trollocHeavy' },
-    darkfriend: { hp: 22, speed: 62, dmg: 8, reach: 56, score: 120, height: 84, windup: 0.48, attackDur: 0.3, hurtW: 11, agile: true, plate: '#e7f6b0', name: 'darkfriend STALKER' },
-    fade: { hp: 24, speed: 125, dmg: 8, reach: 34, score: 150, height: 62, windup: 0.32, attackDur: 0.24, dash: true, ranged: 'shuriken', hurtW: 12, agile: true, plate: '#f08a1e', name: 'fade NINJA' },
-    cultist: { hp: 48, speed: 46, dmg: 12, reach: 40, score: 200, height: 70, windup: 0.62, attackDur: 0.32, knockdown: true, armor: true, hurtW: 15, plate: '#2a4ad0', name: 'cultist THUG' },
-    stoneGuard: { hp: 75, speed: 52, dmg: 14, reach: 44, score: 300, height: 84, windup: 0.58, attackDur: 0.32, knockdown: true, armor: true, charge: true, hurtW: 17, plate: '#143528', name: 'stoneGuard BRUISER' },
-    ashaman: { hp: 32, speed: 72, dmg: 6, reach: 32, score: 400, height: 60, windup: 0.38, attackDur: 0.28, ranged: 'sprinkle', keepAway: true, hurtW: 13, plate: '#f7a7c7', name: 'ashaman' }
+    trollocCaptain: { hp: 52, speed: 48, dmg: 11, reach: 26, score: 50, height: 40, windup: 0.32, attackDur: 0.22, roll: true, hurtW: 11, agile: true, plate: '#e2d24a', name: 'TROLLOC CAPTAIN' },
+    Darkfriend: { hp: 22, speed: 62, dmg: 8, reach: 56, score: 120, height: 84, windup: 0.48, attackDur: 0.3, hurtW: 11, agile: true, plate: '#e7f6b0', name: 'Darkfriend STALKER' },
+    assassin: { hp: 24, speed: 125, dmg: 8, reach: 34, score: 150, height: 62, windup: 0.32, attackDur: 0.24, dash: true, ranged: 'shuriken', hurtW: 12, agile: true, plate: '#f08a1e', name: 'CAEMLYN ASSASSIN' },
+    mashadarCultist: { hp: 48, speed: 46, dmg: 12, reach: 40, score: 200, height: 70, windup: 0.62, attackDur: 0.32, knockdown: true, armor: true, hurtW: 15, plate: '#2a4ad0', name: 'MASHADAR-TOUCHED' },
+    stoneDefender: { hp: 75, speed: 52, dmg: 14, reach: 44, score: 300, height: 84, windup: 0.58, attackDur: 0.32, knockdown: true, armor: true, charge: true, hurtW: 17, plate: '#143528', name: 'STONE DEFENDER' },
+    turnedAshaman: { hp: 32, speed: 72, dmg: 6, reach: 32, score: 400, height: 60, windup: 0.38, attackDur: 0.28, ranged: 'shadowBolt', keepAway: true, hurtW: 13, plate: '#f7a7c7', name: 'turnedAshaman' }
   };
   const ATTACKING = ['windup', 'prime', 'attack', 'dash', 'charge', 'roll'];
 
@@ -548,8 +548,8 @@
         if (this.z <= 0) {
           this.z = 0; this.vz = 0;
           if (this.state === 'thrown') { this.landThrown(); }
-          else if (this.state === 'down') { this.vx = 0; this.g.fx.dust(this.x, this.y, 8); WL.audio.sfx.thud(); }
-          else if (this.state === 'juggle') { this.juggleLeft = 0; this.setState('down'); this.stateT = 0.4; this.vx = 0; this.g.fx.dust(this.x, this.y, 10); WL.audio.sfx.thud(); }
+          else if (this.state === 'down') { this.vx = 0; this.g.fx.dust(this.x, this.y, 8); RWB.audio.sfx.thud(); }
+          else if (this.state === 'juggle') { this.juggleLeft = 0; this.setState('down'); this.stateT = 0.4; this.vx = 0; this.g.fx.dust(this.x, this.y, 10); RWB.audio.sfx.thud(); }
         }
       }
 
@@ -567,7 +567,7 @@
           if (this.stateT >= (this.primeDur || 0.28)) {
             this.setState(this.pending || 'approach');
             this.hitDone = false;
-            if (this.pending === 'dash' || this.pending === 'charge') WL.audio.sfx.swing();
+            if (this.pending === 'dash' || this.pending === 'charge') RWB.audio.sfx.swing();
           }
           break;
         case 'attack': {
@@ -577,7 +577,7 @@
             const dx = (p.x - this.x) * this.facing, dy = Math.abs(p.y - this.y);
             const box = this.meleeBox();
             if (dx > -box.back && dx < box.front && dy < box.depth && p.z < 40) {
-              if (p.hurt(this.def.dmg, this.x, !!this.def.knockdown)) this.g.fx.ashaman(p.x, p.y - 50, !!this.def.knockdown);
+              if (p.hurt(this.def.dmg, this.x, !!this.def.knockdown)) this.g.fx.turnedAshaman(p.x, p.y - 50, !!this.def.knockdown);
             }
           }
           if (this.stateT >= this.def.attackDur) { this.setState('recover'); this.attackCd = U.rand(0.9, 1.9); }
@@ -588,7 +588,7 @@
           this.vx = this.facing * this.speed * 2.6; this.vy = 0;
           if (!this.hitDone) {
             const dx = (p.x - this.x) * this.facing, dy = Math.abs(p.y - this.y);
-            if (dx > -10 && dx < 30 && dy < FAIR.hurtDepth && p.z < 30) { this.hitDone = true; if (p.hurt(this.def.dmg, this.x, this.state === 'roll')) this.g.fx.ashaman(p.x, p.y - 40); }
+            if (dx > -10 && dx < 30 && dy < FAIR.hurtDepth && p.z < 30) { this.hitDone = true; if (p.hurt(this.def.dmg, this.x, this.state === 'roll')) this.g.fx.turnedAshaman(p.x, p.y - 40); }
           }
           if (this.stateT >= 0.42) { this.setState('recover'); this.attackCd = U.rand(1.2, 2.2); }
           break;
@@ -597,7 +597,7 @@
           this.vx = this.facing * this.speed * 2.2; this.vy = 0;
           if (!this.hitDone) {
             const dx = (p.x - this.x) * this.facing, dy = Math.abs(p.y - this.y);
-            if (dx > -10 && dx < 36 && dy < FAIR.hurtDepth + 2 && p.z < 30) { this.hitDone = true; if (p.hurt(this.def.dmg, this.x, true)) { this.g.fx.ashaman(p.x, p.y - 50, true); this.g.shake(4, 0.15); } }
+            if (dx > -10 && dx < 36 && dy < FAIR.hurtDepth + 2 && p.z < 30) { this.hitDone = true; if (p.hurt(this.def.dmg, this.x, true)) { this.g.fx.turnedAshaman(p.x, p.y - 50, true); this.g.shake(4, 0.15); } }
           }
           if (this.stateT >= 0.7) { this.setState('recover'); this.attackCd = U.rand(1.5, 2.5); }
           break;
@@ -606,8 +606,8 @@
           this.vx = 0; this.vy = 0;
           if (!this.hitDone && this.stateT >= 0.3) {
             this.hitDone = true;
-            if (this.def.ranged === 'shuriken') { this.g.projectiles.push(new Projectile(this.g, { kind: 'shuriken', owner: 'enemy', x: this.x + this.facing * 14, y: this.y, z: 40, vx: this.facing * 300, vz: 0, dmg: 6, life: 1.6 })); WL.audio.sfx.shuriken(); }
-            else { this.g.projectiles.push(new Projectile(this.g, { kind: 'sprinkle', owner: 'enemy', x: this.x + this.facing * 14, y: this.y, z: 48, vx: this.facing * 240, vz: 60, dmg: 5, life: 1.8, color: U.pick(['#ff4a4a', '#4ad0ff', '#ffe14a', '#4aff88']) })); WL.audio.sfx.splat(); }
+            if (this.def.ranged === 'shuriken') { this.g.projectiles.push(new Projectile(this.g, { kind: 'shuriken', owner: 'enemy', x: this.x + this.facing * 14, y: this.y, z: 40, vx: this.facing * 300, vz: 0, dmg: 6, life: 1.6 })); RWB.audio.sfx.shuriken(); }
+            else { this.g.projectiles.push(new Projectile(this.g, { kind: 'shadowBolt', owner: 'enemy', x: this.x + this.facing * 14, y: this.y, z: 48, vx: this.facing * 240, vz: 60, dmg: 5, life: 1.8, color: U.pick(['#ff4a4a', '#4ad0ff', '#ffe14a', '#4aff88']) })); RWB.audio.sfx.splat(); }
           }
           if (this.stateT >= 0.6) { this.setState('approach'); this.rangedCd = U.rand(2.5, 4.5); }
           break;
@@ -635,7 +635,7 @@
             if (Math.abs(o.x - this.x) < (o.isBoss ? 40 : 22) && Math.abs(o.y - this.y) < 28 && !this.hitList.has(o)) {
               this.hitList.add(o);
               o.hurt(o.isBoss ? 18 : 14, this.x, { knockdown: true, kb: 120 });
-              this.g.fx.ashaman(o.x, o.y - 30, true); WL.audio.sfx.hit(true); this.g.player.registerHits(1);
+              this.g.fx.turnedAshaman(o.x, o.y - 30, true); RWB.audio.sfx.hit(true); this.g.player.registerHits(1);
             }
           }
           for (const ob of this.g.objects) if (!ob.dead && Math.abs(ob.x - this.x) < 26 && Math.abs(ob.y - this.y) < 30) ob.hit(this.g, 3);
@@ -645,10 +645,10 @@
       }
 
       this.x += this.vx * dt; this.y += this.vy * dt;
-      if (this.state !== 'thrown') this.y = U.clamp(this.y, WL.FLOOR_TOP, WL.FLOOR_BOTTOM);
+      if (this.state !== 'thrown') this.y = U.clamp(this.y, RWB.FLOOR_TOP, RWB.FLOOR_BOTTOM);
       // keep within a generous margin of the camera so they don't wander off forever
       const cam = this.g.camX;
-      if (this.state !== 'thrown') this.x = U.clamp(this.x, cam - 60, cam + WL.W + 60);
+      if (this.state !== 'thrown') this.x = U.clamp(this.x, cam - 60, cam + RWB.W + 60);
     }
 
     think(dt, p) {
@@ -687,14 +687,14 @@
           this.primeDur = pending === 'roll' ? 0.22 : pending === 'charge' ? 0.38 : 0.28;
           this.setState('prime');
           if (this.g.noteAttackStart) this.g.noteAttackStart(this);
-          if (pending === 'charge') WL.audio.sfx.bossRoar(); else WL.audio.sfx.blip();
+          if (pending === 'charge') RWB.audio.sfx.bossRoar(); else RWB.audio.sfx.blip();
           return;
         }
       }
 
       // desired standoff position
       let standoff = this.def.reach - 8;
-      if (this.def.keepAway && this.rangedCd > 0.6) standoff = 150; // ashaman hangs back while reloading
+      if (this.def.keepAway && this.rangedCd > 0.6) standoff = 150; // turnedAshaman hangs back while reloading
       if (pOpen) standoff = Math.max(standoff, this.def.reach + 26); // give him room to get up
       const onSide = Math.sign(this.x - p.x) || 1;
       // The director may assign a flank; otherwise stay on the side we're on.
@@ -705,7 +705,7 @@
         // Crossing to the far flank: arc around riley, not through him.
         const up = this.y < p.y;
         let arcY = p.y + (up ? -48 : 48);
-        if (arcY < WL.FLOOR_TOP + 4 || arcY > WL.FLOOR_BOTTOM - 4) arcY = p.y + (up ? 48 : -48);
+        if (arcY < RWB.FLOOR_TOP + 4 || arcY > RWB.FLOOR_BOTTOM - 4) arcY = p.y + (up ? 48 : -48);
         wantY = arcY;
       }
       const ex = wantX - this.x, ey = wantY - this.y;
@@ -753,17 +753,17 @@
       const juggling = this.state === 'juggle';
       if (juggling) dmg = Math.max(1, Math.round(dmg * FAIR.juggleDamage));
       this.hp -= dmg; this.flash = 0.1;
-      this.g.player.addScore(Math.round(dmg * (this.type === 'ashaman' ? 4 : 2)));
+      this.g.player.addScore(Math.round(dmg * (this.type === 'turnedAshaman' ? 4 : 2)));
       const dir = this.x < fromX ? -1 : 1;
       if (this.hp <= 0) { this.die(dir); return; }
-      if (opts.stun) { this.stun = opts.stun; this.setState('stunned'); this.vx = dir * 20; WL.audio.sfx.blip(); this.g.fx.text(this.x, this.y - this.height - 10, 'FROZEN!', '#8ff'); return; }
+      if (opts.stun) { this.stun = opts.stun; this.setState('stunned'); this.vx = dir * 20; RWB.audio.sfx.blip(); this.g.fx.text(this.x, this.y - this.height - 10, 'FROZEN!', '#8ff'); return; }
       if (opts.noInterrupt || this.state === 'grabbed') return;
       if (juggling) {
         // Each follow-up re-pops a little; out of budget (or a heavy) sends it down.
         if (this.juggleLeft > 0 && !opts.knockdown) {
           this.juggleLeft--;
           this.vz = Math.max(this.vz, 190); this.vx = dir * 36;
-          WL.audio.sfx.juggle();
+          RWB.audio.sfx.juggle();
           return;
         }
         this.juggleLeft = 0;
@@ -793,13 +793,13 @@
       this.dead = true; this.setState('dead'); this.vx = (dir || 1) * 120; this.vz = 220; this.z = Math.max(this.z, 0.01);
       const pts = this.def.score * (this.elite ? 2 : 1);
       this.g.player.addScore(pts);
-      this.g.fx.text(this.x, this.y - this.height, this.type === 'ashaman' ? `+${pts}  STILL GROSS` : `+${pts}`, this.type === 'ashaman' ? '#f9c' : '#ffe14a');
-      if (this.type === 'ashaman') this.g.player.addScore(pts);
+      this.g.fx.text(this.x, this.y - this.height, this.type === 'turnedAshaman' ? `+${pts}  STILL GROSS` : `+${pts}`, this.type === 'turnedAshaman' ? '#f9c' : '#ffe14a');
+      if (this.type === 'turnedAshaman') this.g.player.addScore(pts);
       if (!this.isBoss && this.g.bark && !(this.g.surgeT >= 0)) {
-        if (this.type === 'ashaman') this.g.bark('ashaman');
+        if (this.type === 'turnedAshaman') this.g.bark('turnedAshaman');
         else if (this.elite) this.g.bark('elite');
       }
-      WL.audio.sfx.enemyDie();
+      RWB.audio.sfx.enemyDie();
       this.g.fx.burst(this.x, this.y - this.height / 2, this.type, this.y);
       // drops
       if (U.chance(this.dropChance) || this.forceDrop) {
@@ -815,7 +815,7 @@
       this.hp -= 10;
     }
     landThrown() {
-      this.vx = 0; this.g.fx.dust(this.x, this.y, 12); WL.audio.sfx.thud(); this.g.shake(3, 0.12);
+      this.vx = 0; this.g.fx.dust(this.x, this.y, 12); RWB.audio.sfx.thud(); this.g.shake(3, 0.12);
       this.hitList = null;
       if (this.hp <= 0) this.die(this.facing); else { this.setState('down'); this.stateT = 0.3; }
     }
@@ -845,35 +845,44 @@
       // Type marker on the stage: a lit ring rather than an opaque disc.
       ctx.save();
       const prx = Math.max(12, this.height * 0.24);
-      const painted = WL.art.has(this.type);
+      const painted = RWB.art.has(this.type);
       ctx.globalAlpha = this.elite ? 0.5 : painted ? 0.12 : 0.28;
-      WL.draw.ellipse(ctx, sx, sy + 1, prx, 5.5, plate);
+      RWB.draw.ellipse(ctx, sx, sy + 1, prx, 5.5, plate);
       ctx.globalAlpha = this.elite ? 1 : painted ? 0.5 : 0.85;
       ctx.lineWidth = this.elite ? 2 : 1.5;
       ctx.strokeStyle = this.elite ? '#ffe14a' : plate;
       ctx.beginPath(); ctx.ellipse(sx, sy + 1, prx, 5.5, 0, 0, Math.PI * 2); ctx.stroke();
       ctx.restore();
-      WL.draw.shadow(ctx, sx, sy, this.height * 0.28, this.height * 0.09, this.z, WL.art.has(this.type));
+      RWB.draw.shadow(ctx, sx, sy, this.height * 0.28, this.height * 0.09, this.z, RWB.art.has(this.type));
       const alpha = this.dead ? Math.max(0, 1 - (this.stateT - 0.4) * 2) : (this.state === 'spawn' ? this.stateT * 2 : 1);
       S.drawEnemy(ctx, sx, sy - this.z, { type: this.type, pose: this.pose(), t: this.t, facing: this.facing, flash: this.flash > 0 || (this.dead && Math.floor(this.t * 30) % 2 === 0), alpha, taped: this.state === 'grabbed', stunTint: this.state === 'stunned', floorY: sy });
-      if (this.elite) WL.text.draw(ctx, 'ELITE', sx, sy - this.z - this.height - 14, { size: 6, align: 'center', color: '#fc6', stroke: '#000', strokeWidth: 2 });
+      if (this.elite) RWB.text.draw(ctx, 'ELITE', sx, sy - this.z - this.height - 14, { size: 6, align: 'center', color: '#fc6', stroke: '#000', strokeWidth: 2 });
     }
   }
 
   /* ------------------------------------------------------------------ */
-  /* Boss: Giant ashaman Cone                                      */
+  /* Boss: five bespoke champions                                      */
   /* ------------------------------------------------------------------ */
   // Wind-up length per phase [1, 2, 3]. Jump was 0.42 s, too short to read a locked mark.
   const BOSS_TELLS = { slamWind: [0.8, 0.75, 0.62], jumpWind: [0.6, 0.6, 0.52], rainWind: [0.8, 0.8, 0.7] };
   const BOSS_LAST_CALL = 0.2;
   class Boss extends Enemy {
-    constructor(g, x, y) {
-      super(g, 'ashaman', x, y);
-      this.isBoss = true; this.def = { ...ENEMY_DEFS.ashaman, name: 'SHADOW CHAMPION', reach: 96, dmg: 12, score: 5000, height: 150, knockdown: true };
-      this.maxHp = 620; this.hp = this.maxHp; this.height = 150; this.speed = 48;
+    constructor(g, x, y, bossType) {
+      super(g, 'turnedAshaman', x, y);
+      this.bossType = bossType || 'myrddraal';
+      const profiles = {
+        myrddraal: { name:'MYRDDRAAL', hp:420, speed:72, dmg:11, height:116 },
+        draghkar: { name:'DRAGHKAR', hp:470, speed:64, dmg:10, height:128 },
+        forsaken: { name:'FORSAKEN', hp:520, speed:55, dmg:12, height:124 },
+        callandorGuardian: { name:'CALLANDOR GUARDIAN', hp:560, speed:48, dmg:14, height:138 },
+        taim: { name:'MAZRIM TAIM', hp:680, speed:58, dmg:14, height:126 }
+      };
+      const profile = profiles[this.bossType];
+      this.isBoss = true; this.def = { ...ENEMY_DEFS.turnedAshaman, name: profile.name, reach: 96, dmg: profile.dmg, score: 5000, height: profile.height, knockdown: true };
+      this.maxHp = profile.hp; this.hp = this.maxHp; this.height = profile.height; this.speed = profile.speed;
       this.armorMax = 70; this.armorHp = this.armorMax; this.armorRegen = 0;
       this.phase = 1; this.summoned = false; this.puddleT = 0;
-      this.melt = 0; this.dropChance = 0;
+      this.FURY = 0; this.dropChance = 0;
       this.intro = 2.2; this.state = 'intro';
       this.attackCd = 1.2;
       this.tellDur = 0.75; this.lastCalled = false;
@@ -894,7 +903,7 @@
         this.phase = np; this.g.onBossPhase(np);
         this.setState('stagger'); this.staggerT = 1.4;
       }
-      if (this.phase === 1 && this.armorHp <= 0 && this.state !== 'stagger') { this.armorRegen += dt; if (this.armorRegen > 7) { this.armorHp = this.armorMax; this.armorRegen = 0; this.g.fx.text(this.x, this.y - 170, 'SHE RE-FROZE. RUDE.', '#bff', 1.6); } }
+      if (this.phase === 1 && this.armorHp <= 0 && this.state !== 'stagger') { this.armorRegen += dt; if (this.armorRegen > 7) { this.armorHp = this.armorMax; this.armorRegen = 0; this.g.fx.text(this.x, this.y - 170, 'THE WARD RETURNS.', '#bff', 1.6); } }
 
       if (this.z > 0 || this.vz !== 0) {
         this.vz -= GRAV * dt; this.z += this.vz * dt;
@@ -904,8 +913,8 @@
         }
       }
       if (this.dead) {
-        this.melt = Math.min(1, this.stateT / 3);
-        if (Math.random() < 0.3) this.g.fx.burst(this.x + U.rand(-50, 50), this.y - U.rand(20, 140), 'ashaman', this.y + U.rand(-10, 10));
+        this.FURY = Math.min(1, this.stateT / 3);
+        if (Math.random() < 0.3) this.g.fx.burst(this.x + U.rand(-50, 50), this.y - U.rand(20, 140), 'turnedAshaman', this.y + U.rand(-10, 10));
         if (this.stateT > 3.2) { this.remove = true; this.g.bossDefeated(); }
         return;
       }
@@ -923,17 +932,18 @@
           if (this.attackCd <= 0) {
             const pDown = ['down', 'dead', 'gone'].includes(p.state);
             if (pDown || p.open) { this.attackCd = 0.5; break; }
-            if (adx < 110 && Math.abs(dy) < 30) { this.startTell('slamWind'); WL.audio.sfx.tellSlam(); break; }
+            if (this.bossType === 'myrddraal' && adx > 120) { this.x = U.clamp(p.x - (p.facing || 1) * 90, this.g.camX + 40, this.g.camX + RWB.W - 40); this.facing = p.x > this.x ? 1 : -1; this.startTell('slamWind'); this.g.fx.text(this.x, this.y - 130, 'FADE STRIKE!', '#c9c4e8', .8); break; }
+            if (adx < 110 && Math.abs(dy) < 30) { this.startTell('slamWind'); RWB.audio.sfx.tellSlam(); break; }
             const roll = Math.random();
-            if (this.phase >= 2 && !this.summoned && roll >= 0.75) { this.summoned = true; this.summonNext = true; this.startTell('rainWind'); WL.audio.sfx.tellSummon(); break; }
-            if (this.phase >= 2 && roll < 0.4) { this.startTell('rainWind'); WL.audio.sfx.tellRain(); break; }
-            if (this.phase >= 2 && roll < 0.75 && adx > 90) {
+            if (this.phase >= 2 && !this.summoned && roll >= 0.75) { this.summoned = true; this.summonNext = true; this.startTell('rainWind'); RWB.audio.sfx.tellSummon(); break; }
+            if (this.phase >= 2 && roll < 0.4) { this.startTell('rainWind'); RWB.audio.sfx.tellRain(); break; }
+            if ((this.bossType === 'draghkar' || this.phase >= 2) && roll < 0.75 && adx > 90) {
               // The mark is locked here and he lands exactly on it.
               const cam = this.g.camX;
-              this.jumpTargetX = U.clamp(p.x, cam + 40, cam + WL.W - 40);
-              this.jumpTargetY = U.clamp(p.y, WL.FLOOR_TOP, WL.FLOOR_BOTTOM);
+              this.jumpTargetX = U.clamp(p.x, cam + 40, cam + RWB.W - 40);
+              this.jumpTargetY = U.clamp(p.y, RWB.FLOOR_TOP, RWB.FLOOR_BOTTOM);
               this.startTell('jumpWind');
-              WL.audio.sfx.tellJump();
+              RWB.audio.sfx.tellJump();
               break;
             }
             this.attackCd = 0.4;
@@ -944,11 +954,11 @@
         case 'slam': {
           this.vx = 0; this.vy = 0;
           if (!this.hitDone && this.stateT >= 0.1) {
-            this.hitDone = true; WL.audio.sfx.slam();
+            this.hitDone = true; RWB.audio.sfx.slam();
             if (this.g.impact) this.g.impact(this.facing, 'boss'); else this.g.shake(7, 0.3);
             this.g.fx.dust(this.x + this.facing * 70, this.y, 22);
             const ddx = (p.x - this.x) * this.facing;
-            if (ddx > -10 && ddx < FAIR.slamReach && Math.abs(p.y - this.y) < FAIR.slamDepth && p.z < 50) { if (p.hurt(this.def.dmg, this.x, true)) this.g.fx.ashaman(p.x, p.y - 50, true); }
+            if (ddx > -10 && ddx < FAIR.slamReach && Math.abs(p.y - this.y) < FAIR.slamDepth && p.z < 50) { if (p.hurt(this.def.dmg, this.x, true)) this.g.fx.turnedAshaman(p.x, p.y - 50, true); }
             if (this.phase >= 3) this.g.puddles.push({ x: this.x + this.facing * 70, y: this.y + 4, r: 30, t: 0, life: 8, arm: 0.2 });
           }
           if (this.stateT >= 0.5) { this.setState('recover'); this.attackCd = this.phase === 3 ? 0.7 : 1.3; }
@@ -959,7 +969,7 @@
           this.facing = (this.jumpTargetX || p.x) >= this.x ? 1 : -1;
           this.tellTick();
           if (this.stateT >= this.tellDur) {
-            this.setState('jump'); this.vz = 460; this.z = 0.01; WL.audio.sfx.jump();
+            this.setState('jump'); this.vz = 460; this.z = 0.01; RWB.audio.sfx.jump();
             // Constant velocity over the whole flight: touchdown is the ring.
             const flight = 2 * 460 / GRAV;
             this.vx = (this.jumpTargetX - this.x) / flight;
@@ -979,18 +989,18 @@
             this.hitDone = true;
             if (this.summonNext) {
               this.summonNext = false;
-              this.g.spawnEnemy('ashaman', this.g.camX + 40, U.rand(WL.FLOOR_TOP + 20, WL.FLOOR_BOTTOM - 20), { hpMult: 0.8 });
-              this.g.spawnEnemy('ashaman', this.g.camX + WL.W - 40, U.rand(WL.FLOOR_TOP + 20, WL.FLOOR_BOTTOM - 20), { hpMult: 0.8 });
-              this.g.fx.text(this.x, this.y - 170, 'CUP-SIZED BACKUP', '#f9c', 1.6);
+              this.g.spawnEnemy('turnedAshaman', this.g.camX + 40, U.rand(RWB.FLOOR_TOP + 20, RWB.FLOOR_BOTTOM - 20), { hpMult: 0.8 });
+              this.g.spawnEnemy('turnedAshaman', this.g.camX + RWB.W - 40, U.rand(RWB.FLOOR_TOP + 20, RWB.FLOOR_BOTTOM - 20), { hpMult: 0.8 });
+              this.g.fx.text(this.x, this.y - 170, 'SHADOW REINFORCEMENTS', '#f9c', 1.6);
             } else {
               const n = this.phase === 3 ? 12 : 8;
               for (let i = 0; i < n; i++) {
-                const tx = U.clamp(p.x + U.rand(-140, 140), this.g.camX + 20, this.g.camX + WL.W - 20);
-                const ty = U.rand(WL.FLOOR_TOP, WL.FLOOR_BOTTOM);
-                this.g.projectiles.push(new Projectile(this.g, { kind: 'bigsprinkle', owner: 'enemy', x: tx, y: ty, z: 340 + i * 30, vx: 0, vz: -20, dmg: 7, knockdown: true, falling: true, color: U.pick(['#ff4a4a', '#4ad0ff', '#ffe14a', '#4aff88', '#ff8ae0']), rot: U.rand(0, 3) }));
+                const tx = U.clamp(p.x + U.rand(-140, 140), this.g.camX + 20, this.g.camX + RWB.W - 20);
+                const ty = U.rand(RWB.FLOOR_TOP, RWB.FLOOR_BOTTOM);
+                this.g.projectiles.push(new Projectile(this.g, { kind: 'bigshadowBolt', owner: 'enemy', x: tx, y: ty, z: 340 + i * 30, vx: 0, vz: -20, dmg: 7, knockdown: true, falling: true, color: U.pick(['#ff4a4a', '#4ad0ff', '#ffe14a', '#4aff88', '#ff8ae0']), rot: U.rand(0, 3) }));
               }
-              WL.audio.sfx.throwSfx();
-              this.g.fx.text(this.x, this.y - 170, 'TOPPINGS. FROM ABOVE.', '#fc6', 1.6);
+              RWB.audio.sfx.throwSfx();
+              this.g.fx.text(this.x, this.y - 170, 'SHADOW BOLTS ABOVE', '#fc6', 1.6);
             }
           }
           if (this.stateT >= this.tellDur + 0.6) { this.setState('recover'); this.attackCd = 1.4; }
@@ -1001,8 +1011,8 @@
         case 'stagger': this.vx = 0; this.vy = 0; if (this.stateT >= (this.staggerT || 3)) { this.setState('approach'); this.attackCd = 0.5; } break;
       }
       this.x += this.vx * dt; this.y += this.vy * dt;
-      this.y = U.clamp(this.y, WL.FLOOR_TOP, WL.FLOOR_BOTTOM);
-      this.x = U.clamp(this.x, this.g.camX + 40, this.g.camX + WL.W - 40);
+      this.y = U.clamp(this.y, RWB.FLOOR_TOP, RWB.FLOOR_BOTTOM);
+      this.x = U.clamp(this.x, this.g.camX + 40, this.g.camX + RWB.W - 40);
     }
     /* Tells run on a fixed clock per move and phase. Phase 3 is faster, but
        never below the floor a first-time player can react to, and the last
@@ -1015,7 +1025,7 @@
       this.setState(state);
     }
     tellTick() {
-      if (!this.lastCalled && this.stateT >= this.tellDur - BOSS_LAST_CALL) { this.lastCalled = true; WL.audio.sfx.lastCall(); }
+      if (!this.lastCalled && this.stateT >= this.tellDur - BOSS_LAST_CALL) { this.lastCalled = true; RWB.audio.sfx.lastCall(); }
     }
     /** 0..1 progress through the current tell, and whether we are in the last call. */
     tellProgress() {
@@ -1023,11 +1033,11 @@
       return { k: U.clamp(this.stateT / dur, 0, 1), last: this.stateT >= dur - BOSS_LAST_CALL, dur };
     }
     landHit() {
-      WL.audio.sfx.slam();
+      RWB.audio.sfx.slam();
       if (this.g.impact) this.g.impact(this.facing, 'boss'); else this.g.shake(9, 0.35);
       this.g.fx.dust(this.x, this.y, 30);
       const p = this.g.player;
-      if (Math.hypot(p.x - this.x, (p.y - this.y) * 1.6) < FAIR.flopRadius && p.z < 60) { if (p.hurt(12, this.x, true)) this.g.fx.ashaman(p.x, p.y - 50, true); }
+      if (Math.hypot(p.x - this.x, (p.y - this.y) * 1.6) < FAIR.flopRadius && p.z < 60) { if (p.hurt(12, this.x, true)) this.g.fx.turnedAshaman(p.x, p.y - 50, true); }
       for (const e of this.g.enemies) if (e !== this && e.hittable && Math.hypot(e.x - this.x, (e.y - this.y) * 1.6) < 95) e.hurt(10, this.x, { knockdown: true });
       if (this.phase >= 3) this.g.puddles.push({ x: this.x, y: this.y + 4, r: 44, t: 0, life: 9, arm: 0.35 });
     }
@@ -1037,12 +1047,13 @@
       if (this.armor > 0) {
         real = Math.round(dmg * 0.35);
         this.armorHp -= dmg;
-        if (this.armorHp <= 0) { this.armorHp = 0; this.armorRegen = 0; this.setState('stagger'); this.staggerT = 3.2; this.g.fx.text(this.x, this.y - 170, 'THE SWIRL GIVES UP', '#fff', 1.6); WL.audio.sfx.break(); if (this.g.impact) this.g.impact(1, 'heavy'); else this.g.shake(5, 0.3); }
-        else this.g.fx.text(this.x + U.rand(-20, 20), this.y - 150, 'TING', '#bff', 0.45);
+        if (this.armorHp <= 0) { this.armorHp = 0; this.armorRegen = 0; this.setState('stagger'); this.staggerT = 3.2; this.g.fx.text(this.x, this.y - 170, 'THE WARD BREAKS', '#fff', 1.6); RWB.audio.sfx.break(); if (this.g.impact) this.g.impact(1, 'heavy'); else this.g.shake(5, 0.3); }
+        else this.g.fx.text(this.x + U.rand(-20, 20), this.y - 150, 'WARD', '#bff', 0.45);
       }
       if (opts.saidin) real = dmg;
       this.hp -= real; this.flash = 0.1;
       this.g.player.addScore(real * 3);
+      if (this.bossType === 'taim' && this.phase === 3 && this.hp <= 28) { this.hp = 0; this.g.showBanner('TWINKLE TOES, NOW!', 'LIGHTNING JOINS RILEY\'S BALEFIRE!', 3, true); this.die(); return; }
       if (this.hp <= 0) { this.hp = 0; this.die(); return; }
       if (opts.saidin) { this.armorHp = 0; this.armorRegen = 0; this.setState('stagger'); this.staggerT = 3; return; }
       if (['approach', 'recover'].includes(this.state) && !opts.noInterrupt) this.setState('hurt');
@@ -1051,7 +1062,7 @@
       this.dead = true; this.setState('dead'); this.vx = 0; this.vy = 0;
       this.g.player.addScore(5000);
       this.g.fx.text(this.x, this.y - 160, '+5000', '#ffe14a', 3);
-      WL.audio.sfx.bossRoar(); WL.audio.sfx.enemyDie(); this.g.shake(10, 0.8);
+      RWB.audio.sfx.bossRoar(); RWB.audio.sfx.enemyDie(); this.g.shake(10, 0.8);
     }
     pose() {
       switch (this.state) {
@@ -1066,10 +1077,10 @@
     }
     draw(ctx, camX) {
       const sx = Math.round(this.x - camX), sy = Math.round(this.y);
-      WL.draw.shadow(ctx, sx, sy, 50, 14, this.z);
+      RWB.draw.shadow(ctx, sx, sy, 50, 14, this.z);
       ctx.save();
       if (this.dead) { ctx.globalAlpha = Math.max(0, 1 - Math.max(0, this.stateT - 2) * 0.9); }
-      S.drawBoss(ctx, sx, sy - this.z, { pose: this.pose(), t: this.t, facing: this.facing, flash: this.flash > 0, armor: this.armor, phase: this.phase, melt: this.melt });
+      S.drawBoss(ctx, sx, sy - this.z, { bossType:this.bossType, pose: this.pose(), t: this.t, facing: this.facing, flash: this.flash > 0, armor: this.armor, phase: this.phase, FURY: this.FURY });
       ctx.restore();
     }
   }
@@ -1079,7 +1090,7 @@
   /* ------------------------------------------------------------------ */
   class Pickup {
     constructor(g, kind, x, y, pop) {
-      this.g = g; this.kind = kind; this.x = x; this.y = U.clamp(y, WL.FLOOR_TOP, WL.FLOOR_BOTTOM); this.z = pop ? 1 : 0; this.vz = pop ? 230 : 0; this.vx = pop ? U.rand(-60, 60) : 0;
+      this.g = g; this.kind = kind; this.x = x; this.y = U.clamp(y, RWB.FLOOR_TOP, RWB.FLOOR_BOTTOM); this.z = pop ? 1 : 0; this.vz = pop ? 230 : 0; this.vx = pop ? U.rand(-60, 60) : 0;
       this.t = U.rand(0, 5); this.dead = false; this.remove = false;
     }
     update(dt) {
@@ -1089,7 +1100,7 @@
     }
     draw(ctx, camX) {
       const sx = Math.round(this.x - camX), sy = Math.round(this.y);
-      WL.draw.shadow(ctx, sx, sy, 10, 3, this.z);
+      RWB.draw.shadow(ctx, sx, sy, 10, 3, this.z);
       S.drawPickup(ctx, sx, sy - this.z, this.kind, this.t);
     }
   }
@@ -1108,14 +1119,14 @@
     hit(g, n) {
       if (this.dead) return;
       this.hp -= n; this.shakeT = 0.15;
-      if (this.kind === 'urn') WL.audio.sfx.clank();
-      else if (this.kind === 'rack') WL.audio.sfx.clatter();
-      else WL.audio.sfx.clank();
+      if (this.kind === 'urn') RWB.audio.sfx.clank();
+      else if (this.kind === 'rack') RWB.audio.sfx.clatter();
+      else RWB.audio.sfx.clank();
       if (this.hp <= 0) {
         this.dead = true; this.remove = true;
-        if (this.kind === 'urn') WL.audio.sfx.shatter();
-        else if (this.kind === 'rack') WL.audio.sfx.clatter();
-        else WL.audio.sfx.break();
+        if (this.kind === 'urn') RWB.audio.sfx.shatter();
+        else if (this.kind === 'rack') RWB.audio.sfx.clatter();
+        else RWB.audio.sfx.break();
         g.shake(2.5, 0.12);
         g.fx.debris(this.x, this.y - 18, this.kind, this.y + 2);
         this.contents.forEach((c, i) => setTimeout(() => g.spawnPickup(c, this.x + (i - (this.contents.length - 1) / 2) * 24, this.y, true), i * 60));
@@ -1137,7 +1148,7 @@
     }
     draw(ctx, camX) {
       const sx = Math.round(this.x - camX) + (this.shakeT > 0 ? Math.round(Math.sin(this.t * 80) * 2) : 0), sy = Math.round(this.y);
-      WL.draw.shadow(ctx, sx, sy, this.kind === 'urn' ? 16 : 24, 6, this.z);
+      RWB.draw.shadow(ctx, sx, sy, this.kind === 'urn' ? 16 : 24, 6, this.z);
       S.drawObject(ctx, sx, sy, this.kind, this.hp, this.t);
     }
   }
@@ -1158,13 +1169,13 @@
         return;
       }
       this.x += this.vx * dt;
-      if (this.kind === 'sprinkle' || this.kind === 'relic') { this.vz -= 300 * dt; this.z += this.vz * dt; }
+      if (this.kind === 'shadowBolt' || this.kind === 'relic') { this.vz -= 300 * dt; this.z += this.vz * dt; }
       if (this.z < 0) { this.z = 0; this.expire(); return; }
       if (this.t >= this.life) { this.expire(); return; }
       const p = this.g.player;
       if (this.owner === 'enemy') {
         if (Math.abs(p.x - this.x) < 16 && Math.abs(p.y - this.y) < 18 && Math.abs(p.z - this.z + 30) < 50) {
-          if (p.hurt(this.dmg, this.x - Math.sign(this.vx) * 10, !!this.knockdown)) { this.g.fx.ashaman(p.x, p.y - 45); }
+          if (p.hurt(this.dmg, this.x - Math.sign(this.vx) * 10, !!this.knockdown)) { this.g.fx.turnedAshaman(p.x, p.y - 45); }
           this.remove = true;
         }
       } else {
@@ -1173,7 +1184,7 @@
           if (Math.abs(e.x - this.x) < (e.isBoss ? 44 : 20) && Math.abs(e.y - this.y) < 24) {
             this.hitList.add(e); this.hits++;
             e.hurt(this.dmg, this.x - Math.sign(this.vx) * 10, { knockdown: this.knockdown, kb: 110 });
-            this.g.fx.ashaman(e.x, e.y - 40, true); WL.audio.sfx.hit(true); p.registerHits(1);
+            this.g.fx.turnedAshaman(e.x, e.y - 40, true); RWB.audio.sfx.hit(true); p.registerHits(1);
             if (this.g.impact) this.g.impact(Math.sign(this.vx) || 1, 'heavy'); else this.g.hitstop = 0.06;
             if (this.hits >= this.pierce) { this.expire(); return; }
           }
@@ -1181,19 +1192,19 @@
         for (const ob of this.g.objects) if (!ob.dead && Math.abs(ob.x - this.x) < 26 && Math.abs(ob.y - this.y) < 30) { ob.hit(this.g, 3); }
       }
       // walls (camera bounds)
-      if (this.x < this.g.camX - 20 || this.x > this.g.camX + WL.W + 20) this.expire();
+      if (this.x < this.g.camX - 20 || this.x > this.g.camX + RWB.W + 20) this.expire();
     }
     expire() {
       this.remove = true;
-      if (this.dropAsPickup) this.g.spawnPickup('relic', U.clamp(this.x, this.g.camX + 20, this.g.camX + WL.W - 20), this.y, true);
+      if (this.dropAsPickup) this.g.spawnPickup('relic', U.clamp(this.x, this.g.camX + 20, this.g.camX + RWB.W - 20), this.y, true);
     }
     land() {
       this.remove = true;
       const p = this.g.player;
-      this.g.fx.dust(this.x, this.y, 10); WL.audio.sfx.splat(); this.g.shake(1.5, 0.05);
+      this.g.fx.dust(this.x, this.y, 10); RWB.audio.sfx.splat(); this.g.shake(1.5, 0.05);
       // Same ellipse the landing ring draws.
       const ex = (p.x - this.x) / FAIR.rainRx, ey = (p.y - this.y) / FAIR.rainRy;
-      if (ex * ex + ey * ey < 1 && p.z < 30) { if (p.hurt(this.dmg, this.x, true)) this.g.fx.ashaman(p.x, p.y - 45, true); }
+      if (ex * ex + ey * ey < 1 && p.z < 30) { if (p.hurt(this.dmg, this.x, true)) this.g.fx.turnedAshaman(p.x, p.y - 45, true); }
       for (const e of this.g.enemies) if (!e.isBoss && e.hittable && Math.abs(e.x - this.x) < 26 && Math.abs(e.y - this.y) < 20) e.hurt(8, this.x, { knockdown: true });
     }
     draw(ctx, camX) {
@@ -1226,10 +1237,10 @@
         }
         ctx.restore();
         if (this.z > 330) return;
-      } else WL.draw.shadow(ctx, sx, sy, 8, 3);
+      } else RWB.draw.shadow(ctx, sx, sy, 8, 3);
       S.drawProjectile(ctx, sx, sy - this.z, this);
     }
   }
 
-  WL.entities = { Player, Enemy, Boss, Pickup, Breakable, Projectile, ENEMY_DEFS, ATTACKS, FAIR, ATTACKING, BOSS_TELLS };
+  RWB.entities = { Player, Enemy, Boss, Pickup, Breakable, Projectile, ENEMY_DEFS, ATTACKS, FAIR, ATTACKING, BOSS_TELLS };
 })();

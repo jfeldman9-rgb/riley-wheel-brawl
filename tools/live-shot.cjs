@@ -7,7 +7,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 
-const url = process.argv[2] || 'https://jfeldman9-rgb.github.io/shadow-riley-battle-brawl/?v=20260926-full';
+const url = process.argv[2] || 'https://jfeldman9-rgb.github.io/shadow-riley-battle-brawl/?v=20260926-s2';
 const out = process.argv[3] || null;
 const CDP = 9500 + Math.floor(Math.random() * 400);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -42,33 +42,33 @@ const done = code => { chrome.kill('SIGKILL'); process.exit(code); };
   await send('Page.enable');
   await send('Page.navigate', { url });
   let ready = false;
-  for (let i = 0; i < 300 && !ready; i++) { ready = await js('return !!(window.WL && WL.assets && WL.assets.done && WL.game && WL.game.scene)').catch(() => false); if (!ready) await sleep(100); }
+  for (let i = 0; i < 300 && !ready; i++) { ready = await js('return !!(window.RWB && RWB.assets && RWB.assets.done && RWB.game && RWB.game.scene)').catch(() => false); if (!ready) await sleep(100); }
   const state = await js(`
-    const keys = Object.keys(WL.ARTDATA || {}).filter(k => k !== 'urn').map(k => 'art:' + k).concat(Object.keys((WL.ARTDATA || {}).urn || {}).map(k => 'plate:' + k));
+    const keys = Object.keys(RWB.ARTDATA || {}).filter(k => k !== 'urn').map(k => 'art:' + k).concat(Object.keys((RWB.ARTDATA || {}).urn || {}).map(k => 'plate:' + k));
     return {
       stamp: (document.querySelector('script[src*="main.js"]').src.match(/v=([\\w-]+)/) || [])[1],
-      loaded: keys.filter(k => WL.assets.has(k)), missing: keys.filter(k => !WL.assets.has(k)),
-      riley: WL.art.has('riley'), lidoPlate: !!WL.art.plate('village-far'),
-      failed: WL.assets.failed ? WL.assets.failed() : null
+      loaded: keys.filter(k => RWB.assets.has(k)), missing: keys.filter(k => !RWB.assets.has(k)),
+      riley: RWB.art.has('riley'), courtyardPlate: !!RWB.art.plate('village-far'),
+      failed: RWB.assets.failed ? RWB.assets.failed() : null
     };`);
   console.log(JSON.stringify(state, null, 1));
-  await js(`WL.game.debug.play(0);`);
-  for (let i = 0; i < 100; i++) { if (await js('return WL.game.scene instanceof WL.scenes.Play && WL.game.fadeDir === 0')) break; await sleep(50); }
+  await js(`RWB.game.debug.play(0);`);
+  for (let i = 0; i < 100; i++) { if (await js('return RWB.game.scene instanceof RWB.scenes.Play && RWB.game.fadeDir === 0')) break; await sleep(50); }
   await js(`
-    const s = WL.game.scene; s.banner = null; s.bannerT = 0; s.tutorialT = 0; s.phase = 'play'; s.cheatInvuln = true;
+    const s = RWB.game.scene; s.banner = null; s.bannerT = 0; s.tutorialT = 0; s.phase = 'play'; s.cheatInvuln = true;
     s.locked = true; const p = s.player; p.x = s.camX + 250; p.y = 285; p.facing = 1;
     p.state = 'attack'; p.attack = { pose: 'smash', dur: 0.32, windUntil: 0.05, reach: 52, dmg: 7 }; p.stateT = 0.14;
     p.comboCount = 12; p.comboDisplayT = 3; p.comboPop = 0.8;
     const b = s.spawnEnemy('trolloc', p.x + 60, p.y, { side: 1 }); b.setState('hurt'); b.stateT = 0.1; b.hp = 40;
-    for (const [t, dx, dy, f] of [['fade', 170, -45, -1], ['trollocHeavy', -95, 25, 1], ['trollocHeavy', 120, 45, -1]]) {
+    for (const [t, dx, dy, f] of [['assassin', 170, -45, -1], ['trollocCaptain', -95, 25, 1], ['trollocCaptain', 120, 45, -1]]) {
       const e = s.spawnEnemy(t, p.x + dx, p.y + dy, { side: 1 }); e.x = p.x + dx; e.y = p.y + dy; e.facing = f; e.setState('approach');
     }
-    s.fx.ashaman(p.x + 50, p.y - 45, true); s.fx.foodDebris(p.x + 50, p.y - 45, 'trolloc');
+    s.fx.turnedAshaman(p.x + 50, p.y - 45, true); s.fx.battleDebris(p.x + 50, p.y - 45, 'trolloc');
     s.update = function () {};
   `);
   await sleep(400);
   if (out) { const s = await send('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(out, Buffer.from(s.data, 'base64')); console.log('saved ' + out); }
   if (logs.length) console.log(logs.join('\n'));
   ws.close();
-  done(state.missing.length || !state.riley || !state.lidoPlate ? 1 : 0);
+  done(state.missing.length || !state.riley || !state.courtyardPlate ? 1 : 0);
 })().catch(e => { console.error(e); done(1); });

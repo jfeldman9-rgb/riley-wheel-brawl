@@ -16,21 +16,21 @@ from PIL import Image
 
 STYLE = ("Painted 3D-feel cinematic frame in the style of the title key art: warm Hawaiian light, "
          "crisp rim light, saturated colors, depth of field; calm lower fifth for captions; no text or UI.")
-riley = ("shadow riley: heavyset older man, thick swept-back white hair, big white walrus mustache, red hibiscus "
+riley = ("Riley: heavyset older man, thick swept-back white hair, big white walrus mustache, red hibiscus "
          "Hawaiian shirt, purple-and-white plumeria lei, leather tool belt, gray cargo shorts, black sneakers.")
 urn = {
     'op1-ac-out': 'Noon heat on the village stage: melting swan ice sculpture, dead ward unit with a red light and smoke, wilting tourists, stone of tear.',
     'op2-chieftain-calls': 'chieftain Andersen sweating on the bridge, shouting into a red phone, red alarm light, temperature gauge in the red.',
     'op3-riley-arrives': 'riley strides onto the village stage with relic and pipe staff; the chieftain points him away from the glowing battle.',
-    'op4-cache-strikes': 'The cache bar explodes: trolloc goon through the sneeze guard, CRUNCH CREW fade, sprouts; riley raises the pipe staff.',
-    'st1-village-intro': 'Vegetable picket line (trolloc goons, fade with bullhorn, sprouts) blocks the compressor; riley with relic, unimpressed.',
-    'st1-village-outro': 'riley yanks a huge wad of stoneGuard out of the air-handler intake; dazed greens on the stage, duct tape, open relic.',
-    'st2-shrine-intro': 'The ward shrine: pipes, steam, gauges in the red; three fade ninjas with shuriken; riley grips the pipe staff.',
-    'st2-shrine-outro': 'riley duct-tapes the compressor, gauges swing to blue, fade ninjas duct-taped to a pipe behind him.',
-    'st3-spa-intro': 'Spa and juice bar: flexing stoneGuard bruiser and two angry ashaman cups face riley holding a saidin can.',
-    'st3-spa-outro': 'Frosted freezer door leaking pink glow and a strawberry drip; riley with flashlight; wrecked juice bar, dazed stoneGuard.',
-    'st4-freezer-intro': 'Icy freezer: giant strawberry ashaman cone boss with sprinkle armor and a giant spoon; riley small in the foreground.',
-    'end1-last-valve': 'riley turns the red valve wheel, cool air blasts, the cone boss is a pink puddle with a dizzy waffle cone.',
+    'op4-cache-strikes': 'The cache bar explodes: trolloc goon through the sneeze guard, CRUNCH CREW assassin, sprouts; riley raises the pipe staff.',
+    'st1-village-intro': 'Vegetable picket line (trolloc goons, assassin with bullhorn, sprouts) blocks the compressor; riley with relic, unimpressed.',
+    'st1-village-outro': 'riley yanks a huge wad of stoneDefender out of the air-handler intake; dazed greens on the stage, duct tape, open relic.',
+    'st2-shrine-intro': 'The ward shrine: pipes, steam, gauges in the red; three assassin ninjas with shuriken; riley grips the pipe staff.',
+    'st2-shrine-outro': 'riley duct-tapes the compressor, gauges swing to blue, assassin ninjas duct-taped to a pipe behind him.',
+    'st3-spa-intro': 'Spa and RUNES bar: flexing stoneDefender bruiser and two angry Mashadar-touched fighters face riley channeling saidin.',
+    'st3-spa-outro': 'Frosted tower door leaking pink glow and a ruby drip; riley with flashlight; wrecked RUNES bar, dazed stoneDefender.',
+    'st4-tower-intro': 'Stone hall: a Forsaken Callandor guardian with a blazing sword; riley small in the foreground.',
+    'end1-last-valve': 'riley turns the Callandor, brilliant light erupts, the shadow champion is a defeated in a burst of light.',
     'end2-svelte': 'Golden hour on the village: the chieftain shakes hands with a slimmer riley, cheering passengers, restored ice swan.',
     'end3-carving-station': 'Sunset carving station: riley raises a trolloc leg with a plate of prime rib, the chieftain toasts, chef carves.',
 }

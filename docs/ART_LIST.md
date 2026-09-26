@@ -8,8 +8,8 @@ Every file is **optional at runtime**. If an image is absent, corrupt, or fails 
 
 | Filename | Size | Alpha | Description |
 | --- | ---: | :---: | --- |
-| `assets/art/title-riley-wheel-brawl.webp` | 1280×720 | No | Main key art: Riley in black coat and blue glasses guarding Twinkle Toes from a ring of Shadowspawn, with clear space for the menu. |
-| `assets/art/logo-riley-wheel-brawl.webp` | 1200×420 | Yes | Gold-and-blue arcade logo with a turning-wheel motif and readable title at 640×360. |
+| `assets/art/title-riley-hero.webp` | 1280×720 | No | Main key art: Riley in black coat and blue glasses guarding Twinkle Toes from a ring of Shadowspawn, with clear space for the menu. |
+| `assets/art/logo-riley-hero.webp` | 1200×420 | Yes | Gold-and-blue arcade logo with a turning-wheel motif and readable title at 640×360. |
 | `assets/art/portrait-riley.webp` | 512×512 | Yes | Riley bust for title/victory: short dark hair, thin blue frames, black coat, sword-and-dragon pins. |
 | `assets/art/portrait-riley-hud.webp` | 256×256 | Yes | Tight, high-contrast Riley face crop for the round HUD bezel and low-health flash. |
 | `assets/art/portrait-moiraine.webp` | 512×512 | Yes | Calm Moiraine dialogue portrait with blue-white channeling light. |

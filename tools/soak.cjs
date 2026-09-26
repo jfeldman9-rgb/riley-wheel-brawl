@@ -21,13 +21,13 @@ function boot(){
   ctx.window=ctx;vm.createContext(ctx);
   const files=fs.existsSync(root+'/js/art.js')?[...fs.readFileSync(root+'/index.html','utf8').matchAll(/<script src="js\/(\w+)\.js/g)].map(m=>m[1]):fs.existsSync(root+'/js/settings.js')?['util','settings','assets','input','audio','voice','sprites','entities','levels','options','scenes','main']:['util','assets','input','audio','voice','sprites','entities','levels','scenes','main'];
   for(const f of files)vm.runInContext(fs.readFileSync(root+'/js/'+f+'.js','utf8'),ctx,{filename:f});
-  return ctx.WL;
+  return ctx.RWB;
 }
 let seed=+(process.argv[3]||12345);Math.random=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};
-const WL=boot();
+const RWB=boot();
 const results=[];
 for(let lvl=0;lvl<5;lvl++){
-  const s=new WL.scenes.Play(WL.game,lvl,{score:0,lives:99,saidin:0});s.enter();WL.game.scene=s;
+  const s=new RWB.scenes.Play(RWB.game,lvl,{score:0,lives:99,saidin:0});s.enter();RWB.game.scene=s;
   let dmg=0,hits=0,t=0,frame=0;const hitTimes=[];const p=s.player;let lastHp=p.hp;
   const held={};const inp={pressed:{},held,axis:()=>{
     // walk right when clear, else square up to the nearest enemy's lane

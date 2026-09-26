@@ -2,19 +2,19 @@
    back to procedurally drawn stand-ins so it always stays playable. */
 'use strict';
 
-WL.assets = (function () {
+RWB.assets = (function () {
   const images = {};
   // Image URLs carry the same ?v= stamp as the scripts, so a cached 404 or stale
   // file from an older deploy can't pin the procedural fallback.
   const cs = typeof document !== 'undefined' && document.currentScript;
-  const VER = WL.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || '20260926-full';
+  const VER = RWB.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || '20260926-s2';
   const manifest = {
     "art:riley": "assets/art/atlas-riley.webp",
     "plate:stage1": "assets/art/stage1-emonds-field-far.webp"
   };
 
   // Painted sprite atlases and background urn (tools/bake_art.py -> js/artdata.js).
-  const art = WL.ARTDATA || {};
+  const art = RWB.ARTDATA || {};
   for (const k of Object.keys(art)) if (k !== 'plates') manifest['art:' + k] = art[k].src;
   for (const k of Object.keys(art.plates || {})) manifest['plate:' + k] = art.plates[k].src;
   // Without these the village and riley silently turn procedural, so a miss is reported.
@@ -56,7 +56,7 @@ WL.assets = (function () {
       loaded++; onProgress && onProgress(loaded / total);
     })).then(() => {
       done = true;
-      if (failed.length && typeof console !== 'undefined') console.warn('[WL] painted art failed to load (after retry):', failed.join(', '));
+      if (failed.length && typeof console !== 'undefined') console.warn('[RWB] painted art failed to load (after retry):', failed.join(', '));
       loadLazy();
     });
   }
@@ -68,7 +68,7 @@ WL.assets = (function () {
       if (i >= keys.length) return Promise.resolve();
       const k = keys[i++];
       pending[k] = fetchKey(k, lazy[k]).then(img => {
-        if (!img && typeof console !== 'undefined') console.warn('[WL] story plate failed to load (after retry):', k);
+        if (!img && typeof console !== 'undefined') console.warn('[RWB] story plate failed to load (after retry):', k);
         return img;
       });
       return pending[k].then(next);

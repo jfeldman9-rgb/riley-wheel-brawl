@@ -5,10 +5,10 @@
 'use strict';
 
 (function () {
-  const W = WL.W, H = WL.H;
-  const D = WL.draw, T = WL.text, A = WL.audio, ST = WL.settings;
+  const W = RWB.W, H = RWB.H;
+  const D = RWB.draw, T = RWB.text, A = RWB.audio, ST = RWB.settings;
 
-  const persistAudio = () => { if (WL.display.save) WL.display.save(); };
+  const persistAudio = () => { if (RWB.display.save) RWB.display.save(); };
 
   function optionRows(full) {
     const s = ST.data;
@@ -16,13 +16,13 @@
     if (full) {
       rows.push({ id: 'sound', label: () => 'SOUND: ' + A.volumeLabel(), adj: dir => { A.cycleVolume(dir); persistAudio(); }, desc: 'Master volume. M mutes any time.' });
       rows.push({ id: 'music', label: () => 'MUSIC: ' + A.musicLabel(), adj: dir => { A.cycleMusic(dir); persistAudio(); }, desc: 'Music level. It also ducks under big hits and barks.' });
-      rows.push({ id: 'display', label: () => 'DISPLAY: ' + WL.display.modeLabel(), adj: dir => WL.display.cycleMode(dir), desc: 'AUTO = device pixels. SHARP = 2x+. CLASSIC = 640x360 pixels + scanlines.' });
+      rows.push({ id: 'display', label: () => 'DISPLAY: ' + RWB.display.modeLabel(), adj: dir => RWB.display.cycleMode(dir), desc: 'AUTO = device pixels. SHARP = 2x+. CLASSIC = 640x360 pixels + scanlines.' });
     }
     rows.push(
       { id: 'overlay', label: () => 'CONTROL OVERLAY: ' + Math.round(s.overlay * 100) + '%', adj: dir => ST.cycle('overlay', ST.OVERLAY_STEPS, dir), desc: 'How strong the on-screen control picture is. It always stays up.' },
       { id: 'hud', label: () => 'HUD SIZE: ' + (s.bigHud ? 'LARGE' : 'NORMAL'), adj: () => ST.set({ bigHud: !s.bigHud }), desc: 'Larger health, meter, score and callout text.' },
       { id: 'colors', label: () => 'HEALTH COLORS: ' + (s.colorblind ? 'COLORBLIND-SAFE' : 'CLASSIC'), adj: () => ST.set({ colorblind: !s.colorblind }), desc: 'Blue / yellow / vermilion health, HP number, and pattern-marked tells.' },
-      { id: 'fx', label: () => 'EFFECTS: ' + s.fx.toUpperCase() + (s.fx === 'auto' ? (WL.perf.lite ? ' (LITE)' : ' (FULL)') : ''), adj: dir => { const o = ['auto', 'full', 'lite']; ST.set({ fx: o[(o.indexOf(s.fx) + (dir || 1) + 3) % 3] }); }, desc: 'LITE halves particles and debris. AUTO picks LITE on slow phones.' },
+      { id: 'fx', label: () => 'EFFECTS: ' + s.fx.toUpperCase() + (s.fx === 'auto' ? (RWB.perf.lite ? ' (LITE)' : ' (FULL)') : ''), adj: dir => { const o = ['auto', 'full', 'lite']; ST.set({ fx: o[(o.indexOf(s.fx) + (dir || 1) + 3) % 3] }); }, desc: 'LITE halves particles and debris. AUTO picks LITE on slow phones.' },
       { id: 'shake', label: () => 'SCREEN SHAKE: ' + (s.shake === 'full' ? 'FULL' : 'REDUCED'), adj: () => ST.set({ shake: s.shake === 'full' ? 'reduced' : 'full' }), desc: 'REDUCED also softens the white hit flashes.' },
       { id: 'back', label: () => 'BACK', back: true, desc: '' }
     );
@@ -41,7 +41,7 @@
       this.kind = kind;
       this.full = !!opts.full;
       this.sel = 0;
-      this.col = WL.input.gamepad.connected ? 1 : 0;
+      this.col = RWB.input.gamepad.connected ? 1 : 0;
       this.msg = ''; this.msgT = 0;
       this.listening = null;
       this.rows = kind === 'controls' ? controlRows() : optionRows(this.full);
@@ -60,8 +60,8 @@
     update(inp, dt) {
       if (this.msgT > 0) this.msgT -= dt || 1 / 60;
       if (this.listening) {
-        if (!WL.input.capturing) this.listening = null;
-        else if (inp.pressed.click) { WL.input.cancelCapture(); this.listening = null; this.flash('CANCELLED'); }
+        if (!RWB.input.capturing) this.listening = null;
+        else if (inp.pressed.click) { RWB.input.cancelCapture(); this.listening = null; this.flash('CANCELLED'); }
         return null;
       }
       if (inp.pressed.pause) { A.sfx.blip(); return 'back'; }
@@ -94,7 +94,7 @@
         const pad = this.col === 1;
         if (pad && !ST.PAD_ACTIONS.includes(action)) { this.flash('MOVEMENT USES THE STICK / D-PAD'); return null; }
         this.listening = { action, pad };
-        WL.input.beginCapture(pad ? 'pad' : 'key', value => {
+        RWB.input.beginCapture(pad ? 'pad' : 'key', value => {
           this.listening = null;
           if (value == null) { this.flash('CANCELLED'); return; }
           const res = pad ? ST.setPad(action, value) : ST.setKey(action, value);
@@ -118,7 +118,7 @@
       const row = this.rows[this.sel];
       const foot = this.msgT > 0 ? this.msg : (row && row.desc) || '';
       if (foot) T.draw(ctx, foot, W / 2, H - 50, { size: 6, align: 'center', color: this.msgT > 0 ? '#9f3' : '#bcd' });
-      const back = WL.input.touchEnabled ? 'TAP A ROW. TAP BACK TO RETURN.' : `UP/DOWN PICK   LEFT/RIGHT CHANGE   ${WL.input.hint('pause', 1)} BACK`;
+      const back = RWB.input.touchEnabled ? 'TAP A ROW. TAP BACK TO RETURN.' : `UP/DOWN PICK   LEFT/RIGHT CHANGE   ${RWB.input.hint('pause', 1)} BACK`;
       T.draw(ctx, back, W / 2, H - 36, { size: 6, align: 'center', color: '#89a' });
     }
     drawOptions(ctx) {
@@ -135,7 +135,7 @@
         ctx.save(); ctx.globalAlpha = s.overlay;
         D.circle(ctx, W - 92, 120, 22, 'rgba(238,51,51,0.18)', 'rgba(255,255,255,0.6)');
         T.draw(ctx, 'ATK', W - 92, 110, { size: 7, align: 'center', color: '#fff', stroke: '#000', strokeWidth: 3 });
-        T.draw(ctx, WL.input.badgeFor('attack'), W - 92, 121, { size: 6, align: 'center', color: '#ffe14a', stroke: '#000', strokeWidth: 3 });
+        T.draw(ctx, RWB.input.badgeFor('attack'), W - 92, 121, { size: 6, align: 'center', color: '#ffe14a', stroke: '#000', strokeWidth: 3 });
         ctx.restore();
       } else if (row.id === 'colors' || row.id === 'hud') {
         const bw = s.bigHud ? 120 : 96, bh = s.bigHud ? 11 : 9;
@@ -151,7 +151,7 @@
     drawControls(ctx) {
       const kx = 360, px = 500;
       T.draw(ctx, 'KEYBOARD', kx, 50, { size: 7, align: 'center', color: this.col === 0 ? '#ffe14a' : '#9ab' });
-      T.draw(ctx, WL.input.gamepad.connected ? 'GAMEPAD' : 'GAMEPAD (NONE)', px, 50, { size: 7, align: 'center', color: this.col === 1 ? '#ffe14a' : '#9ab' });
+      T.draw(ctx, RWB.input.gamepad.connected ? 'GAMEPAD' : 'GAMEPAD (NONE)', px, 50, { size: 7, align: 'center', color: this.col === 1 ? '#ffe14a' : '#9ab' });
       this.rows.forEach((r, i) => {
         const y = this.y0 + i * this.step;
         const sel = i === this.sel;
@@ -179,5 +179,5 @@
     }
   }
 
-  WL.OptionsPanel = OptionsPanel;
+  RWB.OptionsPanel = OptionsPanel;
 })();
