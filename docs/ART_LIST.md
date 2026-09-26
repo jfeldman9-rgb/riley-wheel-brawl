@@ -2,7 +2,7 @@
 
 These are the runtime filenames. They supersede the earlier descriptive WebP names. All delivered images are registered; procedural artwork is retained for missing files.
 
-Add each delivered file's relative path to `RWB.ART_MANIFEST` in `js/artmanifest.js`. `RWB.ART_FILES` maps every logical key below to its path. Registration is automatic in `js/campaign.js`; the loader appends `?v=20260926-w2`. Unlisted files generate zero requests. Listed files that fail retry once, then keep their procedural fallback. Failed gameplay assets show a red banner; lazy story failures do not block scene advancement.
+Add each delivered file's relative path to `RWB.ART_MANIFEST` in `js/artmanifest.js`. `RWB.ART_FILES` maps every logical key below to its path. Registration is automatic in `js/campaign.js`; the loader appends `?v=20260926-w3`. Unlisted files generate zero requests. Listed files that fail retry once, then keep their procedural fallback. Failed gameplay assets show a red banner; lazy story failures do not block scene advancement.
 
 ## Stage layers
 

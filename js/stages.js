@@ -8,14 +8,37 @@
     ['#163850', '#d5b879', '#697985', '#27353f'],
     ['#101628', '#5b6882', '#323c52', '#1f293b'],
   ];
-  function tiled(ctx, key, cam, factor, y, h) {
+  const seamless = new Map();
+  // Build one non-mirrored repeat at source resolution.  The final 24% is a
+  // genuine alpha crossfade from the right edge into a copy of the left edge;
+  // it is not a translucent second plate laid over the whole scene.
+  function seamlessPlate(key, topFeather) {
     const img = R.assets.get(key);
+    if (!img) return null;
+    const id=key+':'+!!topFeather;if(seamless.has(id))return seamless.get(id);
+    const overlap=Math.max(32,Math.round(img.width*.24)),step=img.width-overlap;
+    const c=document.createElement('canvas');c.width=step;c.height=img.height;
+    const g=c.getContext('2d');g.drawImage(img,0,0);
+    // Move the actual painted right edge into the overlap zone; the following
+    // masked left edge then dissolves over it, so both sides of the source (not
+    // an arbitrary interior crop) meet at the repeat boundary.
+    g.drawImage(img,img.width-overlap,0,overlap,img.height,step-overlap,0,overlap,img.height);
+    const temp=document.createElement('canvas');temp.width=overlap;temp.height=img.height;
+    const t=temp.getContext('2d');t.drawImage(img,0,0,overlap,img.height,0,0,overlap,img.height);
+    t.globalCompositeOperation='destination-in';const fade=t.createLinearGradient(0,0,overlap,0);
+    fade.addColorStop(0,'rgba(0,0,0,0)');fade.addColorStop(1,'rgba(0,0,0,1)');t.fillStyle=fade;t.fillRect(0,0,overlap,img.height);
+    g.drawImage(temp,step-overlap,0);
+    if(topFeather){g.globalCompositeOperation='destination-in';const v=g.createLinearGradient(0,0,0,Math.min(24,img.height));v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,1)');g.fillStyle=v;g.fillRect(0,0,c.width,img.height);}
+    seamless.set(id,c);return c;
+  }
+  function tiled(ctx, key, cam, factor, y, h, topFeather=false) {
+    const img = seamlessPlate(key,topFeather);
     if (!img) return false;
-    const width = (h * img.width) / img.height;
-    const tile=Math.floor(cam*factor/width);
-    for (let i=tile,x=tile*width-cam*factor;x<640;x+=width,i++) {ctx.save();ctx.translate(x,y);if(i%2){ctx.translate(width,0);ctx.scale(-1,1);}ctx.drawImage(img,0,0,width,h);ctx.restore();}
+    const width = (h * img.width) / img.height,offset=((cam*factor)%width+width)%width;
+    for(let x=-offset-width;x<640+width;x+=width)ctx.drawImage(img,x,y,width,h);
     return true;
   }
+  function haze(ctx,y,color='#c9d7df') {const f=ctx.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');ctx.fillStyle=f;ctx.fillRect(0,y-9,640,21);}
   function architecture(ctx, level, cam, time) {
     const pal = PALETTES[level],
       offset = cam * 0.55;
@@ -128,7 +151,8 @@
       }
       const roof = n === 5 && scene.wave === 5;
       tiled(ctx, roof ? 'stage5-roof-far' : 'stage' + n + '-far', cam, 0.10, 0, 244);
-      if (!roof && !tiled(ctx, 'stage' + n + '-mid', cam, 0.42, 10, 222)) { if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam); }
+      if (!roof && !tiled(ctx, 'stage' + n + '-mid', cam, 0.42, 10, 222, true)) { if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam); }
+      if(!roof)haze(ctx,20);
       if (n > 1) {
         ctx.fillStyle = PALETTES[n - 1][3];
         ctx.fillRect(0, 224, 640, 136);
@@ -150,8 +174,9 @@
         ctx.globalAlpha = 1;
       }
       // Wide floor plates are compressed in depth, not tiled into tiny squares.
-      const floor = R.assets.get(roof ? 'floor-roof' : 'floor' + n);
-      if (floor) for(let i=Math.floor(cam/640),x=i*640-cam;x<640;x+=640,i++){ctx.save();ctx.translate(x,222);if(i%2){ctx.translate(640,0);ctx.scale(-1,1);}ctx.drawImage(floor,0,0,640,138);ctx.restore();}
+      const floorKey=roof ? 'floor-roof' : 'floor' + n;
+      const floor = seamlessPlate(floorKey,true);
+      if (floor){const fw=640*floor.width/(R.assets.get(floorKey).width*.76);const off=((cam%fw)+fw)%fw;for(let x=-off-fw;x<640+fw;x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
       else if(n===1)R.Stage1.layers.floor(ctx,cam);
       const depth=ctx.createLinearGradient(0,218,0,360);
       depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');ctx.fillStyle=depth;ctx.fillRect(0,218,640,142);
@@ -178,7 +203,7 @@
       // Confine dense delivered foreground props to the bottom 26px; every lane
       // and attack tell remains visible, even on the lowest playable lane.
       ctx.save();ctx.beginPath();ctx.rect(0,334,640,26);ctx.clip();
-      const painted=tiled(ctx, 'stage' + n + '-near', scene.camera.x, 1.12, 202, 158);ctx.restore();
+      const painted=tiled(ctx, 'stage' + n + '-near', scene.camera.x, 1.12, 202, 158, true);ctx.restore();
       if (painted || n === 1) return;
       ctx.fillStyle = PALETTES[n - 1][2];
       for (let i = 0; i < 9; i++) {

@@ -11,7 +11,12 @@
     ctx.strokeRect(x, y, w, h);
   }
   function drawRileyPortrait(ctx, x, y) {
-    if (R.paint(ctx, 'portrait-riley', x-20, y-20, 40, 40)) return;
+    // Use the same pre-baked child rig as gameplay; the supplied portrait was
+    // an adult crop and made the HUD contradict Riley's in-world proportions.
+    if (R.Puppet && R.assets.has('rig-riley')) {
+      ctx.save();ctx.beginPath();ctx.arc(x,y,20,0,Math.PI*2);ctx.clip();ctx.translate(x,y+26);ctx.scale(.72,.72);
+      R.Puppet.draw(ctx,{x:0,y:0,z:0,facing:1,state:'idle',stateT:0},0,'riley');ctx.restore();return;
+    }
     ctx.fillStyle = '#101c2d';
     ctx.beginPath();
     ctx.arc(x, y, 21, 0, Math.PI * 2);

@@ -44,3 +44,20 @@ and failed lists remain empty.
 The background/foreground integration and source-detail comparison are visible
 here. The follow-up replaces hard leg cuts with continuous skinning and rigid sole contacts; elastic cloth deformation and the front-facing Riley silhouette remain reviewable limitations. See
 `../STATUS.md` for the exact natural/assisted tables and remaining weaknesses.
+
+## Fixes in this round (w3)
+
+`tools/review.cjs` now produces `stage1-vs-lido.jpeg` through
+`stage5-vs-lido.jpeg`, `seams-stage1.jpeg` through `seams-stage5.jpeg`,
+`walk-riley.jpeg`, `walk-trolloc.jpeg`, `walk-darkfriend.jpeg`,
+`walk-cultist.jpeg`, `joints-closeup.jpeg`, `riley-closeup.jpeg`, and
+`belal-closeup.jpeg`. The seam strips render camera positions 0, 700 and 2000;
+Stage 5's strip uses the Taim roof. Joint crops are genuine 3x runtime walk or
+attack poses. The new files are intentionally generated rather than committed so
+this fix-round diff remains text-only.
+
+The w3 renderer removes mirrored scenery repeats, blends a 24% overlap at each
+vertical repeat, feathers mid/near/floor tops, and lays haze over horizontal
+joins. All puppet states share a processed connected composite with one rim and
+shading pass. Riley is the 64-unit child bake in gameplay and HUD; Be'lal is the
+104-unit male, crimson/pewter swordsman bake with an articulated long sword.

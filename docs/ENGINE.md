@@ -52,7 +52,7 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 
 ## Content extensions
 
-`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes all five stages. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(levelIndex = 0)` opens any stage and `RWB.game.debug.boss()` summons that stage's boss. `RWB.ASSET_VER` is the shared external-resource cache stamp (`20260926-w2`).
+`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes all five stages. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(levelIndex = 0)` opens any stage and `RWB.game.debug.boss()` summons that stage's boss. `RWB.ASSET_VER` is the shared external-resource cache stamp (`20260926-w3`).
 
 ## Chunk A content modules
 
@@ -114,7 +114,7 @@ knees and hems; source soles translate rigidly to measured world contacts. The
 Stone Guard supplies explicit contacts because its painted boots overlap. Kicks
 are constrained to the authored leg length. The source texture is cached at 384
 pixels tall; translucent actors composite to a scratch surface once before fading
-to avoid alpha seams at triangle edges. Idle draws the original cutout. Attack/hurt targets and
+to avoid alpha seams at triangle edges. Idle uses the same processed composite as articulated motion. Attack/hurt targets and
 knockdown rotation use this same rig. Draghkar uses its winged painted cutout.
 
 `gait.phase` advances with actual world displacement, including lane movement.

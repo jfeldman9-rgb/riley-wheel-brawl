@@ -110,7 +110,7 @@ check(RWB.ART_MANIFEST.length >= 54 && RWB.ART_MANIFEST.every(src=>fs.existsSync
 check([...fs.readdirSync(path.join(root,'assets/art')).map(f=>'assets/art/'+f), ...fs.readdirSync(path.join(root,'assets/cutscenes')).map(f=>'assets/cutscenes/'+f)].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-check(urls.every(url => url.includes('?v=20260926-w2')), 'Every script, stylesheet, and font URL has the w2 cache stamp');
+check(urls.every(url => url.includes('?v=20260926-w3')), 'Every script, stylesheet, and font URL has the w3 cache stamp');
 // Chunk B: exercise real collision, persistence and scene transitions, not only metadata.
 const neutral = { pressed: {}, held: {}, axis: () => ({x:0,y:0}) };
 const ctx = new Proxy({ createLinearGradient:()=>({addColorStop(){}}), createRadialGradient:()=>({addColorStop(){}}), measureText:t=>({width:String(t).length*8}) }, {get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
@@ -205,7 +205,7 @@ for(let level=0;level<5;level++) {
 }
 check(Object.values(RWB.ART_FILES).every(src=>!src.startsWith('/') && /\.(png|jpeg)$/.test(src)), 'Art hooks use relative JPEG/PNG paths');
 check([1,2,3,4,5].every(n=>RWB.ART_FILES['stage'+n+'-far'] && RWB.ART_FILES['stage'+n+'-mid'] && RWB.ART_FILES['stage'+n+'-near'] && RWB.ART_FILES['floor'+n]),'Every stage has four optional art layers');
-check(RWB.assets.VER==='20260926-w2' && RWB.ASSET_VER==='20260926-w2','Runtime assets share the w2 script cache stamp');
+check(RWB.assets.VER==='20260926-w3' && RWB.ASSET_VER==='20260926-w3','Runtime assets share the w3 script cache stamp');
 
 const brokenPath='assets/art/test-missing.png';
 RWB.ART_MANIFEST.push(brokenPath);
@@ -215,7 +215,7 @@ await RWB.assets.load();
 check(RWB.__assetUrls().filter(url=>url.startsWith(brokenPath+'?')).length===2 && RWB.assets.failed().includes('test-missing') && !RWB.assets.has('test-missing'), 'A listed broken image retries once and settles to fallback');
 RWB.ART_MANIFEST.pop();
 
-// W2 regression gates: run through persisted data and real Continue constructors.
+// W3 regression gates: run through persisted data and real Continue constructors.
 {
   for(let i=0;i<5;i++) {
     const s=bossScene(i); s.boss.hp=137; s.player.loialReady=false;
@@ -252,7 +252,15 @@ RWB.ART_MANIFEST.pop();
     armOpposite=armOpposite && pose.arms.every((p,i)=>(p.x-(i?9:-9))*pose.feet[i].x<=.0001);
   }
   check(planted>40 && maxDrift<1e-8 && armOpposite,'World-space planted feet stay fixed; arms counter-swing throughout the gait');
-  check(Object.keys(RWB.Puppet.defs).length===12,'All walking characters share articulated painted rigs');
+check(Object.keys(RWB.Puppet.defs).length===12,'All walking characters share articulated painted rigs');
+  const stageSource=fs.readFileSync(path.join(root,'js/stages.js'),'utf8');
+  const puppetSource=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
+  check(!/scale\(\s*-1\s*,\s*1\s*\)/.test(stageSource),'Stage plate and floor tiling never mirrors a repeat');
+  const kid=RWB.Puppet.defs.riley,adults=Object.entries(RWB.Puppet.defs).filter(([k])=>!['riley','twinkle'].includes(k));
+  check(kid.height<Math.min(...adults.map(([,d])=>d.height))&&kid.headRatio>=.19&&kid.headScale>=1.3&&kid.legScale<=.78,'Riley is a 64-unit child with a head at least 1/5 high and shorter limbs than every adult');
+  const belal=RWB.Puppet.defs.forsaken;
+  check(belal.male&&belal.key==='cg-turned-ashaman'&&!['cg-forsaken','cg-taim'].includes(belal.key)&&belal.sword&&belal.sword.length>=.55,"Be'lal uses the male lunging source and owns a long articulated sword part");
+  check(!/if\s*\(\s*!articulated\s*\)\s*ctx\.drawImage/.test(puppetSource)&&/Processed connected skin is mandatory even at idle/.test(puppetSource),'Idle uses the same processed connected rig as action states');
 }
 
 if (failures.length) {
