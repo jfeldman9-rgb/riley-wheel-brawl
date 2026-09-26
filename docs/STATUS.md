@@ -1,5 +1,7 @@
 # Current Repository Status
 
+> **Task 1 done (2026-09-26):** The public page metadata, loading copy, cache stamps, and README now identify Riley Wheel Brawl and document its five-stage fantasy rescue story and controls. Gameplay code and runtime content are unchanged for the later implementation tasks.
+
 ## Snapshot
 
 The repository is currently the complete **Whale Lance: Buffet Brawl** game, not yet Riley Wheel Brawl. It is a no-build, 640×360 logical-resolution Canvas 2D application served from `index.html`. The existing game has four scrolling stages, seven regular enemy types, a final boss, an opening reel, between-stage story beats, an ending, persistent options, and desktop/gamepad/touch controls.
