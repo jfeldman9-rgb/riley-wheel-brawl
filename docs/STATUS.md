@@ -1,45 +1,45 @@
-# Riley Wheel Brawl — Implementation Status
+# Riley Wheel Brawl - Implementation Status
 
-## DONE (verified)
+Chunk B, `rwb-w1`, based on `rwb-grok2` commit `585ebec544e22ae222a67ecc55ab7a9254926178`.
+Cache stamp: `?v=20260926-w1` for scripts, CSS, fonts, and the runtime image loader.
 
-- **Stage 1 is playable from the title, through both reels, into Emond's Field, the Chieftain, and the clear card.** A headless Chrome session drove it with the keyboard. Skipping the last caption of a reel used to throw in `Reel.draw` (the index moved past the last line while the fade was still showing that reel) and killed the frame loop, so the stage never actually started. That crash is fixed, and the same session reached gameplay.
-- **Riley reads as a kid Asha'man.** Short dark hair with a side part and tufts, thin blue wire glasses, a black high-collared coat with buttons, belt, sword pin, and dragon pin, dark trousers, and boots. He is about 70px tall with a large head. Idle, walk, and the kick poses were checked on the canvas, not only in the pose table. The walk cycle still has four distinct poses (the check asserts this). A small plant offset reduces foot slide; it is not full foot-lock IK.
-- **Combat uses spatial hitboxes.** The three-hit chain, flying kick, down-plus-kick 360, fireball, throw, enemy blows, boss moves, shockwave, and stomp go through `RWB.collide`. `node tools/check.cjs` builds a target and checks that each required player move damages it. An attack press during a move is latched, so the chain comes out without waiting for a tiny end window, and a press during hit-stop is kept until the freeze ends. Getting hit cancels the current attack instead of leaving a stuck move timer.
-- **Enemy damage comes from attack hitboxes.** Axe, hound-snout, and spear Trollocs approach, hold a lane offset, telegraph on the ground, attack, step back, then recover. At most two attack at once. With no living attackers, Riley takes no damage for 30 seconds (the check). Horn Charge keeps its facing for the whole rush and its hitbox is low enough to jump. Ground Stomp and the axe shockwave still require a jump.
-- **The Trolloc Chieftain dies for real and uses three different attacks.** Axe Crash, Horn Charge, and Ground Stomp have different tells, shapes, and timing. An attack is recorded only when its hitbox is active. The intro holds him unhittable until the name card is done. The ten-seed soak requires all three attacks on every seed.
-- **Saidin, taint, angreal, Moiraine's heal, and Loial behave as wired.** Hits fill the meter. Balefire is invulnerable, hit-stops, ducks audio, draws the beam and strikes, says the line once, clears normal enemies, and chips the boss. A full meter past the grace period warns, vignettes, and chips HP but never below 1. Loial stays spent across restart and Continue (the check). One angreal can drop per stage.
-- **Emond's Field is a procedural 3,000px lane** with sky, mountains, village and the Winespring Inn, fences, a cart, bonfires, snowy mud, footprints, and falling snow. Two breakable props can drop pickups.
-- **Flow for what is built:** title, opening reel, Stage 1 intro, play, clear reel, "TO BE CONTINUED" card, Game Over with a 9-second Continue, pause, and a checkpoint for level, wave, score, meter, lives, and Loial. Continue costs 500 score, restores 3 lives and full HP, and keeps the wave and Loial state. The check covers that resume.
-- **HUD and audio.** HP (including the colorblind color), saidin/taint, angreal time, Loial READY/SPENT, score, lives, wave, and the boss bar. Big HUD enlarges both panels without pushing the right panel off the 640px canvas. Combat cues are separate synths, not one shared blip.
-- **Empty art manifest, zero image requests.** The check still asserts this. Presentation is procedural.
+## Built
 
-Verification: `node tools/check.cjs` and `node tools/soak.cjs` both exit 0. The soak rejects a missed clear, zero player damage, identical seeds, or a Chieftain who used fewer than three attacks. Latest soak, with the harness topping HP up under 28 and giving 99 lives:
+- Stage 1's combat, kick timings, hit-stop input latch, Chieftain AI, and controls remain the foundation. `Play` now selects stage configuration instead of hard-coding Stage 1. Stage 1 clear advances through its existing clear reel to Caemlyn.
+- **Stage 2, Caemlyn:** warm city architecture and cobbled lane; Darkfriends mixed with Trollocs; Myrddraal with actual shadow blink, multi-swing sword combo, and finite fear stun. Each has a distinct spatial tell.
+- **Stage 3, Shadar Logoth:** ruined arches and violet stone; cultists and mixed ground enemies; Mashadar alternates warned floor lanes and drains HP on contact. Changing lane or jumping avoids it. Draghkar remains airborne, flaps, swoops, uses a hypnotic kiss that really grabs/drains Riley (tap Kick to escape), and sends a low wing gust. Only jump kicks and fireballs can hurt it while flying, including during a low swoop. Grounded kicks, Loial, throws, and super cannot bypass this rule. Fireballs aim once at a visible flyer in the same lane; they do not home.
+- **Stage 4, Stone of Tear:** columned halls, banners, torchlight and polished floor; guards and channelers; Be'lal with sword flurry, a lane-wide balefire tell, and weave snare. Clearing him awards Callandor and plays the lightning reveal with Twinkle Toes. Callandor is visible and doubles super damage to bosses from 78 to 156; its flag persists into Stage 5, restart, death, and Continue.
+- **Stage 5, Black Tower roof:** battlements, storm skyline, banners and dark flagstones; turned Asha'man and Darkfriend waves; Taim uses Dark Balefire, Storm Strikes, and Shadow Surge. His recovery accelerates below 55% HP. Below 22%, Twinkle Toes is freed from the visible weave barrier and supplies a one-time full saidin reward. Taim keeps attacking and ordinary damage cannot reduce him below 1 HP. POWER starts the joint finish after Kenzie's readiness caption. Both visible beam tips must reach and collide with him before he dies. Riley can still die during the charge; a canceled attempt can be retried by refilling saidin, including from hits on Taim's last-HP shield.
+- **Story:** opening, Stage 1 intro/clear, every subsequent stage intro, Callandor reveal, live finale dialogue, homecoming and victory. Exact catalog captions are used; Twinkle Toes is `kenzie`. Reel completion is idempotent and the final caption remains drawable during the fade, including repeated skip presses.
+- **Persistence:** level/wave/score/lives/saidin/Loial/Callandor survive appropriate checkpoints. Loial resets for the next stage and stays spent on same-stage restart/Continue. A stage clear saves the next stage before its reel. Winning clears the run only after Taim falls.
+- **Art:** relative `stageN-far.jpeg`, `floorN.jpeg`, `stageN-mid.png`, `stageN-near.png`, `cg-*.png`, `portrait-*.png`, and `cut-*.jpeg` hooks in `artmanifest.js`. Missing files use location-specific procedural art, visible actors, and speaker medallions. Unlisted assets produce no requests. Listed failures retry once and fall back; critical failures show the red banner, and story failures never block NEXT. The manifest is intentionally empty because no painted files are bundled in this branch.
+- **Controls/presentation:** existing keyboard/gamepad/touch mappings and hit regions retained. The existing persistent transparent controls renderer is now actually called by Play, with CALL/FIRE labels. Title pointer selection selects the clicked row. Touch also advances reels. All five stages have music patterns using the existing synth engine.
+- **Taint:** full-meter grace, warning, HP chip with floor of 1, vignette and spend-to-clear work in every stage. Pause/death/reels stop gameplay damage. The warning voice is gated once per full-meter cycle.
 
-```
-SEED | CLEARED | SECONDS | DAMAGE | HITS | DEATHS | PICKUPS | MOVES
-   1 | YES     |    86.2 |    262 |   14 |      0 |       0 | combo1,combo2,combo3,fireball,jump,spin,super
-   2 | YES     |    79.7 |    188 |   10 |      0 |       1 | combo1,combo2,combo3,fireball,jump,spin,super
-   3 | YES     |    87.6 |    279 |   15 |      0 |       0 | combo1,combo2,combo3,fireball,jump,spin,super
-   4 | YES     |    76.1 |    183 |   10 |      0 |       1 | combo1,combo2,combo3,fireball,jump,spin,super
-   5 | YES     |    85.7 |    223 |   12 |      0 |       1 | combo1,combo2,combo3,fireball,jump,spin,super
-   6 | YES     |    82.3 |    228 |   12 |      0 |       1 | combo1,combo2,combo3,fireball,jump,spin,super
-   7 | YES     |   132.2 |    621 |   36 |      0 |       0 | combo1,combo2,combo3,fireball,jump,super
-   8 | YES     |    93.2 |    291 |   16 |      0 |       1 | combo1,combo2,combo3,fireball,jump,spin,super
-   9 | YES     |    86.2 |    204 |   11 |      0 |       0 | combo1,combo2,combo3,fireball,jump,spin,super
-  10 | YES     |    95.9 |    256 |   14 |      0 |       0 | combo1,combo2,combo3,fireball,jump,spin,super
-MEDIAN DAMAGE: 242
-```
+## Verification
 
-Every seed's Chieftain used Axe Crash, Horn Charge, and Ground Stomp. The same masher with 3 lives and no HP top-up cleared 8 of 10 seeds and game-overed on seeds 7 and 10, always on the boss, after 1–3 deaths. The harness deaths column stays 0 because of that top-up, not because hits miss.
+`node tools/check.cjs` passes. It covers the inherited Stage 1 checks plus all-stage Reel routing and repeated final skips, exact subtitle text/speaker IDs, airborne damage restrictions through real hitboxes, kiss grab/escape, fog drain/safe lane/pause, actual blink and fear stun, Callandor damage/persistence, Taim's survival/continued attacks/refill/joint collision, taint in all stages, all art layer hooks, cache stamps, and a broken listed image's one retry/fallback.
 
-Cache stamp is `?v=20260926-g2`.
+`node tools/soak.cjs` passes all 50 runs. It drives the existing combat APIs with a seeded masher and requires actual active attack coverage for every boss on every seed. Stage 5 also requires joint-beam contact; Stage 3 rejects any received damage move other than jump/fireball. The harness inherits its **HP top-up below 28 and 99 lives**. These are completion and attack-coverage results, not proof of natural difficulty balance.
 
-## NOT DONE / PARTIAL
+| Stage | Clears | Seconds, min-max | Median damage taken | Every boss attack, seeds |
+| --- | --- | --- | --- | --- |
+| 1 - Emond's Field | 10/10 | 76.1-132.2 | 225.5 | 10/10 |
+| 2 - Caemlyn | 10/10 | 53.8-92.1 | 160.5 | 10/10 |
+| 3 - Shadar Logoth | 10/10 | 119.9-144.3 | 413.5 | 10/10 |
+| 4 - Stone of Tear | 10/10 | 61.6-77.7 | 125 | 10/10 |
+| 5 - Black Tower | 10/10 | 62.7-114.7 | 366.5 | 10/10 |
 
-- **Stages 2–5 are not built.** No encounter scripts, enemies, bosses, or cutscenes. The clear card says Stage 2 is next.
-- **The Taim finale is not built.**
-- **Callandor is not built.**
-- **No painted sprites and no recorded voices.** Procedural art and synth cues only.
-- **Stage 1 is still mash-friendly.** Light hits hold a Trolloc in place for the combo, so a player who never dodges still wins most seeds and only sometimes game-overs on the Chieftain. The fastest harness clear is 76 seconds. Grab/throw almost never shows up in the soak because the bot stops walking once it is in kick range.
-- **Walk feet are only partly planted.** The contact foot is nudged by at most 7px. It is better than a free slide and it is not a locked plant.
-- **Touch, gamepad, and a long human playtest are not covered here.** The browser pass used a keyboard.
+`node tools/soak.cjs --stage=3` selects one stage. `--natural` disables top-ups and starts with three lives. The unassisted masher cleared Stage 1 **9/10**, Stage 2 **10/10**, Stage 3 **0/10**, Stage 4 **10/10**, Stage 5 **1/10**. This bot does not deliberately dodge telegraphs or Mashadar. Those failures remain visible; the difficulty was not weakened to disguise them.
+
+A headless Chromium session verified keyboard Title -> opening -> intro -> Stage 1, rendered every stage and boss, completed Taim's joint finish into clear, rendered Classic mode with large HUD/reduced shake/colorblind HP, and clicked the Options row. A touch-emulated browser also reached Stage 1 by tapping through the title/reels and fired a projectile through the original FIRE hit region. No page errors. A real Canvas render also covered all five boss arenas and the Callandor reveal. This is a browser smoke check, not a complete human campaign playthrough.
+
+## Still weak / not claimed complete
+
+- **Difficulty needs human tuning, particularly Stages 3 and 5.** The unassisted masher results above are poor there. Assisted 50/50 does not mean a child can clear the campaign unaided.
+- **Procedural presentation is functional, not final painted quality.** New walkers and bosses have simple bodies, stepping legs/arm swing and effects. Static `cg-*` cutouts can replace them when delivered; a full painted animation atlas is not built here. Foot planting remains approximate.
+- **No recorded voices.** Subtitles and synthesized cues work; full spoken performances are absent.
+- **No full physical gamepad or phone playthrough.** Shared control code is retained and browser smoke is limited; audio feel, responsiveness on actual devices and long-run balance need human playtesting.
+- Checkpoints restore the start of the current wave, not a mid-boss HP snapshot. Reloading after Stage 4 clear retains Callandor but may skip the already-cleared stage's reveal.
+
+No changes to `main` and no PR merge are part of this work.

@@ -39,7 +39,10 @@
       this.owner = owner;
       this.x = owner.x + owner.facing * 25;
       this.y = owner.y + laneOffset;
-      this.z = 30;
+      this.z = 30 + owner.z;
+      const flyer = scene.enemies.find(e => e.flying && !e.dead && Math.abs(e.y - this.y) < 28 && (e.x - owner.x) * owner.facing > 0);
+      // Aim once on release, never home; makes fireballs a usable anti-air tool.
+      this.vz = flyer ? (flyer.z + 25 - this.z) / Math.max(0.15, Math.abs(flyer.x - this.x) / 330) : 0;
       this.vx = owner.facing * 330;
       this.life = 2.3;
       this.radius = owner.angreal > 0 ? 10 : 7;
@@ -48,6 +51,7 @@
     }
     update(dt) {
       this.x += this.vx * dt;
+      this.z += this.vz * dt;
       this.life -= dt;
       if (Math.random() < 0.55) this.g.fx.sparks(this.x, this.y - this.z, '#ffb33d', 1);
       for (const enemy of this.g.enemies) {
@@ -83,6 +87,8 @@
       this.score = saved.score || 0;
       this.lives = saved.lives == null ? 3 : saved.lives;
       this.loialReady = saved.loial !== false;
+      this.callandor = !!saved.callandor;
+      this.stunTimer = 0;
       this.angreal = 0;
       this.fireCooldown = 0;
       this.comboStep = 0;
@@ -247,7 +253,9 @@
       this.comboWindow = finished === 'front' || finished === 'round' ? R.TUNE.comboWindow : 0;
     }
     updateTaint(dt) {
+      if (this.g.paused || this.dead) return;
       if (this.power < this.powerMax || this.g.phase !== 'play') {
+        this.taintWarned = false;
         this.taintAge = 0;
         this.taintClock = 0;
         this.taintTell = 0;
@@ -270,10 +278,19 @@
         this.taintTell = R.TUNE.taintTell;
         this.g.warning = 'TAINT STRIKE INCOMING!';
         this.g.warningTimer = R.TUNE.taintTell;
-        R.voice('moiraine_taint_01');
+        if (!this.taintWarned) { R.voice('moiraine_taint_01'); this.taintWarned = true; }
       }
     }
     update(dt, input) {
+      if (this.grabbedBy) {
+        this.grabTimer -= dt + (R.keyPressed(input, 'attack') ? 0.23 : 0);
+        this.grabDamageClock += dt;
+        this.vx = this.vy = 0;
+        if (this.grabDamageClock >= 0.4) { this.grabDamageClock = 0; this.g.hitPlayer(3, this.grabbedBy.x, { kb:0, knockdown:false, source:'HYPNOTIC KISS' }); }
+        if (this.grabTimer <= 0 || this.grabbedBy.dead) { this.grabbedBy = null; this.invuln = 0.7; }
+        this.updateTaint(dt); super.update(dt); return;
+      }
+      if (this.stunTimer > 0) { this.stunTimer -= dt; this.vx = this.vy = 0; this.updateTaint(dt); super.update(dt); return; }
       this.fireCooldown = Math.max(0, this.fireCooldown - dt);
       this.angreal = Math.max(0, this.angreal - dt);
       this.comboWindow = Math.max(0, this.comboWindow - dt);
@@ -363,6 +380,7 @@
     }
     draw(ctx, cameraX) {
       this.drawShadow(ctx, cameraX, 14);
+      if (R.paint && R.paint(ctx, 'cg-riley', this.x-cameraX-33, this.y-this.z-78, 66, 78)) return;
       const pose = this.pose();
       const hipY = -23;
       const leftFoot = limbPoint(limbPoint(-4, hipY, 12, pose.hip[0]).x, limbPoint(-4, hipY, 12, pose.hip[0]).y, 11, pose.hip[0] + pose.knee[0]);
@@ -378,6 +396,7 @@
         }
         slide = R.util.clamp((this.plantWorld - this.x) * this.facing - plant.x, -7, 7);
       } else this.plantFoot = '';
+      if (this.callandor) { ctx.strokeStyle = '#f5fcff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(this.x-cameraX+15,this.y-this.z-22); ctx.lineTo(this.x-cameraX+27,this.y-this.z-70); ctx.stroke(); }
       const x = this.x - cameraX;
       const y = this.y - this.z + pose.bob * 0.6;
       ctx.save();

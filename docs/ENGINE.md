@@ -52,7 +52,7 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 
 ## Content extensions
 
-`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` currently describes Stage 1 only. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play()` opens Stage 1 and `RWB.game.debug.boss()` summons the Chieftain. `RWB.ASSET_VER` is the shared external-resource cache stamp (`20260926-g2`).
+`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes all five stages. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(levelIndex = 0)` opens any stage and `RWB.game.debug.boss()` summons that stage's boss. `RWB.ASSET_VER` is the shared external-resource cache stamp (`20260926-w1`).
 
 ## Chunk A content modules
 
@@ -71,3 +71,33 @@ constructors, `RWB.Stage1`, and the scene constructors. `Play` publishes its
 live hitbox arrays, used player moves, pickup count, damage count, and the
 Chieftain's `usedAttacks` set for deterministic validation. An enemy move is
 added to `usedAttacks` only when its active interval begins.
+
+## Chunk B extensions
+
+After `stage1.js`, load `campaign.js`, `shadow.js`, and `stages.js`, before `hud.js`
+and `scenes.js`. No bundler or runtime package is added.
+
+- `campaign.js`: exact voice catalog, stage configurations and encounter mixes,
+  story groups, optional JPEG/PNG registration and painted-image helper.
+- `shadow.js`: new walkers extend the existing Trolloc AI/director/throw behavior;
+  distinct bosses use existing Entity physics and collision. Draghkar is truly
+  flying and filters damage to jump kicks and fireballs. Taim clamps ordinary
+  damage at 1 HP; only the joint beam collision can finish him.
+- `stages.js`: independent procedural architecture/palettes, four-layer art hooks,
+  Mashadar lane warning/drain, and Twinkle Toes drawing.
+- `scenes.js`: stage-indexed encounters/checkpoints, per-stage Loial reset on
+  progression, story routing, subtitle queue, Callandor award, live joint finish.
+  Reel advancement is idempotent and its last caption remains drawable during fade.
+- `riley.js`: finite fear stun/kiss escape, release-time anti-air fireball aim,
+  persisted Callandor flag. Existing kick timing, combo queue, hit-stop latch,
+  controls and combat physics stay in place.
+
+Checkpoint `extra.callandor` persists through death, restart and Continue. Stage
+clear saves the next stage before its reel; Loial becomes available only on new
+stage entry, not on restarting or continuing the same stage. The final save is
+cleared only after Taim dies. Finale charge-up leaves Taim's AI and damage live;
+Riley can die and retry, and shield hits still refill saidin at Taim's HP floor.
+
+Art registration uses `ART_FILES` for logical paths and `ART_MANIFEST` for the
+allowlist of delivered files. The shared input renderer is called from Play with
+`always: true`; CALL/FIRE labels retain the original action IDs and hit regions.

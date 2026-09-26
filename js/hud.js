@@ -11,6 +11,7 @@
     ctx.strokeRect(x, y, w, h);
   }
   function drawRileyPortrait(ctx, x, y) {
+    if (R.paint(ctx, 'portrait-riley', x-20, y-20, 40, 40)) return;
     ctx.fillStyle = '#101c2d';
     ctx.beginPath();
     ctx.arc(x, y, 21, 0, Math.PI * 2);
@@ -72,6 +73,7 @@
     R.drawText(ctx, 'LOIAL ' + (player.loialReady ? 'READY' : 'SPENT'), textX, big ? 24 : 20, font, player.loialReady ? '#8cf0ae' : '#87909a');
     R.drawText(ctx, 'SCORE ' + String(player.score).padStart(7, '0'), textX, big ? 44 : 38, font, '#ffffff');
     R.drawText(ctx, 'WAVE ' + Math.min(6, scene.wave + 1) + '/6', textX, big ? 64 : 54, small, '#b7cce1');
+    R.drawText(ctx, 'STAGE ' + (scene.levelIndex + 1) + (player.callandor ? '  CALLANDOR' : ''), 320, 16, 6, '#efdb97', 'center');
     if (player.angreal > 0) {
       R.drawPanel(ctx, 235, 75, 170, 24);
       R.drawText(ctx, 'ANGREAL ' + player.angreal.toFixed(1) + 's', 320, 88, 7, '#ffe078', 'center');
@@ -82,7 +84,7 @@
     }
     if (scene.boss && !scene.boss.dead) {
       R.drawPanel(ctx, 142, 70, 356, 35);
-      R.drawText(ctx, 'TROLLOC CHIEFTAIN', 320, 81, 7, '#f6ddb0', 'center');
+      R.drawText(ctx, scene.level.boss, 320, 81, 7, '#f6ddb0', 'center');
       bar(ctx, 160, 91, 320, 7, scene.boss.hp / scene.boss.hpMax, '#b94147', '#331f26');
     }
     if (scene.warningTimer > 0) R.drawText(ctx, scene.warning, 320, 122, 8, '#ffe67a', 'center');

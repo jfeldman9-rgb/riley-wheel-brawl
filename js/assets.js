@@ -15,7 +15,7 @@
    from an older deploy can't pin the fallback. */
 'use strict';
 
-RWB.ASSET_VER = '20260926-f1';
+RWB.ASSET_VER = '20260926-w1';
 RWB.assets = (function () {
   const images = {};
   const cs = typeof document !== 'undefined' && document.currentScript;
@@ -52,9 +52,9 @@ RWB.assets = (function () {
     if (!listed(src)) { images[k] = null; skipped.push(k); return null; }
     const url = src + (src.includes('?') ? '&' : '?') + 'v=' + VER;
     let img = await fetchImage(url);
-    if (!img && !Array.isArray(RWB.ART_MANIFEST)) img = await fetchImage(url + '&r=' + Date.now());
+    if (!img) img = await fetchImage(url + '&r=' + Date.now());
     images[k] = img;
-    if (!img) failed.push(k);
+    if (!img) { failed.push(k); if (k in lazy && typeof console !== 'undefined') console.info('[RWB] story art unavailable; using drawn art:', k); }
     return img;
   }
 

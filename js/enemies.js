@@ -290,6 +290,8 @@
     draw(ctx, cameraX) {
       this.drawTell(ctx, cameraX);
       this.drawShadow(ctx, cameraX, 24);
+      const spriteSize = this.boss ? 132 : 90;
+      if (R.paint(ctx, this.boss ? 'cg-trolloc-chieftain' : 'cg-trolloc', this.x-cameraX-spriteSize/2, this.y-this.z-spriteSize, spriteSize, spriteSize)) return;
       const frame = Math.floor(this.walkDistance / 16) % 4;
       const legs = [[-10, 10], [-4, 5], [10, -10], [5, -4]][this.state === 'walk' ? frame : 0];
       const scale = this.drawScale || 1;
@@ -406,6 +408,7 @@
     }
     draw(ctx, cameraX) {
       super.draw(ctx, cameraX);
+      if (R.assets.has('cg-trolloc-chieftain')) return;
       const scale = this.drawScale || 1;
       ctx.save();
       ctx.translate(this.x - cameraX, this.y - this.z);

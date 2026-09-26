@@ -11,18 +11,23 @@
       this.timer = 0;
       this.spoken = false;
       this.music = 'story';
+      this.done = false;
+      R.assets.ready(lines.map(line => R.storyArt(line.id)).filter(Boolean));
     }
     update(dt, input) {
+      if (this.done) return;
       this.timer += dt;
       if (!this.spoken) {
         R.voice(this.lines[this.i].id);
         this.spoken = true;
       }
-      if (R.keyPressed(input, 'start') || R.keyPressed(input, 'attack') || R.keyPressed(input, 'jump')) this.advance();
+      if (R.keyPressed(input, 'start') || R.keyPressed(input, 'attack') || R.keyPressed(input, 'jump') || R.keyPressed(input, 'click')) this.advance();
     }
+    enter() { R.audio.playMusic(this.music); }
     advance() {
+      if (this.done) return;
       this.i += 1;
-      if (this.i >= this.lines.length) this.game.setScene(this.next());
+      if (this.i >= this.lines.length) { this.done = true; this.game.setScene(this.next()); }
       else {
         this.timer = 0;
         this.spoken = false;
@@ -42,7 +47,21 @@
         ctx.arc(320, 155, 20 + i * 16, 0, Math.PI * 2);
         ctx.stroke();
       }
+      const key = R.storyArt(line.id);
+      if (!R.paint(ctx, key, 0, 0, 640, 360)) {
+        const n = Number((line.id.match(/^st(\d)_/) || [])[1]) || 1;
+        R.StageWorld.draw(ctx, { levelIndex: n - 1, camera: { x: 300 + Math.min(this.timer, 8) * 4 }, time: this.timer });
+        const hero = new R.Riley(null, {}); hero.x = 230; hero.y = 214; hero.facing = 1; hero.callandor = this.label.includes('CALLANDOR'); hero.draw(ctx, 0);
+        if (line.who === 'kenzie' || line.id.startsWith('end_')) R.drawTwinkle(ctx, 382, 214, !line.id.startsWith('end_'), this.timer);
+        if (['taim','forsaken','fade','draghkar'].includes(line.who)) {
+          const standin = { player: hero, wave: 5, arenaLeft: 0, arenaRight: 640 };
+          const actor = new R.ShadowBoss(standin, 425, 218, line.who); actor.draw(ctx, 0);
+        }
+      }
+      ctx.fillStyle = 'rgba(3,9,22,0.7)'; ctx.fillRect(0,0,640,41);
       R.drawText(ctx, this.label, 20, 22, 9, '#e8cd74');
+      const portrait = 'portrait-' + (line.who === 'kenzie' ? 'twinkle' : line.who);
+      if (!R.paint(ctx, portrait, 15, 231, 46, 58)) { ctx.fillStyle='#18314e'; ctx.beginPath(); ctx.arc(36,260,23,0,Math.PI*2); ctx.fill(); R.drawText(ctx,line.name[0],36,262,17,'#9bddff','center'); }
       R.drawPanel(ctx, 65, 225, 510, 82);
       R.drawText(ctx, line.name, 86, 244, 8, '#70caff');
       const shown = line.text.slice(0, Math.floor(this.timer * 38));
@@ -72,14 +91,21 @@
       this.selection = 0;
       this.music = 'title';
     }
+    enter() { R.audio.playMusic(this.music); }
     items() {
       return R.settings.loadRun() ? ['START', 'CONTINUE', 'OPTIONS', 'CONTROLS'] : ['START', 'OPTIONS', 'CONTROLS'];
     }
     update(dt, input) {
       const items = this.items();
+      if (R.keyPressed(input, 'click')) {
+        const pointer = input.pointer || R.input.pointer;
+        const row = Math.round((pointer.y - 218) / 29);
+        if (pointer.x >= 190 && pointer.x <= 450 && row >= 0 && row < items.length && Math.abs(pointer.y - (218 + row * 29)) <= 13) this.selection = row;
+        else return;
+      }
       if (R.keyPressed(input, 'down')) this.selection = (this.selection + 1) % items.length;
       if (R.keyPressed(input, 'up')) this.selection = (this.selection + items.length - 1) % items.length;
-      if (!R.keyPressed(input, 'start') && !R.keyPressed(input, 'attack')) return;
+      if (!R.keyPressed(input, 'start') && !R.keyPressed(input, 'attack') && !R.keyPressed(input, 'click')) return;
       const chosen = items[this.selection];
       if (chosen === 'START') {
         R.settings.clearRun();
@@ -115,8 +141,11 @@
       ctx.lineTo(332, 103);
       ctx.lineTo(293, 185);
       ctx.stroke();
-      R.drawText(ctx, 'RILEY', 320, 72, 21, '#ffffff', 'center');
-      R.drawText(ctx, 'WHEEL BRAWL', 320, 146, 17, '#e5c65f', 'center');
+      if (!R.paint(ctx, 'logo', 120, 35, 400, 140)) {
+        R.drawText(ctx, 'RILEY', 320, 72, 21, '#ffffff', 'center');
+        R.drawText(ctx, 'WHEEL BRAWL', 320, 146, 17, '#e5c65f', 'center');
+      }
+      R.drawArtFailure(ctx);
       this.items().forEach((item, index) => R.drawText(ctx, (index === this.selection ? '◆ ' : '  ') + item, 320, 218 + index * 29, 9, index === this.selection ? '#70caff' : '#ffffff', 'center'));
     }
   }
@@ -145,7 +174,7 @@
       R.drawText(ctx, 'START: YES    ESC: NO', 320, 284, 7, '#aebdca', 'center');
     }
   }
-  class ContinuedCard {
+  class Victory {
     constructor(game) {
       this.game = game;
       this.time = 0;
@@ -157,19 +186,19 @@
     draw(ctx) {
       ctx.fillStyle = '#081122';
       ctx.fillRect(0, 0, 640, 360);
-      R.drawText(ctx, 'TO BE CONTINUED', 320, 143, 18, '#f0d36e', 'center');
-      R.drawText(ctx, 'STAGE 2 COMING NEXT', 320, 202, 10, '#91d3ff', 'center');
+      R.drawText(ctx, 'TWINKLE TOES IS HOME!', 320, 143, 18, '#f0d36e', 'center');
+      R.drawText(ctx, 'THE WHEEL TURNS. YOU WON.', 320, 202, 10, '#91d3ff', 'center');
     }
   }
   class Play {
     constructor(game, levelIndex, carry) {
       this.game = game;
-      this.levelIndex = 0;
-      this.level = R.LEVELS[0];
+      this.levelIndex = R.util.clamp(levelIndex | 0, 0, 4);
+      this.level = R.LEVELS[this.levelIndex];
       this.carry = carry || {};
       this.wave = R.util.clamp(this.carry.wave | 0, 0, 5);
-      this.arenaLeft = Math.max(0, R.Stage1.wavePoints[this.wave] - 280);
-      this.arenaRight = Math.min(this.level.length, R.Stage1.wavePoints[this.wave] + 310);
+      this.arenaLeft = Math.max(0, this.level.wavePoints[this.wave] - 280);
+      this.arenaRight = Math.min(this.level.length, this.level.wavePoints[this.wave] + 310);
       this.player = new R.Riley(this, this.carry);
       this.player.x = this.arenaLeft + 80;
       this.enemies = [];
@@ -201,8 +230,10 @@
       this.camera = new R.Camera({ length: this.level.length });
       this.camera.lock(this.arenaLeft, this.arenaRight);
       this.fx = new R.FX();
-      this.snow = new R.Stage1.SnowField();
-      this.music = 'stage1';
+      this.snow = this.levelIndex === 0 ? new R.Stage1.SnowField() : { update() {}, draw() {} };
+      this.music = 'stage' + (this.levelIndex + 1);
+      this.subtitleQueue = [];
+      this.seenEntrances = new Set();
       this.pauseMenu = new R.PauseMenu({
         onQuit: () => this.game.setScene(new Title(this.game)),
         extra: [{ label: 'RESTART STAGE', act: () => this.restartStage() }]
@@ -210,42 +241,106 @@
       this.spawnWave(this.wave);
     }
     enter() {
+      R.audio.playMusic(this.music);
       this.saveCheckpoint();
     }
     saveCheckpoint() {
-      R.settings.saveRun({ level: 0, wave: this.wave, score: this.player.score, extra: { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives } });
+      R.settings.saveRun({ level: this.levelIndex, wave: this.wave, score: this.player.score, extra: { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, callandor: this.player.callandor } });
     }
     restartStage() {
-      const carry = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, score: this.player.score, wave: 0 };
-      this.game.setScene(new Play(this.game, 0, carry));
+      const carry = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, score: this.player.score, callandor: this.player.callandor, wave: 0 };
+      this.game.setScene(new Play(this.game, this.levelIndex, carry));
     }
     spawnWave(index) {
       this.enemies.length = 0;
       this.projectiles.length = 0;
       this.hazards.length = 0;
+      this.props.length = 0;
+      if (this.levelIndex === 2) { this.fog = new R.Mashadar(this); this.hazards.push(this.fog); }
       this.attackers.clear();
-      const center = R.Stage1.wavePoints[index];
+      const center = this.level.wavePoints[index];
       this.arenaLeft = Math.max(0, center - 280);
       this.arenaRight = Math.min(this.level.length, center + 310);
       if (this.camera) this.camera.lock(this.arenaLeft, this.arenaRight);
-      const entries = R.Stage1.waveTable[index];
+      const entries = this.level.mix[index];
       if (entries[0] === 'boss') {
-        this.boss = new R.Chieftain(this, center + 130, 260);
+        this.boss = this.levelIndex === 0 ? new R.Chieftain(this, center + 130, 260) : new R.ShadowBoss(this, center + 130, 260, this.level.kind);
         this.enemies.push(this.boss);
-        this.bossCard = 2.2;
+        if (this.levelIndex === 4) this.twinkle = { x: this.arenaLeft + 80, y: 293, captive: true };
+        this.bossCard = this.levelIndex === 0 ? 2.2 : 3.2;
+        const entrances = [[], ['fade_intro_01','st2_fade_01'], ['draghkar_intro_01','st3_draghkar_01'], ['forsaken_intro_01'], ['taim_phase_01']];
+        for (const id of entrances[this.levelIndex]) this.say(id, 1.5);
       } else {
         entries.forEach((variant, i) => {
           const side = i % 2 ? -1 : 1;
           const x = center + side * (120 + i * 45 + Math.random() * 25);
           const y = 235 + (i % 3) * 32 + Math.random() * 9;
-          this.enemies.push(new R.Trolloc(this, x, y, variant));
+          this.enemies.push(['axe','hound','spear'].includes(variant) ? new R.Trolloc(this, x, y, variant) : new R.ShadowSoldier(this, x, y, variant));
+          const entry = { darkfriend:'darkfriend_intro_01', guard:'stone_guard_intro_01', ashaman:'ashaman_intro_01' }[variant];
+          if (entry && !this.seenEntrances.has(entry)) { this.seenEntrances.add(entry); this.say(entry); }
         });
       }
       if (index === 1) this.props.push(new R.BreakableProp(this, center + 35, 305, 'barrel'));
       if (index === 3) this.props.push(new R.BreakableProp(this, center - 65, 244, 'crate'));
       this.tutorial = index === 0 ? '{attack} KICK • {jump} JUMP' : index === 1 ? '{special} FIRE • DOWN+{attack} SPIN' : index === 2 ? '{assist} CALL LOIAL' : null;
+      if (this.levelIndex > 0) this.tutorial = this.levelIndex === 2 ? 'AIRBORNE FOE: JUMP KICK OR FIREBALL' : this.levelIndex === 4 ? "BREAK TAIM'S SHIELD; FREE TWINKLE TOES" : null;
       this.saveCheckpoint();
     }
+    say(id, duration) {
+      const line = R.VOICE_LINES[id];
+      if (line) this.subtitleQueue.push({ line, remaining: duration || 2.2 });
+    }
+    updateDialogue(dt) {
+      if (!this.subtitle && this.subtitleQueue.length) { this.subtitle = this.subtitleQueue.shift(); R.voice(this.subtitle.line.id); if (this.subtitle.line.id === 'st5_kenzie_01') this.rescueReady = true; }
+      if (this.subtitle) { this.subtitle.remaining -= dt; if (this.subtitle.remaining <= 0) this.subtitle = null; }
+    }
+    carryToNext() {
+      return { score: this.player.score, saidin: this.player.power, lives: this.player.lives, callandor: this.player.callandor, loial: true };
+    }
+    nextStage() {
+      const next = this.levelIndex + 1;
+      const carry = this.carryToNext();
+      const start = () => new Reel(this.game, R.CAPTIONS['stage' + (next + 1)], () => new Play(this.game, next, carry), R.LEVELS[next].name);
+      if (this.levelIndex === 4) return new Reel(this.game, R.CAPTIONS.ending, () => new Victory(this.game), 'HOMECOMING');
+      if (this.levelIndex === 0) return new Reel(this.game, R.CAPTIONS.clear, start, 'STAGE 1 CLEAR');
+      if (this.levelIndex === 3) return new Reel(this.game, R.CAPTIONS.callandor, start, 'CALLANDOR ANSWERS');
+      return start();
+    }
+    freeTwinkle() {
+      this.twinkleFreed = true;
+      this.say('taim_phase_03'); this.say('st5_kenzie_01');
+      this.warning = 'TWINKLE TOES IS FREE! FILL SAIDIN, THEN POWER'; this.warningTimer = 5;
+      // A one-time rescue reward; hoarding it still starts the normal taint clock.
+      this.player.power = this.player.powerMax;
+      this.twinkle = { x: this.arenaLeft + 80, y: 293 };
+    }
+    startJoint() {
+      if (!this.twinkleFreed || !this.rescueReady || this.joint || this.player.power < this.player.powerMax || this.player.dead || this.player.busy || this.player.grabbedBy || this.player.stunTimer > 0) return false;
+      this.player.power = 0; this.player.taintAge = 0; this.player.taintClock = 0; this.player.taintTell = 0;
+      this.player.invuln = 0.35; this.joint = { age: 0, hit: false };
+      this.subtitle = null; this.subtitleQueue.length = 0;
+      this.say('st5_riley_02', 0.8); this.say('st5_kenzie_02', 1.5);
+      this.movesUsed.add('joint'); return true;
+    }
+    updateJoint(dt) {
+      if (!this.joint || this.joint.hit) return;
+      this.joint.age += dt;
+      // Taim continues his normal AI and can hurt Riley during charge-up.
+      if (this.player.dead) { this.joint = null; return; }
+      const b = this.boss, progress = Math.min(1, this.joint.age / 1.25);
+      this.joint.tips = [this.player, this.twinkle].map(source => ({
+        x: source.x + (b.x - source.x) * progress,
+        y: source.y + (b.y - source.y) * progress,
+        z: 40 + (b.z + b.bh / 2 - 40) * progress
+      }));
+      // Collision uses the two visible advancing beam tips, never a timer-only kill.
+      const contact = this.joint.tips.map(tip => R.collide.circle(tip.x, tip.y, tip.z, 6, 12, b.hurtbox()));
+      if (progress >= 1 && contact.every(Boolean)) {
+        this.joint.hit = b.takeHit(b.hp, this.player.x, { jointFinish: true, move: 'joint' });
+        if (this.joint.hit) { this.camera.impact(1, 'super'); this.playCue('balefire'); this.player.invuln = 2; }
+      }
+    }
+
     directorCanAttack(enemy) {
       return this.attackers.has(enemy) || this.attackers.size < 2;
     }
@@ -300,6 +395,7 @@
     }
     beginDeath() {
       this.player.dead = true;
+      this.player.grabbedBy = null; this.player.stunTimer = 0; this.joint = null;
       this.player.setState('death');
       this.phase = 'death';
       this.deathTimer = 1.4;
@@ -317,7 +413,7 @@
         R.voice('riley_respawn_01');
         this.saveCheckpoint();
       } else {
-        const checkpoint = { level: 0, wave: this.wave, score: this.player.score, extra: { saidin: this.player.power, loial: this.player.loialReady, lives: 0 } };
+        const checkpoint = { level: this.levelIndex, wave: this.wave, score: this.player.score, extra: { saidin: this.player.power, loial: this.player.loialReady, lives: 0, callandor: this.player.callandor } };
         R.settings.saveRun(checkpoint);
         this.game.setScene(new GameOver(this.game, checkpoint));
       }
@@ -346,6 +442,7 @@
       return true;
     }
     activateBalefire() {
+      if (this.twinkleFreed) return this.startJoint();
       if (this.player.power < this.player.powerMax || this.superTimer > 0) return false;
       this.player.power = 0;
       this.player.taintAge = 0;
@@ -357,6 +454,7 @@
       this.camera.stop(0.18);
       this.camera.impact(this.player.facing, 'super');
       if (R.audio.duck) R.audio.duck(0.3, 1.2);
+      if (this.player.callandor && !this.player.spokenCallandor) { this.say('riley_callandor_01'); this.player.spokenCallandor = true; }
       R.voice('riley_super_01');
       this.playCue('balefire');
       this.movesUsed.add('super');
@@ -369,7 +467,7 @@
         this.superApplied = true;
         for (const enemy of this.enemies) {
           if (enemy.dead) continue;
-          const damage = enemy.boss ? 78 : enemy.hpMax + 10;
+          const damage = enemy.boss ? (this.player.callandor ? 156 : 78) : enemy.hpMax + 10;
           this.damageEnemy(enemy, damage, this.player.x, { kb: 260, knockdown: true, stagger: true, move: 'super' });
         }
       }
@@ -403,7 +501,9 @@
       if (!this.enemies.length && this.waveClearTimer <= 0) return;
       if (this.wave === 5) {
         this.phase = 'clear';
-        R.settings.clearRun();
+        if (this.levelIndex === 3) this.player.callandor = true;
+        if (this.levelIndex === 4) R.settings.clearRun();
+        else R.settings.saveRun({ level: this.levelIndex + 1, wave: 0, score: this.player.score, extra: this.carryToNext() });
         this.clearTimer = 1.4;
         return;
       }
@@ -436,7 +536,7 @@
       }
       if (this.phase === 'clear') {
         this.clearTimer -= dt;
-        if (this.clearTimer <= 0) this.game.setScene(new Reel(this.game, R.CAPTIONS.clear, () => new ContinuedCard(this.game), 'STAGE 1 CLEAR'));
+        if (this.clearTimer <= 0 && !this.clearQueued) { this.clearQueued = true; this.game.setScene(this.nextStage()); }
         return;
       }
       const frozen = this.camera.update(dt);
@@ -451,13 +551,15 @@
       this.warningTimer = Math.max(0, this.warningTimer - dt);
       this.goTimer = Math.max(0, this.goTimer - dt);
       this.bossCard = Math.max(0, (this.bossCard || 0) - dt);
+      this.updateDialogue(dt);
       this.updateSuper(dt);
       this.updateObjects(dt);
+      this.updateJoint(dt);
       this.finishWave(dt);
       this.camera.follow(this.player.x, dt);
     }
     drawWorld(ctx) {
-      R.Stage1.draw(ctx, this.camera.x, this.time);
+      R.StageWorld.draw(ctx, this);
       const list = this.enemies.filter(item => !item.remove).concat(this.props.filter(item => !item.dead), this.pickups, this.allies, [this.player]);
       R.Entity.sortByDepth(list);
       for (const item of list) item.draw(ctx, this.camera.x);
@@ -467,7 +569,7 @@
       if (this.superTimer > 0) {
         const alpha = Math.min(1, this.superTimer * 2);
         ctx.strokeStyle = 'rgba(255,248,190,' + alpha + ')';
-        ctx.lineWidth = 18;
+        ctx.lineWidth = this.player.callandor ? 30 : 18;
         ctx.beginPath();
         ctx.moveTo(this.player.x - this.camera.x + this.player.facing * 14, this.player.y - 42);
         ctx.lineTo(this.player.facing > 0 ? 660 : -20, this.player.y - 42);
@@ -487,15 +589,36 @@
           ctx.stroke();
         }
       }
+      if (this.twinkle) {
+        R.drawTwinkle(ctx, this.twinkle.x - this.camera.x, this.twinkle.y, !!this.joint, this.time);
+        if (this.twinkle.captive) { ctx.strokeStyle='#a684dd'; ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(this.twinkle.x-this.camera.x,this.twinkle.y-35,31,47,0,0,Math.PI*2); ctx.stroke(); }
+      }
+      if (this.joint) {
+
+        for (const [i,source] of [this.player,this.twinkle].entries()) {
+          const tip = this.joint.tips && this.joint.tips[i];
+          if (!tip) continue;
+          ctx.strokeStyle = i ? '#83dbff' : '#fff4b7'; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(source.x-this.camera.x,source.y-40); ctx.lineTo(tip.x-this.camera.x,tip.y-tip.z); ctx.stroke();
+        }
+      }
+      R.StageWorld.near(ctx, this);
       this.snow.draw(ctx);
     }
     draw(ctx) {
       this.drawWorld(ctx);
       R.drawHUD(ctx, this);
+      if (this.phase === 'play' && !this.paused) {
+        for (const button of R.input.touch.buttons) {
+          if (button.id === 'assist') button.label = 'CALL';
+          if (button.id === 'special') button.label = 'FIRE';
+        }
+        R.input.drawTouch(ctx, { always: true, powerReady: this.player.power >= 100, assistReady: this.player.loialReady });
+      }
+      R.drawArtFailure(ctx);
       if (this.bossCard > 0) {
         R.drawPanel(ctx, 148, 131, 344, 74);
         R.drawText(ctx, 'BOSS', 320, 151, 8, '#e7ca6b', 'center');
-        R.drawText(ctx, 'TROLLOC CHIEFTAIN', 320, 181, 12, '#ffffff', 'center');
+        R.drawText(ctx, this.level.boss, 320, 181, 12, '#ffffff', 'center');
       }
       if (this.player.taintAge > R.TUNE.taintGrace) {
         const amount = Math.min(0.55, 0.15 + (this.player.taintAge - R.TUNE.taintGrace) * 0.035);
@@ -505,14 +628,21 @@
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 640, 360);
       }
+      if (this.subtitle) {
+        R.drawPanel(ctx, 42, 192, 556, 27);
+        R.drawText(ctx, this.subtitle.line.name + ': ' + this.subtitle.line.text, 320, 206, 6, '#e4f6ff', 'center');
+      }
+      if (this.twinkleFreed && !this.joint) R.drawText(ctx, R.input.fillKeys('FULL SAIDIN + {power}: TOGETHER!'), 320, 283, 7, '#a9edff', 'center');
       if (this.paused) this.pauseMenu.draw(ctx);
       this.camera.drawFlash(ctx);
     }
   }
   R.scenes = R.scenes || {};
-  Object.assign(R.scenes, { Title, Reel, Play, GameOver, ContinuedCard });
+  Object.assign(R.scenes, { Title, Reel, Play, GameOver, Victory });
   R.settings.validateRun = function (run) {
-    if (run.level !== 0) run.level = 0;
+    run.level = R.util.clamp(run.level | 0, 0, 4);
+    run.extra = run.extra || {};
+    run.extra.callandor = !!run.extra.callandor;
     run.wave = R.util.clamp(run.wave | 0, 0, 5);
     run.score = Math.max(0, run.score | 0);
     run.extra.saidin = R.util.clamp(Number(run.extra.saidin) || 0, 0, 100);

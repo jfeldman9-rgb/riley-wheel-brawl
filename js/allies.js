@@ -23,6 +23,7 @@
       }
     }
     draw(ctx, cameraX) {
+      if (R.paint(ctx, 'cg-loial', this.x-cameraX-52, this.y-140, 104, 140)) return;
       const phase = Math.floor(this.walkDistance / 22) % 4;
       const stride = [18, 4, -18, -4][phase];
       const x = this.x - cameraX;
@@ -91,6 +92,7 @@
     }
   }
   R.drawMoirainePortrait = function (ctx, x, y, radius) {
+    if (R.paint(ctx, 'portrait-moiraine', x-radius,y-radius,radius*2,radius*2)) return;
     ctx.fillStyle = '#142845';
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);

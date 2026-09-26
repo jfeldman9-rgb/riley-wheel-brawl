@@ -2,14 +2,16 @@
 (function () {
   const R = window.RWB;
   R.attachContentDebug = function (game) {
-    game.debug.play = function () {
-      game.setSceneNow(new R.scenes.Play(game, 0, {}));
+    game.debug.play = function (levelIndex = 0) {
+      game.setSceneNow(new R.scenes.Play(game, levelIndex, { callandor: levelIndex === 4 }));
     };
     game.debug.boss = function () {
       const scene = game.scene;
       if (!(scene instanceof R.scenes.Play)) return null;
       scene.wave = 5;
       scene.spawnWave(5);
+      scene.player.x = scene.arenaLeft + 90;
+      scene.camera.x = scene.arenaLeft;
       return scene.boss;
     };
   };
@@ -17,6 +19,7 @@
   R.audio.defineSong('title', { bpm: 88, bass: [0, null, 3, null, 7, null, 5, null], lead: [7, null, 10, null, 12, null, 10, null], kick: pulse, snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0] });
   R.audio.defineSong('story', { bpm: 72, bass: [0, null, null, null, 5, null, null, null], lead: [7, null, null, 9, null, null, 5, null], kick: pulse, snare: pulse.map((value, index) => index % 8 === 4 ? 1 : 0) });
   R.audio.defineSong('stage1', { bpm: 116, bass: [0, 0, 3, null, 5, 5, 3, null], lead: [7, null, 9, 10, 12, null, 10, 9], kick: pulse, snare: pulse.map((value, index) => index % 8 === 4 ? 1 : 0) });
+  for (let n = 2; n <= 5; n++) R.audio.defineSong('stage' + n, { bpm: 104 + n * 7, bass: [0, null, n, 3, 5, null, 3, n], lead: [7, 10, null, 7+n, 12, null, 9, 7], kick: pulse, snare: pulse.map((v,i) => i % 8 === 4 ? 1 : 0) });
   R.audio.defineSong('gameover', { bpm: 55, bass: [0, null, null, null, -2, null, null, null], lead: [3, null, 2, null, 0, null, null, null], kick: pulse, snare: [] });
   R.audio.defineSfx('kick', function () {
     R.audio.noise({ f0: 1600, f1: 420, dur: 0.07, vol: 0.22, filter: 'bandpass' });

@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   const R = window.RWB;
-  R.ASSET_VER = '20260926-g2';
+  R.ASSET_VER = '20260926-w1';
   R.TUNE = {
     stageLength: 3000,
     playerSpeed: 128,

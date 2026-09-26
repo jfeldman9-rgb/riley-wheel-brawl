@@ -32,9 +32,24 @@ cooldown and no health cost. A full SAIDIN meter enables Balefire; holding it
 past the grace period begins the warned, nonlethal taint effect. Menus support
 keyboard, gamepad, mouse, and touch, and bindings can be remapped.
 
+## Campaign
+
+Five stages with distinct enemy waves and bosses. Change lanes to avoid Mashadar;
+use jumping kicks or fireballs against the airborne Draghkar. Claim Callandor after
+Be'lal to double the super's boss damage. On the Black Tower roof, weaken Taim to
+free Twinkle Toes, then spend full saidin with POWER for the joint finish. Taim
+keeps fighting until both beams hit.
+
 ## Verification
 
-`node tools/check.cjs` checks the Stage 1 move hitboxes, taint floor, Loial
-once-per-stage rule, Continue checkpoint, the no-timer damage proof, Reduced
-Shake, and the zero-request art fallback. Run `node tools/soak.cjs` for the
-10-seed Stage 1 combat report.
+`node tools/check.cjs` covers Stage 1 combat plus all-stage progression, safe Reel
+skipping, boss rules, hazards, Callandor persistence, the joint finish, taint, and
+art/cache contracts. `node tools/soak.cjs` runs 10 seeds on each of five stages and
+requires every boss attack on every seed. Use `--stage=3` for one stage.
+
+The default soak keeps the inherited HP top-up below 28 HP and 99 lives; it is a
+completion/attack-coverage test. `--natural` disables those assists and reports
+3-life masher balance. See `docs/STATUS.md` for both sets of measured results.
+
+Painted files can be added using `docs/ART_LIST.md` and `js/artmanifest.js`.
+No build step or new runtime dependency is required.
