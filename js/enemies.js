@@ -2,12 +2,12 @@
 (function () {
   const R = window.RWB;
   const ATTACKS = {
-    axe: { name: 'AXE CHOP', tell: 0.55, active: 0.12, recover: 0.5, reach: 55, height: 62, depth: 22, damage: 9, knockdown: false },
-    bite: { name: 'BITE AND CLAW', tell: 0.32, active: 0.18, recover: 0.36, reach: 48, height: 38, depth: 25, damage: 7, knockdown: false },
-    spear: { name: 'SPEAR THRUST', tell: 0.48, active: 0.14, recover: 0.46, reach: 82, height: 38, depth: 17, damage: 8, knockdown: false },
-    crash: { name: 'AXE CRASH', tell: 0.72, active: 0.16, recover: 0.72, reach: 65, height: 72, depth: 27, damage: 14, knockdown: true },
-    charge: { name: 'HORN CHARGE', tell: 0.85, active: 0.75, recover: 0.7, reach: 54, height: 60, depth: 16, damage: 13, knockdown: true },
-    stomp: { name: 'GROUND STOMP', tell: 0.7, active: 0.2, recover: 0.65, reach: 95, height: 18, depth: 62, damage: 12, knockdown: true }
+    axe: { name: 'AXE CHOP', tell: 0.62, active: 0.14, recover: 0.48, reach: 52, height: 58, depth: 20, damage: 16, knockdown: false },
+    bite: { name: 'BITE AND CLAW', tell: 0.38, active: 0.16, recover: 0.34, reach: 46, height: 36, depth: 22, damage: 14, knockdown: false },
+    spear: { name: 'SPEAR THRUST', tell: 0.56, active: 0.12, recover: 0.44, reach: 86, height: 28, depth: 14, damage: 15, knockdown: false },
+    crash: { name: 'AXE CRASH', tell: 0.78, active: 0.16, recover: 0.62, reach: 62, height: 70, depth: 24, damage: 20, knockdown: true },
+    charge: { name: 'HORN CHARGE', tell: 0.9, active: 0.7, recover: 0.58, reach: 50, height: 30, depth: 14, damage: 18, knockdown: true },
+    stomp: { name: 'GROUND STOMP', tell: 0.74, active: 0.22, recover: 0.56, reach: 100, height: 16, depth: 70, damage: 18, knockdown: true }
   };
   class Shockwave {
     constructor(scene, x, y, facing) {
@@ -37,7 +37,9 @@
   class Trolloc extends R.Entity {
     constructor(scene, x, y, variant) {
       const type = variant || 'axe';
-      super(scene, x, y, { hp: type === 'hound' ? 34 : type === 'spear' ? 39 : 44, bw: type === 'hound' ? 31 : 36, bh: type === 'hound' ? 54 : 69 });
+      const wave = scene && scene.wave ? scene.wave : 0;
+      const base = type === 'hound' ? 92 : type === 'spear' ? 104 : 118;
+      super(scene, x, y, { hp: base + wave * 10, bw: type === 'hound' ? 31 : 36, bh: type === 'hound' ? 54 : 69 });
       this.variant = type;
       this.ai = 'approach';
       this.aiTimer = Math.random() * 0.4;
@@ -46,10 +48,14 @@
       this.walkDistance = 0;
       this.stun = 0;
       this.getupCount = 0;
-      this.speed = type === 'hound' ? 91 : type === 'spear' ? 65 : 58;
+      this.hitFlash = 0;
+      this.deathTimer = 0;
+      this.speed = type === 'hound' ? 96 : type === 'spear' ? 62 : 64;
       this.scoreValue = type === 'hound' ? 160 : type === 'spear' ? 190 : 180;
       this.dropRoll = Math.random();
       this.spawnJitter = Math.random();
+      this.laneBias = type === 'spear' ? 0 : type === 'hound' ? (this.spawnJitter > 0.5 ? 18 : -18) : (this.spawnJitter > 0.5 ? 8 : -8);
+      this.drawScale = 1;
     }
     requestAttack() {
       if (!this.g.directorCanAttack(this)) {
@@ -69,24 +75,28 @@
       this.g.enemyHitboxes.push(box);
       if (!this.attackDidHit && R.collide.overlap(box, this.g.player.hurtbox())) {
         this.attackDidHit = true;
-        this.g.hitPlayer(this.attack.damage, this.x, { kb: this.attack.knockdown ? 145 : 70, knockdown: this.attack.knockdown, source: this.attack.name });
+        const bonus = this.boss ? 0 : (this.g.wave || 0);
+        this.g.hitPlayer(this.attack.damage + bonus, this.x, { kb: this.attack.knockdown ? 210 : 120, knockdown: this.attack.knockdown, source: this.attack.name });
       }
     }
     updateAI(dt) {
       const player = this.g.player;
       const dx = player.x - this.x;
       const dy = player.y - this.y;
-      this.facing = dx >= 0 ? 1 : -1;
+      const committed = this.ai === 'telegraph' || this.ai === 'attack' || this.ai === 'recover';
+      if (!committed) this.facing = dx >= 0 ? 1 : -1;
       this.aiTimer -= dt;
       if (this.ai === 'approach') {
-        this.vx = Math.sign(dx) * this.speed;
-        this.vy = Math.sign(dy) * this.speed * 0.62;
+        const goalY = player.y + (this.laneBias || 0);
+        this.vx = Math.sign(dx || 1) * this.speed;
+        this.vy = Math.sign(goalY - this.y) * this.speed * 0.7;
         this.walkDistance += Math.abs(this.vx) * dt;
         this.setState('walk');
-        if (Math.abs(dx) < (this.variant === 'spear' ? 78 : 51) && Math.abs(dy) < 18) this.requestAttack();
+        const range = this.variant === 'spear' ? 76 : this.variant === 'hound' ? 40 : 46;
+        if (Math.abs(dx) < range && Math.abs(dy) < 24) this.requestAttack();
       } else if (this.ai === 'circle') {
-        this.vx = Math.sign(dx) * this.speed * 0.28;
-        this.vy = (this.spawnJitter > 0.5 ? 1 : -1) * this.speed * 0.55;
+        this.vx = Math.sign(dx || 1) * this.speed * 0.35;
+        this.vy = (this.spawnJitter > 0.5 ? 1 : -1) * this.speed * 0.65;
         this.walkDistance += Math.abs(this.vx) * dt;
         this.setState('walk');
         if (this.aiTimer <= 0) this.ai = 'approach';
@@ -97,11 +107,12 @@
           this.ai = 'attack';
           this.aiTimer = this.attack.active;
           this.setState('attack');
-          if (this.variant === 'hound') this.vx = this.facing * 160;
+          if (this.variant === 'hound') this.vx = this.facing * 175;
           this.g.playCue(this.variant === 'axe' ? 'axe' : this.variant === 'hound' ? 'claw' : 'spear');
         }
       } else if (this.ai === 'attack') {
         this.activeAttack();
+        if (this.variant === 'hound') this.vx = this.facing * 175;
         if (this.aiTimer <= 0) {
           this.ai = 'recover';
           this.aiTimer = this.attack.recover;
@@ -109,7 +120,8 @@
           this.setState('recover');
         }
       } else if (this.ai === 'recover') {
-        this.vx = 0;
+        this.vx = -this.facing * this.speed * 0.55;
+        this.vy = 0;
         if (this.aiTimer <= 0) this.ai = 'approach';
       }
     }
@@ -128,13 +140,31 @@
         this.stun = 0.6;
       }
     }
+    separate() {
+      for (const other of this.g.enemies) {
+        if (other === this || other.dead) continue;
+        const dx = this.x - other.x;
+        const dy = this.y - other.y;
+        if (Math.abs(dx) < 32 && Math.abs(dy) < 16) {
+          this.x += Math.sign(dx || (this.spawnJitter > 0.5 ? 1 : -1)) * 0.7;
+          this.y = R.collide.clampLane(this.y + Math.sign(dy || 1) * 0.35);
+        }
+      }
+    }
     update(dt) {
-      if (this.dead) return;
+      this.hitFlash = Math.max(0, this.hitFlash - dt);
+      if (this.dead) {
+        this.deathTimer -= dt;
+        if (this.deathTimer <= 0) this.remove = true;
+        super.update(dt);
+        return;
+      }
       if (this.grabbedBy) return;
       if (this.thrown > 0) this.updateThrown(dt);
       else if (this.state === 'hurt' || this.state === 'knockback') {
         this.stun -= dt;
         if (this.stun <= 0) {
+          this.friction = 8;
           this.ai = 'approach';
           this.setState('idle');
         }
@@ -142,8 +172,9 @@
         this.stun -= dt;
         if (this.stun <= 0) {
           this.setState('getup');
-          this.stun = 0.45;
-          this.invuln = 0.7;
+          this.stun = 0.4;
+          this.invuln = 0.32;
+          this.friction = 8;
         }
       } else if (this.state === 'getup') {
         this.stun -= dt;
@@ -154,20 +185,27 @@
       } else this.updateAI(dt);
       super.update(dt);
       this.x = R.util.clamp(this.x, this.g.arenaLeft + 12, this.g.arenaRight - 12);
+      if (!this.dead && !this.grabbedBy) this.separate();
     }
     onHurt(damage, opts) {
       this.g.releaseAttacker(this);
+      this.hitFlash = 0.1;
       if (opts.knockdown) {
         this.setState('knockdown');
-        this.stun = 0.7;
+        this.stun = 0.72;
+        this.friction = 2.15;
       } else {
         this.setState('hurt');
-        this.stun = 0.28;
+        this.stun = 0.4;
+        this.friction = 11;
+        this.vx *= 0.4;
       }
     }
     onDeath() {
       this.g.releaseAttacker(this);
-      this.setState('death');
+      this.setState('knockdown');
+      this.deathTimer = 0.75;
+      this.friction = 2.4;
       this.g.onEnemyDeath(this);
     }
     drawHead(ctx) {
@@ -211,13 +249,14 @@
       ctx.moveTo(0, -22);
       ctx.lineTo(0, 31);
       ctx.stroke();
-      if (this.variant === 'axe') {
-        ctx.fillStyle = '#9ca4aa';
+      if (this.variant === 'axe' || this.boss) {
+        ctx.fillStyle = this.boss ? '#c5ccd2' : '#9ca4aa';
         ctx.beginPath();
-        ctx.moveTo(-2, -24);
-        ctx.lineTo(16, -32);
-        ctx.lineTo(13, -15);
-        ctx.lineTo(-2, -12);
+        const size = this.boss ? 1.35 : 1;
+        ctx.moveTo(-2, -24 * size);
+        ctx.lineTo(18 * size, -34 * size);
+        ctx.lineTo(14 * size, -12 * size);
+        ctx.lineTo(-2, -10);
         ctx.fill();
       } else if (this.variant === 'spear') {
         ctx.fillStyle = '#bcc5ca';
@@ -229,13 +268,35 @@
       }
       ctx.restore();
     }
+    drawTell(ctx, cameraX) {
+      if (!this.attack || (this.ai !== 'telegraph' && this.ai !== 'attack')) return;
+      const pulse = 0.28 + Math.abs(Math.sin(this.stateT * 16)) * 0.35;
+      ctx.save();
+      ctx.globalAlpha = this.ai === 'telegraph' ? pulse : 0.22;
+      const reach = this.attack.reach;
+      const left = this.x + Math.min(0, this.facing * reach) - cameraX;
+      ctx.fillStyle = this.variant === 'hound' ? '#ff7848' : this.variant === 'spear' ? '#8dffb0' : '#ffd15a';
+      if (this.attack === ATTACKS.stomp) {
+        ctx.beginPath();
+        ctx.ellipse(this.x - cameraX, this.y, 78, 22, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (this.attack === ATTACKS.charge) {
+        ctx.fillRect(this.facing > 0 ? this.x - cameraX : this.x - cameraX - 220, this.y - 5, 220, 8);
+      } else {
+        ctx.fillRect(left, this.y - 4, Math.abs(reach), 6);
+      }
+      ctx.restore();
+    }
     draw(ctx, cameraX) {
+      this.drawTell(ctx, cameraX);
       this.drawShadow(ctx, cameraX, 24);
-      const frame = Math.floor(this.walkDistance / 17) % 4;
-      const legs = [[-10, 10], [-4, 5], [10, -10], [5, -4]][frame];
+      const frame = Math.floor(this.walkDistance / 16) % 4;
+      const legs = [[-10, 10], [-4, 5], [10, -10], [5, -4]][this.state === 'walk' ? frame : 0];
+      const scale = this.drawScale || 1;
       ctx.save();
       ctx.translate(this.x - cameraX, this.y - this.z);
-      ctx.scale(this.facing, 1);
+      ctx.scale(this.facing * scale, scale);
+      if (this.variant === 'hound') ctx.translate(0, 8);
       ctx.strokeStyle = '#27241f';
       ctx.lineWidth = 9;
       ctx.lineCap = 'round';
@@ -262,6 +323,14 @@
         ctx.arc(0, -42, 29 + Math.sin(this.stateT * 20) * 3, 0, Math.PI * 2);
         ctx.stroke();
       }
+      if (this.hitFlash > 0) {
+        ctx.globalAlpha = Math.min(0.7, this.hitFlash * 6);
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(0, -40, 22, 32, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       ctx.restore();
     }
   }
@@ -273,11 +342,13 @@
       this.hp = this.hpMax;
       this.bw = 55;
       this.bh = 95;
-      this.speed = 55;
+      this.speed = 68;
       this.usedAttacks = new Set();
       this.attackIndex = Math.floor(Math.random() * 3);
       this.scoreValue = 3000;
-      this.introTimer = 0.45;
+      this.introTimer = 1.35;
+      this.drawScale = 1.5;
+      this.laneBias = 0;
     }
     chooseBossAttack() {
       const cycle = [ATTACKS.crash, ATTACKS.charge, ATTACKS.stomp];
@@ -299,6 +370,9 @@
     updateAI(dt) {
       if (this.introTimer > 0) {
         this.introTimer -= dt;
+        this.invuln = Math.max(this.invuln, 0.12);
+        this.vx = 0;
+        this.vy = 0;
         this.setState('idle');
         return;
       }
@@ -308,48 +382,49 @@
         this.g.playCue(this.attack === ATTACKS.crash ? 'bossCrash' : this.attack === ATTACKS.charge ? 'bossCharge' : 'bossStomp');
         if (this.attack === ATTACKS.crash) this.g.hazards.push(new Shockwave(this.g, this.x, this.y, this.facing));
       }
-      if (this.ai === 'attack' && this.attack === ATTACKS.charge) this.vx = this.facing * 245;
+      if (this.ai === 'attack' && this.attack === ATTACKS.charge) this.vx = this.facing * 280;
       if (this.ai === 'attack' && this.attack === ATTACKS.stomp) {
-        const ring = R.collide.box(this.x, this.y, 0, 170, 18, 65);
+        const ring = R.collide.box(this.x, this.y, 0, 188, 16, 72);
         this.g.enemyHitboxes.push(ring);
-        if (!this.attackDidHit && this.g.player.z < 18 && R.collide.overlap(ring, this.g.player.hurtbox())) {
+        if (!this.attackDidHit && this.g.player.z < 20 && R.collide.overlap(ring, this.g.player.hurtbox())) {
           this.attackDidHit = true;
-          this.g.hitPlayer(this.attack.damage, this.x, { kb: 150, knockdown: true, source: this.attack.name });
+          this.g.hitPlayer(this.attack.damage, this.x, { kb: 200, knockdown: true, source: this.attack.name });
         }
       }
     }
     onHurt(damage, opts) {
       if (this.dead) return;
-      this.g.releaseAttacker(this);
+      this.hitFlash = 0.1;
       if (opts.stagger || opts.knockdown) {
+        this.g.releaseAttacker(this);
         this.setState('hurt');
-        this.stun = 0.2;
+        this.stun = 0.22;
+        this.friction = 3;
+        this.ai = 'recover';
+        this.aiTimer = 0.22;
       }
     }
     draw(ctx, cameraX) {
-      ctx.save();
-      ctx.translate(this.x - cameraX, this.y - this.z);
-      ctx.scale(this.facing * 1.32, 1.32);
-      ctx.translate(-(this.x - cameraX), -(this.y - this.z));
       super.draw(ctx, cameraX);
-      ctx.restore();
+      const scale = this.drawScale || 1;
       ctx.save();
       ctx.translate(this.x - cameraX, this.y - this.z);
-      ctx.fillStyle = '#d7c7a4';
+      ctx.scale(this.facing * scale, scale);
+      ctx.fillStyle = '#e6d7b4';
       ctx.beginPath();
-      ctx.moveTo(-20, -91);
-      ctx.lineTo(0, -105);
-      ctx.lineTo(21, -91);
-      ctx.lineTo(14, -72);
-      ctx.lineTo(-14, -72);
+      ctx.moveTo(-16, -78);
+      ctx.lineTo(0, -96);
+      ctx.lineTo(16, -78);
+      ctx.lineTo(11, -64);
+      ctx.lineTo(-11, -64);
       ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = '#76523c';
+      ctx.fillStyle = '#6d4634';
       ctx.beginPath();
-      ctx.moveTo(-29, -65);
-      ctx.lineTo(29, -65);
-      ctx.lineTo(20, -49);
-      ctx.lineTo(-20, -49);
+      ctx.moveTo(-24, -58);
+      ctx.quadraticCurveTo(0, -46, 24, -58);
+      ctx.lineTo(16, -44);
+      ctx.lineTo(-16, -44);
       ctx.fill();
       ctx.restore();
     }

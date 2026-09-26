@@ -6,8 +6,8 @@
     ['axe'],
     ['hound', 'axe'],
     ['spear', 'hound', 'axe'],
-    ['hound', 'hound', 'axe', 'spear'],
-    ['axe', 'spear', 'hound', 'axe'],
+    ['hound', 'spear', 'axe', 'hound'],
+    ['axe', 'spear', 'hound', 'axe', 'spear'],
     ['boss']
   ];
   function starNoise(index) {

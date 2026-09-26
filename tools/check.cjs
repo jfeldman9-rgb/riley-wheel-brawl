@@ -108,7 +108,7 @@ check(moveDamages('spin'), '360 spinning kick creates a damaging hitbox');
 check(RWB.ART_MANIFEST.length === 0 && RWB.__assetRequests() === 0, 'Empty art manifest causes zero image requests');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-check(urls.every(url => url.includes('?v=20260926-f2')), 'Every script, stylesheet, and font URL has the f2 cache stamp');
+check(urls.every(url => url.includes('?v=20260926-g2')), 'Every script, stylesheet, and font URL has the g2 cache stamp');
 if (failures.length) {
   console.error(failures.length + ' check(s) failed');
   process.exit(1);

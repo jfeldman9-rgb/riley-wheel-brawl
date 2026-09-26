@@ -7,10 +7,10 @@
   function limbPoint(x, y, length, angle) {
     return { x: x + Math.sin(degrees(angle)) * length, y: y + Math.cos(degrees(angle)) * length };
   }
-  function drawLimb(ctx, start, a1, a2, first, second, width, boot) {
+  function drawLimb(ctx, start, a1, a2, first, second, width, boot, color) {
     const joint = limbPoint(start.x, start.y, first, a1);
     const end = limbPoint(joint.x, joint.y, second, a1 + a2);
-    ctx.strokeStyle = '#111827';
+    ctx.strokeStyle = color || '#1a2030';
     ctx.lineWidth = width;
     ctx.lineCap = 'round';
     ctx.beginPath();
@@ -20,11 +20,16 @@
     ctx.stroke();
     if (boot) {
       ctx.strokeStyle = '#080b11';
-      ctx.lineWidth = width + 2;
+      ctx.lineWidth = width + 1.5;
       ctx.beginPath();
-      ctx.moveTo(end.x - 3, end.y);
-      ctx.lineTo(end.x + 7, end.y);
+      ctx.moveTo(end.x - 2, end.y);
+      ctx.lineTo(end.x + 6, end.y + 1);
       ctx.stroke();
+    } else {
+      ctx.fillStyle = '#e4b898';
+      ctx.beginPath();
+      ctx.arc(end.x, end.y, 2.1, 0, Math.PI * 2);
+      ctx.fill();
     }
     return end;
   }
@@ -83,6 +88,11 @@
       this.comboStep = 0;
       this.comboWindow = 0;
       this.attackBuffer = 0;
+      this.queuedAttack = false;
+      this.wantSpecial = false;
+      this.hitFlash = 0;
+      this.plantFoot = '';
+      this.plantWorld = 0;
       this.attackMove = null;
       this.attackHits = new Set();
       this.walkDistance = 0;
@@ -107,7 +117,21 @@
       this.setState(name);
       if (name === 'spin') this.invuln = Math.max(this.invuln, 0.22);
       this.g.movesUsed.add(name === 'back' ? 'combo3' : name === 'round' ? 'combo2' : name === 'front' ? 'combo1' : name);
-      this.g.playCue(name === 'spin' ? 'spinKick' : name === 'jump' ? 'jumpKick' : 'kick');
+      const cue = name === 'spin' ? 'spinKick' : name === 'jump' ? 'jumpKick' : name === 'back' ? 'kick3' : name === 'round' ? 'kick2' : 'kick';
+      this.g.playCue(cue);
+    }
+    startAttack(input) {
+      if (!this.grounded) {
+        this.beginMove('jump');
+        return;
+      }
+      if (input && input.held && input.held.down) {
+        this.beginMove('spin');
+        return;
+      }
+      this.comboStep = this.comboWindow > 0 ? this.comboStep % 3 + 1 : 1;
+      const names = ['front', 'round', 'back'];
+      this.beginMove(names[this.comboStep - 1]);
     }
     tryAttack(input) {
       if (!R.keyPressed(input, 'attack')) return;
@@ -117,21 +141,11 @@
         return;
       }
       if (this.attackMove) {
+        this.queuedAttack = true;
         this.attackBuffer = R.TUNE.attackBuffer;
         return;
       }
-      if (!this.grounded) {
-        this.beginMove('jump');
-        return;
-      }
-      if (input.held && input.held.down) {
-        this.beginMove('spin');
-        return;
-      }
-      this.comboStep = this.comboWindow > 0 ? this.comboStep % 3 + 1 : 1;
-      const names = ['front', 'round', 'back'];
-      this.beginMove(names[this.comboStep - 1]);
-      this.comboWindow = R.TUNE.comboWindow;
+      this.startAttack(input);
     }
     tryJump(input) {
       if (!R.keyPressed(input, 'jump') || !this.grounded || this.busy) return;
@@ -145,7 +159,9 @@
       this.g.playCue('jump');
     }
     tryFire(input) {
-      if (!R.keyPressed(input, 'special') || this.fireCooldown > 0 || this.busy) return;
+      if (R.keyPressed(input, 'special')) this.wantSpecial = true;
+      if (!this.wantSpecial || this.fireCooldown > 0 || this.busy) return;
+      this.wantSpecial = false;
       this.fireCooldown = this.angreal > 0 ? R.TUNE.angrealFireCooldown : R.TUNE.fireCooldown;
       this.setState('channel');
       this.channelTimer = 0.22;
@@ -159,10 +175,13 @@
       }
     }
     tryGrab() {
-      if (this.grabbed || this.busy || !this.grounded) return;
+      if (this.grabbed || this.busy || !this.grounded || this.attackMove || this.comboWindow > 0) return;
+      if (Math.abs(this.vx) < 36) return;
       for (const enemy of this.g.enemies) {
         if (enemy.dead || enemy.boss || !['hurt', 'knockback', 'knockdown'].includes(enemy.state)) continue;
-        if (Math.abs(enemy.x - this.x) > 28 || Math.abs(enemy.y - this.y) > 17) continue;
+        if (Math.abs(enemy.x - this.x) > 30 || Math.abs(enemy.y - this.y) > 18) continue;
+        const dir = Math.sign(enemy.x - this.x);
+        if (dir && Math.sign(this.vx) !== dir) continue;
         this.grabbed = enemy;
         enemy.grabbedBy = this;
         enemy.setState('grabbed');
@@ -196,6 +215,11 @@
     }
     updateAttack(dt) {
       if (!this.attackMove) return;
+      if (this.state !== this.attackName) {
+        this.attackMove = null;
+        this.queuedAttack = false;
+        return;
+      }
       const move = this.attackMove;
       const active = this.stateT >= move.active[0] && this.stateT <= move.active[1];
       if (active) {
@@ -209,13 +233,18 @@
         }
       }
       if (this.stateT < move.duration) return;
+      const queued = this.queuedAttack;
+      const finished = this.attackName;
+      this.queuedAttack = false;
+      this.attackBuffer = 0;
       this.attackMove = null;
-      if (this.attackBuffer > 0 && this.grounded && ['front', 'round'].includes(this.attackName)) {
+      if (queued && this.grounded && (finished === 'front' || finished === 'round')) {
         this.comboStep += 1;
         this.beginMove(this.comboStep === 2 ? 'round' : 'back');
-      } else if (this.grounded) {
-        this.setState('idle');
+        return;
       }
+      if (this.grounded) this.setState('idle');
+      this.comboWindow = finished === 'front' || finished === 'round' ? R.TUNE.comboWindow : 0;
     }
     updateTaint(dt) {
       if (this.power < this.powerMax || this.g.phase !== 'play') {
@@ -250,6 +279,7 @@
       this.comboWindow = Math.max(0, this.comboWindow - dt);
       this.attackBuffer = Math.max(0, this.attackBuffer - dt);
       this.healPortrait = Math.max(0, this.healPortrait - dt);
+      this.hitFlash = Math.max(0, this.hitFlash - dt);
       if (this.dead) {
         this.deadTimer += dt;
         return;
@@ -261,12 +291,20 @@
       }
       if (this.state === 'getup' && this.stateT > 0.42) this.setState('idle');
       const locked = ['hurt', 'knockdown', 'lying', 'getup', 'super'].includes(this.state);
-      if (this.state === 'hurt' && this.stateT > 0.25) this.setState('idle');
+      if (locked && R.keyPressed(input, 'attack')) this.queuedAttack = true;
+      if (this.state === 'hurt' && this.stateT > 0.22) {
+        this.setState('idle');
+        this.friction = 8;
+        if (this.queuedAttack) {
+          this.queuedAttack = false;
+          this.startAttack(input);
+        }
+      }
       if (!locked) {
         this.tryJump(input);
         this.tryAttack(input);
         this.tryFire(input);
-      }
+      } else this.tryFire(input);
       if (R.keyPressed(input, 'power') && this.power >= this.powerMax) this.g.activateBalefire();
       if (R.keyPressed(input, 'assist')) this.g.callLoial();
       if (this.grabbed && input && input.pressed) {
@@ -274,13 +312,17 @@
         if (away) this.throwGrab(this.grabbed.x >= this.x ? -1 : 1);
       }
       let axis = input && input.axis ? input.axis() : { x: 0, y: 0 };
-      if (!locked && !this.attackMove) {
-        this.vx = axis.x * R.TUNE.playerSpeed;
-        this.vy = axis.y * R.TUNE.laneSpeed;
-        if (axis.x) this.facing = Math.sign(axis.x);
+      const channeling = (this.channelTimer || 0) > 0;
+      const recovering = this.attackMove && this.stateT > this.attackMove.active[1];
+      if (!locked && !channeling && (!this.attackMove || recovering)) {
+        const scale = this.attackMove ? 0.45 : 1;
+        this.vx = axis.x * R.TUNE.playerSpeed * scale;
+        this.vy = axis.y * R.TUNE.laneSpeed * scale;
+        if (axis.x && !this.attackMove) this.facing = Math.sign(axis.x);
         this.walkDistance += Math.abs(this.vx) * dt;
-        if (this.grounded) this.setState(Math.abs(axis.x) + Math.abs(axis.y) > 0.1 ? 'walk' : 'idle');
+        if (this.grounded && !this.attackMove) this.setState(Math.abs(axis.x) + Math.abs(axis.y) > 0.1 ? 'walk' : 'idle');
       }
+      if (!locked && !channeling && this.state !== 'hurt') this.friction = 8;
       if (!this.grounded && !this.attackMove) this.setState(this.vz >= 0 ? 'rise' : 'fall');
       this.updateAttack(dt);
       this.updateTaint(dt);
@@ -295,13 +337,18 @@
         if (this.channelTimer <= 0 && this.grounded && !this.attackMove) this.setState('idle');
       }
     }
-    onHurt() {
+    onHurt(damage, opts) {
+      this.hitFlash = 0.12;
+      this.friction = opts && opts.launch ? 2.4 : 3.1;
+      this.attackMove = null;
+      this.queuedAttack = false;
+      this.attackBuffer = 0;
       if (this.hp <= 0) {
         this.setState('death');
         return;
       }
       this.setState('hurt');
-      this.power = Math.min(this.powerMax, this.power + 3);
+      this.power = Math.min(this.powerMax, this.power + 4);
     }
     pose() {
       let key = this.state;
@@ -309,120 +356,168 @@
       if (key === 'jump') key = 'fall';
       const frames = R.RILEY_POSES[key] || R.RILEY_POSES.idle;
       let index = 0;
-      if (key === 'walk') index = Math.floor(this.walkDistance / 14) % frames.length;
+      if (key === 'walk') index = Math.floor(this.walkDistance / 12) % frames.length;
       else if (frames.length > 1) index = Math.min(frames.length - 1, Math.floor(this.stateT / Math.max(0.08, (this.attackMove ? this.attackMove.duration : 0.4) / frames.length)));
       else if (key === 'idle') index = Math.floor(this.stateT * 2) % frames.length;
       return frames[index];
     }
     draw(ctx, cameraX) {
-      this.drawShadow(ctx, cameraX, 20);
+      this.drawShadow(ctx, cameraX, 14);
       const pose = this.pose();
+      const hipY = -23;
+      const leftFoot = limbPoint(limbPoint(-4, hipY, 12, pose.hip[0]).x, limbPoint(-4, hipY, 12, pose.hip[0]).y, 11, pose.hip[0] + pose.knee[0]);
+      const rightHipPoint = limbPoint(4, hipY, 12, pose.hip[1]);
+      const rightFoot = limbPoint(rightHipPoint.x, rightHipPoint.y, 11, pose.hip[1] + pose.knee[1]);
+      const contact = leftFoot.y >= rightFoot.y ? 'l' : 'r';
+      const plant = contact === 'l' ? leftFoot : rightFoot;
+      let slide = 0;
+      if (this.state === 'walk' && this.grounded) {
+        if (this.plantFoot !== contact) {
+          this.plantFoot = contact;
+          this.plantWorld = this.x + this.facing * plant.x;
+        }
+        slide = R.util.clamp((this.plantWorld - this.x) * this.facing - plant.x, -7, 7);
+      } else this.plantFoot = '';
       const x = this.x - cameraX;
-      const y = this.y - this.z + pose.bob;
+      const y = this.y - this.z + pose.bob * 0.6;
       ctx.save();
       ctx.translate(x, y);
       ctx.scale(this.facing, 1);
+      ctx.translate(slide, 0);
+      if (this.invuln > 0 && Math.floor(this.invuln * 18) % 2 === 0) ctx.globalAlpha = 0.55;
       if (this.angreal > 0) {
-        ctx.strokeStyle = 'rgba(255,221,100,0.7)';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(255,221,100,0.75)';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(0, -34, 27 + Math.sin(this.stateT * 8) * 2, 0, Math.PI * 2);
+        ctx.arc(0, -32, 24 + Math.sin(this.stateT * 8) * 1.5, 0, Math.PI * 2);
         ctx.stroke();
       }
-      const leftHip = { x: -5, y: -18 };
-      const rightHip = { x: 5, y: -18 };
-      drawLimb(ctx, leftHip, pose.hip[0], pose.knee[0], 17, 17, 6, true);
-      drawLimb(ctx, rightHip, pose.hip[1], pose.knee[1], 17, 17, 6, true);
-      const coat = ctx.createLinearGradient(-15, -53, 15, -12);
-      coat.addColorStop(0, '#27303c');
-      coat.addColorStop(0.45, '#111722');
-      coat.addColorStop(1, '#05080d');
+      drawLimb(ctx, { x: -4, y: hipY }, pose.hip[0], pose.knee[0], 12, 11, 4.2, true, '#1a2030');
+      drawLimb(ctx, { x: 4, y: hipY }, pose.hip[1], pose.knee[1], 12, 11, 4.2, true, '#1a2030');
+      const coat = ctx.createLinearGradient(-12, -48, 12, -14);
+      coat.addColorStop(0, '#2a3342');
+      coat.addColorStop(0.4, '#10151e');
+      coat.addColorStop(1, '#05070c');
       ctx.fillStyle = coat;
       ctx.beginPath();
-      ctx.moveTo(-12, -54);
-      ctx.quadraticCurveTo(-17, -38, -14, -15);
-      ctx.lineTo(-9, -5);
-      ctx.lineTo(0, -14);
-      ctx.lineTo(10, -5);
-      ctx.lineTo(15, -15);
-      ctx.quadraticCurveTo(17, -39, 12, -54);
+      ctx.moveTo(-8, -46);
+      ctx.lineTo(-10, -40);
+      ctx.quadraticCurveTo(-13, -30, -11, -16);
+      ctx.lineTo(-6, -12);
+      ctx.lineTo(0, -18);
+      ctx.lineTo(6, -12);
+      ctx.lineTo(11, -16);
+      ctx.quadraticCurveTo(13, -30, 10, -40);
+      ctx.lineTo(8, -46);
       ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = '#3f4b59';
+      ctx.fillStyle = '#07090e';
+      ctx.beginPath();
+      ctx.moveTo(-7, -46);
+      ctx.lineTo(-5, -50);
+      ctx.lineTo(0, -47);
+      ctx.lineTo(5, -50);
+      ctx.lineTo(7, -46);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#3a4554';
       ctx.lineWidth = 1;
       ctx.stroke();
-      drawLimb(ctx, { x: -11, y: -48 }, pose.shoulder[0], pose.elbow[0], 15, 14, 5, false);
-      drawLimb(ctx, { x: 11, y: -48 }, pose.shoulder[1], pose.elbow[1], 15, 14, 5, false);
-      ctx.strokeStyle = '#66717d';
+      drawLimb(ctx, { x: -8, y: -40 }, pose.shoulder[0], pose.elbow[0], 10, 9, 3.4, false, '#121722');
+      drawLimb(ctx, { x: 8, y: -40 }, pose.shoulder[1], pose.elbow[1], 10, 9, 3.4, false, '#121722');
+      ctx.strokeStyle = '#8d7a45';
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(-12, -29);
-      ctx.lineTo(12, -29);
+      ctx.moveTo(-9, -22);
+      ctx.lineTo(9, -22);
       ctx.stroke();
-      for (let i = 0; i < 4; i += 1) {
-        ctx.fillStyle = '#cbd2d7';
+      ctx.fillStyle = '#d7c37a';
+      ctx.fillRect(-2, -24, 4, 4);
+      for (let i = 0; i < 3; i += 1) {
+        ctx.fillStyle = '#d5dde4';
         ctx.beginPath();
-        ctx.arc(0, -43 + i * 7, 1.2, 0, Math.PI * 2);
+        ctx.arc(0, -38 + i * 5, 1.1, 0, Math.PI * 2);
         ctx.fill();
       }
-      ctx.fillStyle = '#c9c3b5';
+      ctx.fillStyle = '#d9dee6';
       ctx.beginPath();
-      ctx.moveTo(-8, -53);
-      ctx.lineTo(-3, -57);
-      ctx.lineTo(-1, -52);
+      ctx.moveTo(-7, -46);
+      ctx.lineTo(-3, -50);
+      ctx.lineTo(-2, -44);
       ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = '#d9e3e9';
+      ctx.strokeStyle = '#f2f6fb';
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(-7, -56);
-      ctx.lineTo(-2, -51);
+      ctx.moveTo(-6, -49);
+      ctx.lineTo(-3, -45);
       ctx.stroke();
-      ctx.fillStyle = '#b72f2f';
+      ctx.fillStyle = '#c43232';
       ctx.beginPath();
-      ctx.moveTo(4, -56);
-      ctx.quadraticCurveTo(10, -54, 6, -49);
-      ctx.quadraticCurveTo(2, -52, 4, -56);
+      ctx.moveTo(3, -49);
+      ctx.quadraticCurveTo(8, -47, 5, -43);
+      ctx.quadraticCurveTo(2, -45, 3, -49);
       ctx.fill();
       ctx.strokeStyle = '#e8be48';
+      ctx.lineWidth = 1;
       ctx.stroke();
-      const skin = ctx.createRadialGradient(-3, -67, 2, 0, -65, 14);
-      skin.addColorStop(0, '#f3c9a5');
-      skin.addColorStop(1, '#bd8063');
+      const skin = ctx.createRadialGradient(-2, -54, 1, 0, -52, 11);
+      skin.addColorStop(0, '#f6d0ae');
+      skin.addColorStop(1, '#c48868');
       ctx.fillStyle = skin;
       ctx.beginPath();
-      ctx.ellipse(0, -66, 12, 14, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -52, 8.5, 9.2, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#17151b';
+      ctx.fillStyle = '#16141a';
       ctx.beginPath();
-      ctx.arc(0, -71, 12, Math.PI, Math.PI * 2);
-      ctx.lineTo(11, -67);
-      ctx.quadraticCurveTo(5, -72, 4, -79);
-      ctx.lineTo(0, -74);
-      ctx.lineTo(-4, -81);
-      ctx.lineTo(-6, -73);
-      ctx.lineTo(-12, -76);
-      ctx.lineTo(-10, -67);
+      ctx.moveTo(-8, -54);
+      ctx.lineTo(-9, -62);
+      ctx.lineTo(-4, -56);
+      ctx.lineTo(-1, -66);
+      ctx.lineTo(2, -56);
+      ctx.lineTo(5, -64);
+      ctx.lineTo(8, -55);
+      ctx.lineTo(8, -50);
+      ctx.quadraticCurveTo(0, -56, -8, -50);
       ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = '#4d3b47';
+      const hair = ctx.createLinearGradient(0, -66, 0, -52);
+      hair.addColorStop(0, '#3c3844');
+      hair.addColorStop(1, '#16141a');
+      ctx.strokeStyle = hair;
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
-      ctx.moveTo(-7, -75);
-      ctx.quadraticCurveTo(0, -79, 7, -73);
+      ctx.moveTo(-1, -64);
+      ctx.quadraticCurveTo(-5, -58, -2, -51);
       ctx.stroke();
-      ctx.strokeStyle = '#4fb7ef';
-      ctx.lineWidth = 1.4;
-      ctx.strokeRect(-9, -68, 7, 5);
-      ctx.strokeRect(2, -68, 7, 5);
+      ctx.strokeStyle = '#3d86c9';
+      ctx.lineWidth = 1.15;
       ctx.beginPath();
-      ctx.moveTo(-2, -66);
-      ctx.lineTo(2, -66);
+      ctx.ellipse(-4.2, -52, 3.3, 2.5, 0, 0, Math.PI * 2);
       ctx.stroke();
-      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
       ctx.beginPath();
-      ctx.moveTo(-8, -67);
-      ctx.lineTo(-5, -67);
-      ctx.moveTo(3, -67);
-      ctx.lineTo(6, -67);
+      ctx.ellipse(4.2, -52, 3.3, 2.5, 0, 0, Math.PI * 2);
       ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-0.9, -52);
+      ctx.lineTo(0.9, -52);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-5.6, -53);
+      ctx.lineTo(-3.6, -53.2);
+      ctx.moveTo(2.8, -53);
+      ctx.lineTo(4.6, -53.2);
+      ctx.stroke();
+      if (this.hitFlash > 0) {
+        ctx.globalAlpha = Math.min(0.65, this.hitFlash * 6);
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(0, -36, 14, 22, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       ctx.restore();
     }
   }

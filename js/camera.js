@@ -72,8 +72,8 @@ RWB.Camera = class Camera {
   }
 };
 RWB.Camera.IMPACTS = {
-  light: { stop: 0.05, punch: 5, y: -1, shake: 2.4, shakeT: 0.09 },
-  heavy: { stop: 0.09, punch: 9, y: 3, shake: 5.5, shakeT: 0.16, flash: 0.045, flashColor: '#fff6d0' },
-  boss: { stop: 0.1, punch: 11, y: 4, shake: 8, shakeT: 0.28 },
-  super: { stop: 0.18, punch: 3, y: -8, shake: 16, shakeT: 0.95, flash: 0.2 }
+  light: { stop: 0.07, punch: 7, y: -2, shake: 3.4, shakeT: 0.12 },
+  heavy: { stop: 0.11, punch: 12, y: 4, shake: 6.8, shakeT: 0.2, flash: 0.06, flashColor: '#fff6d0' },
+  boss: { stop: 0.13, punch: 14, y: 5, shake: 9, shakeT: 0.32, flash: 0.08, flashColor: '#ffe0a8' },
+  super: { stop: 0.2, punch: 4, y: -8, shake: 16, shakeT: 0.95, flash: 0.22 }
 };
