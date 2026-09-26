@@ -315,8 +315,9 @@
           if (entry && !this.seenEntrances.has(entry)) { this.seenEntrances.add(entry); this.say(entry); }
         });
       }
-      if (index === 1) this.props.push(new R.BreakableProp(this, center + 35, 305, 'barrel'));
-      if (index === 3) this.props.push(new R.BreakableProp(this, center - 65, 244, 'crate'));
+      // The old procedural barrel/crate read as placeholder boxes against the
+      // painted stages; their reward now appears directly as a glowing pickup.
+      if (index === 1 || index === 3) { const kind = this.angrealDropped ? (index === 1 ? 'heal' : 'spark') : 'angreal'; this.pickups.push(new R.Pickup(this, index === 1 ? center + 35 : center - 65, index === 1 ? 305 : 244, kind)); if (kind === 'angreal') this.angrealDropped = true; }
       this.tutorial = index === 0 ? '{attack} KICK • {jump} JUMP' : index === 1 ? '{special} FIRE • DOWN+{attack} SPIN' : index === 2 ? '{assist} CALL LOIAL' : null;
       if (this.levelIndex > 0) this.tutorial = this.levelIndex === 2 ? 'AIRBORNE FOE: JUMP KICK OR FIREBALL' : this.levelIndex === 4 ? "BREAK TAIM'S SHIELD; FREE TWINKLE TOES" : null;
       this.saveCheckpoint();
@@ -603,6 +604,10 @@
       const list = this.enemies.filter(item => !item.remove).concat(this.props.filter(item => !item.dead), this.pickups, this.allies, [this.player]);
       R.Entity.sortByDepth(list);
       for (const item of list) item.draw(ctx, this.camera.x);
+      // If a nearer actor covers Riley, redraw him faintly on top so the player
+      // never loses track of him in a pack (depth order itself is by foot y).
+      const p = this.player;
+      if (p && p.drawSprite && !p.dead && list.some(e => e !== p && e.y > p.y && Math.abs(e.x - p.x) < 60 && !e.dead)) { ctx.save(); ctx.globalAlpha = .38; p.ghost = true; p.drawSprite(ctx, this.camera.x); p.ghost = false; ctx.restore(); }
       for (const projectile of this.projectiles) projectile.draw(ctx, this.camera.x);
       for (const hazard of this.hazards) hazard.draw(ctx, this.camera.x);
       this.fx.draw(ctx, this.camera.x);

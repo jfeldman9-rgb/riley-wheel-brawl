@@ -268,28 +268,21 @@
     draw(ctx) {
       const phase = this.age % 8;
       if (phase >= 6.4) return;
+      // Soft, drifting ground mist instead of a dashed debug box. The lane edges
+      // stay readable as faint glowing seams on the ground.
       ctx.save();
-      ctx.strokeStyle = '#efe7ff';
-      ctx.fillStyle = '#c8bfe2';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([8, 6]);
-      ctx.strokeRect(0, this.lane - 22, 640, 44);
-      if (this.active) {
-        ctx.globalAlpha = 0.32;
-        for (let i = 0; i < 13; i++) {
-          ctx.beginPath();
-          ctx.ellipse(
-            i * 60 + Math.sin(this.age + i) * 20,
-            this.lane,
-            53,
-            15 + Math.sin(i + this.age) * 5,
-            0,
-            0,
-            Math.PI * 2,
-          );
-          ctx.fill();
-        }
+      const rise = this.active ? Math.min(1, (phase - 1.6) / .6) : .35;
+      ctx.globalCompositeOperation = 'screen';
+      for (let i = 0; i < 16; i++) {
+        const x = i * 44 + Math.sin(this.age * .7 + i * 1.7) * 26, y = this.lane + Math.sin(this.age + i) * 6, rx = 58 + (i % 3) * 12;
+        const g = ctx.createRadialGradient(x, y, 2, x, y, rx);
+        g.addColorStop(0, `rgba(196,182,236,${.20 * rise})`); g.addColorStop(1, 'rgba(196,182,236,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, rx, 20, 0, 0, Math.PI * 2); ctx.fill();
       }
+      ctx.globalCompositeOperation = 'source-over';
+      const edge = ctx.createLinearGradient(0, 0, 640, 0); edge.addColorStop(0, 'rgba(230,220,255,0)'); edge.addColorStop(.5, `rgba(230,220,255,${.28 + .2 * rise})`); edge.addColorStop(1, 'rgba(230,220,255,0)');
+      ctx.strokeStyle = edge; ctx.lineWidth = 1; ctx.setLineDash([10, 8]); ctx.lineDashOffset = -this.age * 12;
+      ctx.beginPath(); ctx.moveTo(0, this.lane + 22); ctx.lineTo(640, this.lane + 22); ctx.moveTo(0, this.lane - 22); ctx.lineTo(640, this.lane - 22); ctx.stroke();
       ctx.restore();
       R.drawText(
         ctx,

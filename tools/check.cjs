@@ -111,7 +111,7 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-check(urls.every(url => url.includes('?v=20260926-w3c')), 'Every script, stylesheet, and font URL has the w3c cache stamp');
+check(urls.every(url => url.includes('?v=20260926-w3d')), 'Every script, stylesheet, and font URL has the w3c cache stamp');
 // Chunk B: exercise real collision, persistence and scene transitions, not only metadata.
 const neutral = { pressed: {}, held: {}, axis: () => ({x:0,y:0}) };
 const ctx = new Proxy({ createLinearGradient:()=>({addColorStop(){}}), createRadialGradient:()=>({addColorStop(){}}), measureText:t=>({width:String(t).length*8}) }, {get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
@@ -206,7 +206,7 @@ for(let level=0;level<5;level++) {
 }
 check(Object.values(RWB.ART_FILES).every(src=>!src.startsWith('/') && /\.(png|jpeg|json)$/.test(src)), 'Art hooks use relative image/JSON paths');
 check([1,2,3,4,5].every(n=>RWB.ART_FILES['stage'+n+'-far'] && RWB.ART_FILES['stage'+n+'-mid'] && RWB.ART_FILES['stage'+n+'-near'] && RWB.ART_FILES['floor'+n]),'Every stage has four optional art layers');
-check(RWB.assets.VER==='20260926-w3c' && RWB.ASSET_VER==='20260926-w3c','Runtime assets share the w3c script cache stamp');
+check(RWB.assets.VER==='20260926-w3d' && RWB.ASSET_VER==='20260926-w3d','Runtime assets share the w3c script cache stamp');
 
 const brokenPath='assets/art/test-missing.png';
 RWB.ART_MANIFEST.push(brokenPath);

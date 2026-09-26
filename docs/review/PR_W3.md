@@ -45,3 +45,11 @@ Known remaining weaknesses: during SWORD FLURRY the hilt can sit a few pixels pa
 - Be'lal's sword arm keeps its painted fist during SWORD FLURRY. The blade swings about the fist, and a shorter grip puts the crossguard at the knuckles, so the hilt never separates from the hand.
 - The Riley frames in `assets/art/riley16/` were sliced from the supplied 16-year-old sheet. All frames share one scale, a common foot baseline and a body-centred anchor; the fireball frame is anchored on his body, not the flame. The HUD portrait is a crop of the idle face.
 - All review JPEGs were regenerated from this commit in headless Chromium.
+
+### w3d
+
+- The tan box with an X was the procedural breakable crate/barrel (`BreakableProp`), not a missing asset. It never had painted art, so it no longer spawns. Its reward (angreal, then heal/spark) now appears directly as a glowing pickup at the same spot.
+- Riley has a thin warm rim and contact shadow. When a nearer actor covers him (depth is sorted by foot y), a faint ghost of him is drawn on top so he is never lost in a pack.
+- Stage 3's Mashadar fog is now drifting ground mist with soft animated lane seams, replacing the dashed debug rectangle.
+- Review fight captures use the first natural frame where Riley is on screen, not hurt or invulnerable, and not covered by a nearer enemy. `riley-closeup` is wider and shows Riley idle beside a full Trolloc at the same world scale.
+- Stamp `?v=20260926-w3d`.

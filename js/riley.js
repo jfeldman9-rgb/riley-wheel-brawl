@@ -412,7 +412,10 @@
       ctx.scale(this.facing, 1);
       if (this.invuln > 0 && Math.floor(this.invuln * 18) % 2 === 0) ctx.globalAlpha *= .55;
       if (this.dead) ctx.globalAlpha *= Math.max(.1, Math.min(1, 1 - this.deadTimer / .75));
+      // Thin warm rim + contact shadow keep Riley readable against busy art.
+      if (!this.ghost) ctx.filter = 'drop-shadow(0 0 1.2px rgba(255,232,180,.7)) drop-shadow(0 1px 1px rgba(0,0,0,.65))';
       ctx.drawImage(img, -ax * scale, -ay * scale, w * scale, h * scale);
+      ctx.filter = 'none';
       ctx.restore();
       return true;
     }
