@@ -28,17 +28,19 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
    };
  });
  for(let i=0;i<5;i++){
-   await p.evaluate(i=>reviewFight(i,3),i);await p.screenshot({path:path.join(out,'stage'+(i+1)+'-midfight.png')});
-   await p.evaluate(i=>reviewFight(i,5),i);await p.screenshot({path:path.join(out,'stage'+(i+1)+'-boss.png')});
+   await p.evaluate(i=>reviewFight(i,3),i);await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'stage'+(i+1)+'-midfight.jpeg')});
+   await p.evaluate(i=>reviewFight(i,5),i);await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'stage'+(i+1)+'-boss.jpeg')});
  }
- await p.evaluate(()=>renderScene(new RWB.scenes.Title(RWB.game)));await p.screenshot({path:path.join(out,'title.png')});
- await p.evaluate(()=>{const r=new RWB.scenes.Reel(RWB.game,RWB.CAPTIONS.callandor,()=>new RWB.scenes.Title(RWB.game),'CALLANDOR ANSWERS');r.timer=4;renderScene(r);});await p.screenshot({path:path.join(out,'cutscene-callandor.png')});
+ await p.evaluate(()=>renderScene(new RWB.scenes.Title(RWB.game)));await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'title.jpeg')});
+ await p.evaluate(()=>{const r=new RWB.scenes.Reel(RWB.game,RWB.CAPTIONS.callandor,()=>new RWB.scenes.Title(RWB.game),'CALLANDOR ANSWERS');r.timer=4;renderScene(r);});await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'cutscene-callandor.jpeg')});
+ // Freeze automatic display resizing for diagnostic canvases with custom ratios.
+ await p.evaluate(()=>window.removeEventListener('resize',RWB.display.resize));
  await p.setViewportSize({width:1600,height:1200});
  await p.evaluate(()=>{
    const c=document.getElementById('game');c.width=1600;c.height=1200;c.style.width='1600px';c.style.height='1200px';const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#1c293d';ctx.fillRect(0,0,800,600);
    const kinds=Object.keys(RWB.Puppet.defs);
    kinds.forEach((kind,i)=>{const x=100+(i%4)*200,y=168+Math.floor(i/4)*198;ctx.save();ctx.translate(x,y);ctx.scale(1.20,1.20);RWB.Puppet.draw(ctx,{x:0,y:0,z:0,facing:1,state:'idle',stateT:0},0,kind);ctx.restore();RWB.drawText(ctx,kind.toUpperCase(),x,y+13,5,'#e7d499','center');});
- });await p.screenshot({path:path.join(out,'character-closeups.png')});
+ });await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'character-closeups.jpeg')});
  await p.setViewportSize({width:1280,height:720});
  for(const kind of ['riley','trolloc','darkfriend']){
    const metric=await p.evaluate(kind=>{
@@ -53,8 +55,38 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
      }
      RWB.drawText(ctx,kind.toUpperCase()+' / 8 WALK PHASES / FIXED WORLD CONTACTS',480,14,8,'#ffffff','center');return{kind,frames:8,maxDrift,stanceSamples};
    },kind);
-   await p.locator('#game').screenshot({path:path.join(out,'walk-'+kind+'.png')});fs.writeFileSync(path.join(out,'walk-'+kind+'.json'),JSON.stringify(metric,null,2)+'\n');
+   await p.locator('#game').screenshot({type:'jpeg',quality:92,path:path.join(out,'walk-'+kind+'.jpeg')});fs.writeFileSync(path.join(out,'walk-'+kind+'.json'),JSON.stringify(metric,null,2)+'\n');
  }
+ await p.setViewportSize({width:1600,height:1000});
+ await p.evaluate(()=>{
+   const c=document.getElementById('game');c.width=1600;c.height=1000;c.style.width='1600px';c.style.height='1000px';const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#1c293d';ctx.fillRect(0,0,800,500);
+   const poses=['walk','attack','channel','hurt','knockdown'];
+   poses.forEach((pose,i)=>RWB.drawText(ctx,pose.toUpperCase(),80+i*160,16,7,'#e7d499','center'));
+   ['riley','trolloc','darkfriend'].forEach((kind,row)=>poses.forEach((pose,col)=>{
+     const d=RWB.Puppet.defs[kind],a={x:0,y:0,z:0,facing:1,state:pose,stateT:.15,visualHeight:d.height};
+     if(pose==='walk'){RWB.Puppet.updateGait(a,1/60);for(let i=0;i<20;i++){a.x+=1;RWB.Puppet.updateGait(a,1/60);}}
+     if(pose==='attack'){if(kind==='riley'){a.attackMove=RWB.MOVES.front;a.attackName='front';}else a.ai='attack';}
+     const x=80+col*160,y=150+row*160,down=pose==='knockdown',scale=down?.95:1.15;ctx.save();ctx.translate(x+(down?20:0),y-(down?20:0));ctx.scale(scale,scale);RWB.Puppet.draw(ctx,a,a.x,kind);ctx.restore();
+     RWB.drawText(ctx,kind.toUpperCase(),x,y+16,5,'#e7d499','center');
+   }));
+ });await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'rig-poses.jpeg')});
+ await p.setViewportSize({width:1280,height:720});
+ const contacts=await p.evaluate(()=>{
+   return Object.entries(RWB.Puppet.defs).map(([kind,d])=>{
+     let maxDrift=0,maxContactError=0,samples=0;
+     for(const direction of [-1,1]){
+       const a={x:0,y:0,z:0,facing:direction,state:'walk',stateT:0,visualHeight:d.height};RWB.Puppet.updateGait(a,1/60);
+       for(let f=0;f<180;f++){
+         const previous=RWB.Puppet.contacts(a,kind),old=a.gait.feet.map(p=>({...p})),dt=[1/30,1/60,1/120][f%3],speed=35+(f%60)*2;
+         a.x+=direction*speed*dt;a.y+=Math.sin(f*.04)*speed*.25*dt;RWB.Puppet.updateGait(a,dt);
+         RWB.Puppet.contacts(a,kind).forEach((p,i)=>{const foot=a.gait.feet[i];if(!foot?.stance)return;maxContactError=Math.max(maxContactError,Math.hypot(p.x-foot.x,p.y-foot.y));if(old[i]?.stance){maxDrift=Math.max(maxDrift,Math.hypot(p.x-previous[i].x,p.y-previous[i].y));samples++;}});
+       }
+     }
+     return {kind,samples,maxDrift:+maxDrift.toFixed(6),maxContactError:+maxContactError.toFixed(6)};
+   });
+ });
+ fs.writeFileSync(path.join(out,'rendered-foot-contacts.json'),JSON.stringify(contacts,null,2)+'\n');
+ if(contacts.some(r=>r.maxDrift>.15||r.maxContactError>.15||r.samples<200))errors.push('Rendered sole contact drift exceeds 0.15 world pixels');
  const timings=await p.evaluate(()=>{
    const results=[];for(let level=0;level<5;level++){reviewFight(level,3);const start=performance.now();for(let f=0;f<30;f++)renderScene(review);results.push({stage:level+1,drawMs:+((performance.now()-start)/30).toFixed(2)});}return results;
  });

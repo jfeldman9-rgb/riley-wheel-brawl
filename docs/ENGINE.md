@@ -108,9 +108,13 @@ allowlist of delivered files. The shared input renderer is called from Play with
 drawing and samples final movement after `Play.updateObjects`; hitboxes, controls,
 move timings, collision and existing AI remain in the inherited modules. Twelve
 walking character definitions bind source pixels to head/torso and upper/lower
-limb regions. Painted leg cutouts use two-bone IK; the connected upper silhouette
-uses a bounded deformation around the shoulder/elbow/wrist targets so clothing
-remains continuous. Idle draws the original cutout. Attack/hurt targets and
+limb regions. A cached, alpha-culled 16x24 triangle mesh uses two-bone leg IK
+and bounded shoulder/elbow/wrist deformation. Skin blends continuously through
+knees and hems; source soles translate rigidly to measured world contacts. The
+Stone Guard supplies explicit contacts because its painted boots overlap. Kicks
+are constrained to the authored leg length. The source texture is cached at 384
+pixels tall; translucent actors composite to a scratch surface once before fading
+to avoid alpha seams at triangle edges. Idle draws the original cutout. Attack/hurt targets and
 knockdown rotation use this same rig. Draghkar uses its winged painted cutout.
 
 `gait.phase` advances with actual world displacement, including lane movement.
@@ -140,4 +144,4 @@ caption removes that flag. Reloading partway through replays the reveal.
 
 `tools/review.cjs` serves this checkout and captures actual Canvas output with
 headless Playwright/Chromium. Set `CHROMIUM_PATH` for an existing executable.
-Evidence and audit data are under `docs/review/`.
+Evidence and audit data are under `docs/review/`. The rendered-contact audit samples the actual mesh triangles for all twelve rigs across varying speeds, directions, lane movement and update rates; it fails above 0.15 world pixels of drift/error. `rig-poses.jpeg` exposes walk, attack, channel, hurt and knockdown targets.

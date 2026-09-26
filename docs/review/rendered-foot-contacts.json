@@ -1,0 +1,74 @@
+[
+  {
+    "kind": "riley",
+    "samples": 340,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "twinkle",
+    "samples": 334,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "trolloc",
+    "samples": 342,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "chieftain",
+    "samples": 346,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "darkfriend",
+    "samples": 340,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "cultist",
+    "samples": 340,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "guard",
+    "samples": 342,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "ashaman",
+    "samples": 342,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "fade",
+    "samples": 344,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "forsaken",
+    "samples": 344,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "taim",
+    "samples": 344,
+    "maxDrift": 0,
+    "maxContactError": 0
+  },
+  {
+    "kind": "loial",
+    "samples": 346,
+    "maxDrift": 0,
+    "maxContactError": 0
+  }
+]
