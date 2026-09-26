@@ -42,7 +42,9 @@
     R.drawText(ctx, 'LOIAL ' + (player.loialReady ? 'READY' : 'SPENT'), textX, big ? 24 : 20, font, player.loialReady ? '#8cf0ae' : '#87909a');
     R.drawText(ctx, 'SCORE ' + String(player.score).padStart(7, '0'), textX, big ? 44 : 38, font, '#ffffff');
     R.drawText(ctx, 'WAVE ' + Math.min(6, scene.wave + 1) + '/6', textX, big ? 64 : 54, small, '#b7cce1');
-    R.drawText(ctx, 'STAGE ' + (scene.levelIndex + 1) + (player.callandor ? '  CALLANDOR' : ''), 320, 16, 6, '#efdb97', 'center');
+    // Banner names the stage itself (Callandor is Stage 4's reward, not Stage 5's title).
+    R.drawText(ctx, 'STAGE ' + (scene.levelIndex + 1), 320, 16, 6, '#efdb97', 'center');
+    R.drawText(ctx, (scene.level && scene.level.banner) || (scene.level && scene.level.name) || '', 320, 27, 5, '#efdb97', 'center');
     if (player.angreal > 0) {
       R.drawPanel(ctx, 235, 75, 170, 24);
       R.drawText(ctx, 'ANGREAL ' + player.angreal.toFixed(1) + 's', 320, 88, 7, '#ffe078', 'center');

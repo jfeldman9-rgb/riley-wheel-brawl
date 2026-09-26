@@ -2,7 +2,7 @@
 
 Branch `rwb-w2`, based on the latest supplied-art commit on `rwb-w1`:
 `5a576d4ca36a1054e5b7f41a4489e7141ae91a54`.
-Runtime cache stamp: `?v=20260926-w3e`. No changes to `main`; no merge.
+Runtime cache stamp: `?v=20260926-w3f`. No changes to `main`; no merge.
 
 ## Changed
 

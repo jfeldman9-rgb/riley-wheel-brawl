@@ -67,3 +67,8 @@ Known remaining weaknesses: during SWORD FLURRY the hilt can sit a few pixels pa
 - Mid, near and far plates on stages 2-5, including the Black Tower roof sky, are drawn once at full source width (700 units), so no building or ruin appears twice on screen. The old loop dissolve was removed because no plate wraps inside the camera range anymore.
 - `seams-stage*.jpeg` now shows the full 640-unit view at four camera positions. Stage 5 shows both the interior (wave 3) and the roof (wave 5).
 - `check.txt` prints the cache stamp. Stamp `?v=20260926-w3e`.
+
+### w3f
+
+- The HUD stage banner used to append "CALLANDOR" whenever Riley carried the sword, so Stage 5 (the Black Tower) was titled CALLANDOR. The banner now shows `STAGE N` above the stage's own title: EMOND'S FIELD, CAEMLYN, SHADAR LOGOTH, TEAR - CALLANDOR, THE BLACK TOWER. Gameplay is unchanged; Riley still visibly wields Callandor in Stage 5.
+- Stamp `?v=20260926-w3f`, because hud.js and campaign.js changed.

@@ -418,6 +418,7 @@
       },
     ],
   );
+  R.LEVELS.forEach((level, i) => { level.banner = ["EMOND'S FIELD", 'CAEMLYN', 'SHADAR LOGOTH', 'TEAR - CALLANDOR', 'THE BLACK TOWER'][i]; });
   R.LEVELS.forEach((level, i) => { level.damageScale = [0.82, 2.55, 0.63, 2.15, 0.69][i]; });
   R.LEVELS[0].wavePoints = R.Stage1.wavePoints;
   R.LEVELS[0].mix = R.Stage1.waveTable;

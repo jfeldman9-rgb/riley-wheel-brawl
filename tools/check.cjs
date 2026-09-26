@@ -111,7 +111,7 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260926-w3e';console.log('Cache stamp: '+STAMP);
+const STAMP='20260926-w3f';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 // Chunk B: exercise real collision, persistence and scene transitions, not only metadata.
 const neutral = { pressed: {}, held: {}, axis: () => ({x:0,y:0}) };
@@ -256,6 +256,8 @@ RWB.ART_MANIFEST.pop();
   check(planted>40 && maxDrift<1e-8 && armOpposite,'World-space planted feet stay fixed; arms counter-swing throughout the gait');
 check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, ally and boss characters retain articulated painted rigs; Riley is sprite-only');
   const stageSource=fs.readFileSync(path.join(root,'js/stages.js'),'utf8');
+  const hudSource=fs.readFileSync(path.join(root,'js/hud.js'),'utf8');
+  check(RWB.LEVELS[3].banner.includes('TEAR')&&RWB.LEVELS[3].banner.includes('CALLANDOR')&&RWB.LEVELS[4].banner==='THE BLACK TOWER'&&!RWB.LEVELS[4].banner.includes('CALLANDOR')&&!/'  CALLANDOR'/.test(hudSource)&&/level\.banner/.test(hudSource),'Stage banners: 4 = Tear - Callandor, 5 = The Black Tower (Callandor no longer titles Stage 5)');
   const puppetSource=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
   check(!/scale\(\s*-1\s*,\s*1\s*\)/.test(stageSource),'Stage plate and floor tiling never mirrors a repeat');
   check(['1','2','3','4','5','-roof'].every(n=>RWB.ART_FILES['floor'+n]==='assets/art/floor'+n+'-loop.jpeg')&&/FLOOR_LOOP=1100/.test(stageSource)&&/const overlap=0/.test(stageSource),'Floors use offline-quilted seamless loops (min-error cut, no hard join) spanning 1100 units, >1.7 screens');

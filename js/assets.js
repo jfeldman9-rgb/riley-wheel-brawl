@@ -15,7 +15,7 @@
    from an older deploy can't pin the fallback. */
 'use strict';
 
-RWB.ASSET_VER = '20260926-w3e';
+RWB.ASSET_VER = '20260926-w3f';
 RWB.assets = (function () {
   const images = {};
   const cs = typeof document !== 'undefined' && document.currentScript;
