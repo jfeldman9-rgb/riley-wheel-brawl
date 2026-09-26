@@ -1,22 +1,21 @@
 /* Persistent player settings: audio, display, control overlay, accessibility,
-   keyboard / gamepad remaps, plus the light stage/wave checkpoint used by
-   Continue. Settings keep the `wl-settings` key main.js always used, so an
-   older save still restores its display mode and volume. */
+   keyboard / gamepad remaps, plus a light stage/wave checkpoint for Continue.
+   Action ids are generic: attack, jump, special, assist, power, pause. */
 'use strict';
 
 RWB.settings = (function () {
-  const KEY = 'wl-settings';
-  const RUN_KEY = 'wl-run';
+  const KEY = 'rwb-settings';
+  const RUN_KEY = 'rwb-run';
 
   // First entry is the primary binding: it is what the on-screen badges and
   // legends show. Later entries are the arcade / arrow aliases.
   const DEFAULT_KEYS = {
     up: ['w', 'ArrowUp'], down: ['s', 'ArrowDown'], left: ['a', 'ArrowLeft'], right: ['d', 'ArrowRight'],
     attack: ['e', 'j', 'z'], jump: [' ', 'k', 'x'], special: ['q', 'l', 'c'],
-    tool: ['r', 'i', 'v', 'u'], saidin: ['f', 'b'], pause: ['Escape', 'p']
+    assist: ['r', 'i', 'v', 'u'], power: ['f', 'b'], pause: ['Escape', 'p']
   };
-  // Standard mapping: A jump, B saidin, X attack, Y fire, RB/LB relic, Back pause.
-  const DEFAULT_PAD = { attack: [2], jump: [0], special: [3], tool: [5, 4], saidin: [1], pause: [8] };
+  // Standard mapping: A jump, B power, X attack, Y special, RB/LB assist, Back pause.
+  const DEFAULT_PAD = { attack: [2], jump: [0], special: [3], assist: [5, 4], power: [1], pause: [8] };
   // Enter confirms menus, M mutes, backslash / F11 go fullscreen. Start and the
   // d-pad always work so a bad remap can't lock anyone out of the menus.
   const FIXED_KEYS = { Enter: 'start', m: 'mute', '\\': 'fullscreen', F11: 'fullscreen' };
@@ -24,11 +23,11 @@ RWB.settings = (function () {
   const RESERVED_KEYS = ['Enter', 'm', '\\', 'F11', 'Tab', 'Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'ContextMenu', 'OS', 'Dead', 'Unidentified'];
   const RESERVED_PAD = [9, 12, 13, 14, 15];
 
-  const ACTIONS = ['up', 'down', 'left', 'right', 'attack', 'jump', 'special', 'tool', 'saidin', 'pause'];
-  const PAD_ACTIONS = ['attack', 'jump', 'special', 'tool', 'saidin', 'pause'];
+  const ACTIONS = ['up', 'down', 'left', 'right', 'attack', 'jump', 'special', 'assist', 'power', 'pause'];
+  const PAD_ACTIONS = ['attack', 'jump', 'special', 'assist', 'power', 'pause'];
   const ACTION_NAMES = {
     up: 'MOVE UP', down: 'MOVE DOWN', left: 'MOVE LEFT', right: 'MOVE RIGHT',
-    attack: 'ATTACK', jump: 'JUMP', special: 'FIRE', tool: 'CALL', saidin: 'BALEFIRE', pause: 'PAUSE'
+    attack: 'ATTACK', jump: 'JUMP', special: 'SPECIAL', assist: 'ASSIST', power: 'POWER', pause: 'PAUSE'
   };
 
   const OVERLAY_STEPS = [0.25, 0.4, 0.55, 0.7, 0.85];
@@ -160,35 +159,37 @@ RWB.settings = (function () {
     return padLabel((data.pad[action] || [])[0]);
   }
 
-  /* ---- light checkpoint for Continue ---- */
+  /* ---- light checkpoint for Continue ----
+     { level, wave, score, extra: {...game-defined fields} }. The game may set
+     RWB.settings.validateRun(run) -> run|null to clamp its own extra fields. */
   function saveRun(run) {
-    try { localStorage.setItem(RUN_KEY, JSON.stringify(Object.assign({ v: 1, at: Date.now() }, run))); } catch (e) { /* private mode */ }
+    try { localStorage.setItem(RUN_KEY, JSON.stringify(Object.assign({ v: 2, at: Date.now() }, run))); } catch (e) { /* private mode */ }
   }
   function loadRun() {
     try {
       const r = JSON.parse(localStorage.getItem(RUN_KEY) || 'null');
-      if (!r || r.v !== 1 || !Number.isInteger(r.level) || !RWB.LEVELS || !RWB.LEVELS[r.level]) return null;
-      const waves = RWB.LEVELS[r.level].waves.length;
+      if (!r || r.v !== 2 || !Number.isInteger(r.level) || r.level < 0) return null;
+      if (RWB.LEVELS && !RWB.LEVELS[r.level]) return null;
+      const waves = RWB.LEVELS && RWB.LEVELS[r.level].waves ? RWB.LEVELS[r.level].waves.length : 1;
       r.wave = Math.max(0, Math.min(waves - 1, r.wave | 0));
       r.score = Math.max(0, r.score | 0);
-      r.saidin = Math.max(0, Math.min(100, r.saidin | 0));
-      r.callandor = !!r.callandor;
-      r.loial = r.loial !== false;
-      return r;
+      r.extra = r.extra && typeof r.extra === 'object' ? r.extra : {};
+      return api.validateRun ? api.validateRun(r) : r;
     } catch (e) { return null; }
   }
   function clearRun() { try { localStorage.removeItem(RUN_KEY); } catch (e) { /* private mode */ } }
 
   rebuild();
 
-  return {
+  const api = {
     data, keyMap, padMap, load, save, set, cycle,
     setKey, setPad, resetControls, norm,
     keyLabel, padLabel, keysFor, padFor,
     saveRun, loadRun, clearRun,
     ACTIONS, PAD_ACTIONS, ACTION_NAMES, OVERLAY_STEPS, MUSIC_STEPS, RESERVED_KEYS, RESERVED_PAD,
-    DEFAULT_KEYS, DEFAULT_PAD
+    DEFAULT_KEYS, DEFAULT_PAD, validateRun: null
   };
+  return api;
 })();
 
 /* Frame budget. Coarse pointers get a smaller particle budget; `lite` halves

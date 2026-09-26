@@ -1,15 +1,15 @@
-/* Painted art: sprite atlases and background urn baked by tools/bake_art.py.
+/* Engine painted-art drawing: sprite atlases and background plates (RWB.ARTDATA).
    Everything here is optional. When an atlas or plate hasn't loaded (or the
    file is missing), callers fall back to the procedural Canvas 2D drawing. */
 'use strict';
 
 RWB.art = (function () {
   const DATA = RWB.ARTDATA || {};
-  const urn = DATA.urn || {};
+  const plates = DATA.plates || {};
   const cache = new Map();
 
   function atlas(name) { return RWB.assets.get('art:' + name); }
-  function plate(name) { return urn[name] ? RWB.assets.get('plate:' + name) : null; }
+  function plate(name) { return plates[name] ? RWB.assets.get('plate:' + name) : null; }
   function has(name) { return !!(DATA[name] && DATA[name].f && atlas(name)); }
   function frame(name, f) { const A = DATA[name]; return A && A.f[f] ? A.f[f] : null; }
   function rs() { return RWB.display.mode === 'classic' ? 1 : (RWB.display.renderScale || 1); }
@@ -51,11 +51,11 @@ RWB.art = (function () {
     g.globalCompositeOperation = 'source-in';
     if (kind === 'shadow') { g.fillStyle = '#1a0c20'; g.fillRect(0, 0, c.width, c.height); }
     else {
-      // Keep the colours, assassin from the feet down.
+      // Keep the colours, fade from the feet down.
       g.globalCompositeOperation = 'destination-in';
-      const assassin = g.createLinearGradient(0, c.height, 0, c.height * 0.35);
-      assassin.addColorStop(0, 'rgba(0,0,0,1)'); assassin.addColorStop(1, 'rgba(0,0,0,0)');
-      g.fillStyle = assassin; g.fillRect(0, 0, c.width, c.height);
+      const fadeGrad = g.createLinearGradient(0, c.height, 0, c.height * 0.35);
+      fadeGrad.addColorStop(0, 'rgba(0,0,0,1)'); fadeGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = fadeGrad; g.fillRect(0, 0, c.width, c.height);
     }
     g.globalCompositeOperation = 'source-over';
     e = { c, q };
@@ -118,7 +118,7 @@ RWB.art = (function () {
     ctx.restore();
   }
 
-  /* Lacquered-stage reflection: the frame mirrored under the feet, fading out. */
+  /* Floor reflection: the frame mirrored under the feet, fading out. */
   function reflect(ctx, name, f, x, floorY, z, o) {
     const A = DATA[name], F = A && A.f[f];
     if (!F || !atlas(name) || RWB.perf.lite) return;

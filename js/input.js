@@ -1,5 +1,5 @@
 /* Unified keyboard + gamepad + touch input.
-   Actions: attack, jump, special, tool, saidin, start, pause, mute, fullscreen
+   Actions: attack, jump, special, assist, power, start, pause, mute, fullscreen
    Movement: axis.x / axis.y in [-1, 1]. */
 'use strict';
 
@@ -46,9 +46,9 @@ RWB.input = (function () {
     touch.buttons = [
       { id: 'attack', label: 'ATK', x: W - 118, y: H - 62, r: 30, color: '#e33' },
       { id: 'jump', label: 'JMP', x: W - 48, y: H - 96, r: 24, color: '#39f' },
-      { id: 'special', label: 'FIRE', x: W - 178, y: H - 106, r: 22, color: '#3cf' },
-      { id: 'tool', label: 'CALL', x: W - 60, y: H - 34, r: 22, color: '#fc3' },
-      { id: 'saidin', label: 'SUPER', x: W - 178, y: H - 50, r: 24, color: '#5d3' },
+      { id: 'special', label: 'SPCL', x: W - 178, y: H - 106, r: 22, color: '#3cf' },
+      { id: 'assist', label: 'ASST', x: W - 60, y: H - 34, r: 22, color: '#fc3' },
+      { id: 'power', label: 'POWR', x: W - 178, y: H - 50, r: 24, color: '#5d3' },
       { id: 'pause', label: 'II', x: W / 2 + 96, y: 34, r: 12, color: '#aaa' }
     ];
   }
@@ -133,7 +133,7 @@ RWB.input = (function () {
     pointer.x = p.x; pointer.y = p.y; pointer.type = e.pointerType || 'mouse';
     if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
       const scene = RWB.game && RWB.game.scene;
-      const b = scene && scene instanceof RWB.scenes.Play && !scene.paused && scene.phase === 'play' && buttonAt(p);
+      const b = scene && scene.isGameplay && !scene.paused && scene.phase === 'play' && buttonAt(p);
       if (b) {
         touch.pointers.set(e.pointerId, { x: p.x, y: p.y, button: b.id });
         if (e.currentTarget && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId);
@@ -200,8 +200,8 @@ RWB.input = (function () {
     }
   }
 
-  // Default mapping lives in RWB.settings: A jump, B saidin, X attack, Y fire,
-  // LB/RB relic, Back pause. Triggers (6, 7) are analog and easy to brush,
+  // Default mapping lives in RWB.settings: A jump, B power, X attack, Y special,
+  // LB/RB assist, Back pause. Triggers (6, 7) are analog and easy to brush,
   // so they are only bound if the player remaps onto them.
   // Start (9) confirms menus and, during a fight, opens pause.
 
@@ -253,7 +253,7 @@ RWB.input = (function () {
     }
     for (const i in PAD_BUTTONS) {
       const action = PAD_BUTTONS[i];
-      // tool is on both LB and RB; don't release if the other is held
+      // assist is on both LB and RB; don't release if the other is held
       if (seen[action]) setPad(action, true);
     }
     for (const k in padDown) if (padDown[k] && !seen[k]) setPad(k, false);
@@ -365,7 +365,7 @@ RWB.input = (function () {
     if (gamepad.connected) return id === 'pause' ? 'START' : ST.padFor(id);
     return ST.keysFor(id, 1)[0] || '';
   }
-  const TOUCH_LABEL = { attack: 'ATK', jump: 'JMP', special: 'FIRE', tool: 'CALL', saidin: 'SUPER', pause: 'II' };
+  const TOUCH_LABEL = { attack: 'ATK', jump: 'JMP', special: 'SPCL', assist: 'ASST', power: 'POWR', pause: 'II' };
   /** Short control name for prompts: "E/J" on keyboard, "X" on a pad, "ATK" on touch. */
   function hint(id, n) {
     if (touch.enabled && !(RWB.display && RWB.display.pc) && !gamepad.connected) return TOUCH_LABEL[id] || id.toUpperCase();
@@ -392,10 +392,10 @@ RWB.input = (function () {
   function legend() {
     if (gamepad.connected) {
       const p = id => ST.padFor(id);
-      return `PAD: STICK MOVE   ${p('attack')} ATK   ${p('jump')} JUMP   ${p('special')} FIRE   ${p('tool')} CALL   ${p('saidin')} SUPER   START PAUSE`;
+      return `PAD: STICK MOVE   ${p('attack')} ATK   ${p('jump')} JUMP   ${p('special')} SPECIAL   ${p('assist')} ASSIST   ${p('power')} POWER   START PAUSE`;
     }
     const k = (id, n) => ST.keysFor(id, n || 2).join('/') || '--';
-    return `${moveHint()} MOVE   ${k('attack')} ATK   ${k('jump')} JUMP   ${k('special')} FIRE   ${k('tool')} CALL   ${k('saidin', 1)} SUPER`;
+    return `${moveHint()} MOVE   ${k('attack')} ATK   ${k('jump')} JUMP   ${k('special')} SPECIAL   ${k('assist')} ASSIST   ${k('power', 1)} POWER`;
   }
   function beginCapture(kind, cb) {
     capture = { kind, cb, armed: false };
@@ -458,14 +458,14 @@ RWB.input = (function () {
   function drawControlChrome(ctx, opts) {
     const pad = !!gamepad.connected;
     const H = RWB.H;
-    // Player-chosen overlay strength, capped so the urn never go opaque.
+    // Player-chosen overlay strength, capped so the panels never go opaque.
     const base = Math.max(0.2, Math.min(0.85, opts.opacity != null ? opts.opacity : ST.data.overlay));
     ctx.save();
     ctx.globalAlpha = base;
     ctx.lineWidth = 1.5;
 
-    // ---- move cluster, bottom left. urn stay see-through so a goon
-    // walking the rail is still visible behind the diagram. ----
+    // ---- move cluster, bottom left. panels stay see-through so an enemy
+    // walking the lane is still visible behind the diagram. ----
     const mx = 8, my = H - 138, mw = 112, mh = 130;
     glassPlate(ctx, mx, my, mw, mh);
     RWB.text.draw(ctx, pad ? 'PAD' : 'MOVE', mx + mw / 2, my + 4, {
@@ -522,9 +522,9 @@ RWB.input = (function () {
       for (const b of touch.buttons) {
         const down = !!held[b.id];
         ctx.globalAlpha = down ? 1 : base;
-        const boxMissing = b.id === 'tool' && opts.hasRelic === false;
-        const disabled = (b.id === 'saidin' && opts.surgeReady === false) || boxMissing;
-        const armed = b.id === 'saidin' && opts.surgeReady;
+        const boxMissing = b.id === 'assist' && opts.assistReady === false;
+        const disabled = (b.id === 'power' && opts.powerReady === false) || boxMissing;
+        const armed = b.id === 'power' && opts.powerReady;
         const col = armed ? '#88ff66' : b.color;
         // Glass button: tinted see-through core, colored rim, gloss on top.
         RWB.draw.circle(ctx, b.x, b.y, b.r, disabled ? 'rgba(90,90,100,0.16)' : hexAlpha(col, down ? 0.55 : 0.2), 'rgba(0,0,0,0.55)');
@@ -541,7 +541,7 @@ RWB.input = (function () {
           ctx.strokeStyle = '#f4ffe0'; ctx.lineWidth = 3;
           ctx.beginPath(); ctx.arc(b.x, b.y, b.r + 6, 0, Math.PI * 2); ctx.stroke();
         }
-        const badge = boxMissing ? 'PICK UP' : badgeFor(b.id);
+        const badge = boxMissing ? 'USED' : badgeFor(b.id);
         if (b.id === 'pause') {
           RWB.text.draw(ctx, b.label, b.x, b.y - 5, { size: 7, align: 'center', color: '#fff', stroke: '#000', strokeWidth: 2 });
           RWB.text.draw(ctx, badge, b.x + b.r + 4, b.y - 4, { size: 6, color: '#ffe14a', stroke: '#000', strokeWidth: 2 });
@@ -592,8 +592,8 @@ RWB.input = (function () {
         if (b.id === 'pause' && opts.pause === false) continue;
         const down = held[b.id];
         ctx.globalAlpha = down ? 0.9 : 0.5;
-        const disabled = b.id === 'saidin' && opts.surgeReady === false;
-        const armed = b.id === 'saidin' && opts.surgeReady;
+        const disabled = b.id === 'power' && opts.powerReady === false;
+        const armed = b.id === 'power' && opts.powerReady;
         RWB.draw.circle(ctx, b.x, b.y, b.r, disabled ? '#333' : (armed ? '#8f6' : b.color), 'rgba(255,255,255,0.8)');
         if (armed) {
           ctx.globalAlpha = 0.95;

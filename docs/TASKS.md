@@ -1,5 +1,7 @@
 # Riley Wheel Brawl — Ordered Implementation Tasks
 
+> **Note (2026-09-26, `rwb-fresh`):** the game is being rebuilt from scratch on the kept engine (`docs/ENGINE.md`). Section A (rename / reskin / scrub of an older theme) no longer applies — there is nothing to reskin. Use the remaining sections as the feature checklist; engine action ids are now `attack, jump, special, assist, power, pause`.
+
 Each task is scoped to one focused session. Do them in order; do not begin content expansion while old-theme references still remain. “Acceptance check” describes a manual or automated observable result, not merely code completion.
 
 ## A. Rename, reskin, and remove the old theme

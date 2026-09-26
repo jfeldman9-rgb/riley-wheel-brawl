@@ -1,4 +1,7 @@
-/* Game bootstrap: canvas scaling, main loop, scene flow. */
+/* Engine bootstrap: canvas scaling (HD / Sharp / Classic), fixed 640x360 world,
+   main loop, scene manager with fade, loading screen, audio unlock.
+   Game flow (title -> story -> stages) belongs to content code, which should
+   register RWB.scenes.* and may override RWB.game.boot(). */
 'use strict';
 
 (function () {
@@ -9,7 +12,7 @@
   ctx.imageSmoothingQuality = 'high';
 
   // Everything persistent (display mode, volume, music, overlay opacity,
-  // remaps, accessibility) lives in RWB.settings under the old key.
+  // remaps, accessibility) lives in RWB.settings.
   function loadSettings() {
     const s = RWB.settings.load();
     RWB.display.mode = s.mode;
@@ -34,77 +37,37 @@
     return big && (fine || !coarse);
   }
 
+  /* Scene contract: { enter?(), exit?(), update(dt, input), draw(ctx),
+     isGameplay? (true for a live fight: enables touch buttons, auto-pause on
+     hide, and runtime LITE fx), paused?, phase? ('play' while fighting),
+     music? (song to start on the first audio unlock) }. */
   const game = RWB.game = {
-    scene: null, nextScene: null, assassin: 0, fadeDir: 0,
+    scene: null, nextScene: null, fade: 0, fadeDir: 0, sceneAt: 0,
+    /** Fade out, swap, fade in. */
     setScene(s) { this.nextScene = s; this.fadeDir = 1; },
+    /** Swap with no fade (tests / soak). */
+    setSceneNow(s) { this.nextScene = s; this._swap(); this.fadeDir = 0; this.fade = 0; },
     _swap() {
       if (this.scene && this.scene.exit) this.scene.exit();
       this.scene = this.nextScene; this.nextScene = null;
       this.sceneAt = performance.now();
-      if (this.scene.enter) this.scene.enter();
+      if (this.scene && this.scene.enter) this.scene.enter();
     },
-    /* ---- flow ---- */
-    toTitle() { RWB.audio.stopMusic(); this.setScene(new RWB.scenes.Title(this)); },
-    /** A stage's intro beat, scored with the stage's own song. */
-    introBeat(idx) { const L = RWB.LEVELS[idx]; return L.intro && Object.assign({ music: L.music }, L.intro); },
-    startNewGame(withIntro) {
-      // The opening runs straight into the village intro, then the fight.
-      if (withIntro) this.setScene(new RWB.scenes.Cutscene(this, RWB.OPENING.concat([this.introBeat(0)]), () => this.setScene(new RWB.scenes.Play(this, 0, {})), 'story'));
-      else this.startLevel(0, {});
+    /** First scene after loading. Content overrides this (e.g. to show its Title). */
+    boot() {
+      const S = RWB.scenes || {};
+      const First = S.Title || S.Rebuilding;
+      if (First) this.setScene(new First(this));
     },
-    startLevel(idx, carry) {
-      const intro = this.introBeat(idx);
-      if (intro) {
-        this.setScene(new RWB.scenes.StoryBeat(this, { beats: [intro], onDone: () => this.setScene(new RWB.scenes.Play(this, idx, carry)) }));
-      } else this.setScene(new RWB.scenes.Play(this, idx, carry));
-    },
-    levelComplete(idx, player) {
-      const L = RWB.LEVELS[idx];
-      const callandor = !!(this.scene && this.scene.callandor);
-      const carry = { score: player.score, lives: player.lives, saidin: player.saidin, callandor };
-      if (idx === RWB.LEVELS.length - 1) { RWB.settings.clearRun(); this.showEnding(player.score); return; }
-      RWB.settings.saveRun({ level: idx + 1, wave: 0, score: player.score, saidin: Math.round(player.saidin), callandor, loial: true });
-      // Repair log, then the next stage's intro, in one reel.
-      this.setScene(new RWB.scenes.StoryBeat(this, {
-        beats: [L.outro, this.introBeat(idx + 1)], music: 'story',
-        onDone: () => this.setScene(new RWB.scenes.Play(this, idx + 1, carry))
-      }));
-    },
-    showEnding(score) {
-      this.setScene(new RWB.scenes.StoryBeat(this, { beats: RWB.ENDING, music: 'victory', onDone: () => this.setScene(new RWB.scenes.Victory(this, score)) }));
-    },
-    gameOver(levelIndex, score, wave) { this.setScene(new RWB.scenes.GameOver(this, levelIndex, score, wave)); },
-    /** Continue after a wipe: same stage, from `wave` (0 = stage start). Half score, 3 lives. */
-    continueGame(levelIndex, score, wave) {
-      const run = RWB.settings.loadRun();
-      this.resumeAt(levelIndex, wave | 0, { score: Math.floor(score / 2), lives: 3, saidin: 0, callandor: !!(run && run.callandor), loialReady: !(run && run.loial === false) });
-    },
-    resumeAt(levelIndex, wave, carry) {
-      this.setScene(new RWB.scenes.Play(this, levelIndex, Object.assign({}, carry, { resumeWave: wave })));
-    },
-    /** Title-screen Continue from the saved checkpoint. */
-    continueRun(run) {
-      if (!run) { this.startNewGame(true); return; }
-      const kept = { score: run.score, lives: 3, saidin: run.saidin, callandor: !!run.callandor, loialReady: run.loial !== false };
-      if (run.wave === 0) this.startLevel(run.level, kept);
-      else this.resumeAt(run.level, run.wave, kept);
-    },
-    /* debug helpers (used by automated tests / cheats) */
-    debug: {
-      level(n) { game.startLevel(n, { score: 0, lives: 3, saidin: 0 }); },
-      play(n) { game.setScene(new RWB.scenes.Play(game, n, { score: 0, lives: 3, saidin: 0 })); },
-      fillSurge() { if (game.scene && game.scene.player) game.scene.player.saidin = 100; },
-      invuln(v) { if (game.scene) game.scene.cheatInvuln = v !== false; },
-      boss() { const s = game.scene; if (!s || !s.level) return; s.waveIdx = s.level.waves.length - 1; s.player.x = s.level.waves[s.waveIdx].x - 10; s.camX = Math.max(0, s.player.x - W * 0.42); }
-    }
+    debug: {}
   };
 
   /* ---- scaling ----
      The world stays 640x360. The backing store is the CSS box times
      devicePixelRatio, so the browser shows the bitmap 1:1 instead of
      stretching a small canvas (that stretch is what looked blurry on
-     retina). Sprites are redrawn in vectors into that buffer, so riley,
-     the HUD, and the decks pick up the extra pixels. Classic mode keeps
+     retina). Sprites are redrawn in vectors into that buffer, so actors,
+     the HUD, and the backdrops pick up the extra pixels. Classic mode keeps
      the old 640x360 nearest-neighbor picture. */
   function applyTransform() {
     const rs = RWB.display.renderScale || 1;
@@ -196,9 +159,8 @@
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) return;
     const s = game.scene;
-    if (s && s instanceof RWB.scenes.Play && s.phase === 'play' && !s.paused) {
-      s.paused = true;
-      s.pauseSel = 0;
+    if (s && s.isGameplay && s.phase === 'play' && !s.paused) {
+      if (s.pause) s.pause(); else s.paused = true;
     }
   });
   resize();
@@ -212,7 +174,7 @@
   const unlock = () => {
     RWB.audio.unlock();
     saveSettings();
-    if (game.scene instanceof RWB.scenes.Title) RWB.audio.playMusic('title');
+    if (game.scene && game.scene.music) RWB.audio.playMusic(game.scene.music);
   };
   window.addEventListener('keydown', unlock, { once: true });
   canvas.addEventListener('pointerdown', unlock, { once: true });
@@ -225,7 +187,7 @@
     new Promise(resolve => setTimeout(resolve, 1500))
   ]) : Promise.resolve();
   Promise.all([RWB.assets.load(p => { progress = p; }), fontReady]).then(() => {
-    loading = false; game.setScene(new RWB.scenes.Title(game));
+    loading = false; game.boot();
   });
 
   /* ---- loop ---- */
@@ -239,7 +201,7 @@
       fps = frames; frames = 0; fpsT = 0;
       // Three slow seconds in a live fight and AUTO effects drop to LITE.
       const s = game.scene;
-      const fighting = s instanceof RWB.scenes.Play && s.phase === 'play' && !s.paused && !document.hidden;
+      const fighting = s && s.isGameplay && s.phase === 'play' && !s.paused && !document.hidden;
       slowSeconds = fighting && fps < 48 ? slowSeconds + 1 : 0;
       if (slowSeconds >= 3 && !RWB.perf.runtimeLite) RWB.perf.runtimeLite = true;
     }
@@ -250,9 +212,9 @@
       saveSettings();
     }
 
-    // scene assassin transition
-    if (game.fadeDir === 1) { game.assassin = Math.min(1, game.assassin + dt * 6); if (game.assassin >= 1) { game._swap(); game.fadeDir = -1; } }
-    else if (game.fadeDir === -1) { game.assassin = Math.max(0, game.assassin - dt * 6); if (game.assassin <= 0) game.fadeDir = 0; }
+    // scene fade transition
+    if (game.fadeDir === 1) { game.fade = Math.min(1, game.fade + dt * 6); if (game.fade >= 1) { game._swap(); game.fadeDir = -1; } }
+    else if (game.fadeDir === -1) { game.fade = Math.max(0, game.fade - dt * 6); if (game.fade <= 0) game.fadeDir = 0; }
     else if (game.nextScene && !game.scene) { game._swap(); }
 
     const rs = RWB.display.renderScale || 1;
@@ -265,7 +227,7 @@
       if (game.fadeDir !== 1) game.scene.update(dt, RWB.input);
       game.scene.draw(ctx);
     }
-    if (game.assassin > 0) { ctx.fillStyle = `rgba(0,0,0,${game.assassin})`; ctx.fillRect(0, 0, W, H); }
+    if (game.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${game.fade})`; ctx.fillRect(0, 0, W, H); }
     if (RWB.audio.muted) RWB.text.draw(ctx, 'MUTE', W - 6, H - 10, { size: 6, align: 'right', color: '#aaa' });
     if (window.location.hash === '#fps') {
       RWB.text.draw(ctx, `${fps} FPS  ${rs}x`, 4, H - 10, { size: 6, color: '#0f0' });
@@ -274,10 +236,9 @@
   }
   function drawLoading() {
     ctx.fillStyle = '#07070f'; ctx.fillRect(0, 0, W, H);
-    RWB.text.draw(ctx, 'Riley', W / 2, 120, { size: 20, align: 'center', gradient: ['#fff3a0', '#ffb300', '#e0301e'], stroke: '#000', strokeWidth: 5 });
-    RWB.text.draw(ctx, 'WHEEL BRAWL', W / 2, 150, { size: 26, align: 'center', gradient: ['#ffffff', '#ffd23f', '#ff4d00'], stroke: '#000', strokeWidth: 6 });
-    RWB.draw.bar(ctx, W / 2 - 100, 220, 200, 8, progress, '#ffe14a', '#333');
-    RWB.text.draw(ctx, 'GATHERING THE LIGHT...', W / 2, 240, { size: 7, align: 'center', color: '#bcd' });
+    RWB.text.draw(ctx, 'RILEY WHEEL BRAWL', W / 2, 140, { size: 18, align: 'center', color: '#e8f0ff', stroke: '#000', strokeWidth: 5 });
+    RWB.draw.bar(ctx, W / 2 - 100, 220, 200, 8, progress, '#7cc8ff', '#223');
+    RWB.text.draw(ctx, 'LOADING...', W / 2, 240, { size: 7, align: 'center', color: '#bcd' });
   }
   requestAnimationFrame(frame);
 })();

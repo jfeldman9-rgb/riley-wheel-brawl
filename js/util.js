@@ -1,4 +1,4 @@
-/* Riley: battle Brawl — shared helpers */
+/* Engine: shared constants, display state, layer cache, math, text and draw helpers. */
 'use strict';
 
 const RWB = window.RWB = window.RWB || {};
@@ -32,7 +32,7 @@ RWB.light = {
   set(o) { Object.assign(this, { side: 1, cast: 0.3, gloss: 0, key: 'rgba(255,244,210,0.55)', rim: 'rgba(255,250,225,0.9)', shade: 'rgba(40,18,60,0.26)' }, o || {}); }
 };
 
-/* Offscreen layer cache. Static art (skyline, stage tiles, loungers) is
+/* Offscreen layer cache. Static art (backdrops, floor tiles, props) is
    painted once per render scale and blitted, instead of re-running hundreds
    of path ops per frame on a 4K backing store. maxScale caps resolution:
    distant layers are cached softer on purpose, which reads as depth of field. */
@@ -384,35 +384,16 @@ RWB.draw = {
     for (let p = 0.1; p < 0.99; p += 0.1) ctx.fillRect(Math.round(x + w * p), y + h * 0.5, 1, h * 0.5);
     ctx.restore();
   },
-  // [rgb, mid stop, mid alpha, edge alpha, pulse boost]
-  VIGNETTE: { 1: ['30,14,6', 0.75, 0.08, 0.26, 0.2], 2: ['5,15,22', 0.7, 0.32, 0.62, 0.25], 3: ['10,35,30', 0.7, 0.22, 0.52, 0.25], 4: ['10,20,45', 0.7, 0.32, 0.65, 0.25] },
-  stageLighting(ctx, stageId, pulse, t) {
+  /** Tinted radial vignette. rgb 'r,g,b'; edge alpha 0..1; pulse 0..1 adds a warm flash. */
+  tintVignette(ctx, rgb, edge, pulse) {
     const W = RWB.W, H = RWB.H;
     pulse = U.clamp(pulse || 0, 0, 1);
-    const V = this.VIGNETTE[stageId];
-    if (!V) return;
     ctx.save();
     const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, W * 0.75);
-    vig.addColorStop(0, `rgba(${V[0]},0)`);
-    vig.addColorStop(V[1], `rgba(${V[0]},${V[2]})`);
-    vig.addColorStop(1, `rgba(${V[0]},${V[3] + pulse * V[4]})`);
+    vig.addColorStop(0, `rgba(${rgb},0)`);
+    vig.addColorStop(1, `rgba(${rgb},${U.clamp((edge || 0.4) + pulse * 0.2, 0, 1)})`);
     ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H);
-    if (stageId === 2) {
-      if (Math.sin((t || 0) * 2) > 0) {
-        ctx.fillStyle = 'rgba(255,140,20,0.03)';
-        ctx.fillRect(0, 0, W, H);
-      }
-    } else if (stageId === 3) {
-      ctx.fillStyle = 'rgba(60,200,180,0.035)';
-      ctx.fillRect(0, 0, W, H);
-    } else if (stageId === 4) {
-      ctx.fillStyle = 'rgba(140,210,255,0.05)';
-      ctx.fillRect(0, 0, W, H);
-    }
-    if (pulse > 0) {
-      ctx.fillStyle = `rgba(255,255,220,${pulse * 0.18})`;
-      ctx.fillRect(0, 0, W, H);
-    }
+    if (pulse > 0) { ctx.fillStyle = `rgba(255,255,220,${pulse * 0.18})`; ctx.fillRect(0, 0, W, H); }
     ctx.restore();
   },
   scanlines(ctx, alpha) {
@@ -420,7 +401,7 @@ RWB.draw = {
     if (RWB.display.mode !== 'classic') return;
     // One path instead of a fillRect per stripe. The stripe is one device
     // pixel so a retina backing store doesn't turn the CRT mask into thick
-    // bars that soften riley and the HUD.
+    // bars that soften sprites and the HUD.
     const rs = Math.max(1, (RWB.display && RWB.display.renderScale) || 1);
     ctx.save();
     ctx.globalAlpha = alpha || 0.12;
