@@ -6,7 +6,7 @@
   const R=window.RWB;
   // Joint coordinates on the delivered images: shoulder/elbow/wrist, hip/knee/ankle.
   const defs={
-    riley:{key:'riley-sheet',fallback:'rig-riley',sourcePanel:'top-middle-side',variant:'kid',height:64,headRatio:.225,headScale:1.50,headWidth:1.08,torsoScale:.78,legScale:.70,shoulderScale:.78,front:false,hipLine:.54,head:[.20,.015,.68,.18],neck:[.43,.224],pelvis:[.48,.56],arms:[[[.36,.27],[.29,.40],[.25,.52]],[[.53,.27],[.58,.40],[.58,.51]]],legs:[[[.42,.57],[.40,.74],[.33,.975]],[[.54,.57],[.56,.75],[.58,.985]]]},
+    riley:{key:'riley-sheet',splitLegs:true,fallback:'rig-riley',sourcePanel:'top-middle-side',variant:'kid',height:64,headRatio:.225,headScale:1.45,headWidth:1.08,torsoScale:.78,legScale:.70,shoulderScale:.78,front:false,hipLine:.56,soles:[[.36,.985],[.56,.985]],head:[.18,.015,.72,.175],neck:[.42,.18],pelvis:[.46,.56],arms:[[[.55,.23],[.56,.40],[.45,.54]],[[.58,.23],[.59,.40],[.48,.54]]],legs:[[[.42,.57],[.42,.78],[.36,.93]],[[.52,.57],[.54,.78],[.56,.93]]]},
     twinkle:{key:'rig-twinkle',height:59,front:true,head:[.27,0,.72,.29],neck:[.50,.28],pelvis:[.50,.64],arms:[[[.26,.30],[.14,.46],[.09,.59]],[[.75,.30],[.86,.46],[.91,.59]]],legs:[[[.35,.73],[.35,.85],[.24,.98]],[[.65,.73],[.65,.85],[.77,.98]]]},
     trolloc:{key:'cg-trolloc',height:100,head:[.23,0,.70,.40],neck:[.53,.30],pelvis:[.64,.59],arms:[[[.51,.37],[.40,.46],[.33,.51]],[[.79,.34],[.90,.45],[.89,.60]]],legs:[[[.55,.60],[.44,.73],[.36,.93]],[[.72,.60],[.82,.77],[.92,.97]]]},
     chieftain:{key:'cg-trolloc-chieftain',height:119,head:[.29,0,.73,.27],neck:[.52,.27],pelvis:[.51,.62],arms:[[[.26,.31],[.18,.47],[.31,.52]],[[.75,.32],[.79,.48],[.72,.61]]],legs:[[[.40,.61],[.35,.78],[.22,.965]],[[.62,.62],[.72,.78],[.81,.97]]]},
@@ -29,31 +29,35 @@
       // Native 1824x2318 sheet: isolate its top-middle, three-quarter/side
       // figure.  Chroma key only the edge-connected neutral grey so highlights
       // inside the painted figure survive with a soft antialiased fringe.
-      c.width=460;c.height=1140;const cg=c.getContext('2d');cg.drawImage(image,690,18,460,1140,0,0,460,1140);
-      const id=cg.getImageData(0,0,c.width,c.height),p=id.data;
-      for(let i=0;i<p.length;i+=4){const dr=p[i]-200,dg=p[i+1]-199,db=p[i+2]-200,dist=Math.hypot(dr,dg,db);if(dist<34)p[i+3]=Math.round(255*Math.max(0,(dist-8)/26));}
+      c.width=320;c.height=1140;const cg=c.getContext('2d');cg.drawImage(image,780,40,320,1140,0,0,320,1140);
+      const id=cg.getImageData(0,0,c.width,c.height),p=id.data,edge=new Uint8Array(c.width*c.height),queue=new Uint32Array(c.width*c.height);let first=0,last=0;
+      const distance=i=>Math.hypot(p[i*4]-200,p[i*4+1]-199,p[i*4+2]-200),offer=i=>{if(!edge[i]&&distance(i)<40){edge[i]=1;queue[last++]=i;}};
+      for(let x=0;x<c.width;x++){offer(x);offer((c.height-1)*c.width+x);}for(let y=0;y<c.height;y++){offer(y*c.width);offer(y*c.width+c.width-1);}
+      while(first<last){const i=queue[first++],x=i%c.width,y=(i/c.width)|0;if(x)offer(i-1);if(x+1<c.width)offer(i+1);if(y)offer(i-c.width);if(y+1<c.height)offer(i+c.width);}
+      for(let i=0;i<edge.length;i++)if(edge[i]){const dist=distance(i);p[i*4+3]=Math.round(p[i*4+3]*Math.max(0,Math.min(1,(dist-28)/12)));}
       cg.putImageData(id,0,0);
     } else {c.width=image.width;c.height=image.height;c.getContext('2d').drawImage(image,0,0);}
     const g=c.getContext('2d');
     if(d.variant==='kid'){
       // End the long adult coat at the hip. Continue two trouser columns up
       // beneath the short tunic using texture sampled from the supplied legs.
-      const hip=Math.round(c.height*d.hipLine),legTop=Math.round(c.height*.66),legBottom=Math.round(c.height*.82);
-      g.clearRect(0,hip,c.width,legTop-hip);
-      g.drawImage(c,Math.round(c.width*.35),legTop,Math.round(c.width*.13),legBottom-legTop,Math.round(c.width*.35),hip,Math.round(c.width*.13),legTop-hip);
-      g.drawImage(c,Math.round(c.width*.48),legTop,Math.round(c.width*.13),legBottom-legTop,Math.round(c.width*.48),hip,Math.round(c.width*.13),legTop-hip);
+      const hip=Math.round(c.height*d.hipLine),fillBottom=Math.round(c.height*.70),sampleBottom=Math.round(c.height*.80),left=Math.round(c.width*.10),width=Math.round(c.width*.80);
+      const trousers=document.createElement('canvas');trousers.width=width;trousers.height=sampleBottom-fillBottom;
+      trousers.getContext('2d').drawImage(c,left,fillBottom,width,sampleBottom-fillBottom,0,0,width,sampleBottom-fillBottom);
+      g.clearRect(left,hip,width,fillBottom-hip);
+      g.drawImage(trousers,0,0,width,trousers.height,left,hip,width,fillBottom-hip);
       // Rounder, larger child head is pre-baked, so idle/HUD/cutscene and action
       // paths all consume the same pixels. A soft face pass relaxes the adult jaw.
       const b=d.head,x=b[0]*c.width,y=b[1]*c.height,w=(b[2]-b[0])*c.width,h=(b[3]-b[1])*c.height;
-      const face=document.createElement('canvas');face.width=Math.ceil(w);face.height=Math.ceil(h);const f=face.getContext('2d');f.drawImage(image,x,y,w,h,0,0,w,h);
+      const face=document.createElement('canvas');face.width=Math.ceil(w);face.height=Math.ceil(h);const f=face.getContext('2d');f.drawImage(c,x,y,w,h,0,0,w,h);
       // Only the enlarged head is overpainted: never erase the collar or the
       // shoulders.  Its softly feathered chin lets the original neck show
       // through rather than producing the old rectangular clear band.
       f.globalCompositeOperation='destination-in';const chin=f.createLinearGradient(0,h-6,0,h);chin.addColorStop(0,'#000');chin.addColorStop(1,'rgba(0,0,0,.18)');f.fillStyle=chin;f.fillRect(0,0,w,h);
-      const dw=w*d.headScale*d.headWidth,dh=h*d.headScale,cx=d.neck[0]*c.width,base=d.neck[1]*c.height+2;
+      const dw=w*d.headScale*d.headWidth,dh=h*d.headScale,cx=(b[0]+b[2])*.5*c.width,base=.17*c.height;
       g.drawImage(face,cx-dw/2,base-dh,dw,dh);
     } else if(d.variant==='belal'){
-      const data=g.getImageData(0,0,c.width,c.height),p=data.data,removed=new Uint8Array(c.width*c.height);
+      const data=g.getImageData(0,0,c.width,c.height),p=data.data,source=new Uint8ClampedArray(p),removed=new Uint8Array(c.width*c.height);
       for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){const i=(y*c.width+x)*4,r=p[i],gg=p[i+1],b=p[i+2];
         // Remove the orange weave and its soft halo in the extended-hand corner.
         if(x<c.width*.36&&y<c.height*.36){
@@ -64,7 +68,7 @@
         // Hue-selective coat/trim/hair grade: preserve texture and illumination.
         const max=Math.max(r,gg,b),min=Math.min(r,gg,b),sat=max-min;
         if(sat<35&&y<c.height*.29&&max>95){p[i]=Math.min(220,max*1.05);p[i+1]=Math.min(215,max*.98);p[i+2]=Math.min(210,max*.91);}
-        else if(y>c.height*.18&&r<145&&b<155){const light=.2126*r+.7152*gg+.0722*b,cr=Math.min(168,24+light*1.12),cg=8+light*.22,cb=18+light*.31;p[i]=r*.2+cr*.8;p[i+1]=gg*.2+cg*.8;p[i+2]=b*.2+cb*.8;}
+        else if(y>c.height*.18&&r<145&&b<155){let light=0,count=0;for(let oy=-2;oy<=2;oy++)for(let ox=-2;ox<=2;ox++){const xx=x+ox,yy=y+oy;if(xx<0||yy<0||xx>=c.width||yy>=c.height)continue;const j=(yy*c.width+xx)*4;light+=.2126*source[j]+.7152*source[j+1]+.0722*source[j+2];count++;}light=light/count*.72+42*.28;const cr=Math.min(158,28+light*.98),cg=12+light*.20,cb=22+light*.28;p[i]=r*.38+cr*.62;p[i+1]=gg*.38+cg*.62;p[i+2]=b*.38+cb*.62;}
         else if(sat<28&&max>75){p[i]=max*.82;p[i+1]=max*.86;p[i+2]=max*.91;}
       }
       // Fade the antialiased glow surrounding every removed weave pixel.
@@ -105,7 +109,17 @@
       let visible=false;for(let yy=row*4;yy<(row+1)*4;yy++)for(let xx=col*4;xx<(col+1)*4;xx++)if(alpha[(yy*bake.width+xx)*4+3])visible=true;
       if(!visible)continue;const a=row*(cols+1)+col,b=a+1,c=a+cols+1,d=c+1;triangles.push([a,b,c],[b,d,c]);
     }
-    const rig={image,w,h,neck,hip,arms,legs,bones,root,vertices,triangles,texture,soles,cols,rows,height:d.height};rigs.set(cacheKey,rig);return rig;
+    // Side-view rigs overlap their legs, so one mesh would smear the kicking leg
+    // across the standing one. Split the far leg into its own texture layer.
+    let split=null;
+    if(d.splitLegs){
+      const kick=document.createElement('canvas'),body=document.createElement('canvas');kick.width=body.width=texture.width;kick.height=body.height=texture.height;
+      const kd=tc.getImageData(0,0,texture.width,texture.height),bd=tc.getImageData(0,0,texture.width,texture.height);
+      for(let yy=0;yy<texture.height;yy++){const py=yy*h/texture.height;const lx=leg=>{const a=py<leg[1].y?leg[0]:leg[1],b=py<leg[1].y?leg[1]:leg[2],t=Math.max(0,Math.min(1,(py-a.y)/(b.y-a.y||1)));return a.x+(b.x-a.x)*t;};const mid=(lx(legs[0])+lx(legs[1]))/2;
+        for(let xx=0;xx<texture.width;xx++){const px=xx*w/texture.width,j=(yy*texture.width+xx)*4,isKick=py>hip.y+h*.02&&px>=mid;if(isKick)bd.data[j+3]=0;else kd.data[j+3]=0;}}
+      kick.getContext('2d').putImageData(kd,0,0);body.getContext('2d').putImageData(bd,0,0);split={kick,body};
+    }
+    const rig={image,w,h,neck,hip,arms,legs,bones,root,vertices,triangles,texture,soles,cols,rows,split,height:d.height};rigs.set(cacheKey,rig);return rig;
   }
 
   function targets(a,d,r,pose){
@@ -115,7 +129,7 @@
       const [sh,el,wr]=r.arms[i],s=shift(sh);let hand=shift(wr);
       if(!pose.walking&&!pose.attack&&!pose.hurt&&a.state!=='channel'&&a.ai!=='telegraph'){bones.push([s,shift(el)],[shift(el),hand]);continue;}
       if(pose.walking){const f=pose.feet[i];hand.x-=f.x*native*unit*.75;hand.y-=Math.abs(f.x)*unit*.12;}
-      if(pose.attack||a.state==='channel'||a.ai==='telegraph'){hand={x:s.x+native*(i?26:-6)*unit,y:s.y+(a.ai==='telegraph'?-16:7)*unit};}
+      if(pose.attack||a.state==='channel'||a.ai==='telegraph'){hand={x:s.x+native*((d.sword?!i:i)?26:-6)*unit,y:s.y+(a.ai==='telegraph'?-16:7)*unit};}
       if(pose.hurt)hand={x:s.x-native*(i?7:20)*unit,y:s.y-5*unit};
       const e=knee(s,hand,Math.hypot(el.x-sh.x,el.y-sh.y),Math.hypot(wr.x-el.x,wr.y-el.y),native*(i?1:-1));bones.push([s,e],[e,hand]);
     }
@@ -139,7 +153,7 @@
     const a=(dx*ex+dy*ey)/l,b=(dx*ey-dy*ex)/l;
     return {x:dst[0].x+a*(p.x-src[0].x)-b*(p.y-src[0].y),y:dst[0].y+b*(p.x-src[0].x)+a*(p.y-src[0].y)};
   }
-  function skinPoint(p,r,bones,pose){
+  function skinPoint(p,r,bones,pose,forceSide){
     const {x,y}=p;let X=x+pose.lean*(r.root.y-y),Y=y+pose.bob*r.h/80;
     if(y>r.neck.y)for(let i=0;i<2;i++){
       const elbow=r.arms[i][1],hand=r.arms[i][2];let dx=0,dy=0,total=1;
@@ -153,7 +167,7 @@
     if(y>r.hip.y){
       const legX=leg=>{const a=y<leg[1].y?leg[0]:leg[1],b=y<leg[1].y?leg[1]:leg[2],t=Math.max(0,Math.min(1,(y-a.y)/(b.y-a.y||1)));return a.x+(b.x-a.x)*t;};
       const centers=r.legs.map(legX),mid=(centers[0]+centers[1])/2;
-      const side=x<mid?0:1,[hp,kn,ft]=r.legs[side],index=6+side*2;
+      const side=forceSide!==undefined?forceSide:x<mid?0:1,[hp,kn,ft]=r.legs[side],index=6+side*2;
       const upper=transformPoint(p,r.bones[index],bones[index]),lower=transformPoint(p,r.bones[index+1],bones[index+1]);
       const kneeWeight=smooth(kn.y-r.h*.055,kn.y+r.h*.055,y),bootWeight=pose.attack&&side===1?0:smooth(ft.y-r.h*.105,ft.y-r.h*.035,y);
       let lx=upper.x+(lower.x-upper.x)*kneeWeight,ly=upper.y+(lower.y-upper.y)*kneeWeight;
@@ -172,11 +186,13 @@
     const ctx=composite?r.surface.getContext('2d'):output;
     if(composite){ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,r.surface.width,r.surface.height);ctx.setTransform(scale,0,0,scale,256,256);}
     const padding=composite?.8/scale:r.h/r.height*.45;
-    const vertices=r.vertices.map(p=>skinPoint(p,r,bones,pose));
+    for(const [tex,side] of (r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]])){
+    const vertices=r.vertices.map(p=>skinPoint(p,r,bones,pose,side));
     for(const indices of r.triangles){
       const [a,b,c]=indices.map(i=>vertices[i]);
       const det=(b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y),A=((b.X-a.X)*(c.y-a.y)-(c.X-a.X)*(b.y-a.y))/det,B=((b.Y-a.Y)*(c.y-a.y)-(c.Y-a.Y)*(b.y-a.y))/det,C=((c.X-a.X)*(b.x-a.x)-(b.X-a.X)*(c.x-a.x))/det,D=((c.Y-a.Y)*(b.x-a.x)-(b.Y-a.Y)*(c.x-a.x))/det;
-      ctx.save();ctx.beginPath();const center={x:(a.X+b.X+c.X)/3,y:(a.Y+b.Y+c.Y)/3};[a,b,c].forEach((p,i)=>{const dx=p.X-center.x,dy=p.Y-center.y,l=Math.hypot(dx,dy)||1;ctx[i?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);});ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(r.texture,0,0,r.w,r.h);ctx.restore();
+      ctx.save();ctx.beginPath();const center={x:(a.X+b.X+c.X)/3,y:(a.Y+b.Y+c.Y)/3};[a,b,c].forEach((p,i)=>{const dx=p.X-center.x,dy=p.Y-center.y,l=Math.hypot(dx,dy)||1;ctx[i?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);});ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(tex,0,0,r.w,r.h);ctx.restore();
+    }
     }
     if(composite){
       const x=-256/scale,y=-256/scale,w=r.surface.width/scale,h=r.surface.height/scale;
@@ -189,13 +205,16 @@
       output.restore();
     }
   }
-  function drawSword(ctx,a,d,r,bones){
-    if(!d.sword)return;const hand=bones[5][1],elbow=bones[4][1],dx=hand.x-elbow.x,dy=hand.y-elbow.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l;
+  function drawSword(ctx,a,d,r,bones,pose){
+    // Anchor to the painted fist as actually skinned (bones[3] wrist), not the
+    // raw IK target, which the clamped arm skin can lag behind.
+    if(!d.sword)return;const skin=p=>{const gx=p.x/r.w*r.cols,gy=p.y/r.h*r.rows,col=Math.max(0,Math.min(r.cols-1,Math.floor(gx))),row=Math.max(0,Math.min(r.rows-1,Math.floor(gy))),u=gx-col,v=gy-row,n=row*(r.cols+1)+col,ids=u+v<=1?[n,n+1,n+r.cols+1]:[n+1,n+r.cols+2,n+r.cols+1],wt=u+v<=1?[1-u-v,u,v]:[1-v,u+v-1,1-u];let X=0,Y=0;ids.forEach((k,j)=>{const q=skinPoint(r.vertices[k],r,bones,pose);X+=q.X*wt[j];Y+=q.Y*wt[j];});return{x:X,y:Y};},hand=pose?skin(r.arms[0][2]):bones[3][1],elbow=pose?skin(r.arms[0][1]):bones[2][1],dx=hand.x-elbow.x,dy=hand.y-elbow.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l;
     const flourish=a.ai==='attack'?Math.sin(Math.min(1,(a.stateT||.2)/.55)*Math.PI)*.75:0,cs=Math.cos(flourish),sn=Math.sin(flourish),vx=ux*cs-uy*sn,vy=ux*sn+uy*cs,len=r.h*d.sword.length;
     ctx.save();ctx.lineCap='round';ctx.translate(hand.x,hand.y);ctx.rotate(Math.atan2(vy,vx));
-    ctx.strokeStyle='#39281f';ctx.lineWidth=r.h*.018;ctx.beginPath();ctx.moveTo(-r.h*.085,0);ctx.lineTo(r.h*.055,0);ctx.stroke();
-    ctx.strokeStyle='#b9a16c';ctx.lineWidth=r.h*.012;ctx.beginPath();ctx.moveTo(0,-r.h*.06);ctx.lineTo(0,r.h*.06);ctx.stroke();
-    ctx.fillStyle='#798896';ctx.strokeStyle='#303a46';ctx.lineWidth=r.h*.009;ctx.beginPath();ctx.moveTo(r.h*.035,-r.h*.018);ctx.lineTo(len,0);ctx.lineTo(r.h*.035,r.h*.018);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle='#6d5540';ctx.beginPath();ctx.arc(-r.h*.09,0,r.h*.022,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#39281f';ctx.lineWidth=r.h*.018;ctx.beginPath();ctx.moveTo(-r.h*.085,0);ctx.lineTo(r.h*.045,0);ctx.stroke();
+    ctx.strokeStyle='#b9a16c';ctx.lineWidth=r.h*.012;ctx.beginPath();ctx.moveTo(r.h*.045,-r.h*.06);ctx.lineTo(r.h*.045,r.h*.06);ctx.stroke();
+    ctx.fillStyle='#798896';ctx.strokeStyle='#303a46';ctx.lineWidth=r.h*.009;ctx.beginPath();ctx.moveTo(r.h*.045,-r.h*.018);ctx.lineTo(len,0);ctx.lineTo(r.h*.045,r.h*.018);ctx.closePath();ctx.fill();ctx.stroke();
     ctx.strokeStyle='#edf5fb';ctx.lineWidth=r.h*.006;ctx.beginPath();ctx.moveTo(r.h*.07,-r.h*.006);ctx.lineTo(len*.94,-r.h*.002);ctx.stroke();
     ctx.restore();
   }
@@ -259,7 +278,7 @@
     const articulated=pose.walking||pose.attack||pose.hurt||a.state==='channel'||a.ai==='telegraph'||a.dead||['knockdown','lying','death'].includes(a.state);
     // Processed connected skin is mandatory even at idle: no raw adult Riley,
     // alternate palette, or uncomposited joint path can leak through.
-    drawSword(ctx,a,d,r,bones);paintedBody(ctx,r,bones,pose);
+    paintedBody(ctx,r,bones,pose);drawSword(ctx,a,d,r,bones,pose);
     ctx.restore();
     if(a.callandor){ctx.save();ctx.strokeStyle='#e8ffff';ctx.shadowColor='#9deaff';ctx.shadowBlur=10;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(a.x-cam-12,a.y-a.z-22);ctx.lineTo(a.x-cam-22,a.y-a.z-66);ctx.stroke();ctx.restore();}
     if(a.hitFlash>0){ctx.save();ctx.globalAlpha=Math.min(.55,a.hitFlash*4);ctx.fillStyle='#ffe9ac';ctx.beginPath();ctx.ellipse(a.x-cam,a.y-(a.z||0)-40,18,24,0,0,7);ctx.fill();ctx.restore();}

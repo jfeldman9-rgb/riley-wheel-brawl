@@ -1,13 +1,13 @@
 [
   {
     "kind": "riley",
-    "samples": 340,
+    "samples": 334,
     "maxDrift": 0,
     "maxContactError": 0
   },
   {
     "kind": "twinkle",
-    "samples": 334,
+    "samples": 330,
     "maxDrift": 0,
     "maxContactError": 0
   },

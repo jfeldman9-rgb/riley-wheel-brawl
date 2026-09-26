@@ -257,14 +257,15 @@ check(Object.keys(RWB.Puppet.defs).length===12,'All walking characters share art
   const puppetSource=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
   check(!/scale\(\s*-1\s*,\s*1\s*\)/.test(stageSource),'Stage plate and floor tiling never mirrors a repeat');
   const kid=RWB.Puppet.defs.riley,adults=Object.entries(RWB.Puppet.defs).filter(([k])=>!['riley','twinkle'].includes(k));
-  // Measure the actual composited head box used by bakedImage (clipped at the
-  // image top through its collar anchor), rather than trusting a label field.
-  const bakedHeadBottom=kid.neck[1]+2/1140,bakedHeadHeight=bakedHeadBottom-Math.max(0,bakedHeadBottom-(kid.head[3]-kid.head[1])*kid.headScale);
+  // Measure the enlarged source box baked over the original head. The keyed
+  // alpha, not the sheet's grey rectangle, defines the visible top bound.
+  const bakedHeadHeight=(kid.head[3]-kid.head[1])*kid.headScale;
   check(kid.height===64&&kid.height<Math.min(...adults.map(([,d])=>d.height))&&bakedHeadHeight>=1/4.6&&kid.legScale<=.74,'Riley baked head is at least 1/4.6 of his 64-unit height and his limbs are shorter than every adult');
   check(kid.key==='riley-sheet'&&kid.sourcePanel==='top-middle-side'&&!kid.front&&kid.fallback==='rig-riley','Riley uses the sheet side panel, with rig-riley only as fallback');
-  check(kid.hipLine<=kid.pelvis[1]&&/clearRect\(0,hip,c\.width,legTop-hip\)/.test(puppetSource)&&/Continue two trouser columns/.test(puppetSource),'Riley coat pixels end at the authored hip and trouser texture continues underneath');
+  check(kid.hipLine<=kid.pelvis[1]&&/clearRect\(left,hip,width,fillBottom-hip\)/.test(puppetSource)&&/Continue two trouser columns/.test(puppetSource),'Riley coat pixels end at the authored hip and trouser texture continues underneath');
   const belal=RWB.Puppet.defs.forsaken;
   check(belal.male&&belal.key==='cg-turned-ashaman'&&!['cg-forsaken','cg-taim'].includes(belal.key)&&belal.sword&&belal.sword.length>=.55,"Be'lal uses the male lunging source and owns a long articulated sword part");
+  check(/hand=pose\?skin\(r\.arms\[0\]\[2\]\):bones\[3\]\[1\],elbow=pose\?skin\(r\.arms\[0\]\[1\]\):bones\[2\]\[1\]/.test(puppetSource),"Be'lal's sword uses the extended front wrist bone");
   check(!/if\s*\(\s*!articulated\s*\)\s*ctx\.drawImage/.test(puppetSource)&&/Processed connected skin is mandatory even at idle/.test(puppetSource),'Idle uses the same processed connected rig as action states');
 }
 

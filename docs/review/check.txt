@@ -58,5 +58,6 @@ PASS Riley baked head is at least 1/4.6 of his 64-unit height and his limbs are 
 PASS Riley uses the sheet side panel, with rig-riley only as fallback
 PASS Riley coat pixels end at the authored hip and trouser texture continues underneath
 PASS Be'lal uses the male lunging source and owns a long articulated sword part
+PASS Be'lal's sword uses the extended front wrist bone
 PASS Idle uses the same processed connected rig as action states
 All checks passed.
