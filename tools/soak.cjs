@@ -18,7 +18,7 @@ function boot(root) {
   canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 1280, height: 720 });
   const memory = new Map();
   const sandbox = {
-    console,
+    console: { ...console, info(...args) { if (!String(args[0]).startsWith('[RWB]')) console.info(...args); } },
     Math: Object.create(Math),
     Promise,
     performance: { now: () => 0 },
@@ -37,14 +37,15 @@ function boot(root) {
     requestAnimationFrame() {},
     fetch: () => Promise.resolve({ ok: false }),
     document: { getElementById: () => canvas, createElement: () => createCanvas(1, 1), addEventListener() {}, fonts: { load: () => Promise.resolve() } },
-    Image: class { set src(value) { sandbox.__assetRequests += 1; if (this.onerror) this.onerror(); } }
+    Image: class { set src(value) { sandbox.__assetRequests += 1; sandbox.__assetUrls.push(value); if (this.onerror) this.onerror(); } }
   };
-  sandbox.__assetRequests = 0;
+  sandbox.__assetRequests = 0; sandbox.__assetUrls = [];
   sandbox.window = sandbox;
   vm.createContext(sandbox);
   const scripts = [...fs.readFileSync(path.join(root, 'index.html'), 'utf8').matchAll(/<script src="js\/([\w-]+)\.js/g)].map(match => match[1]);
   for (const script of scripts) vm.runInContext(fs.readFileSync(path.join(root, 'js', script + '.js'), 'utf8'), sandbox, { filename: script + '.js' });
   sandbox.RWB.__assetRequests = () => sandbox.__assetRequests;
+  sandbox.RWB.__assetUrls = () => sandbox.__assetUrls.slice();
   sandbox.RWB.__setRandom = value => { sandbox.Math.random = value; };
   return sandbox.RWB;
 }

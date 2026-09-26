@@ -66,6 +66,10 @@
       }
     }
     draw(ctx, cameraX) {
+      const x=this.x-cameraX,y=this.y-this.z,dir=Math.sign(this.vx)||1;
+      ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineCap='round';
+      for(let i=0;i<4;i++) {const trail=ctx.createLinearGradient(x-dir*42,y,x,y);trail.addColorStop(0,'#ff7b0000');trail.addColorStop(1,i%2?'#ffd86caa':'#ff6633aa');ctx.strokeStyle=trail;ctx.lineWidth=2+i*.6;ctx.beginPath();ctx.moveTo(x-dir*(34+i*4),y+Math.sin(this.x*.08+i)*6);ctx.quadraticCurveTo(x-dir*16,y+(i-1.5)*5,x,y);ctx.stroke();}
+      ctx.restore();
       const glow = ctx.createRadialGradient(this.x - cameraX, this.y - this.z, 1, this.x - cameraX, this.y - this.z, 16);
       glow.addColorStop(0, '#ffffff');
       glow.addColorStop(0.25, '#ffe06e');

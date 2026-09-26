@@ -112,7 +112,7 @@
         this.game.setScene(new Reel(this.game, R.CAPTIONS.opening, () => new Reel(this.game, R.CAPTIONS.intro, () => new Play(this.game, 0, {}), "EMOND'S FIELD"), 'THE WHEEL TURNS'));
       } else if (chosen === 'CONTINUE') {
         const run = R.settings.loadRun();
-        this.game.setScene(new Play(this.game, run.level, Object.assign({}, run.extra, { wave: run.wave, score: run.score })));
+        this.game.setScene(resumeRun(this.game, run));
       } else this.game.setScene(new OptionsScene(this.game, chosen.toLowerCase()));
     }
     draw(ctx) {
@@ -141,6 +141,7 @@
       ctx.lineTo(332, 103);
       ctx.lineTo(293, 185);
       ctx.stroke();
+      if (R.paint(ctx, 'title-key', 0, 0, 640, 360)) { const shade=ctx.createLinearGradient(0,120,0,360);shade.addColorStop(0,'#07132110');shade.addColorStop(1,'#030916ee');ctx.fillStyle=shade;ctx.fillRect(0,0,640,360); }
       if (!R.paint(ctx, 'logo', 120, 35, 400, 140)) {
         R.drawText(ctx, 'RILEY', 320, 72, 21, '#ffffff', 'center');
         R.drawText(ctx, 'WHEEL BRAWL', 320, 146, 17, '#e5c65f', 'center');
@@ -149,6 +150,20 @@
       this.items().forEach((item, index) => R.drawText(ctx, (index === this.selection ? '◆ ' : '  ') + item, 320, 218 + index * 29, 9, index === this.selection ? '#70caff' : '#ffffff', 'center'));
     }
   }
+  // Keep story acknowledgement separate from the gameplay checkpoint.
+  function resumeRun(game, run) {
+    const carry = Object.assign({}, run.extra, { wave: run.wave, score: run.score, lives: run.extra.lives > 0 ? run.extra.lives : 3 });
+    const play = () => new Play(game, run.level, carry);
+    if (run.extra.pendingReveal === 'callandor') {
+      return new Reel(game, R.CAPTIONS.callandor, () => {
+        delete carry.pendingReveal;
+        R.settings.saveRun({ level: run.level, wave: run.wave, score: run.score, extra: carry });
+        return new Reel(game, R.CAPTIONS.stage5, play, R.LEVELS[4].name);
+      }, 'CALLANDOR ANSWERS');
+    }
+    return play();
+  }
+  R.resumeRun = resumeRun;
   class GameOver {
     constructor(game, checkpoint) {
       this.game = game;
@@ -158,7 +173,7 @@
     }
     continueRun() {
       const saved = Object.assign({}, this.checkpoint.extra, { wave: this.checkpoint.wave, score: Math.max(0, this.checkpoint.score - 500), lives: 3 });
-      this.game.setScene(new Play(this.game, this.checkpoint.level, saved));
+      this.game.setScene(resumeRun(this.game, Object.assign({}, this.checkpoint, { score: saved.score, extra: saved })));
     }
     update(dt, input) {
       this.time -= dt;
@@ -244,8 +259,17 @@
       R.audio.playMusic(this.music);
       this.saveCheckpoint();
     }
+    checkpointExtra() {
+      const extra = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, callandor: this.player.callandor };
+      if (this.wave === 5 && this.boss && !this.boss.dead) extra.boss = {
+        kind: this.level.kind, hp: this.boss.hp, attackIndex: this.boss.attackIndex || 0,
+        usedAttacks: [...this.boss.usedAttacks], phaseTwo: !!this.boss.phaseTwo,
+        twinkleFreed: !!this.twinkleFreed, rescueReady: !!this.rescueReady,
+      };
+      return extra;
+    }
     saveCheckpoint() {
-      R.settings.saveRun({ level: this.levelIndex, wave: this.wave, score: this.player.score, extra: { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, callandor: this.player.callandor } });
+      R.settings.saveRun({ level: this.levelIndex, wave: this.wave, score: this.player.score, extra: this.checkpointExtra() });
     }
     restartStage() {
       const carry = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, score: this.player.score, callandor: this.player.callandor, wave: 0 };
@@ -265,11 +289,22 @@
       const entries = this.level.mix[index];
       if (entries[0] === 'boss') {
         this.boss = this.levelIndex === 0 ? new R.Chieftain(this, center + 130, 260) : new R.ShadowBoss(this, center + 130, 260, this.level.kind);
+        const savedBoss = this.carry.boss;
+        if (savedBoss && savedBoss.kind === this.level.kind && Number.isFinite(savedBoss.hp)) {
+          this.boss.hp = R.util.clamp(savedBoss.hp, 1, this.boss.hpMax);
+          this.boss.attackIndex = Math.max(0, savedBoss.attackIndex | 0);
+          this.boss.usedAttacks = new Set((Array.isArray(savedBoss.usedAttacks) ? savedBoss.usedAttacks : []).filter(a => this.level.attacks.includes(a)));
+          this.boss.phaseTwo = !!savedBoss.phaseTwo;
+          this.boss.jointReady = this.twinkleFreed = !!savedBoss.twinkleFreed;
+          this.rescueReady = !!savedBoss.rescueReady;
+          delete this.carry.boss;
+        }
         this.enemies.push(this.boss);
-        if (this.levelIndex === 4) this.twinkle = { x: this.arenaLeft + 80, y: 293, captive: true };
+        if (this.levelIndex === 4) this.twinkle = { x: this.arenaLeft + 80, y: 293, captive: !this.twinkleFreed };
         this.bossCard = this.levelIndex === 0 ? 2.2 : 3.2;
         const entrances = [[], ['fade_intro_01','st2_fade_01'], ['draghkar_intro_01','st3_draghkar_01'], ['forsaken_intro_01'], ['taim_phase_01']];
         for (const id of entrances[this.levelIndex]) this.say(id, 1.5);
+        if (this.twinkleFreed && !this.rescueReady) this.say('st5_kenzie_01');
       } else {
         entries.forEach((variant, i) => {
           const side = i % 2 ? -1 : 1;
@@ -303,7 +338,7 @@
       const start = () => new Reel(this.game, R.CAPTIONS['stage' + (next + 1)], () => new Play(this.game, next, carry), R.LEVELS[next].name);
       if (this.levelIndex === 4) return new Reel(this.game, R.CAPTIONS.ending, () => new Victory(this.game), 'HOMECOMING');
       if (this.levelIndex === 0) return new Reel(this.game, R.CAPTIONS.clear, start, 'STAGE 1 CLEAR');
-      if (this.levelIndex === 3) return new Reel(this.game, R.CAPTIONS.callandor, start, 'CALLANDOR ANSWERS');
+      if (this.levelIndex === 3) return resumeRun(this.game, { level: 4, wave: 0, score: this.player.score, extra: Object.assign(carry, { pendingReveal: 'callandor' }) });
       return start();
     }
     freeTwinkle() {
@@ -358,7 +393,9 @@
       if (!enemy.takeHit(damage, fromX, opts || {})) return false;
       this.player.power = Math.min(this.player.powerMax, this.player.power + Math.round((opts && opts.move === 'fireball' ? 8 : 10) * (this.player.angreal > 0 ? 1.6 : 1)));
       this.player.score += damage * 10;
-      this.fx.sparks(enemy.x, enemy.y - enemy.z - 35, '#ffd268', 8);
+      this.fx.sparks(enemy.x, enemy.y - enemy.z - 35, '#ffd268', 12);
+      this.fx.ring(enemy.x, enemy.y - enemy.z - 35, false, '#fff3c7');
+      this.fx.dust(enemy.x, enemy.y, 5);
       this.camera.impact(this.player.facing, opts && opts.knockdown ? 'heavy' : 'light');
       this.playCue(opts && opts.knockdown ? 'thud' : 'hit');
       return true;
@@ -382,6 +419,7 @@
     }
     hitPlayer(damage, fromX, opts) {
       if (this.phase !== 'play' || this.player.invuln > 0 || this.player.dead) return false;
+      damage *= this.level.damageScale || 1;
       const landed = this.player.takeHit(damage, fromX, { kb: opts.kb, launch: opts.knockdown ? 250 : 80 });
       if (!landed) return false;
       this.damageTaken += damage;
@@ -396,6 +434,7 @@
     beginDeath() {
       this.player.dead = true;
       this.player.grabbedBy = null; this.player.stunTimer = 0; this.joint = null;
+      this.saveCheckpoint();
       this.player.setState('death');
       this.phase = 'death';
       this.deathTimer = 1.4;
@@ -413,7 +452,7 @@
         R.voice('riley_respawn_01');
         this.saveCheckpoint();
       } else {
-        const checkpoint = { level: this.levelIndex, wave: this.wave, score: this.player.score, extra: { saidin: this.player.power, loial: this.player.loialReady, lives: 0, callandor: this.player.callandor } };
+        const checkpoint = { level: this.levelIndex, wave: this.wave, score: this.player.score, extra: this.checkpointExtra() };
         R.settings.saveRun(checkpoint);
         this.game.setScene(new GameOver(this.game, checkpoint));
       }
@@ -503,7 +542,7 @@
         this.phase = 'clear';
         if (this.levelIndex === 3) this.player.callandor = true;
         if (this.levelIndex === 4) R.settings.clearRun();
-        else R.settings.saveRun({ level: this.levelIndex + 1, wave: 0, score: this.player.score, extra: this.carryToNext() });
+        else R.settings.saveRun({ level: this.levelIndex + 1, wave: 0, score: this.player.score, extra: Object.assign(this.carryToNext(), this.levelIndex === 3 ? { pendingReveal: 'callandor' } : {}) });
         this.clearTimer = 1.4;
         return;
       }
@@ -557,6 +596,7 @@
       this.updateJoint(dt);
       this.finishWave(dt);
       this.camera.follow(this.player.x, dt);
+      if (this.boss && !this.boss.dead && this.time >= (this.nextBossSave || 0)) { this.nextBossSave = this.time + 1; this.saveCheckpoint(); }
     }
     drawWorld(ctx) {
       R.StageWorld.draw(ctx, this);
@@ -603,9 +643,10 @@
       }
       R.StageWorld.near(ctx, this);
       this.snow.draw(ctx);
+      R.StageWorld.grade(ctx,this);
     }
     draw(ctx) {
-      this.drawWorld(ctx);
+      ctx.save(); this.camera.apply(ctx); this.drawWorld(ctx); ctx.restore();
       R.drawHUD(ctx, this);
       if (this.phase === 'play' && !this.paused) {
         for (const button of R.input.touch.buttons) {

@@ -1,0 +1,36 @@
+{
+  "errors": [],
+  "unstamped": [],
+  "failed": [],
+  "loaded": 54,
+  "missing": [],
+  "timings": [
+    {
+      "stage": 1,
+      "drawMs": 6.27
+    },
+    {
+      "stage": 2,
+      "drawMs": 6.32
+    },
+    {
+      "stage": 3,
+      "drawMs": 6.08
+    },
+    {
+      "stage": 4,
+      "drawMs": 3.28
+    },
+    {
+      "stage": 5,
+      "drawMs": 2.21
+    }
+  ],
+  "fallback": {
+    "failed": [
+      "stage3-mid"
+    ],
+    "playable": true,
+    "requests": 2
+  }
+}

@@ -12,7 +12,8 @@
     const img = R.assets.get(key);
     if (!img) return false;
     const width = (h * img.width) / img.height;
-    for (let x = -((cam * factor) % width); x < 640; x += width) ctx.drawImage(img, x, y, width, h);
+    const tile=Math.floor(cam*factor/width);
+    for (let i=tile,x=tile*width-cam*factor;x<640;x+=width,i++) {ctx.save();ctx.translate(x,y);if(i%2){ctx.translate(width,0);ctx.scale(-1,1);}ctx.drawImage(img,0,0,width,h);ctx.restore();}
     return true;
   }
   function architecture(ctx, level, cam, time) {
@@ -110,9 +111,9 @@
       const n = scene.levelIndex + 1,
         cam = scene.camera.x,
         time = scene.time;
-      if (n === 1) R.Stage1.draw(ctx, cam, time);
+      if (n === 1 && !R.assets.has('stage1-far')) R.Stage1.draw(ctx, cam, time);
       else {
-        const pal = PALETTES[n - 1],
+        const pal = PALETTES[n - 1] || ['#142b45','#6689a3','#8b9daf','#253443'],
           sky = ctx.createLinearGradient(0, 0, 0, 230);
         sky.addColorStop(0, pal[0]);
         sky.addColorStop(1, pal[1]);
@@ -125,9 +126,9 @@
           ctx.fillRect(x, 215 - h, 46, h);
         }
       }
-      tiled(ctx, 'stage' + n + '-far', cam, 0.08, 0, 224);
-      if (n > 1) architecture(ctx, n - 1, cam, time);
-      tiled(ctx, 'stage' + n + '-mid', cam, 0.55, 0, 224);
+      const roof = n === 5 && scene.wave === 5;
+      tiled(ctx, roof ? 'stage5-roof-far' : 'stage' + n + '-far', cam, 0.10, 0, 244);
+      if (!roof && !tiled(ctx, 'stage' + n + '-mid', cam, 0.42, 10, 222)) { if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam); }
       if (n > 1) {
         ctx.fillStyle = PALETTES[n - 1][3];
         ctx.fillRect(0, 224, 640, 136);
@@ -148,7 +149,14 @@
         }
         ctx.globalAlpha = 1;
       }
-      tiled(ctx, 'floor' + n, cam, 1, 224, 136);
+      // Wide floor plates are compressed in depth, not tiled into tiny squares.
+      const floor = R.assets.get(roof ? 'floor-roof' : 'floor' + n);
+      if (floor) for(let i=Math.floor(cam/640),x=i*640-cam;x<640;x+=640,i++){ctx.save();ctx.translate(x,222);if(i%2){ctx.translate(640,0);ctx.scale(-1,1);}ctx.drawImage(floor,0,0,640,138);ctx.restore();}
+      else if(n===1)R.Stage1.layers.floor(ctx,cam);
+      const depth=ctx.createLinearGradient(0,218,0,360);
+      depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');ctx.fillStyle=depth;ctx.fillRect(0,218,640,142);
+      const light=['#9bcfff','#ffdca0','#a99aff','#ffe8b0','#9ac2ff'][n-1];
+      const glow=ctx.createRadialGradient(440,100,10,440,100,310);glow.addColorStop(0,light+'28');glow.addColorStop(1,light+'00');ctx.fillStyle=glow;ctx.fillRect(0,0,640,360);
       if (n === 5 && Math.sin(time * 0.8) > 0.995) {
         ctx.strokeStyle = '#bccfed';
         ctx.lineWidth = 2;
@@ -160,9 +168,18 @@
         ctx.stroke();
       }
     },
+    grade(ctx,scene){
+      const colors=['#73a7e6','#ffb65a','#a087ed','#f0cd89','#7d9cde'];
+      ctx.save();ctx.globalCompositeOperation='soft-light';ctx.fillStyle=colors[scene.levelIndex];ctx.globalAlpha=.13;ctx.fillRect(0,0,640,360);ctx.restore();
+      const v=ctx.createRadialGradient(320,220,145,320,210,410);v.addColorStop(0,'#050c2000');v.addColorStop(1,'#050c2050');ctx.fillStyle=v;ctx.fillRect(0,0,640,360);
+    },
     near(ctx, scene) {
       const n = scene.levelIndex + 1;
-      if (tiled(ctx, 'stage' + n + '-near', scene.camera.x, 1.12, 0, 360) || n === 1) return;
+      // Confine dense delivered foreground props to the bottom 26px; every lane
+      // and attack tell remains visible, even on the lowest playable lane.
+      ctx.save();ctx.beginPath();ctx.rect(0,334,640,26);ctx.clip();
+      const painted=tiled(ctx, 'stage' + n + '-near', scene.camera.x, 1.12, 202, 158);ctx.restore();
+      if (painted || n === 1) return;
       ctx.fillStyle = PALETTES[n - 1][2];
       for (let i = 0; i < 9; i++) {
         const x = i * 105 - ((scene.camera.x * 1.12) % 105);

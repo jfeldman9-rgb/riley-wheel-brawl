@@ -36,7 +36,7 @@ RWB.settings = (function () {
   const clone = o => JSON.parse(JSON.stringify(o));
   const defaults = () => ({
     mode: 'auto', volume: 1, muted: false, music: 1,
-    overlay: 0.55, bigHud: false, colorblind: false, fx: 'auto', shake: 'full',
+    overlay: 0.3, bigHud: false, colorblind: false, fx: 'auto', shake: 'full',
     keys: clone(DEFAULT_KEYS), pad: clone(DEFAULT_PAD)
   });
   const data = defaults();

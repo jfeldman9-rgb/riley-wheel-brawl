@@ -67,6 +67,7 @@
       this.ai = 'telegraph';
       this.aiTimer = this.attack.tell;
       this.attackDidHit = false;
+      this.activeCounted = false;
       this.g.registerAttacker(this);
       this.setState('telegraph');
     }
@@ -355,10 +356,12 @@
     chooseBossAttack() {
       const cycle = [ATTACKS.crash, ATTACKS.charge, ATTACKS.stomp];
       this.attack = cycle[this.attackIndex % cycle.length];
-      this.attackIndex += 1;
+      // Advance the cycle only once a move becomes active; a stagger must not
+      // silently skip one of the three boss attacks.
       this.ai = 'telegraph';
       this.aiTimer = this.attack.tell;
       this.attackDidHit = false;
+      this.activeCounted = false;
       this.g.registerAttacker(this);
       this.setState('telegraph');
       this.g.warning = this.attack.name;
@@ -379,7 +382,8 @@
         return;
       }
       super.updateAI(dt);
-      if (this.ai === 'attack' && !this.usedAttacks.has(this.attack.name)) {
+      if (this.ai === 'attack' && !this.activeCounted) {
+        this.activeCounted = true; this.attackIndex += 1;
         this.usedAttacks.add(this.attack.name);
         this.g.playCue(this.attack === ATTACKS.crash ? 'bossCrash' : this.attack === ATTACKS.charge ? 'bossCharge' : 'bossStomp');
         if (this.attack === ATTACKS.crash) this.g.hazards.push(new Shockwave(this.g, this.x, this.y, this.facing));

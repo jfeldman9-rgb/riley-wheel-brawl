@@ -52,7 +52,7 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 
 ## Content extensions
 
-`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes all five stages. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(levelIndex = 0)` opens any stage and `RWB.game.debug.boss()` summons that stage's boss. `RWB.ASSET_VER` is the shared external-resource cache stamp (`20260926-w1`).
+`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes all five stages. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(levelIndex = 0)` opens any stage and `RWB.game.debug.boss()` summons that stage's boss. `RWB.ASSET_VER` is the shared external-resource cache stamp (`20260926-w2`).
 
 ## Chunk A content modules
 
@@ -93,7 +93,7 @@ and `scenes.js`. No bundler or runtime package is added.
   controls and combat physics stay in place.
 
 Checkpoint `extra.callandor` persists through death, restart and Continue. Stage
-clear saves the next stage before its reel; Loial becomes available only on new
+clear saves the next stage with a pending Callandor reveal when appropriate; Loial becomes available only on new
 stage entry, not on restarting or continuing the same stage. The final save is
 cleared only after Taim dies. Finale charge-up leaves Taim's AI and damage live;
 Riley can die and retry, and shield hits still refill saidin at Taim's HP floor.
@@ -101,3 +101,43 @@ Riley can die and retry, and shield hits still refill saidin at Taim's HP floor.
 Art registration uses `ART_FILES` for logical paths and `ART_MANIFEST` for the
 allowlist of delivered files. The shared input renderer is called from Play with
 `always: true`; CALL/FIRE labels retain the original action IDs and hit regions.
+
+## W2 painted presentation and persistence
+
+`puppets.js` loads after `scenes.js` and before `content.js`. It augments actor
+drawing and samples final movement after `Play.updateObjects`; hitboxes, controls,
+move timings, collision and existing AI remain in the inherited modules. Twelve
+walking character definitions bind source pixels to head/torso and upper/lower
+limb regions. Painted leg cutouts use two-bone IK; the connected upper silhouette
+uses a bounded deformation around the shoulder/elbow/wrist targets so clothing
+remains continuous. Idle draws the original cutout. Attack/hurt targets and
+knockdown rotation use this same rig. Draghkar uses its winged painted cutout.
+
+`gait.phase` advances with actual world displacement, including lane movement.
+Each stance foot stores an immutable world contact until toe-off. Rendered joints
+are calculated relative to those contacts; drawing never advances the gait.
+Visual heights are assigned during simulation, independent of whether a frame
+is drawn. All rigs keep procedural rendering if their source image is unavailable.
+
+`tools/prepare-rigs.py` extracts Riley/Twinkle's first poses from their supplied
+model sheets. It removes only edge-connected neutral background and preserves
+glasses, facial features and clothing highlights. It needs Pillow, NumPy and SciPy;
+it is an authoring tool, not a browser dependency.
+
+`StageWorld` owns far/mid/floor/near composition, mirrored edge tiling, the Stage 5
+roof switch, depth wash and stage grading. Near props are clipped below the lowest
+fight lane. `Play.draw` applies camera shake to the world only. The HUD remains
+stationary. `ART_MANIFEST` allowlists all 54 delivered/derived images.
+
+Boss checkpoint extras contain HP, attack-cycle index, used attacks, phase two,
+Twinkle rescue and readiness state. They are written at boss entry, every second,
+and immediately on death. Continue restores the encounter at saved HP; a pending
+rescue caption is requeued. Explicit Restart Stage starts at wave zero.
+
+Stage 4 clear saves Stage 5 plus `pendingReveal: 'callandor'`. Both live progression
+and title Continue route through `resumeRun`; only advancing the final reveal
+caption removes that flag. Reloading partway through replays the reveal.
+
+`tools/review.cjs` serves this checkout and captures actual Canvas output with
+headless Playwright/Chromium. Set `CHROMIUM_PATH` for an existing executable.
+Evidence and audit data are under `docs/review/`.

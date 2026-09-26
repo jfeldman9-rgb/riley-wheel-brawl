@@ -106,10 +106,11 @@ check(moveDamages('spin'), '360 spinning kick creates a damaging hitbox');
   check(reduced.shakeAmt < strong.shakeAmt && reduced.flashT < strong.flashT, 'Reduced Shake lowers super shake and flash');
   RWB.settings.data.shake = full;
 }
-check(RWB.ART_MANIFEST.length === 0 && RWB.__assetRequests() === 0, 'Empty art manifest causes zero image requests');
+check(RWB.ART_MANIFEST.length >= 54 && RWB.ART_MANIFEST.every(src=>fs.existsSync(path.join(root,src))), 'Delivered art manifest lists existing bundled files');
+check([...fs.readdirSync(path.join(root,'assets/art')).map(f=>'assets/art/'+f), ...fs.readdirSync(path.join(root,'assets/cutscenes')).map(f=>'assets/cutscenes/'+f)].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-check(urls.every(url => url.includes('?v=20260926-w1')), 'Every script, stylesheet, and font URL has the w1 cache stamp');
+check(urls.every(url => url.includes('?v=20260926-w2')), 'Every script, stylesheet, and font URL has the w2 cache stamp');
 // Chunk B: exercise real collision, persistence and scene transitions, not only metadata.
 const neutral = { pressed: {}, held: {}, axis: () => ({x:0,y:0}) };
 const ctx = new Proxy({ createLinearGradient:()=>({addColorStop(){}}), createRadialGradient:()=>({addColorStop(){}}), measureText:t=>({width:String(t).length*8}) }, {get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
@@ -204,15 +205,56 @@ for(let level=0;level<5;level++) {
 }
 check(Object.values(RWB.ART_FILES).every(src=>!src.startsWith('/') && /\.(png|jpeg)$/.test(src)), 'Art hooks use relative JPEG/PNG paths');
 check([1,2,3,4,5].every(n=>RWB.ART_FILES['stage'+n+'-far'] && RWB.ART_FILES['stage'+n+'-mid'] && RWB.ART_FILES['stage'+n+'-near'] && RWB.ART_FILES['floor'+n]),'Every stage has four optional art layers');
-check(RWB.assets.VER==='20260926-w1' && RWB.ASSET_VER==='20260926-w1','Runtime assets share the w1 script cache stamp');
+check(RWB.assets.VER==='20260926-w2' && RWB.ASSET_VER==='20260926-w2','Runtime assets share the w2 script cache stamp');
 
 const brokenPath='assets/art/test-missing.png';
 RWB.ART_MANIFEST.push(brokenPath);
 RWB.assets.register('test-missing',brokenPath);
 const beforeRequests=RWB.__assetRequests();
 await RWB.assets.load();
-check(RWB.__assetRequests()-beforeRequests===2 && RWB.assets.failed().includes('test-missing') && !RWB.assets.has('test-missing'), 'A listed broken image retries once and settles to fallback');
+check(RWB.__assetUrls().filter(url=>url.startsWith(brokenPath+'?')).length===2 && RWB.assets.failed().includes('test-missing') && !RWB.assets.has('test-missing'), 'A listed broken image retries once and settles to fallback');
 RWB.ART_MANIFEST.pop();
+
+// W2 regression gates: run through persisted data and real Continue constructors.
+{
+  for(let i=0;i<5;i++) {
+    const s=bossScene(i); s.boss.hp=137; s.player.loialReady=false;
+    s.boss.usedAttacks.add(s.level.attacks[0]); s.player.lives=1;
+    s.beginDeath(); s.resolveDeath();
+    const saved=RWB.settings.loadRun();
+    const over=new RWB.scenes.GameOver(game,saved);over.continueRun();
+    const resumed=game.nextScene;
+    check(resumed.wave===5 && resumed.boss.hp===137 && !resumed.player.loialReady && resumed.boss.usedAttacks.has(s.level.attacks[0]),'Stage '+(i+1)+' boss Continue preserves HP and attack progress');
+  }
+  const s=bossScene(4);s.boss.hp=1;s.twinkleFreed=true;s.rescueReady=true;s.saveCheckpoint();
+  const run=RWB.settings.loadRun(),r=RWB.resumeRun(game,run);
+  r.rescueReady=false;r.saveCheckpoint();const pending=RWB.resumeRun(game,RWB.settings.loadRun());for(let i=0;i<10;i++)pending.updateDialogue(3);r.rescueReady=true;
+  check(pending.rescueReady,'Continue replays an interrupted rescue readiness caption');
+  check(r.boss.hp===1 && r.boss.jointReady && r.twinkleFreed && r.rescueReady && !r.twinkle.captive,'Taim last-HP Continue preserves rescue and joint-finish readiness');
+}
+{
+  const s=bossScene(3);s.boss.dead=true;s.finishWave(1/60);
+  let saved=RWB.settings.loadRun(),reel=RWB.resumeRun(game,saved);
+  check(saved.extra.callandor && saved.extra.pendingReveal==='callandor' && reel.lines===RWB.CAPTIONS.callandor,'Reload after Stage 4 clear must show Callandor reveal');
+  reel.advance(); saved=RWB.settings.loadRun();
+  check(saved.extra.pendingReveal==='callandor','Partial reveal is still pending on reload');
+  for(let i=0;i<reel.lines.length+1;i++)reel.advance();
+  check(!RWB.settings.loadRun().extra.pendingReveal,'Only acknowledging the final reveal caption clears the pending flag');
+}
+{
+  let planted=0,maxDrift=0,armOpposite=true;
+  const a={x:100,y:260,z:0,state:'walk',facing:1,stateT:0,visualHeight:83};
+  RWB.Puppet.updateGait(a,1/60);
+  for(let f=0;f<120;f++) {
+    const before=a.gait.feet.map(p=>({...p}));a.x+=128/60;RWB.Puppet.updateGait(a,1/60);
+    const pose=RWB.Puppet.pose(a);
+    a.gait.feet.forEach((p,i)=>{if(p.stance && before[i]?.stance){maxDrift=Math.max(maxDrift,Math.hypot(p.x-before[i].x,p.y-before[i].y));planted++;}if(p.stance){const world=a.x+pose.feet[i].x*83/80;maxDrift=Math.max(maxDrift,Math.abs(world-p.x));}});
+    armOpposite=armOpposite && pose.arms.every((p,i)=>(p.x-(i?9:-9))*pose.feet[i].x<=.0001);
+  }
+  check(planted>40 && maxDrift<1e-8 && armOpposite,'World-space planted feet stay fixed; arms counter-swing throughout the gait');
+  check(Object.keys(RWB.Puppet.defs).length===12,'All walking characters share articulated painted rigs');
+}
+
 if (failures.length) {
   console.error(failures.length + ' check(s) failed');
   process.exit(1);

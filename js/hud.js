@@ -55,7 +55,7 @@
     const big = !!R.settings.data.bigHud;
     const font = big ? 9 : 7;
     const small = big ? 8 : 6;
-    const panelH = big ? 72 : 59;
+    const panelH = big ? 72 : 62;
     R.drawPanel(ctx, 7, 7, big ? 286 : 250, panelH);
     drawRileyPortrait(ctx, 31, big ? 42 : 36);
     R.drawText(ctx, 'RILEY', 57, big ? 20 : 17, font, '#ffffff');
@@ -83,12 +83,12 @@
       R.drawText(ctx, '+' + R.TUNE.healAmount + ' HP', 454, 91, 6, '#d7f8ff');
     }
     if (scene.boss && !scene.boss.dead) {
-      R.drawPanel(ctx, 142, 70, 356, 35);
-      R.drawText(ctx, scene.level.boss, 320, 81, 7, '#f6ddb0', 'center');
-      bar(ctx, 160, 91, 320, 7, scene.boss.hp / scene.boss.hpMax, '#b94147', '#331f26');
+      R.drawPanel(ctx, 142, big ? 83 : 73, 356, 35);
+      R.drawText(ctx, scene.level.boss, 320, big ? 94 : 84, 7, '#f6ddb0', 'center');
+      bar(ctx, 160, big ? 104 : 94, 320, 7, scene.boss.hp / scene.boss.hpMax, '#b94147', '#331f26');
     }
     if (scene.warningTimer > 0) R.drawText(ctx, scene.warning, 320, 122, 8, '#ffe67a', 'center');
     if (scene.goTimer > 0) R.drawText(ctx, 'GO  →', 562, 174, 12, '#fff2a0', 'center');
-    if (scene.tutorial) R.drawText(ctx, R.input.fillKeys(scene.tutorial), 320, 332, 7, '#ffffff', 'center');
+    if (scene.tutorial) { R.drawPanel(ctx, 125, 314, 390, 20); R.drawText(ctx, R.input.fillKeys(scene.tutorial), 320, 325, 6, '#ffffff', 'center'); }
   };
 }());

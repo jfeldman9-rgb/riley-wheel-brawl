@@ -209,6 +209,7 @@
     wavePoints: WAVE_POINTS,
     waveTable: WAVE_TABLE,
     SnowField,
+    layers: { sky: drawSky, mid: drawMid, floor: drawFloor, near: drawNear },
     draw(ctx, cameraX, time) {
       drawSky(ctx, cameraX);
       drawMid(ctx, cameraX);

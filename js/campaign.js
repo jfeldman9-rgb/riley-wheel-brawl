@@ -418,6 +418,7 @@
       },
     ],
   );
+  R.LEVELS.forEach((level, i) => { level.damageScale = [0.82, 2.55, 0.63, 2.15, 0.69][i]; });
   R.LEVELS[0].wavePoints = R.Stage1.wavePoints;
   R.LEVELS[0].mix = R.Stage1.waveTable;
   R.LEVELS[0].kind = 'chieftain';
@@ -442,7 +443,13 @@
     R.drawText(ctx, 'ART LOAD FAILED - USING DRAWN ART', 320, 175, 7, '#fff', 'center');
   };
   R.paint = function (ctx, key, x, y, w, h) {
-    const img = R.assets.get(key);
+    let img = R.assets.get(key);
+    if (!img && typeof key === 'string' && key.startsWith('portrait-')) {
+      const who=key.slice(9),def=R.Puppet && R.Puppet.defs[who === 'trolloc-chieftain' ? 'chieftain' : who];
+      img=R.assets.get('cg-'+who);
+      if(img && def) {const b=def.head;ctx.drawImage(img,b[0]*img.width,b[1]*img.height,(b[2]-b[0])*img.width,(b[3]-b[1])*img.height,x,y,w,h);return true;}
+      if(img) {ctx.drawImage(img,0,0,img.width,img.height*.65,x,y,w,h);return true;}
+    }
     if (!img) return false;
     ctx.drawImage(img, x, y, w, h);
     return true;
