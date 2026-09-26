@@ -48,11 +48,15 @@ RWB.assets = (function () {
       img.src = url;
     });
   }
+  function fetchResource(url) {
+    if (!/\.json(?:[?&]|$)/.test(url)) return fetchImage(url);
+    return fetch(url).then(response => response.ok ? response.json() : null).catch(() => null);
+  }
   async function fetchKey(k, src) {
     if (!listed(src)) { images[k] = null; skipped.push(k); return null; }
     const url = src + (src.includes('?') ? '&' : '?') + 'v=' + VER;
-    let img = await fetchImage(url);
-    if (!img) img = await fetchImage(url + '&r=' + Date.now());
+    let img = await fetchResource(url);
+    if (!img) img = await fetchResource(url + '&r=' + Date.now());
     images[k] = img;
     if (!img) { failed.push(k); if (k in lazy && typeof console !== 'undefined') console.info('[RWB] story art unavailable; using drawn art:', k); }
     return img;

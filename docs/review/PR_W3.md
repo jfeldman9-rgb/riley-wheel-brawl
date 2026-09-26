@@ -30,3 +30,18 @@ Known remaining weaknesses: during SWORD FLURRY the hilt can sit a few pixels pa
 - Be'lal's coat now uses blurred luminance and a continuous dark-crimson/mid-crimson/highlight ramp with a 70% grade / 30% original blend, smooth skin protection, and retained silver/hair handling.
 - The Be'lal review board now contains idle, walk, and SWORD FLURRY at `t=.2`, `.5`, and `.8`. All runtime resources and audits use `?v=20260926-w3c`. No binary review files changed in this text-only round.
 - Local limitation: `node tools/review.cjs` cannot regenerate the boards in this checkout because `playwright` is not installed; run it in the documented browser-review environment for visual sign-off.
+
+## w3c Riley 16 sprite and Stage 1 repeat follow-up
+
+- Replaced the Riley puppet path with the ten anchored `riley16` runtime frames. All frames use one 96-world-unit idle scale, face right in source, mirror around the authored body/foot anchor, and map walk, hand attack, kick, channel, hurt, airborne, and lying states without puppet deformation. Walk frames advance from travelled distance and stop with movement.
+- Riley's HUD and dialogue portrait now use `riley16/portrait.png`. The old Riley rig and sheet remain committed but unused. Riley is 96 units against the regular Trolloc's 112 units; all other painted puppet heights were increased by approximately 1.12 without gameplay geometry changes, while Riley's hurtbox alone was raised to 92.
+- Stage 1 mid and near paintings render as one 720-unit-wide, bottom-anchored plate, preventing a repeated inn inside the 640-unit view. Far skies render as a single 700-unit plate with capped parallax, avoiding the vertical tone seam without mirroring.
+- `check.cjs` now gates all ten Riley frames plus portrait, the four-frame distance walk, 90-100 unit idle height, and the 0.80-0.90 Riley/Trolloc ratio. `review.cjs` now composes every Riley frame through `Riley.drawSprite`, includes an eight-step runtime walk strip and a same-scale Trolloc, and retains Be'lal, Lido, seam, and character boards.
+- `node tools/check.cjs` passes. `node tools/soak.cjs` clears 50/50 assisted seeds in under six seconds locally. The cache/resource stamp remains `?v=20260926-w3c`.
+- Not achieved locally: the text-only request leaves all committed JPEGs unchanged, and `node tools/review.cjs` cannot regenerate them because this checkout does not contain the `playwright` module. The updated review generator is ready for the documented browser environment.
+
+### w3c integration notes
+
+- Be'lal's sword arm keeps its painted fist during SWORD FLURRY. The blade swings about the fist, and a shorter grip puts the crossguard at the knuckles, so the hilt never separates from the hand.
+- The Riley frames in `assets/art/riley16/` were sliced from the supplied 16-year-old sheet. All frames share one scale, a common foot baseline and a body-centred anchor; the fireball frame is anchored on his body, not the flame. The HUD portrait is a crop of the idle face.
+- All review JPEGs were regenerated from this commit in headless Chromium.

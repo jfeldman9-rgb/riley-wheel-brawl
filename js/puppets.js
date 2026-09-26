@@ -6,57 +6,27 @@
   const R=window.RWB;
   // Joint coordinates on the delivered images: shoulder/elbow/wrist, hip/knee/ankle.
   const defs={
-    riley:{key:'riley-sheet',splitLegs:true,fallback:'rig-riley',sourcePanel:'top-middle-side',variant:'kid',height:64,headRatio:.225,headScale:1.45,headWidth:1.08,torsoScale:.78,legScale:.70,shoulderScale:.78,front:false,hipLine:.56,soles:[[.36,.985],[.56,.985]],head:[.18,.015,.72,.175],neck:[.42,.18],pelvis:[.46,.56],arms:[[[.55,.23],[.56,.40],[.45,.54]],[[.58,.23],[.59,.40],[.48,.54]]],legs:[[[.42,.57],[.42,.78],[.36,.93]],[[.52,.57],[.54,.78],[.56,.93]]]},
-    twinkle:{key:'rig-twinkle',height:59,front:true,head:[.27,0,.72,.29],neck:[.50,.28],pelvis:[.50,.64],arms:[[[.26,.30],[.14,.46],[.09,.59]],[[.75,.30],[.86,.46],[.91,.59]]],legs:[[[.35,.73],[.35,.85],[.24,.98]],[[.65,.73],[.65,.85],[.77,.98]]]},
-    trolloc:{key:'cg-trolloc',height:100,head:[.23,0,.70,.40],neck:[.53,.30],pelvis:[.64,.59],arms:[[[.51,.37],[.40,.46],[.33,.51]],[[.79,.34],[.90,.45],[.89,.60]]],legs:[[[.55,.60],[.44,.73],[.36,.93]],[[.72,.60],[.82,.77],[.92,.97]]]},
-    chieftain:{key:'cg-trolloc-chieftain',height:119,head:[.29,0,.73,.27],neck:[.52,.27],pelvis:[.51,.62],arms:[[[.26,.31],[.18,.47],[.31,.52]],[[.75,.32],[.79,.48],[.72,.61]]],legs:[[[.40,.61],[.35,.78],[.22,.965]],[[.62,.62],[.72,.78],[.81,.97]]]},
-    darkfriend:{key:'cg-darkfriend',height:87,head:[.11,.02,.56,.31],neck:[.39,.28],pelvis:[.50,.55],arms:[[[.38,.31],[.29,.43],[.19,.43]],[[.60,.29],[.66,.41],[.45,.405]]],legs:[[[.46,.55],[.34,.67],[.27,.96]],[[.56,.56],[.65,.73],[.77,.92]]]},
-    cultist:{key:'cg-cultist',height:91,head:[.28,0,.69,.29],neck:[.48,.24],pelvis:[.49,.61],arms:[[[.35,.29],[.25,.42],[.17,.42]],[[.65,.29],[.69,.44],[.56,.54]]],legs:[[[.42,.63],[.35,.77],[.25,.96]],[[.60,.64],[.63,.79],[.76,.96]]]},
-    guard:{key:'cg-stone-guard',height:95,soles:[[330/768,969/1024],[450/768,1004/1024]],head:[.28,0,.65,.25],neck:[.49,.25],pelvis:[.52,.60],arms:[[[.40,.28],[.35,.40],[.30,.40]],[[.57,.28],[.61,.43],[.55,.59]]],legs:[[[.46,.61],[.47,.76],[.43,.945]],[[.61,.61],[.63,.77],[.65,.98]]]},
-    ashaman:{key:'cg-turned-ashaman',height:93,head:[.39,0,.68,.25],neck:[.55,.20],pelvis:[.56,.54],arms:[[[.46,.23],[.31,.23],[.18,.21]],[[.64,.25],[.70,.36],[.73,.31]]],legs:[[[.49,.55],[.36,.70],[.24,.97]],[[.61,.55],[.74,.73],[.87,.95]]]},
-    fade:{key:'cg-fade',height:105,head:[.32,0,.64,.26],neck:[.50,.24],pelvis:[.53,.61],arms:[[[.38,.29],[.36,.43],[.34,.59]],[[.61,.29],[.63,.47],[.57,.64]]],legs:[[[.44,.65],[.43,.81],[.41,.955]],[[.61,.65],[.63,.81],[.68,.97]]]},
+    twinkle:{key:'rig-twinkle',height:66,front:true,head:[.27,0,.72,.29],neck:[.50,.28],pelvis:[.50,.64],arms:[[[.26,.30],[.14,.46],[.09,.59]],[[.75,.30],[.86,.46],[.91,.59]]],legs:[[[.35,.73],[.35,.85],[.24,.98]],[[.65,.73],[.65,.85],[.77,.98]]]},
+    trolloc:{key:'cg-trolloc',height:112,head:[.23,0,.70,.40],neck:[.53,.30],pelvis:[.64,.59],arms:[[[.51,.37],[.40,.46],[.33,.51]],[[.79,.34],[.90,.45],[.89,.60]]],legs:[[[.55,.60],[.44,.73],[.36,.93]],[[.72,.60],[.82,.77],[.92,.97]]]},
+    chieftain:{key:'cg-trolloc-chieftain',height:133,head:[.29,0,.73,.27],neck:[.52,.27],pelvis:[.51,.62],arms:[[[.26,.31],[.18,.47],[.31,.52]],[[.75,.32],[.79,.48],[.72,.61]]],legs:[[[.40,.61],[.35,.78],[.22,.965]],[[.62,.62],[.72,.78],[.81,.97]]]},
+    darkfriend:{key:'cg-darkfriend',height:97,head:[.11,.02,.56,.31],neck:[.39,.28],pelvis:[.50,.55],arms:[[[.38,.31],[.29,.43],[.19,.43]],[[.60,.29],[.66,.41],[.45,.405]]],legs:[[[.46,.55],[.34,.67],[.27,.96]],[[.56,.56],[.65,.73],[.77,.92]]]},
+    cultist:{key:'cg-cultist',height:102,head:[.28,0,.69,.29],neck:[.48,.24],pelvis:[.49,.61],arms:[[[.35,.29],[.25,.42],[.17,.42]],[[.65,.29],[.69,.44],[.56,.54]]],legs:[[[.42,.63],[.35,.77],[.25,.96]],[[.60,.64],[.63,.79],[.76,.96]]]},
+    guard:{key:'cg-stone-guard',height:106,soles:[[330/768,969/1024],[450/768,1004/1024]],head:[.28,0,.65,.25],neck:[.49,.25],pelvis:[.52,.60],arms:[[[.40,.28],[.35,.40],[.30,.40]],[[.57,.28],[.61,.43],[.55,.59]]],legs:[[[.46,.61],[.47,.76],[.43,.945]],[[.61,.61],[.63,.77],[.65,.98]]]},
+    ashaman:{key:'cg-turned-ashaman',height:104,head:[.39,0,.68,.25],neck:[.55,.20],pelvis:[.56,.54],arms:[[[.46,.23],[.31,.23],[.18,.21]],[[.64,.25],[.70,.36],[.73,.31]]],legs:[[[.49,.55],[.36,.70],[.24,.97]],[[.61,.55],[.74,.73],[.87,.95]]]},
+    fade:{key:'cg-fade',height:118,head:[.32,0,.64,.26],neck:[.50,.24],pelvis:[.53,.61],arms:[[[.38,.29],[.36,.43],[.34,.59]],[[.61,.29],[.63,.47],[.57,.64]]],legs:[[[.44,.65],[.43,.81],[.41,.955]],[[.61,.65],[.63,.81],[.68,.97]]]},
     // Be'lal is baked from the male lunging Asha'man source, then regraded and
     // given a separately articulated sword (rather than reusing Taim/Forsaken).
-    forsaken:{key:'cg-turned-ashaman',variant:'belal',height:104,male:true,sword:{length:.55},head:[.39,0,.68,.25],neck:[.55,.20],pelvis:[.56,.54],arms:[[[.46,.23],[.31,.23],[.18,.21]],[[.64,.25],[.70,.36],[.73,.31]]],legs:[[[.49,.55],[.36,.70],[.24,.97]],[[.61,.55],[.74,.73],[.87,.95]]]},
-    taim:{key:'cg-taim',height:108,head:[.35,.01,.69,.23],neck:[.52,.22],pelvis:[.51,.60],arms:[[[.37,.26],[.27,.35],[.14,.20]],[[.65,.27],[.76,.40],[.68,.53]]],legs:[[[.42,.66],[.40,.80],[.33,.97]],[[.62,.66],[.64,.81],[.70,.98]]]},
-    loial:{key:'cg-loial',height:125,head:[.24,0,.61,.29],neck:[.43,.25],pelvis:[.53,.56],arms:[[[.35,.29],[.23,.43],[.20,.33]],[[.57,.28],[.60,.41],[.45,.46]]],legs:[[[.45,.56],[.32,.65],[.20,.88]],[[.60,.58],[.67,.77],[.75,.96]]]},
+    forsaken:{key:'cg-turned-ashaman',variant:'belal',height:116,male:true,sword:{length:.55},head:[.39,0,.68,.25],neck:[.55,.20],pelvis:[.56,.54],arms:[[[.46,.23],[.31,.23],[.18,.21]],[[.64,.25],[.70,.36],[.73,.31]]],legs:[[[.49,.55],[.36,.70],[.24,.97]],[[.61,.55],[.74,.73],[.87,.95]]]},
+    taim:{key:'cg-taim',height:121,head:[.35,.01,.69,.23],neck:[.52,.22],pelvis:[.51,.60],arms:[[[.37,.26],[.27,.35],[.14,.20]],[[.65,.27],[.76,.40],[.68,.53]]],legs:[[[.42,.66],[.40,.80],[.33,.97]],[[.62,.66],[.64,.81],[.70,.98]]]},
+    loial:{key:'cg-loial',height:140,head:[.24,0,.61,.29],neck:[.43,.25],pelvis:[.53,.56],arms:[[[.35,.29],[.23,.43],[.20,.33]],[[.57,.28],[.60,.41],[.45,.46]]],legs:[[[.45,.56],[.32,.65],[.20,.88]],[[.60,.58],[.67,.77],[.75,.96]]]},
   };
   const rigs=new Map();
   function knee(hip,foot,l1,l2,bend=1){const dx=foot.x-hip.x,dy=foot.y-hip.y,dist=Math.max(.001,Math.hypot(dx,dy)),d=Math.min(dist,l1+l2-.001),along=(l1*l1-l2*l2+d*d)/(2*d),side=Math.sqrt(Math.max(0,l1*l1-along*along))*bend;return{x:hip.x+dx/dist*along+dy/dist*side,y:hip.y+dy/dist*along-dx/dist*side};}
   function bakedImage(d,image){
     const c=document.createElement('canvas');
-    if(d.sourcePanel==='top-middle-side'){
-      // Native 1824x2318 sheet: isolate its top-middle, three-quarter/side
-      // figure.  Chroma key only the edge-connected neutral grey so highlights
-      // inside the painted figure survive with a soft antialiased fringe.
-      c.width=320;c.height=1140;const cg=c.getContext('2d');cg.drawImage(image,780,40,320,1140,0,0,320,1140);
-      const id=cg.getImageData(0,0,c.width,c.height),p=id.data,edge=new Uint8Array(c.width*c.height),queue=new Uint32Array(c.width*c.height);let first=0,last=0;
-      const distance=i=>Math.hypot(p[i*4]-200,p[i*4+1]-199,p[i*4+2]-200),offer=i=>{if(!edge[i]&&distance(i)<40){edge[i]=1;queue[last++]=i;}};
-      for(let x=0;x<c.width;x++){offer(x);offer((c.height-1)*c.width+x);}for(let y=0;y<c.height;y++){offer(y*c.width);offer(y*c.width+c.width-1);}
-      while(first<last){const i=queue[first++],x=i%c.width,y=(i/c.width)|0;if(x)offer(i-1);if(x+1<c.width)offer(i+1);if(y)offer(i-c.width);if(y+1<c.height)offer(i+c.width);}
-      for(let i=0;i<edge.length;i++)if(edge[i]){const dist=distance(i);p[i*4+3]=Math.round(p[i*4+3]*Math.max(0,Math.min(1,(dist-28)/12)));}
-      cg.putImageData(id,0,0);
-    } else {c.width=image.width;c.height=image.height;c.getContext('2d').drawImage(image,0,0);}
+    c.width=image.width;c.height=image.height;c.getContext('2d').drawImage(image,0,0);
     const g=c.getContext('2d');
-    if(d.variant==='kid'){
-      // End the long adult coat at the hip. Continue two trouser columns up
-      // beneath the short tunic using texture sampled from the supplied legs.
-      const hip=Math.round(c.height*d.hipLine),fillBottom=Math.round(c.height*.70),sampleBottom=Math.round(c.height*.80),left=Math.round(c.width*.10),width=Math.round(c.width*.80);
-      const trousers=document.createElement('canvas');trousers.width=width;trousers.height=sampleBottom-fillBottom;
-      trousers.getContext('2d').drawImage(c,left,fillBottom,width,sampleBottom-fillBottom,0,0,width,sampleBottom-fillBottom);
-      g.clearRect(left,hip,width,fillBottom-hip);
-      g.drawImage(trousers,0,0,width,trousers.height,left,hip,width,fillBottom-hip);
-      // Rounder, larger child head is pre-baked, so idle/HUD/cutscene and action
-      // paths all consume the same pixels. A soft face pass relaxes the adult jaw.
-      const b=d.head,x=b[0]*c.width,y=b[1]*c.height,w=(b[2]-b[0])*c.width,h=(b[3]-b[1])*c.height;
-      const face=document.createElement('canvas');face.width=Math.ceil(w);face.height=Math.ceil(h);const f=face.getContext('2d');f.drawImage(c,x,y,w,h,0,0,w,h);
-      // Only the enlarged head is overpainted: never erase the collar or the
-      // shoulders.  Its softly feathered chin lets the original neck show
-      // through rather than producing the old rectangular clear band.
-      f.globalCompositeOperation='destination-in';const chin=f.createLinearGradient(0,h-6,0,h);chin.addColorStop(0,'#000');chin.addColorStop(1,'rgba(0,0,0,.18)');f.fillStyle=chin;f.fillRect(0,0,w,h);
-      const dw=w*d.headScale*d.headWidth,dh=h*d.headScale,cx=(b[0]+b[2])*.5*c.width,base=.17*c.height;
-      g.drawImage(face,cx-dw/2,base-dh,dw,dh);
-    } else if(d.variant==='belal'){
+    if(d.variant==='belal'){
       const data=g.getImageData(0,0,c.width,c.height),p=data.data,source=new Uint8ClampedArray(p),removed=new Uint8Array(c.width*c.height);
       const luminance=new Float32Array(c.width*c.height);
       for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){let sum=0,count=0;for(let oy=-2;oy<=2;oy++)for(let ox=-2;ox<=2;ox++){const xx=x+ox,yy=y+oy;if(xx<0||yy<0||xx>=c.width||yy>=c.height)continue;const j=(yy*c.width+xx)*4;sum+=.2126*source[j]+.7152*source[j+1]+.0722*source[j+2];count++;}luminance[y*c.width+x]=sum/count;}
@@ -220,9 +190,9 @@
     if(!d.sword)return;const skin=p=>{const gx=p.x/r.w*r.cols,gy=p.y/r.h*r.rows,col=Math.max(0,Math.min(r.cols-1,Math.floor(gx))),row=Math.max(0,Math.min(r.rows-1,Math.floor(gy))),u=gx-col,v=gy-row,n=row*(r.cols+1)+col,ids=u+v<=1?[n,n+1,n+r.cols+1]:[n+1,n+r.cols+2,n+r.cols+1],wt=u+v<=1?[1-u-v,u,v]:[1-v,u+v-1,1-u];let X=0,Y=0;ids.forEach((k,j)=>{const q=skinPoint(r.vertices[k],r,bones,pose);X+=q.X*wt[j];Y+=q.Y*wt[j];});return{x:X,y:Y};},hand=pose?skin(r.arms[0][2]):bones[3][1],elbow=pose?skin(r.arms[0][1]):bones[2][1],dx=hand.x-elbow.x,dy=hand.y-elbow.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l;
     const flourish=a.ai==='attack'?Math.sin(Math.min(1,(a.stateT||.2)/.55)*Math.PI*2)*.9:0,cs=Math.cos(flourish),sn=Math.sin(flourish),vx=ux*cs-uy*sn,vy=ux*sn+uy*cs,len=r.h*d.sword.length;
     ctx.save();ctx.lineCap='round';ctx.translate(hand.x,hand.y);ctx.rotate(Math.atan2(vy,vx));
-    ctx.strokeStyle='#39281f';ctx.lineWidth=r.h*.018;ctx.beginPath();ctx.moveTo(-r.h*.085,0);ctx.lineTo(r.h*.045,0);ctx.stroke();
-    ctx.strokeStyle='#b9a16c';ctx.lineWidth=r.h*.012;ctx.beginPath();ctx.moveTo(r.h*.045,-r.h*.06);ctx.lineTo(r.h*.045,r.h*.06);ctx.stroke();
-    ctx.fillStyle='#798896';ctx.strokeStyle='#303a46';ctx.lineWidth=r.h*.009;ctx.beginPath();ctx.moveTo(r.h*.045,-r.h*.018);ctx.lineTo(len,0);ctx.lineTo(r.h*.045,r.h*.018);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.strokeStyle='#39281f';ctx.lineWidth=r.h*.018;ctx.beginPath();ctx.moveTo(-r.h*.06,0);ctx.lineTo(r.h*.022,0);ctx.stroke();
+    ctx.strokeStyle='#b9a16c';ctx.lineWidth=r.h*.012;ctx.beginPath();ctx.moveTo(r.h*.022,-r.h*.06);ctx.lineTo(r.h*.022,r.h*.06);ctx.stroke();
+    ctx.fillStyle='#798896';ctx.strokeStyle='#303a46';ctx.lineWidth=r.h*.009;ctx.beginPath();ctx.moveTo(r.h*.022,-r.h*.018);ctx.lineTo(len,0);ctx.lineTo(r.h*.022,r.h*.018);ctx.closePath();ctx.fill();ctx.stroke();
     ctx.strokeStyle='#edf5fb';ctx.lineWidth=r.h*.006;ctx.beginPath();ctx.moveTo(r.h*.07,-r.h*.006);ctx.lineTo(len*.94,-r.h*.002);ctx.stroke();
     ctx.restore();
   }
@@ -295,8 +265,6 @@
   // Movement is sampled after each full gameplay update (including arena clamp).
   const update=R.scenes.Play.prototype.updateObjects;
   R.scenes.Play.prototype.updateObjects=function(dt){update.call(this,dt);for(const a of [this.player,...this.enemies,...this.allies])updateGait(a,dt);};
-  const riley=R.Riley.prototype.draw;
-  R.Riley.prototype.draw=function(ctx,cam){if(R.assets.has('riley-sheet')||R.assets.has('rig-riley')){this.drawShadow(ctx,cam,17);R.Puppet.draw(ctx,this,cam,'riley');}else riley.call(this,ctx,cam);};
   const troll=R.Trolloc.prototype.draw;
   R.Trolloc.prototype.draw=function(ctx,cam){const kind=this.boss?'chieftain':'trolloc';if(R.assets.has(defs[kind].key)){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?28:21);R.Puppet.draw(ctx,this,cam,kind);}else troll.call(this,ctx,cam);};
   for(const Type of [R.ShadowSoldier,R.ShadowBoss]){const draw=Type.prototype.draw;Type.prototype.draw=function(ctx,cam){

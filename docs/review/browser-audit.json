@@ -2,28 +2,28 @@
   "errors": [],
   "unstamped": [],
   "failed": [],
-  "loaded": 54,
+  "loaded": 66,
   "missing": [],
   "timings": [
     {
       "stage": 1,
-      "drawMs": 13.94
+      "drawMs": 8.08
     },
     {
       "stage": 2,
-      "drawMs": 17.57
+      "drawMs": 86.3
     },
     {
       "stage": 3,
-      "drawMs": 18.95
+      "drawMs": 10.21
     },
     {
       "stage": 4,
-      "drawMs": 13.65
+      "drawMs": 3.84
     },
     {
       "stage": 5,
-      "drawMs": 15.51
+      "drawMs": 4.59
     }
   ],
   "fallback": {

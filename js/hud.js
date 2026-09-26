@@ -11,49 +11,13 @@
     ctx.strokeRect(x, y, w, h);
   }
   function drawRileyPortrait(ctx, x, y) {
-    // Use the same pre-baked child rig as gameplay; the supplied portrait was
-    // an adult crop and made the HUD contradict Riley's in-world proportions.
-    if (R.Puppet && R.assets.has('rig-riley')) {
-      ctx.save();ctx.beginPath();ctx.arc(x,y,20,0,Math.PI*2);ctx.clip();ctx.translate(x,y+26);ctx.scale(.72,.72);
-      R.Puppet.draw(ctx,{x:0,y:0,z:0,facing:1,state:'idle',stateT:0},0,'riley');ctx.restore();return;
+    const img = R.assets.get('riley16-portrait');
+    if (img) {
+      ctx.save();ctx.beginPath();ctx.arc(x,y,21,0,Math.PI*2);ctx.clip();ctx.drawImage(img,x-21,y-21,42,42);ctx.restore();
+      ctx.strokeStyle='#61c6ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,21,0,Math.PI*2);ctx.stroke();return;
     }
-    ctx.fillStyle = '#101c2d';
-    ctx.beginPath();
-    ctx.arc(x, y, 21, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#61c6ff';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.fillStyle = '#d6a47f';
-    ctx.beginPath();
-    ctx.ellipse(x, y - 1, 9, 11, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#17151a';
-    ctx.beginPath();
-    ctx.arc(x, y - 5, 10, Math.PI, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#17151a';
-    ctx.beginPath();
-    ctx.moveTo(x - 8, y - 4);
-    ctx.lineTo(x - 10, y - 12);
-    ctx.lineTo(x - 2, y - 7);
-    ctx.lineTo(x, y - 14);
-    ctx.lineTo(x + 3, y - 7);
-    ctx.lineTo(x + 9, y - 12);
-    ctx.lineTo(x + 8, y - 4);
-    ctx.fill();
-    ctx.strokeStyle = '#4eb5ef';
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    ctx.ellipse(x - 4, y, 3.2, 2.3, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.ellipse(x + 4, y, 3.2, 2.3, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x - 1, y);
-    ctx.lineTo(x + 1, y);
-    ctx.stroke();
+    ctx.fillStyle='#101c2d';ctx.beginPath();ctx.arc(x,y,21,0,Math.PI*2);ctx.fill();
+    R.drawText(ctx,'R',x,y+5,15,'#61c6ff','center');
   }
   R.drawHUD = function (ctx, scene) {
     const player = scene.player;

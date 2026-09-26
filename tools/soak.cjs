@@ -35,7 +35,7 @@ function boot(root) {
     localStorage: { getItem: key => memory.has(key) ? memory.get(key) : null, setItem: (key, value) => memory.set(key, value), removeItem: key => memory.delete(key) },
     location: { hash: '' },
     requestAnimationFrame() {},
-    fetch: () => Promise.resolve({ ok: false }),
+    fetch: url => { const clean=String(url).split('?')[0],file=path.join(root,clean); if (!clean.endsWith('.json') || !fs.existsSync(file)) return Promise.resolve({ok:false}); return Promise.resolve({ok:true,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(file,'utf8')))}); },
     document: { getElementById: () => canvas, createElement: () => createCanvas(1, 1), addEventListener() {}, fonts: { load: () => Promise.resolve() } },
     Image: class { set src(value) { sandbox.__assetRequests += 1; sandbox.__assetUrls.push(value); if (this.onerror) this.onerror(); } }
   };

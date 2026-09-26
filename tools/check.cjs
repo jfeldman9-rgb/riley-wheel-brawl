@@ -15,8 +15,8 @@ let title = new RWB.scenes.Title(game);
 game.scene = title;
 title.update(0, { pressed: { start: true } });
 check(game.nextScene instanceof RWB.scenes.Reel, 'Title starts the opening reel');
-const walk = RWB.RILEY_POSES.walk;
-check(walk.length >= 4 && new Set(walk.map(pose => JSON.stringify(pose))).size >= 4, 'Riley walk cycle has at least four distinct poses');
+const rileyFrames=['idle','walk1','walk2','walk3','walk4','punch','kick','fireball','hurt','jump'];
+check(rileyFrames.slice(1,5).every(frame=>RWB.RILEY16.frames[frame]), 'Riley walk uses four distinct sprite frames');
 function moveDamages(name) {
   const scene = new RWB.scenes.Play(game, 0, {});
   scene.enemies = [];
@@ -107,7 +107,8 @@ check(moveDamages('spin'), '360 spinning kick creates a damaging hitbox');
   RWB.settings.data.shake = full;
 }
 check(RWB.ART_MANIFEST.length >= 54 && RWB.ART_MANIFEST.every(src=>fs.existsSync(path.join(root,src))), 'Delivered art manifest lists existing bundled files');
-check([...fs.readdirSync(path.join(root,'assets/art')).map(f=>'assets/art/'+f), ...fs.readdirSync(path.join(root,'assets/cutscenes')).map(f=>'assets/cutscenes/'+f)].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
+const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).flatMap(e=>e.isDirectory()?artFiles(dir+'/'+e.name):[dir+'/'+e.name]);
+check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
 check(urls.every(url => url.includes('?v=20260926-w3c')), 'Every script, stylesheet, and font URL has the w3c cache stamp');
@@ -203,7 +204,7 @@ for(let level=0;level<5;level++) {
   check(hurt && s.player.taintAge===0 && s.player.power===0,'Stage '+(level+1)+' full saidin taint hurts and spending clears it');
   s.draw(ctx);
 }
-check(Object.values(RWB.ART_FILES).every(src=>!src.startsWith('/') && /\.(png|jpeg)$/.test(src)), 'Art hooks use relative JPEG/PNG paths');
+check(Object.values(RWB.ART_FILES).every(src=>!src.startsWith('/') && /\.(png|jpeg|json)$/.test(src)), 'Art hooks use relative image/JSON paths');
 check([1,2,3,4,5].every(n=>RWB.ART_FILES['stage'+n+'-far'] && RWB.ART_FILES['stage'+n+'-mid'] && RWB.ART_FILES['stage'+n+'-near'] && RWB.ART_FILES['floor'+n]),'Every stage has four optional art layers');
 check(RWB.assets.VER==='20260926-w3c' && RWB.ASSET_VER==='20260926-w3c','Runtime assets share the w3c script cache stamp');
 
@@ -252,18 +253,15 @@ RWB.ART_MANIFEST.pop();
     armOpposite=armOpposite && pose.arms.every((p,i)=>(p.x-(i?9:-9))*pose.feet[i].x<=.0001);
   }
   check(planted>40 && maxDrift<1e-8 && armOpposite,'World-space planted feet stay fixed; arms counter-swing throughout the gait');
-check(Object.keys(RWB.Puppet.defs).length===12,'All walking characters share articulated painted rigs');
+check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, ally and boss characters retain articulated painted rigs; Riley is sprite-only');
   const stageSource=fs.readFileSync(path.join(root,'js/stages.js'),'utf8');
   const puppetSource=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
   check(!/scale\(\s*-1\s*,\s*1\s*\)/.test(stageSource),'Stage plate and floor tiling never mirrors a repeat');
-  check(/const midHeights=\[260,256,252,248,222\]/.test(stageSource)&&/factor=Math\.min\(factor,Math\.max\(0,\(width-640\)\/CAMERA_RANGE\)\)/.test(stageSource),'Stage skyline plates retain natural-scale heights and cap parallax to one soft join');
-  const kid=RWB.Puppet.defs.riley,adults=Object.entries(RWB.Puppet.defs).filter(([k])=>!['riley','twinkle'].includes(k));
-  // Measure the enlarged source box baked over the original head. The keyed
-  // alpha, not the sheet's grey rectangle, defines the visible top bound.
-  const bakedHeadHeight=(kid.head[3]-kid.head[1])*kid.headScale;
-  check(kid.height===64&&kid.height<Math.min(...adults.map(([,d])=>d.height))&&bakedHeadHeight>=1/4.6&&kid.legScale<=.74,'Riley baked head is at least 1/4.6 of his 64-unit height and his limbs are shorter than every adult');
-  check(kid.key==='riley-sheet'&&kid.sourcePanel==='top-middle-side'&&!kid.front&&kid.fallback==='rig-riley','Riley uses the sheet side panel, with rig-riley only as fallback');
-  check(kid.hipLine<=kid.pelvis[1]&&/clearRect\(left,hip,width,fillBottom-hip\)/.test(puppetSource)&&/Continue two trouser columns/.test(puppetSource),'Riley coat pixels end at the authored hip and trouser texture continues underneath');
+  check(/stage1Wide\?720/.test(stageSource)&&/far\?700/.test(stageSource)&&/factor=Math\.min\(factor,Math\.max\(0,\(width-640\)\/CAMERA_RANGE\)\)/.test(stageSource),'Stage 1 mid/near plates are 720 units wide and far skies cap parallax to one soft join');
+  const rileySource=fs.readFileSync(path.join(root,'js/riley.js'),'utf8');
+  check(rileyFrames.every(frame=>RWB.ART_MANIFEST.includes('assets/art/riley16/'+frame+'.png'))&&RWB.ART_MANIFEST.includes('assets/art/riley16/portrait.png')&&/drawImage\(img, -ax \* scale, -ay \* scale/.test(rileySource),'Riley draws from all ten anchored riley16 runtime frames and the new portrait is manifested');
+  check(RWB.RILEY16.height>=90&&RWB.RILEY16.height<=100&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height>=.80&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height<=.90,'Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc');
+  check(/Math\.floor\(this\.walkDistance \/ 20\) % 4/.test(rileySource),'Riley walk advances four frames by movement distance and stops at rest');
   const belal=RWB.Puppet.defs.forsaken;
   check(belal.male&&belal.key==='cg-turned-ashaman'&&!['cg-forsaken','cg-taim'].includes(belal.key)&&belal.sword&&belal.sword.length>=.55,"Be'lal uses the male lunging source and owns a long articulated sword part");
   check(/hand=pose\?skin\(r\.arms\[0\]\[2\]\):bones\[3\]\[1\],elbow=pose\?skin\(r\.arms\[0\]\[1\]\):bones\[2\]\[1\]/.test(puppetSource),"Be'lal's sword uses the extended front wrist bone");

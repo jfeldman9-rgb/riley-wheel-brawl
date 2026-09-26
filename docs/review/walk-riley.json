@@ -1,6 +1,6 @@
 {
   "kind": "riley",
   "frames": 8,
-  "maxDrift": 0,
-  "stanceSamples": 94
+  "cycleFrames": 4,
+  "distanceDriven": true
 }

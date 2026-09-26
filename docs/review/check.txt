@@ -1,5 +1,5 @@
 PASS Title starts the opening reel
-PASS Riley walk cycle has at least four distinct poses
+PASS Riley walk uses four distinct sprite frames
 PASS Front kick creates a damaging hitbox
 PASS Roundhouse creates a damaging hitbox
 PASS Spinning back kick creates a damaging hitbox
@@ -14,7 +14,7 @@ PASS Player takes zero damage in 30 seconds with no attackers
 PASS Reduced Shake lowers super shake and flash
 PASS Delivered art manifest lists existing bundled files
 PASS Every committed painted image has a registered manifest key
-PASS Every script, stylesheet, and font URL has the w3 cache stamp
+PASS Every script, stylesheet, and font URL has the w3c cache stamp
 PASS Every reel skips past its last caption safely and transitions exactly once
 PASS Every campaign subtitle is exact text from VOICE_LINES.md
 PASS Twinkle Toes uses speaker id kenzie
@@ -37,9 +37,9 @@ PASS Stage 2 full saidin taint hurts and spending clears it
 PASS Stage 3 full saidin taint hurts and spending clears it
 PASS Stage 4 full saidin taint hurts and spending clears it
 PASS Stage 5 full saidin taint hurts and spending clears it
-PASS Art hooks use relative JPEG/PNG paths
+PASS Art hooks use relative image/JSON paths
 PASS Every stage has four optional art layers
-PASS Runtime assets share the w3 script cache stamp
+PASS Runtime assets share the w3c script cache stamp
 PASS A listed broken image retries once and settles to fallback
 PASS Stage 1 boss Continue preserves HP and attack progress
 PASS Stage 2 boss Continue preserves HP and attack progress
@@ -52,12 +52,14 @@ PASS Reload after Stage 4 clear must show Callandor reveal
 PASS Partial reveal is still pending on reload
 PASS Only acknowledging the final reveal caption clears the pending flag
 PASS World-space planted feet stay fixed; arms counter-swing throughout the gait
-PASS All walking characters share articulated painted rigs
+PASS Enemy, ally and boss characters retain articulated painted rigs; Riley is sprite-only
 PASS Stage plate and floor tiling never mirrors a repeat
-PASS Riley baked head is at least 1/4.6 of his 64-unit height and his limbs are shorter than every adult
-PASS Riley uses the sheet side panel, with rig-riley only as fallback
-PASS Riley coat pixels end at the authored hip and trouser texture continues underneath
+PASS Stage 1 mid/near plates are 720 units wide and far skies cap parallax to one soft join
+PASS Riley draws from all ten anchored riley16 runtime frames and the new portrait is manifested
+PASS Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc
+PASS Riley walk advances four frames by movement distance and stops at rest
 PASS Be'lal uses the male lunging source and owns a long articulated sword part
 PASS Be'lal's sword uses the extended front wrist bone
+PASS Be'lal's skinned wrist and sword grip stay within 1.5 source pixels through SWORD FLURRY
 PASS Idle uses the same processed connected rig as action states
 All checks passed.

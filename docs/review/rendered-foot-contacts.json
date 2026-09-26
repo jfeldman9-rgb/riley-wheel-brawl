@@ -1,19 +1,13 @@
 [
   {
-    "kind": "riley",
+    "kind": "twinkle",
     "samples": 334,
     "maxDrift": 0,
     "maxContactError": 0
   },
   {
-    "kind": "twinkle",
-    "samples": 330,
-    "maxDrift": 0,
-    "maxContactError": 0
-  },
-  {
     "kind": "trolloc",
-    "samples": 342,
+    "samples": 344,
     "maxDrift": 0,
     "maxContactError": 0
   },
@@ -25,25 +19,25 @@
   },
   {
     "kind": "darkfriend",
-    "samples": 340,
+    "samples": 342,
     "maxDrift": 0,
     "maxContactError": 0
   },
   {
     "kind": "cultist",
-    "samples": 340,
+    "samples": 342,
     "maxDrift": 0,
     "maxContactError": 0
   },
   {
     "kind": "guard",
-    "samples": 342,
+    "samples": 344,
     "maxDrift": 0,
     "maxContactError": 0
   },
   {
     "kind": "ashaman",
-    "samples": 342,
+    "samples": 344,
     "maxDrift": 0,
     "maxContactError": 0
   },
@@ -61,13 +55,13 @@
   },
   {
     "kind": "taim",
-    "samples": 344,
+    "samples": 346,
     "maxDrift": 0,
     "maxContactError": 0
   },
   {
     "kind": "loial",
-    "samples": 346,
+    "samples": 348,
     "maxDrift": 0,
     "maxContactError": 0
   }

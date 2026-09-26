@@ -42,10 +42,12 @@
   function tiled(ctx, key, cam, factor, y, h, topFeather=false, mistColor='#c9d7df') {
     const tile = seamlessPlate(key,topFeather);
     if (!tile) return false;
-    // Keep the paintings near their authored 222px skyline scale. Two copies
-    // form one non-mirrored strip when a crop is narrower than the viewport;
-    // the capped parallax keeps its outer repeat beyond the complete arena.
-    const drawH=Math.max(h,320*tile.height/tile.width),tileWidth=drawH*tile.width/tile.height,copies=tileWidth<640?2:1,width=tileWidth*copies,drawY=y+h-drawH;
+    // Stage 1 uses a 720-unit, bottom-anchored plate, so its inn cannot repeat
+    // inside one 640-unit view. Far skies use one wide copy and tiny capped
+    // parallax; other stages retain their measured non-mirrored loop crops.
+    const stage1Wide=/^stage1-(?:mid|near)$/.test(key),far=/^stage\d-far$/.test(key);
+    const targetWidth=stage1Wide?720:far?700:0;
+    const drawH=targetWidth?targetWidth*tile.height/tile.width:Math.max(h,320*tile.height/tile.width),tileWidth=targetWidth||drawH*tile.width/tile.height,copies=tileWidth<640?2:1,width=tileWidth*copies,drawY=y+h-drawH;
     let plate=tile;
     if(copies===2){const id=key+':'+!!topFeather+':strip';plate=strips.get(id);if(!plate){plate=document.createElement('canvas');plate.width=tile.width*2;plate.height=tile.height;const pg=plate.getContext('2d');pg.drawImage(tile,0,0);pg.drawImage(tile,tile.width,0);strips.set(id,plate);}}
     factor=Math.min(factor,Math.max(0,(width-640)/CAMERA_RANGE));
