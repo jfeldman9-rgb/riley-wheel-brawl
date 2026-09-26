@@ -1,4 +1,4 @@
-# W2 review evidence
+# W3 review evidence
 
 Evidence is generated from `rwb-w2`; the PR embeds the required images directly.
 
@@ -51,13 +51,15 @@ here. The follow-up replaces hard leg cuts with continuous skinning and rigid so
 `stage5-vs-lido.jpeg`, `seams-stage1.jpeg` through `seams-stage5.jpeg`,
 `walk-riley.jpeg`, `walk-trolloc.jpeg`, `walk-darkfriend.jpeg`,
 `walk-cultist.jpeg`, `joints-closeup.jpeg`, `riley-closeup.jpeg`, and
-`belal-closeup.jpeg`. The seam strips render camera positions 0, 700 and 2000;
+`belal-closeup.jpeg`. The seam strips render camera positions 0, 700, 1400 and 2000 and mark each mid-layer join with a small top tick;
 Stage 5's strip uses the Taim roof. Joint crops are genuine 3x runtime walk or
 attack poses. The new files are intentionally generated rather than committed so
 this fix-round diff remains text-only.
 
-The w3 renderer removes mirrored scenery repeats, blends a 24% overlap at each
-vertical repeat, feathers mid/near/floor tops, and lays haze over horizontal
-joins. All puppet states share a processed connected composite with one rim and
+The final w3 renderer crops each scenery layer at measured best-match columns, limits opaque dissolves to 6%, and feathers transparent mid edges over 10% with a stage-tinted mist at each marked join. Floor tops retain a 24px-class feather and haze. All puppet states share a processed connected composite with one rim and
 shading pass. Riley is the 64-unit child bake in gameplay and HUD; Be'lal is the
 104-unit male, crimson/pewter swordsman bake with an articulated long sword.
+
+### Final fix-round note
+
+Character shading is composited onto the transparent offscreen skin, so it cannot tint the main-canvas background. Riley's enlarged head overpaints the original without clearing his collar; Be'lal's complete sword is attached to the extended front wrist and his fire weave is removed with a feathered halo. The audit ignores only `docs/review/` reference requests, not runtime assets. Playwright is not installed in the current checkout, so regenerate the JPEGs with the command above before visual sign-off; this text-only round does not claim refreshed images.

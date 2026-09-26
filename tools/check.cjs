@@ -257,7 +257,10 @@ check(Object.keys(RWB.Puppet.defs).length===12,'All walking characters share art
   const puppetSource=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
   check(!/scale\(\s*-1\s*,\s*1\s*\)/.test(stageSource),'Stage plate and floor tiling never mirrors a repeat');
   const kid=RWB.Puppet.defs.riley,adults=Object.entries(RWB.Puppet.defs).filter(([k])=>!['riley','twinkle'].includes(k));
-  check(kid.height<Math.min(...adults.map(([,d])=>d.height))&&kid.headRatio>=.19&&kid.headScale>=1.3&&kid.legScale<=.78,'Riley is a 64-unit child with a head at least 1/5 high and shorter limbs than every adult');
+  // Measure the actual composited head box used by bakedImage (clipped at the
+  // image top through its collar anchor), rather than trusting a label field.
+  const bakedHeadBottom=kid.neck[1]+2/1024,bakedHeadHeight=bakedHeadBottom-Math.max(0,bakedHeadBottom-(kid.head[3]-kid.head[1])*kid.headScale);
+  check(kid.height===64&&kid.height<Math.min(...adults.map(([,d])=>d.height))&&bakedHeadHeight>=.20&&kid.legScale<=.74,'Riley baked head is at least 1/5 of his 64-unit height and his limbs are shorter than every adult');
   const belal=RWB.Puppet.defs.forsaken;
   check(belal.male&&belal.key==='cg-turned-ashaman'&&!['cg-forsaken','cg-taim'].includes(belal.key)&&belal.sword&&belal.sword.length>=.55,"Be'lal uses the male lunging source and owns a long articulated sword part");
   check(!/if\s*\(\s*!articulated\s*\)\s*ctx\.drawImage/.test(puppetSource)&&/Processed connected skin is mandatory even at idle/.test(puppetSource),'Idle uses the same processed connected rig as action states');

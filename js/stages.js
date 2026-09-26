@@ -9,33 +9,39 @@
     ['#101628', '#5b6882', '#323c52', '#1f293b'],
   ];
   const seamless = new Map();
-  // Build one non-mirrored repeat at source resolution.  The final 24% is a
-  // genuine alpha crossfade from the right edge into a copy of the left edge;
-  // it is not a translucent second plate laid over the whole scene.
+  const LOOP_CROPS={
+    'stage1-mid':[196,1492],'stage1-near':[194,1623],
+    'stage2-mid':[306,1472],'stage2-near':[544,1417],
+    'stage3-mid':[430,1614],'stage3-near':[461,1468],
+    'stage4-mid':[564,1547],'stage4-near':[520,1398],
+    'stage5-mid':[380,1656],'stage5-near':[608,1524],
+  };
+  // Crop at measured matching columns. Opaque layers use only a narrow 6%
+  // dissolve; transparent middle plates instead reveal the far plate through
+  // a 10% feather at either side of the join.
   function seamlessPlate(key, topFeather) {
     const img = R.assets.get(key);
     if (!img) return null;
     const id=key+':'+!!topFeather;if(seamless.has(id))return seamless.get(id);
-    const overlap=Math.max(32,Math.round(img.width*.24)),step=img.width-overlap;
+    const mid=/-mid$/.test(key),crop=LOOP_CROPS[key]||[0,img.width-44],start=crop[0],end=Math.min(img.width,crop[1]),sourceWidth=end-start;
+    const overlap=mid?0:Math.max(12,Math.round(sourceWidth*.06)),step=sourceWidth-overlap;
     const c=document.createElement('canvas');c.width=step;c.height=img.height;
-    const g=c.getContext('2d');g.drawImage(img,0,0);
-    // Move the actual painted right edge into the overlap zone; the following
-    // masked left edge then dissolves over it, so both sides of the source (not
-    // an arbitrary interior crop) meet at the repeat boundary.
-    g.drawImage(img,img.width-overlap,0,overlap,img.height,step-overlap,0,overlap,img.height);
-    const temp=document.createElement('canvas');temp.width=overlap;temp.height=img.height;
-    const t=temp.getContext('2d');t.drawImage(img,0,0,overlap,img.height,0,0,overlap,img.height);
-    t.globalCompositeOperation='destination-in';const fade=t.createLinearGradient(0,0,overlap,0);
-    fade.addColorStop(0,'rgba(0,0,0,0)');fade.addColorStop(1,'rgba(0,0,0,1)');t.fillStyle=fade;t.fillRect(0,0,overlap,img.height);
-    g.drawImage(temp,step-overlap,0);
-    if(topFeather){g.globalCompositeOperation='destination-in';const v=g.createLinearGradient(0,0,0,Math.min(24,img.height));v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,1)');g.fillStyle=v;g.fillRect(0,0,c.width,img.height);}
-    seamless.set(id,c);return c;
+    const g=c.getContext('2d');g.drawImage(img,start,0,step,img.height,0,0,step,img.height);
+    if(overlap){
+      g.drawImage(img,end-overlap,0,overlap,img.height,step-overlap,0,overlap,img.height);
+      const temp=document.createElement('canvas');temp.width=overlap;temp.height=img.height;const t=temp.getContext('2d');
+      t.drawImage(img,start,0,overlap,img.height,0,0,overlap,img.height);t.globalCompositeOperation='destination-in';const fade=t.createLinearGradient(0,0,overlap,0);fade.addColorStop(0,'rgba(0,0,0,0)');fade.addColorStop(1,'#000');t.fillStyle=fade;t.fillRect(0,0,overlap,img.height);g.drawImage(temp,step-overlap,0);
+    } else {
+      g.globalCompositeOperation='destination-in';const edge=Math.round(sourceWidth*.10),mask=g.createLinearGradient(0,0,sourceWidth,0);mask.addColorStop(0,'rgba(0,0,0,0)');mask.addColorStop(edge/sourceWidth,'#000');mask.addColorStop(1-edge/sourceWidth,'#000');mask.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=mask;g.fillRect(0,0,c.width,c.height);
+    }
+    if(topFeather){g.globalCompositeOperation='destination-in';const feather=/^floor/.test(key)?Math.round(img.height*24/138):Math.min(24,img.height),v=g.createLinearGradient(0,0,0,feather);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,1)');g.fillStyle=v;g.fillRect(0,0,c.width,img.height);}
+    c.loopKind=mid?'mid':'opaque';seamless.set(id,c);return c;
   }
-  function tiled(ctx, key, cam, factor, y, h, topFeather=false) {
+  function tiled(ctx, key, cam, factor, y, h, topFeather=false, mistColor='#c9d7df') {
     const img = seamlessPlate(key,topFeather);
     if (!img) return false;
     const width = (h * img.width) / img.height,offset=((cam*factor)%width+width)%width;
-    for(let x=-offset-width;x<640+width;x+=width)ctx.drawImage(img,x,y,width,h);
+    for(let x=-offset-width;x<640+width;x+=width){ctx.drawImage(img,x,y,width,h);if(img.loopKind==='mid'){const join=x+width,band=width*.07,m=ctx.createLinearGradient(join-band,0,join+band,0);m.addColorStop(0,mistColor+'00');m.addColorStop(.5,mistColor+'20');m.addColorStop(1,mistColor+'00');ctx.fillStyle=m;ctx.fillRect(join-band,y,band*2,h);}}
     return true;
   }
   function haze(ctx,y,color='#c9d7df') {const f=ctx.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');ctx.fillStyle=f;ctx.fillRect(0,y-9,640,21);}
@@ -134,9 +140,10 @@
       const n = scene.levelIndex + 1,
         cam = scene.camera.x,
         time = scene.time;
+      const stagePalette=PALETTES[n - 1] || ['#142b45','#6689a3','#8b9daf','#253443'];
       if (n === 1 && !R.assets.has('stage1-far')) R.Stage1.draw(ctx, cam, time);
       else {
-        const pal = PALETTES[n - 1] || ['#142b45','#6689a3','#8b9daf','#253443'],
+        const pal = stagePalette,
           sky = ctx.createLinearGradient(0, 0, 0, 230);
         sky.addColorStop(0, pal[0]);
         sky.addColorStop(1, pal[1]);
@@ -151,7 +158,7 @@
       }
       const roof = n === 5 && scene.wave === 5;
       tiled(ctx, roof ? 'stage5-roof-far' : 'stage' + n + '-far', cam, 0.10, 0, 244);
-      if (!roof && !tiled(ctx, 'stage' + n + '-mid', cam, 0.42, 10, 222, true)) { if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam); }
+      if (!roof && !tiled(ctx, 'stage' + n + '-mid', cam, 0.42, 10, 222, true,stagePalette[1])) { if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam); }
       if(!roof)haze(ctx,20);
       if (n > 1) {
         ctx.fillStyle = PALETTES[n - 1][3];

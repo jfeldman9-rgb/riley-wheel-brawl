@@ -1,18 +1,9 @@
-## Fixes in this round (w3)
+## Fixes in this round (w3 final)
 
-- Removed flipped background/floor repeats and replaced them with cached 24%
-  alpha-crossfaded overlaps, feathered layer tops, and join haze across all five
-  stages and the Taim roof. Review: `seams-stage1.jpeg` …
-  `seams-stage5.jpeg`, plus `stage1-vs-lido.jpeg` … `stage5-vs-lido.jpeg`.
-- Unified every rig state behind the processed connected-skin compositor with a
-  shared rim/shading pass and no flat joint patches. Review:
-  `joints-closeup.jpeg` and the four `walk-*.jpeg` strips.
-- Re-proportioned Riley as a roughly ten-year-old, 64-unit child and routed the
-  HUD through that same bake. Review: `riley-closeup.jpeg`.
-- Rebuilt Be'lal as a distinct 104-unit male swordsman from the lunging turned
-  Asha'man source, erased the fire weave, regraded him crimson/pewter/grey, and
-  added a 0.55-height articulated sword used in every state and SWORD FLURRY.
-  Review: `belal-closeup.jpeg`.
+- Removes the actor-sized tint rectangles by applying the gradient to the cleared offscreen skin before the source-over canvas draw.
+- Uses the supplied best-match crop points for every stage plate. Opaque joins crossfade only 6%; transparent mid plates feather to the far layer over 10% and receive a low-alpha, stage-tinted mist column. Floors have feathered top edges.
+- Enlarges Riley's tight hair/face region 1.5x horizontally and 1.4x vertically, anchors the chin at the collar without clearing body pixels, feathers the chin, and shortens his rig proportions while retaining a 64-unit total height.
+- Moves Be'lal's complete connected sword to the extended front wrist, layers the painted fist over its grip, keeps the attack flourish, removes the remaining warm/green/white weave with a four-pixel feather, and smoothly luminance-maps the coat to deep crimson.
+- Expands seam evidence to cameras 0, 700, 1400, and 2000 with mid-join ticks; fixes Riley framing and excludes review-only reference assets from the runtime cache-stamp audit.
 
-All images above are produced directly by `node tools/review.cjs`; no binary
-art or screenshots are added by this text-only fix round.
+`node tools/check.cjs` passes and `node tools/soak.cjs` clears 50/50 assisted runs. The fix remains text-only. Playwright is not installed in this checkout, so the committed JPEGs were not regenerated here; run `node tools/review.cjs` in the documented Playwright environment for final visual sign-off.

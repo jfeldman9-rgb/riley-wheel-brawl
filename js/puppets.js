@@ -6,7 +6,7 @@
   const R=window.RWB;
   // Joint coordinates on the delivered images: shoulder/elbow/wrist, hip/knee/ankle.
   const defs={
-    riley:{key:'rig-riley',variant:'kid',height:64,headRatio:.20,headScale:1.36,headWidth:1.08,torsoScale:.85,legScale:.78,shoulderScale:.82,front:true,head:[.30,0,.71,.22],neck:[.5,.21],pelvis:[.50,.62],arms:[[[.28,.25],[.17,.39],[.13,.52]],[[.72,.25],[.83,.39],[.87,.52]]],legs:[[[.37,.64],[.33,.79],[.26,.985]],[[.63,.64],[.67,.79],[.76,.985]]]},
+    riley:{key:'rig-riley',variant:'kid',height:64,headRatio:.21,headScale:1.40,headWidth:1.0715,torsoScale:.81,legScale:.74,shoulderScale:.82,front:true,head:[.33,0,.67,.18],neck:[.5,.22],pelvis:[.50,.59],arms:[[[.30,.25],[.19,.38],[.15,.50]],[[.70,.25],[.81,.38],[.85,.50]]],legs:[[[.38,.60],[.34,.76],[.27,.985]],[[.62,.60],[.66,.76],[.75,.985]]]},
     twinkle:{key:'rig-twinkle',height:59,front:true,head:[.27,0,.72,.29],neck:[.50,.28],pelvis:[.50,.64],arms:[[[.26,.30],[.14,.46],[.09,.59]],[[.75,.30],[.86,.46],[.91,.59]]],legs:[[[.35,.73],[.35,.85],[.24,.98]],[[.65,.73],[.65,.85],[.77,.98]]]},
     trolloc:{key:'cg-trolloc',height:100,head:[.23,0,.70,.40],neck:[.53,.30],pelvis:[.64,.59],arms:[[[.51,.37],[.40,.46],[.33,.51]],[[.79,.34],[.90,.45],[.89,.60]]],legs:[[[.55,.60],[.44,.73],[.36,.93]],[[.72,.60],[.82,.77],[.92,.97]]]},
     chieftain:{key:'cg-trolloc-chieftain',height:119,head:[.29,0,.73,.27],neck:[.52,.27],pelvis:[.51,.62],arms:[[[.26,.31],[.18,.47],[.31,.52]],[[.75,.32],[.79,.48],[.72,.61]]],legs:[[[.40,.61],[.35,.78],[.22,.965]],[[.62,.62],[.72,.78],[.81,.97]]]},
@@ -29,19 +29,31 @@
       // Rounder, larger child head is pre-baked, so idle/HUD/cutscene and action
       // paths all consume the same pixels. A soft face pass relaxes the adult jaw.
       const b=d.head,x=b[0]*c.width,y=b[1]*c.height,w=(b[2]-b[0])*c.width,h=(b[3]-b[1])*c.height;
-      const face=document.createElement('canvas');face.width=Math.ceil(w);face.height=Math.ceil(h);const f=face.getContext('2d');f.filter='blur(1.2px)';f.drawImage(image,x,y,w,h,0,0,w,h);f.filter='none';
-      const dw=w*d.headScale*d.headWidth,dh=h*d.headScale,cx=d.neck[0]*c.width,base=d.neck[1]*c.height+3;
-      g.clearRect(cx-dw/2-3,Math.max(0,base-dh-3),dw+6,dh+6);g.drawImage(face,cx-dw/2,base-dh,dw,dh);
+      const face=document.createElement('canvas');face.width=Math.ceil(w);face.height=Math.ceil(h);const f=face.getContext('2d');f.drawImage(image,x,y,w,h,0,0,w,h);
+      // Only the enlarged head is overpainted: never erase the collar or the
+      // shoulders.  Its softly feathered chin lets the original neck show
+      // through rather than producing the old rectangular clear band.
+      f.globalCompositeOperation='destination-in';const chin=f.createLinearGradient(0,h-6,0,h);chin.addColorStop(0,'#000');chin.addColorStop(1,'rgba(0,0,0,.18)');f.fillStyle=chin;f.fillRect(0,0,w,h);
+      const dw=w*d.headScale*d.headWidth,dh=h*d.headScale,cx=d.neck[0]*c.width,base=d.neck[1]*c.height+2;
+      g.drawImage(face,cx-dw/2,base-dh,dw,dh);
     } else if(d.variant==='belal'){
-      const data=g.getImageData(0,0,c.width,c.height),p=data.data;
+      const data=g.getImageData(0,0,c.width,c.height),p=data.data,removed=new Uint8Array(c.width*c.height);
       for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){const i=(y*c.width+x)*4,r=p[i],gg=p[i+1],b=p[i+2];
         // Remove the orange weave and its soft halo in the extended-hand corner.
-        if(x<c.width*.35&&y<c.height*.35&&r>150&&b<135&&r-b>70){p[i+3]=Math.max(0,p[i+3]-220);continue;}
+        if(x<c.width*.36&&y<c.height*.36){
+          const warm=r>145&&r>gg*1.16&&gg>b*1.08,green=gg>95&&gg>r*.72&&gg>b*1.16,white=r>205&&gg>205&&b>185;
+          const skin=r>95&&r>gg*1.08&&gg>b*1.18&&r-b<105;
+          if(!skin&&(warm||green||white)){p[i+3]=0;removed[y*c.width+x]=1;continue;}
+        }
         // Hue-selective coat/trim/hair grade: preserve texture and illumination.
         const max=Math.max(r,gg,b),min=Math.min(r,gg,b),sat=max-min;
         if(sat<35&&y<c.height*.29&&max>95){p[i]=Math.min(220,max*1.05);p[i+1]=Math.min(215,max*.98);p[i+2]=Math.min(210,max*.91);}
-        else if(y>c.height*.18&&r<125&&b<145){const light=(r+gg+b)/3;p[i]=Math.min(170,light*1.30+35);p[i+1]=light*.48;p[i+2]=light*.55;}
+        else if(y>c.height*.18&&r<145&&b<155){const light=.2126*r+.7152*gg+.0722*b,cr=Math.min(168,24+light*1.12),cg=8+light*.22,cb=18+light*.31;p[i]=r*.2+cr*.8;p[i+1]=gg*.2+cg*.8;p[i+2]=b*.2+cb*.8;}
         else if(sat<28&&max>75){p[i]=max*.82;p[i+1]=max*.86;p[i+2]=max*.91;}
+      }
+      // Fade the antialiased glow surrounding every removed weave pixel.
+      for(let y=0;y<c.height*.36;y++)for(let x=0;x<c.width*.36;x++)if(removed[y*c.width+x])for(let oy=-4;oy<=4;oy++)for(let ox=-4;ox<=4;ox++){
+        const xx=x+ox,yy=y+oy,dist=Math.hypot(ox,oy);if(xx<0||yy<0||xx>=c.width||yy>=c.height||dist>4)continue;const j=(yy*c.width+xx)*4,rr=p[j],gr=p[j+1],bb=p[j+2],skin=rr>95&&rr>gr*1.08&&gr>bb*1.18&&rr-bb<105;if(!skin)p[j+3]=Math.min(p[j+3],Math.round(255*Math.max(0,dist/4)));
       }g.putImageData(data,0,0);
     }
     return c;
@@ -152,16 +164,21 @@
     }
     if(composite){
       const x=-256/scale,y=-256/scale,w=r.surface.width/scale,h=r.surface.height/scale;
+      // Shade only pixels belonging to the freshly cleared offscreen skin.
+      // source-atop on the destination canvas also tinted its background and
+      // exposed the full surface rectangle around every actor.
+      ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-atop';
+      const shade=ctx.createLinearGradient(256,0,256+r.w*scale,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');ctx.fillStyle=shade;ctx.fillRect(0,0,r.surface.width,r.surface.height);ctx.globalCompositeOperation='source-over';
       output.save();output.globalAlpha=actorAlpha*.42;output.shadowColor='#111827';output.shadowBlur=2.6;output.drawImage(r.surface,x,y,w,h);output.restore();
       output.save();output.globalAlpha=actorAlpha;output.drawImage(r.surface,x,y,w,h);
-      const shade=output.createLinearGradient(0,0,r.w,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');output.globalCompositeOperation='source-atop';output.fillStyle=shade;output.fillRect(0,0,r.w,r.h);output.restore();
+      output.restore();
     }
   }
   function drawSword(ctx,a,d,r,bones){
-    if(!d.sword)return;const hand=bones[5][1],elbow=bones[4][1],dx=hand.x-elbow.x,dy=hand.y-elbow.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l;
+    if(!d.sword)return;const hand=bones[3][1],elbow=bones[2][1],dx=hand.x-elbow.x,dy=hand.y-elbow.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l;
     const flourish=a.ai==='attack'?Math.sin(Math.min(1,(a.stateT||.2)/.55)*Math.PI)*.75:0,cs=Math.cos(flourish),sn=Math.sin(flourish),vx=ux*cs-uy*sn,vy=ux*sn+uy*cs,len=r.h*d.sword.length;
     ctx.save();ctx.lineCap='round';ctx.translate(hand.x,hand.y);ctx.rotate(Math.atan2(vy,vx));
-    ctx.strokeStyle='#39281f';ctx.lineWidth=r.h*.018;ctx.beginPath();ctx.moveTo(-r.h*.08,0);ctx.lineTo(r.h*.06,0);ctx.stroke();
+    ctx.strokeStyle='#39281f';ctx.lineWidth=r.h*.018;ctx.beginPath();ctx.moveTo(-r.h*.085,0);ctx.lineTo(r.h*.055,0);ctx.stroke();
     ctx.strokeStyle='#b9a16c';ctx.lineWidth=r.h*.012;ctx.beginPath();ctx.moveTo(0,-r.h*.06);ctx.lineTo(0,r.h*.06);ctx.stroke();
     ctx.fillStyle='#798896';ctx.strokeStyle='#303a46';ctx.lineWidth=r.h*.009;ctx.beginPath();ctx.moveTo(r.h*.035,-r.h*.018);ctx.lineTo(len,0);ctx.lineTo(r.h*.035,r.h*.018);ctx.closePath();ctx.fill();ctx.stroke();
     ctx.strokeStyle='#edf5fb';ctx.lineWidth=r.h*.006;ctx.beginPath();ctx.moveTo(r.h*.07,-r.h*.006);ctx.lineTo(len*.94,-r.h*.002);ctx.stroke();
@@ -227,7 +244,7 @@
     const articulated=pose.walking||pose.attack||pose.hurt||a.state==='channel'||a.ai==='telegraph'||a.dead||['knockdown','lying','death'].includes(a.state);
     // Processed connected skin is mandatory even at idle: no raw adult Riley,
     // alternate palette, or uncomposited joint path can leak through.
-    paintedBody(ctx,r,bones,pose);drawSword(ctx,a,d,r,bones);
+    drawSword(ctx,a,d,r,bones);paintedBody(ctx,r,bones,pose);
     ctx.restore();
     if(a.callandor){ctx.save();ctx.strokeStyle='#e8ffff';ctx.shadowColor='#9deaff';ctx.shadowBlur=10;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(a.x-cam-12,a.y-a.z-22);ctx.lineTo(a.x-cam-22,a.y-a.z-66);ctx.stroke();ctx.restore();}
     if(a.hitFlash>0){ctx.save();ctx.globalAlpha=Math.min(.55,a.hitFlash*4);ctx.fillStyle='#ffe9ac';ctx.beginPath();ctx.ellipse(a.x-cam,a.y-(a.z||0)-40,18,24,0,0,7);ctx.fill();ctx.restore();}

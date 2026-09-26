@@ -54,7 +54,7 @@ PASS Only acknowledging the final reveal caption clears the pending flag
 PASS World-space planted feet stay fixed; arms counter-swing throughout the gait
 PASS All walking characters share articulated painted rigs
 PASS Stage plate and floor tiling never mirrors a repeat
-PASS Riley is a 64-unit child with a head at least 1/5 high and shorter limbs than every adult
+PASS Riley baked head is at least 1/5 of his 64-unit height and his limbs are shorter than every adult
 PASS Be'lal uses the male lunging source and owns a long articulated sword part
 PASS Idle uses the same processed connected rig as action states
 All checks passed.
