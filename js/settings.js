@@ -27,7 +27,7 @@ RWB.settings = (function () {
   const PAD_ACTIONS = ['attack', 'jump', 'special', 'assist', 'power', 'pause'];
   const ACTION_NAMES = {
     up: 'MOVE UP', down: 'MOVE DOWN', left: 'MOVE LEFT', right: 'MOVE RIGHT',
-    attack: 'ATTACK', jump: 'JUMP', special: 'SPECIAL', assist: 'ASSIST', power: 'POWER', pause: 'PAUSE'
+    attack: 'KICK', jump: 'JUMP', special: 'FIRE', assist: 'LOIAL', power: 'SAIDIN', pause: 'PAUSE'
   };
 
   const OVERLAY_STEPS = [0.25, 0.4, 0.55, 0.7, 0.85];

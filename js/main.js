@@ -61,6 +61,7 @@
     },
     debug: {}
   };
+  if (RWB.attachContentDebug) RWB.attachContentDebug(game);
 
   /* ---- scaling ----
      The world stays 640x360. The backing store is the CSS box times

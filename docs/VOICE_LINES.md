@@ -1,6 +1,6 @@
 # Riley Wheel Brawl — Voice Line Catalog
 
-These are the complete short lines intended for spoken playback and matching subtitles. Keep recordings warm, clear, and kid-friendly. Do not improvise alternate takes in the shipped game. If a recording is missing, the subtitle and existing synthesized cue must still fire.
+These are the complete short lines intended for spoken playback and matching subtitles. Keep recordings warm, clear, and kid-friendly. Do not improvise alternate takes in the released game. If a recording is missing, the subtitle and existing synthesized cue must still fire.
 
 ## Story lines
 

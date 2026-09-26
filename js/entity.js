@@ -52,5 +52,5 @@ RWB.Entity = class Entity {
   drawShadow(ctx, camX, rx) { RWB.draw.shadow(ctx, this.x - camX, this.y, rx || this.bw * 0.8, null, this.z); }
   draw(ctx, camX) { /* content */ }
 };
-/** Depth sort: farther lanes (smaller y) draw first. */
+/** Depth sort: distant lanes (smaller y) draw first. */
 RWB.Entity.sortByDepth = list => list.sort((a, b) => a.y - b.y || a.z - b.z);

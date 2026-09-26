@@ -6,7 +6,7 @@
        { <atlasName>: { src, k, f: {frame: [sx,sy,sw,sh,ax,ay,_,painted]} }, plates: { <name>: { src } } }
      atlases register as 'art:<name>', plates as 'plate:<name>'.
    - RWB.assets.register(key, src, { lazy }) from content code, before load().
-   - RWB.ART_MANIFEST (js/artmanifest.js): optional array of shipped file paths
+   - RWB.ART_MANIFEST (js/artmanifest.js): optional array of bundled file paths
      (e.g. 'assets/art/atlas-hero.webp'). When it is an array, ONLY listed files
      are requested, so absent art never produces a 404. When undefined, every
      registered file is tried (and a miss is retried once, then falls back).
@@ -15,10 +15,11 @@
    from an older deploy can't pin the fallback. */
 'use strict';
 
+RWB.ASSET_VER = '20260926-f1';
 RWB.assets = (function () {
   const images = {};
   const cs = typeof document !== 'undefined' && document.currentScript;
-  const VER = RWB.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || 'dev';
+  const VER = RWB.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || RWB.ASSET_VER;
   const manifest = {};   // key -> src, fetched during load()
   const lazy = {};       // key -> src, fetched in the background after load()
 
@@ -26,7 +27,7 @@ RWB.assets = (function () {
   for (const k of Object.keys(art)) if (k !== 'plates' && art[k] && art[k].src) manifest['art:' + k] = art[k].src;
   for (const k of Object.keys(art.plates || {})) manifest['plate:' + k] = art.plates[k].src;
 
-  function shipped(src) {
+  function listed(src) {
     const list = RWB.ART_MANIFEST;
     return !Array.isArray(list) || list.includes(src);
   }
@@ -48,7 +49,7 @@ RWB.assets = (function () {
     });
   }
   async function fetchKey(k, src) {
-    if (!shipped(src)) { images[k] = null; skipped.push(k); return null; }
+    if (!listed(src)) { images[k] = null; skipped.push(k); return null; }
     const url = src + (src.includes('?') ? '&' : '?') + 'v=' + VER;
     let img = await fetchImage(url);
     if (!img && !Array.isArray(RWB.ART_MANIFEST)) img = await fetchImage(url + '&r=' + Date.now());
@@ -93,7 +94,7 @@ RWB.assets = (function () {
   function has(key) { return !!images[key]; }
   function settled(key) { return key in images; }
   return {
-    register, load, ready, get, has, settled, VER, shipped,
+    register, load, ready, get, has, settled, VER, listed,
     failed: () => failed.slice(), skipped: () => skipped.slice(),
     get progress() { return total ? loaded / total : 1; }, get done() { return done; }
   };

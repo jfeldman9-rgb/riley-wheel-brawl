@@ -28,11 +28,13 @@ function boot(root) {
     localStorage: { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, v), removeItem: k => m.delete(k) }, location: { hash: '' }, requestAnimationFrame() {},
     fetch: () => Promise.resolve({ ok: false }),
     document: { getElementById: () => canvas, createElement: () => createCanvas(1, 1), addEventListener() {}, fonts: { load: () => Promise.resolve() } },
-    Image: class { set src(s) { this.onerror && this.onerror(); } }
+    Image: class { set src(s) { ctx.__assetRequests++; this.onerror && this.onerror(); } }
   };
+  ctx.__assetRequests = 0;
   ctx.window = ctx; vm.createContext(ctx);
   const files = [...fs.readFileSync(root + '/index.html', 'utf8').matchAll(/<script src="js\/([\w-]+)\.js/g)].map(x => x[1]);
   for (const f of files) vm.runInContext(fs.readFileSync(root + '/js/' + f + '.js', 'utf8'), ctx, { filename: f + '.js' });
+  ctx.RWB.__assetRequests = () => ctx.__assetRequests;
   return ctx.RWB;
 }
 
@@ -57,7 +59,7 @@ function soak(RWB, seedVal) {
       if (p.state === 'idle' && p.hp < 40) p.hp = p.hpMax || 100;
       lastHp = p.hp;
     }
-    results.push({ stage: lvl + 1, seconds: +t.toFixed(0), cleared: s.phase, kills: s.kills, dmgTaken: dmg, timesHit: hits });
+    results.push({ stage: lvl + 1, seconds: +t.toFixed(0), cleared: s.phase, kills: s.kills, dmgTaken: dmg, timesHit: hits, attacks: s.boss ? [...s.boss.usedAttacks] : [] });
   }
   return results;
 }
@@ -69,6 +71,13 @@ if (require.main === module) {
     console.log('soak: engine booted OK; no RWB.scenes.Play / RWB.LEVELS yet (content not built). Nothing to soak.');
     process.exit(0);
   }
-  console.log(JSON.stringify(soak(RWB, +(process.argv[3] || 12345))));
+  const seeds = Array.from({ length: 12 }, (_, i) => i + 1), all = seeds.map(seed => soak(RWB, seed));
+  console.log('SEED | ' + RWB.LEVELS.map((_,i)=>`STAGE ${i+1} (clear/sec/dmg/hits)`).join(' | '));
+  all.forEach((row,i)=>console.log(String(seeds[i]).padStart(4)+' | '+row.map(r=>`${r.cleared==='clear'||r.cleared==='bossdead'?'Y':'N'}/${r.seconds}/${r.dmgTaken}/${r.timesHit}`).join(' | ')));
+  const medians=RWB.LEVELS.map((_,i)=>{const a=all.map(r=>r[i].dmgTaken).sort((a,b)=>a-b);return (a[5]+a[6])/2;});
+  console.log('MEDIAN DAMAGE: '+medians.map((v,i)=>`S${i+1}=${v}`).join(', '));
+  RWB.LEVELS.forEach((l,i)=>console.log(`${l.boss}: ${[...new Set(all.flatMap(r=>r[i].attacks))].join(', ')}`));
+  const bad=all.flat().some(r=>(r.cleared!=='clear'&&r.cleared!=='bossdead')||r.dmgTaken<=0||r.attacks.length<3)||medians.some((v,i)=>i&&v<=medians[i-1]);
+  if(bad) process.exitCode=1;
 }
 module.exports = { boot, soak };

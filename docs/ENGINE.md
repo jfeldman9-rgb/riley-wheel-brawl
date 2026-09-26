@@ -1,10 +1,6 @@
-# Riley Wheel Brawl — Engine (kept on `rwb-fresh`)
+# Riley Wheel Brawl — Engine
 
-`rwb-fresh` keeps **only** the generic engine from `rwb-pass3` (d4ce483). All
-characters, enemies, bosses, moves, stages, story, cutscenes, sprite drawing,
-title/logo art, songs and game-specific sounds were removed. The game content is
-to be rebuilt from scratch on top of these modules, following `docs/BRIEF.md`,
-`docs/VOICE_LINES.md`, `docs/ART_LIST.md` and `docs/TASKS.md`.
+The generic engine supports the original game content in `js/content.js`. The content follows `docs/BRIEF.md`, `docs/VOICE_LINES.md`, and `docs/ART_LIST.md`.
 
 Everything lives on the global `RWB` namespace; scripts are plain `<script>` tags
 in `index.html` (no bundler), each with a `?v=` cache stamp. World space is a
@@ -17,7 +13,7 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 | `js/util.js` | pass3 (trimmed) | `RWB.W/H`, floor band, fonts, `RWB.display`, `RWB.light`, `RWB.gfx` layer cache, `RWB.util` math + seeded PRNG, `RWB.text` (draw / cached / wrap / width), `RWB.draw` (rrect, circle, ellipse, shadow, bar, arcadeBar, hatch, tintVignette, vignette, scanlines, fitImage). Per-stage lighting table removed. |
 | `js/settings.js` | pass3 (neutralized) | `RWB.settings`: persisted options (`rwb-settings`), keyboard + gamepad remaps with swap-on-conflict, labels, Continue checkpoint (`rwb-run`, `{level, wave, score, extra}` + optional `validateRun` hook). `RWB.perf` particle budget / auto-LITE. |
 | `js/artdata.js` | new stub | `RWB.ARTDATA` frame table for painted atlases/plates (empty). |
-| `js/artmanifest.js` | new | `RWB.ART_MANIFEST`: array of files that actually ship. Only listed files are requested, so missing art never 404s. |
+| `js/artmanifest.js` | new | `RWB.ART_MANIFEST`: array of files that are actually bundled. Only listed files are requested, so missing art never 404s. |
 | `js/assets.js` | pass3 (rewritten generic) | `RWB.assets.register(key, src, {lazy})`, `load(onProgress)`, `ready(keys)`, `get/has/settled`, `failed()`, `skipped()`, `VER`. Missing images resolve to `null` → caller draws procedural art. |
 | `js/art.js` | pass3 | `RWB.art.has/frame/draw/castShadow/reflect/plate/plateLayer` for painted atlases; all no-ops when the art is absent. |
 | `js/input.js` | pass3 (neutralized) | `RWB.input`: keyboard, gamepad (deadzone, rumble), touch (virtual stick + buttons), mouse. Actions: `up down left right attack jump special assist power pause start mute fullscreen click`. `held`, `pressed`, `axis()`, `hint(id)`, `fillKeys('{attack}')`, `legend()`, `drawTouch(ctx, {always, powerReady, assistReady})`, remap capture. Touch buttons are live when the scene has `isGameplay && phase === 'play' && !paused`. |
@@ -28,7 +24,7 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 | `js/fx.js` | new (generic) | `RWB.FX` pooled particles: `sparks`, `chunks`, `dust`, `ring`, `glow`, `text`, `spawn(kind,…)`, `update/draw`, `FX.defineKind(name,{update,draw})`. Respects `RWB.perf.fxCap/fxScale`. |
 | `js/options.js` | pass3 (unchanged) | `RWB.OptionsPanel('options'|'controls', {full})`: sound, music, display mode, overlay, HUD size, colorblind health, effects, **Screen Shake FULL/REDUCED**, and live key/pad remapping. |
 | `js/pause.js` | new (generic) | `RWB.PauseMenu({onQuit, extra, quitLabel})`: RESUME / OPTIONS / CONTROLS / extras / QUIT; `open()`, `update(input, dt)` → `'resume'|'quit'|null`, `draw(ctx)`. |
-| `js/stub.js` | new placeholder | `RWB.scenes.Rebuilding`: "RILEY WHEEL BRAWL / REBUILDING" screen; Enter opens Options. Delete once content exists. |
+| `js/content.js` | original content | Title, reels, actors, combat, five arenas, HUD, bosses, finale, victory, songs, and optional-art registration. |
 | `js/main.js` | pass3 (flow removed) | Canvas scaling (AUTO / SHARP / CLASSIC, up to 4K, DPR watch, fullscreen), loading screen, audio unlock, main loop (dt clamp, auto-LITE after slow seconds, mute/fullscreen keys, `#fps`), `RWB.game` scene manager: `setScene(s)` (fade), `setSceneNow(s)`, `boot()` (starts `RWB.scenes.Title` or the stub; content may override), `debug` object. |
 
 ## Scene contract
@@ -52,3 +48,8 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 
 - `assets/fonts/press-start-2p.ttf` + `OFL.txt` (SIL Open Font License).
 - `css/style.css` (full-bleed canvas, letterbox, font face).
+
+
+## Content extensions
+
+`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes the five arenas and boss attack names. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(n)` opens an arena and `RWB.game.debug.boss()` summons its boss. `RWB.ASSET_VER` is the shared external-resource cache stamp.
