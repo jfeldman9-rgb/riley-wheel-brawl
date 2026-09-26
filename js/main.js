@@ -63,7 +63,7 @@
       const callandor = !!(this.scene && this.scene.callandor);
       const carry = { score: player.score, lives: player.lives, saidin: player.saidin, callandor };
       if (idx === RWB.LEVELS.length - 1) { RWB.settings.clearRun(); this.showEnding(player.score); return; }
-      RWB.settings.saveRun({ level: idx + 1, wave: 0, score: player.score, saidin: Math.round(player.saidin), callandor });
+      RWB.settings.saveRun({ level: idx + 1, wave: 0, score: player.score, saidin: Math.round(player.saidin), callandor, loial: true });
       // Repair log, then the next stage's intro, in one reel.
       this.setScene(new RWB.scenes.StoryBeat(this, {
         beats: [L.outro, this.introBeat(idx + 1)], music: 'story',
@@ -76,7 +76,8 @@
     gameOver(levelIndex, score, wave) { this.setScene(new RWB.scenes.GameOver(this, levelIndex, score, wave)); },
     /** Continue after a wipe: same stage, from `wave` (0 = stage start). Half score, 3 lives. */
     continueGame(levelIndex, score, wave) {
-      this.resumeAt(levelIndex, wave | 0, { score: Math.floor(score / 2), lives: 3, saidin: 0 });
+      const run = RWB.settings.loadRun();
+      this.resumeAt(levelIndex, wave | 0, { score: Math.floor(score / 2), lives: 3, saidin: 0, callandor: !!(run && run.callandor), loialReady: !(run && run.loial === false) });
     },
     resumeAt(levelIndex, wave, carry) {
       this.setScene(new RWB.scenes.Play(this, levelIndex, Object.assign({}, carry, { resumeWave: wave })));
@@ -84,8 +85,9 @@
     /** Title-screen Continue from the saved checkpoint. */
     continueRun(run) {
       if (!run) { this.startNewGame(true); return; }
-      if (run.wave === 0) this.startLevel(run.level, { score: run.score, lives: 3, saidin: run.saidin, callandor: !!run.callandor });
-      else this.resumeAt(run.level, run.wave, { score: run.score, lives: 3, saidin: run.saidin, callandor: !!run.callandor });
+      const kept = { score: run.score, lives: 3, saidin: run.saidin, callandor: !!run.callandor, loialReady: run.loial !== false };
+      if (run.wave === 0) this.startLevel(run.level, kept);
+      else this.resumeAt(run.level, run.wave, kept);
     },
     /* debug helpers (used by automated tests / cheats) */
     debug: {

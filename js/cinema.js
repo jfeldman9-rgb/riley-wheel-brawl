@@ -25,7 +25,11 @@ RWB.cinema = (function () {
 
   const SPEAKERS = {
     riley: { name: 'Riley', color: '#d8321f', side: -1, img: () => RWB.art.plate('riley-portrait') || RWB.assets.get('rileyPortrait') },
-    chieftain: { name: 'chieftain ANDERSEN', color: '#2462c4', side: 1, img: () => RWB.assets.get('story:chieftain-portrait') }
+    moiraine: { name: 'Moiraine', color: '#3a6adf', side: 1, img: () => null },
+    kenzie: { name: 'Twinkle Toes', color: '#3aa0ff', side: 1, img: () => null },
+    taim: { name: 'Mazrim Taim', color: '#c02030', side: 1, img: () => null },
+    forsaken: { name: 'Forsaken', color: '#7a48c8', side: 1, img: () => null },
+    chieftain: { name: 'Trolloc Chieftain', color: '#8a4a28', side: 1, img: () => null }
   };
 
   const lineHold = text => 1.25 + text.length * 0.03;
@@ -72,6 +76,23 @@ RWB.cinema = (function () {
         const z = who === 'chieftain' ? 1.16 : 1.1;
         const d = r * 2 * z;
         g.drawImage(img, c - d / 2, c - d / 2 + (who === 'chieftain' ? r * 0.14 : r * 0.04), d, d);
+      } else if (who === 'kenzie') {
+        g.fillStyle = '#1d4eaa'; g.fillRect(c - 10, c - 2, 20, 28);
+        g.fillStyle = '#7ec8ff'; g.fillRect(c - 12, c + 6, 24, 8);
+        g.fillStyle = '#f2c8a4'; g.beginPath(); g.arc(c, c - 12, 10, 0, 7); g.fill();
+        g.fillStyle = '#bfe6ff'; g.beginPath(); g.arc(c, c - 20, 11, Math.PI, 0); g.fill();
+      } else if (who === 'moiraine') {
+        g.fillStyle = '#1a2a6a'; g.fillRect(c - 16, c - 4, 32, 34);
+        g.fillStyle = '#d8c8a0'; g.beginPath(); g.arc(c, c - 8, 11, 0, 7); g.fill();
+        g.fillStyle = '#243888'; g.beginPath(); g.arc(c, c - 16, 14, Math.PI, 0); g.fill();
+      } else if (who === 'taim') {
+        g.fillStyle = '#12080c'; g.fillRect(c - 16, c - 6, 32, 36);
+        g.fillStyle = '#c6a181'; g.beginPath(); g.arc(c, c - 8, 11, 0, 7); g.fill();
+        g.fillStyle = '#e02030'; g.fillRect(c - 6, c - 8, 3, 3); g.fillRect(c + 3, c - 8, 3, 3);
+      } else if (who === 'forsaken') {
+        g.fillStyle = '#2a1848'; g.fillRect(c - 16, c - 4, 32, 34);
+        g.fillStyle = '#d8b89b'; g.beginPath(); g.arc(c, c - 8, 11, 0, 7); g.fill();
+        g.fillStyle = '#6a3ab0'; g.beginPath(); g.moveTo(c - 16, c - 6); g.lineTo(c, c - 28); g.lineTo(c + 16, c - 6); g.fill();
       } else {
         S.rileyHead(g, c, c + 2, r * 1.4, { mood: 'idle' });
       }
@@ -172,7 +193,7 @@ RWB.cinema = (function () {
         ctx.restore();
       }
     } else if (fx === 'debris' && RWB.art.has('props')) {
-      const bits = ['floret', 'floret2', 'lettuce'];
+      const bits = ['shard', 'shard2', 'coin'];
       for (let i = 0; i < 12 * n; i++) {
         const k = (t * (0.35 + hash(i) * 0.3) + hash(i + 5)) % 1;
         const [ox, oy] = at(0.66, 0.45);
@@ -435,7 +456,7 @@ RWB.cinema = (function () {
       const col = cur > 85 ? '#ff4a2a' : cur > 76 ? '#ffb020' : '#46c0ff';
       D.fillRRect(ctx, x + 2, y + 2, w, h, 6, 'rgba(0,0,0,0.4)');
       D.fillRRect(ctx, x, y, w, h, 6, 'rgba(8,14,34,0.88)', 'rgba(255,255,255,0.5)');
-      T.draw(ctx, 'vessel TEMP', x + 8, y + 5, { size: 5, color: '#b8cde6', shadow: false });
+      T.draw(ctx, 'SIGNAL', x + 8, y + 5, { size: 5, color: '#b8cde6', shadow: false });
       T.draw(ctx, `${Math.round(cur)}°F`, x + 8, y + 14, { size: 12, color: col, stroke: '#000', strokeWidth: 3, shadow: false });
       // glass tube
       D.fillRRect(ctx, x + w - 28, y + 5, 8, h - 10, 4, 'rgba(255,255,255,0.18)', 'rgba(255,255,255,0.5)');

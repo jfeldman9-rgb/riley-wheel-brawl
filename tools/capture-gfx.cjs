@@ -94,7 +94,7 @@ const shots = [];
   check(stamps.size === 1, 'one cache-bust stamp across css + scripts: ' + [...stamps].join(', '));
   const tags = [...html.matchAll(/<script src="js\//g)].length;
   check(scripts.length === tags && scripts.includes('art') && scripts.includes('artdata') && /css\/style\.css\?v=/.test(html), 'every script and the stylesheet are versioned');
-  check(stamps.has('20260926-s2'), 'cache-bust stamp is 20260926-s2');
+  check(stamps.has('20260926-g1'), 'cache-bust stamp is 20260926-g1');
   const data = context0.RWB.ARTDATA;
   for (const a of ['riley', 'trolloc', 'assassin', 'trollocCaptain', 'Darkfriend', 'props']) check(fs.existsSync(root + '/' + data[a].src), 'atlas ships: ' + data[a].src);
   for (const p of Object.values(data.urn)) check(fs.existsSync(root + '/' + p.src), 'plate ships: ' + p.src);

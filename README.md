@@ -1,6 +1,6 @@
 # Riley Wheel Brawl
 
-**Riley Wheel Brawl** is a kid-friendly, side-scrolling fantasy beat-em-up inspired by *The Wheel of Time*. Riley, a young Asha'man trained in Tae Kwon Do, follows Moiraine across five dangerous locations to rescue his eight-year-old sister Kenzie—known as **Twinkle Toes**—from the Forsaken and Mazrim Taim.
+**Riley Wheel Brawl** is a kid-friendly, side-scrolling fantasy beat-em-up inspired by *The Wheel of Time*. Riley, a young Asha'man trained in Tae Kwon Do, follows Moiraine across five dangerous locations to rescue his eight-year-old sister **Twinkle Toes** from the Forsaken and Mazrim Taim.
 
 The adventure begins on Winternight in Emond's Field, then continues through Caemlyn, Shadar Logoth, the Stone of Tear, and the Black Tower. At the Stone, Twinkle Toes reveals that she can channel lightning. She returns in the finale to help Riley defeat Taim with lightning and balefire.
 
