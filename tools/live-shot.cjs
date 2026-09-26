@@ -7,7 +7,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 
-const url = process.argv[2] || 'https://jfeldman9-rgb.github.io/shadow-riley-battle-brawl/?v=20260926-s2';
+const url = process.argv[2] || 'https://jfeldman9-rgb.github.io/shadow-riley-battle-brawl/?v=20260926-s3';
 const out = process.argv[3] || null;
 const CDP = 9500 + Math.floor(Math.random() * 400);
 const sleep = ms => new Promise(r => setTimeout(r, ms));

@@ -488,12 +488,12 @@
     // hurtW: half width riley's swings test against, matched to each sprite's body.
     // agile: may side-step out of a swing it sees coming (never mid-combo).
     trolloc: { hp: 24, speed: 54, dmg: 6, reach: 36, score: 100, height: 66, windup: 0.48, attackDur: 0.28, ranged: false, hurtW: 14, plate: '#6b5340', name: 'TROLLOC' },
-    trollocCaptain: { hp: 44, speed: 46, dmg: 9, reach: 26, score: 150, height: 70, windup: 0.4, attackDur: 0.22, roll: true, hurtW: 14, agile: true, plate: '#c4552a', name: 'TROLLOC CAPTAIN' },
-    Darkfriend: { hp: 22, speed: 62, dmg: 7, reach: 56, score: 120, height: 84, windup: 0.5, attackDur: 0.3, hurtW: 11, agile: true, plate: '#3a3a48', name: 'DARKFRIEND' },
-    assassin: { hp: 22, speed: 118, dmg: 7, reach: 34, score: 150, height: 62, windup: 0.36, attackDur: 0.24, dash: true, ranged: 'shuriken', hurtW: 12, agile: true, plate: '#1c1c28', name: 'CAEMLYN ASSASSIN' },
+    trollocCaptain: { hp: 44, speed: 50, dmg: 8, reach: 32, score: 150, height: 70, windup: 0.52, attackDur: 0.24, roll: true, charge: true, chargeChance: 0.8, armor: true, hurtW: 14, agile: true, plate: '#c4552a', name: 'TROLLOC CAPTAIN' },
+    Darkfriend: { hp: 22, speed: 62, dmg: 10, reach: 56, score: 120, height: 84, windup: 0.5, attackDur: 0.3, armor: true, hurtW: 11, agile: true, plate: '#3a3a48', name: 'DARKFRIEND' },
+    assassin: { hp: 22, speed: 118, dmg: 10, reach: 34, score: 150, height: 62, windup: 0.4, attackDur: 0.24, dash: true, ranged: 'shuriken', armor: true, hurtW: 12, agile: true, plate: '#1c1c28', name: 'CAEMLYN ASSASSIN' },
     mashadarCultist: { hp: 40, speed: 44, dmg: 10, reach: 40, score: 200, height: 70, windup: 0.62, attackDur: 0.32, knockdown: true, armor: true, hurtW: 15, plate: '#6a6888', name: 'MASHADAR-TOUCHED' },
-    stoneDefender: { hp: 56, speed: 48, dmg: 11, reach: 44, score: 300, height: 84, windup: 0.62, attackDur: 0.32, knockdown: true, armor: true, charge: true, hurtW: 17, plate: '#8a8478', name: 'STONE DEFENDER' },
-    turnedAshaman: { hp: 30, speed: 68, dmg: 6, reach: 32, score: 400, height: 68, windup: 0.42, attackDur: 0.28, ranged: 'shadowBolt', keepAway: true, hurtW: 13, plate: '#14141c', name: "TURNED ASHA'MAN" }
+    stoneDefender: { hp: 56, speed: 52, dmg: 22, reach: 48, score: 300, height: 84, windup: 0.58, attackDur: 0.34, knockdown: true, armor: true, charge: true, chargeChance: 0.86, hurtW: 17, plate: '#8a8478', name: 'STONE DEFENDER' },
+    turnedAshaman: { hp: 30, speed: 68, dmg: 9, reach: 32, score: 400, height: 68, windup: 0.42, attackDur: 0.28, ranged: 'shadowBolt', keepAway: true, hurtW: 13, plate: '#14141c', name: "TURNED ASHA'MAN" }
   };
   const ATTACKING = ['windup', 'prime', 'attack', 'dash', 'charge', 'roll'];
 
@@ -685,7 +685,7 @@
         let pending = null;
         if (this.def.dash && U.chance(0.7)) pending = 'dash';
         else if (this.def.roll && U.chance(0.6)) pending = 'roll';
-        else if (this.def.charge && U.chance(0.5)) pending = 'charge';
+        else if (this.def.charge && U.chance(this.def.chargeChance || 0.5)) pending = 'charge';
         if (pending) {
           this.pending = pending;
           this.primeDur = pending === 'roll' ? 0.22 : pending === 'charge' ? 0.38 : 0.28;
@@ -879,7 +879,7 @@
         myrddraal: { name:'MYRDDRAAL', hp:380, speed:70, dmg:10, height:116, armor:48 },
         draghkar: { name:'DRAGHKAR', hp:440, speed:62, dmg:10, height:128, armor:44 },
         forsaken: { name:'THE FORSAKEN', hp:500, speed:52, dmg:11, height:124, armor:56 },
-        taim: { name:'MAZRIM TAIM', hp:600, speed:56, dmg:12, height:126, armor:64 }
+        taim: { name:'MAZRIM TAIM', hp:600, speed:56, dmg:18, height:126, armor:64 }
       };
       const profile = profiles[this.bossType] || profiles.myrddraal;
       this.isBoss = true; this.def = { ...ENEMY_DEFS.turnedAshaman, name: profile.name, reach: 96, dmg: profile.dmg, score: 5000, height: profile.height, knockdown: true };

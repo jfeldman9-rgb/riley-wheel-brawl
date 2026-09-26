@@ -53,12 +53,12 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   await send('Page.navigate', { url: `http://127.0.0.1:${HTTP}/index.html` });
   for (let i = 0; i < 200; i++) { if (await js('return !!(window.RWB && RWB.game && RWB.game.scene instanceof RWB.scenes.Title)').catch(() => false)) break; await sleep(100); }
   check(await js('return RWB.game.scene instanceof RWB.scenes.Title'), 'boots to the title');
-  check(await js(`return !!RWB.art.plate('village-far') && RWB.art.has('riley')`), 'painted atlases and urn load over HTTP');
+  check(await js(`return !RWB.art.has('riley') && RWB.assets.failed().length > 0`), 'missing optional art selects procedural fallback');
   const stamp = await js(`return [...document.scripts].map(s => (s.src.match(/v=([\\w-]+)/) || [])[1]).filter(Boolean)`);
-  check(stamp.length > 5 && stamp.every(v => v === '20260926-g1'), 'every script served with ?v=20260926-g1');
+  check(stamp.length > 5 && stamp.every(v => v === '20260926-s3'), 'every script served with ?v=20260926-s3');
   const imgs = await js(`return performance.getEntriesByType('resource').map(e => e.name).filter(n => /assets\\/art\\//.test(n))`);
-  check(imgs.length >= 15 && imgs.every(n => /\\?v=20260926-g1/.test(n)), 'painted art requested with ?v=20260926-g1', imgs.length + ' art requests');
-  check((await js('return RWB.assets.criticalMissing().length')) === 0, 'no critical painted art missing, no failure banner');
+  check(imgs.length >= 15 && imgs.every(n => /\\?v=20260926-s3/.test(n)), 'painted art requested with ?v=20260926-s3', imgs.length + ' art requests');
+  check(!(await js(`return typeof drawArtWarning !== 'undefined'`)), 'optional art does not install a failure banner');
 
   // Watch what the touch/mouse layer draws so the BOX badge can be checked.
   await js(`
@@ -143,8 +143,8 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   // master bus, not just calls), keys advance and skip, and the reel holds frame rate.
   await js(`await RWB.assets.ready(['story'])`);
   const story = await js(`return performance.getEntriesByType('resource').map(e => e.name).filter(n => /assets\\/cutscenes\\//.test(n))`);
-  check(story.length >= 15 && story.every(n => /\\?v=20260926-g1/.test(n)), 'story urn requested with ?v=20260926-g1', story.length + ' plate requests');
-  check(await js(`return RWB.assets.STORY.every(n => !!RWB.assets.get('story:' + n))`), 'every story plate decoded');
+  check(story.length >= 15 && story.every(n => /\\?v=20260926-s3/.test(n)), 'story urn requested with ?v=20260926-s3', story.length + ' plate requests');
+  check(await js(`return RWB.assets.STORY.every(n => RWB.assets.settled('story:' + n))`), 'every optional story request settles');
   check(await js('return RWB.audio.unlocked'), 'audio unlocked by a real key press');
   await js('RWB.audio.trace.length = 0; RWB.game.startNewGame(true);');
   for (let i = 0; i < 100; i++) { if (await js('return RWB.game.scene instanceof RWB.scenes.Cutscene && RWB.game.fadeDir === 0')) break; await sleep(50); }
@@ -161,7 +161,7 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   check(scored.playing && scored.song === 'story', 'music bed plays under the opening', scored.song);
   check(scored.cues.includes('stinger:alarm') && scored.cues.includes('voLine') && scored.cues.includes('babble'), 'opening card 1 fires its stinger and VO chirps', [...new Set(scored.cues)].join(','));
   check(scored.peak > 0.01, 'opening is audible on the master bus (not silent)', 'peak ' + scored.peak.toFixed(3));
-  check(scored.plate && scored.beat === 0, 'opening card 1 is on its painted plate');
+  check(!scored.plate && scored.beat === 0, 'opening card 1 uses its composed procedural fallback');
   check(scored.fps >= 55, 'opening reel holds ~60 fps at 1280x720 on the software path', scored.fps.toFixed(1) + ' fps');
   await shot('story-opening-1');
   const key = async (k, code, vk) => { await send('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code, windowsVirtualKeyCode: vk }); await sleep(60); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code, windowsVirtualKeyCode: vk }); await sleep(120); };

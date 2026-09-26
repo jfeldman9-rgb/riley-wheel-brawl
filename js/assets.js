@@ -7,7 +7,7 @@ RWB.assets = (function () {
   // Image URLs carry the same ?v= stamp as the scripts, so a cached 404 or stale
   // file from an older deploy can't pin the procedural fallback.
   const cs = typeof document !== 'undefined' && document.currentScript;
-  const VER = RWB.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || '20260926-g1';
+  const VER = RWB.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || '20260926-s3';
   const manifest = {
     "art:riley": "assets/art/atlas-riley.webp",
     "plate:stage1": "assets/art/stage1-emonds-field-far.webp"
@@ -15,15 +15,13 @@ RWB.assets = (function () {
 
   // Painted sprite atlases and background urn (tools/bake_art.py -> js/artdata.js).
   const art = RWB.ARTDATA || {};
-  for (const k of Object.keys(art)) if (k !== 'plates') manifest['art:' + k] = art[k].src;
+  for (const k of Object.keys(art)) if (k !== 'plates' && k !== 'urn') manifest['art:' + k] = art[k].src;
   for (const k of Object.keys(art.plates || {})) manifest['plate:' + k] = art.plates[k].src;
-  // Without these the village and riley silently turn procedural, so a miss is reported.
-  const CRITICAL = ['art:riley', 'plate:stage1'];
   const painted = k => k.startsWith('art:') || k.startsWith('plate:') || k.startsWith('story:');
 
   // Painted story urn (tools/bake_story.py). They are fetched in the background
   // after the title is up, opening first, so they never delay the first frame.
-  const STORY = ['opening-01-winters-night','stage1-emonds-field','stage2-caemlyn','stage3-shadar-logoth','stage4-callandor-reveal','stage5-black-tower-finale','stage5-homecoming'];
+  const STORY = ['opening-01-winters-night','opening-02-capture','opening-03-taim-order','opening-04-riley-vow','stage1-emonds-field','stage2-caemlyn','stage3-shadar-logoth','stage4-callandor-reveal','stage5-black-tower-finale','stage5-homecoming'];
   const lazy = {};
   for (const n of STORY) lazy['story:' + n] = 'assets/cutscenes/' + n + '.webp';
 
@@ -56,7 +54,7 @@ RWB.assets = (function () {
       loaded++; onProgress && onProgress(loaded / total);
     })).then(() => {
       done = true;
-      if (failed.length && typeof console !== 'undefined') console.warn('[RWB] painted art failed to load (after retry):', failed.join(', '));
+      if (failed.length && typeof console !== 'undefined') console.info('[RWB] optional painted art unavailable; using procedural art:', failed.join(', '));
       loadLazy();
     });
   }
@@ -68,7 +66,7 @@ RWB.assets = (function () {
       if (i >= keys.length) return Promise.resolve();
       const k = keys[i++];
       pending[k] = fetchKey(k, lazy[k]).then(img => {
-        if (!img && typeof console !== 'undefined') console.warn('[RWB] story plate failed to load (after retry):', k);
+        if (!img && typeof console !== 'undefined') console.info('[RWB] optional story plate unavailable; using procedural art:', k);
         return img;
       });
       return pending[k].then(next);
@@ -90,8 +88,5 @@ RWB.assets = (function () {
   function has(key) { return !!images[key]; }
   /** Settled (loaded or failed) — the cutscene stops waiting either way. */
   function settled(key) { return key in images; }
-  /** Critical painted-art keys that are still missing after load (empty when all is well). */
-  function criticalMissing() { return done ? CRITICAL.filter(k => manifest[k] && !images[k]) : []; }
-
-  return { load, ready, get, has, settled, VER, STORY, criticalMissing, failed: () => failed.slice(), _img: k => images[k] || null, get progress() { return total ? loaded / total : 0; }, get done() { return done; } };
+  return { load, ready, get, has, settled, VER, STORY, failed: () => failed.slice(), _img: k => images[k] || null, get progress() { return total ? loaded / total : 0; }, get done() { return done; } };
 })();

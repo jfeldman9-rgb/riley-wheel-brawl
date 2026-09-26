@@ -853,7 +853,8 @@
       this.phase = 'bossdead'; this.phaseT = 0; this.player.won = true; this.player.setState('victory');
       if (this.levelIndex === 4) {
         this.showBanner('TOGETHER!', 'TWINKLE TOES: LIGHTNING!  RILEY: BALEFIRE!', 4, true);
-        this.jointFinishT = 4; this.surgeT = 0; this.surgeX = this.player.x; this.surgeY = this.player.y; this.flashT = 1; this.flashColor = '#bfeaff';
+        this.jointFinishT = 4; this.surgeT = -1; this.surgeX = this.player.x; this.surgeY = this.player.y;
+        this.flashT = this.reducedMotion ? 0.12 : 0.45; this.flashColor = '#bfeaff';
       } else if (this.levelIndex === 3) {
         this.callandor = true; this.carry.callandor = true;
         this.showBanner('CALLANDOR CLAIMED', 'BALEFIRE GROWS BRIGHTER!', 4);
@@ -912,7 +913,10 @@
 
     update(dt, inp) {
       this.t += dt;
-      if (this.jointFinishT > 0 && !this.paused) this.jointFinishT -= dt;
+      if (this.jointFinishT > 0 && !this.paused) {
+        if (inp.pressed.attack || inp.pressed.jump || inp.pressed.start) this.jointFinishT = Math.min(this.jointFinishT, 0.25);
+        this.jointFinishT -= dt;
+      }
       if (!this.paused && this.loialT >= 0) {
         this.loialT += dt;
         const lx = this.camX - 90 + this.loialT * 520;
@@ -1369,28 +1373,32 @@
       ctx.restore();
     }
     drawJointFinish(ctx) {
-      const life = Math.max(0, Math.min(1, this.jointFinishT / 1.2));
-      const tx = 54, ty = 248;
+      const elapsed = 4 - this.jointFinishT;
+      const run = U.clamp(elapsed / 0.9, 0, 1), spin = U.clamp((elapsed - 0.9) / 0.7, 0, 1);
+      const channel = U.clamp((elapsed - 1.6) / 0.55, 0, 1), fall = U.clamp((elapsed - 2.7) / 0.65, 0, 1);
+      const tx = -35 + run * 118, ty = 248;
+      const targetX = this.boss ? this.boss.x - this.camX : 500, targetY = this.boss ? this.boss.y - 78 : 190;
       ctx.save();
-      ctx.globalAlpha = Math.min(1, this.jointFinishT);
+      ctx.globalAlpha = Math.min(1, this.jointFinishT * 4);
+      ctx.translate(tx, ty - 30); ctx.rotate(spin * Math.PI * 2); ctx.translate(-tx, -(ty - 30));
       D.ellipse(ctx, tx, ty + 4, 16, 5, 'rgba(0,0,0,0.35)');
       ctx.fillStyle = '#1d4eaa'; ctx.fillRect(tx - 8, ty - 34, 16, 30);
       ctx.fillStyle = '#7ec8ff'; ctx.fillRect(tx - 10, ty - 20, 20, 8);
       ctx.fillStyle = '#f2c8a4'; ctx.beginPath(); ctx.arc(tx, ty - 42, 8, 0, 7); ctx.fill();
       ctx.fillStyle = '#bfe6ff'; ctx.beginPath(); ctx.arc(tx, ty - 50, 9, Math.PI, 0); ctx.fill();
       T.draw(ctx, 'TWINKLE TOES', tx + 8, ty - 68, { size: 6, color: '#e7f7ff', stroke: '#041428', strokeWidth: 3 });
+      ctx.restore(); ctx.save();
+      ctx.globalAlpha = channel;
       ctx.strokeStyle = '#f7fbff'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
       ctx.beginPath();
       let x = tx + 12, y = ty - 36;
       ctx.moveTo(x, y);
-      for (let i = 0; i < 9; i++) { x += 58; y += (i % 2 ? 18 : -16) * (0.65 + 0.35 * Math.sin(this.t * 30 + i)); ctx.lineTo(x, y); }
+      for (let i = 1; i <= 9; i++) { x = tx + (targetX-tx)*i/9; y = ty-36+(targetY-(ty-36))*i/9+(i%2?8:-8)*Math.sin(this.t*28+i); ctx.lineTo(x,y); }
       ctx.stroke();
-      ctx.globalAlpha = 0.4 * life; ctx.strokeStyle = '#7ad0ff'; ctx.lineWidth = 8; ctx.stroke();
-      if (!(this.surgeT >= 0)) {
-        ctx.globalAlpha = 0.8 * Math.min(1, this.jointFinishT);
-        ctx.fillStyle = '#dff6ff'; ctx.fillRect(120, 198, 500, 14);
-        ctx.fillStyle = 'rgba(150,220,255,0.85)'; ctx.fillRect(120, 188, 500, 34);
-      }
+      ctx.globalAlpha = 0.38 * channel; ctx.strokeStyle = '#7ad0ff'; ctx.lineWidth = 8; ctx.stroke();
+      ctx.globalAlpha=channel;ctx.fillStyle='#fff4b5';ctx.fillRect(this.player.x-this.camX+20, targetY-4, Math.max(0,targetX-(this.player.x-this.camX+20)),8);
+      if(channel>0.85){ctx.globalAlpha=(1-fall)*(this.reducedMotion?0.22:0.65);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(targetX,targetY,55+fall*35,0,7);ctx.fill();}
+      if(fall>0){ctx.globalAlpha=fall;T.draw(ctx,'TAIM FALLS',targetX,targetY+45,{size:7,align:'center',color:'#dcecff',stroke:'#000',strokeWidth:3});}
       ctx.restore();
     }
     drawSurgeReady(ctx) {

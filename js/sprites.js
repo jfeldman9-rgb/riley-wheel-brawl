@@ -1144,9 +1144,13 @@ RWB.sprites = (function () {
     };
     const look=looks[b.bossType];
     if (look) {
-      const bob=Math.sin((b.t||0)*4)*2, wind=b.pose==='slamWind'||b.pose==='rainWind', attacking=b.pose==='slam';
-      if (b.bossType==='draghkar') { ctx.fillStyle='#341824';ctx.beginPath();ctx.moveTo(-12,-92+bob);ctx.lineTo(-72,-52+bob);ctx.lineTo(-25,-38+bob);ctx.lineTo(0,-67+bob);ctx.lineTo(25,-38+bob);ctx.lineTo(72,-52+bob);ctx.lineTo(12,-92+bob);ctx.fill(); }
-      ctx.strokeStyle='#080910';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-13,-43+bob);ctx.lineTo(-20,0);ctx.moveTo(13,-43+bob);ctx.lineTo(20,0);ctx.stroke();
+      const moving=b.pose==='walk', stride=moving?Math.sin((b.t||0)*8):0;
+      const airborne=b.bossType==='draghkar', bob=airborne?-22+Math.sin((b.t||0)*5)*9:Math.sin((b.t||0)*4)*2;
+      const wind=b.pose==='slamWind'||b.pose==='rainWind', attacking=b.pose==='slam';
+      if(b.bossType==='trollocChief')ctx.scale(1.22,1.08);
+      if (airborne) { const flap=Math.sin((b.t||0)*10)*20;ctx.fillStyle='#341824';ctx.strokeStyle='#100810';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-10,-92+bob);ctx.lineTo(-82,-72+flap+bob);ctx.lineTo(-48,-34+bob);ctx.lineTo(0,-67+bob);ctx.lineTo(48,-34+bob);ctx.lineTo(82,-72+flap+bob);ctx.lineTo(10,-92+bob);ctx.closePath();ctx.fill();ctx.stroke(); }
+      if(b.bossType==='myrddraal'){const wave=Math.sin((b.t||0)*9)*7;ctx.fillStyle='#090a12';ctx.beginPath();ctx.moveTo(-27,-103+bob);ctx.quadraticCurveTo(-52,-72, -31+wave,-12);ctx.lineTo(-8,-31);ctx.lineTo(8,-31);ctx.lineTo(31-wave,-12);ctx.quadraticCurveTo(52,-72,27,-103+bob);ctx.fill();}
+      ctx.strokeStyle='#080910';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-13,-43+bob);ctx.lineTo(-20+stride*9,airborne?-10:0);ctx.moveTo(13,-43+bob);ctx.lineTo(20-stride*9,airborne?-8:0);ctx.stroke();
       ctx.fillStyle=look.coat;ctx.strokeStyle='#050608';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-31,-104+bob);ctx.lineTo(31,-104+bob);ctx.lineTo(24,-35+bob);ctx.lineTo(0,-20+bob);ctx.lineTo(-24,-35+bob);ctx.closePath();ctx.fill();ctx.stroke();
       ctx.strokeStyle=look.trim;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,-101+bob);ctx.lineTo(0,-29+bob);ctx.stroke();
       D.circle(ctx,0,-119+bob,17,look.skin,'#080910');
@@ -1157,6 +1161,9 @@ RWB.sprites = (function () {
       ctx.strokeStyle=look.trim;ctx.lineWidth=look.weapon==='sword'||look.weapon==='blade'?5:3;ctx.beginPath();ctx.moveTo(45,attacking?-53:wind?-122:-68);ctx.lineTo(attacking?112:70,attacking?-43:wind?-170:-115);ctx.stroke();
       if(look.weapon==='talons'){ctx.strokeStyle='#eadde2';for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(42,-67+i*3);ctx.lineTo(65+i*3,-57+i*2);ctx.stroke();}}
       if(look.weapon==='lightning'||look.weapon==='staff'){ctx.strokeStyle=b.phase===3?'#9eeaff':'#ba8cff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(68,-114);ctx.lineTo(55,-128);ctx.lineTo(76,-141);ctx.lineTo(62,-157);ctx.stroke();}
+      if(b.bossType==='trollocChief'){ctx.fillStyle='#b7a0a0';ctx.beginPath();ctx.moveTo(65,-118);ctx.lineTo(91,-137);ctx.lineTo(101,-119);ctx.lineTo(78,-101);ctx.closePath();ctx.fill();ctx.strokeStyle='#24140d';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(70,-112);ctx.lineTo(42,-65);ctx.stroke();}
+      if(b.bossType==='forsaken'){for(let i=0;i<4;i++){const a=(b.t||0)*2+i*Math.PI/2;D.circle(ctx,Math.cos(a)*43,-92+Math.sin(a)*18,4,i%2?'#d8b4ff':'#75d9ff');}}
+      if(b.bossType==='taim'){ctx.strokeStyle='#d8b34a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-10,-82);ctx.quadraticCurveTo(0,-70,10,-82);ctx.quadraticCurveTo(0,-91,-10,-82);ctx.stroke();ctx.fillStyle='#b52736';ctx.beginPath();ctx.moveTo(-4,-106);ctx.lineTo(0,-113);ctx.lineTo(4,-106);ctx.lineTo(0,-99);ctx.fill();}
       ctx.restore(); return;
     }
     LS = RWB.light.side * (b.facing < 0 ? -1 : 1);
