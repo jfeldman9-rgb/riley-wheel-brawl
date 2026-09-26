@@ -84,3 +84,10 @@ Use each line once, the first time that enemy archetype appears. These introduct
 - Taint warnings may repeat only after the player spends and refills saidin.
 - All boss entrance lines play before control resumes or before an attack can begin.
 - Mute, master volume, music ducking, pause, and browser visibility rules apply to every clip.
+
+## Stage 1 clear lines
+
+| ID | Character | Exact line | When it plays |
+| --- | --- | --- | --- |
+| `st1_clear_moiraine_01` | Moiraine | “The road is open. The Shadow fled east.” | Stage 1 clear reel. |
+| `st1_clear_riley_01` | Riley | “Twinkle Toes, I am coming.” | Stage 1 clear reel. |

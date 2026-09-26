@@ -15,19 +15,22 @@ python3 -m http.server 8000
 
 | Action | Keyboard | Gamepad |
 |---|---|---|
-| Move | WASD / arrows | D-pad / left stick |
-| Kick combo | E / J / Z | X |
-| Jump / jump kick | Space / K / X, then Kick | A, then X |
-| Spinning kick | Third grounded Kick in the three-hit combo | Third grounded X |
+| Move / change lane | WASD / arrows | D-pad / left stick |
+| Three-hit kick chain | E / J / Z | X |
+| Jump / flying kick | Space / K / X, then Kick | A, then X |
+| 360 spinning kick | Hold Down and press Kick, or press Jump + Kick together | Down + X, or A + X |
 | Fireball (**FIRE**) | Q / L / C | Y |
+| Grab | Walk into a hurt or knocked-back normal Trolloc | Walk into the target |
+| Knee a grabbed target | Kick, up to twice | X, up to twice |
+| Throw a grabbed target | Press away from the target | Press away from the target |
 | Call Loial (**LOIAL**, once per stage) | R / I / V / U | LB / RB |
 | Spend full meter (**SAIDIN**) | F / B | B |
 | Pause | Escape / P | Back |
 
-Kick three times for front, roundhouse, then spinning back kick. FIRE has a
-cooldown but no health cost. A full SAIDIN meter enables Balefire; waiting too
-long after it fills starts the warned taint effect. Menus support keyboard,
-gamepad, mouse, and touch. Controls can be remapped in the Controls panel.
+The ground chain is front kick, roundhouse, then spinning back kick. FIRE has a
+cooldown and no health cost. A full SAIDIN meter enables Balefire; holding it
+past the grace period begins the warned, nonlethal taint effect. Menus support
+keyboard, gamepad, mouse, and touch, and bindings can be remapped.
 
 ## Verification
 

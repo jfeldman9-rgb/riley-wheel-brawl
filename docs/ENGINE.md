@@ -53,3 +53,18 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 ## Content extensions
 
 `RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes the five arenas and boss attack names. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(n)` opens an arena and `RWB.game.debug.boss()` summons its boss. `RWB.ASSET_VER` is the shared external-resource cache stamp.
+
+## Chunk A content modules
+
+Stage 1 content is split after `pause.js` in this fixed order: `data.js`,
+`riley.js`, `enemies.js`, `allies.js`, `pickups.js`, `stage1.js`, `hud.js`,
+`scenes.js`, and `content.js`. `content.js` now contains only audio registration
+and debug glue. These files consume the existing generic entity, collision,
+camera, effects, input, pause, audio, and persistence APIs; no engine API was
+extended for Chunk A.
+
+The Stage 1 test contract exposes `RWB.RILEY_POSES`, `RWB.MOVES`, actor
+constructors, `RWB.Stage1`, and the scene constructors. `Play` publishes its
+live hitbox arrays, used player moves, pickup count, damage count, and the
+Chieftain's `usedAttacks` set for deterministic validation. An enemy move is
+added to `usedAttacks` only when its active interval begins.
