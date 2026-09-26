@@ -29,7 +29,8 @@
       }
     }
     draw(ctx) {
-      const line = this.lines[this.i];
+      const line = this.lines[Math.min(this.i, this.lines.length - 1)];
+      if (!line) return;
       const bg = ctx.createLinearGradient(0, 0, 640, 360);
       bg.addColorStop(0, '#050b19');
       bg.addColorStop(1, '#1b3657');
@@ -262,21 +263,37 @@
       if (!enemy.takeHit(damage, fromX, opts || {})) return false;
       this.player.power = Math.min(this.player.powerMax, this.player.power + Math.round((opts && opts.move === 'fireball' ? 8 : 10) * (this.player.angreal > 0 ? 1.6 : 1)));
       this.player.score += damage * 10;
-      this.fx.sparks(enemy.x, enemy.y - enemy.z - 35, '#ffd268', 7);
-      this.camera.stop(opts && opts.knockdown ? 0.07 : 0.04);
+      this.fx.sparks(enemy.x, enemy.y - enemy.z - 35, '#ffd268', 8);
       this.camera.impact(this.player.facing, opts && opts.knockdown ? 'heavy' : 'light');
-      this.playCue('hit');
+      this.playCue(opts && opts.knockdown ? 'thud' : 'hit');
       return true;
+    }
+    latchInput(input) {
+      if (!input) return;
+      const keep = ['attack', 'jump', 'special', 'assist', 'power', 'up', 'down', 'left', 'right', 'start'];
+      this.latchedPress = this.latchedPress || {};
+      this.latchedHeld = this.latchedHeld || {};
+      for (const key of keep) {
+        if (input.pressed && input.pressed[key]) this.latchedPress[key] = true;
+        if (input.held && input.held[key]) this.latchedHeld[key] = true;
+      }
+    }
+    mergeLatch(input) {
+      const pressed = Object.assign({}, this.latchedPress || {}, input && input.pressed || {});
+      const held = Object.assign({}, this.latchedHeld || {}, input && input.held || {});
+      this.latchedPress = {};
+      this.latchedHeld = {};
+      return Object.assign({}, input, { pressed, held });
     }
     hitPlayer(damage, fromX, opts) {
       if (this.phase !== 'play' || this.player.invuln > 0 || this.player.dead) return false;
-      const landed = this.player.takeHit(damage, fromX, { kb: opts.kb, launch: opts.knockdown ? 120 : 0 });
+      const landed = this.player.takeHit(damage, fromX, { kb: opts.kb, launch: opts.knockdown ? 250 : 80 });
       if (!landed) return false;
       this.damageTaken += damage;
       this.timesHit += 1;
-      this.player.invuln = opts.knockdown ? 0.75 : 0.45;
+      this.player.invuln = opts.knockdown ? 0.85 : 0.5;
       if (opts.knockdown && this.player.hp > 0) this.player.setState('knockdown');
-      this.camera.impact(fromX < this.player.x ? 1 : -1, 'heavy');
+      this.camera.impact(fromX < this.player.x ? 1 : -1, opts.knockdown ? 'boss' : 'heavy');
       this.playCue('hurt');
       if (this.player.hp <= 0) this.beginDeath();
       return true;
@@ -371,6 +388,7 @@
       this.hazards = this.hazards.filter(item => item.life > 0);
       this.pickups = this.pickups.filter(item => !item.remove);
       this.allies = this.allies.filter(item => item.life > 0);
+      this.enemies = this.enemies.filter(item => !item.remove);
       for (const box of this.playerHitboxes) {
         for (const prop of this.props) if (!prop.dead && R.collide.overlap(box, prop.hurtbox())) prop.takeHit(12);
       }
@@ -378,7 +396,11 @@
       this.snow.update(dt);
     }
     finishWave(dt) {
-      if (!this.enemies.length || !this.enemies.every(enemy => enemy.dead)) return;
+      if (this.enemies.some(enemy => !enemy.dead)) {
+        this.waveClearTimer = 0;
+        return;
+      }
+      if (!this.enemies.length && this.waveClearTimer <= 0) return;
       if (this.wave === 5) {
         this.phase = 'clear';
         R.settings.clearRun();
@@ -396,12 +418,13 @@
       }
     }
     update(dt, input) {
-      this.currentInput = input || { pressed: {}, held: {}, axis: () => ({ x: 0, y: 0 }) };
+      input = input || { pressed: {}, held: {}, axis: () => ({ x: 0, y: 0 }) };
       if (R.keyPressed(input, 'pause')) {
         this.paused = !this.paused;
         if (this.paused) this.pauseMenu.open();
       }
       if (this.paused) {
+        this.currentInput = input;
         const result = this.pauseMenu.update(input, dt);
         if (result === 'resume') this.paused = false;
         return;
@@ -417,7 +440,13 @@
         return;
       }
       const frozen = this.camera.update(dt);
-      if (frozen) return;
+      if (frozen) {
+        this.latchInput(input);
+        this.currentInput = input;
+        return;
+      }
+      input = this.mergeLatch(input);
+      this.currentInput = input;
       this.time += dt;
       this.warningTimer = Math.max(0, this.warningTimer - dt);
       this.goTimer = Math.max(0, this.goTimer - dt);
@@ -429,7 +458,7 @@
     }
     drawWorld(ctx) {
       R.Stage1.draw(ctx, this.camera.x, this.time);
-      const list = this.enemies.filter(item => !item.dead).concat(this.props.filter(item => !item.dead), this.pickups, this.allies, [this.player]);
+      const list = this.enemies.filter(item => !item.remove).concat(this.props.filter(item => !item.dead), this.pickups, this.allies, [this.player]);
       R.Entity.sortByDepth(list);
       for (const item of list) item.draw(ctx, this.camera.x);
       for (const projectile of this.projectiles) projectile.draw(ctx, this.camera.x);

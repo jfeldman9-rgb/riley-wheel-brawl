@@ -34,6 +34,7 @@ keyboard, gamepad, mouse, and touch, and bindings can be remapped.
 
 ## Verification
 
-`node tools/check.cjs` checks story skips, accessibility effects, airborne and
-finale rules, caption fidelity, and the zero-request art fallback. Run
-`node tools/soak.cjs` for the 12-seed combat tuning report.
+`node tools/check.cjs` checks the Stage 1 move hitboxes, taint floor, Loial
+once-per-stage rule, Continue checkpoint, the no-timer damage proof, Reduced
+Shake, and the zero-request art fallback. Run `node tools/soak.cjs` for the
+10-seed Stage 1 combat report.

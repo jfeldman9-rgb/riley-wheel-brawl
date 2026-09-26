@@ -17,8 +17,8 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 | `js/assets.js` | pass3 (rewritten generic) | `RWB.assets.register(key, src, {lazy})`, `load(onProgress)`, `ready(keys)`, `get/has/settled`, `failed()`, `skipped()`, `VER`. Missing images resolve to `null` → caller draws procedural art. |
 | `js/art.js` | pass3 | `RWB.art.has/frame/draw/castShadow/reflect/plate/plateLayer` for painted atlases; all no-ops when the art is absent. |
 | `js/input.js` | pass3 (neutralized) | `RWB.input`: keyboard, gamepad (deadzone, rumble), touch (virtual stick + buttons), mouse. Actions: `up down left right attack jump special assist power pause start mute fullscreen click`. `held`, `pressed`, `axis()`, `hint(id)`, `fillKeys('{attack}')`, `legend()`, `drawTouch(ctx, {always, powerReady, assistReady})`, remap capture. Touch buttons are live when the scene has `isGameplay && phase === 'play' && !paused`. |
-| `js/audio.js` | pass3 (content removed) | `RWB.audio`: buses (master, music→duck, sfx→compressor), `tone/noise/formant/brass` synth primitives, generic `sfx` (blip, select, swing, hit, hurt, thud, jump, pickup, whoosh, lastCall, levelClear, gameOver, impact, wipe, stinger, babble, voLine), 16-step sequencer (`playMusic/stopMusic`), `defineSfx/defineSong/defineStinger/defineVoice`, optional recorded clips `loadClip(key,url)/playClip(key)`, volume/music/mute, `trace` of fired cues, `level()` meter. **No songs are registered.** |
-| `js/camera.js` | new (generic) | `RWB.Camera`: follow with lead, bounds, arena `lock/unlock`, `shake`, `punch`, `stop` (hit-stop), `flash`, `impact(dir, 'light'|'heavy'|'boss'|'super')`, `update(dt)` → true while frozen, `apply(ctx)`, `drawFlash(ctx)`. Reduced Shake scales shake 35%, punch 50%, flash dimmed/shortened. |
+| `js/audio.js` | pass3 (content removed) | `RWB.audio`: buses (master, music→duck, sfx→compressor), `tone/noise/formant/brass` synth primitives, generic `sfx` (blip, select, swing, hit, hurt, thud, jump, pickup, whoosh, lastCall, levelClear, gameOver, impact, wipe, stinger, babble, voLine), 16-step sequencer (`playMusic/stopMusic`), `defineSfx/defineSong/defineStinger/defineVoice`, optional recorded clips `loadClip(key,url)/playClip(key)`, volume/music/mute, `trace` of fired cues, `level()` meter. Songs are registered by content (`title`, `story`, `stage1`, `gameover`), not by this file. |
+| `js/camera.js` | new (generic) | `RWB.Camera`: follow with lead, bounds, arena `lock/unlock`, `shake`, `punch`, `stop` (hit-stop), `flash`, `impact(dir, 'light'|'heavy'|'boss'|'super')`, `update(dt)` → true while frozen, `apply(ctx)`, `drawFlash(ctx)`. Reduced Shake scales shake 35%, punch 50%, flash dimmed/shortened. Impact presets were retuned so light hits stop for about 0.07s, heavy hits 0.11s, boss hits 0.13s, and supers 0.2s. |
 | `js/collide.js` | new (generic) | `RWB.collide`: `FAIR` tunables, `box`, `front(actor, reach, back, h, zOff, depth)`, `hurt(actor)`, `overlap(a,b)` (x overlap + lane depth + z range), `circle(...)` for projectiles/beams, `clampLane`, `debugDraw` (`#boxes`). |
 | `js/entity.js` | new (generic) | `RWB.Entity` base: x/y/z, velocities, gravity or `flying`, facing, `setState/stateT`, hp, `invuln`, `takeHit(dmg, fromX, {kb, launch})` with `onHurt/onDeath/onLand` hooks, `drawShadow`; `RWB.Entity.sortByDepth`. |
 | `js/fx.js` | new (generic) | `RWB.FX` pooled particles: `sparks`, `chunks`, `dust`, `ring`, `glow`, `text`, `spawn(kind,…)`, `update/draw`, `FX.defineKind(name,{update,draw})`. Respects `RWB.perf.fxCap/fxScale`. |
@@ -52,7 +52,7 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 
 ## Content extensions
 
-`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes the five arenas and boss attack names. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(n)` opens an arena and `RWB.game.debug.boss()` summons its boss. `RWB.ASSET_VER` is the shared external-resource cache stamp.
+`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` currently describes Stage 1 only. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play()` opens Stage 1 and `RWB.game.debug.boss()` summons the Chieftain. `RWB.ASSET_VER` is the shared external-resource cache stamp (`20260926-g2`).
 
 ## Chunk A content modules
 
@@ -60,8 +60,11 @@ Stage 1 content is split after `pause.js` in this fixed order: `data.js`,
 `riley.js`, `enemies.js`, `allies.js`, `pickups.js`, `stage1.js`, `hud.js`,
 `scenes.js`, and `content.js`. `content.js` now contains only audio registration
 and debug glue. These files consume the existing generic entity, collision,
-camera, effects, input, pause, audio, and persistence APIs; no engine API was
-extended for Chunk A.
+camera, effects, input, pause, audio, and persistence APIs. Chunk A did not add
+engine methods. The g2 pass only retuned `RWB.Camera.IMPACTS` (see the camera
+row above). Gameplay hit-stop still freezes `Play.update` via `camera.update`,
+and that scene latches attack, jump, special, assist, power, and directions
+until the freeze ends so a one-frame press is not dropped.
 
 The Stage 1 test contract exposes `RWB.RILEY_POSES`, `RWB.MOVES`, actor
 constructors, `RWB.Stage1`, and the scene constructors. `Play` publishes its
