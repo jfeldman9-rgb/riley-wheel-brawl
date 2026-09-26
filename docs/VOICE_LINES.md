@@ -11,12 +11,12 @@ These are the complete short lines intended for spoken playback and matching sub
 | `op_kenzie_01` | Twinkle Toes | “You picked the wrong dancer!” | Opening: Kenzie faces her captors. |
 | `op_taim_01` | Mazrim Taim | “Bring the child to the Black Tower.” | Opening: Taim orders the capture. |
 | `st1_moiraine_01` | Moiraine | “Winternight has begun. Stay sharp.” | Stage 1 sequence: Emond's Field reveal. |
-| `st1_riley_01` | Riley | “I will guard our home.” | Stage 1 sequence: before the tutorial fight. |
+| `st1_riley_01` | Riley | “I'll guard our home.” | Stage 1 sequence: before the tutorial fight. |
 | `st2_moiraine_01` | Moiraine | “The Fade fled toward Caemlyn.” | Stage 2 sequence: city lead. |
-| `st2_riley_01` | Riley | “It will not lose me.” | Stage 2 sequence: Riley gives chase. |
+| `st2_riley_01` | Riley | “It won't lose me.” | Stage 2 sequence: Riley gives chase. |
 | `st2_fade_01` | Fade | “The Shadow sees you.” | Stage 2: Fade mini-boss entrance. |
 | `st3_moiraine_01` | Moiraine | “Mashadar hunts anything that moves.” | Stage 3 sequence: hazard warning. |
-| `st3_riley_01` | Riley | “Then I will move fast.” | Stage 3 sequence: Riley enters Shadar Logoth. |
+| `st3_riley_01` | Riley | “Then I'll move fast.” | Stage 3 sequence: Riley enters Shadar Logoth. |
 | `st3_draghkar_01` | Draghkar | “Come closer, little spark.” | Stage 3: Draghkar boss entrance. |
 | `st4_forsaken_01` | Forsaken | “Callandor belongs to me.” | Stage 4 sequence: Forsaken confronts Riley. |
 | `st4_riley_01` | Riley | “Not today.” | Stage 4 sequence: Riley answers the Forsaken. |
@@ -29,7 +29,7 @@ These are the complete short lines intended for spoken playback and matching sub
 | `st5_riley_02` | Riley | “Together!” | Finale: Riley begins the joint finish. |
 | `st5_kenzie_02` | Twinkle Toes | “Twinkle Toes thunder!” | Finale: Kenzie calls down lightning. |
 | `end_moiraine_01` | Moiraine | “The Wheel turned in our favor.” | Ending: after Taim falls. |
-| `end_riley_01` | Riley | “Let us go home.” | Ending: Riley and Kenzie reunite. |
+| `end_riley_01` | Riley | “Let's go home.” | Ending: Riley and Kenzie reunite. |
 | `end_kenzie_01` | Twinkle Toes | “After one victory dance!” | Ending: final joke before the victory screen. |
 
 ## Combat and system lines
@@ -56,7 +56,7 @@ These are the complete short lines intended for spoken playback and matching sub
 | `riley_call_spent_01` | Riley | “Loial needs a rest.” | First attempted second call in a stage; once per stage. |
 | `riley_callandor_01` | Riley | “Callandor answers!” | First upgraded super after obtaining Callandor. |
 | `riley_victory_01` | Riley | “The way is clear.” | Stage 1–4 clear pose. |
-| `riley_victory_02` | Riley | “Kenzie, I am coming.” | Alternate Stage 1–4 clear line. |
+| `riley_victory_02` | Riley | “Kenzie, I'm coming.” | Alternate Stage 1–4 clear line. |
 
 ## Enemy entrance lines
 
@@ -65,7 +65,7 @@ Use each line once, the first time that enemy archetype appears. These introduct
 | ID | Character | Exact line | When it plays |
 | --- | --- | --- | --- |
 | `trolloc_intro_01` | Trolloc | “The Shadow is hungry!” | First Trolloc card in Stage 1. |
-| `trolloc_heavy_intro_01` | Trolloc captain | “Break the village!” | First heavy Trolloc card. |
+| `trolloc_heavy_intro_01` | Trolloc chieftain | “Break the village!” | First heavy Trolloc card. |
 | `darkfriend_intro_01` | Darkfriend | “You cannot hide!” | First Darkfriend card in Caemlyn. |
 | `fade_intro_01` | Fade | “No road is safe.” | Fade mini-boss title card, before combat control resumes. |
 | `draghkar_intro_01` | Draghkar | “Listen to my song.” | Draghkar boss title card, before its first tell. |

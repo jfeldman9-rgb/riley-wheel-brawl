@@ -34,18 +34,18 @@ for(const [w,h,dpr,touch,bw,bh] of cases){
 }
 const b=boot(844,390,3,true),{WL,canvas,listeners,clisteners,context}=b;
 const key=(k,down)=>listeners[down?'keydown':'keyup'][0]({key:k,preventDefault(){}});
-for(const [k,act] of Object.entries({e:'attack',j:'attack',z:'attack',' ':'jump',k:'jump',x:'jump',q:'special',l:'special',c:'special',r:'tool',i:'tool',v:'tool',f:'fart',b:'fart',Escape:'pause',p:'pause',Enter:'start',m:'mute','\\':'fullscreen'})){
+for(const [k,act] of Object.entries({e:'attack',j:'attack',z:'attack',' ':'jump',k:'jump',x:'jump',q:'special',l:'special',c:'special',r:'tool',i:'tool',v:'tool',f:'saidin',b:'saidin',Escape:'pause',p:'pause',Enter:'start',m:'mute','\\':'fullscreen'})){
  key(k,true);WL.input.beginFrame();assert.equal(WL.input.pressed[act],true,k);key(k,false);WL.input.beginFrame();assert.equal(WL.input.held[act],false,k);
 }
 key('d',true);assert.equal(WL.input.axis().x,1);key('d',false);
 for(const button of WL.input.touch.buttons){const rect=canvas.getBoundingClientRect();const ev={pointerType:'touch',pointerId:1,clientX:button.x/640*rect.width,clientY:button.y/360*rect.height};clisteners.pointerdown(ev);WL.input.beginFrame();assert.equal(WL.input.pressed[button.id],true,button.id);clisteners.pointerup(ev);assert.equal(WL.input.held[button.id],false)}
 const pad={connected:true,index:0,axes:[0,0],buttons:Array.from({length:16},()=>({pressed:false,value:0}))};context.navigator.getGamepads=()=>[pad];
-for(const [idx,act] of Object.entries({0:'jump',1:'fart',2:'attack',3:'special',4:'tool',5:'tool',8:'pause',9:'start'})){pad.buttons[idx].pressed=true;WL.input.beginFrame();assert.equal(WL.input.pressed[act],true);pad.buttons[idx].pressed=false;WL.input.beginFrame();assert.equal(WL.input.held[act],false)}
+for(const [idx,act] of Object.entries({0:'jump',1:'saidin',2:'attack',3:'special',4:'tool',5:'tool',8:'pause',9:'start'})){pad.buttons[idx].pressed=true;WL.input.beginFrame();assert.equal(WL.input.pressed[act],true);pad.buttons[idx].pressed=false;WL.input.beginFrame();assert.equal(WL.input.held[act],false)}
 context.navigator.getGamepads=()=>[];WL.input.beginFrame();
 console.log('PASS keyboard aliases, all touch targets and standard gamepad bindings');
 for(let i=0;i<4;i++){
  const scene=new WL.scenes.Play(WL.game,i,{});scene.enter?.();scene.phase='play';scene.bannerT=0;scene.player.x=270;scene.player.y=275;
- scene.spawnEnemy(i===0?'broccoli':i===1?'carrot':i===2?'kale':'froyo',360,280,{});
+ scene.spawnEnemy(i===0?'trolloc':i===1?'fade':i===2?'stoneGuard':'ashaman',360,280,{});
  if(i===3)scene.spawnBoss();
  const ctx=canvas.getContext('2d');ctx.setTransform(WL.display.renderScale,0,0,WL.display.renderScale,0,0);scene.draw(ctx);
  if(process.env.WL_CAPTURE_DIR) fs.writeFileSync(process.env.WL_CAPTURE_DIR+'/wl-stage-'+i+'.png',canvas.toBuffer('image/png'));
@@ -54,7 +54,7 @@ for(let i=0;i<4;i++){
  console.log(`PASS stage ${i+1}: render, 120 update frames, background auto-pause`);
 }
 const ctx=canvas.getContext('2d');new WL.scenes.Title(WL.game).draw(ctx);if(process.env.WL_CAPTURE_DIR) fs.writeFileSync(process.env.WL_CAPTURE_DIR+'/wl-title.png',canvas.toBuffer('image/png'));
-const titleWidth=WL.text.width(ctx,'BUFFET BRAWL',34);assert.ok(240-titleWidth/2-4>0);console.log('PASS title fits without clipping');
+const titleWidth=WL.text.width(ctx,'battle BRAWL',34);assert.ok(240-titleWidth/2-4>0);console.log('PASS title fits without clipping');
 
 // Exercise actual BOX actions, not just whether an input event was queued.
 for (const pointerType of ['mouse', 'pen', 'touch']) {
@@ -83,16 +83,16 @@ for (const pointerType of ['mouse', 'pen', 'touch']) {
   }
   for(let i=0;i<24;i++) scene.player.update(1/60,WL.input);
   assert.equal(scene.projectiles.length,1);
-  assert.equal(scene.projectiles[0].kind,'toolbox');
-  assert.equal(scene.player.hasToolbox,false);
+  assert.equal(scene.projectiles[0].kind,'relic');
+  assert.equal(scene.player.hasRelic,false);
   const projectile=scene.projectiles[0];
   for(let i=0;i<120 && !projectile.remove;i++) projectile.update(1/60);
-  const pickup=scene.pickups.find(p=>p.kind==='toolbox');
-  assert.ok(pickup,'thrown toolbox returns as pickup');
+  const pickup=scene.pickups.find(p=>p.kind==='relic');
+  assert.ok(pickup,'thrown relic returns as pickup');
   scene.player.collect(pickup);
-  assert.equal(scene.player.hasToolbox,true);
+  assert.equal(scene.player.hasRelic,true);
   clisteners.pointerdown(box); WL.input.beginFrame(); scene.player.update(1/60,WL.input);
-  assert.equal(scene.player.state,'throw','recovered toolbox can be thrown again');
+  assert.equal(scene.player.state,'throw','recovered relic can be thrown again');
   clisteners.pointercancel(box); assert.equal(WL.input.held.tool,false);
   console.log(`PASS ${pointerType}: BOX throw, recover, rethrow, cancel; no accidental pause`);
 }
@@ -124,7 +124,7 @@ const freshPlay=(WL,i,carry)=>{const s=new WL.scenes.Play(WL.game,i,carry||{});s
   assert.equal(WL.settings.setKey('attack','h').ok,true);
   assert.equal(WL.settings.setKey('jump','e').ok,true,'old attack primary is free to reuse');
   assert.equal(WL.settings.setPad('attack',1).ok,true);
-  assert.equal(JSON.stringify(WL.settings.data.pad.fart),'[2]','stolen pad button swaps, nothing left unbound');
+  assert.equal(JSON.stringify(WL.settings.data.pad.saidin),'[2]','stolen pad button swaps, nothing left unbound');
   assert.equal(WL.settings.setKey('attack','Enter').ok,false,'Enter stays reserved');
   env=boot(1280,720,2,false,store); WL=env.WL;
   const s=WL.settings.data;
@@ -139,7 +139,7 @@ const freshPlay=(WL,i,carry)=>{const s=new WL.scenes.Play(WL.game,i,carry||{});s
   assert.ok(WL.input.fillKeys('{attack}: GO').startsWith('H/J'),'tutorial copy follows remaps');
   // Badges drawn in the sticky chrome match the remap, and the chrome still draws PICK UP.
   const drawn=[];const orig=WL.text.draw;WL.text.draw=(c,str,...r)=>{drawn.push(str);return orig(c,str,...r)};
-  const ctx=env.canvas.getContext('2d');WL.input.drawTouch(ctx,{always:true,fartReady:false,hasToolbox:false});WL.text.draw=orig;
+  const ctx=env.canvas.getContext('2d');WL.input.drawTouch(ctx,{always:true,surgeReady:false,hasRelic:false});WL.text.draw=orig;
   assert.ok(drawn.includes('H')&&drawn.includes('PICK UP'),'chrome shows remapped badge and PICK UP');
   // Pad remap drives actions.
   const pad={connected:true,index:0,axes:[0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};env.context.navigator.getGamepads=()=>[pad];
@@ -153,7 +153,7 @@ const freshPlay=(WL,i,carry)=>{const s=new WL.scenes.Play(WL.game,i,carry||{});s
 // 3. Continue from stage/wave.
 {
   const store=memStore();const env=boot(1280,720,2,false,store);const {WL}=env;
-  const scene=freshPlay(WL,1,{score:5000,lives:3,fart:0});
+  const scene=freshPlay(WL,1,{score:5000,lives:3,saidin:0});
   let run=WL.settings.loadRun();assert.equal(run.level,1);assert.equal(run.wave,0);
   scene.locked=true;scene.waveIdx=2;scene.groupIdx=scene.level.waves[2].groups.length-1;scene.enemies=[];scene.update(1/60,WL.input);
   run=WL.settings.loadRun();assert.equal(run.wave,3,'wave clear writes checkpoint');
@@ -174,20 +174,20 @@ const freshPlay=(WL,i,carry)=>{const s=new WL.scenes.Play(WL.game,i,carry||{});s
   assert.ok(p.invuln>=E.FAIR.lightStun,'iframes cover the whole stun');
   p.invuln=0;p.setState('idle');p.hurt(5,p.x+10,false);p.invuln=0;p.setState('idle');p.hurt(5,p.x+10,false);assert.equal(p.state,'down','third light hit in a streak knocks down (release)');
   p.setState('idle');p.invuln=0;p.hitStreak=0;p.wakeT=0;
-  const a=scene.spawnEnemy('broccoli',p.x+30,p.y,{});const b=scene.spawnEnemy('broccoli',p.x-30,p.y,{});a.setState('windup');
+  const a=scene.spawnEnemy('trolloc',p.x+30,p.y,{});const b=scene.spawnEnemy('trolloc',p.x-30,p.y,{});a.setState('windup');
   scene.t=10;scene.lastAttackT=0;
   assert.equal(scene.canStartAttack(b),false,'no attacks from both sides at once');
-  const c=scene.spawnEnemy('sprout',p.x+50,p.y,{});assert.equal(scene.canStartAttack(c),true,'same-side partner may attack');
-  p.setState('hurt');assert.equal(scene.canStartAttack(c),false,'enemies respect a reeling Lance');
-  // Enemy melee box matches the drawn tell and misses when Lance side-steps.
-  p.setState('idle');p.invuln=0;scene.enemies=[];const e=scene.spawnEnemy('broccoli',p.x+40,p.y+E.FAIR.hurtDepth+2,{});e.facing=-1;e.setState('attack');e.stateT=0.09;e.hitDone=false;const hp=p.hp;e.update(1/60);assert.equal(p.hp,hp,'lane side-step escapes');
+  const c=scene.spawnEnemy('trollocHeavy',p.x+50,p.y,{});assert.equal(scene.canStartAttack(c),true,'same-side partner may attack');
+  p.setState('hurt');assert.equal(scene.canStartAttack(c),false,'enemies respect a reeling riley');
+  // Enemy melee box matches the drawn tell and misses when riley side-steps.
+  p.setState('idle');p.invuln=0;scene.enemies=[];const e=scene.spawnEnemy('trolloc',p.x+40,p.y+E.FAIR.hurtDepth+2,{});e.facing=-1;e.setState('attack');e.stateT=0.09;e.hitDone=false;const hp=p.hp;e.update(1/60);assert.equal(p.hp,hp,'lane side-step escapes');
   // Enemies get up with brief iframes; light-hit lock limit.
-  const g=scene.spawnEnemy('kale',p.x+30,p.y,{});g.setState('getup');assert.equal(g.hittable,false);g.setState('approach');
+  const g=scene.spawnEnemy('stoneGuard',p.x+30,p.y,{});g.setState('getup');assert.equal(g.hittable,false);g.setState('approach');
   for(let i=0;i<E.FAIR.enemyStreakLimit;i++){if(g.state!=='down'){g.setState('approach');g.hurt(1,p.x,{})}}
   assert.equal(g.state,'down','fifth light hit tumbles the enemy');
   console.log('PASS fairness: light-hit iframes, streak knockdown, no sandwiches, openings respected, side-step escapes, getup iframes');
 }
-// 5. Wrench Pop launcher + juggle; mash keeps the sweep.
+// 5. staff Pop launcher + juggle; mash keeps the sweep.
 {
   const env=boot(1280,720,2,false);const {WL}=env;const E=WL.entities;
   const scene=freshPlay(WL,0);const p=scene.player;scene.enemies=[];scene.objects=[];
@@ -195,25 +195,25 @@ const freshPlay=(WL,i,carry)=>{const s=new WL.scenes.Play(WL.game,i,carry||{});s
   p.nextCombo='sweep';p.comboTimer=0.42-0.02;p.setState('idle');
   inp.pressed={attack:true};p.update(1/60,inp);assert.equal(p.attack,E.ATTACKS.sweep,'quick press = sweep');
   p.setState('idle');p.nextCombo='sweep';p.comboTimer=0.42-0.15;
-  const e=scene.spawnEnemy('broccoli',p.x+36,p.y,{});e.setState('approach');p.facing=1;
-  inp.pressed={attack:true};p.update(1/60,inp);assert.equal(p.attack,E.ATTACKS.pop,'a beat later = Wrench Pop');
+  const e=scene.spawnEnemy('trolloc',p.x+36,p.y,{});e.setState('approach');p.facing=1;
+  inp.pressed={attack:true};p.update(1/60,inp);assert.equal(p.attack,E.ATTACKS.pop,'a beat later = staff Pop');
   inp.pressed={};for(let i=0;i<10;i++)p.update(1/60,inp);
   assert.equal(e.state,'juggle','launcher pops the enemy');
   for(let i=0;i<8;i++)e.update(1/60);
   const before=e.juggleLeft;e.hurt(5,p.x,{});assert.equal(e.juggleLeft,before-1,'follow-up juggles');assert.equal(e.state,'juggle');
   e.juggleLeft=0;e.hurt(5,p.x,{});assert.equal(e.state,'down','juggle budget ends in a knockdown');
-  console.log('PASS combo: mash = sweep, timed beat = Wrench Pop launcher, juggle budget');
+  console.log('PASS combo: mash = sweep, timed beat = staff Pop launcher, juggle budget');
 }
 // 7. FX pool + caps.
 {
   const {WL}=boot(844,390,1,true);const scene=freshPlay(WL,0);
   WL.settings.set({fx:'auto'});WL.perf.coarse=true;
-  for(let i=0;i<200;i++)scene.fx.debris(300,250,'plates');
+  for(let i=0;i<200;i++)scene.fx.debris(300,250,'urn');
   assert.ok(scene.fx.list.length<=WL.perf.fxCap,'coarse-pointer cap holds: '+scene.fx.list.length);
   for(let i=0;i<120;i++)scene.fx.update(1/60);
   const pooled=scene.fx.pool.length;assert.ok(pooled>0,'dead particles return to the pool');
-  scene.fx.burst(300,250,'broccoli');assert.ok(scene.fx.pool.length<pooled,'new particles reuse pooled objects');
-  scene.fx.spark(1,1,true);scene.fx.text(1,1,'X');assert.ok(scene.fx.list.some(f=>f.kind==='text'),'callouts never dropped');
+  scene.fx.burst(300,250,'trolloc');assert.ok(scene.fx.pool.length<pooled,'new particles reuse pooled objects');
+  scene.fx.ashaman(1,1,true);scene.fx.text(1,1,'X');assert.ok(scene.fx.list.some(f=>f.kind==='text'),'callouts never dropped');
   assert.equal(WL.perf.lite,true,'coarse + 1x DPR runs LITE in auto');
   console.log(`PASS FX pool: cap ${WL.perf.fxCap}, ${pooled} pooled, lite on coarse low-DPR`);
 }
@@ -244,7 +244,7 @@ const freshPlay=(WL,i,carry)=>{const s=new WL.scenes.Play(WL.game,i,carry||{});s
   assert.ok(JSON.parse(store.getItem('wl-settings')).overlay!==0.55,'overlay change saved');
   console.log('PASS large HUD + colorblind render; pause Options/Controls panels; title Settings');
 }
-// 11. Story reels: painted plates on disk, every card readable inside ~3 s, every beat scored, press/skip flow.
+// 11. Story reels: painted urn on disk, every card readable inside ~3 s, every beat scored, press/skip flow.
 {
   const env=boot(1920,1080,1,false);const {WL}=env;const ctx=env.canvas.getContext('2d');const A=WL.audio;
   const beats=[...WL.OPENING,...WL.LEVELS.flatMap(L=>[L.intro,L.outro]).filter(Boolean),...WL.ENDING];
@@ -256,13 +256,13 @@ const freshPlay=(WL,i,carry)=>{const s=new WL.scenes.Play(WL.game,i,carry||{});s
     const firstCue=Math.min(0.5,...(b.tags||[]).map(g=>g.at),b.slam&&!b.slam.end?b.slam.at:9);
     assert.ok(firstCue<=1.5&&tl.lines[0].start<=1,'who/where lands in under 1.5 s and dialogue by 1 s: '+b.plate);
     assert.ok(b.cam&&b.cam.length===6&&b.cam[2]>=1&&b.cam[5]>=1,'camera move never shows plate edges: '+b.plate);
-    for(const l of tl.lines)assert.ok(['lance','captain','narrator'].includes(l.who));
+    for(const l of tl.lines)assert.ok(['riley','chieftain','narrator'].includes(l.who));
   }
-  assert.ok(fs.existsSync(root+'/assets/cutscenes/captain-portrait.webp'));
+  assert.ok(fs.existsSync(root+'/assets/cutscenes/chieftain-portrait.webp'));
   assert.ok(WL.assets.STORY.every(n=>fs.existsSync(root+'/assets/cutscenes/'+n+'.webp')),'every lazy story key has a file');
   const idle={pressed:{},axis:()=>({x:0,y:0})};
   const run=(scene,secs,drawEvery)=>{for(let f=0;f<secs*60&&!scene.done;f++){scene.update(1/60,idle);if(drawEvery&&f%drawEvery===0)scene.draw(ctx)}};
-  // Opening runs itself (no input) through the Lido intro, then the fight.
+  // Opening runs itself (no input) through the village intro, then the fight.
   A.trace.length=0;
   WL.game.startNewGame(true);WL.game._swap();
   const cut=WL.game.scene;assert.ok(cut instanceof WL.scenes.Cutscene);assert.equal(cut.beats.length,5);
@@ -275,7 +275,7 @@ const freshPlay=(WL,i,carry)=>{const s=new WL.scenes.Play(WL.game,i,carry||{});s
   }
   assert.ok(cut.done,'opening finishes on its own');
   assert.ok(WL.game.nextScene instanceof WL.scenes.Play&&WL.game.nextScene.level===WL.LEVELS[0],'opening hands over to stage 1');
-  assert.equal(A.song,'lido','stage 1 intro switches to the stage song');
+  assert.equal(A.song,'village','stage 1 intro switches to the stage song');
   perBeat.forEach((p,k)=>{
     const cues=A.trace.slice(p.from,(perBeat[k+1]||{from:A.trace.length}).from).map(c=>c.name);
     assert.ok(cues.some(n=>n.startsWith('stinger:')),'beat '+(k+1)+' plays a stinger');
@@ -292,11 +292,11 @@ const freshPlay=(WL,i,carry)=>{const s=new WL.scenes.Play(WL.game,i,carry||{});s
   for(let k=0;k<3;k++)reel.draw(ctx),reel.update(0.2,idle);
   reel.update(1/60,press({pause:true}));assert.equal(done,1,'pause skips the reel');
   const skip=new WL.scenes.Cutscene(WL.game,WL.OPENING,()=>done++);skip.enter();skip.waiting=false;run(skip,0.5);
-  skip.update(1/60,{pressed:{click:true,start:true},pointer:{x:630,y:10},axis:()=>({x:0,y:0})});assert.equal(done,2,'SKIP chip click skips');
-  // Stage clear: repair log then the next deck's intro in one reel, then the fight.
-  WL.game.levelComplete(0,{score:1000,lives:3,fart:10});WL.game._swap();
-  const sb=WL.game.scene;assert.ok(sb instanceof WL.scenes.StoryBeat);assert.equal(sb.beats.map(b=>b.plate).join(),'st1-lido-outro,st2-plant-intro');
-  assert.equal(A.song,'story');run(sb,60,30);assert.ok(sb.done&&WL.game.nextScene instanceof WL.scenes.Play);assert.equal(A.song,'plant');
+  skip.update(1/60,{pressed:{click:true,start:true},pointer:{x:630,y:10},axis:()=>({x:0,y:0})});assert.equal(done,2,'SKIP mark click skips');
+  // Stage clear: repair log then the next stage's intro in one reel, then the fight.
+  WL.game.levelComplete(0,{score:1000,lives:3,saidin:10});WL.game._swap();
+  const sb=WL.game.scene;assert.ok(sb instanceof WL.scenes.StoryBeat);assert.equal(sb.beats.map(b=>b.plate).join(),'st1-village-outro,st2-shrine-intro');
+  assert.equal(A.song,'story');run(sb,60,30);assert.ok(sb.done&&WL.game.nextScene instanceof WL.scenes.Play);assert.equal(A.song,'shrine');
   // Ending: three beats to the victory screen, scored with the victory song.
   WL.game.showEnding(5000);WL.game._swap();const end=WL.game.scene;assert.equal(end.beats.length,3);assert.equal(A.song,'victory');
   run(end,90,30);assert.ok(end.done&&WL.game.nextScene instanceof WL.scenes.Victory);

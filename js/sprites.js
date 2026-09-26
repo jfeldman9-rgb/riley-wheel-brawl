@@ -1,5 +1,5 @@
 /* Procedural arcade sprites. Everything is drawn with canvas primitives so the
-   game has zero binary sprite dependencies; Lance's head uses the photo-derived
+   game has zero binary sprite dependencies; riley's head uses the photo-derived
    portrait when available. All draw functions take the FEET position as origin
    and draw facing +x; callers flip with ctx.scale(-1,1) for facing left. */
 'use strict';
@@ -115,7 +115,7 @@ WL.sprites = (function () {
     ctx.lineWidth = 2;
     if (endColor) ball(ctx, x2, y2, endR || w * 0.75, endColor);
   }
-  /** Five-petal hibiscus for shirt prints, logo and deck dressing. */
+  /** Five-petal hibiscus for shirt prints, logo and stage dressing. */
   function hibiscus(ctx, x, y, r, petal, center, rot) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0);
     ctx.fillStyle = petal;
@@ -153,11 +153,11 @@ WL.sprites = (function () {
     }
   }
 
-  /* ================= LANCE ================= */
-  /* Lance's cruise look, matched to the reference photos: white thinning hair,
+  /* ================= riley ================= */
+  /* riley's journey look, matched to the reference photos: white thinning hair,
      prominent white mustache, tan/ruddy skin, red polo with a purple & white
      lei, gray cargo shorts, black sneakers, plus a mechanic's tool belt. */
-  const LANCE = {
+  const riley = {
     shirt: '#c8322a', shirtDark: '#8e1f18', shirtLight: '#e0483c',
     shorts: '#6e716b', shortsDark: '#50534e',
     skin: '#dca27a', skinDark: '#b8825a', skinLight: '#ead0b0',
@@ -168,13 +168,13 @@ WL.sprites = (function () {
   };
 
   /**
-   * lanceHead(ctx, x, y, h, opts) — x,y = head center, h = head height.
-   * If a real photo crop is present at assets/lance/lance-head.png it is used
+   * rileyHead(ctx, x, y, h, opts) — x,y = head center, h = head height.
+   * If a real photo crop is present at assets/riley/riley-head.png it is used
    * (inside an oval mask); otherwise the head is drawn from the photo spec.
    */
-  function lanceHead(ctx, x, y, h, opts) {
+  function rileyHead(ctx, x, y, h, opts) {
     opts = opts || {};
-    const img = WL.assets.get('lanceHead');
+    const img = WL.assets.get('rileyHead');
     if (img && !opts.noPhoto) {
       const w = h * (img.width / img.height);
       ctx.save();
@@ -191,11 +191,11 @@ WL.sprites = (function () {
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     const mood = opts.mood || 'neutral'; // neutral | grin | hurt | strain
     // neck
-    ctx.fillStyle = LANCE.skinDark; ctx.fillRect(-0.19, 0.3, 0.38, 0.3);
+    ctx.fillStyle = riley.skinDark; ctx.fillRect(-0.19, 0.3, 0.38, 0.3);
     // ears
-    for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * 0.42, 0.04, 0.075, 0.11, 0, 0, 7); ctx.fillStyle = LANCE.skin; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = lw; ctx.stroke(); }
+    for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * 0.42, 0.04, 0.075, 0.11, 0, 0, 7); ctx.fillStyle = riley.skin; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = lw; ctx.stroke(); }
     // white hair on the sides/back, hugging the skull behind the temples and ears
-    for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * 0.35, -0.02, 0.10, 0.25, s * 0.15, 0, 7); ctx.fillStyle = LANCE.hairShade; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = lw; ctx.stroke(); }
+    for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * 0.35, -0.02, 0.10, 0.25, s * 0.15, 0, 7); ctx.fillStyle = riley.hairShade; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = lw; ctx.stroke(); }
     // face: round, full cheeks, soft jowls
     ctx.beginPath();
     ctx.moveTo(-0.40, -0.08);
@@ -204,7 +204,7 @@ WL.sprites = (function () {
     ctx.bezierCurveTo(0.42, 0.18, 0.30, 0.44, 0, 0.47);
     ctx.bezierCurveTo(-0.30, 0.44, -0.42, 0.18, -0.40, -0.08);
     ctx.closePath();
-    ctx.fillStyle = LANCE.skin; ctx.fill();
+    ctx.fillStyle = riley.skin; ctx.fill();
     if (rich()) {
       const fg = ctx.createLinearGradient(LS * 0.46, -0.42, -LS * 0.46, 0.35);
       fg.addColorStop(0, 'rgba(255,236,205,0.55)');
@@ -250,7 +250,7 @@ WL.sprites = (function () {
     ctx.strokeStyle = OUT; ctx.lineWidth = 0.075;
     ctx.beginPath(); ctx.moveTo(-0.31, -0.15 + browLift - inner * 0.6); ctx.quadraticCurveTo(-0.18, -0.21, -0.06, -0.15 + inner); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(0.06, -0.15 + inner); ctx.quadraticCurveTo(0.18, -0.21, 0.31, -0.15 + browLift - inner * 0.6); ctx.stroke();
-    ctx.strokeStyle = LANCE.hair; ctx.lineWidth = 0.055;
+    ctx.strokeStyle = riley.hair; ctx.lineWidth = 0.055;
     ctx.beginPath(); ctx.moveTo(-0.30, -0.155 + browLift - inner * 0.6); ctx.quadraticCurveTo(-0.18, -0.215, -0.07, -0.155 + inner); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(0.07, -0.155 + inner); ctx.quadraticCurveTo(0.18, -0.215, 0.30, -0.155 + browLift - inner * 0.6); ctx.stroke();
     ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 0.018;
@@ -269,7 +269,7 @@ WL.sprites = (function () {
       ctx.beginPath(); ctx.arc(s * 0.165, -0.035, 0.014, 0, 7); ctx.fillStyle = '#111'; ctx.fill();
       ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(s * 0.15, -0.05, 0.008, 0, 7); ctx.fill();
       // hooded upper lid
-      ctx.strokeStyle = LANCE.skinDark; ctx.lineWidth = 0.02; ctx.beginPath(); ctx.moveTo(s * 0.09, -0.085); ctx.quadraticCurveTo(s * 0.17, -0.11, s * 0.25, -0.08); ctx.stroke();
+      ctx.strokeStyle = riley.skinDark; ctx.lineWidth = 0.02; ctx.beginPath(); ctx.moveTo(s * 0.09, -0.085); ctx.quadraticCurveTo(s * 0.17, -0.11, s * 0.25, -0.08); ctx.stroke();
       // crow's feet
       ctx.lineWidth = 0.012; ctx.beginPath(); ctx.moveTo(s * 0.26, -0.03); ctx.lineTo(s * 0.32, -0.05); ctx.moveTo(s * 0.26, -0.01); ctx.lineTo(s * 0.32, 0.01); ctx.stroke();
     }
@@ -304,9 +304,9 @@ WL.sprites = (function () {
       const mg = ctx.createLinearGradient(0, 0.15, 0, 0.33);
       mg.addColorStop(0, '#ffffff'); mg.addColorStop(0.55, '#eceef2'); mg.addColorStop(1, '#b9bcc6');
       ctx.fillStyle = mg;
-    } else ctx.fillStyle = LANCE.hair;
+    } else ctx.fillStyle = riley.hair;
     ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = LANCE.hairShade; ctx.lineWidth = 0.012;
+    ctx.strokeStyle = riley.hairShade; ctx.lineWidth = 0.012;
     for (let i = -3; i <= 3; i++) { if (!i) continue; ctx.beginPath(); ctx.moveTo(i * 0.045, 0.2 + Math.abs(i) * 0.005); ctx.quadraticCurveTo(i * 0.06, 0.25, i * 0.075, 0.29); ctx.stroke(); }
     ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 0.016;
     ctx.beginPath(); ctx.moveTo(LS * 0.04, 0.19); ctx.quadraticCurveTo(LS * 0.16, 0.175, LS * 0.24, 0.22); ctx.stroke();
@@ -317,25 +317,25 @@ WL.sprites = (function () {
   }
 
   /** Head-and-shoulders bust for the title / ending screens. h = head height. */
-  function drawLanceBust(ctx, x, y, h, opts) {
+  function drawRileyBust(ctx, x, y, h, opts) {
     opts = opts || {};
     ctx.save(); ctx.translate(x, y);
     const s = h / 34; // body proportions relative to the in-game head
     // shoulders / chest in red polo
     ctx.save(); ctx.scale(s, s);
     ctx.beginPath(); ctx.moveTo(-42, 60); ctx.lineTo(-40, 30); ctx.quadraticCurveTo(-36, 16, -18, 14); ctx.lineTo(18, 14); ctx.quadraticCurveTo(36, 16, 40, 30); ctx.lineTo(42, 60); ctx.closePath();
-    ctx.fillStyle = LANCE.shirt; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = riley.shirt; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = 2; ctx.stroke();
     ctx.save(); ctx.clip(); ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.fillRect(-60, 14, 26, 60); ctx.restore();
     // collar + placket
-    ctx.fillStyle = LANCE.shirtLight; ctx.beginPath(); ctx.moveTo(-14, 14); ctx.lineTo(0, 30); ctx.lineTo(-8, 14); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(14, 14); ctx.lineTo(0, 30); ctx.lineTo(8, 14); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = riley.shirtLight; ctx.beginPath(); ctx.moveTo(-14, 14); ctx.lineTo(0, 30); ctx.lineTo(-8, 14); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(14, 14); ctx.lineTo(0, 30); ctx.lineTo(8, 14); ctx.closePath(); ctx.fill();
     ctx.strokeStyle = OUT; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-14, 14); ctx.lineTo(0, 30); ctx.lineTo(14, 14); ctx.stroke();
     ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 36, 1.6, 0, 7); ctx.fill(); ctx.beginPath(); ctx.arc(0, 43, 1.6, 0, 7); ctx.fill();
     // neck
-    ctx.fillStyle = LANCE.skinDark; ctx.fillRect(-8, 6, 16, 12);
+    ctx.fillStyle = riley.skinDark; ctx.fillRect(-8, 6, 16, 12);
     // lei
     lei(ctx, 0, 16, 22, 34, 3.4);
     ctx.restore();
-    lanceHead(ctx, 0, 0, h, { mood: opts.mood || 'grin' });
+    rileyHead(ctx, 0, 0, h, { mood: opts.mood || 'grin' });
     ctx.restore();
   }
 
@@ -346,7 +346,7 @@ WL.sprites = (function () {
     for (let i = 0; i <= n; i++) {
       const a = Math.PI * (i / n);
       const px = cx + Math.cos(a) * rx * -1, py = cy + Math.sin(a) * ry;
-      const c = i % 3 === 1 ? LANCE.leiB : (i % 3 === 2 ? LANCE.leiC : LANCE.leiA);
+      const c = i % 3 === 1 ? riley.leiB : (i % 3 === 2 ? riley.leiC : riley.leiA);
       // dark backing disc keeps the silhouette readable on the red shirt
       ctx.beginPath(); ctx.arc(px, py, r * 1.08, 0, 7); ctx.fillStyle = OUT; ctx.fill();
       if (flowers) {
@@ -374,11 +374,11 @@ WL.sprites = (function () {
     ctx.save(); ctx.translate(x, y); ctx.rotate(ang || 0);
     outlineStyle(ctx, 2);
     const hi = rich();
-    if (kind === 'screwdriver') {
+    if (kind === 'wand') {
       D.fillRRect(ctx, -6, -3, 12, 6, 2, hi ? enamel(ctx, -3, 3, '#e8c000') : '#e8c000', OUT);
       D.fillRRect(ctx, 6, -1.5, 16, 3, 1, hi ? chrome(ctx, -1.5, 1.5) : '#b8bcc8', OUT);
       ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(-3, -3, 1, 6); ctx.fillRect(1, -3, 1, 6);
-    } else if (kind === 'wrench') {
+    } else if (kind === 'staff') {
       const m = hi ? chrome(ctx, -8, 8) : '#a8b0c0';
       D.fillRRect(ctx, -4, -3, 26, 6, 3, m, OUT);
       ctx.beginPath(); ctx.arc(24, 0, 8, 0.6, Math.PI * 2 - 0.6); ctx.closePath(); ctx.fillStyle = m; ctx.fill(); ctx.stroke();
@@ -401,8 +401,8 @@ WL.sprites = (function () {
       ctx.fillStyle = '#fff'; ctx.fillRect(-4, -4, 8, 6);
       ctx.fillStyle = '#1d6fa0'; ctx.fillRect(-3, -2.5, 6, 1.2);
       D.fillRRect(ctx, -2, -12, 4, 5, 1, hi ? chrome(ctx, -12, -7) : '#888', OUT);
-    } else if (kind === 'toolbox') {
-      // Red steel toolbox: cantilever lid, chrome latches and handle, specular edge.
+    } else if (kind === 'relic') {
+      // Red steel relic: cantilever lid, chrome latches and handle, specular edge.
       D.fillRRect(ctx, -11, -7, 22, 15, 2.5, hi ? enamel(ctx, -7, 8, '#d42e24') : '#c8322a', OUT);
       D.fillRRect(ctx, -11.5, -8, 23, 5, 2, hi ? enamel(ctx, -8, -3, '#e8463a') : '#e0483c', OUT);
       ctx.fillStyle = '#7a1c16'; ctx.fillRect(-10, -2.5, 20, 1.2);
@@ -450,55 +450,55 @@ WL.sprites = (function () {
   }
 
   /**
-   * drawLance(ctx, x, y, o)
-   * o.pose: idle|walk|jab|smash|smashWind|sweep|spray|throw|grab|grabHit|jump|jumpkick|hurt|down|fart|fartCharge|victory|dead|carry
+   * drawRiley(ctx, x, y, o)
+   * o.pose: idle|walk|jab|smash|smashWind|sweep|fire|throw|grab|grabHit|jump|jumpkick|hurt|down|saidin|surgeCharge|victory|dead|carry
    * o.t: animation time (seconds), o.flash: white flash, o.thin: slim ending version, o.alpha
    */
   /* ---- painted sprites (assets/art, see tools/bake_art.py) ----
      Poses map onto baked frames; the little motion between frames (breathing,
-     walk bob, recoil, wobble) is added here. o.floorY (the deck under a jumping
-     body) turns on the silhouette cast shadow and the deck reflection. */
-  const LANCE_FRAME = { idle: 'idle', walk: 'walk0', jab: 'jab', smashWind: 'smashWind', smash: 'smash', sweepWind: 'sweepWind', sweep: 'sweep', popWind: 'popWind', uppercut: 'uppercut', spray: 'spray', throw: 'throw', grab: 'grab', grabHit: 'grabHit', jump: 'jump', jumpkick: 'jumpkick', hurt: 'hurt', down: 'down', dead: 'down', fartCharge: 'fartCharge', fart: 'fart', victory: 'victory', carry: 'carry' };
+     walk bob, recoil, wobble) is added here. o.floorY (the stage under a jumping
+     body) turns on the silhouette cast shadow and the stage reflection. */
+  const riley_FRAME = { idle: 'idle', walk: 'walk0', jab: 'jab', smashWind: 'smashWind', smash: 'smash', sweepWind: 'sweepWind', sweep: 'sweep', popWind: 'popWind', uppercut: 'uppercut', fire: 'fire', throw: 'throw', grab: 'grab', grabHit: 'grabHit', jump: 'jump', jumpkick: 'jumpkick', hurt: 'hurt', down: 'down', dead: 'down', surgeCharge: 'surgeCharge', saidin: 'saidin', victory: 'victory', carry: 'carry' };
   function underBody(ctx, name, f, x, y, o) {
     if (o.floorY == null) return;
     const z = Math.max(0, o.floorY - y);
     if (WL.light.gloss) WL.art.reflect(ctx, name, f, x, o.floorY, z, { facing: o.facing, alpha: o.alpha, strength: WL.light.gloss });
     WL.art.castShadow(ctx, name, f, x, o.floorY, z, { facing: o.facing, alpha: o.alpha });
   }
-  function paintedLance(ctx, x, y, o) {
+  function paintedRiley(ctx, x, y, o) {
     const pose = o.pose || 'idle', t = o.t || 0;
-    let f = LANCE_FRAME[pose] || 'idle';
+    let f = riley_FRAME[pose] || 'idle';
     const m = { facing: o.facing, alpha: o.alpha };
     switch (pose) {
       case 'idle': m.sy = 1 + Math.sin(t * 4) * 0.012; m.sx = 1 - Math.sin(t * 4) * 0.006; break;
       case 'walk': f = Math.floor(t * 7) % 2 ? 'walk1' : 'walk0'; m.lift = Math.abs(Math.sin(t * Math.PI * 7)) * 1.4; break;
       case 'hurt': m.rot = -0.08; break;
-      case 'fartCharge': x += Math.sin(t * 70) * 0.7; m.sy = 0.985 + Math.sin(t * 30) * 0.01; break;
-      case 'fart': m.sx = 1.04; m.sy = 0.97; break;
+      case 'surgeCharge': x += Math.sin(t * 70) * 0.7; m.sy = 0.985 + Math.sin(t * 30) * 0.01; break;
+      case 'saidin': m.sx = 1.04; m.sy = 0.97; break;
       case 'victory': m.lift = Math.abs(Math.sin(t * 5)) * 2; break;
       case 'dead': m.alpha = (o.alpha !== undefined ? o.alpha : 1); break;
     }
-    underBody(ctx, 'lance', f, x, y, o);
+    underBody(ctx, 'riley', f, x, y, o);
     if (o.flash) {
-      drawFlashed(ctx, x, y, 150, 250, (g) => paintedLance(g, 150, 250, Object.assign({}, o, { flash: false, floorY: null })));
+      drawFlashed(ctx, x, y, 150, 250, (g) => paintedRiley(g, 150, 250, Object.assign({}, o, { flash: false, floorY: null })));
       return true;
     }
-    WL.art.draw(ctx, 'lance', f, x, y, m);
+    WL.art.draw(ctx, 'riley', f, x, y, m);
     if (pose === 'down' && !o.noStars) {
       for (let i = 0; i < 3; i++) { const a = t * 5 + i * 2.1; D.circle(ctx, x + (o.facing < 0 ? 30 : -30) + Math.cos(a) * 12, y - 24 + Math.sin(a) * 4, 2.5, '#ffe14a', OUT); }
     }
     return true;
   }
 
-  const PAINT_H = { broccoli: 88, carrot: 82, sprout: 46, celery: 94 };
+  const PAINT_H = { trolloc: 88, fade: 82, trollocHeavy: 46, darkfriend: 94 };
   function enemyFrame(type, pose, t) {
     switch (pose) {
       case 'walk': return Math.floor(t * 6) % 2 ? 'walk1' : 'walk0';
       case 'windup': return 'windup';
       case 'attack': case 'spit': return 'attack';
-      case 'kick': return type === 'carrot' ? 'kick' : 'attack';
-      case 'dash': return type === 'sprout' ? 'dash' : 'walk0';
-      case 'roll': return type === 'sprout' ? 'hurt' : 'walk1';
+      case 'kick': return type === 'fade' ? 'kick' : 'attack';
+      case 'dash': return type === 'trollocHeavy' ? 'dash' : 'walk0';
+      case 'roll': return type === 'trollocHeavy' ? 'hurt' : 'walk1';
       case 'hurt': case 'grabbed': case 'knockdown': return 'hurt';
       case 'down': case 'dead': case 'thrown': return 'down';
     }
@@ -516,7 +516,7 @@ WL.sprites = (function () {
       case 'walk': m.lift = Math.abs(Math.sin(t * Math.PI * 6)) * 1.2; break;
       case 'windup': x += Math.sin(t * 50) * 0.6; break;
       case 'stunned': m.rot = Math.sin(t * 12) * 0.06; break;
-      case 'dash': m.rot = e.type === 'sprout' ? 0 : 0.14; break;
+      case 'dash': m.rot = e.type === 'trollocHeavy' ? 0 : 0.14; break;
       case 'roll': m.rot = t * 14; m.pivot = h * 0.5; m.lift = -h * 0.2; break;
       case 'knockdown': m.rot = -0.5 - Math.sin(t * 8) * 0.3; m.pivot = h * 0.5; break;
       case 'thrown': m.rot = t * 14; m.pivot = h * 0.25; break;
@@ -531,11 +531,11 @@ WL.sprites = (function () {
     return h;
   }
 
-  function drawLance(ctx, x, y, o) {
+  function drawRiley(ctx, x, y, o) {
     o = o || {};
-    if (!o.thin && WL.art.has('lance') && paintedLance(ctx, x, y, o)) return;
+    if (!o.thin && WL.art.has('riley') && paintedRiley(ctx, x, y, o)) return;
     if (o.flash) {
-      drawFlashed(ctx, x, y, 150, 250, (f) => drawLance(f, 150, 250, Object.assign({}, o, { flash: false })));
+      drawFlashed(ctx, x, y, 150, 250, (f) => drawRiley(f, 150, 250, Object.assign({}, o, { flash: false })));
       return;
     }
     const t = o.t || 0;
@@ -588,16 +588,16 @@ WL.sprites = (function () {
       }
       case 'jab':
         lean = 5; lf = { x: -12, y: 0 }; rf = { x: 12, y: 0 };
-        fe = { x: 20, y: -56 }; fh = { x: 36, y: -54 }; toolKind = 'screwdriver'; toolAng = 0;
+        fe = { x: 20, y: -56 }; fh = { x: 36, y: -54 }; toolKind = 'wand'; toolAng = 0;
         be = { x: -14, y: -52 }; bh2 = { x: -6, y: -46 };
         break;
       case 'smashWind':
-        lean = -3; fe = { x: 4, y: -78 }; fh = { x: -6, y: -92 }; toolKind = 'wrench'; toolAng = -2.2;
+        lean = -3; fe = { x: 4, y: -78 }; fh = { x: -6, y: -92 }; toolKind = 'staff'; toolAng = -2.2;
         be = { x: -14, y: -50 }; bh2 = { x: -4, y: -46 };
         break;
       case 'smash':
         lean = 6; crouch = 3; lf = { x: -12, y: 0 }; rf = { x: 14, y: 0 };
-        fe = { x: 22, y: -56 }; fh = { x: 34, y: -44 }; toolKind = 'wrench'; toolAng = 0.55;
+        fe = { x: 22, y: -56 }; fh = { x: 34, y: -44 }; toolKind = 'staff'; toolAng = 0.55;
         be = { x: -14, y: -50 }; bh2 = { x: -2, y: -44 };
         break;
       case 'sweep':
@@ -607,12 +607,12 @@ WL.sprites = (function () {
         break;
       case 'popWind':
         crouch = 7; lean = 3; lf = { x: -14, y: 0 }; rf = { x: 14, y: 0 };
-        fe = { x: 14, y: -44 }; fh = { x: 24, y: -30 }; toolKind = 'wrench'; toolAng = 1.3;
+        fe = { x: 14, y: -44 }; fh = { x: 24, y: -30 }; toolKind = 'staff'; toolAng = 1.3;
         be = { x: -14, y: -48 }; bh2 = { x: -6, y: -40 };
         break;
       case 'uppercut':
         lean = 2; lf = { x: -10, y: 0 }; rf = { x: 12, y: -3 };
-        fe = { x: 18, y: -74 }; fh = { x: 24, y: -94 }; toolKind = 'wrench'; toolAng = -1.35;
+        fe = { x: 18, y: -74 }; fh = { x: 24, y: -94 }; toolKind = 'staff'; toolAng = -1.35;
         be = { x: -14, y: -54 }; bh2 = { x: -4, y: -48 };
         break;
       case 'sweepWind':
@@ -620,7 +620,7 @@ WL.sprites = (function () {
         fe = { x: -12, y: -60 }; fh = { x: -30, y: -58 }; toolKind = 'pipewrench'; toolAng = Math.PI + 0.3;
         be = { x: -16, y: -56 }; bh2 = { x: -28, y: -56 };
         break;
-      case 'spray':
+      case 'fire':
         lean = 3; fe = { x: 18, y: -56 }; fh = { x: 30, y: -56 }; toolKind = 'canister'; toolAng = Math.PI / 2;
         be = { x: -14, y: -52 }; bh2 = { x: -8, y: -44 };
         break;
@@ -650,22 +650,22 @@ WL.sprites = (function () {
         break;
       case 'down': case 'dead':
         lying = true; break;
-      case 'fartCharge':
+      case 'surgeCharge':
         crouch = 8; lean = 2; headTilt = 0.15; lf = { x: -14, y: 0 }; rf = { x: 14, y: 0 };
         fe = { x: 14, y: -50 }; fh = { x: 8, y: -40 }; be = { x: -16, y: -50 }; bh2 = { x: -10, y: -40 };
         break;
-      case 'fart':
+      case 'saidin':
         crouch = 10; lean = 10; headTilt = -0.25; lf = { x: -16, y: 0 }; rf = { x: 16, y: 0 };
         fe = { x: 16, y: -54 }; fh = { x: 8, y: -66 }; be = { x: -18, y: -54 }; bh2 = { x: -10, y: -66 };
         break;
       case 'victory': {
         const s = Math.sin(t * 6);
         fe = { x: 14, y: -76 }; fh = { x: 18, y: -94 + s * 2 }; be = { x: -14, y: -76 }; bh2 = { x: -18, y: -94 - s * 2 };
-        toolKind = 'wrench'; toolAng = -1.3;
+        toolKind = 'staff'; toolAng = -1.3;
         break;
       }
       case 'carry':
-        fe = { x: 16, y: -54 }; fh = { x: 20, y: -46 }; toolKind = 'toolbox'; toolAng = 0;
+        fe = { x: 16, y: -54 }; fh = { x: 20, y: -46 }; toolKind = 'relic'; toolAng = 0;
         break;
     }
 
@@ -676,7 +676,7 @@ WL.sprites = (function () {
       ctx.rotate(-Math.PI / 2 + 0.05);
       ctx.translate(0, 0);
       // simplified: reuse standing pieces with arms spread
-      drawLanceBody(ctx, { lf: { x: -8, y: 0 }, rf: { x: 8, y: 0 }, sh, bh, fe: { x: 16, y: -60 }, fh: { x: 26, y: -50 }, be: { x: -16, y: -60 }, bh2: { x: -26, y: -50 }, lean: 0, crouch: 0, bodyW, bellyR, hipY, shoulderY, headY, headTilt: 0, thin, t, toolKind: null, o });
+      drawRileyBody(ctx, { lf: { x: -8, y: 0 }, rf: { x: 8, y: 0 }, sh, bh, fe: { x: 16, y: -60 }, fh: { x: 26, y: -50 }, be: { x: -16, y: -60 }, bh2: { x: -26, y: -50 }, lean: 0, crouch: 0, bodyW, bellyR, hipY, shoulderY, headY, headTilt: 0, thin, t, toolKind: null, o });
       ctx.restore();
       if (pose === 'down' && !o.noStars) {
         for (let i = 0; i < 3; i++) {
@@ -688,11 +688,11 @@ WL.sprites = (function () {
       return;
     }
 
-    drawLanceBody(ctx, { lf, rf, sh, bh, fe, fh, be, bh2, lean, crouch, bob, bodyW, bellyR, hipY, shoulderY, headY, headTilt, thin, t, toolKind, toolAng, toolAtFront, o });
+    drawRileyBody(ctx, { lf, rf, sh, bh, fe, fh, be, bh2, lean, crouch, bob, bodyW, bellyR, hipY, shoulderY, headY, headTilt, thin, t, toolKind, toolAng, toolAtFront, o });
     ctx.restore();
   }
 
-  const FIGHT_POSES = ['jab', 'smash', 'smashWind', 'sweep', 'sweepWind', 'popWind', 'uppercut', 'throw', 'jumpkick', 'grab', 'grabHit', 'spray'];
+  const FIGHT_POSES = ['jab', 'smash', 'smashWind', 'sweep', 'sweepWind', 'popWind', 'uppercut', 'throw', 'jumpkick', 'grab', 'grabHit', 'fire'];
   // [x offset from torso center, y below torso top, radius, rotation]
   const SHIRT_PRINT = [[-14, 9, 4.4, 0.2], [9, 5, 3.6, 1.1], [17, 21, 4.6, 0.5], [-5, 25, 4, 2.2], [-19, 31, 3.4, 1.6], [5, 39, 3.8, 0.9], [21, 38, 3.2, 2.8], [-11, 44, 3, 0.4]];
   /** Flared short-sleeve cuff near the elbow, with a print blossom. */
@@ -702,7 +702,7 @@ WL.sprites = (function () {
     ctx.lineCap = 'butt';
     ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
     ctx.strokeStyle = OUT; ctx.lineWidth = w + 5; ctx.stroke();
-    ctx.strokeStyle = LANCE.shirt; ctx.lineWidth = w + 2.2; ctx.stroke();
+    ctx.strokeStyle = riley.shirt; ctx.lineWidth = w + 2.2; ctx.stroke();
     if (rich()) {
       segLight(ctx, ax, ay, bx, by, w + 2.2);
       hibiscus(ctx, s.x + (e.x - s.x) * 0.35, s.y + (e.y - s.y) * 0.35, 2.4, 'rgba(255,214,196,0.3)', null, 0.7);
@@ -710,7 +710,7 @@ WL.sprites = (function () {
     ctx.lineCap = 'round'; ctx.lineWidth = 2;
   }
 
-  function drawLanceBody(ctx, p) {
+  function drawRileyBody(ctx, p) {
     const { lf, rf, sh, bh, lean, crouch, bodyW, bellyR, hipY, shoulderY, headY, headTilt, thin, t, toolKind, toolAng, toolAtFront, o } = p;
     // pose tables were authored with the shoulder at -62; shift arm points to the taller rig
     const AY = shoulderY + 66;
@@ -719,39 +719,39 @@ WL.sprites = (function () {
     const bob = p.bob || 0;
     const cy = crouch; // crouch lowers torso
     const armW = thin ? 7 : 9;
-    const skin = LANCE.skin;
-    const mood = o.mood || (['hurt', 'down', 'dead'].includes(o.pose) ? 'hurt' : (o.pose === 'fart' || o.pose === 'fartCharge') ? 'strain' : (o.pose === 'victory' ? 'grin' : FIGHT_POSES.includes(o.pose) ? 'fight' : 'neutral'));
+    const skin = riley.skin;
+    const mood = o.mood || (['hurt', 'down', 'dead'].includes(o.pose) ? 'hurt' : (o.pose === 'saidin' || o.pose === 'surgeCharge') ? 'strain' : (o.pose === 'victory' ? 'grin' : FIGHT_POSES.includes(o.pose) ? 'fight' : 'neutral'));
     const hi = rich();
     // back arm first (behind body): short red sleeve, bare tan forearm
     const bs = { x: bh.x + lean * 0.5, y: bh.y + cy + bob }, bel = { x: be.x, y: be.y + cy + bob };
-    limb2(ctx, bs.x, bs.y, bel.x, bel.y, bh2.x, bh2.y + cy + bob, armW, LANCE.shirt, skin, 6, skin);
+    limb2(ctx, bs.x, bs.y, bel.x, bel.y, bh2.x, bh2.y + cy + bob, armW, riley.shirt, skin, 6, skin);
     sleeveCuff(ctx, bs, bel, armW);
     // legs: gray cargo shorts on the thigh, bare calves
     const hipL = { x: -8 + lean * 0.2, y: hipY + cy + bob }, hipR = { x: 8 + lean * 0.2, y: hipY + cy + bob };
     const kneeL = { x: (hipL.x + lf.x) / 2 - 2, y: (hipL.y + lf.y) / 2 }, kneeR = { x: (hipR.x + rf.x) / 2 + 2, y: (hipR.y + rf.y) / 2 };
     const legW = thin ? 9 : 11;
-    limb2(ctx, hipL.x, hipL.y, kneeL.x, kneeL.y, lf.x, lf.y - 3, legW, LANCE.shorts, null, 0, skin);
-    limb2(ctx, hipR.x, hipR.y, kneeR.x, kneeR.y, rf.x, rf.y - 3, legW, LANCE.shorts, null, 0, skin);
+    limb2(ctx, hipL.x, hipL.y, kneeL.x, kneeL.y, lf.x, lf.y - 3, legW, riley.shorts, null, 0, skin);
+    limb2(ctx, hipR.x, hipR.y, kneeR.x, kneeR.y, rf.x, rf.y - 3, legW, riley.shorts, null, 0, skin);
     // cargo hems and thigh pockets
     for (const [h, k] of [[hipL, kneeL], [hipR, kneeR]]) {
       const hx = h.x + (k.x - h.x) * 0.7, hy = h.y + (k.y - h.y) * 0.7;
       ctx.lineCap = 'butt';
       ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(k.x, k.y);
       ctx.strokeStyle = OUT; ctx.lineWidth = legW + 4.5; ctx.stroke();
-      ctx.strokeStyle = LANCE.shortsDark; ctx.lineWidth = legW + 1.5; ctx.stroke();
+      ctx.strokeStyle = riley.shortsDark; ctx.lineWidth = legW + 1.5; ctx.stroke();
       ctx.lineCap = 'round';
       if (!thin) {
         const px = h.x + (k.x - h.x) * 0.42, py = h.y + (k.y - h.y) * 0.42;
         ctx.lineWidth = 1;
-        D.fillRRect(ctx, px - 3.5, py - 2.5, 7, 7, 1.5, hi ? enamel(ctx, py - 2.5, py + 4.5, '#7a7c74') : LANCE.shortsDark, OUT);
+        D.fillRRect(ctx, px - 3.5, py - 2.5, 7, 7, 1.5, hi ? enamel(ctx, py - 2.5, py + 4.5, '#7a7c74') : riley.shortsDark, OUT);
         ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(px - 3.5, py - 0.3, 7, 0.8);
       }
     }
     // sneakers: black leather with a white sole
     for (const f of [lf, rf]) {
       ctx.lineWidth = 2;
-      D.fillRRect(ctx, f.x - 7, f.y - 8, 17, 9, 3, hi ? enamel(ctx, f.y - 8, f.y + 1, '#34343c') : LANCE.boot, OUT);
-      ctx.fillStyle = LANCE.sole; ctx.fillRect(f.x - 6.5, f.y - 2.4, 16, 2.4);
+      D.fillRRect(ctx, f.x - 7, f.y - 8, 17, 9, 3, hi ? enamel(ctx, f.y - 8, f.y + 1, '#34343c') : riley.boot, OUT);
+      ctx.fillStyle = riley.sole; ctx.fillRect(f.x - 6.5, f.y - 2.4, 16, 2.4);
       ctx.fillStyle = 'rgba(0,0,0,0.28)'; ctx.fillRect(f.x - 6.5, f.y - 0.8, 16, 0.8);
       ctx.fillStyle = '#fff'; ctx.fillRect(f.x - 2, f.y - 7, 3, 1.5);
       if (hi) { ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.fillRect(f.x - 5, f.y - 7.6, 9, 0.9); }
@@ -769,7 +769,7 @@ WL.sprites = (function () {
       ctx.closePath();
     };
     torso();
-    ctx.fillStyle = LANCE.shirt; ctx.fill();
+    ctx.fillStyle = riley.shirt; ctx.fill();
     ctx.save(); ctx.clip();
     if (hi) {
       // tone-on-tone hibiscus print
@@ -783,7 +783,7 @@ WL.sprites = (function () {
       ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.ellipse(bodyW * 0.18 + lean * 0.6, (torsoTop + torsoBot) / 2 + 8, bodyW * 0.3, 13, 0, 0, Math.PI * 2); ctx.fill();
     }
     // shorts waistband peeking under the untucked hem
-    ctx.fillStyle = LANCE.shortsDark; ctx.fillRect(-bodyW / 2, torsoBot - 3, bodyW + 10, 3);
+    ctx.fillStyle = riley.shortsDark; ctx.fillRect(-bodyW / 2, torsoBot - 3, bodyW + 10, 3);
     ctx.restore();
     torso();
     volume(ctx, lean * 0.6 + LS * 3, bodyW / 2 + bellyR * 0.45, 1);
@@ -791,15 +791,15 @@ WL.sprites = (function () {
     outlineStyle(ctx, 2); ctx.stroke();
     // open camp collar, button placket
     const cx0 = lean * 0.6;
-    ctx.fillStyle = LANCE.skinDark;
+    ctx.fillStyle = riley.skinDark;
     ctx.beginPath(); ctx.moveTo(cx0 - 7, torsoTop - 1); ctx.lineTo(cx0, torsoTop + 12); ctx.lineTo(cx0 + 7, torsoTop - 1); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = LANCE.shirtLight; ctx.strokeStyle = OUT; ctx.lineWidth = 1.5;
+    ctx.fillStyle = riley.shirtLight; ctx.strokeStyle = OUT; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(cx0 - 7, torsoTop - 1.5); ctx.lineTo(cx0 - 16, torsoTop + 2); ctx.lineTo(cx0 - 1, torsoTop + 13); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx0 + 7, torsoTop - 1.5); ctx.lineTo(cx0 + 16, torsoTop + 2); ctx.lineTo(cx0 + 1, torsoTop + 13); ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = LANCE.shirtDark; ctx.lineWidth = 1;
+    ctx.strokeStyle = riley.shirtDark; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(cx0 + 0.5, torsoTop + 13); ctx.lineTo(cx0 + 1 + lean * 0.1, torsoBot - 8); ctx.stroke();
     for (let i = 0; i < 3; i++) { const by = torsoTop + 17 + i * 8; D.circle(ctx, cx0 + 2 + lean * 0.05 * i, by, 1.2, '#f4ede0'); }
-    // Whale Lance name patch on the chest
+    // shadow riley name patch on the chest
     ctx.save(); ctx.translate(-bodyW * 0.24 + lean * 0.6, torsoTop + 13);
     ctx.lineWidth = 1.5;
     D.fillRRect(ctx, -6, -3, 12, 6, 1, '#f4f1ea', OUT);
@@ -812,7 +812,7 @@ WL.sprites = (function () {
       ctx.lineCap = 'round';
       ctx.beginPath(); ctx.moveTo(bx0 + 3, by + 4); ctx.lineTo(bx0 - 1, by + 19); ctx.strokeStyle = OUT; ctx.lineWidth = 4; ctx.stroke(); ctx.strokeStyle = '#b88a4a'; ctx.lineWidth = 2.2; ctx.stroke();
       ctx.lineWidth = 1.2; D.fillRRect(ctx, bx0 - 5, by + 17, 9, 4, 1, hi ? chrome(ctx, by + 17, by + 21) : '#999', OUT);
-      ctx.fillStyle = hi ? enamel(ctx, by, by + 5, '#7a5230') : LANCE.belt; ctx.fillRect(bx0, by, bw, 5);
+      ctx.fillStyle = hi ? enamel(ctx, by, by + 5, '#7a5230') : riley.belt; ctx.fillRect(bx0, by, bw, 5);
       ctx.strokeStyle = OUT; ctx.lineWidth = 1; ctx.strokeRect(bx0, by, bw, 5);
       if (hi) {
         ctx.strokeStyle = 'rgba(240,210,150,0.6)'; ctx.lineWidth = 0.6; ctx.setLineDash([1.4, 1.2]);
@@ -820,31 +820,31 @@ WL.sprites = (function () {
         ctx.setLineDash([]);
       }
       ctx.lineWidth = 1.2;
-      D.fillRRect(ctx, lean * 0.2 - 3.5, by - 0.6, 7, 6.2, 1, hi ? chrome(ctx, by - 0.6, by + 5.6) : LANCE.buckle, OUT);
+      D.fillRRect(ctx, lean * 0.2 - 3.5, by - 0.6, 7, 6.2, 1, hi ? chrome(ctx, by - 0.6, by + 5.6) : riley.buckle, OUT);
       ctx.fillStyle = '#3a2410'; ctx.fillRect(lean * 0.2 - 1.8, by + 1, 3.6, 3);
       for (const px of [bx0 - 1, bodyW / 2 - 12 + lean * 0.2]) {
-        D.fillRRect(ctx, px, by + 2, 10, 10, 2, hi ? enamel(ctx, by + 2, by + 12, '#8a6238') : LANCE.pouch, OUT);
-        D.fillRRect(ctx, px - 0.5, by + 1.5, 11, 4, 1.5, hi ? enamel(ctx, by + 1.5, by + 5.5, '#6a4624') : LANCE.belt, OUT);
+        D.fillRRect(ctx, px, by + 2, 10, 10, 2, hi ? enamel(ctx, by + 2, by + 12, '#8a6238') : riley.pouch, OUT);
+        D.fillRRect(ctx, px - 0.5, by + 1.5, 11, 4, 1.5, hi ? enamel(ctx, by + 1.5, by + 5.5, '#6a4624') : riley.belt, OUT);
         ctx.fillStyle = hi ? '#e8d8a0' : '#caa'; ctx.beginPath(); ctx.arc(px + 5, by + 4.4, 0.9, 0, 7); ctx.fill();
       }
       ctx.fillStyle = '#b8bcc8'; ctx.fillRect(bodyW / 2 - 8 + lean * 0.2, by - 1, 2, 5); ctx.fillStyle = '#e8c000'; ctx.fillRect(bodyW / 2 - 5 + lean * 0.2, by - 1, 2, 4);
     } else {
-      ctx.fillStyle = LANCE.belt; ctx.fillRect(-bodyW / 2 + 3 + lean * 0.2, torsoBot - 6, bodyW - 6, 4);
-      ctx.fillStyle = LANCE.buckle; ctx.fillRect(lean * 0.2 - 2, torsoBot - 6, 4, 4);
+      ctx.fillStyle = riley.belt; ctx.fillRect(-bodyW / 2 + 3 + lean * 0.2, torsoBot - 6, bodyW - 6, 4);
+      ctx.fillStyle = riley.buckle; ctx.fillRect(lean * 0.2 - 2, torsoBot - 6, 4, 4);
     }
     // neck
-    ctx.fillStyle = LANCE.skinDark; ctx.fillRect(cx0 - 6 + lean * 0.3, torsoTop - 8, 12, 9);
+    ctx.fillStyle = riley.skinDark; ctx.fillRect(cx0 - 6 + lean * 0.3, torsoTop - 8, 12, 9);
     // lei: purple & white plumeria, hanging over the chest
     lei(ctx, cx0, torsoTop - 2, thin ? 11 : 15, thin ? 22 : 26, 2.6);
     // head
     ctx.save();
     ctx.translate(lean * 0.9, headY + cy + bob + 2);
     ctx.rotate(headTilt);
-    lanceHead(ctx, 0, 0, 38, { mood, noPhoto: o.noPhoto });
+    rileyHead(ctx, 0, 0, 38, { mood, noPhoto: o.noPhoto });
     ctx.restore();
     // front arm (in front of body)
     const fs = { x: sh.x + lean * 0.6, y: sh.y + cy + bob }, fel = { x: fe.x, y: fe.y + cy + bob };
-    limb2(ctx, fs.x, fs.y, fel.x, fel.y, fh.x, fh.y + cy + bob, armW, LANCE.shirt, skin, 6, skin);
+    limb2(ctx, fs.x, fs.y, fel.x, fel.y, fh.x, fh.y + cy + bob, armW, riley.shirt, skin, 6, skin);
     sleeveCuff(ctx, fs, fel, armW);
     if (toolKind && toolAtFront !== false) tool(ctx, toolKind, fh.x, fh.y + cy + bob, toolAng);
     if (toolKind && toolAtFront === false) tool(ctx, toolKind, bh2.x, bh2.y + cy + bob, toolAng);
@@ -853,13 +853,13 @@ WL.sprites = (function () {
   /* ================= ENEMIES ================= */
   // Palette per type
   const VEG = {
-    broccoli: { body: '#4f9a2c', dark: '#2f6318', stalk: '#a9d67a', limb: '#5aa53a', glove: '#3f8424', boot: '#2a2a2a', h: 66 },
-    sprout: { body: '#7bbf3a', dark: '#4e8a22', limb: '#5a9a2a', glove: '#fff', boot: '#333', h: 40 },
-    celery: { body: '#a6d46a', dark: '#6da03a', limb: '#8cc050', glove: '#ddd', boot: '#333', h: 84 },
-    carrot: { body: '#f08a1e', dark: '#c05e0a', leaf: '#3f9b2f', limb: '#e07818', glove: '#222', boot: '#222', band: '#d81818', h: 62 },
-    spinach: { body: '#2f6b2a', dark: '#1e4a1a', limb: '#2a5a26', glove: '#e0e0e0', boot: '#222', band: '#2848c8', h: 70 },
-    kale: { body: '#1f4d3a', dark: '#12302a', frill: '#3e8a5e', limb: '#1a4232', glove: '#c8c8c8', boot: '#1a1a1a', h: 84 },
-    froyo: { cup: '#f6f2ea', cupDark: '#d8d0c0', swirl: '#f7a7c7', swirlDark: '#d87aa0', limb: '#e8e2d6', glove: '#fff', boot: '#c8c0b0', h: 60 }
+    trolloc: { body: '#4f9a2c', dark: '#2f6318', stalk: '#a9d67a', limb: '#5aa53a', glove: '#3f8424', boot: '#2a2a2a', h: 66 },
+    trollocHeavy: { body: '#7bbf3a', dark: '#4e8a22', limb: '#5a9a2a', glove: '#fff', boot: '#333', h: 40 },
+    darkfriend: { body: '#a6d46a', dark: '#6da03a', limb: '#8cc050', glove: '#ddd', boot: '#333', h: 84 },
+    fade: { body: '#f08a1e', dark: '#c05e0a', leaf: '#3f9b2f', limb: '#e07818', glove: '#222', boot: '#222', band: '#d81818', h: 62 },
+    cultist: { body: '#2f6b2a', dark: '#1e4a1a', limb: '#2a5a26', glove: '#e0e0e0', boot: '#222', band: '#2848c8', h: 70 },
+    stoneGuard: { body: '#1f4d3a', dark: '#12302a', frill: '#3e8a5e', limb: '#1a4232', glove: '#c8c8c8', boot: '#1a1a1a', h: 84 },
+    ashaman: { cup: '#f6f2ea', cupDark: '#d8d0c0', swirl: '#f7a7c7', swirlDark: '#d87aa0', limb: '#e8e2d6', glove: '#fff', boot: '#c8c0b0', h: 60 }
   };
 
   /* generic limb rig; returns positions given pose */
@@ -913,9 +913,9 @@ WL.sprites = (function () {
   }
 
   const enemyDrawers = {
-    broccoli(ctx, e, r) {
-      // Muscle-bound floret in a KALE RAGE tank and floral board shorts.
-      const V = VEG.broccoli, hipY = -26, shoulderY = -46;
+    trolloc(ctx, e, r) {
+      // Muscle-bound floret in a stoneGuard RAGE tank and floral board shorts.
+      const V = VEG.trolloc, hipY = -26, shoulderY = -46;
       drawLimbs(ctx, r, V, hipY, shoulderY, 9, (cy, lean) => {
         const lx = lean * 0.6;
         // board shorts over the hips
@@ -938,7 +938,7 @@ WL.sprites = (function () {
         ctx.fillStyle = '#f6f4ec'; ctx.fill();
         ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fillRect(-16 + lx, hipY - 4 + cy, 32, 6);
         ctx.restore();
-        label(ctx, 'KALE', lx + 0.5, shoulderY + 6 + cy, { size: 3.4, align: 'center', color: '#1a5a14', shadow: false });
+        label(ctx, 'stoneGuard', lx + 0.5, shoulderY + 6 + cy, { size: 3.4, align: 'center', color: '#1a5a14', shadow: false });
         label(ctx, 'RAGE', lx + 0.5, shoulderY + 10.5 + cy, { size: 3.4, align: 'center', color: '#d8282a', shadow: false });
         torso(); volume(ctx, lx, 14, 1); outlineStyle(ctx, 2); ctx.stroke();
         // pec line + deltoids
@@ -956,8 +956,8 @@ WL.sprites = (function () {
         face(ctx, hx, hy + 2, e.pose, 3.2);
       });
     },
-    sprout(ctx, e, r) {
-      const V = VEG.sprout, hipY = -14, shoulderY = -26;
+    trollocHeavy(ctx, e, r) {
+      const V = VEG.trollocHeavy, hipY = -14, shoulderY = -26;
       if (e.pose === 'roll') {
         ctx.save(); ctx.rotate(e.t * 20);
         ball(ctx, 0, -14, 14, V.body);
@@ -967,7 +967,7 @@ WL.sprites = (function () {
       drawLimbs(ctx, r, V, hipY, shoulderY, 5, (cy, lean) => {
         const hx = lean * 0.6, hy = shoulderY - 6 + cy;
         ball(ctx, hx, hy, 15, V.body, false);
-        // wrapped leaves, like a real sprout: two side leaves and a cap leaf
+        // wrapped leaves, like a real trollocHeavy: two side leaves and a cap leaf
         ctx.save(); ctx.beginPath(); ctx.arc(hx, hy, 15, 0, Math.PI * 2); ctx.clip();
         const leaves = [[-11, 5, 11, 15, -0.5, '#95d650'], [11, 6, 11, 15, 0.5, '#86c844'], [0, -13, 15, 8, 0, '#a2de5c']];
         for (const [lx, ly, rx, ry, rot, col] of leaves) {
@@ -986,8 +986,8 @@ WL.sprites = (function () {
         face(ctx, hx, hy + 2, e.pose, 2.6);
       });
     },
-    celery(ctx, e, r) {
-      const V = VEG.celery, hipY = -34, shoulderY = -62;
+    darkfriend(ctx, e, r) {
+      const V = VEG.darkfriend, hipY = -34, shoulderY = -62;
       drawLimbs(ctx, r, V, hipY, shoulderY, 6, (cy, lean) => {
         // tall ribbed stalk
         D.fillRRect(ctx, -9 + lean * 0.4, shoulderY - 12 + cy, 18, 52, 5, V.body, OUT); volume(ctx, lean * 0.4, 9, 0.9); outlineStyle(ctx, 2); ctx.stroke();
@@ -1006,9 +1006,9 @@ WL.sprites = (function () {
         ctx.restore();
       });
     },
-    carrot(ctx, e, r) {
+    fade(ctx, e, r) {
       // CRUNCH CREW ninja: tapered root in a black tank, red headband.
-      const V = VEG.carrot, hipY = -26, shoulderY = -46;
+      const V = VEG.fade, hipY = -26, shoulderY = -46;
       drawLimbs(ctx, r, V, hipY, shoulderY, 6, (cy, lean) => {
         const lx = lean * 0.6;
         const body = () => { ctx.beginPath(); ctx.moveTo(-13 + lx, shoulderY - 18 + cy); ctx.lineTo(13 + lx, shoulderY - 18 + cy); ctx.quadraticCurveTo(12, hipY + cy, 0, hipY + 10 + cy); ctx.quadraticCurveTo(-12, hipY + cy, -13 + lx, shoulderY - 18 + cy); ctx.closePath(); };
@@ -1046,8 +1046,8 @@ WL.sprites = (function () {
         }
       });
     },
-    spinach(ctx, e, r) {
-      const V = VEG.spinach, hipY = -28, shoulderY = -50;
+    cultist(ctx, e, r) {
+      const V = VEG.cultist, hipY = -28, shoulderY = -50;
       drawLimbs(ctx, r, V, hipY, shoulderY, 9, (cy, lean) => {
         // leafy bulky torso
         ctx.beginPath(); ctx.moveTo(-18 + lean * 0.6, shoulderY - 2 + cy);
@@ -1066,8 +1066,8 @@ WL.sprites = (function () {
         face(ctx, hx, hy + 1, e.pose, 3.2);
       });
     },
-    kale(ctx, e, r) {
-      const V = VEG.kale, hipY = -34, shoulderY = -62;
+    stoneGuard(ctx, e, r) {
+      const V = VEG.stoneGuard, hipY = -34, shoulderY = -62;
       drawLimbs(ctx, r, V, hipY, shoulderY, 11, (cy, lean) => {
         // massive frilly torso
         ctx.beginPath();
@@ -1078,7 +1078,7 @@ WL.sprites = (function () {
         for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.arc(-12 + i * 8 + lean * 0.5, shoulderY + 6 + cy, 6, Math.PI, Math.PI * 2); ctx.stroke(); }
         // spiked collar/chain
         ctx.fillStyle = '#c0c0c0'; for (let i = -2; i <= 2; i++) ctx.fillRect(i * 8 - 2 + lean * 0.6, shoulderY - 4 + cy, 4, 4);
-        // head: curly kale
+        // head: curly stoneGuard
         const hx = lean * 0.9, hy = shoulderY - 16 + cy;
         for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; ball(ctx, hx + Math.cos(a) * 11, hy + Math.sin(a) * 9, 7, V.frill); }
         oval(ctx, hx, hy, 14, 12, V.body);
@@ -1087,14 +1087,14 @@ WL.sprites = (function () {
         face(ctx, hx, hy + 1, e.pose, 3.4, '#ffe0a0');
       });
     },
-    froyo(ctx, e, r) {
-      const V = VEG.froyo, hipY = -22, shoulderY = -44;
+    ashaman(ctx, e, r) {
+      const V = VEG.ashaman, hipY = -22, shoulderY = -44;
       drawLimbs(ctx, r, V, hipY, shoulderY, 6, (cy, lean) => {
         // cup
         ctx.beginPath(); ctx.moveTo(-16 + lean * 0.6, shoulderY - 2 + cy); ctx.lineTo(16 + lean * 0.6, shoulderY - 2 + cy); ctx.lineTo(12, hipY + 8 + cy); ctx.lineTo(-12, hipY + 8 + cy); ctx.closePath();
         ctx.fillStyle = V.cup; ctx.fill(); volume(ctx, lean * 0.6, 16, 1); outlineStyle(ctx, 2); ctx.stroke();
         ctx.fillStyle = '#e85a8a'; ctx.fillRect(-13 + lean * 0.5, shoulderY + 6 + cy, 26, 8);
-        label(ctx, 'FROYO', lean * 0.5, shoulderY + 7 + cy, { size: 5, align: 'center', color: '#fff', shadow: false });
+        label(ctx, 'ashaman', lean * 0.5, shoulderY + 7 + cy, { size: 5, align: 'center', color: '#fff', shadow: false });
         face(ctx, lean * 0.6, shoulderY + 20 + cy - 6, e.pose, 2.6);
         // swirl
         const sx = lean * 0.8, sy = shoulderY - 4 + cy;
@@ -1213,7 +1213,7 @@ WL.sprites = (function () {
     ctx.restore();
   }
 
-  /* ================= BOSS: Giant Froyo Cone ================= */
+  /* ================= BOSS: Giant ashaman Cone ================= */
   /**
    * drawBoss(ctx, x, y, b) b: {pose, t, facing, flash, armor(0..1), phase, melt}
    * poses: idle, walk, slamWind, slam, jump, land, rainWind, hurt, stagger, dead
@@ -1327,42 +1327,42 @@ WL.sprites = (function () {
     ctx.save(); ctx.translate(x, y - 6 + Math.sin(t * 4) * 2);
     outlineStyle(ctx, 2);
     switch (kind) {
-      case 'beans':
+      case 'saidinSpark':
         D.fillRRect(ctx, -8, -20, 16, 20, 2, '#d8d8d8', OUT);
         ctx.fillStyle = '#c8322a'; ctx.fillRect(-8, -15, 16, 9);
-        WL.text.draw(ctx, 'BEANS', 0, -13, { size: 4, align: 'center', color: '#fff', shadow: false });
+        WL.text.draw(ctx, 'saidinSpark', 0, -13, { size: 4, align: 'center', color: '#fff', shadow: false });
         break;
-      case 'chili':
+      case 'saidinSurge':
         D.ellipse(ctx, 0, -6, 12, 6, '#7a4a22', OUT);
         ctx.beginPath(); ctx.ellipse(0, -10, 11, 5, 0, Math.PI, Math.PI * 2); ctx.fillStyle = '#b8281e'; ctx.fill(); ctx.stroke();
         D.circle(ctx, -4, -12, 2, '#7a1010'); D.circle(ctx, 4, -11, 2, '#7a1010');
         ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 1.5;
         for (let i = -1; i <= 1; i++) { ctx.beginPath(); ctx.moveTo(i * 5, -16); ctx.quadraticCurveTo(i * 5 + 2, -20, i * 5, -24 - Math.sin(t * 5 + i) * 2); ctx.stroke(); }
         break;
-      case 'leftovers':
+      case 'power':
         D.ellipse(ctx, 0, -4, 14, 5, '#f0f0f0', OUT);
         D.ellipse(ctx, -3, -8, 6, 4, '#c8843a', OUT); D.ellipse(ctx, 5, -9, 5, 4, '#e8c060', OUT); D.ellipse(ctx, 0, -12, 5, 3, '#a05a2a', OUT);
         break;
-      case 'burger':
+      case 'heal':
         D.ellipse(ctx, 0, -14, 11, 5, '#e0a050', OUT);
         ctx.fillStyle = '#5a3a1a'; ctx.fillRect(-10, -12, 20, 4); ctx.fillStyle = '#f0c030'; ctx.fillRect(-11, -9, 22, 2); ctx.fillStyle = '#4ac040'; ctx.fillRect(-11, -8, 22, 2);
         D.fillRRect(ctx, -11, -6, 22, 5, 2, '#e0a050', OUT);
         ctx.fillStyle = '#fff'; ctx.fillRect(-4, -16, 1.5, 1.5); ctx.fillRect(2, -15, 1.5, 1.5);
         break;
-      case 'turkey':
+      case 'trolloc':
         ctx.save(); ctx.rotate(-0.5);
         D.ellipse(ctx, 0, -12, 11, 8, '#c8762a', OUT);
         D.fillRRect(ctx, 6, -14, 14, 5, 2, '#f0e8d8', OUT); D.circle(ctx, 20, -12, 3.5, '#f0e8d8', OUT);
         ctx.restore();
         break;
-      case 'chip':
+      case 'mark':
         D.circle(ctx, 0, -8, 9, '#c8322a', OUT); D.circle(ctx, 0, -8, 5, '#f0e0a0', OUT);
         WL.text.draw(ctx, '$', 0, -11, { size: 6, align: 'center', color: '#5a1010', shadow: false });
         break;
-      case 'toolbox':
-        tool(ctx, 'toolbox', 0, -7, 0);
+      case 'relic':
+        tool(ctx, 'relic', 0, -7, 0);
         break;
-      case 'coffee':
+      case 'angreal':
         D.fillRRect(ctx, -6, -16, 12, 14, 2, '#f0f0f0', OUT); ctx.fillStyle = '#4a2a10'; ctx.fillRect(-5, -15, 10, 3);
         ctx.strokeStyle = OUT; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(8, -9, 4, -1.4, 1.4); ctx.stroke();
         break;
@@ -1371,7 +1371,7 @@ WL.sprites = (function () {
   }
 
   /* ================= BREAKABLE OBJECTS ================= */
-  const OBJECT_FRAME = { cart: 'cart', plates: 'platesStack', chair: 'chair', tray: 'tray', cooler: 'cooler', crate: 'crate' };
+  const OBJECT_FRAME = { cart: 'cart', urn: 'platesStack', stool: 'stool', rack: 'rack', chest: 'chest', crate: 'crate' };
   function drawObject(ctx, x, y, kind, hp, t) {
     const pf = OBJECT_FRAME[kind];
     if (pf && WL.art.has('props')) {
@@ -1393,7 +1393,7 @@ WL.sprites = (function () {
     const dmg = hp <= 1;
     const hi = rich();
     switch (kind) {
-      case 'cart': // buffet cart with chafing dishes
+      case 'cart': // battle cart with chafing dishes
         D.fillRRect(ctx, -26, -34, 52, 30, 3, hi ? chrome(ctx, -34, -4) : '#d0d4dc', OUT);
         ctx.fillStyle = '#8a8f9a'; ctx.fillRect(-26, -22, 52, 3);
         D.circle(ctx, -18, -2, 4, '#333', OUT); D.circle(ctx, 18, -2, 4, '#333', OUT);
@@ -1401,7 +1401,7 @@ WL.sprites = (function () {
         ctx.beginPath(); ctx.ellipse(-12, -40, 8, 5, 0, Math.PI, 0); ctx.fillStyle = hi ? chrome(ctx, -45, -40) : '#b8bcc8'; ctx.fill(); ctx.stroke();
         ctx.beginPath(); ctx.ellipse(12, -40, 8, 5, 0, Math.PI, 0); ctx.fillStyle = hi ? chrome(ctx, -45, -40) : '#b8bcc8'; ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#c8322a'; ctx.fillRect(-24, -32, 48, 8);
-        WL.text.draw(ctx, 'BUFFET', 0, -31, { size: 5, align: 'center', color: '#fff', shadow: false });
+        WL.text.draw(ctx, 'battle', 0, -31, { size: 5, align: 'center', color: '#fff', shadow: false });
         break;
       case 'crate':
         D.fillRRect(ctx, -18, -34, 36, 34, 2, hi ? enamel(ctx, -34, 0, '#b07a3a') : '#b07a3a', OUT);
@@ -1410,19 +1410,19 @@ WL.sprites = (function () {
         ctx.strokeStyle = OUT; ctx.strokeRect(-18, -34, 36, 34);
         WL.text.draw(ctx, 'NCL', 0, -20, { size: 5, align: 'center', color: '#3a2a10', shadow: false });
         break;
-      case 'cooler':
+      case 'chest':
         D.fillRRect(ctx, -20, -28, 40, 28, 3, hi ? enamel(ctx, -28, 0, '#3a78c8') : '#3a78c8', OUT);
         if (hi) volume(ctx, 0, 20, 0.8);
         D.fillRRect(ctx, -21, -32, 42, 8, 3, hi ? enamel(ctx, -32, -24, '#f0f0f0') : '#f0f0f0', OUT);
         ctx.fillStyle = '#204a88'; ctx.fillRect(-16, -20, 32, 3);
         break;
-      case 'barrel':
+      case 'cask':
         D.fillRRect(ctx, -14, -38, 28, 38, 5, '#4a8a3a', OUT);
         if (hi) volume(ctx, 0, 14, 1.1);
         ctx.fillStyle = '#2a5a20'; ctx.fillRect(-14, -30, 28, 3); ctx.fillRect(-14, -12, 28, 3);
         WL.text.draw(ctx, 'R-410A', 0, -24, { size: 4, align: 'center', color: '#dfffd0', shadow: false });
         break;
-      case 'vending':
+      case 'obelisk':
         D.fillRRect(ctx, -22, -70, 44, 70, 3, '#2a8a5a', OUT);
         if (hi) volume(ctx, 0, 22, 0.9);
         D.fillRRect(ctx, -17, -64, 26, 40, 2, '#0a1a2a', OUT);
@@ -1431,11 +1431,11 @@ WL.sprites = (function () {
         ctx.fillStyle = '#000'; ctx.fillRect(-16, -18, 32, 10);
         WL.text.draw(ctx, 'JUICE', 0, -69, { size: 5, align: 'center', color: '#fff', shadow: false });
         break;
-      case 'plant':
+      case 'shrine':
         D.fillRRect(ctx, -12, -20, 24, 20, 3, '#a05a2a', OUT);
         for (let i = 0; i < 5; i++) { ctx.save(); ctx.translate(0, -20); ctx.rotate(-1 + i * 0.5); D.ellipse(ctx, 0, -16, 5, 16, '#3a9a3a', OUT); ctx.restore(); }
         break;
-      case 'plates': // Stack of ceramic buffet plates with gold rim
+      case 'urn': // Stack of ceramic battle urn with gold rim
         D.ellipse(ctx, 0, -2, 16, 5, '#1e2430', OUT); // stand base
         D.fillRRect(ctx, -2, -26, 4, 24, 1, '#94a0b4', OUT); // chrome rod holder
         for (let p = 0; p < 6; p++) {
@@ -1447,7 +1447,7 @@ WL.sprites = (function () {
           ctx.fillRect(-6, py - 1, 12, 1);
         }
         break;
-      case 'tray': // Buffet chafing dish with stainless steel dome lid & burner
+      case 'rack': // battle chafing dish with stainless steel dome lid & burner
         D.fillRRect(ctx, -18, -8, 36, 8, 2, '#485060', OUT);
         ctx.fillStyle = Math.sin(t * 12) > 0 ? '#ff8c1a' : '#3399ff';
         D.ellipse(ctx, 0, -5, 5, 3, ctx.fillStyle);
@@ -1459,7 +1459,7 @@ WL.sprites = (function () {
         ctx.fillStyle = 'rgba(255,255,255,0.6)';
         ctx.beginPath(); ctx.arc(0, -18, 14, Math.PI * 1.15, Math.PI * 1.5); ctx.stroke();
         break;
-      case 'chair': // Cruise ship dining chair (mahogany with burgundy velvet cushion)
+      case 'stool': // journey vessel dining stool (mahogany with burgundy velvet cushion)
         ctx.fillStyle = '#4a2612'; ctx.fillRect(-10, -22, 3, 22); ctx.fillRect(7, -22, 3, 22);
         D.fillRRect(ctx, -13, -16, 26, 8, 3, '#881b24', OUT);
         ctx.fillStyle = '#d4af37'; ctx.fillRect(-12, -16, 24, 1.5);
@@ -1487,7 +1487,7 @@ WL.sprites = (function () {
         ctx.rotate(p.t * 10);
         D.fillRRect(ctx, -6, -2.5, 12, 5, 2.5, p.color || '#ff4a4a', OUT);
         break;
-      case 'toolbox':
+      case 'relic':
         // Weighty motion blur ghost trail
         const tvx = p.vx || 320;
         const trailDir = Math.sign(tvx) || 1;
@@ -1497,19 +1497,19 @@ WL.sprites = (function () {
           ctx.translate(-trailDir * t * 14, t * 4);
           ctx.rotate((p.t - t * 0.03) * 12);
           ctx.globalAlpha = 0.35 - t * 0.1;
-          if (WL.art.has('props')) WL.art.draw(ctx, 'props', 'toolbox', 0, 8, { sx: 1.25, sy: 1.25 });
-          else tool(ctx, 'toolbox', 0, 0, 0);
+          if (WL.art.has('props')) WL.art.draw(ctx, 'props', 'relic', 0, 8, { sx: 1.25, sy: 1.25 });
+          else tool(ctx, 'relic', 0, 0, 0);
           ctx.restore();
         }
         ctx.restore();
         if (WL.art.has('props')) {
           // The painted box tumbles about its middle (the frame's anchor is its base).
           ctx.rotate(p.t * 12);
-          WL.art.draw(ctx, 'props', 'toolbox', 0, 8, { sx: 1.25, sy: 1.25 });
+          WL.art.draw(ctx, 'props', 'relic', 0, 8, { sx: 1.25, sy: 1.25 });
           break;
         }
         ctx.rotate(p.t * 12);
-        tool(ctx, 'toolbox', 0, 0, 0);
+        tool(ctx, 'relic', 0, 0, 0);
         break;
       case 'bigsprinkle':
         ctx.rotate(p.rot || 0);
@@ -1527,7 +1527,7 @@ WL.sprites = (function () {
   function drawSprayCone(ctx, x, y, facing, t, len) {
     ctx.save(); ctx.translate(x, y); if (facing < 0) ctx.scale(-1, 1);
     const L = len || 95;
-    // Layered swirling refrigerant vapor vortex
+    // Layered swirling saidin vapor vortex
     const g = ctx.createLinearGradient(0, 0, L, 0);
     g.addColorStop(0, 'rgba(210,250,255,0.95)');
     g.addColorStop(0.4, 'rgba(120,230,255,0.65)');
@@ -1545,7 +1545,7 @@ WL.sprites = (function () {
       ctx.stroke();
     }
 
-    // Ice crystal flakes
+    // Ice trollocHeavy flakes
     ctx.fillStyle = '#ffffff';
     for (let i = 0; i < 16; i++) {
       const fx = ((t * 280 + i * 31) % L);
@@ -1576,7 +1576,7 @@ WL.sprites = (function () {
     ctx.globalCompositeOperation = op; ctx.globalAlpha = a0;
   }
 
-  /* Debris atlas: food chaos and kitchenware, one cached bitmap per shape+color. */
+  /* Debris atlas: magic chaos and kitchenware, one cached bitmap per shape+color. */
   const debrisCache = new Map();
   const DEBRIS_SIZE = 16;
   function paintDebris(g, shape, color) {
@@ -1639,11 +1639,11 @@ WL.sprites = (function () {
     }
     return e;
   }
-  /* Painted debris variants per shape; a leaf's colour picks lettuce, kale or cucumber. */
+  /* Painted debris variants per shape; a leaf's colour picks lettuce, stoneGuard or cucumber. */
   const DEBRIS_ART = { floret: ['floret', 'floret2'], tomato: ['tomato', 'cherry', 'tomato', 'radish'], coin: ['coin', 'coin', 'stick'], shard: ['shard', 'shard2'], fork: ['fork'], spoon: ['spoon'], crumb: ['crouton', 'pepper'] };
   function debrisFrame(shape, color, r) {
     let list = DEBRIS_ART[shape];
-    if (shape === 'leaf') list = /^#[0-3]/.test(color) ? ['kale', 'kale', 'sproutHalf'] : ['lettuce', 'lettuce', 'cucumber', 'sproutHalf'];
+    if (shape === 'leaf') list = /^#[0-3]/.test(color) ? ['stoneGuard', 'stoneGuard', 'sproutHalf'] : ['lettuce', 'lettuce', 'cucumber', 'sproutHalf'];
     if (shape === 'splinter') list = color === '#f08a1e' ? ['stick'] : /^#[89a-c]/i.test(color) ? ['cucumber', 'lettuce'] : null;
     if (!list) return null;
     return list[Math.floor(r * 977) % list.length];
@@ -1688,7 +1688,7 @@ WL.sprites = (function () {
     return burstCanvas;
   }
   function drawHitSpark(ctx, x, y, t, big) {
-    if (rich() && WL.art.has('lance')) {
+    if (rich() && WL.art.has('riley')) {
       const k = Math.min(1, t / 0.22);
       ctx.save(); ctx.translate(x, y);
       drawGlow(ctx, 0, 0, (big ? 46 : 28) * (0.6 + k * 0.9), (1 - k) * (big ? 0.95 : 0.8));
@@ -1740,45 +1740,14 @@ WL.sprites = (function () {
     ctx.restore();
   }
 
-  /* Volcano Fart — shock rings (strokes, not full-screen fills) plus a dirty core. */
-  function drawFartCloud(ctx, x, y, t, facing) {
-    ctx.save();
-    const T = Math.min(1, t / 1.05);
-    // Expanding green/gold energy shock rings
-    for (let i = 0; i < 4; i++) {
-      const lt = t - i * 0.05;
-      if (lt <= 0) continue;
-      const R = 28 + lt * 540;
-      ctx.globalAlpha = Math.max(0, 0.95 - lt * 0.75);
-      ctx.strokeStyle = i === 0 ? '#ffffff' : (i === 1 ? '#c6ff4a' : (i === 2 ? '#ffea4a' : '#5f8f22'));
-      ctx.lineWidth = Math.max(2, 14 - lt * 9);
-      ctx.beginPath();
-      ctx.ellipse(x, y - 16, R, R * 0.38, 0, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    // Radiant burst rays
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, 0.75 - t * 1.2);
-    ctx.strokeStyle = '#ffe14a'; ctx.lineWidth = 3;
-    for (let a = 0; a < 8; a++) {
-      const ang = (a * Math.PI) / 4 + t * 3;
-      ctx.beginPath();
-      ctx.moveTo(x + Math.cos(ang) * 20, y - 24 + Math.sin(ang) * 12);
-      ctx.lineTo(x + Math.cos(ang) * (60 + t * 120), y - 24 + Math.sin(ang) * (36 + t * 70));
-      ctx.stroke();
-    }
-    ctx.restore();
-
-    ctx.globalAlpha = Math.max(0, 0.9 - t * 1.5);
-    D.circle(ctx, x - (facing || 1) * 8, y - 26, 18 + t * 40, '#e8ff9a');
-    ctx.globalAlpha = Math.max(0, 0.6 - t * 0.7);
-    D.circle(ctx, x - (facing || 1) * 14, y - 18, 12 + t * 24, '#c8a15a');
-    for (let i = 0; i < 18; i++) {
-      const a = i * 0.85 + t * 2.2, d = 16 + (i % 5) * 14 + T * 250;
-      const px = x + Math.cos(a) * d, py = y - 28 + Math.sin(a) * d * 0.32 - T * 30;
-      ctx.globalAlpha = Math.max(0, 0.8 - T);
-      D.circle(ctx, px, py, 6 + (i % 4) * 3, i % 3 === 0 ? '#6b4a2a' : (i % 3 === 1 ? '#8bd04a' : '#d8ff8a'));
-    }
+  /* Volcano saidin — shock rings (strokes, not full-screen fills) plus a dirty core. */
+  function drawSurgeCloud(ctx, x, y, t, facing) {
+    ctx.save(); const k=Math.max(0,1-t/1.35), dir=facing||1;
+    ctx.globalCompositeOperation='lighter';
+    ctx.fillStyle=`rgba(220,250,255,${k*.85})`; ctx.fillRect(dir>0?x:x-640,y-48,640,22);
+    ctx.fillStyle=`rgba(100,190,255,${k*.55})`; ctx.fillRect(dir>0?x:x-640,y-56,640,38);
+    ctx.strokeStyle='#fff';ctx.lineWidth=3;
+    for(let i=0;i<7;i++){let px=x-280+i*92;ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px+12,y-88);ctx.lineTo(px-4,y-40);ctx.stroke();}
     ctx.restore();
   }
 
@@ -1793,7 +1762,7 @@ WL.sprites = (function () {
     const kick = pose === 'jumpkick';
 
     if (pose === 'pop') {
-      // Wrench Pop: a vertical crescent rising in front of Lance.
+      // staff Pop: a vertical crescent rising in front of riley.
       const r = 34, a = Math.PI * 0.55 - u * Math.PI * 0.9;
       ctx.lineCap = 'round';
       ctx.beginPath();
@@ -1809,7 +1778,7 @@ WL.sprites = (function () {
       return;
     }
     if (jab) {
-      // Screwdriver rapid precision thrust streak: multi-line neon cyan/white speed lines
+      // wand rapid precision thrust streak: multi-line neon cyan/white speed lines
       const len = 42 + u * 28;
       ctx.lineWidth = 3.5;
       ctx.strokeStyle = '#5de6ff';
@@ -1899,5 +1868,5 @@ WL.sprites = (function () {
     ctx.restore();
   }
 
-  return { drawLance, lanceHead, drawLanceBust, drawEnemy, drawBoss, drawPickup, drawObject, drawProjectile, drawSprayCone, drawHitSpark, drawDust, drawFartCloud, drawSlash, drawPuddle, tool, VEG, OUT, tint, hibiscus, drawGlow, drawDebris, ball, volume, setLight(side) { LS = side; } };
+  return { drawRiley, rileyHead, drawRileyBust, drawEnemy, drawBoss, drawPickup, drawObject, drawProjectile, drawSprayCone, drawHitSpark, drawDust, drawSurgeCloud, drawSlash, drawPuddle, tool, VEG, OUT, tint, hibiscus, drawGlow, drawDebris, ball, volume, setLight(side) { LS = side; } };
 })();

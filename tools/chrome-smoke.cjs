@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* Chrome smoke on the software raster path: real mouse clicks on ATK and BOX,
-   BOX turns into PICK UP while the toolbox is out and back once it's picked up,
-   the same in Classic 640x360, then a busy Lido fight timed at 1280x720 DPR 1.
+   BOX turns into PICK UP while the relic is out and back once it's picked up,
+   the same in Classic 640x360, then a busy village fight timed at 1280x720 DPR 1.
    Usage: node tools/chrome-smoke.cjs [shotDir]   (needs google-chrome and python3) */
 'use strict';
 const { spawn } = require('child_process');
@@ -53,11 +53,11 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   await send('Page.navigate', { url: `http://127.0.0.1:${HTTP}/index.html` });
   for (let i = 0; i < 200; i++) { if (await js('return !!(window.WL && WL.game && WL.game.scene instanceof WL.scenes.Title)').catch(() => false)) break; await sleep(100); }
   check(await js('return WL.game.scene instanceof WL.scenes.Title'), 'boots to the title');
-  check(await js(`return !!WL.art.plate('lido-far') && WL.art.has('lance')`), 'painted atlases and plates load over HTTP');
+  check(await js(`return !!WL.art.plate('village-far') && WL.art.has('riley')`), 'painted atlases and urn load over HTTP');
   const stamp = await js(`return [...document.scripts].map(s => (s.src.match(/v=([\\w-]+)/) || [])[1]).filter(Boolean)`);
-  check(stamp.length > 5 && stamp.every(v => v === '20260923-cut1'), 'every script served with ?v=20260923-cut1');
+  check(stamp.length > 5 && stamp.every(v => v === '20260926-full'), 'every script served with ?v=20260926-full');
   const imgs = await js(`return performance.getEntriesByType('resource').map(e => e.name).filter(n => /assets\\/art\\//.test(n))`);
-  check(imgs.length >= 15 && imgs.every(n => /\\?v=20260923-cut1/.test(n)), 'painted art requested with ?v=20260923-cut1', imgs.length + ' art requests');
+  check(imgs.length >= 15 && imgs.every(n => /\\?v=20260926-full/.test(n)), 'painted art requested with ?v=20260926-full', imgs.length + ' art requests');
   check((await js('return WL.assets.criticalMissing().length')) === 0, 'no critical painted art missing, no failure banner');
 
   // Watch what the touch/mouse layer draws so the BOX badge can be checked.
@@ -84,22 +84,22 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
     await sleep(200);
     check(await js('return window.__atk > 0 || WL.game.scene.player.state === "attack"'), `${label}: mouse click on ATK attacks`);
     await sleep(500);
-    // BOX by mouse: the toolbox flies, the badge turns into PICK UP
-    await js(`const p = WL.game.scene.player; p.setState('idle'); p.hasToolbox = true;`);
+    // BOX by mouse: the relic flies, the badge turns into PICK UP
+    await js(`const p = WL.game.scene.player; p.setState('idle'); p.hasRelic = true;`);
     await click(...BTN.tool);
     await sleep(700);
-    const thrown = await js('const s = WL.game.scene; return { has: s.player.hasToolbox, flying: s.projectiles.some(p => p.kind === "toolbox"), pickup: s.pickups.some(p => p.kind === "toolbox") }');
-    check(!thrown.has && (thrown.flying || thrown.pickup), `${label}: mouse click on BOX throws the toolbox`, JSON.stringify(thrown));
+    const thrown = await js('const s = WL.game.scene; return { has: s.player.hasRelic, flying: s.projectiles.some(p => p.kind === "relic"), pickup: s.pickups.some(p => p.kind === "relic") }');
+    check(!thrown.has && (thrown.flying || thrown.pickup), `${label}: mouse click on BOX throws the relic`, JSON.stringify(thrown));
     await sleep(900);
-    check(await js('return window.__touchOpts && window.__touchOpts.hasToolbox === false'), `${label}: BOX reads PICK UP while the toolbox is out`);
+    check(await js('return window.__touchOpts && window.__touchOpts.hasRelic === false'), `${label}: BOX reads PICK UP while the relic is out`);
     await shot(label.toLowerCase().replace(/\W+/g, '-') + '-pick-up');
-    // walk Lance onto the dropped box
-    await js(`const s = WL.game.scene, b = s.pickups.find(p => p.kind === 'toolbox'); if (b) { s.player.x = b.x - 8; s.player.y = b.y; }`);
+    // walk riley onto the dropped box
+    await js(`const s = WL.game.scene, b = s.pickups.find(p => p.kind === 'relic'); if (b) { s.player.x = b.x - 8; s.player.y = b.y; }`);
     await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39 });
     await sleep(400);
     await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39 });
     await sleep(200);
-    check(await js('return WL.game.scene.player.hasToolbox && window.__touchOpts.hasToolbox !== false'), `${label}: walking over the box recovers it, BOX is back`);
+    check(await js('return WL.game.scene.player.hasRelic && window.__touchOpts.hasRelic !== false'), `${label}: walking over the box recovers it, BOX is back`);
   }
 
   await js(`WL.display.setMode('auto')`);
@@ -111,20 +111,20 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   await controls('Classic');
   await js(`WL.display.setMode('auto')`);
 
-  // Frame budget: a crowded Lido fight on the software path, rAF-paced.
+  // Frame budget: a crowded village fight on the software path, rAF-paced.
   await viewport(1280, 720, 1);
   await sleep(300);
   await toPlay();
   await js(`
     const s = WL.game.scene; WL.perf.runtimeLite = false;
     s.locked = true; s.player.x = s.camX + 260; s.player.y = 280;
-    for (const [t, dx, dy] of [['broccoli', 80, -10], ['carrot', 150, -40], ['sprout', -90, 20], ['sprout', 190, 30], ['celery', -150, -30], ['sprout', 40, 50]]) s.spawnEnemy(t, s.player.x + dx, s.player.y + dy, { side: dx > 0 ? 1 : -1 });
+    for (const [t, dx, dy] of [['trolloc', 80, -10], ['fade', 150, -40], ['trollocHeavy', -90, 20], ['trollocHeavy', 190, 30], ['darkfriend', -150, -30], ['trollocHeavy', 40, 50]]) s.spawnEnemy(t, s.player.x + dx, s.player.y + dy, { side: dx > 0 ? 1 : -1 });
   `);
   const perf = await js(`
     const s = WL.game.scene, P = WL.scenes.Play.prototype, od = s.draw;
     let work = [];
     s.draw = function (ctx) { const t0 = performance.now(); od.call(this, ctx); work.push(performance.now() - t0); };
-    const beat = setInterval(() => { s.fx.spark(s.player.x + 30, s.player.y - 40, true); s.fx.foodDebris(s.player.x + 30, s.player.y - 40, 'broccoli'); }, 250);
+    const beat = setInterval(() => { s.fx.ashaman(s.player.x + 30, s.player.y - 40, true); s.fx.foodDebris(s.player.x + 30, s.player.y - 40, 'trolloc'); }, 250);
     let frames = 0, run = true;
     const tick = () => { frames++; if (run) requestAnimationFrame(tick); };
     requestAnimationFrame(tick);
@@ -136,14 +136,14 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
     work.sort((a, b) => a - b);
     return { fps: frames / secs, drawMs: work.reduce((a, b) => a + b, 0) / work.length, p95: work[Math.floor(work.length * 0.95)], lite: WL.perf.runtimeLite || WL.perf.lite, scale: WL.display.renderScale, fx: s.fx.list.length };
   `);
-  check(perf.fps >= 55 && !perf.lite, 'Lido fight at 1280x720 on the software path holds ~60 fps', `${perf.fps.toFixed(1)} fps, draw ${perf.drawMs.toFixed(2)} ms avg / ${perf.p95.toFixed(2)} ms p95, ${perf.fx} fx, ${perf.scale}x`);
+  check(perf.fps >= 55 && !perf.lite, 'village fight at 1280x720 on the software path holds ~60 fps', `${perf.fps.toFixed(1)} fps, draw ${perf.drawMs.toFixed(2)} ms avg / ${perf.p95.toFixed(2)} ms p95, ${perf.fx} fx, ${perf.scale}x`);
   await shot('perf-1280x720');
 
-  // Story: painted plates versioned and loaded, the opening is scored (real signal on the
+  // Story: painted urn versioned and loaded, the opening is scored (real signal on the
   // master bus, not just calls), keys advance and skip, and the reel holds frame rate.
   await js(`await WL.assets.ready(['story'])`);
   const story = await js(`return performance.getEntriesByType('resource').map(e => e.name).filter(n => /assets\\/cutscenes\\//.test(n))`);
-  check(story.length >= 15 && story.every(n => /\\?v=20260923-cut1/.test(n)), 'story plates requested with ?v=20260923-cut1', story.length + ' plate requests');
+  check(story.length >= 15 && story.every(n => /\\?v=20260926-full/.test(n)), 'story urn requested with ?v=20260926-full', story.length + ' plate requests');
   check(await js(`return WL.assets.STORY.every(n => !!WL.assets.get('story:' + n))`), 'every story plate decoded');
   check(await js('return WL.audio.unlocked'), 'audio unlocked by a real key press');
   await js('WL.audio.trace.length = 0; WL.game.startNewGame(true);');
@@ -177,8 +177,8 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   await js('WL.game.levelComplete(0, WL.game.scene.player)');
   for (let i = 0; i < 60; i++) { if (await js('return WL.game.scene instanceof WL.scenes.StoryBeat && WL.game.fadeDir === 0')) break; await sleep(50); }
   await sleep(2500);
-  const beat = await js(`const s = WL.game.scene; return { plates: s.beats.map(b => b.plate).join(), cues: WL.audio.trace.map(c => c.name).slice(-40), song: WL.audio.song, peak: (() => { let p = 0; for (let i = 0; i < 20; i++) p = Math.max(p, WL.audio.level()); return p; })() }`);
-  check(beat.plates === 'st1-lido-outro,st2-plant-intro', 'stage clear plays the repair log, then the next deck intro', beat.plates);
+  const beat = await js(`const s = WL.game.scene; return { urn: s.beats.map(b => b.plate).join(), cues: WL.audio.trace.map(c => c.name).slice(-40), song: WL.audio.song, peak: (() => { let p = 0; for (let i = 0; i < 20; i++) p = Math.max(p, WL.audio.level()); return p; })() }`);
+  check(beat.urn === 'st1-village-outro,st2-shrine-intro', 'stage clear plays the repair log, then the next stage intro', beat.urn);
   check(beat.cues.includes('stinger:fixed') && beat.song === 'story', 'StoryBeat is scored: stinger + music bed', beat.song);
   await shot('story-storybeat');
   const errs = await js('return window.__errors');
@@ -186,7 +186,7 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
 
   // A painted file that won't load is retried once, then reported on screen.
   await send('Network.enable');
-  await send('Network.setBlockedURLs', { urls: ['*lido-far.webp*', '*lance.webp*'] });
+  await send('Network.setBlockedURLs', { urls: ['*village-far.webp*', '*riley.webp*'] });
   const warns = [];
   await send('Runtime.enable');
   ws.addEventListener('message', e => { const m = JSON.parse(e.data); if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'warning') warns.push(m.params.args.map(a => a.value).join(' ')); });
@@ -194,8 +194,8 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   for (let i = 0; i < 200; i++) { if (await js('return !!(window.WL && WL.game && WL.game.scene instanceof WL.scenes.Title)').catch(() => false)) break; await sleep(100); }
   await sleep(400);
   const miss = await js('return WL.assets.criticalMissing()');
-  const retried = await js(`return performance.getEntriesByType('resource').filter(e => /lido-far\\.webp/.test(e.name)).map(e => e.name)`);
-  check(miss.includes('art:lance') && miss.includes('plate:lido-far'), 'blocked lance/lido-far are reported missing', miss.join(', '));
+  const retried = await js(`return performance.getEntriesByType('resource').filter(e => /village-far\\.webp/.test(e.name)).map(e => e.name)`);
+  check(miss.includes('art:riley') && miss.includes('plate:village-far'), 'blocked riley/village-far are reported missing', miss.join(', '));
   check(warns.some(w => /painted art failed/.test(w)), 'console.warn names the failed keys', warns.join(' | '));
   const red = await js(`const c = document.querySelector('canvas'), g = c.getContext('2d'), s = c.width / WL.W, d = g.getImageData(Math.round(WL.W / 2 * s) - 100, Math.round(99 * s), 200, 4).data; let n = 0; for (let i = 0; i < d.length; i += 4) if (d[i] > 90 && d[i + 1] < 40 && d[i + 2] < 40) n++; return n / (d.length / 4);`);
   check(red > 0.3, 'PAINTED ART FAILED TO LOAD banner is on the title', 'red ' + red.toFixed(2));

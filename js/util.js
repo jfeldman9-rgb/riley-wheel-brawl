@@ -1,4 +1,4 @@
-/* Whale Lance: Buffet Brawl — shared helpers */
+/* shadow riley: battle Brawl — shared helpers */
 'use strict';
 
 const WL = window.WL = window.WL || {};
@@ -32,7 +32,7 @@ WL.light = {
   set(o) { Object.assign(this, { side: 1, cast: 0.3, gloss: 0, key: 'rgba(255,244,210,0.55)', rim: 'rgba(255,250,225,0.9)', shade: 'rgba(40,18,60,0.26)' }, o || {}); }
 };
 
-/* Offscreen layer cache. Static art (skyline, deck tiles, loungers) is
+/* Offscreen layer cache. Static art (skyline, stage tiles, loungers) is
    painted once per render scale and blitted, instead of re-running hundreds
    of path ops per frame on a 4K backing store. maxScale caps resolution:
    distant layers are cached softer on purpose, which reads as depth of field. */
@@ -420,7 +420,7 @@ WL.draw = {
     if (WL.display.mode !== 'classic') return;
     // One path instead of a fillRect per stripe. The stripe is one device
     // pixel so a retina backing store doesn't turn the CRT mask into thick
-    // bars that soften Lance and the HUD.
+    // bars that soften riley and the HUD.
     const rs = Math.max(1, (WL.display && WL.display.renderScale) || 1);
     ctx.save();
     ctx.globalAlpha = alpha || 0.12;

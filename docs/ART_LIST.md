@@ -25,7 +25,7 @@ Atlases are painted images too and are listed so the art handoff is exhaustive. 
 | --- | ---: | :---: | --- |
 | `assets/art/atlas-riley.webp` | 2048×2048 | Yes | Riley's complete rig: idle, 4+ walk frames, three kicks and winds, jump/kick, grab/throw, fire, super, hurt/down, Callandor, victory. |
 | `assets/art/atlas-trolloc.webp` | 2048×1536 | Yes | Several readable Trolloc variants with real walk, melee, hurt, down, and defeat poses. |
-| `assets/art/atlas-trolloc-captain.webp` | 1536×1536 | Yes | Heavy armored Trolloc captain with real walk and slow telegraphed attacks. |
+| `assets/art/atlas-trolloc-chieftain.webp` | 1536×1536 | Yes | Heavy armored Trolloc chieftain with real walk and slow telegraphed attacks. |
 | `assets/art/atlas-darkfriend.webp` | 1536×1536 | Yes | Caemlyn Darkfriend with real walk, feint, strike, hurt, and down poses. |
 | `assets/art/atlas-fade.webp` | 2048×1536 | Yes | Myrddraal mini-boss with cloak-aware walk, sword tells, attacks, phases, stagger, and defeat. |
 | `assets/art/atlas-mashadar-cultist.webp` | 1536×1536 | Yes | Shadar Logoth ground enemy with real walk, lantern/weapon attacks, hurt, and down poses. |

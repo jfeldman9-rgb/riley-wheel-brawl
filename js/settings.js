@@ -13,10 +13,10 @@ WL.settings = (function () {
   const DEFAULT_KEYS = {
     up: ['w', 'ArrowUp'], down: ['s', 'ArrowDown'], left: ['a', 'ArrowLeft'], right: ['d', 'ArrowRight'],
     attack: ['e', 'j', 'z'], jump: [' ', 'k', 'x'], special: ['q', 'l', 'c'],
-    tool: ['r', 'i', 'v', 'u'], fart: ['f', 'b'], pause: ['Escape', 'p']
+    tool: ['r', 'i', 'v', 'u'], saidin: ['f', 'b'], pause: ['Escape', 'p']
   };
-  // Standard mapping: A jump, B fart, X attack, Y spray, RB/LB toolbox, Back pause.
-  const DEFAULT_PAD = { attack: [2], jump: [0], special: [3], tool: [5, 4], fart: [1], pause: [8] };
+  // Standard mapping: A jump, B saidin, X attack, Y fire, RB/LB relic, Back pause.
+  const DEFAULT_PAD = { attack: [2], jump: [0], special: [3], tool: [5, 4], saidin: [1], pause: [8] };
   // Enter confirms menus, M mutes, backslash / F11 go fullscreen. Start and the
   // d-pad always work so a bad remap can't lock anyone out of the menus.
   const FIXED_KEYS = { Enter: 'start', m: 'mute', '\\': 'fullscreen', F11: 'fullscreen' };
@@ -24,11 +24,11 @@ WL.settings = (function () {
   const RESERVED_KEYS = ['Enter', 'm', '\\', 'F11', 'Tab', 'Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'ContextMenu', 'OS', 'Dead', 'Unidentified'];
   const RESERVED_PAD = [9, 12, 13, 14, 15];
 
-  const ACTIONS = ['up', 'down', 'left', 'right', 'attack', 'jump', 'special', 'tool', 'fart', 'pause'];
-  const PAD_ACTIONS = ['attack', 'jump', 'special', 'tool', 'fart', 'pause'];
+  const ACTIONS = ['up', 'down', 'left', 'right', 'attack', 'jump', 'special', 'tool', 'saidin', 'pause'];
+  const PAD_ACTIONS = ['attack', 'jump', 'special', 'tool', 'saidin', 'pause'];
   const ACTION_NAMES = {
     up: 'MOVE UP', down: 'MOVE DOWN', left: 'MOVE LEFT', right: 'MOVE RIGHT',
-    attack: 'ATTACK', jump: 'JUMP', special: 'SPRAY', tool: 'TOOLBOX', fart: 'FART', pause: 'PAUSE'
+    attack: 'ATTACK', jump: 'JUMP', special: 'FIRE', tool: 'CALL', saidin: 'BALEFIRE', pause: 'PAUSE'
   };
 
   const OVERLAY_STEPS = [0.25, 0.4, 0.55, 0.7, 0.85];
@@ -171,7 +171,8 @@ WL.settings = (function () {
       const waves = WL.LEVELS[r.level].waves.length;
       r.wave = Math.max(0, Math.min(waves - 1, r.wave | 0));
       r.score = Math.max(0, r.score | 0);
-      r.fart = Math.max(0, Math.min(100, r.fart | 0));
+      r.saidin = Math.max(0, Math.min(100, r.saidin | 0));
+      r.callandor = !!r.callandor;
       return r;
     } catch (e) { return null; }
   }

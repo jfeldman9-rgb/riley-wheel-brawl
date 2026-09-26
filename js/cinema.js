@@ -24,8 +24,8 @@ WL.cinema = (function () {
   const backOut = t => { const c = 1.7; t = clamp01(t) - 1; return 1 + (c + 1) * t * t * t + c * t * t; };
 
   const SPEAKERS = {
-    lance: { name: 'WHALE LANCE', color: '#d8321f', side: -1, img: () => WL.art.plate('lance-portrait') || WL.assets.get('lancePortrait') },
-    captain: { name: 'CAPTAIN ANDERSEN', color: '#2462c4', side: 1, img: () => WL.assets.get('story:captain-portrait') }
+    riley: { name: 'shadow riley', color: '#d8321f', side: -1, img: () => WL.art.plate('riley-portrait') || WL.assets.get('rileyPortrait') },
+    chieftain: { name: 'chieftain ANDERSEN', color: '#2462c4', side: 1, img: () => WL.assets.get('story:chieftain-portrait') }
   };
 
   const lineHold = text => 1.25 + text.length * 0.03;
@@ -69,11 +69,11 @@ WL.cinema = (function () {
       g.fillStyle = bg; g.fillRect(0, 0, size, size);
       g.imageSmoothingQuality = 'high';
       if (img) {
-        const z = who === 'captain' ? 1.16 : 1.1;
+        const z = who === 'chieftain' ? 1.16 : 1.1;
         const d = r * 2 * z;
-        g.drawImage(img, c - d / 2, c - d / 2 + (who === 'captain' ? r * 0.14 : r * 0.04), d, d);
+        g.drawImage(img, c - d / 2, c - d / 2 + (who === 'chieftain' ? r * 0.14 : r * 0.04), d, d);
       } else {
-        S.lanceHead(g, c, c + 2, r * 1.4, { mood: 'idle' });
+        S.rileyHead(g, c, c + 2, r * 1.4, { mood: 'idle' });
       }
       const sh = g.createLinearGradient(0, c - r, 0, c + r);
       sh.addColorStop(0, 'rgba(255,255,255,0.22)'); sh.addColorStop(0.4, 'rgba(255,255,255,0)'); sh.addColorStop(1, 'rgba(0,0,0,0.3)');
@@ -337,7 +337,7 @@ WL.cinema = (function () {
       g.addColorStop(0, '#15305e'); g.addColorStop(0.62, b.tint || '#c9824a'); g.addColorStop(1, '#3a2012');
       ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
       ctx.save(); ctx.translate(200, 300); ctx.scale(2.2, 2.2);
-      S.drawLance(ctx, 0, 0, { pose: 'idle', t, facing: 1 });
+      S.drawRiley(ctx, 0, 0, { pose: 'idle', t, facing: 1 });
       ctx.restore();
     }
     drawTags(ctx, b, t, v) {
@@ -370,7 +370,7 @@ WL.cinema = (function () {
         ctx.restore();
       });
     }
-    /* The finale card sits in the lower band so the logo lands over the food, not the faces. */
+    /* The finale card sits in the lower band so the logo lands over the magic, not the faces. */
     slamY(b) { return b.slam.y != null ? b.slam.y : b.slam.end ? 296 : 72; }
     slamVisible(b, t) { return !!b.slam && t >= this.tl.slamAt && (b.slam.end || t <= this.tl.slamAt + 2.6); }
     drawSlam(ctx, b, t) {
@@ -388,7 +388,7 @@ WL.cinema = (function () {
       band.addColorStop(0, 'rgba(0,0,0,0)'); band.addColorStop(0.5, 'rgba(10,0,20,0.55)'); band.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = band; ctx.fillRect(0, y - 18, W, size + 40);
       if (b.slam.end && WL.art.plate('logo')) {
-        const P = WL.ARTDATA.plates.logo, lw = 300, lh = lw * P.h / P.w;
+        const P = WL.ARTDATA.urn.logo, lw = 300, lh = lw * P.h / P.w;
         ctx.drawImage(WL.art.plate('logo'), W / 2 - lw / 2, y - lh - 14, lw, lh);
       }
       ctx.translate(W / 2, y + size / 2);
@@ -435,7 +435,7 @@ WL.cinema = (function () {
       const col = cur > 85 ? '#ff4a2a' : cur > 76 ? '#ffb020' : '#46c0ff';
       D.fillRRect(ctx, x + 2, y + 2, w, h, 6, 'rgba(0,0,0,0.4)');
       D.fillRRect(ctx, x, y, w, h, 6, 'rgba(8,14,34,0.88)', 'rgba(255,255,255,0.5)');
-      T.draw(ctx, 'SHIP TEMP', x + 8, y + 5, { size: 5, color: '#b8cde6', shadow: false });
+      T.draw(ctx, 'vessel TEMP', x + 8, y + 5, { size: 5, color: '#b8cde6', shadow: false });
       T.draw(ctx, `${Math.round(cur)}°F`, x + 8, y + 14, { size: 12, color: col, stroke: '#000', strokeWidth: 3, shadow: false });
       // glass tube
       D.fillRRect(ctx, x + w - 28, y + 5, 8, h - 10, 4, 'rgba(255,255,255,0.18)', 'rgba(255,255,255,0.5)');
@@ -516,7 +516,7 @@ WL.cinema = (function () {
       ctx.fillStyle = '#000';
       ctx.fillRect(0, 0, W, bh); ctx.fillRect(0, H - bh, W, bh);
       if (k < 1) return;
-      // skip chip (clickable) and progress pips
+      // skip mark (clickable) and progress pips
       const sx = W - 88;
       D.fillRRect(ctx, sx, 5, 80, 12, 6, 'rgba(255,255,255,0.1)', 'rgba(255,255,255,0.35)');
       T.draw(ctx, WL.input.touchEnabled ? 'SKIP ▶▶' : `${WL.input.hint('pause', 1)}  SKIP ▶▶`, sx + 40, 8, { size: 5, align: 'center', color: '#dfe8f4', shadow: false });

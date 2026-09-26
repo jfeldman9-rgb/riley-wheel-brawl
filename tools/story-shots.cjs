@@ -55,7 +55,7 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
   await send('Page.navigate', { url: `http://127.0.0.1:${HTTP}/index.html` });
   for (let i = 0; i < 200; i++) { if (await js('return !!(window.WL && WL.game && WL.game.scene instanceof WL.scenes.Title)').catch(() => false)) break; await sleep(100); }
   await js('window.__errors = []; window.addEventListener("error", e => window.__errors.push(String(e.message)));');
-  // Background story plates (when the build has them) finish before the timed shots.
+  // Background story urn (when the build has them) finish before the timed shots.
   await js('if (WL.assets.ready) await WL.assets.ready(["story"]);');
   const settle = async () => { for (let i = 0; i < 100; i++) { if (await js('return WL.game.fadeDir === 0 && !WL.game.nextScene')) break; await sleep(30); } };
   /* Wall-clock time inside the current scene, so both old and new scene classes work. */
@@ -114,13 +114,13 @@ const done = code => { chrome.kill('SIGKILL'); server.kill('SIGKILL'); process.e
       await shot('opening-' + k);
     }
   }
-  await js('WL.game.levelComplete(0, { score: 48250, lives: 3, fart: 40 })');
+  await js('WL.game.levelComplete(0, { score: 48250, lives: 3, saidin: 40 })');
   await sleep(250); await settle();
   frames.length = 0;
   await waitScene(AT);
-  await shot('storybeat-lido-outro');
+  await shot('storybeat-village-outro');
   if (VIDEO) {
-    // Stage clear: the repair log carries into the next deck's intro.
+    // Stage clear: the repair log carries into the next stage's intro.
     await waitUntil('WL.game.scene.i >= 1 && WL.game.scene.t > 4', 20000);
     await send('Page.stopScreencast');
     encode('story-live-feel-storybeat');

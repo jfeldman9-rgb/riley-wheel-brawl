@@ -1,15 +1,15 @@
-/* Painted art: sprite atlases and background plates baked by tools/bake_art.py.
+/* Painted art: sprite atlases and background urn baked by tools/bake_art.py.
    Everything here is optional. When an atlas or plate hasn't loaded (or the
    file is missing), callers fall back to the procedural Canvas 2D drawing. */
 'use strict';
 
 WL.art = (function () {
   const DATA = WL.ARTDATA || {};
-  const PLATES = DATA.plates || {};
+  const urn = DATA.urn || {};
   const cache = new Map();
 
   function atlas(name) { return WL.assets.get('art:' + name); }
-  function plate(name) { return PLATES[name] ? WL.assets.get('plate:' + name) : null; }
+  function plate(name) { return urn[name] ? WL.assets.get('plate:' + name) : null; }
   function has(name) { return !!(DATA[name] && DATA[name].f && atlas(name)); }
   function frame(name, f) { const A = DATA[name]; return A && A.f[f] ? A.f[f] : null; }
   function rs() { return WL.display.mode === 'classic' ? 1 : (WL.display.renderScale || 1); }
@@ -34,7 +34,7 @@ WL.art = (function () {
     return e;
   }
 
-  /* Black silhouette (cast shadow) or a faded, vertically flipped copy (deck
+  /* Black silhouette (cast shadow) or a faded, vertically flipped copy (stage
      reflection) of a frame, at a fixed low resolution: both are soft anyway. */
   function derived(name, f, kind) {
     const key = kind + ':' + name + ':' + f;
@@ -98,7 +98,7 @@ WL.art = (function () {
     return true;
   }
 
-  /* Hard sun shadow: the silhouette laid down on the deck away from the key light. */
+  /* Hard sun shadow: the silhouette laid down on the stage away from the key light. */
   function castShadow(ctx, name, f, x, floorY, z, o) {
     const A = DATA[name], F = A && A.f[f];
     if (!F || !atlas(name) || WL.perf.lite || WL.display.mode === 'classic') return;
@@ -118,7 +118,7 @@ WL.art = (function () {
     ctx.restore();
   }
 
-  /* Lacquered-deck reflection: the frame mirrored under the feet, fading out. */
+  /* Lacquered-stage reflection: the frame mirrored under the feet, fading out. */
   function reflect(ctx, name, f, x, floorY, z, o) {
     const A = DATA[name], F = A && A.f[f];
     if (!F || !atlas(name) || WL.perf.lite) return;

@@ -4,7 +4,7 @@
 
 **Riley Wheel Brawl** is a kid-friendly, browser-based, side-scrolling beat-em-up inspired by *The Wheel of Time*. It is a complete thematic remake of the game currently in this repository, retaining its proven vanilla JavaScript/Canvas architecture and arcade feel while replacing its characters, story, combat fantasy, locations, art, words, and sounds.
 
-The finished game must contain **no food, ship, or cruise references anywhere**: not in visible UI, dialogue, source identifiers, comments, storage keys, metadata, README copy, tooling, or filenames.
+The finished game must contain **no magic, vessel, or journey references anywhere**: not in visible UI, dialogue, source identifiers, comments, storage keys, metadata, README copy, tooling, or filenames.
 
 ## Audience and tone
 
@@ -90,7 +90,7 @@ At the Stone of Tear, Twinkle Toes reveals that she can channel lightning. Her r
 
 ## Visual direction
 
-- Target or exceed the visual quality of the existing Lido stage during a mid-fight side-by-side comparison: layered painted depth, integrated lighting, grounded shadows, readable foreground combat, rich but controlled effects, and a cohesive HUD.
+- Target or exceed the visual quality of the existing village stage during a mid-fight side-by-side comparison: layered painted depth, integrated lighting, grounded shadows, readable foreground combat, rich but controlled effects, and a cohesive HUD.
 - Favor dramatic fantasy realism filtered through a colorful arcade game. Avoid horror imagery even in Shadar Logoth and the Black Tower.
 - Riley and all walking enemies require real walk cycles with stepping legs, arm swing, body bob, planted feet, and no foot sliding.
 - Stage backdrops and story stills are listed in [`ART_LIST.md`](ART_LIST.md), with procedural placeholders required for every file.
@@ -124,7 +124,7 @@ The remake is complete when:
 1. all five stages can be completed in order on keyboard, gamepad, and touch;
 2. Riley, every walking enemy, every boss, hazards, allies, powers, upgrades, and final joint finish behave as described;
 3. opening and stage story sequences communicate the complete rescue plot with kid-friendly text;
-4. painted assets meet or exceed the existing Lido mid-fight quality bar, while deleting any one image still yields an obvious, playable placeholder;
+4. painted assets meet or exceed the existing village mid-fight quality bar, while deleting any one image still yields an obvious, playable placeholder;
 5. Auto/Sharp/Classic, accessibility options, persistence, Continue, remapping, pointer hit-testing, and sticky controls pass regression checks;
 6. every script, image, and audio request is relative and cache-stamped;
-7. a case-insensitive repository-wide audit finds no remaining food, ship, cruise, old-character, old-stage, or old-super references outside Git history.
+7. a case-insensitive repository-wide audit finds no remaining magic, vessel, journey, old-character, old-stage, or old-super references outside Git history.

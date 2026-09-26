@@ -48,7 +48,7 @@
     /** A stage's intro beat, scored with the stage's own song. */
     introBeat(idx) { const L = WL.LEVELS[idx]; return L.intro && Object.assign({ music: L.music }, L.intro); },
     startNewGame(withIntro) {
-      // The opening runs straight into the Lido intro, then the fight.
+      // The opening runs straight into the village intro, then the fight.
       if (withIntro) this.setScene(new WL.scenes.Cutscene(this, WL.OPENING.concat([this.introBeat(0)]), () => this.setScene(new WL.scenes.Play(this, 0, {})), 'story'));
       else this.startLevel(0, {});
     },
@@ -60,10 +60,10 @@
     },
     levelComplete(idx, player) {
       const L = WL.LEVELS[idx];
-      const carry = { score: player.score, lives: player.lives, fart: player.fart };
-      if (L.boss) { WL.settings.clearRun(); this.showEnding(player.score); return; }
-      WL.settings.saveRun({ level: idx + 1, wave: 0, score: player.score, fart: Math.round(player.fart) });
-      // Repair log, then the next deck's intro, in one reel.
+      const carry = { score: player.score, lives: player.lives, saidin: player.saidin };
+      if (idx === WL.LEVELS.length - 1) { WL.settings.clearRun(); this.showEnding(player.score); return; }
+      WL.settings.saveRun({ level: idx + 1, wave: 0, score: player.score, saidin: Math.round(player.saidin) });
+      // Repair log, then the next stage's intro, in one reel.
       this.setScene(new WL.scenes.StoryBeat(this, {
         beats: [L.outro, this.introBeat(idx + 1)], music: 'story',
         onDone: () => this.setScene(new WL.scenes.Play(this, idx + 1, carry))
@@ -75,7 +75,7 @@
     gameOver(levelIndex, score, wave) { this.setScene(new WL.scenes.GameOver(this, levelIndex, score, wave)); },
     /** Continue after a wipe: same stage, from `wave` (0 = stage start). Half score, 3 lives. */
     continueGame(levelIndex, score, wave) {
-      this.resumeAt(levelIndex, wave | 0, { score: Math.floor(score / 2), lives: 3, fart: 0 });
+      this.resumeAt(levelIndex, wave | 0, { score: Math.floor(score / 2), lives: 3, saidin: 0 });
     },
     resumeAt(levelIndex, wave, carry) {
       this.setScene(new WL.scenes.Play(this, levelIndex, Object.assign({}, carry, { resumeWave: wave })));
@@ -83,14 +83,14 @@
     /** Title-screen Continue from the saved checkpoint. */
     continueRun(run) {
       if (!run) { this.startNewGame(true); return; }
-      if (run.wave === 0) this.startLevel(run.level, { score: run.score, lives: 3, fart: run.fart });
-      else this.resumeAt(run.level, run.wave, { score: run.score, lives: 3, fart: run.fart });
+      if (run.wave === 0) this.startLevel(run.level, { score: run.score, lives: 3, saidin: run.saidin, callandor: !!run.callandor });
+      else this.resumeAt(run.level, run.wave, { score: run.score, lives: 3, saidin: run.saidin, callandor: !!run.callandor });
     },
     /* debug helpers (used by automated tests / cheats) */
     debug: {
-      level(n) { game.startLevel(n, { score: 0, lives: 3, fart: 0 }); },
-      play(n) { game.setScene(new WL.scenes.Play(game, n, { score: 0, lives: 3, fart: 0 })); },
-      fillFart() { if (game.scene && game.scene.player) game.scene.player.fart = 100; },
+      level(n) { game.startLevel(n, { score: 0, lives: 3, saidin: 0 }); },
+      play(n) { game.setScene(new WL.scenes.Play(game, n, { score: 0, lives: 3, saidin: 0 })); },
+      fillSurge() { if (game.scene && game.scene.player) game.scene.player.saidin = 100; },
       invuln(v) { if (game.scene) game.scene.cheatInvuln = v !== false; },
       boss() { const s = game.scene; if (!s || !s.level) return; s.waveIdx = s.level.waves.length - 1; s.player.x = s.level.waves[s.waveIdx].x - 10; s.camX = Math.max(0, s.player.x - W * 0.42); }
     }
@@ -100,7 +100,7 @@
      The world stays 640x360. The backing store is the CSS box times
      devicePixelRatio, so the browser shows the bitmap 1:1 instead of
      stretching a small canvas (that stretch is what looked blurry on
-     retina). Sprites are redrawn in vectors into that buffer, so Lance,
+     retina). Sprites are redrawn in vectors into that buffer, so riley,
      the HUD, and the decks pick up the extra pixels. Classic mode keeps
      the old 640x360 nearest-neighbor picture. */
   function applyTransform() {
@@ -285,10 +285,10 @@
   }
   function drawLoading() {
     ctx.fillStyle = '#07070f'; ctx.fillRect(0, 0, W, H);
-    WL.text.draw(ctx, 'WHALE LANCE', W / 2, 120, { size: 20, align: 'center', gradient: ['#fff3a0', '#ffb300', '#e0301e'], stroke: '#000', strokeWidth: 5 });
-    WL.text.draw(ctx, 'BUFFET BRAWL', W / 2, 150, { size: 26, align: 'center', gradient: ['#ffffff', '#ffd23f', '#ff4d00'], stroke: '#000', strokeWidth: 6 });
+    WL.text.draw(ctx, 'shadow riley', W / 2, 120, { size: 20, align: 'center', gradient: ['#fff3a0', '#ffb300', '#e0301e'], stroke: '#000', strokeWidth: 5 });
+    WL.text.draw(ctx, 'battle BRAWL', W / 2, 150, { size: 26, align: 'center', gradient: ['#ffffff', '#ffd23f', '#ff4d00'], stroke: '#000', strokeWidth: 6 });
     WL.draw.bar(ctx, W / 2 - 100, 220, 200, 8, progress, '#ffe14a', '#333');
-    WL.text.draw(ctx, 'PREHEATING THE BUFFET...', W / 2, 240, { size: 7, align: 'center', color: '#bcd' });
+    WL.text.draw(ctx, 'PREHEATING THE battle...', W / 2, 240, { size: 7, align: 'center', color: '#bcd' });
   }
   requestAnimationFrame(frame);
 })();

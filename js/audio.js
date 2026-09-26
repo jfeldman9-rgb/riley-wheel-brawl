@@ -170,7 +170,7 @@ WL.audio = (function () {
     // Launcher pop: rising whip so the juggle reads by ear.
     pop() { tone({ f0: 240, f1: 980, dur: 0.12, vol: 0.26, type: 'square' }); noise({ f0: 900, f1: 2600, dur: 0.1, vol: 0.2, filter: 'bandpass', q: 1.4 }); },
     juggle() { if (!gate('juggle', 40)) return; tone({ f0: vary(740, 0.03), f1: 1180, dur: 0.07, vol: 0.18, type: 'triangle' }); },
-    // Radio-chirp under a Lance bark. The words are on screen; this says "he spoke".
+    // Radio-chirp under a riley bark. The words are on screen; this says "he spoke".
     voice() { if (!gate('voice', 400)) return; [520, 660, 440].forEach((f, i) => tone({ f0: vary(f, 0.04), dur: 0.035, delay: i * 0.045, vol: 0.07, type: 'square' })); },
     /* Boss tells: one sound per move, plus a shared "last call" click right before impact. */
     tellSlam() { tone({ f0: 196, dur: 0.07, vol: 0.3, type: 'square' }); tone({ f0: 147, dur: 0.09, delay: 0.12, vol: 0.3, type: 'square' }); },
@@ -182,14 +182,14 @@ WL.audio = (function () {
     pickup() { tone({ f0: 660, f1: 660, dur: 0.07, vol: 0.2 }); tone({ f0: 880, dur: 0.08, delay: 0.07, vol: 0.2 }); tone({ f0: 1320, dur: 0.12, delay: 0.14, vol: 0.2 }); },
     heal() { for (let i = 0; i < 4; i++) tone({ f0: 523 * Math.pow(1.25, i), dur: 0.12, delay: i * 0.06, vol: 0.18, type: 'triangle' }); },
     chomp() { noise({ f0: 900, f1: 200, dur: 0.12, vol: 0.3 }); tone({ f0: 200, f1: 120, dur: 0.1, vol: 0.2, type: 'square' }); },
-    spray() { noise({ f0: 4000, f1: 2500, dur: 0.55, vol: 0.35, filter: 'highpass', attack: 0.02 }); tone({ f0: 2400, f1: 1800, dur: 0.5, vol: 0.05, type: 'sine' }); },
+    fire() { noise({ f0: 4000, f1: 2500, dur: 0.55, vol: 0.35, filter: 'highpass', attack: 0.02 }); tone({ f0: 2400, f1: 1800, dur: 0.5, vol: 0.05, type: 'sine' }); },
     throwSfx() { noise({ f0: 1200, f1: 3000, dur: 0.2, vol: 0.2, filter: 'bandpass' }); },
     grab() { noise({ f0: 2500, f1: 600, dur: 0.18, vol: 0.25, filter: 'bandpass', q: 2 }); tone({ f0: 400, f1: 500, dur: 0.1, vol: 0.15 }); },
     tape() { noise({ f0: 3500, f1: 1500, dur: 0.25, vol: 0.3, filter: 'bandpass', q: 3 }); },
     enemyDie() { if (!gate('enemyDie', 45)) return; tone({ f0: 500, f1: 80, dur: 0.3, vol: 0.3, type: 'sawtooth' }); noise({ f0: 1500, f1: 200, dur: 0.3, vol: 0.3 }); },
     shuriken() { if (!gate('shuriken', 40)) return; tone({ f0: 1500, f1: 700, dur: 0.15, vol: 0.15, type: 'triangle' }); },
     steam() { if (!gate('steam', 200)) return; noise({ f0: 3000, f1: 1200, dur: 0.6, vol: 0.25, filter: 'highpass', attack: 0.05 }); },
-    fart() {
+    saidin() {
       if (!ctx || muted) return;
       // the star of the show: low sawtooth with vibrato, pitch drop, gritty noise
       const t0 = ctx.currentTime;
@@ -241,7 +241,7 @@ WL.audio = (function () {
       k();
       duck(0.45, 0.35, 0.8);
     },
-    /** Speech babble for one syllable of a typed line. who: lance | captain | narrator. */
+    /** Speech babble for one syllable of a typed line. who: riley | chieftain | narrator. */
     babble(who) {
       if (!gate('babble', 52)) return;
       const v = VOICES[who] || VOICES.narrator;
@@ -287,8 +287,8 @@ WL.audio = (function () {
     }
   }
   const VOICES = {
-    lance: { f0: 118, formant: 620, vol: 0.2, type: 'sawtooth', grunt: [[150, 104, 0.2, 0]] },
-    captain: { f0: 196, formant: 1050, vol: 0.16, type: 'square', grunt: [[220, 262, 0.1, 0], [262, 208, 0.14, 0.11]] },
+    riley: { f0: 118, formant: 620, vol: 0.2, type: 'sawtooth', grunt: [[150, 104, 0.2, 0]] },
+    chieftain: { f0: 196, formant: 1050, vol: 0.16, type: 'square', grunt: [[220, 262, 0.1, 0], [262, 208, 0.14, 0.11]] },
     narrator: { tick: true }
   };
   const STINGERS = {
@@ -329,8 +329,8 @@ WL.audio = (function () {
   // Songs: { bpm, bass: [midi or 0 ...16 steps], lead: [...], arp: root notes per bar }
   const SONGS = {
     title: { bpm: 112, bass: [36, 0, 36, 0, 43, 0, 36, 0, 41, 0, 41, 0, 43, 0, 46, 0], lead: [60, 0, 63, 0, 67, 0, 70, 67, 0, 65, 0, 63, 0, 60, 0, 0], kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1] },
-    lido: { bpm: 126, bass: [38, 38, 0, 38, 45, 0, 38, 0, 41, 41, 0, 41, 43, 0, 45, 0], lead: [62, 0, 65, 69, 0, 67, 0, 65, 0, 62, 0, 65, 67, 0, 69, 0], kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0] },
-    plant: { bpm: 132, bass: [33, 33, 0, 33, 33, 0, 36, 0, 31, 31, 0, 31, 31, 0, 35, 36], lead: [57, 0, 0, 60, 0, 57, 0, 0, 55, 0, 0, 59, 0, 60, 0, 62], kick: [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0] },
+    village: { bpm: 126, bass: [38, 38, 0, 38, 45, 0, 38, 0, 41, 41, 0, 41, 43, 0, 45, 0], lead: [62, 0, 65, 69, 0, 67, 0, 65, 0, 62, 0, 65, 67, 0, 69, 0], kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0] },
+    shrine: { bpm: 132, bass: [33, 33, 0, 33, 33, 0, 36, 0, 31, 31, 0, 31, 31, 0, 35, 36], lead: [57, 0, 0, 60, 0, 57, 0, 0, 55, 0, 0, 59, 0, 60, 0, 62], kick: [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0] },
     spa: { bpm: 120, bass: [40, 0, 0, 40, 0, 47, 0, 0, 38, 0, 0, 38, 0, 45, 0, 0], lead: [64, 67, 0, 71, 0, 0, 67, 0, 62, 66, 0, 69, 0, 0, 66, 0], kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1] },
     freezer: { bpm: 138, bass: [31, 31, 0, 31, 0, 31, 34, 0, 30, 30, 0, 30, 0, 30, 33, 0], lead: [55, 0, 58, 0, 62, 0, 58, 55, 54, 0, 57, 0, 61, 0, 57, 54], kick: [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0], snare: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0] },
     boss: { bpm: 150, bass: [29, 29, 29, 0, 32, 0, 29, 0, 27, 27, 27, 0, 30, 0, 28, 0], lead: [53, 0, 56, 60, 0, 56, 53, 0, 51, 0, 54, 58, 0, 54, 51, 0], kick: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], snare: [0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1] },

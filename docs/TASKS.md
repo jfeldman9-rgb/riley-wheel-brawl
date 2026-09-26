@@ -14,7 +14,7 @@ Each task is scoped to one focused session. Do them in order; do not begin conte
 
 - **Files to touch:** all `js/*.js`; `assets/art/*`; `assets/cutscenes/*`; `tools/*.py`, `tools/*.js`, `tools/*.cjs`; `tools/art-src/*`; `tools/gate-shots/*`; delete/rename obsolete old-theme files as needed.
 - **Expected behavior:** Rename the global namespace, settings/run keys, classes/fields/actions, sprites, pickups, stages, audio cues, generated metadata, debug helpers, test fixtures, filenames, and comments to Riley/fantasy or neutral terms. Supply neutral procedural placeholders/data wherever final content is not built yet. Preserve gameplay, BOX/ATK pointer hit-testing, sticky controls, PICK UP, Continue, upgrades, display modes, cutscenes, retry/fallback loading, and the red failure banner. Every script/image/audio URL is relative and has `?v=`.
-- **Acceptance check:** Run a case-insensitive repository scan using the agreed forbidden-term list (including all old names, enemies, locations, food, ship/cruise vocabulary, A/C/HVAC/toolbox/spray/fart terminology); it returns no matches outside `.git`. Then complete one placeholder stage with keyboard and mouse, verify BOX/ATK clicks, throw/recover to see PICK UP, and reload Continue.
+- **Acceptance check:** Run a case-insensitive repository scan using the agreed forbidden-term list (including all old names, enemies, locations, magic, vessel/journey vocabulary, ward/warding/relic/fire/saidin terminology); it returns no matches outside `.git`. Then complete one placeholder stage with keyboard and mouse, verify BOX/ATK clicks, throw/recover to see PICK UP, and reload Continue.
 
 ### 3. Establish five neutral stage slots and fallback-only art contracts — **Medium**
 
@@ -53,7 +53,7 @@ Each task is scoped to one focused session. Do them in order; do not begin conte
 ### 8. Convert the meter and pickups to saidin — **Medium**
 
 - **Files to touch:** `js/entities.js`, `js/scenes.js`, `js/sprites.js`, `js/levels.js`, `js/settings.js`, `js/input.js`, `js/voice.js`, `js/main.js`.
-- **Expected behavior:** Power pickups add saidin; the HUD and ready prompts show SAIDIN; save/Continue and debug fill preserve the renamed meter safely. Replace all healing items with Moiraine healing tokens/effects and all score/power items with non-food fantasy counterparts. Moiraine's required heal line plays once per heal event.
+- **Expected behavior:** Power pickups add saidin; the HUD and ready prompts show SAIDIN; save/Continue and debug fill preserve the renamed meter safely. Replace all healing items with Moiraine healing tokens/effects and all score/power items with non-magic fantasy counterparts. Moiraine's required heal line plays once per heal event.
 - **Acceptance check:** Collect power until the meter fills, collect a heal while hurt, clear a wave, and reload Continue. See the saidin value persist, hear/see “Rise, Riley, Rise!” exactly once on the heal, and find no edible pickup or old meter label.
 
 ### 9. Implement full-meter taint pressure — **Hard**
@@ -107,7 +107,7 @@ Each task is scoped to one focused session. Do them in order; do not begin conte
 ### 16. Finish angreal triple-fireball pickups — **Medium**
 
 - **Files to touch:** `js/entities.js`, `js/sprites.js`, `js/scenes.js`, `js/levels.js`, `js/audio.js`.
-- **Expected behavior:** Angreal grant a timed, HUD-visible buff producing three larger fireballs in a readable spread. A second pickup refreshes duration. Balance prevents one pickup from erasing a boss while remaining exciting.
+- **Expected behavior:** Angreal grant a timed, HUD-visible buff producing three larger fireballs in a readable spread. A second pickup refreshes duration. Bariley prevents one pickup from erasing a boss while remaining exciting.
 - **Acceptance check:** Collect an angreal, press FIRE, and see three larger projectiles with separate lane collision. Collect another before expiry to refresh the timer; wait it out and see fire return to one normal projectile.
 
 ### 17. Finish Loial's once-per-stage call — **Hard**
@@ -131,5 +131,5 @@ Each task is scoped to one focused session. Do them in order; do not begin conte
 ### 20. Final visual, input, performance, and release gate — **Hard**
 
 - **Files to touch:** `README.md`, `index.html`, `js/*.js` as defects require, `tools/chrome-smoke.cjs`, `tools/test_and_capture.js`, `tools/capture-gfx.cjs`, `tools/story-shots.cjs`, `tools/verify-hd.cjs`, `tools/soak.cjs`, `tools/gate-shots/*`.
-- **Expected behavior:** Tune all stages and characters to at least the current Lido mid-fight visual bar. Verify no foot sliding, fair telegraphs, readable taint, stable 4K/phone budgets, relative/versioned assets, missing-art fallback/banner, all input methods, remaps, sticky controls, BOX/ATK/PICK UP regression, Continue, Callandor, and the complete forbidden-reference scrub.
+- **Expected behavior:** Tune all stages and characters to at least the current village mid-fight visual bar. Verify no foot sliding, fair telegraphs, readable taint, stable 4K/phone budgets, relative/versioned assets, missing-art fallback/banner, all input methods, remaps, sticky controls, BOX/ATK/PICK UP regression, Continue, Callandor, and the complete forbidden-reference scrub.
 - **Acceptance check:** Pass the updated automated smoke, soak, HD, story, missing-asset, URL, and forbidden-term suites; manually complete all five stages on keyboard and touch emulation; capture a representative mid-fight image for every stage beside the archived baseline and approve each at or above the bar.

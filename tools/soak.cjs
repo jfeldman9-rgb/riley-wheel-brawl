@@ -1,7 +1,14 @@
 // Offline bot soak: a steady masher plays every stage for up to 4 minutes of game time.
 // Usage: node tools/soak.cjs [repoRoot] [seed]   (needs @napi-rs/canvas, like verify-hd.cjs)
 const fs=require('fs'),vm=require('vm');
-const {createCanvas,Image}=require('@napi-rs/canvas');
+let createCanvas,Image;
+try { ({createCanvas,Image}=require('@napi-rs/canvas')); }
+catch (_) {
+  const gradient={addColorStop(){}};
+  const context=new Proxy({measureText:s=>({width:String(s).length*8}),createLinearGradient:()=>gradient,createRadialGradient:()=>gradient,createPattern:()=>null,getImageData:()=>({data:new Uint8ClampedArray(4)}),setLineDash(){}},{get:(o,k)=>k in o?o[k]:(()=>{}) ,set:(o,k,v)=>(o[k]=v,true)});
+  createCanvas=(w,h)=>({width:w,height:h,style:{},classList:{toggle(){}},getContext:()=>context,addEventListener(){},getBoundingClientRect:()=>({left:0,top:0,width:w,height:h})});
+  Image=class { set src(v){ if(this.onerror)this.onerror(); } };
+}
 const root=process.argv[2]||require('path').resolve(__dirname,'..');
 function boot(){
   const canvas=createCanvas(640,360);canvas.style={};canvas.classList={toggle(){}};canvas.addEventListener=()=>{};
@@ -19,8 +26,8 @@ function boot(){
 let seed=+(process.argv[3]||12345);Math.random=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};
 const WL=boot();
 const results=[];
-for(let lvl=0;lvl<4;lvl++){
-  const s=new WL.scenes.Play(WL.game,lvl,{score:0,lives:99,fart:0});s.enter();WL.game.scene=s;
+for(let lvl=0;lvl<5;lvl++){
+  const s=new WL.scenes.Play(WL.game,lvl,{score:0,lives:99,saidin:0});s.enter();WL.game.scene=s;
   let dmg=0,hits=0,t=0,frame=0;const hitTimes=[];const p=s.player;let lastHp=p.hp;
   const held={};const inp={pressed:{},held,axis:()=>{
     // walk right when clear, else square up to the nearest enemy's lane
@@ -33,7 +40,7 @@ for(let lvl=0;lvl<4;lvl++){
     const dt=1/60;t+=dt;
     inp.pressed={};
     if(frame%9===0)inp.pressed.attack=true;              // steady masher
-    if(p.fart>=p.fartMax&&frame%60===0)inp.pressed.fart=true;
+    if(p.saidin>=p.saidinMax&&frame%60===0)inp.pressed.saidin=true;
     s.update(dt,inp);
     if(p.hp<lastHp){dmg+=lastHp-p.hp;hits++;hitTimes.push(t);}
     if(p.state==='idle'&&p.hp<40)p.hp=100;             // top up so the run continues

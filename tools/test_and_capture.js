@@ -97,31 +97,31 @@ async function main() {
     p.comboPop = 0.85;
     p.hp = 82;
     scene.playerGhostHp = 96;
-    p.fart = 70;
+    p.saidin = 70;
     p.score = 4250;
     scene.lightingPulse = 0.35;
 
     scene.enemies = [];
-    const broc = scene.spawnEnemy('broccoli', 335, 275, { side: 1 });
+    const broc = scene.spawnEnemy('trolloc', 335, 275, { side: 1 });
     broc.setState('hurt');
     broc.stateT = 0.12;
     broc.flash = 0.1;
     broc.hp = 12;
 
-    const sprout = scene.spawnEnemy('sprout', 435, 240, { side: 1 });
-    sprout.setState('approach');
-    sprout.stateT = 0.5;
+    const trollocHeavy = scene.spawnEnemy('trollocHeavy', 435, 240, { side: 1 });
+    trollocHeavy.setState('approach');
+    trollocHeavy.stateT = 0.5;
 
     scene.objects = [
-      new WL.entities.Breakable(scene, 'plates', 185, 255),
-      new WL.entities.Breakable(scene, 'tray', 225, 315),
+      new WL.entities.Breakable(scene, 'urn', 185, 255),
+      new WL.entities.Breakable(scene, 'rack', 225, 315),
       new WL.entities.Breakable(scene, 'cart', 390, 305),
-      new WL.entities.Breakable(scene, 'chair', 490, 235)
+      new WL.entities.Breakable(scene, 'stool', 490, 235)
     ];
 
     scene.fx.list = [];
-    scene.fx.spark(325, 235, true);
-    scene.fx.foodDebris(325, 235, 'broccoli');
+    scene.fx.ashaman(325, 235, true);
+    scene.fx.foodDebris(325, 235, 'trolloc');
     scene.fx.impactRing(325, 235, true);
 
     scene.update = function() {};
@@ -171,31 +171,31 @@ async function main() {
     p.comboPop = 1.0;
     p.hp = 74;
     scene.playerGhostHp = 90;
-    p.fart = 100; // MAX fart ready!
+    p.saidin = 100; // MAX saidin ready!
     p.score = 6800;
     scene.lightingPulse = 0.45;
 
     scene.enemies = [];
-    const broc = scene.spawnEnemy('broccoli', 335, 275, { side: 1 });
+    const broc = scene.spawnEnemy('trolloc', 335, 275, { side: 1 });
     broc.setState('down');
     broc.z = 25;
     broc.stateT = 0.15;
     broc.flash = 0.1;
     broc.hp = 5;
 
-    const sprout = scene.spawnEnemy('sprout', 430, 245, { side: 1 });
-    sprout.setState('approach');
-    sprout.stateT = 0.5;
+    const trollocHeavy = scene.spawnEnemy('trollocHeavy', 430, 245, { side: 1 });
+    trollocHeavy.setState('approach');
+    trollocHeavy.stateT = 0.5;
 
     scene.objects = [
-      new WL.entities.Breakable(scene, 'plates', 185, 250),
-      new WL.entities.Breakable(scene, 'tray', 225, 315),
+      new WL.entities.Breakable(scene, 'urn', 185, 250),
+      new WL.entities.Breakable(scene, 'rack', 225, 315),
       new WL.entities.Breakable(scene, 'cart', 390, 305)
     ];
 
     scene.fx.list = [];
-    scene.fx.spark(325, 230, true);
-    scene.fx.foodDebris(325, 230, 'broccoli');
+    scene.fx.ashaman(325, 230, true);
+    scene.fx.foodDebris(325, 230, 'trolloc');
     scene.fx.impactRing(325, 230, true);
 
     scene.update = function() {};
@@ -216,7 +216,7 @@ async function main() {
     const scene = WL.game.scene;
     scene.player.state = 'victory';
     scene.player.stateT = 0.5;
-    scene.fx.debris(320, 270, 'plates');
+    scene.fx.debris(320, 270, 'urn');
     scene.showBanner('WAVE CLEAR!', 'BONUS +600 PTS', 2.0);
   `);
   await sleep(250);

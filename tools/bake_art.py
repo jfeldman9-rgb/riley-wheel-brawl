@@ -5,7 +5,7 @@
     python3 tools/bake_art.py            # reads tools/art-src/*, writes assets/art/* and js/artdata.js
 
 Each source sheet is a painted pose sheet on a flat chroma background (green for
-Lance, magenta for the greens, see SHEETS). The script keys the background out,
+riley, magenta for the greens, see SHEETS). The script keys the background out,
 removes colour spill from the edges, splits the sheet into figures by connected
 components (left to right), finds each figure's foot anchor, scales it to the
 world size the game expects, and packs every character into one WebP atlas.
@@ -23,29 +23,29 @@ OUT = os.path.join(ROOT, 'assets', 'art')
 # World height (640x360 px) of the reference standing frame of each character,
 # and how many atlas pixels to keep per world pixel (4 = crisp at 1440p).
 CHARS = {
-    'lance':    {'ref': 'idle', 'h': 110, 'ppw': 4.0},
-    'broccoli': {'ref': 'idle', 'h': 88,  'ppw': 4.0},
-    'carrot':   {'ref': 'idle', 'h': 82,  'ppw': 4.0},
-    'sprout':   {'ref': 'idle', 'h': 46,  'ppw': 4.0},
-    'celery':   {'ref': 'idle', 'h': 94,  'ppw': 4.0},
+    'riley':    {'ref': 'idle', 'h': 110, 'ppw': 4.0},
+    'trolloc': {'ref': 'idle', 'h': 88,  'ppw': 4.0},
+    'fade':   {'ref': 'idle', 'h': 82,  'ppw': 4.0},
+    'trollocHeavy':   {'ref': 'idle', 'h': 46,  'ppw': 4.0},
+    'darkfriend':   {'ref': 'idle', 'h': 94,  'ppw': 4.0},
 }
 
 # sheet file -> (character, frame names left to right, facing of the painted figures)
 SHEETS = [
-    ('lance-sheet-a', 'lance', ['idle0', 'walk0', 'smashWind', 'sweepWind'], 1),
-    ('lance-sheet-b', 'lance', ['jab', 'sweep', 'uppercut', 'walk1'], 1),
-    ('lance-sheet-c', 'lance', ['throw', 'carry', 'spray', 'grab'], 1),
-    ('lance-sheet-d', 'lance', ['hurt', 'down', 'jump', 'jumpkick'], 1),
-    ('lance-sheet-e', 'lance', ['fartCharge', None, 'victory', 'grabHit'], 1),
-    ('lance-sheet-f', 'lance', ['smash', 'fart', 'popWind', 'idle'], 1),
-    ('broccoli-sheet-a', 'broccoli', ['idle', 'walk0', 'windup', 'attack'], -1),
-    ('broccoli-sheet-b', 'broccoli', ['walk1', 'hurt', 'down'], -1),
-    ('carrot-sheet-a', 'carrot', ['idle', 'walk0', 'windup', 'kick'], -1),
-    ('carrot-sheet-b', 'carrot', ['walk1', 'hurt', 'down'], -1),
-    ('sprout-sheet-a', 'sprout', ['idle', 'walk0', 'walk1', None, 'attack', 'hurt'], -1),
-    ('sprout-sheet-b', 'sprout', ['windup', 'dash', 'down'], -1),
-    ('celery-sheet-a', 'celery', ['idle', 'walk0', 'windup', 'attack'], -1),
-    ('celery-sheet-b', 'celery', ['walk1', 'hurt', 'down'], -1),
+    ('riley-sheet-a', 'riley', ['idle0', 'walk0', 'smashWind', 'sweepWind'], 1),
+    ('riley-sheet-b', 'riley', ['jab', 'sweep', 'uppercut', 'walk1'], 1),
+    ('riley-sheet-c', 'riley', ['throw', 'carry', 'fire', 'grab'], 1),
+    ('riley-sheet-d', 'riley', ['hurt', 'down', 'jump', 'jumpkick'], 1),
+    ('riley-sheet-e', 'riley', ['surgeCharge', None, 'victory', 'grabHit'], 1),
+    ('riley-sheet-f', 'riley', ['smash', 'saidin', 'popWind', 'idle'], 1),
+    ('trolloc-sheet-a', 'trolloc', ['idle', 'walk0', 'windup', 'attack'], -1),
+    ('trolloc-sheet-b', 'trolloc', ['walk1', 'hurt', 'down'], -1),
+    ('fade-sheet-a', 'fade', ['idle', 'walk0', 'windup', 'kick'], -1),
+    ('fade-sheet-b', 'fade', ['walk1', 'hurt', 'down'], -1),
+    ('trollocHeavy-sheet-a', 'trollocHeavy', ['idle', 'walk0', 'walk1', None, 'attack', 'hurt'], -1),
+    ('trollocHeavy-sheet-b', 'trollocHeavy', ['windup', 'dash', 'down'], -1),
+    ('darkfriend-sheet-a', 'darkfriend', ['idle', 'walk0', 'windup', 'attack'], -1),
+    ('darkfriend-sheet-b', 'darkfriend', ['walk1', 'hurt', 'down'], -1),
 ]
 LYING = {'down'}
 
@@ -63,7 +63,7 @@ def key_out(img):
     rgb = np.asarray(img).astype(np.float32)
     ycc = np.asarray(img.convert('YCbCr')).astype(np.float32)
     R, G, B = rgb[..., 0], rgb[..., 1], rgb[..., 2]
-    # Plates have walls and floors on their borders, so classify the key by hue
+    # urn have walls and floors on their borders, so classify the key by hue
     # (whichever chroma colour dominates the border) and sample it everywhere.
     hints = [(R > 150) & (G < 70) & (B > 50) & (R > B), (G > 150) & (R < 110) & (B < 110), (B > 150) & (R < 90) & (G < 140)]
     edge = np.zeros(R.shape, bool); edge[:8] = edge[-8:] = True; edge[:, :8] = edge[:, -8:] = True
@@ -165,30 +165,30 @@ def text_patch(crop, mode):
     return max(0, x0 - 3), max(0, y0 - 3), min(crop.shape[1], x1 + 3), min(crop.shape[0], y1 + 3)
 
 
-TEXT = {'broccoli': 'dark-on-light', 'carrot': 'light-on-dark'}
+TEXT = {'trolloc': 'dark-on-light', 'fade': 'light-on-dark'}
 
 
 # Prop sheets: (sheet, frame names in reading order, world height of each frame)
 PROP_SHEETS = [
-    ('lido-props', [('caution', 44), ('bush', 60), ('platesStack', 30), ('cart', 44), ('lounger', 30)]),
-    ('lido-items', [('beans', 20), ('chili', 14), ('leftovers', 14), ('burger', 16), ('turkey', 15), ('chip', 13),
-                    ('toolbox', 16), ('coffee', 17), ('tray', 34), ('cooler', 28), ('crate', 34), ('chair', 42)]),
+    ('village-props', [('caution', 44), ('bush', 60), ('platesStack', 30), ('cart', 44), ('lounger', 30)]),
+    ('village-items', [('saidinSpark', 20), ('saidinSurge', 14), ('power', 14), ('heal', 16), ('trolloc', 15), ('mark', 13),
+                    ('relic', 16), ('angreal', 17), ('rack', 34), ('chest', 28), ('crate', 34), ('stool', 42)]),
     ('combo-font', [('d' + str(i), 24) for i in range(10)] + [('hit', 14), ('combo', 14)]),
-    ('lido-debris', [(n, 12) for n in ['floret', 'floret2', 'lettuce', 'kale', 'tomato', 'cherry', 'coin', 'stick', 'cucumber',
+    ('village-debris', [(n, 12) for n in ['floret', 'floret2', 'lettuce', 'stoneGuard', 'tomato', 'cherry', 'coin', 'stick', 'cucumber',
                                          'sproutHalf', 'shard', 'shard2', 'fork', 'spoon', 'radish', 'pepper', 'splash', 'crouton']]),
 ]
 DEBRIS = {n for n, _ in PROP_SHEETS[3][1]}
 MERGE = {'combo-font': 5}  # letters of a word are one glyph
-# Painted plates: name -> (keyed?, max output width, feathered side edges in px)
-PLATES = {
-    'lido-far': (False, 1600, 0),
-    'lido-mid-ship': (True, 1280, 18),
-    'lido-mid-pool': (True, 1280, 18),
-    'lido-mid-deck': (True, 1280, 18),
-    'lido-buffet': (True, 1280, 0),
+# Painted urn: name -> (keyed?, max output width, feathered side edges in px)
+urn = {
+    'village-far': (False, 1600, 0),
+    'village-mid-vessel': (True, 1280, 18),
+    'village-mid-pool': (True, 1280, 18),
+    'village-mid-stage': (True, 1280, 18),
+    'village-battle': (True, 1280, 0),
     'logo': (True, 1100, 0),
     'title-art': (False, 1600, 0),
-    'lance-portrait': (False, 384, 0),
+    'riley-portrait': (False, 384, 0),
 }
 
 
@@ -260,14 +260,14 @@ def seamless_x(img, overlap):
 
 
 def bake_plates(table):
-    plates = {}
-    for name, (keyed, maxw, feather) in PLATES.items():
+    urn = {}
+    for name, (keyed, maxw, feather) in urn.items():
         src = load_src(name)
         if keyed:
             rgba = key_out(src)
             a = rgba[..., 3]
             ys, xs = np.nonzero(a > 0.02)
-            rgba = rgba[ys.min():ys.max() + 1, xs.min():xs.max() + 1] if name in ('logo', 'lido-buffet') else rgba[ys.min():]
+            rgba = rgba[ys.min():ys.max() + 1, xs.min():xs.max() + 1] if name in ('logo', 'village-battle') else rgba[ys.min():]
             if feather:
                 w = rgba.shape[1]
                 ramp = np.clip(np.minimum(np.arange(w), np.arange(w)[::-1]) / feather, 0, 1)
@@ -279,13 +279,13 @@ def bake_plates(table):
             im = im.resize((maxw, round(im.height * maxw / im.width)), Image.LANCZOS)
         path = os.path.join(OUT, name + '.webp')
         im.save(path, 'WEBP', quality=84 if keyed else 80, method=4)
-        plates[name] = {'src': 'assets/art/' + name + '.webp', 'w': im.width, 'h': im.height}
+        urn[name] = {'src': 'assets/art/' + name + '.webp', 'w': im.width, 'h': im.height}
         print(f'{name}: {im.size}, {os.path.getsize(path) // 1024} KB')
-    floor = seamless_x(load_src('lido-floor'), 160)
+    floor = seamless_x(load_src('village-floor'), 160)
     floor = floor.resize((1120, 720), Image.LANCZOS)
-    floor.save(os.path.join(OUT, 'lido-floor.webp'), 'WEBP', quality=82, method=4)
-    plates['lido-floor'] = {'src': 'assets/art/lido-floor.webp', 'w': floor.width, 'h': floor.height}
-    table['plates'] = plates
+    floor.save(os.path.join(OUT, 'village-floor.webp'), 'WEBP', quality=82, method=4)
+    urn['village-floor'] = {'src': 'assets/art/village-floor.webp', 'w': floor.width, 'h': floor.height}
+    table['urn'] = urn
 
 
 def main():

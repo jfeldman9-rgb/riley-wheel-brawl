@@ -7,28 +7,23 @@ WL.assets = (function () {
   // Image URLs carry the same ?v= stamp as the scripts, so a cached 404 or stale
   // file from an older deploy can't pin the procedural fallback.
   const cs = typeof document !== 'undefined' && document.currentScript;
-  const VER = WL.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || '20260923-cut1';
+  const VER = WL.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || '20260926-full';
   const manifest = {
-    // Optional real-photo likeness (see tools/make_lance_portraits.py). When these
-    // files are absent Lance is drawn procedurally from the photo spec.
-    lancePortrait: 'assets/lance/lance-portrait.png', // bust, transparent bg (title/ending)
-    lanceHead: 'assets/lance/lance-head.png',         // face crop for the in-game sprite
-    lanceHud: 'assets/lance/lance-hud.png'            // small HUD portrait
+    "art:riley": "assets/art/atlas-riley.webp",
+    "plate:stage1": "assets/art/stage1-emonds-field-far.webp"
   };
 
-  // Painted sprite atlases and background plates (tools/bake_art.py -> js/artdata.js).
+  // Painted sprite atlases and background urn (tools/bake_art.py -> js/artdata.js).
   const art = WL.ARTDATA || {};
   for (const k of Object.keys(art)) if (k !== 'plates') manifest['art:' + k] = art[k].src;
   for (const k of Object.keys(art.plates || {})) manifest['plate:' + k] = art.plates[k].src;
-  // Without these the Lido and Lance silently turn procedural, so a miss is reported.
-  const CRITICAL = ['art:lance', 'plate:lido-far', 'plate:lido-mid-ship', 'plate:lido-mid-pool', 'plate:lido-mid-deck', 'plate:lido-floor'];
+  // Without these the village and riley silently turn procedural, so a miss is reported.
+  const CRITICAL = ['art:riley', 'plate:stage1'];
   const painted = k => k.startsWith('art:') || k.startsWith('plate:') || k.startsWith('story:');
 
-  // Painted story plates (tools/bake_story.py). They are fetched in the background
+  // Painted story urn (tools/bake_story.py). They are fetched in the background
   // after the title is up, opening first, so they never delay the first frame.
-  const STORY = ['op1-ac-out', 'op2-captain-calls', 'op3-lance-arrives', 'op4-salad-strikes', 'captain-portrait',
-    'st1-lido-intro', 'st1-lido-outro', 'st2-plant-intro', 'st2-plant-outro', 'st3-spa-intro', 'st3-spa-outro',
-    'st4-freezer-intro', 'end1-last-valve', 'end2-svelte', 'end3-carving-station'];
+  const STORY = ['opening-01-winters-night','stage1-emonds-field','stage2-caemlyn','stage3-shadar-logoth','stage4-callandor-reveal','stage5-black-tower-finale','stage5-homecoming'];
   const lazy = {};
   for (const n of STORY) lazy['story:' + n] = 'assets/cutscenes/' + n + '.webp';
 

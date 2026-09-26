@@ -28,7 +28,7 @@
 
   /* ---- HUD art ---- */
   function drawHudPortrait(ctx, cx, cy, mood) {
-    const painted = WL.art.plate('lance-portrait');
+    const painted = WL.art.plate('riley-portrait');
     const e = painted ? WL.gfx.layer('hud-portrait-painted-' + mood, 40, 40, undefined, g => {
       g.save();
       g.beginPath(); g.arc(20, 20, 18.6, 0, Math.PI * 2); g.clip();
@@ -51,7 +51,7 @@
       g.fillStyle = '#4f8a44'; g.beginPath(); g.moveTo(0, 30); g.lineTo(10, 25); g.lineTo(18, 28); g.lineTo(40, 31); g.lineTo(40, 40); g.lineTo(0, 40); g.closePath(); g.fill();
       // shoulders in the red shirt, lei across the collar
       g.fillStyle = '#c8322a'; g.beginPath(); g.moveTo(3, 40); g.quadraticCurveTo(6, 31, 20, 31); g.quadraticCurveTo(34, 31, 37, 40); g.closePath(); g.fill();
-      S.lanceHead(g, 20, 19, 27, { mood });
+      S.rileyHead(g, 20, 19, 27, { mood });
       for (let i = 0; i < 7; i++) { const a = Math.PI * (0.1 + i * 0.13); S.hibiscus(g, 20 - Math.cos(a) * 11, 32 + Math.sin(a) * 4, 2.6, i % 2 ? '#f7f2ff' : '#9a4fd0', '#ffe070', i); }
       g.restore();
     });
@@ -83,7 +83,7 @@
     ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect(x - 3, y - 3.6, 1.6, 1);
     ctx.restore();
   }
-  /* Title logo, cached per scale: extruded WHALE LANCE: over BUFFET BRAWL, with hibiscus. */
+  /* Title logo, cached per scale: extruded shadow riley: over battle BRAWL, with hibiscus. */
   function paintLogo(g) {
     const cx = 190;
     const layer = (str, y, size, grad, depth) => {
@@ -111,14 +111,14 @@
       g.fillStyle = '#ffe070'; g.beginPath(); g.arc(r * 0.52, -r * 0.58, 1.8, 0, 7); g.fill();
       g.restore();
     };
-    layer('WHALE LANCE:', 6, 24, ['#f2fbff', '#6cc4ff', '#1a5ad8'], 4);
-    layer('BUFFET BRAWL', 40, 30, ['#fff6b0', '#ffc21a', '#ff5a00', '#d0200a'], 5);
+    layer('shadow riley:', 6, 24, ['#f2fbff', '#6cc4ff', '#1a5ad8'], 4);
+    layer('battle BRAWL', 40, 30, ['#fff6b0', '#ffc21a', '#ff5a00', '#d0200a'], 5);
     flower(30, 16, 15, 0.3);
     flower(352, 14, 13, -0.4);
   }
   /** Logo by width (world px); returns its height. The painted logo is used when it loaded. */
   function drawLogo(ctx, cx, y, width) {
-    const P = WL.ARTDATA && WL.ARTDATA.plates && WL.ARTDATA.plates.logo;
+    const P = WL.ARTDATA && WL.ARTDATA.urn && WL.ARTDATA.urn.logo;
     const img = WL.art.plate('logo');
     if (img && P) {
       const h = Math.round(width * P.h / P.w);
@@ -206,7 +206,7 @@
   /* Title                                                              */
   /* ================================================================== */
   const TITLE_Y0 = 198, TITLE_STEP = 18;
-  // The painted key art keeps Lance centre stage, so the menu moves to a glass plate on the left.
+  // The painted key art keeps riley centre stage, so the menu moves to a glass plate on the left.
   const titleArt = () => !!WL.art.plate('title-art');
   const menuX = () => (titleArt() ? 116 : W / 2 - 80);
   const menuY0 = () => (titleArt() ? 184 : TITLE_Y0);
@@ -263,7 +263,7 @@
       const t = this.t, mx = menuX(), y0 = menuY0();
       const art = WL.art.plateLayer('title-art', W, H, 2.5, 0);
       WL.gfx.blit(ctx, art, 0, 0);
-      // sun glints drifting across the deck lacquer
+      // sun glints drifting across the stage lacquer
       if (!WL.perf.lite) {
         ctx.save(); ctx.globalCompositeOperation = 'lighter';
         for (let i = 0; i < 5; i++) {
@@ -280,7 +280,7 @@
       const foot = ctx.createLinearGradient(0, 306, 0, H);
       foot.addColorStop(0, 'rgba(4,10,30,0)'); foot.addColorStop(0.45, 'rgba(4,10,30,0.6)'); foot.addColorStop(1, 'rgba(4,10,30,0.8)');
       ctx.fillStyle = foot; ctx.fillRect(0, 306, W, H - 306);
-      T.draw(ctx, 'WHALE LANCE AIR CONDITIONING AND HEATING PRESENTS', W / 2, 3, { size: 5, align: 'center', color: '#fffbe8', stroke: '#0b1d4a', strokeWidth: 3 });
+      T.draw(ctx, 'shadow riley AIR CONDITIONING AND HEATING PRESENTS', W / 2, 3, { size: 5, align: 'center', color: '#fffbe8', stroke: '#0b1d4a', strokeWidth: 3 });
       drawLogo(ctx, W / 2, 12 + Math.sin(t * 2) * 2, 330);
       if (this.sub) { this.sub.draw(ctx); D.scanlines(ctx, 0.08); return; }
       if (this.showHelp) { this.drawHelp(ctx); D.scanlines(ctx, 0.08); return; }
@@ -291,7 +291,7 @@
       D.fillRRect(ctx, mx - 100, pTop, 200, pH, 10, pg, 'rgba(255,255,255,0.45)');
       ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fillRect(mx - 90, pTop + 1, 180, 1);
       T.draw(ctx, '"WE SPEAR THE COMPETITION"', mx, pTop + 7, { size: 6, align: 'center', color: '#ffffff', stroke: '#0b1d4a', strokeWidth: 3 });
-      T.draw(ctx, this.run ? (() => { const L = WL.LEVELS[this.run.level]; return `SAVED: STAGE ${L.id} WAVE ${this.run.wave + 1}/${L.waves.length}`; })() : 'THE SALAD BAR STARTED IT.', mx, pTop + 18, { size: 5, align: 'center', color: this.run ? '#8ff' : '#ffe98a', stroke: '#0b1d4a', strokeWidth: 3 });
+      T.draw(ctx, this.run ? (() => { const L = WL.LEVELS[this.run.level]; return `SAVED: STAGE ${L.id} WAVE ${this.run.wave + 1}/${L.waves.length}`; })() : 'THE SHADOW HAS RISEN.', mx, pTop + 18, { size: 5, align: 'center', color: this.run ? '#8ff' : '#ffe98a', stroke: '#0b1d4a', strokeWidth: 3 });
       this.items.forEach((it, i) => {
         const seld = i === this.sel;
         const y = y0 + i * TITLE_STEP;
@@ -307,26 +307,26 @@
       if (Math.floor(t * 2) % 2 === 0) T.draw(ctx, WL.input.touchEnabled ? 'TAP A ROW TO START' : 'PRESS ENTER OR CLICK', mx, y0 + n * TITLE_STEP + 6, { size: 6, align: 'center', color: '#fff', stroke: '#0b1d4a', strokeWidth: 3 });
       T.draw(ctx, WL.input.legend(), W / 2, 320, { size: 6, align: 'center', color: '#dde8f4', stroke: '#050a18', strokeWidth: 2 });
       T.draw(ctx, `${WL.input.hint('pause', 1)} PAUSE    M MUTE    \\ FULLSCREEN    CLICK A MENU ROW`, W / 2, 333, { size: 6, align: 'center', color: '#b8c8da', stroke: '#050a18', strokeWidth: 2 });
-      T.draw(ctx, '(c) 2026 WHALE LANCE A/C & HEATING. INSERT COIN. A FAMILY ROAST.', W / 2, 347, { size: 5, align: 'center', color: '#9aabbd' });
+      T.draw(ctx, '(c) 2026 shadow riley POWER & HEATING. INSERT COIN. A FAMILY ROAST.', W / 2, 347, { size: 5, align: 'center', color: '#9aabbd' });
       if (WL.display.pc) T.draw(ctx, WL.display.modeLabel(), 8, 6, { size: 6, color: '#cde' });
       D.scanlines(ctx, 0.08);
     }
     draw(ctx) {
       if (titleArt()) { this.drawPainted(ctx); return; }
       const t = this.t;
-      // The Lido deck itself, drifting slowly, is the backdrop.
+      // The village stage itself, drifting slowly, is the backdrop.
       WL.light.set({ side: 1, cast: 0.34 });
       WL.LEVELS[0].bg(ctx, (t * 14) % 1900, t);
-      // Hero: Lance mid-brag on the deck, a sprout still seeing stars.
+      // Hero: riley mid-brag on the stage, a trollocHeavy still seeing stars.
       ctx.save(); ctx.translate(596, 350); ctx.scale(1.35, 1.35);
-      S.drawEnemy(ctx, 0, 0, { type: 'sprout', pose: 'stunned', t, facing: -1 });
+      S.drawEnemy(ctx, 0, 0, { type: 'trollocHeavy', pose: 'stunned', t, facing: -1 });
       ctx.restore();
-      const img = WL.assets.get('lancePortrait');
+      const img = WL.assets.get('rileyPortrait');
       if (img) { const s = 190 / img.height; ctx.drawImage(img, W - 30 - img.width * s, 110 + Math.sin(t * 2) * 2, img.width * s, img.height * s); }
       else {
         D.shadow(ctx, 516, 350, 44, 10, 0);
         ctx.save(); ctx.translate(516, 350); ctx.scale(2.05, 2.05);
-        S.drawLance(ctx, 0, 0, { pose: 'victory', t, facing: -1 });
+        S.drawRiley(ctx, 0, 0, { pose: 'victory', t, facing: -1 });
         ctx.restore();
       }
       // Scrims: a glass menu plate at left, and a footer gradient under the legends.
@@ -338,10 +338,10 @@
       ctx.fillStyle = top; ctx.fillRect(0, 0, W, 26);
       // logo
       const bounce = Math.sin(t * 2) * 2.5;
-      T.draw(ctx, 'WHALE LANCE AIR CONDITIONING AND HEATING PRESENTS', W / 2, 8, { size: 6, align: 'center', color: '#fffbe8', stroke: '#0b1d4a', strokeWidth: 3 });
+      T.draw(ctx, 'shadow riley AIR CONDITIONING AND HEATING PRESENTS', W / 2, 8, { size: 6, align: 'center', color: '#fffbe8', stroke: '#0b1d4a', strokeWidth: 3 });
       drawLogo(ctx, W / 2 - 80, 20 + bounce, 380);
       T.draw(ctx, '"WE SPEAR THE COMPETITION"', W / 2 - 80, 114, { size: 7, align: 'center', color: '#ffffff', stroke: '#0b1d4a', strokeWidth: 3 });
-      T.draw(ctx, 'THE SALAD BAR STARTED IT.', W / 2 - 80, 127, { size: 6, align: 'center', color: '#ffe98a', stroke: '#0b1d4a', strokeWidth: 3 });
+      T.draw(ctx, 'THE SHADOW HAS RISEN.', W / 2 - 80, 127, { size: 6, align: 'center', color: '#ffe98a', stroke: '#0b1d4a', strokeWidth: 3 });
       if (!this.sub && !this.showHelp) {
         const pg = ctx.createLinearGradient(0, 170, 0, 300);
         pg.addColorStop(0, 'rgba(10,24,60,0.62)'); pg.addColorStop(1, 'rgba(4,10,30,0.72)');
@@ -370,7 +370,7 @@
         if (Math.floor(t * 2) % 2 === 0) T.draw(ctx, WL.input.touchEnabled ? 'TAP A ROW TO START' : 'PRESS ENTER OR CLICK', W / 2 - 80, 292, { size: 7, align: 'center', color: '#fff', stroke: '#0b1d4a', strokeWidth: 3 });
         T.draw(ctx, WL.input.legend(), W / 2, 318, { size: 6, align: 'center', color: '#bcd' });
         T.draw(ctx, `${WL.input.hint('pause', 1)} PAUSE    M MUTE    \\ FULLSCREEN    CLICK A MENU ROW`, W / 2, 332, { size: 6, align: 'center', color: '#9ab' });
-        T.draw(ctx, '(c) 2026 WHALE LANCE A/C & HEATING. INSERT COIN. A FAMILY ROAST.', W / 2, 346, { size: 5, align: 'center', color: '#89a' });
+        T.draw(ctx, '(c) 2026 shadow riley POWER & HEATING. INSERT COIN. A FAMILY ROAST.', W / 2, 346, { size: 5, align: 'center', color: '#89a' });
         if (WL.display.pc) T.draw(ctx, WL.display.modeLabel(), 8, 6, { size: 6, color: '#cde' });
       } else this.drawHelp(ctx);
       D.scanlines(ctx, 0.08);
@@ -382,15 +382,15 @@
       const lines = [
         ['HOW TO PLAY', '#ffe14a'],
         [`MOVE      ${I.moveHint(true)}. Gamepad stick or d-pad. Touch stick on phones.`, '#fff'],
-        [`ATTACK    ${k('attack')}screwdriver, wrench, pipe wrench`, '#fff'],
-        ['COMBO     Mash = sweep knockdown. Wait a beat before the 3rd hit = WRENCH POP', '#bff'],
+        [`ATTACK    ${k('attack')}wand, staff, pipe staff`, '#fff'],
+        ['COMBO     Mash = sweep knockdown. Wait a beat before the 3rd hit = staff POP', '#bff'],
         ['          launcher; hit it again in the air (up to 3) or flying-boot it.', '#bff'],
         ['GRAB      Walk into an enemy = duct-tape grab. ATTACK = knee. Back+ATTACK = throw', '#fff'],
         [`JUMP      ${k('jump')}ATTACK in the air = flying boot`, '#fff'],
-        [`SPRAY     ${k('special')}Refrigerant. Freezes. Costs a little HP.`, '#fff'],
-        [`TOOLBOX   ${k('tool')}Throw the toolbox. Pick it back up!`, '#fff'],
-        [`FART      ${k('fart', 2)}VOLCANO FART when the green meter is full`, '#9f3'],
-        [`PAD       ${WL.settings.padFor('attack')} atk  ${WL.settings.padFor('jump')} jump  ${WL.settings.padFor('special')} spray  ${WL.settings.padFor('tool')} box  ${WL.settings.padFor('fart')} fart`, '#bcd'],
+        [`fire     ${k('special')}saidin. Freezes. Costs a little HP.`, '#fff'],
+        [`relic   ${k('tool')}Throw the relic. Pick it back up!`, '#fff'],
+        [`saidin      ${k('saidin', 2)}SAIDIN when the green meter is full`, '#9f3'],
+        [`PAD       ${WL.settings.padFor('attack')} atk  ${WL.settings.padFor('jump')} jump  ${WL.settings.padFor('special')} fire  ${WL.settings.padFor('tool')} box  ${WL.settings.padFor('saidin')} saidin`, '#bcd'],
         ['SETTINGS  Remap keys / pad, overlay opacity, large HUD, colorblind health.', '#bcd'],
         ['Press any key to go back', '#aaa']
       ];
@@ -453,7 +453,7 @@
       f.vx = vx; f.vy = vy; f.color = color; f.r = r; f.square = !!square; f.shard = !!shard;
       return true;
     }
-    /** Shaped debris (floret, leaf, tomato, fork...) that spins and bounces on the deck. */
+    /** Shaped debris (floret, leaf, tomato, fork...) that spins and bounces on the stage. */
     _bit(x, y, vx, vy, life, shape, color, r, floor) {
       const f = this._p('chunk', x, y, life);
       if (!f) return false;
@@ -461,10 +461,10 @@
       f.rot = U.rand(0, 6.28); f.vr = U.rand(-14, 14); f.floor = floor ? floor + U.rand(-8, 10) : 0;
       return true;
     }
-    spark(x, y, big) {
-      const f = this._p('spark', x, y, 0.22, true); f.big = !!big;
+    ashaman(x, y, big) {
+      const f = this._p('ashaman', x, y, 0.22, true); f.big = !!big;
       if (WL.perf.lite) return;
-      // hot embers that fly off the contact point and fall
+      // hot saidinSpark that fly off the contact point and fall
       for (let i = 0, n = this._n(big ? 10 : 6); i < n; i++) {
         const e = this._p('ember', x, y, U.rand(0.22, 0.42));
         if (!e) return;
@@ -472,7 +472,7 @@
         e.vx = Math.cos(a) * v; e.vy = Math.sin(a) * v - 60; e.big = !!big;
       }
     }
-    /** A squashed salad splat left on the deck after a heavy hit; it fades out. */
+    /** A squashed cache splat left on the stage after a heavy hit; it fades out. */
     splat(x, floor) {
       if (WL.perf.lite || !WL.art.has('props')) return;
       const f = this._p('splat', x, floor, 4.5);
@@ -493,13 +493,13 @@
     /* What each green sheds when it gets hit: [shape, color] pairs. */
     static foodBits(type) {
       switch (type) {
-        case 'broccoli': return [['floret', '#4f9a2c'], ['floret', '#5aa83a'], ['leaf', '#6ab83a'], ['tomato', '#d8281e'], ['coin', '#f08a1e']];
-        case 'sprout': return [['leaf', '#95d650'], ['leaf', '#7bbf3a'], ['floret', '#6ab83a']];
-        case 'celery': return [['leaf', '#a6d46a'], ['splinter', '#c6e88a'], ['leaf', '#5aa83a']];
-        case 'carrot': return [['coin', '#f08a1e'], ['coin', '#f08a1e'], ['leaf', '#3f9b2f'], ['splinter', '#f08a1e']];
-        case 'spinach': return [['leaf', '#2f6b2a'], ['leaf', '#3f8a36'], ['tomato', '#d8281e']];
-        case 'kale': return [['leaf', '#1f4d3a'], ['leaf', '#3e8a5e'], ['floret', '#3e8a5e']];
-        case 'froyo': return [['crumb', '#f7a7c7'], ['crumb', '#f6f2ea'], ['crumb', '#e82a3a'], ['spoon', '#c9cfd9']];
+        case 'trolloc': return [['floret', '#4f9a2c'], ['floret', '#5aa83a'], ['leaf', '#6ab83a'], ['tomato', '#d8281e'], ['coin', '#f08a1e']];
+        case 'trollocHeavy': return [['leaf', '#95d650'], ['leaf', '#7bbf3a'], ['floret', '#6ab83a']];
+        case 'darkfriend': return [['leaf', '#a6d46a'], ['splinter', '#c6e88a'], ['leaf', '#5aa83a']];
+        case 'fade': return [['coin', '#f08a1e'], ['coin', '#f08a1e'], ['leaf', '#3f9b2f'], ['splinter', '#f08a1e']];
+        case 'cultist': return [['leaf', '#2f6b2a'], ['leaf', '#3f8a36'], ['tomato', '#d8281e']];
+        case 'stoneGuard': return [['leaf', '#1f4d3a'], ['leaf', '#3e8a5e'], ['floret', '#3e8a5e']];
+        case 'ashaman': return [['crumb', '#f7a7c7'], ['crumb', '#f6f2ea'], ['crumb', '#e82a3a'], ['spoon', '#c9cfd9']];
       }
       return [['leaf', '#6ab83a'], ['tomato', '#d8281e'], ['coin', '#f08a1e']];
     }
@@ -511,7 +511,7 @@
       }
     }
     foodDebris(x, y, type, floor, big) {
-      // salad-bar chaos: the goon's own greens plus whatever it had for lunch
+      // cache-bar chaos: the goon's own greens plus whatever it had for lunch
       const bits = FX.foodBits(type).concat([['tomato', '#d8281e'], ['leaf', '#8fd04a']]);
       if (big && floor) this.splat(x + U.rand(-10, 10), floor + 4);
       for (let i = 0, n = this._n(big ? 13 : 8); i < n; i++) {
@@ -523,16 +523,16 @@
       const f = this._p('ring', x, y, 0.24);
       if (f) f.big = !!big;
     }
-    fartBurst(x, y) {
+    surgeBurst(x, y) {
       const cols = ['#d8ff8a', '#7ad83a', '#5a8a2a', '#efe6c8', '#c8a15a'];
       for (let i = 0, n = this._n(22); i < n; i++) if (!this._chunk(x, y, U.rand(-420, 420), U.rand(-460, -40), 0.85, U.pick(cols), U.rand(2, 6), i % 3 === 0)) return;
     }
     debris(x, y, kind, floor) {
-      const kit = { plates: [['shard', '#ffffff'], ['shard', '#ffffff'], ['fork', '#c9cfd9'], ['spoon', '#c9cfd9']], tray: [['fork', '#c9cfd9'], ['spoon', '#c9cfd9'], ['tomato', '#d8281e'], ['leaf', '#8fd04a'], ['shard', '#ffffff']],
-        cart: [['fork', '#c9cfd9'], ['spoon', '#c9cfd9'], ['tomato', '#d8281e'], ['coin', '#f08a1e'], ['floret', '#5aa83a']], chair: [['splinter', '#5c2f15'], ['splinter', '#7a421c'], ['crumb', '#881b24']],
-        crate: [['splinter', '#b07a3a'], ['splinter', '#6a4218']], cooler: [['crumb', '#3a78c8'], ['crumb', '#f0f0f0'], ['coin', '#f08a1e']] }[kind];
+      const kit = { urn: [['shard', '#ffffff'], ['shard', '#ffffff'], ['fork', '#c9cfd9'], ['spoon', '#c9cfd9']], rack: [['fork', '#c9cfd9'], ['spoon', '#c9cfd9'], ['tomato', '#d8281e'], ['leaf', '#8fd04a'], ['shard', '#ffffff']],
+        cart: [['fork', '#c9cfd9'], ['spoon', '#c9cfd9'], ['tomato', '#d8281e'], ['coin', '#f08a1e'], ['floret', '#5aa83a']], stool: [['splinter', '#5c2f15'], ['splinter', '#7a421c'], ['crumb', '#881b24']],
+        crate: [['splinter', '#b07a3a'], ['splinter', '#6a4218']], chest: [['crumb', '#3a78c8'], ['crumb', '#f0f0f0'], ['coin', '#f08a1e']] }[kind];
       if (kit) {
-        for (let i = 0, n = this._n(kind === 'plates' ? 18 : 15); i < n; i++) {
+        for (let i = 0, n = this._n(kind === 'urn' ? 18 : 15); i < n; i++) {
           const [shape, col] = kit[i % kit.length];
           if (!this._bit(x, y, U.rand(-220, 220), U.rand(-320, -90), U.rand(0.9, 1.4), shape, col, U.rand(2.6, 4.2), floor || y + 18)) return;
         }
@@ -540,24 +540,24 @@
       }
       let cols = ['#d0d4dc', '#8a8f9a', '#c8322a'];
       let count = 14;
-      if (kind === 'plates') {
+      if (kind === 'urn') {
         cols = ['#ffffff', '#f4f8fb', '#e2e8f0', '#d4af37'];
         count = 18;
-      } else if (kind === 'tray') {
+      } else if (kind === 'rack') {
         cols = ['#e0e4ec', '#a4afbf', '#748094', '#ffaa33'];
         count = 16;
-      } else if (kind === 'chair') {
+      } else if (kind === 'stool') {
         cols = ['#5c2f15', '#881b24', '#d4af37', '#7a421c'];
         count = 16;
       } else if (kind === 'crate') {
         cols = ['#b07a3a', '#6a4218'];
-      } else if (kind === 'barrel') {
+      } else if (kind === 'cask') {
         cols = ['#4a8a3a', '#2a5a20'];
-      } else if (kind === 'vending') {
+      } else if (kind === 'obelisk') {
         cols = ['#2a8a5a', '#0a1a2a', '#d33'];
       }
       for (let i = 0, n = this._n(count); i < n; i++) {
-        if (!this._chunk(x, y, U.rand(-220, 220), U.rand(-320, -90), U.rand(0.7, 1.1), U.pick(cols), U.rand(2, 6), kind !== 'plates', kind === 'plates')) return;
+        if (!this._chunk(x, y, U.rand(-220, 220), U.rand(-320, -90), U.rand(0.7, 1.1), U.pick(cols), U.rand(2, 6), kind !== 'urn', kind === 'urn')) return;
       }
     }
     update(dt) {
@@ -583,7 +583,7 @@
       }
       list.length = j;
     }
-    /** Floor decals (salad splats), drawn under the bodies. */
+    /** Floor decals (cache splats), drawn under the bodies. */
     drawFloor(ctx, camX) {
       for (const f of this.list) {
         if (f.kind !== 'splat') continue;
@@ -599,7 +599,7 @@
         if (f.t < 0) continue;
         const sx = f.x - camX;
         switch (f.kind) {
-          case 'spark': S.drawHitSpark(ctx, sx, f.y, f.t, f.big); break;
+          case 'ashaman': S.drawHitSpark(ctx, sx, f.y, f.t, f.big); break;
           case 'ember': {
             const k = f.t / f.life;
             ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1 - k;
@@ -663,7 +663,7 @@
   /* Play                                                               */
   /* ================================================================== */
   const PAUSE_Y0 = 96, PAUSE_STEP = 18;
-  // Key light per stage: the Lido sun sits high on the right; the indoor decks use overhead fixtures.
+  // Key light per stage: the village sun sits high on the right; the indoor decks use overhead fixtures.
   const STAGE_LIGHT = {
     1: { side: 1, cast: 0.34, gloss: 0.34 },
     2: { side: -1, cast: 0.18, rim: 'rgba(255,200,120,0.8)' },
@@ -684,7 +684,7 @@
       this.banner = null; this.bannerT = 0;
       this.tutorial = null; this.tutorialT = 0;
       this.cards = []; this.seen = {}; this.barkCd = 0; this.comboRankT = 0; this.comboRank = '';
-      this.fartT = -1; this.fartX = 0; this.fartY = 0; this.flashT = 0; this.flashColor = '#fff';
+      this.surgeT = -1; this.surgeX = 0; this.surgeY = 0; this.flashT = 0; this.flashColor = '#fff';
       this.kills = 0; this.boss = null;
       this.goArrowT = 0;
       this.puddleTick = 0;
@@ -695,13 +695,15 @@
       this.sub = null;           // options / controls panel open inside pause
       this.lastAttackT = -10;    // AI director: last time an enemy started an attack
       this.aiT = 0;
+      this.callandor = !!this.carry.callandor;
+      this.taintT = 0; this.taintTick = 0; this.loialT = -1;
     }
     enter() {
       const L = this.level;
       this.player = new E.Player(this, 80, (FT + FB) / 2);
       if (this.carry.score !== undefined) this.player.score = this.carry.score;
       if (this.carry.lives !== undefined) this.player.lives = this.carry.lives;
-      if (this.carry.fart !== undefined) this.player.fart = this.carry.fart;
+      if (this.carry.saidin !== undefined) this.player.saidin = this.carry.saidin;
       this.playerGhostHp = this.player.hp;
       for (const o of L.objects || []) this.objects.push(new E.Breakable(this, o.kind, o.x, o.y, o.contents));
       for (const p of L.pickups || []) this.pickups.push(new E.Pickup(this, p.kind, p.x, p.y, false));
@@ -726,7 +728,7 @@
     /** Light save for Continue: stage, next wave, score, meter. */
     checkpoint() {
       const p = this.player;
-      WL.settings.saveRun({ level: this.levelIndex, wave: this.waveIdx, score: p.score, fart: Math.round(p.fart) });
+      WL.settings.saveRun({ level: this.levelIndex, wave: this.waveIdx, score: p.score, saidin: Math.round(p.saidin), callandor: this.callandor });
     }
     /* ---- AI director ---- */
     // Two attackers max, never from both sides at once, and a beat between
@@ -759,7 +761,7 @@
       const open = left ? 1 : -1;
       const room = open < 0 ? p.x - this.camX : this.camX + W - p.x;
       if (room < 70) return;
-      // Send the farthest goon around to the open flank.
+      // Send the surgehest goon around to the open flank.
       let pick = null, far = -1;
       for (const e of melee) { const d = Math.abs(e.x - p.x); if (d > far && !(e.flankT > 0)) { far = d; pick = e; } }
       if (pick) { pick.flankSide = open; pick.flankT = 3.5; }
@@ -781,7 +783,7 @@
         light: { stop: 0.05, punch: 5, y: -1, shake: 2.4, shakeT: 0.09 },
         heavy: { stop: 0.09, punch: 9, y: 3, shake: 5.5, shakeT: 0.16, flash: 0.045, flashColor: '#fff6d0' },
         boss: { stop: 0.1, punch: 11, y: 4, shake: 8, shakeT: 0.28 },
-        fart: { stop: 0.18, punch: 3, y: -8, shake: 16, shakeT: 0.95 }
+        saidin: { stop: 0.18, punch: 3, y: -8, shake: 16, shakeT: 0.95 }
       };
       const s = table[kind] || table.light;
       const motion = this.reducedMotion ? 0.35 : 1;
@@ -790,12 +792,12 @@
       this.punchY = U.clamp(this.punchY + s.y * motion, -12, 12);
       this.shake(s.shake, s.shakeT);
       if (s.flash) { this.flashT = Math.max(this.flashT, s.flash * (this.reducedMotion ? 0.4 : 1)); this.flashColor = s.flashColor; }
-      this.lightingPulse = Math.min(1, this.lightingPulse + (kind === 'fart' ? 1.0 : kind === 'boss' ? 0.75 : kind === 'heavy' ? 0.5 : 0.2) * motion);
+      this.lightingPulse = Math.min(1, this.lightingPulse + (kind === 'saidin' ? 1.0 : kind === 'boss' ? 0.75 : kind === 'heavy' ? 0.5 : 0.2) * motion);
       if (kind === 'heavy' || kind === 'boss') { if (WL.input.rumble) WL.input.rumble(kind === 'boss' ? 90 : 50, 0.55, 0.3); }
       // Music gets out of the way of the big ones.
       if (kind === 'heavy') A.duck(0.62, 0.06, 0.3);
       else if (kind === 'boss') A.duck(0.42, 0.16, 0.55);
-      else if (kind === 'fart') A.duck(0.15, 1.0, 0.9);
+      else if (kind === 'saidin') A.duck(0.15, 1.0, 0.9);
     }
     bark(id) {
       if (this.barkCd > 0 || !this.player) return;
@@ -825,6 +827,7 @@
       return e;
     }
     spawnPickup(kind, x, y, pop) { this.pickups.push(new E.Pickup(this, kind, x, y, pop)); }
+    callLoial() { this.loialT = 0; this.showBanner('LOIAL, NOW!', 'FOR MY FRIENDS!', 1.4, true); A.duck(0.4, 0.1, 0.5); for (const e of this.enemies) if (!e.dead && !e.isBoss) e.hurt(28, this.player.x, { knockdown: true, kb: 280 }); }
     onEnemyKilled(e) { this.kills++; }
     showBanner(a, b, dur, big) { this.banner = { a, b, big: !!big }; this.bannerT = dur || 2; }
     showTutorial(txt) { this.tutorial = txt; this.tutorialT = 5.5; }
@@ -836,15 +839,16 @@
       this.phaseCard = { n, t: 2.6 };
       A.duck(0.3, 1.2, 0.8);
       A.sfx.bossRoar(); this.impact(this.boss && this.boss.facing || 1, 'boss');
-      // the dessert station coughs up some real food between phases
-      this.spawnPickup('burger', this.camX + 120, U.rand(FT + 20, FB - 20), true);
-      this.spawnPickup(n === 2 ? 'chili' : 'beans', this.camX + W - 120, U.rand(FT + 20, FB - 20), true);
+      // the dessert station coughs up some real magic between phases
+      this.spawnPickup('heal', this.camX + 120, U.rand(FT + 20, FB - 20), true);
+      this.spawnPickup(n === 2 ? 'saidinSurge' : 'saidinSpark', this.camX + W - 120, U.rand(FT + 20, FB - 20), true);
     }
     bossDefeated() {
+      if (this.levelIndex === 4) { this.showBanner('TOGETHER!', 'TWINKLE TOES THUNDER!  BALEFIRE!', 4, true); this.flashT = 1; this.flashColor = '#bfeaff'; }
       this.phase = 'bossdead'; this.phaseT = 0; this.player.won = true; this.player.setState('victory');
-      WL.settings.clearRun();
+      if (this.levelIndex === 3) { this.callandor = true; this.carry.callandor = true; this.showBanner('CALLANDOR CLAIMED', 'BALEFIRE GROWS BRIGHTER!', 4); }
       A.stopMusic(); A.sfx.levelClear();
-      this.showBanner('THE CONE MELTS', '72°F. YOU CAN BREATHE.', 4);
+      if (this.levelIndex !== 4 && this.levelIndex !== 3) this.showBanner('THE SHADOW FALLS', 'THE WAY IS CLEAR.', 4);
       for (const e of this.enemies) if (!e.dead && !e.isBoss) e.die(1);
     }
     playerDied() {
@@ -853,26 +857,26 @@
       if (p.lives > 0) { p.respawn(this.camX + 80, (FT + FB) / 2); this.fx.text(p.x, p.y - 100, (WL.voice && WL.voice.bark('respawn')) || 'STILL ON THE CLOCK.', '#ffe14a', 2); A.sfx.oneUp(); }
       else { this.phase = 'dead'; this.phaseT = 0; A.stopMusic(); A.sfx.gameOver(); }
     }
-    triggerFart() {
+    triggerSurge() {
       const p = this.player;
-      this.fartT = 0; this.fartX = p.x; this.fartY = p.y;
+      this.surgeT = 0; this.surgeX = p.x; this.surgeY = p.y;
       this.flashT = 0.32; this.flashColor = '#e7ff9a';
-      A.sfx.fart(); p.fart = 0;
+      A.sfx.saidin(); p.saidin = 0;
       if (WL.input.rumble) WL.input.rumble(240, 1, 0.45);
-      const sub = (WL.voice && WL.voice.fartLine()) || 'THE HVAC SPECIAL.';
-      this.showBanner((WL.voice && WL.voice.fartTitle) || 'VOLCANO FART', sub, 1.7, true);
-      this.fx.fartBurst(p.x, p.y - 20);
+      const sub = (WL.voice && WL.voice.surgeLine()) || 'THE POWERing SPECIAL.';
+      this.showBanner('BALEFIRE!', 'LIGHTNING ANSWERS THE DRAGON!', 1.7, true);
+      this.fx.surgeBurst(p.x, p.y - 20);
       let n = 0;
       for (const e of this.enemies) {
         if (e.dead || e.x < this.camX - 80 || e.x > this.camX + W + 80) continue;
-        if (e.isBoss) { e.hurt(130, p.x, { fart: true }); n++; continue; }
+        if (e.isBoss) { e.hurt(this.callandor ? 180 : 130, p.x, { saidin: true }); n++; continue; }
         const dir = e.x < p.x ? -1 : 1;
         e.hp = 0; e.die(dir); e.vx = dir * U.rand(520, 760); e.vz = U.rand(380, 520); n++;
       }
       for (const o of this.objects) if (!o.dead && o.x > this.camX - 40 && o.x < this.camX + W + 40) o.hit(this, 9);
       for (const pr of this.projectiles) if (pr.owner === 'enemy') pr.remove = true;
       if (n) { p.registerHits(n); p.addScore(n * 150); }
-      this.impact(p.facing, 'fart');
+      this.impact(p.facing, 'saidin');
     }
 
     /* ---- wave logic ---- */
@@ -892,11 +896,16 @@
       this.boss = new E.Boss(this, this.camX + W - 110, (FT + FB) / 2);
       this.enemies.push(this.boss);
       A.playMusic('boss'); A.sfx.bossRoar(); this.impact(-1, 'boss');
-      this.showBanner('BOSS CONE', 'YOU WANT A SAMPLE?', 2.8);
+      this.showBanner(this.level.bossName || 'SHADOW BOSS', 'WATCH THE FLOOR TELLS!', 2.8);
     }
 
     update(dt, inp) {
       this.t += dt;
+      if (this.loialT >= 0) { this.loialT += dt; if (this.loialT > 1.2) this.loialT = -1; }
+      if (this.phase === 'play' && !this.paused && this.player && this.player.saidin >= this.player.saidinMax) {
+        this.taintT += dt; this.taintTick += this.taintT > 7 ? dt : 0;
+        if (this.taintTick >= 2) { this.taintTick = 0; if (this.player.hp > 6) this.player.hurt(3, this.player.x - 1, false); this.showBanner('THE TAINT GROWS', 'SPEND THE POWER, RILEY!', 1.2); }
+      } else { this.taintT = 0; this.taintTick = 0; }
       let actDt = dt;
       if (this.slowmoT > 0) {
         this.slowmoT -= dt;
@@ -931,7 +940,7 @@
       if (this.barkCd > 0) this.barkCd -= dt;
       if (this.bannerT <= 0 && this.cards.length) { this.cards[0].t -= dt; if (this.cards[0].t <= 0) this.cards.shift(); }
       if (this.flashT > 0) this.flashT -= dt;
-      if (this.fartT >= 0) { this.fartT += dt; if (this.fartT > 1.35) this.fartT = -1; }
+      if (this.surgeT >= 0) { this.surgeT += dt; if (this.surgeT > 1.35) this.surgeT = -1; }
       if (this.shakeT > 0) { this.shakeT -= dt; this.shakeX = U.rand(-1, 1) * this.shakeAmt; this.shakeY = U.rand(-1, 1) * this.shakeAmt * 0.6; if (this.shakeT <= 0) this.shakeAmt = 0; } else { this.shakeX = this.shakeY = 0; }
       this.fx.update(actDt);
       this.phaseT += dt;
@@ -943,7 +952,7 @@
       if (this.hitstop > 0) {
         this.hitstop -= dt;
         if (inp.pressed.attack && this.player && this.player.state === 'attack') this.player.bufferAttack = true;
-        if (inp.pressed.fart && this.player && this.player.fart >= this.player.fartMax) this.player.bufferFart = true;
+        if (inp.pressed.saidin && this.player && this.player.saidin >= this.player.saidinMax) this.player.bufferSurge = true;
         return;
       }
       const back = Math.pow(0.42, dt * 60);
@@ -966,7 +975,7 @@
           else { this.spawnGroup(wv.groups[0]); if (wv.tutorial) this.showTutorial(wv.tutorial); }
         }
         if (!wv && p.x >= L.length - 40 && this.phase === 'play' && !L.boss) {
-          this.phase = 'clear'; this.phaseT = 0; p.setState('victory'); p.won = true; A.stopMusic(); A.sfx.levelClear(); this.showBanner('DECK SECURED!', `TEMP'S DROPPING. +${1000 * L.id}`, 3.2, true); p.addScore(1000 * L.id);
+          this.phase = 'clear'; this.phaseT = 0; p.setState('victory'); p.won = true; A.stopMusic(); A.sfx.levelClear(); this.showBanner('stage SECURED!', `TEMP'S DROPPING. +${1000 * L.id}`, 3.2, true); p.addScore(1000 * L.id);
         }
       } else {
         const wv = this.currentWave();
@@ -1113,24 +1122,26 @@
       draws.sort((a, b) => depth(a) - depth(b));
       for (const d of draws) d.draw(ctx, this.camX);
       this.drawTells(ctx, 'label');
-      if (this.fartT >= 0) S.drawFartCloud(ctx, this.fartX - this.camX, this.fartY, this.fartT, p.facing);
+      if (this.surgeT >= 0) S.drawSurgeCloud(ctx, this.surgeX - this.camX, this.surgeY, this.surgeT, p.facing);
+      if (this.loialT >= 0) { const lx=-80+this.loialT*700; ctx.save(); ctx.translate(lx,250); ctx.fillStyle='#76513a'; ctx.fillRect(-18,-48,36,48); ctx.fillStyle='#d7b68a'; ctx.beginPath(); ctx.arc(0,-55,19,0,7); ctx.fill(); ctx.strokeStyle='#dce5eb'; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(12,-38); ctx.lineTo(35,-8); ctx.stroke(); ctx.restore(); }
       this.fx.draw(ctx, this.camX);
       if (L.fg) L.fg(ctx, this.camX, this.t);
       ctx.restore();
-      if (this.fartT >= 0 && this.fartT < 1.05) {
-        const k = Math.sin(Math.min(1, this.fartT / 0.1) * Math.PI / 2) * Math.min(1, (1.05 - this.fartT) / 0.28);
+      if (this.surgeT >= 0 && this.surgeT < 1.05) {
+        const k = Math.sin(Math.min(1, this.surgeT / 0.1) * Math.PI / 2) * Math.min(1, (1.05 - this.surgeT) / 0.28);
         const h = 36 * k;
         ctx.fillStyle = '#071007';
         ctx.fillRect(0, 44, W, Math.max(10, h * 0.62));
         ctx.fillRect(0, H - h, W, h);
       }
+      if (this.taintT > 0) { const q=Math.min(.7,Math.max(0,(this.taintT-3)/10)); ctx.save(); ctx.fillStyle=`rgba(12,0,22,${q})`; ctx.fillRect(0,0,W,18+q*55); ctx.fillRect(0,H-18-q*55,W,18+q*55); ctx.fillRect(0,0,18+q*38,H); ctx.fillRect(W-18-q*38,0,18+q*38,H); ctx.restore(); }
       if (this.flashT > 0) { ctx.save(); ctx.globalAlpha = Math.min(0.8, this.flashT * 2.5); ctx.fillStyle = this.flashColor; ctx.fillRect(0, 0, W, H); ctx.restore(); }
       WL.draw.stageLighting(ctx, L.id, this.lightingPulse, this.t);
       this.drawHUD(ctx);
       // Control picture stays for the whole stage — intro, fight, clear —
       // on a phone and on a desktop. It is not tied to the tutorial timer.
-      WL.input.drawTouch(ctx, { always: true, fartReady: p.fart >= p.fartMax, hasToolbox: p.hasToolbox || p.state === 'grab' });
-      if (p.fart >= p.fartMax && (this.phase === 'play' || this.phase === 'intro')) this.drawFartReady(ctx);
+      WL.input.drawTouch(ctx, { always: true, surgeReady: p.saidin >= p.saidinMax, hasRelic: p.hasRelic || p.state === 'grab' });
+      if (p.saidin >= p.saidinMax && (this.phase === 'play' || this.phase === 'intro')) this.drawSurgeReady(ctx);
       if (this.paused) this.drawPause(ctx);
       D.scanlines(ctx, 0.07);
     }
@@ -1187,7 +1198,7 @@
     /* Boss tell language. Each move has its own floor shape, a phase color,
        a countdown clock under the cone, and the same "last call" in the final
        0.2 s: the outline goes solid white and a click plays.
-         SPOON (slam)      rectangle = exact hit box, fill sweeps outward
+         SPOON (slam)      rectangle = exact hit box, fill sweeps outPOWER
          BELLY FLOP (jump) ring + cross = exact landing radius, outer ring closes in
          RAIN / BACKUP     dashed rings per drop / arrows at the spawn edges */
     drawBossTells(ctx, e, pass, sx, sy) {
@@ -1290,7 +1301,7 @@
         ctx.restore();
       }
     }
-    drawFartReady(ctx) {
+    drawSurgeReady(ctx) {
       if (Math.floor(this.t * 6) % 2 !== 0) return;
       ctx.save();
       ctx.strokeStyle = '#c6ff6a'; ctx.lineWidth = 3; ctx.lineJoin = 'round';
@@ -1307,24 +1318,24 @@
       const p = this.player, L = this.level;
       const big = WL.settings.data.bigHud;
       const cb = WL.settings.data.colorblind;
-      // LARGE scales the left (Lance) and right (score) blocks from their
+      // LARGE scales the left (riley) and right (score) blocks from their
       // corners; the stage/wave line moves into the gap between them.
       const s = big ? 1.25 : 1;
       const hb = Math.round(44 * s);
       this.hudBottom = hb;
       // No full-width bar: the sky shows between the HUD pieces. A light
-      // backing sits behind Lance's cluster only, for legibility on white hulls.
+      // backing sits behind riley's cluster only, for legibility on white hulls.
       ctx.save();
       ctx.scale(s, s);
       D.fillRRect(ctx, 2, 1, 232, 40, 12, 'rgba(6,12,32,0.34)');
-      // circular portrait with a gold bezel; it flushes red when Lance is low
+      // circular portrait with a gold bezel; it flushes red when riley is low
       const hpPct = p.hp / p.maxHp;
-      const hud = WL.assets.get('lanceHud');
+      const hud = WL.assets.get('rileyHud');
       if (hud) { ctx.save(); ctx.beginPath(); ctx.arc(22, 22, 18, 0, Math.PI * 2); ctx.clip(); ctx.drawImage(hud, 4, 4, 36, 36); ctx.restore(); }
       else drawHudPortrait(ctx, 22, 22, hpPct < 0.3 ? 'hurt' : (p.state === 'attack' ? 'fight' : 'neutral'));
       drawBezel(ctx, 22, 22, 18, hpPct <= 0.25 && Math.floor(this.t * 4) % 2 === 0);
-      T.cached(ctx, 'LANCE', 45, 3, { size: 8, color: '#ffe14a', stroke: '#1a0e00', strokeWidth: 3 });
-      T.cached(ctx, 'A/C', 91, 5, { size: 5, color: '#e7c6ff', stroke: '#000', strokeWidth: 2 });
+      T.cached(ctx, 'riley', 45, 3, { size: 8, color: '#ffe14a', stroke: '#1a0e00', strokeWidth: 3 });
+      T.cached(ctx, 'POWER', 91, 5, { size: 5, color: '#e7c6ff', stroke: '#000', strokeWidth: 2 });
       // long HP bar
       const barW = 154;
       D.arcadeBar(ctx, 45, 14, barW, 9, hpPct, this.playerGhostHp / p.maxHp, hpColor(hpPct), cb ? '#ffffff' : '#ff9922', '#22080a');
@@ -1335,21 +1346,21 @@
       const spare = Math.max(0, p.lives - 1);
       for (let i = 0; i < spare; i++) hardHat(ctx, 51 + i * 13, 32);
       T.cached(ctx, `x${spare}`, 46 + Math.max(1, spare) * 13 + 2, 28, { size: 6, color: '#fff', stroke: '#000', strokeWidth: 2 });
-      // Volcano Fart meter
-      const full = p.fart >= p.fartMax;
+      // Volcano saidin meter
+      const full = p.saidin >= p.saidinMax;
       const pulse = full ? 0.6 + Math.sin(this.t * 10) * 0.4 : 1;
       const fx0 = 100, fw = 99;
-      D.arcadeBar(ctx, fx0, 28, fw, 7, p.fart / p.fartMax, p.fart / p.fartMax, full ? `rgba(170,255,90,${pulse})` : '#7ad83a', null, '#0e2408');
-      T.cached(ctx, 'VOLCANO FART', fx0 + 3, 29, { size: 4, color: full ? '#15300a' : '#eaffd0', stroke: full ? null : '#0a1a04', strokeWidth: 2, shadow: false });
+      D.arcadeBar(ctx, fx0, 28, fw, 7, p.saidin / p.saidinMax, p.saidin / p.saidinMax, full ? `rgba(170,255,90,${pulse})` : '#7ad83a', null, '#0e2408');
+      T.cached(ctx, 'SAIDIN', fx0 + 3, 29, { size: 4, color: full ? '#15300a' : '#eaffd0', stroke: full ? null : '#0a1a04', strokeWidth: 2, shadow: false });
       if (full && Math.floor(this.t * 6) % 2 === 0) {
         D.fillRRect(ctx, fx0 + fw + 5, 27, 26, 9, 3, '#ffe14a', '#12300a');
         T.cached(ctx, 'MAX', fx0 + fw + 18, 28, { size: 6, align: 'center', color: '#111', shadow: false });
       }
-      // toolbox indicator
-      if (p.hasToolbox) {
+      // relic indicator
+      if (p.hasRelic) {
         S.drawGlow(ctx, 216, 17, 12, 0.35);
-        if (WL.art.has('props')) WL.art.draw(ctx, 'props', 'toolbox', 216, 25, { sx: 1.1, sy: 1.1 });
-        else S.tool(ctx, 'toolbox', 216, 18, 0);
+        if (WL.art.has('props')) WL.art.draw(ctx, 'props', 'relic', 216, 25, { sx: 1.1, sy: 1.1 });
+        else S.tool(ctx, 'relic', 216, 18, 0);
       }
       ctx.restore();
 
@@ -1367,7 +1378,7 @@
         D.arcadeBar(ctx, W / 2 - 50, ly + 7, 100, 2, prog, prog, '#ffe14a', null, '#1a1a24');
       }
 
-      // objective tracker, top right: FIX THE A/C, one pip per wave, temp and score
+      // objective tracker, top right: FOLLOW THE TRAIL, one pip per wave, temp and score
       ctx.save();
       ctx.translate(W, 0); ctx.scale(s, s); ctx.translate(-W, 0);
       const pw = 164, px = W - pw - 4, py = 3, ph = 39;
@@ -1375,20 +1386,20 @@
       pg.addColorStop(0, 'rgba(18,30,60,0.62)'); pg.addColorStop(1, 'rgba(6,10,24,0.5)');
       D.fillRRect(ctx, px, py, pw, ph, 6, pg, 'rgba(255,255,255,0.35)');
       ctx.fillStyle = 'rgba(255,255,255,0.14)'; ctx.fillRect(px + 6, py + 1, pw - 12, 1);
-      // wrench badge
+      // staff badge
       const bgx = px + 13, bgy = py + 13;
       S.ball(ctx, bgx, bgy, 9, '#2b5aa8');
-      S.tool(ctx, 'wrench', bgx - 7, bgy + 5, -0.8);
+      S.tool(ctx, 'staff', bgx - 7, bgy + 5, -0.8);
       const temp = L.temp != null ? L.temp : 72;
       const hot = temp >= 90 ? '#ff6a3a' : temp >= 80 ? '#ffb020' : '#8fd4ff';
-      T.cached(ctx, L.boss ? 'LAST VALVE' : 'FIX THE A/C', px + 26, py + 5, { size: 7, color: '#ffffff', stroke: '#000', strokeWidth: 2 });
+      T.cached(ctx, L.boss ? 'FINAL BATTLE' : 'FOLLOW THE TRAIL', px + 26, py + 5, { size: 7, color: '#ffffff', stroke: '#000', strokeWidth: 2 });
       T.cached(ctx, `${temp}°F`, px + pw - 6, py + 5, { size: 6, align: 'right', color: hot, stroke: '#000', strokeWidth: 2 });
       const done = Math.min(this.waveIdx, totalWaves);
       for (let i = 0; i < totalWaves; i++) {
         const cx = px + 29 + i * 9, cyy = py + 18;
         D.fillRRect(ctx, cx - 3, cyy - 2.5, 7, 5, 1.5, i < done ? '#3cdb3c' : (i === done ? `rgba(255,225,74,${0.5 + 0.4 * Math.sin(this.t * 6)})` : 'rgba(255,255,255,0.14)'), 'rgba(0,0,0,0.6)');
       }
-      T.cached(ctx, L.boss && this.boss ? 'BEAT THE CONE' : `${done}/${totalWaves} ZONES`, px + 29 + totalWaves * 9 + 2, py + 15, { size: 5, color: '#9fe8ff', stroke: '#000', strokeWidth: 2 });
+      T.cached(ctx, L.boss && this.boss ? 'BEAT THE SHADOW' : `${done}/${totalWaves} ZONES`, px + 29 + totalWaves * 9 + 2, py + 15, { size: 5, color: '#9fe8ff', stroke: '#000', strokeWidth: 2 });
       T.cached(ctx, 'SCORE', px + 26, py + 28, { size: 5, color: '#ffe14a', stroke: '#000', strokeWidth: 2 });
       T.cached(ctx, U.pad(p.score, 7), px + pw - 6, py + 25, { size: 9, align: 'right', color: '#fff', stroke: '#000', strokeWidth: 2 });
       ctx.restore();
@@ -1407,7 +1418,7 @@
       if (this.bannerT <= 0 && p.comboCount >= 2 && p.comboDisplayT > 0) {
         const pop = 1 + (p.comboPop || 0) * 0.35;
         const rank = (WL.voice && WL.voice.comboRank(p.comboCount)) || '';
-        const tool = p.lastToolT > 0 && WL.voice ? (p.lastTool === 'uppercut' ? 'WRENCH POP' : WL.voice.toolName(p.lastTool)) : '';
+        const tool = p.lastToolT > 0 && WL.voice ? (p.lastTool === 'uppercut' ? 'staff POP' : WL.voice.toolName(p.lastTool)) : '';
         ctx.save();
         // Center stage, like the concept; with a boss up it moves left, off the cone's face.
         ctx.translate(this.boss ? 118 : W / 2 + 6, comboY);
@@ -1432,7 +1443,7 @@
       }
       // ahead arrow
       if (!this.locked && this.aliveEnemies() === 0 && this.phase === 'play' && (this.currentWave() || !L.boss) && Math.floor(this.t * 3) % 2 === 0) {
-        const go = L.boss ? 'THE CONE' : 'THE DUCT';
+        const go = L.boss ? 'THE SHADOW' : 'THE DUCT';
         T.draw(ctx, go, W - 36, 102 + dy, { size: 8, align: 'right', color: '#ffe14a', stroke: '#000', strokeWidth: 3 });
         ctx.fillStyle = '#ffe14a'; ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(W - 30, 100 + dy); ctx.lineTo(W - 10, 110 + dy); ctx.lineTo(W - 30, 120 + dy); ctx.closePath(); ctx.fill(); ctx.stroke();
       }
@@ -1442,7 +1453,7 @@
         const bw = 268, bx = W / 2 - bw / 2, by = Math.max(58 + dy, hudFloor + 13);
         const phaseName = b.phase === 1 ? 'SWIRL' : b.phase === 2 ? 'TOPPINGS' : 'MELT';
         const phaseCol = b.phase === 1 ? '#bfefff' : b.phase === 2 ? '#ffe14a' : '#ff6fa8';
-        T.draw(ctx, 'GIANT FROYO CONE', W / 2, by - 10, { size: 6, align: 'center', color: '#f9c', stroke: '#000', strokeWidth: 3 });
+        T.draw(ctx, 'SHADOW CHAMPION', W / 2, by - 10, { size: 6, align: 'center', color: '#f9c', stroke: '#000', strokeWidth: 3 });
         D.arcadeBar(ctx, bx, by, bw, 8, b.hp / b.maxHp, b.hp / b.maxHp, b.phase === 3 ? '#e02040' : '#e85a8a', null, '#3a0a1a');
         // Notches where the next phases begin: you can see a change coming.
         ctx.fillStyle = '#ffffff';
@@ -1487,7 +1498,7 @@
         T.draw(ctx, this.banner.b, W / 2, y + (big ? 36 : 22), { size: big ? 9 : 7, align: 'center', color: '#fff9e0', stroke: '#000', strokeWidth: 3 });
         ctx.restore();
       }
-      if (this.phase === 'dead') { ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0, 0, W, H); T.draw(ctx, 'LANCE HIT THE DECK', W / 2, 150, { size: 16, align: 'center', color: '#e03020', stroke: '#000', strokeWidth: 5 }); }
+      if (this.phase === 'dead') { ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0, 0, W, H); T.draw(ctx, 'riley HIT THE stage', W / 2, 150, { size: 16, align: 'center', color: '#e03020', stroke: '#000', strokeWidth: 5 }); }
     }
     /* Move legend under the boss bar: each move with the floor shape it draws.
        Moves unlocked in later phases are listed dim so the next phase isn't a surprise. */
@@ -1523,7 +1534,7 @@
       // Legend comes from the live bindings, so it stays honest after a remap.
       T.draw(ctx, WL.input.legend(), W / 2, 256, { size: 6, align: 'center', color: '#bcd' });
       T.draw(ctx, 'Walk into an enemy = duct-tape grab. Attack = knee. Back+Attack or Jump = throw.', W / 2, 270, { size: 6, align: 'center', color: '#bcd' });
-      T.draw(ctx, 'COMBO: ATK ATK ... (beat) ATK = WRENCH POP launcher. Juggle with ATK or the flying boot.', W / 2, 284, { size: 6, align: 'center', color: '#bff' });
+      T.draw(ctx, 'COMBO: ATK ATK ... (beat) ATK = staff POP launcher. Juggle with ATK or the flying boot.', W / 2, 284, { size: 6, align: 'center', color: '#bff' });
       T.draw(ctx, 'Left / right changes the highlighted setting. \\ toggles fullscreen.', W / 2, 298, { size: 6, align: 'center', color: '#9ab' });
       T.draw(ctx, `KILLS: ${this.kills}   HITS: ${this.player.hits}   STAGE ${this.level.id} WAVE ${Math.min(this.waveIdx + 1, this.level.waves.length)}`, W / 2, 318, { size: 7, align: 'center', color: '#9ab' });
       if (WL.input.touchEnabled) WL.input.drawTouch(ctx, { buttons: false });
@@ -1547,7 +1558,7 @@
     }
     enter() {
       // Keep the checkpoint on disk so Continue also works after a reload.
-      WL.settings.saveRun({ level: this.levelIndex, wave: this.wave, score: Math.floor(this.score / 2), fart: 0 });
+      WL.settings.saveRun({ level: this.levelIndex, wave: this.wave, score: Math.floor(this.score / 2), saidin: 0 });
     }
     rowAt(pt) {
       for (let i = 0; i < this.items.length; i++) {
@@ -1581,11 +1592,11 @@
     draw(ctx) {
       ctx.fillStyle = '#05050f'; ctx.fillRect(0, 0, W, H);
       D.vignette(ctx, 0.7);
-      S.drawLance(ctx, W / 2 - 60, 194, { pose: 'down', t: this.t, facing: 1 });
-      // froyo taunting
-      S.drawEnemy(ctx, W / 2 + 60, 194, { type: 'froyo', pose: 'idle', t: this.t, facing: -1 });
+      S.drawRiley(ctx, W / 2 - 60, 194, { pose: 'down', t: this.t, facing: 1 });
+      // ashaman taunting
+      S.drawEnemy(ctx, W / 2 + 60, 194, { type: 'ashaman', pose: 'idle', t: this.t, facing: -1 });
       T.draw(ctx, 'GAME OVER', W / 2, 44, { size: 28, align: 'center', gradient: ['#fff', '#e03020'], stroke: '#000', strokeWidth: 6 });
-      T.draw(ctx, '"The buffet sends its regards."', W / 2, 86, { size: 7, align: 'center', color: '#f9c' });
+      T.draw(ctx, '"The battle sends its regards."', W / 2, 86, { size: 7, align: 'center', color: '#f9c' });
       T.draw(ctx, `SCORE ${U.pad(this.score, 7)}`, W / 2, 104, { size: 10, align: 'center', color: '#ffe14a' });
       T.draw(ctx, `CONTINUE?  ${this.count}`, W / 2, 222, { size: 14, align: 'center', color: Math.floor(this.t * 4) % 2 ? '#fff' : '#ffe14a', stroke: '#000', strokeWidth: 4 });
       this.items.forEach((it, i) => {
@@ -1610,41 +1621,41 @@
     }
     draw(ctx) {
       const t = this.t;
-      // cool blue restored A/C sky
+      // cool blue restored POWER sky
       const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#2e7bd6'); g.addColorStop(1, '#9fd7f5'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
       // snowflakes / cool air
       ctx.fillStyle = 'rgba(255,255,255,0.8)'; for (let i = 0; i < 40; i++) { const x = (i * 53 + Math.sin(t + i) * 20) % W; const y = (i * 37 + t * 30) % H; ctx.fillRect(x, y, 2, 2); }
       ctx.fillStyle = '#c99a5b'; ctx.fillRect(0, 262, W, H - 262);
       if (this.stage === 0) {
-        T.draw(ctx, 'A/C RESTORED', W / 2, 20, { size: 22, align: 'center', gradient: ['#fff', '#bfefff', '#39f'], stroke: '#000', strokeWidth: 5 });
+        T.draw(ctx, 'KENZIE RESCUED', W / 2, 20, { size: 22, align: 'center', gradient: ['#fff', '#bfefff', '#39f'], stroke: '#000', strokeWidth: 5 });
         T.draw(ctx, '72°F AND HOLDING', W / 2, 50, { size: 9, align: 'center', color: '#fff', stroke: '#000' });
         // BEFORE / AFTER
-        ctx.save(); ctx.globalAlpha = 0.55; S.drawLance(ctx, 150, 250, { pose: 'idle', t, facing: 1 }); ctx.restore();
+        ctx.save(); ctx.globalAlpha = 0.55; S.drawRiley(ctx, 150, 250, { pose: 'idle', t, facing: 1 }); ctx.restore();
         T.draw(ctx, 'BEFORE', 150, 262, { size: 9, align: 'center', color: '#fff', stroke: '#000' });
-        T.draw(ctx, '"Lance, before"', 150, 276, { size: 6, align: 'center', color: '#333', shadow: false });
+        T.draw(ctx, '"riley, before"', 150, 276, { size: 6, align: 'center', color: '#333', shadow: false });
         // arrow
         T.draw(ctx, '>>>', W / 2, 190, { size: 16, align: 'center', color: '#ffe14a', stroke: '#000' });
-        T.draw(ctx, '4 DECKS. ONE SALAD-BAR UPRISING.', W / 2, 150, { size: 7, align: 'center', color: '#fff', stroke: '#000' });
-        T.draw(ctx, 'ONE FART, ITEMIZED.', W / 2, 162, { size: 7, align: 'center', color: '#9f3', stroke: '#000' });
+        T.draw(ctx, 'FIVE STAGES. ONE HEROIC RESCUE.', W / 2, 150, { size: 7, align: 'center', color: '#fff', stroke: '#000' });
+        T.draw(ctx, 'ONE saidin, ITEMIZED.', W / 2, 162, { size: 7, align: 'center', color: '#9f3', stroke: '#000' });
         const k = Math.min(1, t / 1.5);
-        S.drawLance(ctx, W - 150, 250, { pose: t > 1.6 ? 'victory' : 'idle', t, facing: -1, thin: true });
+        S.drawRiley(ctx, W - 150, 250, { pose: t > 1.6 ? 'victory' : 'idle', t, facing: -1, thin: true });
         T.draw(ctx, 'AFTER', W - 150, 262, { size: 9, align: 'center', color: '#fff', stroke: '#000' });
-        T.draw(ctx, '"Svelte Lance"', W - 150, 276, { size: 6, align: 'center', color: '#333', shadow: false });
-        if (t > 2) T.draw(ctx, 'Captain: "Lance. You look... svelte."', W / 2, 296, { size: 7, align: 'center', color: '#fff', stroke: '#000' });
-        if (t > 3.5) T.draw(ctx, 'Lance: "The invoice says cardio. Open the buffet."', W / 2, 310, { size: 7, align: 'center', color: '#ffe14a', stroke: '#000' });
+        T.draw(ctx, '"Svelte riley"', W - 150, 276, { size: 6, align: 'center', color: '#333', shadow: false });
+        if (t > 2) T.draw(ctx, 'chieftain: "riley. You look... svelte."', W / 2, 296, { size: 7, align: 'center', color: '#fff', stroke: '#000' });
+        if (t > 3.5) T.draw(ctx, 'riley: "The invoice says cardio. Open the battle."', W / 2, 310, { size: 7, align: 'center', color: '#ffe14a', stroke: '#000' });
         if (Math.floor(t * 2) % 2 === 0 && t > 1) T.draw(ctx, WL.input.touchEnabled ? 'TAP' : 'ENTER', W - 18, H - 16, { size: 7, align: 'right', color: '#fff' });
       } else {
         T.draw(ctx, 'THANKS FOR PLAYING', W / 2, 24, { size: 16, align: 'center', gradient: ['#fff3a0', '#ffb300', '#e0301e'], stroke: '#000', strokeWidth: 5 });
         T.draw(ctx, `FINAL SCORE ${U.pad(this.score, 7)}`, W / 2, 54, { size: 11, align: 'center', color: '#fff', stroke: '#000' });
-        const img = WL.assets.get('lancePortrait');
+        const img = WL.assets.get('rileyPortrait');
         if (img) { const s = 150 / img.height; ctx.drawImage(img, W / 2 - img.width * s / 2, 80, img.width * s, img.height * s); }
-        else S.drawLanceBust(ctx, W / 2, 130, 84, { mood: 'grin' });
-        S.drawLance(ctx, 110, 250, { pose: 'victory', t, facing: 1, thin: true });
-        S.drawEnemy(ctx, W - 130, 250, { type: 'broccoli', pose: 'down', t, facing: 1 });
-        S.drawEnemy(ctx, W - 90, 262, { type: 'froyo', pose: 'down', t, facing: 1 });
-        T.draw(ctx, 'WHALE LANCE AIR CONDITIONING AND HEATING', W / 2, 240, { size: 8, align: 'center', color: '#fff', stroke: '#000' });
+        else S.drawRileyBust(ctx, W / 2, 130, 84, { mood: 'grin' });
+        S.drawRiley(ctx, 110, 250, { pose: 'victory', t, facing: 1, thin: true });
+        S.drawEnemy(ctx, W - 130, 250, { type: 'trolloc', pose: 'down', t, facing: 1 });
+        S.drawEnemy(ctx, W - 90, 262, { type: 'ashaman', pose: 'down', t, facing: 1 });
+        T.draw(ctx, 'shadow riley AIR CONDITIONING AND HEATING', W / 2, 240, { size: 8, align: 'center', color: '#fff', stroke: '#000' });
         T.draw(ctx, '"WE SPEAR THE COMPETITION"', W / 2, 254, { size: 7, align: 'center', color: '#ffe14a', stroke: '#000' });
-        T.draw(ctx, 'Starring LANCE as himself. No vegetables were harmed. Several were eaten.', W / 2, 290, { size: 6, align: 'center', color: '#fff', stroke: '#000' });
+        T.draw(ctx, 'Starring riley as himself. No vegetables were harmed. Several were eaten.', W / 2, 290, { size: 6, align: 'center', color: '#fff', stroke: '#000' });
         T.draw(ctx, 'Happy cruising, Dad.', W / 2, 306, { size: 7, align: 'center', color: '#fff', stroke: '#000' });
         if (Math.floor(t * 2) % 2 === 0 && t > 1) T.draw(ctx, WL.input.touchEnabled ? 'TAP FOR TITLE' : 'ENTER FOR TITLE', W / 2, 336, { size: 7, align: 'center', color: '#fff' });
       }

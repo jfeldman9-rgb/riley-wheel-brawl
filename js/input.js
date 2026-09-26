@@ -1,5 +1,5 @@
 /* Unified keyboard + gamepad + touch input.
-   Actions: attack, jump, special, tool, fart, start, pause, mute, fullscreen
+   Actions: attack, jump, special, tool, saidin, start, pause, mute, fullscreen
    Movement: axis.x / axis.y in [-1, 1]. */
 'use strict';
 
@@ -46,9 +46,9 @@ WL.input = (function () {
     touch.buttons = [
       { id: 'attack', label: 'ATK', x: W - 118, y: H - 62, r: 30, color: '#e33' },
       { id: 'jump', label: 'JMP', x: W - 48, y: H - 96, r: 24, color: '#39f' },
-      { id: 'special', label: 'SPR', x: W - 178, y: H - 106, r: 22, color: '#3cf' },
-      { id: 'tool', label: 'BOX', x: W - 60, y: H - 34, r: 22, color: '#fc3' },
-      { id: 'fart', label: 'FART', x: W - 178, y: H - 50, r: 24, color: '#5d3' },
+      { id: 'special', label: 'FIRE', x: W - 178, y: H - 106, r: 22, color: '#3cf' },
+      { id: 'tool', label: 'CALL', x: W - 60, y: H - 34, r: 22, color: '#fc3' },
+      { id: 'saidin', label: 'SUPER', x: W - 178, y: H - 50, r: 24, color: '#5d3' },
       { id: 'pause', label: 'II', x: W / 2 + 96, y: 34, r: 12, color: '#aaa' }
     ];
   }
@@ -200,8 +200,8 @@ WL.input = (function () {
     }
   }
 
-  // Default mapping lives in WL.settings: A jump, B fart, X attack, Y spray,
-  // LB/RB toolbox, Back pause. Triggers (6, 7) are analog and easy to brush,
+  // Default mapping lives in WL.settings: A jump, B saidin, X attack, Y fire,
+  // LB/RB relic, Back pause. Triggers (6, 7) are analog and easy to brush,
   // so they are only bound if the player remaps onto them.
   // Start (9) confirms menus and, during a fight, opens pause.
 
@@ -365,7 +365,7 @@ WL.input = (function () {
     if (gamepad.connected) return id === 'pause' ? 'START' : ST.padFor(id);
     return ST.keysFor(id, 1)[0] || '';
   }
-  const TOUCH_LABEL = { attack: 'ATK', jump: 'JMP', special: 'SPR', tool: 'BOX', fart: 'FART', pause: 'II' };
+  const TOUCH_LABEL = { attack: 'ATK', jump: 'JMP', special: 'FIRE', tool: 'CALL', saidin: 'SUPER', pause: 'II' };
   /** Short control name for prompts: "E/J" on keyboard, "X" on a pad, "ATK" on touch. */
   function hint(id, n) {
     if (touch.enabled && !(WL.display && WL.display.pc) && !gamepad.connected) return TOUCH_LABEL[id] || id.toUpperCase();
@@ -392,10 +392,10 @@ WL.input = (function () {
   function legend() {
     if (gamepad.connected) {
       const p = id => ST.padFor(id);
-      return `PAD: STICK MOVE   ${p('attack')} ATK   ${p('jump')} JUMP   ${p('special')} SPRAY   ${p('tool')} BOX   ${p('fart')} FART   START PAUSE`;
+      return `PAD: STICK MOVE   ${p('attack')} ATK   ${p('jump')} JUMP   ${p('special')} FIRE   ${p('tool')} CALL   ${p('saidin')} SUPER   START PAUSE`;
     }
     const k = (id, n) => ST.keysFor(id, n || 2).join('/') || '--';
-    return `${moveHint()} MOVE   ${k('attack')} ATK   ${k('jump')} JUMP   ${k('special')} SPRAY   ${k('tool')} BOX   ${k('fart', 1)} FART`;
+    return `${moveHint()} MOVE   ${k('attack')} ATK   ${k('jump')} JUMP   ${k('special')} FIRE   ${k('tool')} CALL   ${k('saidin', 1)} SUPER`;
   }
   function beginCapture(kind, cb) {
     capture = { kind, cb, armed: false };
@@ -458,13 +458,13 @@ WL.input = (function () {
   function drawControlChrome(ctx, opts) {
     const pad = !!gamepad.connected;
     const H = WL.H;
-    // Player-chosen overlay strength, capped so the plates never go opaque.
+    // Player-chosen overlay strength, capped so the urn never go opaque.
     const base = Math.max(0.2, Math.min(0.85, opts.opacity != null ? opts.opacity : ST.data.overlay));
     ctx.save();
     ctx.globalAlpha = base;
     ctx.lineWidth = 1.5;
 
-    // ---- move cluster, bottom left. Plates stay see-through so a goon
+    // ---- move cluster, bottom left. urn stay see-through so a goon
     // walking the rail is still visible behind the diagram. ----
     const mx = 8, my = H - 138, mw = 112, mh = 130;
     glassPlate(ctx, mx, my, mw, mh);
@@ -522,9 +522,9 @@ WL.input = (function () {
       for (const b of touch.buttons) {
         const down = !!held[b.id];
         ctx.globalAlpha = down ? 1 : base;
-        const boxMissing = b.id === 'tool' && opts.hasToolbox === false;
-        const disabled = (b.id === 'fart' && opts.fartReady === false) || boxMissing;
-        const armed = b.id === 'fart' && opts.fartReady;
+        const boxMissing = b.id === 'tool' && opts.hasRelic === false;
+        const disabled = (b.id === 'saidin' && opts.surgeReady === false) || boxMissing;
+        const armed = b.id === 'saidin' && opts.surgeReady;
         const col = armed ? '#88ff66' : b.color;
         // Glass button: tinted see-through core, colored rim, gloss on top.
         WL.draw.circle(ctx, b.x, b.y, b.r, disabled ? 'rgba(90,90,100,0.16)' : hexAlpha(col, down ? 0.55 : 0.2), 'rgba(0,0,0,0.55)');
@@ -547,7 +547,7 @@ WL.input = (function () {
           WL.text.draw(ctx, badge, b.x + b.r + 4, b.y - 4, { size: 6, color: '#ffe14a', stroke: '#000', strokeWidth: 2 });
         } else {
           WL.text.draw(ctx, b.label, b.x, b.y - 10, { size: 7, align: 'center', color: '#fff', stroke: '#000', strokeWidth: 3 });
-          // Key / pad badge on a colored chip, like a console glyph.
+          // Key / pad badge on a colored mark, like a console glyph.
           const bs = boxMissing ? 5 : 6;
           const cw = Math.max(12, WL.text.width(ctx, badge, bs) + 7), ch = bs + 5;
           WL.draw.fillRRect(ctx, b.x - cw / 2, b.y - 1.5, cw, ch, ch / 2, boxMissing ? 'rgba(120,70,0,0.75)' : 'rgba(6,8,20,0.7)', disabled && !boxMissing ? 'rgba(200,200,210,0.5)' : hexAlpha(col, 0.95));
@@ -592,8 +592,8 @@ WL.input = (function () {
         if (b.id === 'pause' && opts.pause === false) continue;
         const down = held[b.id];
         ctx.globalAlpha = down ? 0.9 : 0.5;
-        const disabled = b.id === 'fart' && opts.fartReady === false;
-        const armed = b.id === 'fart' && opts.fartReady;
+        const disabled = b.id === 'saidin' && opts.surgeReady === false;
+        const armed = b.id === 'saidin' && opts.surgeReady;
         WL.draw.circle(ctx, b.x, b.y, b.r, disabled ? '#333' : (armed ? '#8f6' : b.color), 'rgba(255,255,255,0.8)');
         if (armed) {
           ctx.globalAlpha = 0.95;
