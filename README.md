@@ -1,235 +1,85 @@
-# Whale Lance: Buffet Brawl
+# Riley Wheel Brawl
 
-A Streets of Rage-style side-scrolling beat-em-up. The A/C on the *Pride of America* is out, the captain calls **Whale Lance Air Conditioning and Heating**, and Lance has to fight his way through four decks of angry healthy food to fix it — while staying away from the buffet.
+**Riley Wheel Brawl** is a kid-friendly, side-scrolling fantasy beat-em-up inspired by *The Wheel of Time*. Riley, a young Asha'man trained in Tae Kwon Do, follows Moiraine across five dangerous locations to rescue his eight-year-old sister Kenzie—known as **Twinkle Toes**—from the Forsaken and Mazrim Taim.
 
-Plain HTML5 Canvas + vanilla JavaScript. No build step, no dependencies. Plays on a desktop with keyboard or a gamepad, and on a phone with touch.
+The adventure begins on Winternight in Emond's Field, then continues through Caemlyn, Shadar Logoth, the Stone of Tear, and the Black Tower. At the Stone, Twinkle Toes reveals that she can channel lightning. She returns in the finale to help Riley defeat Taim with lightning and balefire.
 
-The showcase pass tightens the cabinet feel (hit-stop, a directional camera punch, attack buffering, floor tells before dashes and the froyo spoon) and rewrites the mid-fight voice: stage banners, enemy cards, combo ranks, Volcano Fart one-liners, and the ending. The ship temperature stays on the HUD so the cruise reads during the fight.
-
-The canvas now renders at device pixel density on phones and desktops, up to 3840×2160. Auto uses native density; Sharp supersamples low-density screens at 2× or higher. HD modes use smooth edges and no CRT stripes. Pause → Display → Classic retains the 640×360 nearest-neighbor picture and scanlines. The choice is remembered, and changing display quality never changes the input hints or camera lead. The bundled arcade font loads without a Google Fonts connection.
-
-During a stage the control picture stays on screen the whole time, on phones and desktops: touch buttons in the corners, a WASD / arrow diagram (or the pad, if one is connected). It does not hide after the tutorial.
-
-The upgrade pass adds fairer hitboxes and invulnerability frames, readable boss telegraphs, Continue from the current stage and wave, keyboard and gamepad remapping, a timed launcher/juggle, a music-ducking audio mix, pooled particles with a phone budget, a large HUD and colorblind-safe health, smarter enemy AI, and settings that survive a reload.
-
-The concept-art pass pushes the picture toward the key art: a sunlit Lido deck (Diamond Head, the Waikiki skyline, sailboats, the Pride of America superstructure, a pool deck with tourists, buffet signage, polished teak, HOT FOOD caution signs), side-lit characters with rim light and hard cast shadows, a fight face for Lance, KALE RAGE and CRUNCH CREW goons, food-and-kitchenware debris that bounces on the deck, glow hit sparks, and a HUD with a round portrait, a long glossy HP bar, hard-hat lives, the logo and a FIX THE A/C tracker. See [Graphics](#graphics).
+The game uses HTML5 Canvas and vanilla JavaScript, with no build step or runtime dependencies. It supports keyboard, gamepad, mouse, and touch, and is designed to run from the repository root or beneath `/riley-wheel-brawl/` on GitHub Pages.
 
 ## Play
 
-**Online:** enable GitHub Pages for this repo (Settings → Pages → *Deploy from a branch* → `main`, folder `/ (root)`) and open the published URL.
+### GitHub Pages
 
-**Locally:** the game loads its cutscene art with `<img>` so it needs to be served over HTTP (not `file://`):
+Enable GitHub Pages for the repository using **Settings → Pages → Deploy from a branch**, select the publishing branch, and choose `/ (root)`. Open the published `/riley-wheel-brawl/` URL when deployment completes.
+
+### Local server
+
+The game loads optional art through browser requests, so serve the repository over HTTP rather than opening `index.html` directly:
 
 ```bash
-# any static server works
+cd riley-wheel-brawl
 python3 -m http.server 8000
-# or
-npx serve .
 ```
 
-Then open <http://localhost:8000>.
+Then open <http://localhost:8000/>.
 
-## Controls
+To test the same subdirectory layout used by GitHub Pages, start the server from the repository's parent directory and open <http://localhost:8000/riley-wheel-brawl/>.
 
-Two keyboard layouts work at once: a PC cluster around WASD, and the arcade cluster (right hand on J / K / L).
+## Story and stages
+
+1. **Emond's Field — Winter Night:** Trollocs attack during Winternight while Riley learns movement, Tae Kwon Do, channeling, and ally calls.
+2. **Caemlyn Streets:** Riley crosses the crowded city and confronts a Myrddraal.
+3. **Shadar Logoth:** He avoids the dangerous Mashadar fog and battles a Draghkar.
+4. **Stone of Tear:** Riley faces a Forsaken, claims Callandor, and discovers Twinkle Toes can channel lightning.
+5. **Black Tower:** Turned Asha'man guard Taim, and the siblings unite their powers for the final rescue.
+
+## Fantasy controls
+
+Two keyboard layouts work at once: the movement cluster around WASD and the arcade action cluster around J/K/L. Inputs can be remapped from **Controls**; live hints update to show the selected bindings.
 
 | Action | Keyboard | Gamepad | Touch |
 | --- | --- | --- | --- |
-| Move | Arrow keys / WASD | Left stick or d-pad | Virtual stick (left half of screen) |
-| Attack (screwdriver jab → wrench smash → pipe-wrench sweep) | `E`, `J` or `Z` | **X** | **ATK** |
-| **Wrench Pop** launcher | Attack, Attack, *wait a beat*, Attack (mashing still gives the sweep) | same | same |
-| Duct-tape grab | Walk into an enemy. Attack = knee. Back + Attack or Jump = throw | same | same |
-| Jump / flying boot | `Space`, `K` or `X` (+ Attack in the air) | **A** | **JMP** |
-| Refrigerant spray (freezes enemies, costs a little HP) | `Q`, `L` or `C` | **Y** | **SPR** |
-| Toolbox throw (pick it back up after) | `R`, `I` or `V` | **RB** or **LB** | **BOX** |
-| **Volcano Fart** (screen clear, needs a full meter) | `F` or `B` | **B** | **FART** |
-| Pause | `Esc`, `P` or `Enter` | **Start** or **Back** | **II** |
-| Mute | `M` | pause menu | pause menu |
-| Fullscreen | Backslash, or F11 when the browser gives the page that key | pause menu | pause menu |
+| Move | Arrow keys / WASD | Left stick or d-pad | Virtual stick |
+| Tae Kwon Do attack | `E`, `J`, or `Z` | **X** | **ATK** |
+| Jump / aerial attack | `Space`, `K`, or `X` | **A** | **JMP** |
+| Channel a fireball | `Q`, `L`, or `C` | **Y** | **FIRE** |
+| Call Loial | `R`, `I`, or `V` | **RB** or **LB** | **CALL** |
+| Lightning and balefire super | `F` or `B` | **B** | **POWER** |
+| Pause | `Esc`, `P`, or `Enter` | **Start** or **Back** | **II** |
+| Mute | `M` | Pause menu | Pause menu |
+| Fullscreen | Backslash | Pause menu | Pause menu |
 
-Pause menu: sound, music, fullscreen, display mode (Auto / Sharp / Classic), **Options** and **Controls**. The title screen has the same panels under **Settings**. Alt-tabbing pauses the fight. A hit rumbles the gamepad when the pad supports it.
+Riley's grounded combo uses a front kick, roundhouse kick, and spinning back kick. His special launches a fireball in the direction he faces. Power pickups fill the **saidin** meter; once full, the super calls down lightning and releases balefire. Holding full saidin too long allows the taint to build, so watch its warning and spend the meter in time.
 
-Every table row above is a default. **Controls** remaps the primary key for each action (the arcade aliases stay) and each pad action. Binding a key another action uses swaps the two, so nothing is left unbound. Enter, Start, the d-pad, `M` and backslash can't be remapped, so the menus can always be reached. The corner badges, the title/pause legends, the help screen and the tutorial tips all read the live bindings.
+Moiraine's magic restores health. Angreal temporarily create a spread of three larger fireballs. Loial can charge through enemies once per stage, and claiming Callandor permanently strengthens Riley's super for the rest of the run.
 
-**Options:** control overlay strength (25–85%; the plates stay see-through and the picture never hides), HUD size (Normal / Large), health colors (Classic / Colorblind-safe: blue, yellow and vermilion plus an HP number and a striped low-health bar), effects (Auto / Full / Lite) and screen shake (Full / Reduced, which also softens the white hit flashes). Everything, including volume, music level, display mode and remaps, is saved in `localStorage` under `wl-settings`.
+## Display and accessibility
 
-### Continue
+The pause and settings menus provide:
 
-Clearing a wave saves a small checkpoint (`wl-run`: stage, next wave, score, meter). After a game over, **Continue** resumes the same stage at that wave with half score and three lives; **Restart stage** starts the stage over. The title screen offers **Continue** after a reload. Beating the boss clears the checkpoint.
+- Auto, Sharp, and Classic display modes;
+- adjustable sound and music;
+- normal or large HUD sizing;
+- colorblind-safe health indicators;
+- Full, Lite, or automatic effects quality;
+- reduced screen shake;
+- adjustable touch-control visibility;
+- keyboard and gamepad remapping;
+- fullscreen and mute controls.
 
-### Combo depth
-
-Mashing Attack gives the classic screwdriver → wrench → pipe-wrench sweep. Pausing about a tenth of a second after the wrench (a white chevron appears over Lance) turns the third hit into the **Wrench Pop**: the enemy floats and can take up to three follow-ups (jab, wrench or the flying boot) at 80% damage before it drops. It also breaks spinach/kale armor. The HUD shows `WRENCH POP` and `JUGGLE xN`.
-
-### Boss telegraphs
-
-Each boss move draws its own floor shape at the exact size of its hitbox, and plays its own sound when it starts. A countdown ring under the cone fills clockwise. In the last 0.2 s the outline turns solid white and a click plays.
-
-| Move | Shape | Wind-up (phase 1 / 2 / 3) |
-| --- | --- | --- |
-| Spoon slam | rectangle, filling outward, chevrons | 0.80 / 0.75 / 0.62 s |
-| Belly flop | ring + cross at the locked landing spot, dashed outer ring closing in; he lands exactly on it | 0.60 / 0.60 / 0.52 s |
-| Topping rain | dashed ring per drop, the true hit ellipse | 0.80 / 0.80 / 0.70 s |
-| Backup cups | arrows at the two screen edges | 0.80 s |
-
-The boss bar has notches where phases 2 and 3 begin, and a move legend under the bar lists the moves and their shapes. Moves that unlock later are shown dimmed.
-
-The title screen accepts a click on a menu row. Backslash toggles fullscreen from anywhere.
-
-The same bindings are drawn in the corners for the entire stage, so the diagram is still there after the first wave's tips expire.
-
-### The Volcano Fart
-
-The green meter under Lance's health fills when he eats **beans**, **chili**, **buffet leftovers** and coffee — never salad. When it's full, press Fart: every enemy on screen is launched off the ship with a screen-shaking blast, and the boss takes a huge hit and loses its swirl armor.
-
-Burgers and turkey legs heal. Casino chips are points. Lance hates frozen yogurt: every froyo cup is worth double.
-
-## Fairness tuning
-
-All hit and invulnerability numbers are in `FAIR` in `js/entities.js`. The floor tells draw from the same numbers.
-
-| Setting | Before | Now | Why |
-| --- | --- | --- | --- |
-| Enemy melee reach | reach + 14 px | reach + 13 px (Lance's half width) | box matches the drawn tell |
-| Enemy melee lane tolerance | 26 px | 18 px | enemies only commit inside 16 px, so a side-step during the tell escapes |
-| Dash / roll / charge lane tolerance | 22 / 22 / 26 px | 18 / 18 / 20 px | same rule as melee |
-| Lance's swing active time | 1 frame | 0.06 s (each enemy hit once) | fewer invisible whiffs when an enemy steps in |
-| Lance's swing width | 12 px for every enemy | per-sprite 11–17 px (`hurtW`) | sprouts are small, kale is wide |
-| Stun after a light hit | 0.32 s | 0.28 s | |
-| Iframes after a light hit | 0.15 s, plus 0.25 s after the stun | 0.56 s from the hit (covers the stun plus ~0.28 s to act) | no re-hit while reeling |
-| Light-hit streak | none | third light hit within 1.6 s knocks Lance down | a release with get-up iframes instead of a stun-lock |
-| Get-up iframes | 0.9 s | 1.0 s | enemies also hold attacks for the first 0.45 s |
-| Enemy light-hit lock | unlimited | fifth un-knocked hit tumbles the enemy | no infinite jab loops |
-| Enemy get-up | hittable | 0.35 s invulnerable | no free hits on a rising enemy |
-| Boss slam lane | ±40 px | ±34 px, drawn exactly | |
-| Topping rain | 26 × 20 px box, smaller ring | 26 × 13 px ellipse, the same ellipse is drawn | |
-| Belly-flop landing | chased the target, ring 18–40 px | lands exactly on the locked mark, ring is the true 78 px radius | |
-
-**AI director:** at most two attackers, never from both sides of Lance at once, at least 0.3 s between attack starts, and nobody starts an attack while Lance is reeling or getting up. When everyone is on one side, the farthest goon walks around to flank. It arcs around Lance instead of walking through him. Agile greens (sprout, celery, carrot) sometimes side-step a swing they see coming, but never mid-combo. A whiffed swing lets a nearby enemy start its (fully telegraphed) attack sooner.
-
-In a 12-seed soak with a masher bot (`node tools/soak.cjs . <seed>`), all four stages are still cleared every time. Damage taken per minute fell on every stage (stage 1: 3.0 → 2.9, stage 2: 30.1 → 26.8, stage 3: 21.6 → 16.9, boss stage: 58.6 → 46.2). The worst burst of hits inside 1.5 s never got worse, and on stage 2 it fell from 3 hits to 2.
-
-## Performance
-
-Particles and breakable debris come from a pool that is compacted in place; nothing is allocated per frame for FX. The concurrent cap is 320 on desktop, 180 on coarse pointers and 110 in Lite, and Lite also halves burst sizes. Auto uses Lite on a coarse pointer below 2× DPR, and switches to Lite after three seconds under 48 fps in a fight. Entity shadows use one cached radial sprite instead of a new gradient per body per frame. Sparks and callout text are never dropped.
-
-## Story
-
-1. **The A/C is out** — the Pride of America bakes off Hawaii.
-2. **The captain calls for help** — "Get me Whale Lance Air Conditioning!"
-3. **Lance arrives** — the captain tells him to stay away from the buffet.
-4. **Healthy food attack!** — while fixing the ducts, the salad bar strikes back.
-
-Then four stages aboard the ship, each ending with an A/C repair log and the ship's temperature dropping:
-
-| Stage | Ship space | Enemies |
-| --- | --- | --- |
-| 1 | Lido Deck buffet / pool deck (tutorial) — "the salad bar clocked in" | broccoli goons, brussels sprouts, celery stalkers |
-| 2 | A/C plant / pipe corridors (steam vents) | carrot ninjas, spinach thugs |
-| 3 | Spa & juice bar (elite greens) | kale bruisers, frozen yogurt cups |
-| 4 | Freezer / dessert station | **Giant Frozen Yogurt Cone** boss: swirl armor → sprinkle rain → meltdown puddles |
-
-Ending: the A/C hums at 72°F and Lance, after four decks of cardio and one very committed fart, is *svelte*.
+The game preserves progress at wave checkpoints so **Continue** can restore the current stage and run upgrades after a reload.
 
 ## Project layout
 
-```
-index.html            entry point (GitHub Pages ready, served from repo root)
-css/style.css
-js/util.js            helpers, text and drawing primitives
-js/settings.js        persistent settings, key/pad remap tables, Continue checkpoint, FX budget
-js/artdata.js         generated by tools/bake_art.py: atlas frames, foot anchors, world scale, plate sizes
-js/assets.js          image loader (every image is optional; drawn fallbacks exist)
-js/art.js             painted-art runtime: frame lookup, mirroring, cached scaled frames, cast shadows, reflections
-js/input.js           keyboard (WASD cluster + arcade keys), gamepad, touch
-js/audio.js           WebAudio synthesized SFX and chiptune sequencer (no audio files)
-js/voice.js           stage banners, enemy cards, combo ranks, fart lines, barks
-js/sprites.js         procedural sprites: Lance (drawn from photo refs), 7 enemy types, boss, items, FX
-js/entities.js        Player state machine, enemy AI, boss phases, pickups, projectiles
-js/levels.js          stage data, parallax backgrounds, waves, hazards, story text
-js/options.js         Options / Controls panels shared by the title and pause menus
-js/scenes.js          title, cutscene player, story beats, Play/HUD, pause, game over, ending
-js/main.js            bootstrap, scaling, game loop, scene flow
-assets/art/           painted WebP atlases (Lance, enemies, props) and Lido/title/logo/portrait plates
-assets/cutscenes/     opening cutscene panels (cutscene-01..04)
-tools/                bake_art.py + art-src/: keyed pose sheets -> assets/art atlases and js/artdata.js (optional);
-                      make_lance_portraits.py: turns a real photo into the optional likeness PNGs;
-                      verify-hd.cjs / capture-gfx.cjs / soak.cjs / chrome-smoke.cjs: regression, visual smoke,
-                      bot soak, real-Chrome controls + frame-rate smoke
+```text
+index.html         Browser entry point and script order
+css/style.css      Fullscreen canvas shell
+js/                Canvas runtime, scenes, input, combat, audio, and content
+assets/art/        Optional painted character and environment art
+assets/cutscenes/  Optional story stills
+assets/fonts/      Bundled arcade font
+docs/              Design brief, task plan, art list, and voice lines
+tools/             Art preparation and regression utilities
 ```
 
-### Swapping in art
-
-The loader looks for these exact files; drop replacements in with the same names and nothing else needs to change:
-
-- `assets/cutscenes/cutscene-01-ac-out.png`
-- `assets/cutscenes/cutscene-02-captain-calls.png`
-- `assets/cutscenes/cutscene-03-lance-arrives.png`
-- `assets/cutscenes/cutscene-04-monsters-attack.png`
-- `assets/lance/lance-portrait.png` — bust on a transparent background (title/ending)
-- `assets/lance/lance-head.png` — face crop (in-game sprite head; masked to an oval at draw time)
-- `assets/lance/lance-hud.png` — small HUD portrait
-
-### Lance's likeness
-
-In the default build Lance, the enemies, the Lido deck, the title and the HUD portrait are painted sprites
-generated from Jason's concept art and baked by `tools/bake_art.py` (see Graphics). The procedural Lance below is the
-fallback when those files are missing.
-
-The procedural Lance (`drawLance`, `lanceHead`, `drawLanceBust` in `js/sprites.js`) matches the
-reference photos: thinning white hair combed back, prominent white mustache, tan/ruddy complexion, a red shirt (now
-with a tone-on-tone hibiscus print and an open camp collar) with a purple-and-white plumeria lei, gray cargo shorts,
-black sneakers, and a leather mechanic's tool belt worn over the shirt. The three `assets/lance/*.png` photo files
-are **optional** and the repo ships without them.
-
-To use crops of the real photos instead of the drawn head, run:
-
-```bash
-pip install pillow
-python3 tools/make_lance_portraits.py path/to/lance-face-toast.png --face X,Y,W,H [--bust X,Y,W,H]
-```
-
-`--face` is the pixel box around the head (hairline to chin); the script writes the three PNGs above with an oval
-alpha mask and the game picks them up automatically on the next load.
-
-### Debug helpers (browser console)
-
-```js
-WL.game.debug.play(3)     // jump straight into stage 4 (0-based)
-WL.game.debug.boss()      // skip to the boss wave of the current stage
-WL.game.debug.fillFart()  // fill the Volcano Fart meter
-WL.game.debug.invuln()    // toggle invulnerability on
-```
-
-Add `#fps` to the URL to show a frame counter.
-
-## Graphics
-
-Still Canvas 2D and still no required build step, but the Lido stage, the characters, the title and the HUD art are now **painted sprites** rather than code-drawn shapes. The AC plant, juice bar and freezer decks and the Froyo Cone boss are still procedural.
-
-- **Painted-art pipeline (optional tool).** Pose sheets and background plates were generated from the concept art on flat key colors and live in `tools/art-src/`. `python3 tools/bake_art.py` (Pillow, NumPy, SciPy) keys them out in YCbCr with edge unmixing, splits each sheet into figures, finds a foot anchor per pose, packs WebP atlases into `assets/art/` and writes `js/artdata.js`. The shipped atlases are committed, so Pages serves them as-is. Sprites keep their painted facing and are mirrored at draw time; shirt lettering (KALE RAGE, CRUNCH CREW) is redrawn un-mirrored from a patch.
-- **Runtime (`js/art.js`).** Frames are scaled once per render scale into cached canvases, so the fight costs plain 1:1 blits. Each painted fighter gets a silhouette cast shadow and, on the glossy decks (the Lido most strongly), a faded mirror image in the floor. Game poses map to painted frames (`LANCE_FRAME`, `enemyFrame` in `js/sprites.js`); hitboxes, timings and pose names are unchanged. If an atlas is missing the old procedural sprite draws instead (`WL_NO_ART=1 node tools/capture-gfx.cjs` renders that path).
-- **Lido plates.** Sky and Diamond Head (0.03), open water and sailboats (0.1), the superstructure / pool crowd / sun-deck plates (0.45) with their reflection in the deck, the buffet line (0.78) mirrored in the lacquer, the teak (1.0), settled salad-bar wreckage, and a soft out-of-focus foreground (1.3).
-- **Hit FX.** Rich mode draws an additive starburst with flying embers, food and kitchenware debris from the props atlas that bounces and settles, and splat decals that stay on the deck. Lite and Classic keep the cheaper star.
-
-- **Light model.** `WL.light` holds the key-light side and the cast-shadow strength per stage (the Lido sun sits high on the right; indoor decks use overhead fixtures). Sprites shade toward it: lit spheres for heads and florets, side-lit volume gradients with a rim band on torsos, highlight/shade strokes along every limb, chrome and enamel materials on tools and props. Shadows are a soft contact blob plus a hard-edged cast shadow thrown away from the sun.
-- **Layer cache.** `WL.gfx.layer` paints static art (skyline, rail and superstructure, pool deck, buffets, the teak tile, signs, the logo, the HUD portrait) once per render scale. Layers at the live scale are copied 1:1 with smoothing off. Distant layers get a one-time blur at paint time for a depth-of-field feel, so the fight plane stays the sharpest thing on screen. Changing the display mode rebuilds them.
-- **Budget.** The effects that cost the most at 4K (full-frame gradients, resampled blits) were removed or confined to small areas. Lite (and AUTO after three slow seconds) drops shading, glows, the sun glitter and the debris sprites, and costs what the previous build did. Classic keeps the 640×360 nearest-neighbor picture.
-- **HUD.** No opaque bar: the sky shows between the pieces. Top-left is a round portrait in a gold bezel (it flashes red at low health), the HP bar, hard hats for spare lives and the Volcano Fart meter. Top-center is the logo (hidden in Large HUD, where the stage line tucks under the tracker). Top-right, FIX THE A/C shows one pip per wave, the ship temperature and the score. Combos are a slanted fire callout at center (left of center while the boss is up, so it never covers the cone's face).
-- **Controls.** Same sticky, see-through picture for the whole stage; buttons are glass discs with colored rims and key/pad badges on glyph chips. BOX still reads PICK UP when Lance has no toolbox.
-
-## HD rendering verification
-
-The deterministic regression harness uses Node.js and `@napi-rs/canvas` (development only). Run `node tools/verify-hd.cjs` with that package available. It exercises phone/retina/4K sizing, display-mode/input independence, keyboard aliases, gamepad mappings, every touch button, all four stage renderers, gameplay updates, background auto-pause, settings persistence across a reload, key/pad remaps and the badges drawn from them, Continue from a wave, iframes and the anti-stun-lock rules, the Wrench Pop juggle, FX pool caps, and boss tell timing/landing. Set `WL_CAPTURE_DIR` to an existing directory to save rendered stage/title images. This is a native Canvas simulation, not a Safari or physical-gamepad test.
-
-`node tools/capture-gfx.cjs [outDir]` is the visual smoke test for the graphics. It renders the title, a staged mid-fight on every stage, the boss tell, pause, Large HUD, Classic and Lite at 1920×1080 (writing PNGs when `outDir` is given), and checks picture properties the art direction depends on: a daylight sky, warm wood on the deck, sky showing through the top HUD, see-through control plates, PICK UP on BOX, Classic at 640×360, one cache-bust stamp on every asset, and `.nojekyll`.
-
-`node tools/chrome-smoke.cjs [shotDir]` serves the repo and drives headless Chrome with the GPU disabled (software raster). It clicks ATK and BOX with real mouse events, checks that BOX reads PICK UP while the toolbox is out and comes back after Lance walks over it, repeats that in Classic at 640×360, and times a crowded Lido fight at 1280×720 (it must hold ~60 fps without AUTO dropping to Lite).
-
-## Next improvements
-
-- The Lido now uses the concept's painted look. Next: bake plates for the AC plant, juice bar and freezer decks, paint the Froyo Cone boss and the remaining enemy types, and add in-between walk frames (the painted walk cycle is short). Preserve the current poses, hitboxes and timing.
-- The concept is framed like key art, with Lance about half the screen tall. Gameplay keeps its fight-lane scale; a closer camera would need retuned lanes and hitboxes.
-- Add a portrait-orientation hint and test sustained high-resolution performance on real iPhones; Classic remains the low-cost fallback.
-
-The public Pages build was behind `main` at the start of this update. Always verify the public `js/main.js` after publishing; a merged graphics commit alone does not prove deployment.
+All runtime URLs are relative so the project works below `/riley-wheel-brawl/`. Optional painted assets have procedural fallbacks, allowing play to continue when an image is unavailable.
