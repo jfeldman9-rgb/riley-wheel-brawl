@@ -23,25 +23,29 @@
     const img = R.assets.get(key);
     if (!img) return null;
     const id=key+':'+!!topFeather;if(seamless.has(id))return seamless.get(id);
-    const mid=/-mid$/.test(key),crop=LOOP_CROPS[key]||[0,img.width-44],start=crop[0],end=Math.min(img.width,crop[1]),sourceWidth=end-start;
-    const overlap=mid?0:Math.max(12,Math.round(sourceWidth*.06)),step=sourceWidth-overlap;
+    const crop=LOOP_CROPS[key]||[0,img.width-44],start=crop[0],end=Math.min(img.width,crop[1]),sourceWidth=end-start;
+    // The measured loop columns are dissolved into one another.  The resulting
+    // plate is still a single painting (never a flipped/ghosted second pass).
+    const overlap=Math.max(12,Math.round(sourceWidth*.045)),step=sourceWidth-overlap;
     const c=document.createElement('canvas');c.width=step;c.height=img.height;
     const g=c.getContext('2d');g.drawImage(img,start,0,step,img.height,0,0,step,img.height);
     if(overlap){
       g.drawImage(img,end-overlap,0,overlap,img.height,step-overlap,0,overlap,img.height);
       const temp=document.createElement('canvas');temp.width=overlap;temp.height=img.height;const t=temp.getContext('2d');
       t.drawImage(img,start,0,overlap,img.height,0,0,overlap,img.height);t.globalCompositeOperation='destination-in';const fade=t.createLinearGradient(0,0,overlap,0);fade.addColorStop(0,'rgba(0,0,0,0)');fade.addColorStop(1,'#000');t.fillStyle=fade;t.fillRect(0,0,overlap,img.height);g.drawImage(temp,step-overlap,0);
-    } else {
-      g.globalCompositeOperation='destination-in';const edge=Math.round(sourceWidth*.10),mask=g.createLinearGradient(0,0,sourceWidth,0);mask.addColorStop(0,'rgba(0,0,0,0)');mask.addColorStop(edge/sourceWidth,'#000');mask.addColorStop(1-edge/sourceWidth,'#000');mask.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=mask;g.fillRect(0,0,c.width,c.height);
     }
     if(topFeather){g.globalCompositeOperation='destination-in';const feather=/^floor/.test(key)?Math.round(img.height*24/138):Math.min(24,img.height),v=g.createLinearGradient(0,0,0,feather);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,1)');g.fillStyle=v;g.fillRect(0,0,c.width,img.height);}
-    c.loopKind=mid?'mid':'opaque';seamless.set(id,c);return c;
+    c.loopKind='painted';seamless.set(id,c);return c;
   }
   function tiled(ctx, key, cam, factor, y, h, topFeather=false, mistColor='#c9d7df') {
     const img = seamlessPlate(key,topFeather);
     if (!img) return false;
-    const width = (h * img.width) / img.height,offset=((cam*factor)%width+width)%width;
-    for(let x=-offset-width;x<640+width;x+=width){ctx.drawImage(img,x,y,width,h);if(img.loopKind==='mid'){const join=x+width,band=width*.07,m=ctx.createLinearGradient(join-band,0,join+band,0);m.addColorStop(0,mistColor+'00');m.addColorStop(.5,mistColor+'20');m.addColorStop(1,mistColor+'00');ctx.fillStyle=m;ctx.fillRect(join-band,y,band*2,h);}}
+    // Every plate is at least 1.4 view widths. Anchor its bottom at the old
+    // layer baseline and crop/overflow the source top rather than shrinking it
+    // into the narrow repeating strips that caused the regression.
+    const drawH=Math.max(h,896*img.height/img.width),width=drawH*img.width/img.height,drawY=y+h-drawH;
+    const offset=((cam*factor)%width+width)%width;
+    for(let x=-offset;x<640;x+=width){ctx.drawImage(img,x,drawY,width,drawH);const join=x+width,band=Math.min(28,width*.035),m=ctx.createLinearGradient(join-band,0,join+band,0);m.addColorStop(0,mistColor+'00');m.addColorStop(.5,mistColor+'28');m.addColorStop(1,mistColor+'00');ctx.fillStyle=m;ctx.fillRect(join-band,drawY,band*2,drawH);}
     return true;
   }
   function haze(ctx,y,color='#c9d7df') {const f=ctx.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');ctx.fillStyle=f;ctx.fillRect(0,y-9,640,21);}

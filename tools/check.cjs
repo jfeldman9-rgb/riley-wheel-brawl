@@ -110,7 +110,7 @@ check(RWB.ART_MANIFEST.length >= 54 && RWB.ART_MANIFEST.every(src=>fs.existsSync
 check([...fs.readdirSync(path.join(root,'assets/art')).map(f=>'assets/art/'+f), ...fs.readdirSync(path.join(root,'assets/cutscenes')).map(f=>'assets/cutscenes/'+f)].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-check(urls.every(url => url.includes('?v=20260926-w3')), 'Every script, stylesheet, and font URL has the w3 cache stamp');
+check(urls.every(url => url.includes('?v=20260926-w3b')), 'Every script, stylesheet, and font URL has the w3 cache stamp');
 // Chunk B: exercise real collision, persistence and scene transitions, not only metadata.
 const neutral = { pressed: {}, held: {}, axis: () => ({x:0,y:0}) };
 const ctx = new Proxy({ createLinearGradient:()=>({addColorStop(){}}), createRadialGradient:()=>({addColorStop(){}}), measureText:t=>({width:String(t).length*8}) }, {get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
@@ -205,7 +205,7 @@ for(let level=0;level<5;level++) {
 }
 check(Object.values(RWB.ART_FILES).every(src=>!src.startsWith('/') && /\.(png|jpeg)$/.test(src)), 'Art hooks use relative JPEG/PNG paths');
 check([1,2,3,4,5].every(n=>RWB.ART_FILES['stage'+n+'-far'] && RWB.ART_FILES['stage'+n+'-mid'] && RWB.ART_FILES['stage'+n+'-near'] && RWB.ART_FILES['floor'+n]),'Every stage has four optional art layers');
-check(RWB.assets.VER==='20260926-w3' && RWB.ASSET_VER==='20260926-w3','Runtime assets share the w3 script cache stamp');
+check(RWB.assets.VER==='20260926-w3b' && RWB.ASSET_VER==='20260926-w3b','Runtime assets share the w3 script cache stamp');
 
 const brokenPath='assets/art/test-missing.png';
 RWB.ART_MANIFEST.push(brokenPath);
@@ -259,8 +259,10 @@ check(Object.keys(RWB.Puppet.defs).length===12,'All walking characters share art
   const kid=RWB.Puppet.defs.riley,adults=Object.entries(RWB.Puppet.defs).filter(([k])=>!['riley','twinkle'].includes(k));
   // Measure the actual composited head box used by bakedImage (clipped at the
   // image top through its collar anchor), rather than trusting a label field.
-  const bakedHeadBottom=kid.neck[1]+2/1024,bakedHeadHeight=bakedHeadBottom-Math.max(0,bakedHeadBottom-(kid.head[3]-kid.head[1])*kid.headScale);
-  check(kid.height===64&&kid.height<Math.min(...adults.map(([,d])=>d.height))&&bakedHeadHeight>=.20&&kid.legScale<=.74,'Riley baked head is at least 1/5 of his 64-unit height and his limbs are shorter than every adult');
+  const bakedHeadBottom=kid.neck[1]+2/1140,bakedHeadHeight=bakedHeadBottom-Math.max(0,bakedHeadBottom-(kid.head[3]-kid.head[1])*kid.headScale);
+  check(kid.height===64&&kid.height<Math.min(...adults.map(([,d])=>d.height))&&bakedHeadHeight>=1/4.6&&kid.legScale<=.74,'Riley baked head is at least 1/4.6 of his 64-unit height and his limbs are shorter than every adult');
+  check(kid.key==='riley-sheet'&&kid.sourcePanel==='top-middle-side'&&!kid.front&&kid.fallback==='rig-riley','Riley uses the sheet side panel, with rig-riley only as fallback');
+  check(kid.hipLine<=kid.pelvis[1]&&/clearRect\(0,hip,c\.width,legTop-hip\)/.test(puppetSource)&&/Continue two trouser columns/.test(puppetSource),'Riley coat pixels end at the authored hip and trouser texture continues underneath');
   const belal=RWB.Puppet.defs.forsaken;
   check(belal.male&&belal.key==='cg-turned-ashaman'&&!['cg-forsaken','cg-taim'].includes(belal.key)&&belal.sword&&belal.sword.length>=.55,"Be'lal uses the male lunging source and owns a long articulated sword part");
   check(!/if\s*\(\s*!articulated\s*\)\s*ctx\.drawImage/.test(puppetSource)&&/Processed connected skin is mandatory even at idle/.test(puppetSource),'Idle uses the same processed connected rig as action states');

@@ -6,7 +6,7 @@
   const R=window.RWB;
   // Joint coordinates on the delivered images: shoulder/elbow/wrist, hip/knee/ankle.
   const defs={
-    riley:{key:'rig-riley',variant:'kid',height:64,headRatio:.21,headScale:1.40,headWidth:1.0715,torsoScale:.81,legScale:.74,shoulderScale:.82,front:true,head:[.33,0,.67,.18],neck:[.5,.22],pelvis:[.50,.59],arms:[[[.30,.25],[.19,.38],[.15,.50]],[[.70,.25],[.81,.38],[.85,.50]]],legs:[[[.38,.60],[.34,.76],[.27,.985]],[[.62,.60],[.66,.76],[.75,.985]]]},
+    riley:{key:'riley-sheet',fallback:'rig-riley',sourcePanel:'top-middle-side',variant:'kid',height:64,headRatio:.225,headScale:1.50,headWidth:1.08,torsoScale:.78,legScale:.70,shoulderScale:.78,front:false,hipLine:.54,head:[.20,.015,.68,.18],neck:[.43,.224],pelvis:[.48,.56],arms:[[[.36,.27],[.29,.40],[.25,.52]],[[.53,.27],[.58,.40],[.58,.51]]],legs:[[[.42,.57],[.40,.74],[.33,.975]],[[.54,.57],[.56,.75],[.58,.985]]]},
     twinkle:{key:'rig-twinkle',height:59,front:true,head:[.27,0,.72,.29],neck:[.50,.28],pelvis:[.50,.64],arms:[[[.26,.30],[.14,.46],[.09,.59]],[[.75,.30],[.86,.46],[.91,.59]]],legs:[[[.35,.73],[.35,.85],[.24,.98]],[[.65,.73],[.65,.85],[.77,.98]]]},
     trolloc:{key:'cg-trolloc',height:100,head:[.23,0,.70,.40],neck:[.53,.30],pelvis:[.64,.59],arms:[[[.51,.37],[.40,.46],[.33,.51]],[[.79,.34],[.90,.45],[.89,.60]]],legs:[[[.55,.60],[.44,.73],[.36,.93]],[[.72,.60],[.82,.77],[.92,.97]]]},
     chieftain:{key:'cg-trolloc-chieftain',height:119,head:[.29,0,.73,.27],neck:[.52,.27],pelvis:[.51,.62],arms:[[[.26,.31],[.18,.47],[.31,.52]],[[.75,.32],[.79,.48],[.72,.61]]],legs:[[[.40,.61],[.35,.78],[.22,.965]],[[.62,.62],[.72,.78],[.81,.97]]]},
@@ -24,8 +24,24 @@
   const rigs=new Map();
   function knee(hip,foot,l1,l2,bend=1){const dx=foot.x-hip.x,dy=foot.y-hip.y,dist=Math.max(.001,Math.hypot(dx,dy)),d=Math.min(dist,l1+l2-.001),along=(l1*l1-l2*l2+d*d)/(2*d),side=Math.sqrt(Math.max(0,l1*l1-along*along))*bend;return{x:hip.x+dx/dist*along+dy/dist*side,y:hip.y+dy/dist*along-dx/dist*side};}
   function bakedImage(d,image){
-    const c=document.createElement('canvas');c.width=image.width;c.height=image.height;const g=c.getContext('2d');g.drawImage(image,0,0);
+    const c=document.createElement('canvas');
+    if(d.sourcePanel==='top-middle-side'){
+      // Native 1824x2318 sheet: isolate its top-middle, three-quarter/side
+      // figure.  Chroma key only the edge-connected neutral grey so highlights
+      // inside the painted figure survive with a soft antialiased fringe.
+      c.width=460;c.height=1140;const cg=c.getContext('2d');cg.drawImage(image,690,18,460,1140,0,0,460,1140);
+      const id=cg.getImageData(0,0,c.width,c.height),p=id.data;
+      for(let i=0;i<p.length;i+=4){const dr=p[i]-200,dg=p[i+1]-199,db=p[i+2]-200,dist=Math.hypot(dr,dg,db);if(dist<34)p[i+3]=Math.round(255*Math.max(0,(dist-8)/26));}
+      cg.putImageData(id,0,0);
+    } else {c.width=image.width;c.height=image.height;c.getContext('2d').drawImage(image,0,0);}
+    const g=c.getContext('2d');
     if(d.variant==='kid'){
+      // End the long adult coat at the hip. Continue two trouser columns up
+      // beneath the short tunic using texture sampled from the supplied legs.
+      const hip=Math.round(c.height*d.hipLine),legTop=Math.round(c.height*.66),legBottom=Math.round(c.height*.82);
+      g.clearRect(0,hip,c.width,legTop-hip);
+      g.drawImage(c,Math.round(c.width*.35),legTop,Math.round(c.width*.13),legBottom-legTop,Math.round(c.width*.35),hip,Math.round(c.width*.13),legTop-hip);
+      g.drawImage(c,Math.round(c.width*.48),legTop,Math.round(c.width*.13),legBottom-legTop,Math.round(c.width*.48),hip,Math.round(c.width*.13),legTop-hip);
       // Rounder, larger child head is pre-baked, so idle/HUD/cutscene and action
       // paths all consume the same pixels. A soft face pass relaxes the adult jaw.
       const b=d.head,x=b[0]*c.width,y=b[1]*c.height,w=(b[2]-b[0])*c.width,h=(b[3]-b[1])*c.height;
@@ -59,7 +75,7 @@
     return c;
   }
   function getRig(d){
-    const raw=R.assets.get(d.key);if(!raw)return null;const cacheKey=d.key+':'+(d.variant||'base');if(rigs.has(cacheKey))return rigs.get(cacheKey);const image=bakedImage(d,raw);
+    const primary=R.assets.get(d.key),raw=primary||R.assets.get(d.fallback);if(!raw)return null;const cacheKey=(primary?d.key:d.fallback)+':'+(d.variant||'base');if(rigs.has(cacheKey))return rigs.get(cacheKey);const image=bakedImage(primary?d:{...d,sourcePanel:null},raw);
     const w=image.width,h=image.height,point=p=>({x:p[0]*w,y:p[1]*h});
     const neck=point(d.neck),hip=point(d.pelvis),arms=d.arms.map(a=>a.map(point)),legs=d.legs.map(a=>a.map(point));
     const bones=[[hip,neck],[neck,{x:neck.x,y:0}],...arms.flatMap(a=>[[a[0],a[1]],[a[1],a[2]]]),...legs.flatMap(a=>[[a[0],a[1]],[a[1],a[2]]])];
@@ -169,20 +185,19 @@
       // exposed the full surface rectangle around every actor.
       ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-atop';
       const shade=ctx.createLinearGradient(256,0,256+r.w*scale,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');ctx.fillStyle=shade;ctx.fillRect(0,0,r.surface.width,r.surface.height);ctx.globalCompositeOperation='source-over';
-      output.save();output.globalAlpha=actorAlpha*.42;output.shadowColor='#111827';output.shadowBlur=2.6;output.drawImage(r.surface,x,y,w,h);output.restore();
       output.save();output.globalAlpha=actorAlpha;output.drawImage(r.surface,x,y,w,h);
       output.restore();
     }
   }
   function drawSword(ctx,a,d,r,bones){
-    if(!d.sword)return;const hand=bones[3][1],elbow=bones[2][1],dx=hand.x-elbow.x,dy=hand.y-elbow.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l;
+    if(!d.sword)return;const hand=bones[5][1],elbow=bones[4][1],dx=hand.x-elbow.x,dy=hand.y-elbow.y,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l;
     const flourish=a.ai==='attack'?Math.sin(Math.min(1,(a.stateT||.2)/.55)*Math.PI)*.75:0,cs=Math.cos(flourish),sn=Math.sin(flourish),vx=ux*cs-uy*sn,vy=ux*sn+uy*cs,len=r.h*d.sword.length;
     ctx.save();ctx.lineCap='round';ctx.translate(hand.x,hand.y);ctx.rotate(Math.atan2(vy,vx));
     ctx.strokeStyle='#39281f';ctx.lineWidth=r.h*.018;ctx.beginPath();ctx.moveTo(-r.h*.085,0);ctx.lineTo(r.h*.055,0);ctx.stroke();
     ctx.strokeStyle='#b9a16c';ctx.lineWidth=r.h*.012;ctx.beginPath();ctx.moveTo(0,-r.h*.06);ctx.lineTo(0,r.h*.06);ctx.stroke();
     ctx.fillStyle='#798896';ctx.strokeStyle='#303a46';ctx.lineWidth=r.h*.009;ctx.beginPath();ctx.moveTo(r.h*.035,-r.h*.018);ctx.lineTo(len,0);ctx.lineTo(r.h*.035,r.h*.018);ctx.closePath();ctx.fill();ctx.stroke();
     ctx.strokeStyle='#edf5fb';ctx.lineWidth=r.h*.006;ctx.beginPath();ctx.moveTo(r.h*.07,-r.h*.006);ctx.lineTo(len*.94,-r.h*.002);ctx.stroke();
-    ctx.fillStyle='#8b7450';ctx.beginPath();ctx.arc(-r.h*.085,0,r.h*.025,0,Math.PI*2);ctx.fill();ctx.restore();
+    ctx.restore();
   }
   function updateGait(a, dt) {
     if(!a.visualHeight){const kind=a instanceof R.Riley?'riley':a instanceof R.Loial?'loial':a.kind||(a.boss?'chieftain':'trolloc');a.visualHeight=defs[kind]?.height||83;}
@@ -254,7 +269,7 @@
   const update=R.scenes.Play.prototype.updateObjects;
   R.scenes.Play.prototype.updateObjects=function(dt){update.call(this,dt);for(const a of [this.player,...this.enemies,...this.allies])updateGait(a,dt);};
   const riley=R.Riley.prototype.draw;
-  R.Riley.prototype.draw=function(ctx,cam){if(R.assets.has('rig-riley')){this.drawShadow(ctx,cam,17);R.Puppet.draw(ctx,this,cam,'riley');}else riley.call(this,ctx,cam);};
+  R.Riley.prototype.draw=function(ctx,cam){if(R.assets.has('riley-sheet')||R.assets.has('rig-riley')){this.drawShadow(ctx,cam,17);R.Puppet.draw(ctx,this,cam,'riley');}else riley.call(this,ctx,cam);};
   const troll=R.Trolloc.prototype.draw;
   R.Trolloc.prototype.draw=function(ctx,cam){const kind=this.boss?'chieftain':'trolloc';if(R.assets.has(defs[kind].key)){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?28:21);R.Puppet.draw(ctx,this,cam,kind);}else troll.call(this,ctx,cam);};
   for(const Type of [R.ShadowSoldier,R.ShadowBoss]){const draw=Type.prototype.draw;Type.prototype.draw=function(ctx,cam){

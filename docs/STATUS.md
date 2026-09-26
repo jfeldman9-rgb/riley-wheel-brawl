@@ -2,7 +2,7 @@
 
 Branch `rwb-w2`, based on the latest supplied-art commit on `rwb-w1`:
 `5a576d4ca36a1054e5b7f41a4489e7141ae91a54`.
-Runtime cache stamp: `?v=20260926-w3`. No changes to `main`; no merge.
+Runtime cache stamp: `?v=20260926-w3b`. No changes to `main`; no merge.
 
 ## Changed
 
@@ -49,18 +49,18 @@ Full seed rows: [natural](review/soak-natural.txt), [assisted](review/soak-assis
 
 ## Still weak / limits
 
-- The rigs deform single painted poses, not hand-painted animation atlases. Continuous skinning removes the previous knee/hem gaps and detached fragments, but long cloaks and extreme poses can still look elastic. Riley retains the front-facing model-sheet silhouette, so crossing legs read less naturally than a purpose-painted side-view walk. Source-contact tests now cover the rendered mesh, not just skeleton targets; they do not assess anatomical appeal or every edge pixel. Closeups, walk strips and the action-pose board expose these limits.
+- The rigs deform single painted poses, not hand-painted animation atlases. Continuous skinning removes the previous knee/hem gaps and detached fragments, but long cloaks and extreme poses can still look elastic. Riley now uses the supplied top-middle side panel, though it remains a single deformed painting rather than purpose-painted animation frames. Source-contact tests now cover the rendered mesh, not just skeleton targets; they do not assess anatomical appeal or every edge pixel. Closeups, walk strips and the action-pose board expose these limits.
 - Stage 1 is intentionally easiest at 10/10. Stage 2 is 9/10, slightly above the requested approximate 5-8/10 range. Stage 3 is still the longest encounter, and the ten-seed masher is not a substitute for child playtesting.
 - Be'lal now uses a distinct male swordsman bake. All Trolloc variants share the supplied Trolloc cutout; their AI differs, but their visual silhouettes are similar.
-- Painted repeats are non-mirrored and crop to per-layer best-match loop points. Opaque joins dissolve across only 6%; transparent middle layers feather to the far plate with a subtle mist column. Floor tops feather into the scene and near layers remain clipped below the fight lane.
+- Painted repeats are non-mirrored, crop to per-layer best-match loop points, and render at least 896px wide. Their narrow 4.5% overlap dissolves at the single possible on-screen join, with a subtle mist column. Floor tops feather into the scene and near layers remain clipped below the fight lane.
 - Graphics comparison with Lido is visual review, not an automated quality score. The committed Lido reference and five stage captures make that comparison reviewable; automated checks alone cannot certify that subjective gate.
 - No new recorded voices, full physical gamepad/phone campaign run, or real-device performance certification. Existing controls and accessibility paths are retained; the current evidence is automated desktop/browser evidence.
 
-## Fixes in this round (w3 final)
+## Fixes in this round (`w3b`)
 
-- Moved actor shading onto the cleared offscreen skin surface before its normal source-over draw, removing the canvas-sized rectangle around every character while retaining the shared shadow/rim pass.
-- Cropped every painted plate at its measured matching columns. Opaque layers use a narrow 6% dissolve; alpha-bearing mid layers feather both sides over 10% and add low-alpha, stage-colored mist at the join. Floors retain a feathered top and haze.
-- Re-baked Riley with a tight face/hair crop scaled 1.5x wide and 1.4x tall, overpainting rather than clearing his collar. The chin is feathered, the mesh torso/legs are shorter, and the check derives a 22.2% head height from the baked crop and collar anchor.
-- Attached Be'lal's connected pommel/grip/guard/blade to the extended front wrist, behind the painted fist. SWORD FLURRY rotates it in that hand. Expanded warm/green/near-white weave removal includes a four-pixel feather and the coat now maps original luminance smoothly onto a deep-crimson ramp.
-- Review seam strips now show cameras 0, 700, 1400, and 2000 with top-edge mid-join ticks. Reference assets are excluded from cache-stamp auditing and Riley's review canvas matches its viewport.
-- `node tools/check.cjs` passes and the assisted soak remains 50/50. No binary evidence changed in this text-only round.
+- Enlarged every far/mid/near plate to at least 1.4x the view width, bottom anchoring it and allowing the source top to overflow. Loop crops, narrow cross-fades, mist, and non-mirroring remain.
+- Re-authored the 64-unit Riley rig around the sheet's top-middle side figure. Runtime baking soft-keys the grey, removes coat pixels below the hip, continues trousers beneath a short tunic, and enlarges the head beyond 1/4.6 height. `rig-riley.png` is fallback only.
+- Removed the duplicate blurred actor composite; each freshly cleared transparent surface now reaches gameplay/review exactly once.
+- Bound Be'lal's sword to the front hand and removed its dot-like pivot/pommel marker.
+- Reworked oversized review captures to use offscreen-canvas data URLs, creates the correct stage for each seam board, preserves every requested output at JPEG quality 85, and stamps runtime requests `20260926-w3b`.
+- `node tools/check.cjs` passes and the refreshed assisted soak is 50/50. No binary evidence changed. Playwright is unavailable locally, so refreshed visual evidence remains explicitly pending.

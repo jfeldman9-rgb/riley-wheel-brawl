@@ -7,8 +7,9 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'docs/review');fs.mkd
 const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req.url.split('?')[0]);const file=path.join(root,pathname==='/'?'index.html':pathname);if(!file.startsWith(root+path.sep)||!fs.existsSync(file)){res.statusCode=404;return res.end();}res.setHeader('Content-Type',file.endsWith('.js')?'application/javascript':file.endsWith('.css')?'text/css':file.endsWith('.html')?'text/html':file.endsWith('.png')?'image/png':file.endsWith('.jpeg')?'image/jpeg':'application/octet-stream');fs.createReadStream(file).pipe(res);});
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
- const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  const p=await browser.newPage({viewport:{width:1280,height:720}}),errors=[],requests=[];
+ const saveCanvas=async name=>{const url=await p.locator('#game').evaluate((c)=>c.toDataURL('image/jpeg',.85));fs.writeFileSync(path.join(out,name),Buffer.from(url.split(',')[1],'base64'));};
  p.on('pageerror',e=>errors.push(e.message));p.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});p.on('request',r=>requests.push(r.url()));
  await p.addInitScript(()=>{window.requestAnimationFrame=()=>0;});
  await p.goto('http://127.0.0.1:'+server.address().port+'/');
@@ -28,17 +29,17 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
    };
  });
  for(let i=0;i<5;i++){
-   await p.evaluate(i=>reviewFight(i,3),i);await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'stage'+(i+1)+'-midfight.jpeg')});
+   await p.evaluate(i=>reviewFight(i,3),i);await p.screenshot({type:'jpeg',quality:85,path:path.join(out,'stage'+(i+1)+'-midfight.jpeg')});
    // Runtime fight at left; the committed Lido quality bar at right, equal
    // height and explicitly labelled. Canvas does the composition in-browser.
    await p.evaluate(async i=>{const c=document.getElementById('game'),shot=document.createElement('canvas');shot.width=c.width;shot.height=c.height;shot.getContext('2d').drawImage(c,0,0);const ref=new Image();ref.src='docs/review/lido-reference.png';await ref.decode();c.width=2560;c.height=720;const g=c.getContext('2d');g.fillStyle='#101827';g.fillRect(0,0,c.width,c.height);g.drawImage(shot,0,0,1280,720);g.drawImage(ref,1280,0,1280,720);g.setTransform(2,0,0,2,0,0);RWB.drawText(g,'STAGE '+(i+1)+' MID-FIGHT',320,14,8,'#fff','center');RWB.drawText(g,'LIDO REFERENCE',960,14,8,'#fff','center');},i);
-   await p.locator('#game').screenshot({type:'jpeg',quality:92,path:path.join(out,'stage'+(i+1)+'-vs-lido.jpeg')});
-   await p.evaluate(i=>reviewFight(i,5),i);await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'stage'+(i+1)+'-boss.jpeg')});
-   await p.evaluate(i=>{const c=document.getElementById('game');c.width=2560;c.height=720;c.style.width='1280px';c.style.height='360px';const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0),cams=[0,700,1400,2000],cuts=[[196,1492],[306,1472],[430,1614],[564,1547],[380,1656]];cams.forEach((cam,j)=>{const s=new RWB.scenes.Play(RWB.game,i,{wave:i===4?5:3});s.camera.x=cam;g.save();g.beginPath();g.rect(j*320,0,320,360);g.clip();g.translate(j*320,0);RWB.StageWorld.draw(g,s);RWB.StageWorld.near(g,s);const img=RWB.assets.get('stage'+(i+1)+'-mid'),tile=222*(cuts[i][1]-cuts[i][0])/img.height,off=((cam*.42)%tile+tile)%tile;g.strokeStyle='#fff';g.lineWidth=2;for(let x=-off;x<=320;x+=tile){g.beginPath();g.moveTo(x,0);g.lineTo(x,8);g.stroke();}RWB.drawText(g,'CAM '+cam,160,18,7,'#fff','center');g.restore();});});
-   await p.locator('#game').screenshot({type:'jpeg',quality:92,path:path.join(out,'seams-stage'+(i+1)+'.jpeg')});
+   await saveCanvas('stage'+(i+1)+'-vs-lido.jpeg');
+   await p.evaluate(i=>reviewFight(i,5),i);await p.screenshot({type:'jpeg',quality:85,path:path.join(out,'stage'+(i+1)+'-boss.jpeg')});
+   await p.evaluate(i=>{const display=document.getElementById('game'),c=document.createElement('canvas');c.width=2560;c.height=720;const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0),cams=[0,700,1400,2000],cuts=[[196,1492],[306,1472],[430,1614],[564,1547],[380,1656]];cams.forEach((cam,j)=>{const s=new RWB.scenes.Play(RWB.game,i,{wave:i===4?5:3});RWB.game.setSceneNow(s);s.camera.x=cam;g.save();g.beginPath();g.rect(j*320,0,320,360);g.clip();g.translate(j*320,0);RWB.StageWorld.draw(g,s);RWB.StageWorld.near(g,s);const img=RWB.assets.get('stage'+(i+1)+'-mid'),sourceWidth=cuts[i][1]-cuts[i][0],step=sourceWidth-Math.max(12,Math.round(sourceWidth*.045)),tile=Math.max(896,222*step/img.height),off=((cam*.42)%tile+tile)%tile;g.strokeStyle='#fff';g.lineWidth=2;for(let x=-off;x<=320;x+=tile){g.beginPath();g.moveTo(x,0);g.lineTo(x,8);g.stroke();}RWB.drawText(g,'STAGE '+(i+1)+' / CAM '+cam,160,18,7,'#fff','center');g.restore();});display.width=c.width;display.height=c.height;display.getContext('2d').drawImage(c,0,0);},i);
+   await saveCanvas('seams-stage'+(i+1)+'.jpeg');
  }
- await p.evaluate(()=>renderScene(new RWB.scenes.Title(RWB.game)));await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'title.jpeg')});
- await p.evaluate(()=>{const r=new RWB.scenes.Reel(RWB.game,RWB.CAPTIONS.callandor,()=>new RWB.scenes.Title(RWB.game),'CALLANDOR ANSWERS');r.timer=4;renderScene(r);});await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'cutscene-callandor.jpeg')});
+ await p.evaluate(()=>renderScene(new RWB.scenes.Title(RWB.game)));await p.screenshot({type:'jpeg',quality:85,path:path.join(out,'title.jpeg')});
+ await p.evaluate(()=>{const r=new RWB.scenes.Reel(RWB.game,RWB.CAPTIONS.callandor,()=>new RWB.scenes.Title(RWB.game),'CALLANDOR ANSWERS');r.timer=4;renderScene(r);});await p.screenshot({type:'jpeg',quality:85,path:path.join(out,'cutscene-callandor.jpeg')});
  // Freeze automatic display resizing for diagnostic canvases with custom ratios.
  await p.evaluate(()=>window.removeEventListener('resize',RWB.display.resize));
  await p.setViewportSize({width:1600,height:1200});
@@ -46,7 +47,7 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
    const c=document.getElementById('game');c.width=1600;c.height=1200;c.style.width='1600px';c.style.height='1200px';const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#1c293d';ctx.fillRect(0,0,800,600);
    const kinds=Object.keys(RWB.Puppet.defs);
    kinds.forEach((kind,i)=>{const x=100+(i%4)*200,y=168+Math.floor(i/4)*198;ctx.save();ctx.translate(x,y);ctx.scale(1.20,1.20);RWB.Puppet.draw(ctx,{x:0,y:0,z:0,facing:1,state:'idle',stateT:0},0,kind);ctx.restore();RWB.drawText(ctx,kind.toUpperCase(),x,y+13,5,'#e7d499','center');});
- });await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'character-closeups.jpeg')});
+ });await p.screenshot({type:'jpeg',quality:85,path:path.join(out,'character-closeups.jpeg')});
  await p.setViewportSize({width:1280,height:720});
  for(const kind of ['riley','trolloc','darkfriend','cultist']){
    const metric=await p.evaluate(kind=>{
@@ -61,18 +62,18 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
      }
      RWB.drawText(ctx,kind.toUpperCase()+' / 8 WALK PHASES / FIXED WORLD CONTACTS',480,14,8,'#ffffff','center');return{kind,frames:8,maxDrift,stanceSamples};
    },kind);
-   await p.locator('#game').screenshot({type:'jpeg',quality:92,path:path.join(out,'walk-'+kind+'.jpeg')});fs.writeFileSync(path.join(out,'walk-'+kind+'.json'),JSON.stringify(metric,null,2)+'\n');
+   await saveCanvas('walk-'+kind+'.jpeg');fs.writeFileSync(path.join(out,'walk-'+kind+'.json'),JSON.stringify(metric,null,2)+'\n');
  }
  // True 3x action crops, plus age/scale and Be'lal sword proof boards. All use
  // RWB.Puppet.draw, never pasted source art.
  await p.setViewportSize({width:1600,height:900});
  await p.evaluate(()=>{const c=document.getElementById('game');c.width=1600;c.height=900;c.style.width='1600px';c.style.height='900px';const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);g.fillStyle='#17243a';g.fillRect(0,0,800,450);const specs=[['trolloc','walk','WAIST'],['darkfriend','walk','CLOAK'],['riley','attack','SHOULDER / HIP'],['forsaken','attack','SWORD HAND']];specs.forEach(([kind,state,label],i)=>{const a={x:0,y:0,z:0,facing:1,state,stateT:.22,ai:state==='attack'?'attack':'',attackMove:state==='attack'?{duration:.55}:null,attackName:'front'};if(state==='walk'){RWB.Puppet.updateGait(a,1/60);for(let n=0;n<20;n++){a.x++;RWB.Puppet.updateGait(a,1/60);}}g.save();g.beginPath();g.rect(i*200,0,200,450);g.clip();g.translate(i*200+100,335);g.scale(3,3);RWB.Puppet.draw(g,a,a.x,kind);g.restore();RWB.drawText(g,label,i*200+100,420,6,'#fff','center');});});
- await p.locator('#game').screenshot({type:'jpeg',quality:94,path:path.join(out,'joints-closeup.jpeg')});
+ await saveCanvas('joints-closeup.jpeg');
  await p.setViewportSize({width:1800,height:700});
  await p.evaluate(()=>{const c=document.getElementById('game');c.width=1800;c.height=700;c.style.width='1800px';c.style.height='700px';const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);g.fillStyle='#17243a';g.fillRect(0,0,900,350);[['riley','idle'],['twinkle','idle'],['trolloc','idle'],['riley','walk'],['riley','attack']].forEach(([k,s],i)=>{const a={x:0,y:0,z:0,facing:1,state:s,stateT:.2,attackMove:s==='attack'?RWB.MOVES.front:null,attackName:'front'};if(s==='walk'){RWB.Puppet.updateGait(a,1/60);for(let n=0;n<18;n++){a.x++;RWB.Puppet.updateGait(a,1/60);}}g.save();g.translate(90+i*180,275);g.scale(1.8,1.8);RWB.Puppet.draw(g,a,a.x,k);g.restore();RWB.drawText(g,k.toUpperCase()+' '+s.toUpperCase(),90+i*180,322,6,'#fff','center');});});
- await p.locator('#game').screenshot({type:'jpeg',quality:92,path:path.join(out,'riley-closeup.jpeg')});
+ await saveCanvas('riley-closeup.jpeg');
  await p.evaluate(()=>{const c=document.getElementById('game');c.width=1500;c.height=700;c.style.width='1500px';c.style.height='700px';const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);g.fillStyle='#17243a';g.fillRect(0,0,750,350);['idle','walk','attack'].forEach((s,i)=>{const a={x:0,y:0,z:0,facing:1,state:s,stateT:.25,ai:s==='attack'?'attack':'',attackMove:s==='attack'?{duration:.55}:null};if(s==='walk'){RWB.Puppet.updateGait(a,1/60);for(let n=0;n<18;n++){a.x++;RWB.Puppet.updateGait(a,1/60);}}g.save();g.translate(125+i*250,285);g.scale(1.65,1.65);RWB.Puppet.draw(g,a,a.x,'forsaken');g.restore();RWB.drawText(g,s==='attack'?'SWORD FLURRY':s.toUpperCase(),125+i*250,326,7,'#fff','center');});});
- await p.locator('#game').screenshot({type:'jpeg',quality:92,path:path.join(out,'belal-closeup.jpeg')});
+ await saveCanvas('belal-closeup.jpeg');
  await p.setViewportSize({width:1600,height:1000});
  await p.evaluate(()=>{
    const c=document.getElementById('game');c.width=1600;c.height=1000;c.style.width='1600px';c.style.height='1000px';const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#1c293d';ctx.fillRect(0,0,800,500);
@@ -85,7 +86,7 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
      const x=80+col*160,y=150+row*160,down=pose==='knockdown',scale=down?.95:1.15;ctx.save();ctx.translate(x+(down?20:0),y-(down?20:0));ctx.scale(scale,scale);RWB.Puppet.draw(ctx,a,a.x,kind);ctx.restore();
      RWB.drawText(ctx,kind.toUpperCase(),x,y+16,5,'#e7d499','center');
    }));
- });await p.screenshot({type:'jpeg',quality:92,path:path.join(out,'rig-poses.jpeg')});
+ });await p.screenshot({type:'jpeg',quality:85,path:path.join(out,'rig-poses.jpeg')});
  await p.setViewportSize({width:1280,height:720});
  const contacts=await p.evaluate(()=>{
    return Object.entries(RWB.Puppet.defs).map(([kind,d])=>{
@@ -107,7 +108,7 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
    const results=[];for(let level=0;level<5;level++){reviewFight(level,3);const start=performance.now();for(let f=0;f<30;f++)renderScene(review);results.push({stage:level+1,drawMs:+((performance.now()-start)/30).toFixed(2)});}return results;
  });
  const audit=await p.evaluate(()=>({failed:RWB.assets.failed(),loaded:RWB.ART_MANIFEST.length,missing:Object.entries(RWB.ART_FILES).filter(([k,path])=>RWB.ART_MANIFEST.includes(path)&&!RWB.assets.has(k)).map(([k])=>k)}));
- const unstamped=requests.filter(url=>/\.(js|css|ttf|png|jpeg)(\?|$)/.test(url)&&!url.includes('/docs/review/lido-reference.png')&&!url.includes('v=20260926-w3'));
+ const unstamped=requests.filter(url=>/\.(js|css|ttf|png|jpeg)(\?|$)/.test(url)&&!url.includes('/docs/review/lido-reference.png')&&!url.includes('v=20260926-w3b'));
  let blocked=0;await p.route('**/assets/art/stage3-mid.png*',route=>{blocked++;return route.abort();});
  await p.reload();await p.waitForFunction(()=>RWB.assets.done);
  const fallback=await p.evaluate(()=>{const s=new RWB.scenes.Play(RWB.game,2,{}),c=document.getElementById('game'),ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);s.draw(ctx);return{failed:RWB.assets.failed(),playable:s.phase==='play'};});

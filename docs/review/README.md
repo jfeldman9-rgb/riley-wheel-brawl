@@ -35,31 +35,20 @@ Fight captures use seeds fixed by `tools/review.cjs` and the normal update/input
 path. They do not inject damage, an attack pose or a projectile for the screenshot.
 They clear intro cards/expired subtitles and tutorial text to expose the scene.
 Closeups, walk strips and the pose board are diagnostic drawings, not representations of a live
-encounter. Screenshots are captured directly as JPEG at quality 92 to keep review uploads small; they have not been composited or retouched.
+encounter. Screenshots are captured directly as JPEG at quality 85 to keep review uploads small; they have not been composited or retouched.
 
 The browser audit includes a separate intentional failure test for `stage3-mid`:
 one initial request, one retry, then a playable fallback. Its normal-load missing
 and failed lists remain empty.
 
 The background/foreground integration and source-detail comparison are visible
-here. The follow-up replaces hard leg cuts with continuous skinning and rigid sole contacts; elastic cloth deformation and the front-facing Riley silhouette remain reviewable limitations. See
+here. The follow-up replaces hard leg cuts with continuous skinning and rigid sole contacts; elastic cloth deformation remains a reviewable limitation; Riley now uses the top-middle side panel. See
 `../STATUS.md` for the exact natural/assisted tables and remaining weaknesses.
 
-## Fixes in this round (w3)
+## Fixes in this round (`w3b`)
 
-`tools/review.cjs` now produces `stage1-vs-lido.jpeg` through
-`stage5-vs-lido.jpeg`, `seams-stage1.jpeg` through `seams-stage5.jpeg`,
-`walk-riley.jpeg`, `walk-trolloc.jpeg`, `walk-darkfriend.jpeg`,
-`walk-cultist.jpeg`, `joints-closeup.jpeg`, `riley-closeup.jpeg`, and
-`belal-closeup.jpeg`. The seam strips render camera positions 0, 700, 1400 and 2000 and mark each mid-layer join with a small top tick;
-Stage 5's strip uses the Taim roof. Joint crops are genuine 3x runtime walk or
-attack poses. The new files are intentionally generated rather than committed so
-this fix-round diff remains text-only.
+`tools/review.cjs` retains every listed output, including four-camera seam boards for each actual stage, and writes oversized canvases through `toDataURL` rather than hanging on element screenshots larger than the viewport. All JPEGs use quality 85. Runtime plates are bottom-anchored at a minimum 896px width, so the 640px view contains at most one narrow, misted join.
 
-The final w3 renderer crops each scenery layer at measured best-match columns, limits opaque dissolves to 6%, and feathers transparent mid edges over 10% with a stage-tinted mist at each marked join. Floor tops retain a 24px-class feather and haze. All puppet states share a processed connected composite with one rim and
-shading pass. Riley is the 64-unit child bake in gameplay and HUD; Be'lal is the
-104-unit male, crimson/pewter swordsman bake with an articulated long sword.
+Riley is runtime-baked from the top-middle side panel of `riley-sheet.jpeg`: the neutral-grey background is soft-keyed, the coat ends at the hip with trouser texture continued beneath it, and the 64-unit rig has a >=1/4.6 head plus short child limbs. `rig-riley.png` is fallback only. The transparent composite is cleared every frame and drawn once. Be'lal's blade is bound to his front hand and the pivot-like pommel dot is gone.
 
-### Final fix-round note
-
-Character shading is composited onto the transparent offscreen skin, so it cannot tint the main-canvas background. Riley's enlarged head overpaints the original without clearing his collar; Be'lal's complete sword is attached to the extended front wrist and his fire weave is removed with a feathered halo. The audit ignores only `docs/review/` reference requests, not runtime assets. Playwright is not installed in the current checkout, so regenerate the JPEGs with the command above before visual sign-off; this text-only round does not claim refreshed images.
+Playwright is not installed in this checkout, so regenerate the JPEGs with the command above before visual sign-off. This text-only round does not claim refreshed images.
