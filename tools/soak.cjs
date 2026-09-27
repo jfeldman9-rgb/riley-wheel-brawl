@@ -75,7 +75,7 @@ function soak(RWB, seedValue, levelIndex = 0, options = {}) {
   let measuredHits = 0;
   const input = { pressed: {}, held: {}, axis() {
     const enemy = scene.enemies.filter(item => !item.dead).sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
-    if (!enemy) return { x: 0, y: 0 };
+    if (!enemy) return scene.marching ? { x: 1, y: 0 } : { x: 0, y: 0 };
     const dx = enemy.x - player.x;
     const dy = enemy.y - player.y;
     return { x: Math.abs(dx) > 39 ? Math.sign(dx) : 0, y: Math.abs(dy) > 8 ? Math.sign(dy) * 0.75 : 0 };

@@ -1,9 +1,26 @@
 'use strict';
 (function () {
   const R = window.RWB;
-  R.ASSET_VER = '20260926-grok3d';
+  R.ASSET_VER = '20260927-scroll1';
+  // One-way Streets of Rage layout. Six fight screens, a short walk between
+  // them, camera only moves forward. Whale Lance (3991948) did the same with
+  // camX = max(camX, target), a lock at each wave.x, and goArrowT.
+  R.SCROLL = {
+    fight: 640,
+    stride: 720,
+    zones: 6,
+    get length() { return (this.zones - 1) * this.stride + this.fight; },
+    left(zone) { return zone * this.stride; },
+    names: [
+      ['VILLAGE EDGE', 'WINESPRING INN', 'FOREST ROAD'],
+      ['CAEMLYN GATES', 'THE STREETS', 'THE PALACE'],
+      ['THE RUINS', 'MASHADAR FOG', 'THE SQUARE'],
+      ['STONE HALLS', 'INNER STONE', 'HEART OF THE STONE'],
+      ['TOWER GROUNDS', 'THE YARD', 'THE ROOF']
+    ]
+  };
   R.TUNE = {
-    stageLength: 3000,
+    stageLength: 4240,
     playerSpeed: 128,
     laneSpeed: 84,
     jumpSpeed: 340,
@@ -72,7 +89,7 @@
     index: 0,
     name: "EMOND'S FIELD",
     sub: 'WINTERNIGHT',
-    length: 3000,
+    length: 4240,
     waves: [0, 1, 2, 3, 4, 5],
     boss: 'TROLLOC CHIEFTAIN',
     attacks: ['AXE CRASH', 'HORN CHARGE', 'GROUND STOMP']

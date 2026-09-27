@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   const R = window.RWB;
-  const WAVE_POINTS = [360, 820, 1280, 1780, 2280, 2720];
+  const WAVE_POINTS = [0, 720, 1440, 2160, 2880, 3600];
   const WAVE_TABLE = [
     ['axe'],
     ['hound', 'axe'],

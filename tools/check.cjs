@@ -425,7 +425,7 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260926-grok3d';console.log('Cache stamp: '+STAMP);
+const STAMP='20260927-scroll1';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -641,6 +641,30 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   check(escOpen && escStays && escClose && escStaysClosed, 'ESC opens the pause menu, it stays open, and pressing pause again resumes');
   check(iiOpen && iiStays && iiResume, 'Tapping II opens the pause menu, it stays open, and choosing RESUME closes it');
   check(clickOpen && clickStays && clickResume, 'Clicking II opens the pause menu, it stays open, and confirming RESUME closes it');
+}
+{
+  check(RWB.LEVELS.every(level => level.length === 4240 && level.wavePoints.length === 6 && level.wavePoints[0] === 0 && level.wavePoints[5] === 3600 && level.wavePoints[5] + RWB.SCROLL.fight === level.length), 'Every stage is 4240 units, six fight zones, boss arena at the end');
+  const walk = { pressed: {}, held: {}, axis: () => ({ x: 1, y: 0 }) };
+  const scene = new RWB.scenes.Play(game, 0, { wave: 0, lives: 99 });
+  for (const enemy of scene.enemies) { enemy.dead = true; enemy.deathTimer = 2; }
+  let frames = 0, retreated = false;
+  while (frames < 90 && !scene.marching) { scene.update(1 / 60, walk); frames += 1; }
+  const unlocked = scene.marching && scene.camera.lockMin == null && scene.goTimer > 0;
+  while (frames < 900 && scene.wave < 1) {
+    const before = scene.camera.x;
+    scene.update(1 / 60, walk);
+    if (scene.camera.x < before - 0.001) retreated = true;
+    frames += 1;
+  }
+  const offscreen = scene.wave === 1 && scene.enemies.length > 0 && scene.enemies.every(enemy => enemy.x < scene.arenaLeft - 8 || enemy.x > scene.arenaRight + 8);
+  const locked = scene.wave === 1 && !scene.marching && scene.camera.lockMin === scene.level.wavePoints[1] && scene.camera.x === scene.level.wavePoints[1];
+  check(unlocked, 'Clearing a wave unlocks the camera and shows the GO arrow');
+  check(!retreated && locked, 'Walking into the next zone locks the camera there and the camera never goes back');
+  check(offscreen, 'The next wave spawns from off-screen, not on top of the player');
+  const boss = new RWB.scenes.Play(game, 4, { wave: 5, lives: 99 });
+  check(boss.wave === 5 && boss.arenaLeft === boss.level.wavePoints[5] && boss.enemies.some(enemy => enemy.boss) && boss.camera.x === boss.level.wavePoints[5], 'The boss is the last zone');
+  const continued = RWB.resumeRun(game, { level: 1, wave: 2, score: 100, extra: { lives: 3 } });
+  check(continued.wave === 2 && continued.camera.x === continued.level.wavePoints[2] && continued.arenaLeft === continued.level.wavePoints[2] && continued.player.x === continued.arenaLeft + 90, 'Continue resumes at the saved zone');
 }
 await pageLoadChecks(check, root);
 

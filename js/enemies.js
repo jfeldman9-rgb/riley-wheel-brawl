@@ -185,7 +185,8 @@
         }
       } else this.updateAI(dt);
       super.update(dt);
-      this.x = R.util.clamp(this.x, this.g.arenaLeft + 12, this.g.arenaRight - 12);
+      const leash = this.g.leash ? this.g.leash() : [this.g.arenaLeft, this.g.arenaRight];
+      this.x = R.util.clamp(this.x, leash[0] + 12, leash[1] - 12);
       if (!this.dead && !this.grabbedBy) this.separate();
     }
     onHurt(damage, opts) {

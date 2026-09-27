@@ -1,6 +1,20 @@
 # Riley Wheel Brawl — current status
 
-Runtime stamp: `?v=20260926-grok3d`. PR #5 (`rwb-grok3` at `12ac675`) was merged into `rwb-w2` as `860119c` on 2026-09-26 at 10:23 PM PT. Jason approved the merge in chat right after the independent grok3d review came back GO. `rwb-w2` is the branch GitHub Pages serves, so this build is live. `main` is untouched at `3991948`. GitHub Pages settings are unchanged.
+Runtime stamp on this branch: `?v=20260927-scroll1`. Branch `rwb-scroll`, cut from `rwb-w2` at `a65e981`. Not merged. GitHub Pages still serves `rwb-w2` (PR #5, live). `main` is untouched at `3991948`. This branch does not change Pages.
+
+## Scrolling stages (scroll1)
+
+Before: a cleared wave added one to the wave index and dropped Riley back at the left of the next fight on the same plate. The stage was 3000 units and the picture did not travel.
+
+After: every stage is a 4240-unit street (6.625 screens at the 640-wide view). Six fight zones sit at 0, 720, 1440, 2160, 2880, and 3600. The last zone is the boss arena. Clearing a wave plays a chime, holds a flashing `GO →`, unlocks the camera, and Riley walks right. The camera only moves forward (the Whale Lance lock: `camX = max(camX, target)`, reused as `Camera.noForwardBacktrack`). Walking onto the next zone line locks the camera there and the next group walks in from off the left and right edges. Nothing teleports between waves. Continue starts at the saved zone.
+
+The far and mid plates crossfade three crops of the existing painting, so the street changes as the camera advances. Stage 5's last third crossfades `stage5-roof-far` and `floor-roof`. Ground silhouettes and a section wash mark the third of the level you are in. Seams are alpha blends, never a mirrored tile. Paintings that would replace those crops are listed in `NEEDED_ART.md`.
+
+Damage scales are unchanged: `[1.34, 2.66, 0.72, 1.52, 0.76]`. Pace, soak, and check numbers for this stamp are filled in after the run below.
+
+## grok3d (merged, historical)
+
+Runtime stamp on the merged branch was `?v=20260926-grok3d`. PR #5 (`rwb-grok3` at `12ac675`) was merged into `rwb-w2` as `860119c` on 2026-09-26 at 10:23 PM PT. Jason approved the merge in chat right after the independent grok3d review came back GO. `rwb-w2` is the branch GitHub Pages serves. `main` is untouched at `3991948`. GitHub Pages settings are unchanged.
 
 Natural soak at `12ac675` (3 lives, no HP top-up, seeds 1–10, with the new damage and knockback numbers in `js/data.js`): 7/8/8/8/8, every boss attack seen 10/10. Assisted soak: 10/10 on every stage (50/50).
 

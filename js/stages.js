@@ -75,6 +75,71 @@
     }
     return true;
   }
+  function levelSpan(scene){return (scene&&scene.level&&scene.level.length)||(R.SCROLL&&R.SCROLL.length)||4240;}
+  function sectionBlend(cam,span){
+    const travel=Math.max(1,span-640),u=Math.max(0,Math.min(0.9999,cam/travel)),scaled=u*2;
+    const index=Math.min(1,Math.floor(scaled)),local=scaled-index;
+    const blend=local<0.62?0:Math.min(1,(local-0.62)/0.38);
+    return {index,blend};
+  }
+  function blitCrop(ctx,key,section,cam,factor,y,h,alpha){
+    if(alpha<0.03)return false;
+    const img=R.assets.get(key);if(!img)return false;
+    const crop=LOOP_CROPS[key]||[0,Math.max(1,img.width-44)],span=Math.max(8,crop[1]-crop[0]);
+    const win=Math.max(8,Math.floor(span*0.58)),maxX=crop[0]+span-win;
+    const sx=crop[0]+Math.round((maxX-crop[0])*(section/2));
+    const stage1Wide=/^stage1-(?:mid|near)$/.test(key),far=/^stage\d-(?:roof-)?far$/.test(key);
+    const targetWidth=stage1Wide?720:far?700:SINGLE_WIDE.test(key)?700:0;
+    const drawH=targetWidth?targetWidth*img.height/win:Math.max(h,320*img.height/win);
+    const width=targetWidth||drawH*win/img.height,drawY=y+h-drawH;
+    const k=Math.min(factor,Math.max(0,(width-640)/CAMERA_RANGE));
+    if(R.StageWorld&&R.StageWorld._layer)R.StageWorld._layerFactor=k;
+    ctx.save();ctx.globalAlpha*=alpha;ctx.drawImage(img,sx,0,win,img.height,-cam*k,drawY,width,drawH);ctx.restore();
+    return true;
+  }
+  function travelPlate(ctx,key,cam,factor,y,h,scene,altKey){
+    const span=levelSpan(scene),part=sectionBlend(cam,span);
+    const keys=[key,key,altKey||key];
+    const first=blitCrop(ctx,keys[part.index],part.index,cam,factor,y,h,1-part.blend);
+    const second=part.blend>0&&blitCrop(ctx,keys[part.index+1],part.index+1,cam,factor,y,h,part.blend);
+    return first||second;
+  }
+  function paintLandmarks(ctx,n,cam,span){
+    // Ground silhouettes only. They live in the floor layer (scroll k = 1) and
+    // stay below the mid-row sample, so a sub-pixel camera step still moves
+    // the floor by one pixel and leaves the distant plate unmoved.
+    const styles=[
+      [{c:'#6d5338',roof:'#8d6a42',glow:'#ffcc77'},{c:'#c4553a',roof:'#6e8f4e',glow:'#ffd27a'},{c:'#1d4a28',roof:'#14361c',glow:'#9dcaa8'}],
+      [{c:'#8d7a62',roof:'#5c4634',glow:'#f0d2a0'},{c:'#6e5a48',roof:'#3d342c',glow:'#ffe0a0'},{c:'#d7c7a2',roof:'#8d7b58',glow:'#fff1c4'}],
+      [{c:'#3a3548',roof:'#241f30',glow:'#8a78b0'},{c:'#2a2438',roof:'#161222',glow:'#b7a6e0'},{c:'#4a445c',roof:'#2c2638',glow:'#ddd4f2'}],
+      [{c:'#6a624e',roof:'#3e382c',glow:'#e7c27a'},{c:'#514a3c',roof:'#2a261e',glow:'#f0d090'},{c:'#c2a15a',roof:'#6e5428',glow:'#ffe7a4'}],
+      [{c:'#3d4558',roof:'#232838',glow:'#9eb4d8'},{c:'#323848',roof:'#1c2230',glow:'#b7c6e4'},{c:'#5c677c',roof:'#2e3648',glow:'#d5deee'}]
+    ][n-1];
+    if(!styles)return;
+    const step=n===2?340:260;
+    for(let x=Math.floor((cam-80)/step)*step;x<cam+720;x+=step){
+      const sec=Math.min(2,Math.floor(Math.max(0,x)/span*3)),st=styles[sec],sx=x-cam;
+      ctx.save();ctx.globalAlpha=0.9;
+      if(sec===2&&n===1){ctx.fillStyle=st.c;ctx.beginPath();ctx.moveTo(sx,338);ctx.lineTo(sx+22,268);ctx.lineTo(sx+44,338);ctx.fill();ctx.beginPath();ctx.moveTo(sx+30,338);ctx.lineTo(sx+58,252);ctx.lineTo(sx+86,338);ctx.fill();}
+      else if(sec===0&&n===2){ctx.fillStyle=st.c;ctx.fillRect(sx,248,18,90);ctx.fillRect(sx+108,248,18,90);ctx.fillStyle=st.roof;ctx.fillRect(sx,240,126,12);}
+      else if(sec===2&&n===4){ctx.fillStyle=st.roof;ctx.beginPath();ctx.moveTo(sx,320);ctx.lineTo(sx+28,258);ctx.lineTo(sx+56,320);ctx.fill();ctx.fillStyle=st.glow;ctx.globalAlpha=0.7;ctx.fillRect(sx+24,246,8,22);}
+      else if(sec===2&&n===5){ctx.fillStyle=st.c;for(let m=0;m<4;m++)ctx.fillRect(sx+m*18,286,14,16-m%2*5);ctx.fillRect(sx,302,72,36);}
+      else{const inn=sec===1;ctx.fillStyle=st.c;ctx.fillRect(sx,inn?262:286,inn?84:56,inn?76:52);ctx.fillStyle=st.roof;ctx.beginPath();ctx.moveTo(sx-6,inn?266:290);ctx.lineTo(sx+(inn?42:28),inn?242:268);ctx.lineTo(sx+(inn?90:62),inn?266:290);ctx.fill();ctx.fillStyle=st.glow;ctx.fillRect(sx+14,inn?292:308,12,16);}
+      ctx.restore();
+    }
+  }
+  function sectionWash(ctx,n,cam,span){
+    const washes=[
+      ['rgba(120,150,190,0.10)','rgba(255,170,70,0.16)','rgba(40,110,60,0.16)'],
+      ['rgba(180,150,110,0.10)','rgba(90,70,50,0.14)','rgba(230,210,160,0.12)'],
+      ['rgba(40,30,60,0.16)','rgba(90,70,140,0.20)','rgba(180,170,200,0.10)'],
+      ['rgba(80,70,50,0.12)','rgba(40,36,28,0.16)','rgba(220,180,80,0.16)'],
+      ['rgba(50,60,80,0.12)','rgba(30,36,52,0.16)','rgba(180,190,210,0.14)']
+    ][n-1];
+    if(!washes)return;
+    const part=sectionBlend(cam,span);
+    ctx.save();ctx.fillStyle=washes[part.index];ctx.globalAlpha=0.85*(1-part.blend);ctx.fillRect(0,0,640,220);ctx.fillStyle=washes[part.index+1];ctx.globalAlpha=0.85*part.blend;ctx.fillRect(0,0,640,220);ctx.restore();
+  }
   function haze(ctx,y,color='#c9d7df') {ctx.drawImage(overlay('haze:'+y+color,g=>{const f=g.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');g.fillStyle=f;g.fillRect(0,y-9,640,21);}),0,0,640,360);}
   function architecture(ctx, level, cam, time) {
     const pal = PALETTES[level],
@@ -263,14 +328,17 @@
           }
         }
       }
-      const roof = n === 5 && scene.wave === 5;
-      if(show('back'))tiled(ctx, roof ? 'stage5-roof-far' : 'stage' + n + '-far', cam, 0.10, 0, 244);
+      const span=levelSpan(scene);
+      if(show('back')){
+        if(!travelPlate(ctx,'stage'+n+'-far',cam,0.10,0,244,scene,n===5?'stage5-roof-far':null))tiled(ctx,'stage'+n+'-far',cam,0.10,0,244);
+      }
       const midHeights=[260,256,252,248,222];
       if(show('mid')){
-        if (!roof && !tiled(ctx, 'stage' + n + '-mid', cam, 0.42, 10, midHeights[n-1], true,stagePalette[1])) { if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam); }
-        if(!roof)haze(ctx,20);
+        if(!travelPlate(ctx,'stage'+n+'-mid',cam,0.42,10,midHeights[n-1],scene,null)){if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam);}
+        haze(ctx,20);
       }
-      const floorKey=roof ? 'floor-roof' : 'floor' + n;
+      const part=sectionBlend(cam,span);
+      const floorKey='floor'+n;
       if(show('floor')){
       if (n > 1 && !R.assets.has(floorKey)) {
         ctx.fillStyle = PALETTES[n - 1][3];
@@ -294,13 +362,14 @@
       }
       // Wide floor plates are compressed in depth, not tiled into tiny squares.
       const floor = sizedPlate(floorKey,seamlessPlate(floorKey,true),FLOOR_LOOP,138);
-      if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off;x<640;x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
+      if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off;x<640;x+=fw)ctx.drawImage(floor,x,222,fw,138);if(n===5&&part.index===1&&part.blend>0.02){const roofFloor=sizedPlate('floor-roof',seamlessPlate('floor-roof',true),FLOOR_LOOP,138);if(roofFloor){ctx.save();ctx.globalAlpha=part.blend;for(let x=-off;x<640;x+=fw)ctx.drawImage(roofFloor,x,222,fw,138);ctx.restore();}}haze(ctx,224,n===5&&part.blend>0.85?'#aebbd0':'#b8c1c6');}
       else if(n===1)R.Stage1.layers.floor(ctx,cam);
+      paintLandmarks(ctx,n,cam,span);
       }
-      if(show('screen'))ctx.drawImage(overlay('light:'+n,g=>{
+      if(show('screen')){ctx.drawImage(overlay('light:'+n,g=>{
         const depth=g.createLinearGradient(0,218,0,360);depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');g.fillStyle=depth;g.fillRect(0,218,640,142);
         const light=['#9bcfff','#ffdca0','#a99aff','#ffe8b0','#9ac2ff'][n-1],glow=g.createRadialGradient(440,100,10,440,100,310);glow.addColorStop(0,light+'28');glow.addColorStop(1,light+'00');g.fillStyle=glow;g.fillRect(0,0,640,360);
-      }),0,0,640,360);
+      }),0,0,640,360);sectionWash(ctx,n,cam,span);}
       if (n === 5 && !this._painting && Math.sin(time * 0.8) > 0.995) strokeLightning(ctx);
     },
     grade(ctx,scene){
