@@ -48,6 +48,10 @@
   R.perf.work=[];
   R.perf.hitches=[];
   R.perf.poseFallbacks=0;
+  // The 2px source-rect face draw is off. A pixel diff of every pose of every
+  // rig against the full-texture clip measured a max channel difference of 255
+  // (worst: twinkle hurt). The canvas path keeps drawing the whole texture.
+  R.perf.fullFace=true;
   R.perf.frameJobs=null;
   R.perf.slowSteps=[];
   R.perf.markStep=function(name,ms){

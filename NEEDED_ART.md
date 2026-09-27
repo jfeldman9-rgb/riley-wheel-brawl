@@ -43,6 +43,15 @@ Existing: `stage5-far`, `stage5-mid`, `stage5-near`, `floor5-loop`, and for the 
 
 Riley stays the muscular 16-year-old `assets/art/riley16/` set until the redraw. The four current walk frames are the same wide stance: the boots sit about 53 units apart, with no contact phase and no passing phase. A sub-pose shift inside ±4 units cannot reach a 30 u/s slip target, and it brings back the hop that was removed. The redraw is the sleeveless black Asha'man coat, and it needs at least 8 walk frames: contact, down, passing, and up for each leg. A step is about 55 units (110 units per cycle). `frames.json` should give a planted-sole x for every frame so the sole can stay down while the body tracks the hitbox.
 
+## Joins the current plates cannot close
+
+The S4 and S5 min-error seams are a per-pixel pick from the plates that already exist. They do not blur, average, or regrade. The ±40 unit window is still above 4×, so these joins stay a fail until new paintings exist:
+
+- Stage 4 needs a blue-to-red hall bay whose floor line matches plate c. Plate b's wall base sits near 0.84 of the plate height and plate c's near 0.70, so a seam in the existing bays still steps the floor and can leave a pillar or brazier cut in the ±40 unit window.
+- Stage 5 needs a bridge-to-camp gate. Plate a is the stone bridge and plate b is the wooden palisade. No quiet column on either plate hides that change, and a hard seam through the overlap still slices stone into wood.
+
+Measured on this branch (check.cjs, one run): S4 b winMax 5.709 (fadeMax 5.217), S4 c winMax 6.568 (fadeMax 2.794), S5 b winMax 9.651 (fadeMax 8.546), S5 second copy winMax 7.956 (fadeMax 4.407). Scroll7's crossfades were S4 5.321 / 6.537 and S5 6.014 / 4.026. The hard seam did not bring either stage under 4×.
+
 ## What not to paint again
 
 Riley stays the muscular 16-year-old `assets/art/riley16/` set until that redraw. Be'lal stays the painted frames with the sword already in his hand. Floors stay the quilted loops. Do not mirror a plate to fake a second screen.

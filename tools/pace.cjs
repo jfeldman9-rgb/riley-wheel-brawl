@@ -30,7 +30,14 @@ const percentile=(a,p)=>[...a].sort((x,y)=>x-y)[Math.min(a.length-1,Math.floor((
    const gaps=[],pumps=[],big=[];let prior=0,start=0,framesAfter=0,clearAt=0;
    await new Promise(resolve=>{const sample=t=>{
     if(!primed){
-      if(R.game.scene!==s){requestAnimationFrame(sample);return;}
+      // The fade-out has to swap before the walk window exists. Cap the wait
+      // so a scene that never becomes current cannot sit in this promise.
+      if(R.game.scene!==s){
+        if(t>1e14)return;
+        if(!sample.born)sample.born=t;
+        if(t-sample.born>8000){resolve();return;}
+        requestAnimationFrame(sample);return;
+      }
       framesAfter++;
       if(framesAfter<2){requestAnimationFrame(sample);return;}
     }
@@ -50,6 +57,8 @@ const percentile=(a,p)=>[...a].sort((x,y)=>x-y)[Math.min(a.length-1,Math.floor((
   const g=raw.gaps.length?raw.gaps:[0],c=raw.costs.length?raw.costs:[0],p=raw.pumps.length?raw.pumps:[0];
   const row={name,seconds,canvas:raw.canvas,frames:raw.gaps.length,avgFps:+(1000/(g.reduce((a,b)=>a+b,0)/g.length)).toFixed(2),p95Ms:+percentile(g,.95).toFixed(2),p99Ms:+percentile(g,.99).toFixed(2),over20:g.filter(x=>x>20).length,over33:g.filter(x=>x>33).length,over50:g.filter(x=>x>50).length,maxMs:+Math.max(...g).toFixed(2),meanUpdateDrawMs:+(c.reduce((a,b)=>a+b,0)/Math.max(1,raw.gaps.length)).toFixed(2),pumpP99:+percentile(p,.99).toFixed(2),pumpMax:+Math.max(...p).toFixed(2),runtimeLite:raw.lite,enterMs:+raw.enterMs.toFixed(1),poseMs:+raw.poseMs.toFixed(1),bossQueue:raw.bossQueue,bossAt:raw.bossAt,emptyAt:raw.emptyAt,queueNow:raw.queueNow,fallbacks:raw.fallbacks,clearAt:raw.clearAt,slow:raw.slow,outside:raw.outside,framesOver20:raw.big};
   rows.push(row);
+  const line=name+' fps '+row.avgFps+' >20 '+row.over20+' >33 '+row.over33+' >50 '+row.over50+' max '+row.maxMs+' pumpMax '+row.pumpMax+' qBoss '+row.bossQueue+' empty '+row.emptyAt+' fallbacks '+row.fallbacks+' clear '+row.clearAt+'\n';
+  fs.appendFileSync('/tmp/pace-progress.txt', line);
   console.log(name,'fps',row.avgFps,'>20',row.over20,'>33',row.over33,'>50',row.over50,'max',row.maxMs,'pumpMax',row.pumpMax,'qBoss',row.bossQueue,'empty',row.emptyAt,'fallbacks',row.fallbacks);
   for(const frame of raw.big)console.log('  >20',JSON.stringify(frame));
  }
