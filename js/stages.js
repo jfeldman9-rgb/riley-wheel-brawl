@@ -123,10 +123,15 @@
     const keep='stage'+n+'-',floorKeep='floor'+n;
     for(const id of [...sized.keys()]){
       const s=String(id);
+      if(s.startsWith('pin:'))continue;
       if(s.startsWith('stage')&&!s.startsWith(keep))sized.delete(id);
       else if(s.startsWith('floor')&&!s.startsWith(floorKeep)&&!s.startsWith('floor-roof'))sized.delete(id);
     }
-    for(const id of [...sliceCache.keys()])if(!String(id).startsWith(keep))sliceCache.delete(id);
+    for(const id of [...sliceCache.keys()]){
+      const s=String(id);
+      if(s.startsWith('pin:'))continue;
+      if(!s.startsWith(keep))sliceCache.delete(id);
+    }
     for(const id of [...seamless.keys()]){
       const s=String(id);
       if(s.startsWith('floor')&&!s.startsWith(floorKeep)&&!s.startsWith('floor-roof'))seamless.delete(id);
@@ -211,22 +216,10 @@
   // Pale gray mist and matte fringes on the stage 5 street. Threshold the
   // semi-transparent edge, then pull the washed-out stone onto the night castle.
   function nightMist(canvas){
-    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
-    const kill=new Uint8Array(w*h),night=[24,26,34];
-    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-      const p=y*w+x,a=d[p*4+3];
-      if(a>=250)continue;
-      if(a<230){kill[p]=1;continue;}
-      let edge=false;
-      for(let dy=-3;dy<=3&&!edge;dy++)for(let dx=-3;dx<=3;dx++){
-        const xx=x+dx,yy=y+dy;
-        if(xx<0||yy<0||xx>=w||yy>=h||d[(yy*w+xx)*4+3]<24)edge=true;
-      }
-      if(edge)kill[p]=1;
-    }
-    for(let p=0;p<kill.length;p++)if(kill[p]){const i=p*4;d[i]=d[i+1]=d[i+2]=d[i+3]=0;}
+    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data,night=[24,26,34];
     for(let i=0;i<d.length;i+=4){
-      if(d[i+3]<16){d[i]=d[i+1]=d[i+2]=0;continue;}
+      const a=d[i+3];
+      if(a<240){d[i]=d[i+1]=d[i+2]=d[i+3]=0;continue;}
       const r=d[i],gc=d[i+1],b=d[i+2],L=0.2126*r+0.7152*gc+0.0722*b;
       const max=Math.max(r,gc,b),min=Math.min(r,gc,b),sat=max?(max-min)/max:0;
       if(sat<0.34&&L>32){
@@ -245,45 +238,50 @@
     y0=Math.max(0,Math.min(h-1,y0|0));
     y1=Math.max(y0+1,Math.min(h,y1|0));
     const img=g.getImageData(0,0,w,h),d=img.data,rows=y1-y0;
-    const rad=power?4:2,passes=power?18:10,thresh=power?1.45:2.05;
-    const taps=[];
-    for(let k=-rad;k<=rad;k++)taps.push(k,k===0?0.4:0.6/(rad*2));
-    for(let pass=0;pass<passes;pass++){
-      const cols=new Float64Array(w);
-      for(let x=1;x<w;x++){
-        let s=0;
-        for(let y=y0;y<y1;y++){
-          const i=(y*w+x)*4,p=i-4;
-          s+=Math.abs(d[i]-d[p])+Math.abs(d[i+1]-d[p+1])+Math.abs(d[i+2]-d[p+2]);
-        }
-        cols[x]=s/rows;
+    const cols=new Float64Array(w);
+    for(let x=1;x<w;x++){
+      let s=0;
+      for(let y=y0;y<y1;y++){
+        const i=(y*w+x)*4,p=i-4;
+        s+=Math.abs(d[i]-d[p])+Math.abs(d[i+1]-d[p+1])+Math.abs(d[i+2]-d[p+2]);
       }
-      const sample=[];
-      for(let x=1;x<w;x++)sample.push(cols[x]);
-      sample.sort((a,b)=>a-b);
-      const med=sample[sample.length>>1]||1;
-      let hot=0;
-      const src=new Uint8ClampedArray(d);
-      const absCut=power?18:24;
-      for(let x=rad;x<w-rad;x++){
-        const ratio=cols[x]/med,absHot=cols[x]>=absCut&&(!power||ratio>=1.2);
-        if(ratio<thresh&&!absHot)continue;
-        hot++;
-        const k=absHot?Math.min(0.84,0.55+(cols[x]-absCut)/60):Math.min(0.85,(ratio-1.5)/ratio);
-        for(let y=y0;y<y1;y++){
-          const i=(y*w+x)*4;
-          if(src[i+3]<32)continue;
-          for(let c=0;c<3;c++){
-            let blurred=0;
-            for(let t=0;t<taps.length;t+=2){
-              const n=i+taps[t]*4;
-              blurred+=(src[n+3]<32?src[i+c]:src[n+c])*taps[t+1];
-            }
-            d[i+c]=src[i+c]+(blurred-src[i+c])*k;
-          }
-        }
+      cols[x]=s/rows;
+    }
+    const sample=[];
+    for(let x=1;x<w;x++)sample.push(cols[x]);
+    sample.sort((a,b)=>a-b);
+    const med=sample[sample.length>>1]||1;
+    const thresh=power?1.4:2.05,absCut=power?16:24,rad=power?22:10;
+    const dist=new Int16Array(w);
+    for(let x=0;x<w;x++)dist[x]=rad+1;
+    for(let x=1;x<w;x++){
+      const ratio=cols[x]/med;
+      if(ratio>=thresh||(cols[x]>=absCut&&(!power||ratio>=1.2)))dist[x]=0;
+    }
+    for(let x=1;x<w;x++)dist[x]=Math.min(dist[x],dist[x-1]+1);
+    for(let x=w-2;x>=0;x--)dist[x]=Math.min(dist[x],dist[x+1]+1);
+    const src=new Uint8ClampedArray(d),strength=power?0.92:0.74;
+    const pr=new Float64Array(w+1),pg=new Float64Array(w+1),pb=new Float64Array(w+1),pn=new Float64Array(w+1);
+    for(let y=y0;y<y1;y++){
+      const row=y*w;
+      for(let x=0;x<w;x++){
+        const j=(row+x)*4,use=src[j+3]>=32;
+        pr[x+1]=pr[x]+(use?src[j]:0);
+        pg[x+1]=pg[x]+(use?src[j+1]:0);
+        pb[x+1]=pb[x]+(use?src[j+2]:0);
+        pn[x+1]=pn[x]+(use?1:0);
       }
-      if(!hot)break;
+      for(let x=1;x<w-1;x++){
+        if(dist[x]>rad)continue;
+        const i=(row+x)*4;
+        if(src[i+3]<32)continue;
+        const a=Math.max(0,x-rad),b=Math.min(w-1,x+rad),n=pn[b+1]-pn[a];
+        if(n<2)continue;
+        const k=strength*(1-dist[x]/rad);
+        d[i]=src[i]*(1-k)+(pr[b+1]-pr[a])/n*k;
+        d[i+1]=src[i+1]*(1-k)+(pg[b+1]-pg[a])/n*k;
+        d[i+2]=src[i+2]*(1-k)+(pb[b+1]-pb[a])/n*k;
+      }
     }
     g.putImageData(img,0,0);
   }
@@ -356,7 +354,8 @@
   }
   function bakedPlate(piece,drawH,screenY){
     const rs=rsNow(),rampU=piece.ramp||0,rampOut=piece.rampOut||0;
-    const id=piece.key+':plate:'+rampU+':'+rampOut+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
+    const pin=piece.key==='stage5-mid-b'?'pin:':'';
+    const id=pin+piece.key+':plate:'+rampU+':'+rampOut+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
     if(sliceCache.has(id))return sliceCache.get(id);
     const img=R.assets.get(piece.key);if(!img)return null;
     const c=document.createElement('canvas');
@@ -380,7 +379,7 @@
   }
   function gradedFar(key,logicalW,logicalH,stageN){
     const mode=FAR_GRADE[stageN]||'';
-    const rs=rsNow(),id=key+':far:'+mode+'@'+rs+':'+Math.round(logicalW)+'x'+Math.round(logicalH);
+    const rs=rsNow(),id=(stageN===5?'pin:':'')+key+':far:'+mode+'@'+rs+':'+Math.round(logicalW)+'x'+Math.round(logicalH);
     if(sized.has(id))return sized.get(id);
     const img=R.assets.get(key);if(!img)return null;
     const c=document.createElement('canvas');
@@ -548,7 +547,17 @@
       // shifts by the factor this layer actually used, times (round - camera).
       if(!this._painting && R.assets.has('stage'+n+'-far')){
         const rs=R.display.renderScale||1,camExact=scene.camera.x||0,bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs)),roundCam=Math.round(camExact);
-        if(this._stageKept!==n){evictStage(n);this._stageKept=n;}
+        if(this._stageKept!==n){evictStage(n);this._stageKept=n;this._platesBaked=0;}
+        if(n>1&&this._platesBaked!==n&&R.assets.has('stage'+n+'-mid-b')){
+          const layout=midLayout(n,travelOf(scene));
+          for(const piece of layout.pieces){
+            const img=R.assets.get(piece.key);if(!img)continue;
+            const fullH=piece.w*img.height/img.width;
+            const y=n===4?0:10+MID_HEIGHTS[n-1]-fullH;
+            bakedPlate(piece,n===4?MID_HEIGHTS[3]:fullH,y);
+          }
+          this._platesBaked=n;
+        }
         const views=this._views||(this._views={});
         const roof=roofing(scene)?1:0;
         const layers=[
