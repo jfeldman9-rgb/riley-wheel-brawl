@@ -303,6 +303,8 @@
     if(a.state==='walk'||Math.hypot(a.vx||0,a.vy||0)>12)return 'walk'+(1+Math.floor((a.walkDistance||0)/15)%4);
     return 'idle';
   }
+  const belalFlashCache={};
+  function belalFlash(name,img,w,h){let c=belalFlashCache[name];if(!c){c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(w));c.height=Math.max(1,Math.ceil(h));const g=c.getContext('2d');g.drawImage(img,0,0,w,h);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,w,h);belalFlashCache[name]=c;}return c;}
   R.drawBelal=function(ctx,a,cam,height){
     const name=a.belalFrame||belalFrame(a),img=R.assets.get('belal-'+name);if(!img)return false;
     const [w,h,ax,ay]=BELAL.frames[name],s=(height||116)/BELAL.frames.idle[1];
@@ -312,7 +314,8 @@
     if(['knockdown','lying'].includes(a.state)||a.dead)ctx.rotate(-(a.facing||-1)*Math.min(1,(a.stateT||0)*4)*1.25);
     ctx.scale(a.facing===1?-s:s,s);
     ctx.drawImage(img,-ax,-ay,w,h);
-    if(a.hitFlash>0){ctx.globalCompositeOperation='source-atop';ctx.globalAlpha=Math.min(.65,a.hitFlash*5);ctx.fillStyle='#fff4c8';ctx.fillRect(-ax,-ay,w,h);}
+    // Tint only Be'lal's own pixels: source-atop on the live canvas would light a box over the scene.
+    if(a.hitFlash>0){ctx.globalAlpha*=Math.min(.65,a.hitFlash*5);ctx.drawImage(belalFlash(name,img,w,h),-ax,-ay,w,h);}
     ctx.restore();
     return true;
   };
