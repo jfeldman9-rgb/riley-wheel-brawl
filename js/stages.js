@@ -102,11 +102,12 @@
     let ovL,ovR;
     if(slack>=80){ovL=40;ovR=slack-40;}
     else ovL=ovR=slack/2;
-    const xB=a.w-ovL,rampOf=ov=>ov>=48?48:ov>=40?40:32;
+    const xB=a.w-ovL,rampOf=ov=>n===1?(ov>=48?48:ov>=40?40:32):Math.max(32,Math.min(72,Math.round(ov)));
+    const rampL=rampOf(ovL),rampR=rampOf(ovR);
     const pieces=[
-      {id:a.id,key:a.key,x:0,w:a.w,ramp:0,pool:0},
-      {id:b.id,key:b.key,x:xB,w:b.w,ramp:rampOf(ovL),pool:1},
-      {id:c.id,key:c.key,x:lastX,w:c.w,ramp:rampOf(ovR),pool:2}
+      {id:a.id,key:a.key,x:0,w:a.w,ramp:0,rampOut:n===1?0:rampL,pool:0},
+      {id:b.id,key:b.key,x:xB,w:b.w,ramp:rampL,rampOut:n===1?0:rampR,pool:1},
+      {id:c.id,key:c.key,x:lastX,w:c.w,ramp:rampR,rampOut:0,pool:2}
     ];
     const planned=[];
     const sorted=pieces.slice().sort((p,q)=>p.x-q.x);
@@ -190,22 +191,190 @@
     }
     c.logicalW=plateW;c.logicalH=drawH;sliceCache.set(id,c);return c;
   }
-  function bakedPlate(piece,drawH){
-    const rs=rsNow(),rampU=piece.ramp||0;
-    const id=piece.key+':plate:'+rampU+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
+  function clampByte(v){return v<0?0:v>255?255:v|0;}
+  // The right half of stage4-mid-c is a cool white hall. Pull it toward the
+  // torchlit browns on the left so the boss view reads as one room.
+  function warmPlate(canvas){
+    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      let t=(x/w-0.32)/0.2;
+      if(t<=0)continue;
+      if(t>1)t=1;
+      t=t*t*(3-2*t);
+      const i=(y*w+x)*4,r=d[i],gc=d[i+1],b=d[i+2],dark=1-0.2*t;
+      d[i]=clampByte((r*1.08+24*t)*dark);
+      d[i+1]=clampByte(gc*(1-0.14*t)*dark);
+      d[i+2]=clampByte(b*(1-0.5*t)*dark);
+    }
+    g.putImageData(img,0,0);
+  }
+  // Pale gray mist and matte fringes on the stage 5 street. Threshold the
+  // semi-transparent edge, then pull the washed-out stone onto the night castle.
+  function nightMist(canvas){
+    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
+    const kill=new Uint8Array(w*h),night=[24,26,34];
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const p=y*w+x,a=d[p*4+3];
+      if(a>=250)continue;
+      if(a<230){kill[p]=1;continue;}
+      let edge=false;
+      for(let dy=-3;dy<=3&&!edge;dy++)for(let dx=-3;dx<=3;dx++){
+        const xx=x+dx,yy=y+dy;
+        if(xx<0||yy<0||xx>=w||yy>=h||d[(yy*w+xx)*4+3]<24)edge=true;
+      }
+      if(edge)kill[p]=1;
+    }
+    for(let p=0;p<kill.length;p++)if(kill[p]){const i=p*4;d[i]=d[i+1]=d[i+2]=d[i+3]=0;}
+    for(let i=0;i<d.length;i+=4){
+      if(d[i+3]<16){d[i]=d[i+1]=d[i+2]=0;continue;}
+      const r=d[i],gc=d[i+1],b=d[i+2],L=0.2126*r+0.7152*gc+0.0722*b;
+      const max=Math.max(r,gc,b),min=Math.min(r,gc,b),sat=max?(max-min)/max:0;
+      if(sat<0.34&&L>32){
+        const k=Math.min(0.9,(L-32)/26);
+        d[i]=clampByte(r+(night[0]-r)*k);
+        d[i+1]=clampByte(gc+(night[1]-gc)*k);
+        d[i+2]=clampByte(b+(night[2]-b)*k);
+      }
+    }
+    g.putImageData(img,0,0);
+  }
+  // Feather only the tall edges that read as a hard cut. RGB only, and never
+  // from a transparent neighbour, so a matte cannot grow a pale fringe.
+  function softenColumns(canvas,y0,y1,power){
+    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+    y0=Math.max(0,Math.min(h-1,y0|0));
+    y1=Math.max(y0+1,Math.min(h,y1|0));
+    const img=g.getImageData(0,0,w,h),d=img.data,rows=y1-y0;
+    const rad=power?4:2,passes=power?18:10,thresh=power?1.45:2.05;
+    const taps=[];
+    for(let k=-rad;k<=rad;k++)taps.push(k,k===0?0.4:0.6/(rad*2));
+    for(let pass=0;pass<passes;pass++){
+      const cols=new Float64Array(w);
+      for(let x=1;x<w;x++){
+        let s=0;
+        for(let y=y0;y<y1;y++){
+          const i=(y*w+x)*4,p=i-4;
+          s+=Math.abs(d[i]-d[p])+Math.abs(d[i+1]-d[p+1])+Math.abs(d[i+2]-d[p+2]);
+        }
+        cols[x]=s/rows;
+      }
+      const sample=[];
+      for(let x=1;x<w;x++)sample.push(cols[x]);
+      sample.sort((a,b)=>a-b);
+      const med=sample[sample.length>>1]||1;
+      let hot=0;
+      const src=new Uint8ClampedArray(d);
+      const absCut=power?18:24;
+      for(let x=rad;x<w-rad;x++){
+        const ratio=cols[x]/med,absHot=cols[x]>=absCut&&(!power||ratio>=1.2);
+        if(ratio<thresh&&!absHot)continue;
+        hot++;
+        const k=absHot?Math.min(0.84,0.55+(cols[x]-absCut)/60):Math.min(0.85,(ratio-1.5)/ratio);
+        for(let y=y0;y<y1;y++){
+          const i=(y*w+x)*4;
+          if(src[i+3]<32)continue;
+          for(let c=0;c<3;c++){
+            let blurred=0;
+            for(let t=0;t<taps.length;t+=2){
+              const n=i+taps[t]*4;
+              blurred+=(src[n+3]<32?src[i+c]:src[n+c])*taps[t+1];
+            }
+            d[i+c]=src[i+c]+(blurred-src[i+c])*k;
+          }
+        }
+      }
+      if(!hot)break;
+    }
+    g.putImageData(img,0,0);
+  }
+  // Spread a hard skyline across a few pixels so the castle does not meet the
+  // sky in one column. Colour stays the night grade, so the fade is not a fringe.
+  function featherSkyline(canvas,y0,y1,radius){
+    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+    y0=Math.max(0,Math.min(h-1,y0|0));
+    y1=Math.max(y0+1,Math.min(h,y1|0));
+    const img=g.getImageData(0,0,w,h),d=img.data,src=new Uint8ClampedArray(d);
+    for(let y=y0;y<y1;y++){
+      for(let x=0;x<w;x++){
+        const i=(y*w+x)*4;
+        if(src[i+3]<240)continue;
+        let dist=radius+1;
+        for(let dx=1;dx<=radius;dx++){
+          const L=x-dx,R=x+dx;
+          if((L>=0&&src[(y*w+L)*4+3]<16)||(R<w&&src[(y*w+R)*4+3]<16)){dist=dx;break;}
+        }
+        if(dist>radius)continue;
+        d[i+3]=src[i+3]*dist/(radius+1);
+      }
+    }
+    g.putImageData(img,0,0);
+  }
+  // The stage 5 far plate's upper city is a pale band once the mid sky is clear.
+  // Pull that glow down to the night castle. The lower sky, which the seam
+  // luminance band samples, stays put.
+  function crushGlow(canvas,logicalH){
+    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
+    const plateRs=h/logicalH,drawY=-0.376*logicalH,night=[18,22,36];
+    for(let y=0;y<h;y++){
+      const screenY=y/plateRs+drawY;
+      if(screenY>160)continue;
+      const strength=screenY<110?1:Math.max(0,(160-screenY)/50);
+      for(let x=0;x<w;x++){
+        const i=(y*w+x)*4,r=d[i],gc=d[i+1],b=d[i+2];
+        const L=0.2126*r+0.7152*gc+0.0722*b;
+        if(L<38)continue;
+        const k=Math.min(0.82,0.48+(L-38)/80)*strength;
+        d[i]=clampByte(r+(night[0]-r)*k);
+        d[i+1]=clampByte(gc+(night[1]-gc)*k);
+        d[i+2]=clampByte(b+(night[2]-b)*k);
+      }
+    }
+    g.putImageData(img,0,0);
+  }
+  function bakeRamp(g,width,height,leftPx,rightPx){
+    if(leftPx<=0&&rightPx<=0)return;
+    leftPx=Math.max(0,Math.min(width-1,leftPx|0));
+    rightPx=Math.max(0,Math.min(width-1-leftPx,rightPx|0));
+    g.globalCompositeOperation='destination-in';
+    const fade=g.createLinearGradient(0,0,width,0);
+    const stops=[];
+    if(leftPx>0){for(let i=0;i<=8;i++){const t=i/8;stops.push([leftPx*t/width,t*t*(3-2*t)]);}}
+    else stops.push([0,1]);
+    const rightStart=width-rightPx;
+    if(rightPx>0){
+      stops.push([rightStart/width,1]);
+      for(let i=1;i<=8;i++){const t=i/8,x=rightStart+rightPx*t;stops.push([x/width,1-t*t*(3-2*t)]);}
+    }else stops.push([1,1]);
+    let prev=-1;
+    for(const [at,alpha] of stops){
+      const stop=Math.max(prev+1e-4,Math.min(1,at));
+      fade.addColorStop(stop,'rgba(0,0,0,'+alpha+')');
+      prev=stop;
+    }
+    g.fillStyle=fade;g.fillRect(0,0,width,height);
+    g.globalCompositeOperation='source-over';
+  }
+  function bakedPlate(piece,drawH,screenY){
+    const rs=rsNow(),rampU=piece.ramp||0,rampOut=piece.rampOut||0;
+    const id=piece.key+':plate:'+rampU+':'+rampOut+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
     if(sliceCache.has(id))return sliceCache.get(id);
     const img=R.assets.get(piece.key);if(!img)return null;
     const c=document.createElement('canvas');
     c.width=Math.max(1,Math.ceil(piece.w*rs));c.height=Math.max(1,Math.ceil(drawH*rs));
     const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
     g.drawImage(img,0,0,c.width,c.height);
-    if(rampU>0&&c.width>2){
-      const rampPx=Math.max(1,Math.min(c.width-1,Math.round(rampU/piece.w*c.width)));
-      g.globalCompositeOperation='destination-in';
-      const fade=g.createLinearGradient(0,0,rampPx,0);
-      for(let i=0;i<=8;i++){const t=i/8,s=t*t*(3-2*t);fade.addColorStop(t,'rgba(0,0,0,'+s+')');}
-      g.fillStyle=fade;g.fillRect(0,0,c.width,c.height);
-      g.globalCompositeOperation='source-over';
+    if(piece.key==='stage4-mid-c')warmPlate(c);
+    if(piece.key==='stage5-mid'||piece.key==='stage5-mid-b')nightMist(c);
+    if((rampU>0||rampOut>0)&&c.width>2){
+      const leftPx=rampU>0?Math.max(1,Math.round(rampU/piece.w*c.width)):0;
+      const rightPx=rampOut>0?Math.max(1,Math.round(rampOut/piece.w*c.width)):0;
+      bakeRamp(g,c.width,c.height,leftPx,rightPx);
+    }
+    // Stage 1 already reads as one night street. Later stages feather the cuts.
+    if(/^stage[2-5]-mid/.test(piece.key)){
+      const top=screenY||0,y0=Math.round((0-top)*rs),y1=Math.round((222-top)*rs);
+      softenColumns(c,y0,y1,false);
+      if(piece.key==='stage5-mid'||piece.key==='stage5-mid-b')featherSkyline(c,y0,y1,8);
     }
     c.rampU=rampU;sliceCache.set(id,c);return c;
   }
@@ -225,13 +394,18 @@
       g.fillRect(0,0,c.width,c.height);
       g.globalAlpha=1;g.globalCompositeOperation='source-over';
     }else if(mode==='violet'){
-      g.filter='saturate(0.35) brightness(0.68)';
+      g.filter='saturate(0.62) brightness(1.05)';
       g.drawImage(img,0,0,c.width,c.height);
       g.filter='none';
-      g.globalCompositeOperation='multiply';g.globalAlpha=0.42;g.fillStyle='#4c3d6e';
+      g.globalCompositeOperation='multiply';g.globalAlpha=0.16;g.fillStyle='#3a4458';
       g.fillRect(0,0,c.width,c.height);
       g.globalAlpha=1;g.globalCompositeOperation='source-over';
+      crushGlow(c,logicalH);
     }else g.drawImage(img,0,0,c.width,c.height);
+    if(stageN>=2&&stageN<=5){
+      const drawY=-0.376*logicalH,plateRs=c.height/logicalH;
+      softenColumns(c,Math.round((0-drawY)*plateRs),Math.round((222-drawY)*plateRs),true);
+    }
     sized.set(id,c);
     if(mode)R.StageWorld.farGraded[stageN]=mode;
     return c;
@@ -471,7 +645,7 @@
             const fullH=piece.w*img.height/img.width;
             const y=n===4?0:10+MID_HEIGHTS[n-1]-fullH;
             const dh=n===4?MID_HEIGHTS[3]:fullH;
-            const plate=bakedPlate(piece,dh);
+            const plate=bakedPlate(piece,dh,y);
             if(!plate)continue;
             ctx.globalAlpha=1;
             noteScrollAlpha(ctx);

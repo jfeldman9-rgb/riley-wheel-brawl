@@ -72,6 +72,9 @@
         R.StageWorld.draw(ctx,view);
         R.StageWorld.near(ctx,view);
       }
+      // Stage 1's plates are the slow bake. Leave them resident so the first
+      // stage enter, still under the black load fade, does not build them again.
+      R.StageWorld.draw(ctx,{levelIndex:0,camera:{x:0},time:0,wave:3,level:{length:(R.SCROLL&&R.SCROLL.length)||4240}});
       ctx.getImageData(0,0,1,1);
     }catch(e){}
     finally{
