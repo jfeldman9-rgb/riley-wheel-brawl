@@ -95,10 +95,25 @@
         // willReadFrequently keeps the texture on the CPU. The first getImageData
         // of a default canvas is an atomic ~10 ms readback, which blows the pump.
         const tc=texture.getContext('2d',{willReadFrequently:true});
-        if(st.bmp&&st.bmp!==false){tc.drawImage(st.bmp,0,0,tw,th);if(st.bmp.close)st.bmp.close();st.bmp=null;}
-        else tc.drawImage(st.image,0,0,tw,th);
+        st.texture=texture;st.tc=tc;st.tw=tw;st.th=th;st.copyY=0;st.ry=0;st.pixels=new Uint8ClampedArray(tw*th*4);
+      }
+      if(st.copyY<st.th){
+        const tc=st.tc;
+        if(sync||!(st.bmp&&st.bmp!==false)){
+          if(st.bmp&&st.bmp!==false){tc.drawImage(st.bmp,0,0,tw,th);if(st.bmp.close)st.bmp.close();st.bmp=null;}
+          else tc.drawImage(st.image,0,0,tw,th);
+          st.copyY=st.th;
+        }else{
+          // The bitmap is already the texture size, so each strip is a 1:1 copy.
+          while(st.copyY<st.th&&performance.now()-t0<1.2&&(sync||performance.now()<end)){
+            const rows=Math.min(32,st.th-st.copyY);
+            tc.drawImage(st.bmp,0,st.copyY,tw,rows,0,st.copyY,tw,rows);
+            st.copyY+=rows;
+          }
+          if(st.copyY<st.th)return false;
+          if(st.bmp.close)st.bmp.close();st.bmp=null;
+        }
         tc.globalCompositeOperation='source-atop';const shade=tc.createLinearGradient(0,0,tw,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');tc.fillStyle=shade;tc.fillRect(0,0,tw,th);tc.globalCompositeOperation='source-over';
-        st.texture=texture;st.tc=tc;st.tw=tw;st.th=th;st.ry=0;st.pixels=new Uint8ClampedArray(tw*th*4);
         const shadeMs=performance.now()-t0;
         if(shadeMs>4&&R.perf.markStep)R.perf.markStep('rig-shade:'+st.cacheKey,shadeMs);
         if(!sync&&performance.now()>=end)return false;

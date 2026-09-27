@@ -791,16 +791,26 @@
           return false;
         }
         if(job.bmp==null)return false;
+        if(!job.c){
+          job.c=document.createElement('canvas');job.c.width=dw;job.c.height=dh;
+          job.g=job.c.getContext('2d');job.g.imageSmoothingEnabled=true;job.g.imageSmoothingQuality='high';
+          job.y=0;
+        }
         const t0=performance.now();
-        const c=document.createElement('canvas');c.width=dw;c.height=dh;
-        const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
-        if(job.bmp&&job.bmp!==false){g.drawImage(job.bmp,0,0);if(job.bmp.close)job.bmp.close();}
-        else g.drawImage(img,0,0,dw,dh);
-        sized.set(id,c);touch(c);
+        if(job.bmp&&job.bmp!==false){
+          while(job.y<dh&&performance.now()-t0<1.2&&performance.now()<end){
+            const rows=Math.min(24,dh-job.y);
+            job.g.drawImage(job.bmp,0,job.y,dw,rows,0,job.y,dw,rows);
+            job.y+=rows;
+          }
+          if(job.y<dh)return false;
+          if(job.bmp.close)job.bmp.close();
+        }else job.g.drawImage(img,0,0,dw,dh);
+        sized.set(id,job.c);touch(job.c);
         if(R.perf.markStep)R.perf.markStep('roof-far',performance.now()-t0);
         return true;
       });
-      R.Bake.enqueue(1,'roof-mid',(job)=>{
+      R.Bake.enqueue(1,'roof-mid',(job,end)=>{
         const img=R.assets.get('stage5-roof-mid');if(!img)return true;
         const lw=2172/PPU[5],lh=lw*img.height/img.width;
         const piece={key:'stage5-roof-mid',w:lw,ramp:0};
@@ -815,12 +825,22 @@
           return false;
         }
         if(job.bmp==null)return false;
+        if(!job.c){
+          job.c=document.createElement('canvas');job.c.width=dw;job.c.height=dh;
+          job.g=job.c.getContext('2d');job.g.imageSmoothingEnabled=true;job.g.imageSmoothingQuality='high';
+          job.y=0;
+        }
         const t0=performance.now();
-        const c=document.createElement('canvas');c.width=dw;c.height=dh;
-        const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
-        if(job.bmp&&job.bmp!==false){g.drawImage(job.bmp,0,0);if(job.bmp.close)job.bmp.close();}
-        else g.drawImage(img,0,0,dw,dh);
-        c.rampU=0;c.rampOutU=0;sliceCache.set(id,c);touch(c);
+        if(job.bmp&&job.bmp!==false){
+          while(job.y<dh&&performance.now()-t0<1.2&&performance.now()<end){
+            const rows=Math.min(24,dh-job.y);
+            job.g.drawImage(job.bmp,0,job.y,dw,rows,0,job.y,dw,rows);
+            job.y+=rows;
+          }
+          if(job.y<dh)return false;
+          if(job.bmp.close)job.bmp.close();
+        }else job.g.drawImage(img,0,0,dw,dh);
+        job.c.rampU=0;job.c.rampOutU=0;sliceCache.set(id,job.c);touch(job.c);
         if(R.perf.markStep)R.perf.markStep('roof-mid',performance.now()-t0);
         return true;
       });
