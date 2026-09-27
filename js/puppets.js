@@ -208,18 +208,7 @@
         ctx.save();ctx.beginPath();for(let k=0;k<3;k++){const p=k===0?a:k===1?b:c,dx=p.X-centerX,dy=p.Y-centerY,l=Math.hypot(dx,dy)||1;ctx[k?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);}ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(tex,0,0,r.w,r.h);ctx.restore();
       }
     }
-    return outlineSurface(surface, bounds, scale);
-  }
-  // 1px dark rim baked into the pose so cloaks separate from the background.
-  // The source pose canvas is dropped; the outlined one replaces it.
-  function outlineSurface(surface, bounds, scale){
-    const pad=1,c=document.createElement('canvas');
-    c.width=bounds.width+pad*2;c.height=bounds.height+pad*2;
-    const g=c.getContext('2d');g.imageSmoothingEnabled=false;
-    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])g.drawImage(surface,pad+dx,pad+dy);
-    g.globalCompositeOperation='source-in';g.fillStyle='#140e0a';g.fillRect(0,0,c.width,c.height);
-    g.globalCompositeOperation='source-over';g.drawImage(surface,pad,pad);
-    return {surface:c,bounds:{left:bounds.left-pad,top:bounds.top-pad,width:c.width,height:c.height},scale};
+    return {surface,bounds,scale};
   }
   function blitPose(output,r,entry){
     const scale=entry.scale,b=entry.bounds;

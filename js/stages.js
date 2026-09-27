@@ -773,8 +773,10 @@
       if(show('screen')){ctx.drawImage(overlay('light:'+n,g=>{
         const depth=g.createLinearGradient(0,218,0,360);depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');g.fillStyle=depth;g.fillRect(0,218,640,142);
         const light=['#9bcfff','#ffdca0','#a99aff','#ffe8b0','#9ac2ff'][n-1],glow=g.createRadialGradient(440,100,10,440,100,310);glow.addColorStop(0,light+'28');glow.addColorStop(1,light+'00');g.fillStyle=glow;g.fillRect(0,0,640,360);
-        // Stages 2 and 4: a shallow shade behind the fight lane so cloaks separate from the street and the hall. Stage 5 stays bright enough to read on its own.
-        if(n===2||n===4){g.fillStyle='rgba(8,10,16,0.20)';g.fillRect(0,158,640,148);}
+        // Behind the fighters only. A per-pose outline on every enemy bake pushed stage enter past 700ms, so the separation is this band: darker on the brown hall, light on the night street.
+        if(n===2){g.fillStyle='rgba(8,10,16,0.22)';g.fillRect(0,168,640,132);}
+        else if(n===4){g.fillStyle='rgba(8,10,16,0.34)';g.fillRect(0,168,640,132);}
+        else if(n===5){g.fillStyle='rgba(4,6,12,0.16)';g.fillRect(0,176,640,120);}
       }),0,0,640,360);}
       if (n === 5 && !this._painting && Math.sin(time * 0.8) > 0.995) strokeLightning(ctx);
     },
