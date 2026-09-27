@@ -74,7 +74,7 @@ const server = http.createServer((req, res) => {
         };
       }
       function seamCost(a, b, a0, a1, b0, b1) {
-        const ah = a.h, bh = b.h, aw = a1 - a0, bw = b1 - b0;
+        const ah = a.canvas.height, bh = b.canvas.height, aw = a1 - a0, bw = b1 - b0;
         const W = Math.min(aw, bw);
         if (W < 2) return null;
         const ad = a.ctx.getImageData(a0, 0, W, ah).data, bd = b.ctx.getImageData(b0, 0, W, bh).data;

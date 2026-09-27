@@ -776,19 +776,53 @@
         if(!ctx||!img)return;
         ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(img,0,0,8,8);ctx.restore();
       };
-      R.Bake.enqueue(1,'roof-far',()=>{
+      R.Bake.enqueue(1,'roof-far',(job,end)=>{
         const img=R.assets.get('stage5-roof-far');if(!img)return true;
-        const travel=3600,farW=640+K_FAR*travel,drawH=farW*img.height/img.width;
+        const travel=3600,farW=640+K_FAR*travel,drawH=farW*img.height/img.width,rs=rsNow();
+        // Same key gradedFar uses for an ungraded roof (stage index 0).
+        const id='stage5-roof-far:far:@'+rs+':'+Math.round(farW)+'x'+Math.round(drawH);
+        if(sized.has(id))return true;
+        const dw=Math.max(1,Math.ceil(farW*rs)),dh=Math.max(1,Math.ceil(drawH*rs));
+        if(!job.pending&&job.bmp==null){
+          try{
+            job.pending=createImageBitmap(img,{resizeWidth:dw,resizeHeight:dh,resizeQuality:'high'});
+            job.pending.then(bmp=>{job.bmp=bmp;}).catch(()=>{job.bmp=false;});
+          }catch(e){job.bmp=false;}
+          return false;
+        }
+        if(job.bmp==null)return false;
         const t0=performance.now();
-        const plate=gradedFar('stage5-roof-far',farW,drawH,0);
-        touch(plate);if(R.perf.markStep)R.perf.markStep('roof-far',performance.now()-t0);return true;
+        const c=document.createElement('canvas');c.width=dw;c.height=dh;
+        const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+        if(job.bmp&&job.bmp!==false){g.drawImage(job.bmp,0,0);if(job.bmp.close)job.bmp.close();}
+        else g.drawImage(img,0,0,dw,dh);
+        sized.set(id,c);touch(c);
+        if(R.perf.markStep)R.perf.markStep('roof-far',performance.now()-t0);
+        return true;
       });
-      R.Bake.enqueue(1,'roof-mid',()=>{
+      R.Bake.enqueue(1,'roof-mid',(job)=>{
         const img=R.assets.get('stage5-roof-mid');if(!img)return true;
         const lw=2172/PPU[5],lh=lw*img.height/img.width;
+        const piece={key:'stage5-roof-mid',w:lw,ramp:0};
+        const id=plateId(piece,lh);
+        if(sliceCache.has(id))return true;
+        const rs=rsNow(),dw=Math.max(1,Math.ceil(lw*rs)),dh=Math.max(1,Math.ceil(lh*rs));
+        if(!job.pending&&job.bmp==null){
+          try{
+            job.pending=createImageBitmap(img,{resizeWidth:dw,resizeHeight:dh,resizeQuality:'high'});
+            job.pending.then(bmp=>{job.bmp=bmp;}).catch(()=>{job.bmp=false;});
+          }catch(e){job.bmp=false;}
+          return false;
+        }
+        if(job.bmp==null)return false;
         const t0=performance.now();
-        const plate=bakedPlate({key:'stage5-roof-mid',w:lw,ramp:0,id:'roof'},lh);
-        touch(plate);if(R.perf.markStep)R.perf.markStep('roof-mid',performance.now()-t0);return true;
+        const c=document.createElement('canvas');c.width=dw;c.height=dh;
+        const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+        if(job.bmp&&job.bmp!==false){g.drawImage(job.bmp,0,0);if(job.bmp.close)job.bmp.close();}
+        else g.drawImage(img,0,0,dw,dh);
+        c.rampU=0;c.rampOutU=0;sliceCache.set(id,c);touch(c);
+        if(R.perf.markStep)R.perf.markStep('roof-mid',performance.now()-t0);
+        return true;
       });
       R.Bake.enqueue(1,'roof-floor',()=>{
         const t0=performance.now();

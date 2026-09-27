@@ -62,7 +62,10 @@
       st.cacheKey=(primary?d.key:d.fallback)+':'+(d.variant||'base');
       if(rigs.has(st.cacheKey)){st.rig=rigs.get(st.cacheKey);st.phase='done';return true;}
       const t0=performance.now();
-      st.image=bakedImage(primary?d:{...d,sourcePanel:null},raw);
+      // Be'lal's cloth regrade is the only reason to copy the source. Every
+      // other rig uses the decoded image. A full-size canvas copy of cg-fade
+      // was a 9.6 ms step inside the clear-screen pump.
+      st.image=d.variant==='belal'?bakedImage(primary?d:{...d,sourcePanel:null},raw):raw;
       R.perf.markStep&&R.perf.markStep('bakedImage:'+st.cacheKey,performance.now()-t0);
       const image=st.image,w=image.width,h=image.height,point=p=>({x:p[0]*w,y:p[1]*h});
       st.w=w;st.h=h;st.point=point;
@@ -329,7 +332,9 @@
     for(let n=0;n<layers.length;n++)for(let i=0;i<r.vertices.length;i++){const v=skinPoint(r.vertices[i],r,bones,pose,layers[n][1],transforms,r.buffers[n][i]);minX=Math.min(minX,v.X);minY=Math.min(minY,v.Y);maxX=Math.max(maxX,v.X);maxY=Math.max(maxY,v.Y);}
     const left=Math.floor(minX*scale)-2,top=Math.floor(minY*scale)-2,width=Math.max(1,Math.ceil(maxX*scale)-left+2),height=Math.max(1,Math.ceil(maxY*scale)-top+2);
     const surface=document.createElement('canvas');surface.width=width;surface.height=height;
-    const ctx=surface.getContext('2d',{willReadFrequently:true}),bounds={left,top,width,height},padding=.8/scale;
+    // Not willReadFrequently: nothing reads this surface back. That flag made
+    // the first blit copy pixels off the CPU and cost 8–13 ms inside the draw.
+    const ctx=surface.getContext('2d'),bounds={left,top,width,height},padding=.8/scale;
     const bakeAt=performance.now();
     ctx.setTransform(scale,0,0,scale,-left,-top);
     if(!gpuSkin(r,r.buffers[0],bounds,scale,ctx))for(let n=0;n<layers.length;n++){const vertices=r.buffers[n],tex=layers[n][0];
@@ -363,12 +368,10 @@
     const q=R.perf.poseQueue;
     if(q){const i=q.findIndex(it=>it.kind===r.kind&&it.key===key);if(i>=0)q.splice(i,1);}
     if(q&&!q.length&&!R.perf.queueEmptyAt)R.perf.queueEmptyAt=performance.now();
-    if(R.Bake){
-      R.Bake.queueTouch(entry);
-      // After the pose is in the library. Strips stay under the pump budget.
-      // Priority 3 so a live pose (P0) and the boss set (P1) are not blocked.
-      R.Bake.enqueue(3,'flash:'+r.kind+':'+key,(job,end)=>stepFlash(job,end),{entry,kind:r.kind});
-    }
+    // Idle and walk frames are uploaded during enter. Other poses are uploaded
+    // on the frame a draw asks for them (Play.draw flushes before the world),
+    // not while the scheduler is merely filling the library.
+    if(R.Bake&&(key==='idle'||(key&&key[0]==='w')))R.Bake.queueTouch(entry);
     return entry;
   }
   function stepPose(job,end){
@@ -410,7 +413,7 @@
       const allocAt=performance.now();
       const surface=document.createElement('canvas');surface.width=width;surface.height=height;
       if(R.perf.markStep)R.perf.markStep('pose-alloc:'+job.kind,performance.now()-allocAt);
-      st.surface=surface;st.ctx=surface.getContext('2d',{willReadFrequently:true});st.bounds={left,top,width,height};st.padding=.8/scale;
+      st.surface=surface;st.ctx=surface.getContext('2d');st.bounds={left,top,width,height};st.padding=.8/scale;
       st.ctx.setTransform(scale,0,0,scale,-left,-top);
       st.phase='rast';st.ln=0;st.fi=0;st.gpu=true;
       // Raster starts on a later slice so one pose invocation stays near 1 ms.
@@ -498,7 +501,6 @@
       if(R.perf.poseWarm){
         if(!bones)return null;
         entry=bakePose(r,bones,pose);
-        flashOf(entry);
         if(key)lib.set(key,entry);
       }else{
         R.perf.poseFallbacks=(R.perf.poseFallbacks||0)+1;
@@ -510,9 +512,10 @@
     }
     if(!output||!entry)return entry;
     blitPose(output,r,entry);
-    // Gameplay never builds the flash canvas here. A miss keeps the untinted
-    // frame for this draw; the strip job already queued at pose finish fills it.
-    if(actor&&actor.hitFlash>0&&entry.flash){const alpha=output.globalAlpha,b=entry.bounds,scale=entry.scale;output.globalAlpha=alpha*Math.min(.72,actor.hitFlash*6);output.drawImage(entry.flash,0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);output.globalAlpha=alpha;}
+    // A second draw of the pose that is already on screen, added with lighter
+    // so the hit reads brighter. A warm-white canvas copy was a 6–12 ms
+    // readback, over the gameplay pump cap. source-atop stays off the main canvas.
+    if(actor&&actor.hitFlash>0){const alpha=output.globalAlpha,op=output.globalCompositeOperation;output.globalCompositeOperation='lighter';output.globalAlpha=alpha*Math.min(.55,actor.hitFlash*4);blitPose(output,r,entry);output.globalAlpha=alpha;output.globalCompositeOperation=op;}
     return entry;
   }
   function drawSword(ctx,a,d,r,bones,pose){
@@ -625,8 +628,8 @@
     const after=(R.perf.poseQueue&&R.perf.poseQueue.length)||0;
     return Math.max(0,before-after);
   },prepareStage(level){
-    // Idle is painted here so the first frame has a body. Every other pose
-    // is a resumable scheduler job, including during the fight.
+    // Current-stage poses except kicks are skinned here so the fight does not
+    // allocate them. Kicks stay resumable jobs. Enter has to stay within 700 ms.
     const bakeAt=performance.now();
     R.perf.allowSync=true;
     R.perf.poseFallbacks=0;
@@ -642,17 +645,20 @@
     for(const kind of kinds){
       const d=defs[kind];if(!d)continue;
       const r=getRig(d);if(!r)continue;
-      const bakedNow=['idle'];
-      for(let i=0;i<WALK_FRAMES;i++)bakedNow.push('w'+i);
-      for(const key of bakedNow){
+      // Every current-stage pose is skinned here, inside the measured enter,
+      // while that still fits the 700 ms cap. Leaving them for the fight made
+      // the first blit miss a vsync (a 33 ms gap) even when the pump stayed at 4 ms.
+      for(const key of POSE_KEYS){
+        // Kick frames are the extra canvases that pushed a full atlas over the
+        // 700 ms enter. They stay on the scheduler; the march does not draw them.
+        if(key[0]==='k')continue;
         if(r.library&&r.library.has(key))continue;
         const prev=R.perf.poseWarm;R.perf.poseWarm=true;
         const a=actorFor(d,key),pose=this.pose(a,d.height);
         paintedBody(null,r,targets(a,d,r,pose),pose,a,key);
         R.perf.poseWarm=prev;
       }
-      const idle=r.library&&r.library.get('idle');
-      if(idle)this.touchEntry(idle);
+      if(r.library)for(const [key,entry] of r.library)if(key==='idle'||key[0]==='w')this.touchEntry(entry);
       for(const key of POSE_KEYS){
         if(key==='idle')continue;
         if(r.library&&r.library.has(key))continue;
@@ -707,12 +713,12 @@
     }
     if(level===3){
       const names=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];
-      names.forEach((name,i)=>R.Bake.enqueue(1,'belal:'+name,(job)=>{
+      names.forEach((name)=>R.Bake.enqueue(1,'belal:'+name,(job)=>{
         const img=R.assets.get('belal-'+name);if(!img)return true;
-        const t0=performance.now();
-        belalFlash(name,img,img.width||8,img.height||8);
         const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
-        if(ctx){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(img,0,0,8,8);ctx.restore();}
+        if(!ctx)return true;
+        const t0=performance.now();
+        ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(img,0,0,8,8);ctx.restore();
         R.perf.markStep&&R.perf.markStep('belal:'+name,performance.now()-t0);
         return true;
       },{level}));
@@ -795,8 +801,9 @@
     if(['knockdown','lying'].includes(a.state)||a.dead)ctx.rotate(-(a.facing||-1)*Math.min(1,(a.stateT||0)*4)*1.25);
     ctx.scale(a.facing===1?-s:s,s);
     ctx.drawImage(img,-ax,-ay,w,h);
-    // Tint only Be'lal's own pixels: source-atop on the live canvas would light a box over the scene.
-    if(a.hitFlash>0){ctx.globalAlpha*=Math.min(.65,a.hitFlash*5);ctx.drawImage(belalFlash(name,img,w,h),-ax,-ay,w,h);}
+    // Brighter ghost of the same frame. A white source-atop copy is a full
+    // extra canvas, and source-atop on the live canvas lights a box over the scene.
+    if(a.hitFlash>0){const op=ctx.globalCompositeOperation;ctx.globalCompositeOperation='lighter';ctx.globalAlpha*=Math.min(.55,a.hitFlash*4);ctx.drawImage(img,-ax,-ay,w,h);ctx.globalCompositeOperation=op;}
     ctx.restore();
     return true;
   };

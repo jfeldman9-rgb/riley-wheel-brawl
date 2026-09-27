@@ -34,7 +34,7 @@ const percentile=(a,p)=>[...a].sort((x,y)=>x-y)[Math.min(a.length-1,Math.floor((
       framesAfter++;
       if(framesAfter<2){requestAnimationFrame(sample);return;}
     }
-    if(!start){start=t;R.perf.hitches=[];R.perf.slowSteps=[];}
+    if(!start){start=t;R.perf.hitches=[];R.perf.slowSteps=[];R.perf.outside=[];}
     if(start){
       if(prior){const gap=t-prior;gaps.push(gap);pumps.push(R.perf.lastPumpMs||0);if(gap>20){const w=(R.perf.work||[])[(R.perf.work||[]).length-1];big.push({gap:+gap.toFixed(2),cam:s.camera&&+s.camera.x.toFixed(1),wave:s.wave,phase:s.phase,updateMs:w&&w.updateMs,drawMs:w&&w.drawMs,pumpMs:w&&w.pumpMs,jobs:w&&w.jobs});}}
       prior=t;

@@ -267,7 +267,8 @@
       const drawMs=performance.now()-drawAt;
       RWB.perf.lastUpdateDraw=updateMs+drawMs;
       const jobs=(RWB.perf.frameJobs||[]).slice();
-      const row={t:now,scene:(scene.constructor&&scene.constructor.name)||'',wave:scene.wave||0,cam:scene.camera?+scene.camera.x.toFixed(1):0,updateMs:+updateMs.toFixed(2),drawMs:+drawMs.toFixed(2),pumpMs:+pumpMs.toFixed(2),jobs};
+      const frameMs=performance.now()-started;
+      const row={t:now,scene:(scene.constructor&&scene.constructor.name)||'',wave:scene.wave||0,cam:scene.camera?+scene.camera.x.toFixed(1):0,updateMs:+updateMs.toFixed(2),drawMs:+drawMs.toFixed(2),pumpMs:+pumpMs.toFixed(2),frameMs:+frameMs.toFixed(2),jobs};
       const ring=RWB.perf.work||(RWB.perf.work=[]);
       ring.push(row);if(ring.length>360)ring.shift();
       if(updateMs+drawMs+pumpMs>20){const hitches=RWB.perf.hitches||(RWB.perf.hitches=[]);hitches.push(row);if(hitches.length>500)hitches.shift();}
