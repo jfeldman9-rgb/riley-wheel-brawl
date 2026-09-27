@@ -67,6 +67,7 @@
       this.ai = 'telegraph';
       this.aiTimer = this.attack.tell;
       this.attackDidHit = false;
+      this.activeCounted = false;
       this.g.registerAttacker(this);
       this.setState('telegraph');
     }
@@ -189,7 +190,7 @@
     }
     onHurt(damage, opts) {
       this.g.releaseAttacker(this);
-      this.hitFlash = 0.1;
+      this.hitFlash = 0.16;
       if (opts.knockdown) {
         this.setState('knockdown');
         this.stun = 0.72;
@@ -197,8 +198,8 @@
       } else {
         this.setState('hurt');
         this.stun = 0.4;
-        this.friction = 11;
-        this.vx *= 0.4;
+        this.friction = 6.5;
+        this.vx *= 0.78;
       }
     }
     onDeath() {
@@ -290,6 +291,8 @@
     draw(ctx, cameraX) {
       this.drawTell(ctx, cameraX);
       this.drawShadow(ctx, cameraX, 24);
+      const spriteSize = this.boss ? 132 : 90;
+      if (R.paint(ctx, this.boss ? 'cg-trolloc-chieftain' : 'cg-trolloc', this.x-cameraX-spriteSize/2, this.y-this.z-spriteSize, spriteSize, spriteSize)) return;
       const frame = Math.floor(this.walkDistance / 16) % 4;
       const legs = [[-10, 10], [-4, 5], [10, -10], [5, -4]][this.state === 'walk' ? frame : 0];
       const scale = this.drawScale || 1;
@@ -353,10 +356,12 @@
     chooseBossAttack() {
       const cycle = [ATTACKS.crash, ATTACKS.charge, ATTACKS.stomp];
       this.attack = cycle[this.attackIndex % cycle.length];
-      this.attackIndex += 1;
+      // Advance the cycle only once a move becomes active; a stagger must not
+      // silently skip one of the three boss attacks.
       this.ai = 'telegraph';
       this.aiTimer = this.attack.tell;
       this.attackDidHit = false;
+      this.activeCounted = false;
       this.g.registerAttacker(this);
       this.setState('telegraph');
       this.g.warning = this.attack.name;
@@ -377,7 +382,8 @@
         return;
       }
       super.updateAI(dt);
-      if (this.ai === 'attack' && !this.usedAttacks.has(this.attack.name)) {
+      if (this.ai === 'attack' && !this.activeCounted) {
+        this.activeCounted = true; this.attackIndex += 1;
         this.usedAttacks.add(this.attack.name);
         this.g.playCue(this.attack === ATTACKS.crash ? 'bossCrash' : this.attack === ATTACKS.charge ? 'bossCharge' : 'bossStomp');
         if (this.attack === ATTACKS.crash) this.g.hazards.push(new Shockwave(this.g, this.x, this.y, this.facing));
@@ -394,7 +400,7 @@
     }
     onHurt(damage, opts) {
       if (this.dead) return;
-      this.hitFlash = 0.1;
+      this.hitFlash = 0.16;
       if (opts.stagger || opts.knockdown) {
         this.g.releaseAttacker(this);
         this.setState('hurt');
@@ -406,6 +412,7 @@
     }
     draw(ctx, cameraX) {
       super.draw(ctx, cameraX);
+      if (R.assets.has('cg-trolloc-chieftain')) return;
       const scale = this.drawScale || 1;
       ctx.save();
       ctx.translate(this.x - cameraX, this.y - this.z);

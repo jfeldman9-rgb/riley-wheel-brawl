@@ -11,50 +11,21 @@
     ctx.strokeRect(x, y, w, h);
   }
   function drawRileyPortrait(ctx, x, y) {
-    ctx.fillStyle = '#101c2d';
-    ctx.beginPath();
-    ctx.arc(x, y, 21, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#61c6ff';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.fillStyle = '#d6a47f';
-    ctx.beginPath();
-    ctx.ellipse(x, y - 1, 9, 11, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#17151a';
-    ctx.beginPath();
-    ctx.arc(x, y - 5, 10, Math.PI, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#17151a';
-    ctx.beginPath();
-    ctx.moveTo(x - 8, y - 4);
-    ctx.lineTo(x - 10, y - 12);
-    ctx.lineTo(x - 2, y - 7);
-    ctx.lineTo(x, y - 14);
-    ctx.lineTo(x + 3, y - 7);
-    ctx.lineTo(x + 9, y - 12);
-    ctx.lineTo(x + 8, y - 4);
-    ctx.fill();
-    ctx.strokeStyle = '#4eb5ef';
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    ctx.ellipse(x - 4, y, 3.2, 2.3, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.ellipse(x + 4, y, 3.2, 2.3, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x - 1, y);
-    ctx.lineTo(x + 1, y);
-    ctx.stroke();
+    const img = R.assets.get('riley16-portrait');
+    if (img) {
+      ctx.save();ctx.beginPath();ctx.arc(x,y,21,0,Math.PI*2);ctx.clip();ctx.drawImage(img,x-21,y-21,42,42);ctx.restore();
+      ctx.strokeStyle='#61c6ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,21,0,Math.PI*2);ctx.stroke();return;
+    }
+    ctx.fillStyle='#101c2d';ctx.beginPath();ctx.arc(x,y,21,0,Math.PI*2);ctx.fill();
+    R.drawText(ctx,'R',x,y+5,15,'#61c6ff','center');
   }
-  R.drawHUD = function (ctx, scene) {
+  const hudLayer = { key: '', canvas: null };
+  function paintHud(ctx, scene) {
     const player = scene.player;
     const big = !!R.settings.data.bigHud;
     const font = big ? 9 : 7;
     const small = big ? 8 : 6;
-    const panelH = big ? 72 : 59;
+    const panelH = big ? 72 : 62;
     R.drawPanel(ctx, 7, 7, big ? 286 : 250, panelH);
     drawRileyPortrait(ctx, 31, big ? 42 : 36);
     R.drawText(ctx, 'RILEY', 57, big ? 20 : 17, font, '#ffffff');
@@ -72,6 +43,9 @@
     R.drawText(ctx, 'LOIAL ' + (player.loialReady ? 'READY' : 'SPENT'), textX, big ? 24 : 20, font, player.loialReady ? '#8cf0ae' : '#87909a');
     R.drawText(ctx, 'SCORE ' + String(player.score).padStart(7, '0'), textX, big ? 44 : 38, font, '#ffffff');
     R.drawText(ctx, 'WAVE ' + Math.min(6, scene.wave + 1) + '/6', textX, big ? 64 : 54, small, '#b7cce1');
+    // Banner names the stage itself (Callandor is Stage 4's reward, not Stage 5's title).
+    R.drawText(ctx, 'STAGE ' + (scene.levelIndex + 1), 320, 16, 6, '#efdb97', 'center');
+    R.drawText(ctx, (scene.level && scene.level.banner) || (scene.level && scene.level.name) || '', 320, 27, 5, '#efdb97', 'center');
     if (player.angreal > 0) {
       R.drawPanel(ctx, 235, 75, 170, 24);
       R.drawText(ctx, 'ANGREAL ' + player.angreal.toFixed(1) + 's', 320, 88, 7, '#ffe078', 'center');
@@ -81,12 +55,44 @@
       R.drawText(ctx, '+' + R.TUNE.healAmount + ' HP', 454, 91, 6, '#d7f8ff');
     }
     if (scene.boss && !scene.boss.dead) {
-      R.drawPanel(ctx, 142, 70, 356, 35);
-      R.drawText(ctx, 'TROLLOC CHIEFTAIN', 320, 81, 7, '#f6ddb0', 'center');
-      bar(ctx, 160, 91, 320, 7, scene.boss.hp / scene.boss.hpMax, '#b94147', '#331f26');
+      R.drawPanel(ctx, 142, big ? 83 : 73, 356, 35);
+      R.drawText(ctx, scene.level.boss, 320, big ? 94 : 84, 7, '#f6ddb0', 'center');
+      bar(ctx, 160, big ? 104 : 94, 320, 7, scene.boss.hp / scene.boss.hpMax, '#b94147', '#331f26');
     }
     if (scene.warningTimer > 0) R.drawText(ctx, scene.warning, 320, 122, 8, '#ffe67a', 'center');
     if (scene.goTimer > 0) R.drawText(ctx, 'GO  →', 562, 174, 12, '#fff2a0', 'center');
-    if (scene.tutorial) R.drawText(ctx, R.input.fillKeys(scene.tutorial), 320, 332, 7, '#ffffff', 'center');
+    if (scene.tutorial) { R.drawPanel(ctx, 125, 314, 390, 20); R.drawText(ctx, R.input.fillKeys(scene.tutorial), 320, 325, 6, '#ffffff', 'center'); }
+  }
+  R.drawHUD = function (ctx, scene) {
+    const player = scene.player;
+    const bossHp = scene.boss && !scene.boss.dead ? Math.ceil(scene.boss.hp) : -1;
+    const rs = (R.display && R.display.renderScale) || 1;
+    const bw = Math.max(1, Math.ceil(640 * rs)), bh = Math.max(1, Math.ceil(360 * rs));
+    const key = [
+      bw, Math.ceil(player.hp), Math.ceil(player.power), player.lives, player.score, player.loialReady ? 1 : 0,
+      scene.wave, scene.levelIndex, bossHp, player.angreal > 0 ? player.angreal.toFixed(1) : '',
+      player.healPortrait > 0 ? 1 : 0, scene.warningTimer > 0 ? scene.warning : '', scene.goTimer > 0 ? 1 : 0,
+      scene.tutorial || '', R.settings.data.bigHud ? 1 : 0, R.settings.data.colorblind ? 1 : 0,
+      player.taintAge > R.TUNE.taintGrace ? 1 : 0
+    ].join('|');
+    if (!hudLayer.canvas) hudLayer.canvas = document.createElement('canvas');
+    const sizeChanged = hudLayer.canvas.width !== bw || hudLayer.canvas.height !== bh;
+    if (sizeChanged) {
+      hudLayer.canvas.width = bw;
+      hudLayer.canvas.height = bh;
+    }
+    if (hudLayer.key !== key || sizeChanged) {
+      const g = hudLayer.canvas.getContext('2d');
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.clearRect(0, 0, bw, bh);
+      g.setTransform(rs, 0, 0, rs, 0, 0);
+      paintHud(g, scene);
+      hudLayer.key = key;
+    }
+    const smooth = ctx.imageSmoothingEnabled;
+    ctx.imageSmoothingEnabled = false;
+    const top = scene.tutorial ? 340 : (scene.goTimer > 0 ? 200 : 150);
+    ctx.drawImage(hudLayer.canvas, 0, 0, bw, Math.ceil(top * rs), 0, 0, 640, top);
+    ctx.imageSmoothingEnabled = smooth;
   };
 }());

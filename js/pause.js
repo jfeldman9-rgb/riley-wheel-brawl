@@ -2,7 +2,7 @@
    Uses RWB.OptionsPanel for settings (incl. Screen Shake: Reduced) and remaps.
    Usage in a gameplay scene:
      this.pauseMenu = new RWB.PauseMenu({ onQuit: () => game.boot(), extra: [{ label: 'RESTART STAGE', act: () => ... }] });
-     update: if (!this.paused && input.pressed.pause) this.pause();
+     update: if (!this.paused && input.pressed.pause) { this.pause(); return; }
              if (this.paused) { if (this.pauseMenu.update(input, dt) === 'resume') this.paused = false; return; }
      draw:   if (this.paused) this.pauseMenu.draw(ctx); */
 'use strict';

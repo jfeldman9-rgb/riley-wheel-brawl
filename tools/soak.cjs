@@ -18,7 +18,7 @@ function boot(root) {
   canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 1280, height: 720 });
   const memory = new Map();
   const sandbox = {
-    console,
+    console: { ...console, info(...args) { if (!String(args[0]).startsWith('[RWB]')) console.info(...args); } },
     Math: Object.create(Math),
     Promise,
     performance: { now: () => 0 },
@@ -35,16 +35,17 @@ function boot(root) {
     localStorage: { getItem: key => memory.has(key) ? memory.get(key) : null, setItem: (key, value) => memory.set(key, value), removeItem: key => memory.delete(key) },
     location: { hash: '' },
     requestAnimationFrame() {},
-    fetch: () => Promise.resolve({ ok: false }),
+    fetch: url => { const clean=String(url).split('?')[0],file=path.join(root,clean); if (!clean.endsWith('.json') || !fs.existsSync(file)) return Promise.resolve({ok:false}); return Promise.resolve({ok:true,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(file,'utf8')))}); },
     document: { getElementById: () => canvas, createElement: () => createCanvas(1, 1), addEventListener() {}, fonts: { load: () => Promise.resolve() } },
-    Image: class { set src(value) { sandbox.__assetRequests += 1; if (this.onerror) this.onerror(); } }
+    Image: class { set src(value) { sandbox.__assetRequests += 1; sandbox.__assetUrls.push(value); if (this.onerror) this.onerror(); } }
   };
-  sandbox.__assetRequests = 0;
+  sandbox.__assetRequests = 0; sandbox.__assetUrls = [];
   sandbox.window = sandbox;
   vm.createContext(sandbox);
   const scripts = [...fs.readFileSync(path.join(root, 'index.html'), 'utf8').matchAll(/<script src="js\/([\w-]+)\.js/g)].map(match => match[1]);
   for (const script of scripts) vm.runInContext(fs.readFileSync(path.join(root, 'js', script + '.js'), 'utf8'), sandbox, { filename: script + '.js' });
   sandbox.RWB.__assetRequests = () => sandbox.__assetRequests;
+  sandbox.RWB.__assetUrls = () => sandbox.__assetUrls.slice();
   sandbox.RWB.__setRandom = value => { sandbox.Math.random = value; };
   return sandbox.RWB;
 }
@@ -59,11 +60,11 @@ function seeded(RWB, seedValue) {
     return seed / 4294967296;
   };
 }
-function soak(RWB, seedValue) {
+function soak(RWB, seedValue, levelIndex = 0, options = {}) {
   seeded(RWB, seedValue);
   const oldRandom = RWB.__random;
   RWB.__setRandom(oldRandom);
-  const scene = new RWB.scenes.Play(RWB.game, 0, { lives: 99 });
+  const scene = new RWB.scenes.Play(RWB.game, levelIndex, { lives: options.natural ? 3 : 99, callandor: levelIndex === 4 });
   scene.enter();
   RWB.game.scene = scene;
   const player = scene.player;
@@ -81,7 +82,7 @@ function soak(RWB, seedValue) {
   } };
   const nativeRandom = Math.random;
   Math.random = oldRandom;
-  while (seconds < 240 && scene.phase !== 'clear') {
+  while (seconds < 360 && scene.phase !== 'clear') {
     seconds += 1 / 60;
     frame += 1;
     input.pressed = {};
@@ -101,12 +102,16 @@ function soak(RWB, seedValue) {
       measuredDamage += lastHp - player.hp;
       measuredHits += 1;
     }
-    if (player.hp < 28 && scene.phase === 'play') player.hp = player.hpMax;
+    if (options.natural && player.lives <= 0) break;
+    if (!options.natural && player.hp < 28 && scene.phase === 'play') player.hp = player.hpMax;
     lastHp = player.hp;
   }
   Math.random = nativeRandom;
   return {
+    stage: levelIndex + 1,
     cleared: scene.phase === 'clear',
+    jointHit: !!(scene.joint && scene.joint.hit),
+    receivedMoves: scene.boss && scene.boss.receivedMoves ? [...scene.boss.receivedMoves] : [],
     seconds: Number(seconds.toFixed(1)),
     damage: measuredDamage,
     hits: measuredHits,
@@ -117,18 +122,23 @@ function soak(RWB, seedValue) {
   };
 }
 if (require.main === module) {
-  const root = process.argv[2] || path.resolve(__dirname, '..');
+  const root = process.argv.slice(2).find(arg => !arg.startsWith('--')) || path.resolve(__dirname, '..');
   const RWB = boot(root);
+  const selected = process.argv.find(arg => arg.startsWith('--stage='));
+  const stages = selected ? [Number(selected.split('=')[1]) - 1] : [0,1,2,3,4];
+  if (stages.some(stage => !RWB.LEVELS[stage])) throw new Error('Use --stage=1 through --stage=5');
   const rows = [];
-  for (let seed = 1; seed <= 10; seed += 1) rows.push({ seed, result: soak(RWB, seed) });
-  console.log('SEED | CLEARED | SECONDS | DAMAGE | HITS | DEATHS | PICKUPS | MOVES');
-  for (const row of rows) console.log(String(row.seed).padStart(4) + ' | ' + (row.result.cleared ? 'YES' : 'NO ').padEnd(7) + ' | ' + String(row.result.seconds).padStart(7) + ' | ' + String(row.result.damage).padStart(6) + ' | ' + String(row.result.hits).padStart(4) + ' | ' + String(row.result.deaths).padStart(6) + ' | ' + String(row.result.pickups).padStart(7) + ' | ' + row.result.moves.join(','));
-  const damages = rows.map(row => row.result.damage).sort((a, b) => a - b);
-  const median = (damages[4] + damages[5]) / 2;
-  console.log('MEDIAN DAMAGE: ' + median);
-  for (const row of rows) console.log('SEED ' + row.seed + ' CHIEFTAIN ATTACKS: ' + row.result.attacks.join(', '));
-  const signatures = new Set(rows.map(row => [row.result.seconds, row.result.damage, row.result.hits, row.result.pickups].join('/')));
-  const failed = rows.some(row => !row.result.cleared || row.result.damage <= 0 || row.result.attacks.length < 3) || signatures.size === 1;
-  if (failed) process.exitCode = 1;
+  for (const stage of stages) for (let seed = 1; seed <= 10; seed++) rows.push({ seed, result: soak(RWB, seed, stage, { natural: process.argv.includes('--natural') }) });
+  console.log('STAGE | SEED | CLEAR | SECONDS | DAMAGE | HITS | DEATHS | ATTACKS');
+  for (const {seed, result:r} of rows) console.log([r.stage,seed,r.cleared?'YES':'NO',r.seconds,r.damage,r.hits,r.deaths,r.attacks.join(', ')].join(' | '));
+  console.log('\nSTAGE | CLEARS | TIME RANGE | MEDIAN DAMAGE | ALL ATTACKS / SEED');
+  for (const stage of stages) {
+    const set = rows.filter(row=>row.result.stage === stage+1).map(row=>row.result);
+    const damages = set.map(r=>r.damage).sort((a,b)=>a-b);
+    console.log([stage+1, set.filter(r=>r.cleared).length+'/10', Math.min(...set.map(r=>r.seconds))+'-'+Math.max(...set.map(r=>r.seconds)), (damages[4]+damages[5])/2, set.filter(r=>RWB.LEVELS[stage].attacks.every(a=>r.attacks.includes(a))).length+'/10'].join(' | '));
+  }
+  const failed = rows.some(({result:r}) => !r.cleared || r.damage <= 0 || !RWB.LEVELS[r.stage-1].attacks.every(a=>r.attacks.includes(a)) || (r.stage===5 && !r.jointHit) || (r.stage===3 && r.receivedMoves.some(m=>!['jump','fireball'].includes(m))));
+  const identical = stages.some(stage=>new Set(rows.filter(row=>row.result.stage===stage+1).map(({result:r})=>[r.seconds,r.damage,r.hits].join('/'))).size===1);
+  if (failed || identical) process.exitCode = 1;
 }
 module.exports = { boot, soak };

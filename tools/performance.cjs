@@ -1,0 +1,29 @@
+'use strict';
+// Repeatable headless frame-cost and RAF benchmark. Combat is assisted only to
+// keep each sample alive; use soak.cjs --natural for difficulty, not this tool.
+const fs=require('fs'),path=require('path'),http=require('http'),{chromium}=require('playwright');
+const args=process.argv.slice(2),root=path.resolve(args[0]||path.join(__dirname,'..')),out=path.resolve(args[1]||path.join(root,'docs/review/performance.json'));
+const server=http.createServer((req,res)=>{const file=path.join(root,decodeURIComponent(req.url.split('?')[0]==='/'?'/index.html':req.url.split('?')[0]));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)){res.statusCode=404;return res.end();}res.setHeader('Content-Type',file.endsWith('.js')?'application/javascript':file.endsWith('.css')?'text/css':file.endsWith('.html')?'text/html':file.endsWith('.png')?'image/png':file.endsWith('.jpeg')?'image/jpeg':'application/octet-stream');fs.createReadStream(file).pipe(res);});
+(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage',...(process.env.RWB_ACCELERATED?['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']:['--disable-gpu','--disable-accelerated-2d-canvas'])]});const results=[];const timeout=setTimeout(()=>{console.error('Benchmark timeout');browser.close();server.close();process.exitCode=1;},360000);
+for(const mode of [{name:'desktop',width:1280,height:720,dpr:1},{name:'phone-retina',width:854,height:480,dpr:3}]){
+ const context=await browser.newContext({viewport:{width:mode.width,height:mode.height},deviceScaleFactor:mode.dpr,isMobile:mode.dpr>1,hasTouch:mode.dpr>1}),p=await context.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));p.on('console',m=>{if(m.text().startsWith('BENCH'))console.log(m.text());});
+ await p.addInitScript(({canvasOnly})=>{if(canvasOnly){const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return type==='webgl'?null:original.call(this,type,...args);};}window.nativeRAF=window.requestAnimationFrame.bind(window);window.requestAnimationFrame=cb=>(window.gameFrame=cb,1);},{canvasOnly:!process.env.RWB_ACCELERATED});await p.goto('http://127.0.0.1:'+server.address().port+'/');await p.waitForFunction(()=>window.RWB?.assets.done,{},{polling:100,timeout:30000});console.log(mode.name+' loaded');await p.evaluate(async()=>{await document.fonts.ready;if(RWB.prepareRendering)await RWB.prepareRendering();});
+ const samples=await p.evaluate(async()=>{
+  const R=RWB,c=document.getElementById('game'),ctx=c.getContext('2d'),percentile=(a,n)=>[...a].sort((a,b)=>a-b)[Math.min(a.length-1,Math.floor(a.length*n))],stats=a=>({p50:+percentile(a,.5).toFixed(2),p95:+percentile(a,.95).toFixed(2),max:+Math.max(...a).toFixed(2)}),stages=[];
+  window.startBench=level=>{let seed=1900+level;Math.random=()=>((seed=(seed*1664525+1013904223)>>>0)/4294967296);const s=new R.scenes.Play(R.game,level,{wave:3,callandor:level===4});R.game.setSceneNow(s);let frame=0;const input={held:{},pressed:{},axis(){const e=s.enemies.find(e=>!e.dead);return e?{x:Math.abs(e.x-s.player.x)>52?Math.sign(e.x-s.player.x):0,y:Math.abs(e.y-s.player.y)>7?Math.sign(e.y-s.player.y)*.7:0}:{x:0,y:0};},step(){frame++;this.pressed={};if(frame%25===0)this.pressed.attack=true;if(frame%87===0)this.pressed.special=true;s.player.hp=100;}};return {s,input};};
+  for(let level=0;level<5;level++){
+   const {s,input}=startBench(level);const draw=()=>{ctx.setTransform(R.display.renderScale,0,0,R.display.renderScale,0,0);s.draw(ctx);};const cold=performance.now();draw();const firstDraw=performance.now()-cold;
+   for(let f=0;f<90;f++){input.step();s.update(1/60,input);if(f>=80)draw();}
+   const costs=[],updates=[];for(let f=0;f<30;f++){input.step();const t=performance.now();s.update(1/60,input);const t1=performance.now();draw();costs.push(performance.now()-t1);updates.push(t1-t);}
+   console.log('BENCH stage '+(level+1));stages.push({stage:level+1,firstDrawMs:+firstDraw.toFixed(2),drawMs:stats(costs),updateMs:stats(updates)});
+   await new Promise(r=>setTimeout(r,0));
+  }
+  const {s,input}=startBench(0);R.input.axis=()=>input.axis();R.input.beginFrame=()=>{input.step();R.input.pressed=input.pressed;}; // main uses the public object each frame
+  // Preserve the existing pressed object's identity used by main/input wrappers.
+  const press=R.input.pressed;R.input.beginFrame=()=>{input.step();for(const k in press)delete press[k];Object.assign(press,input.pressed);s.player.hp=100;};R.input.pressed=press;
+  const intervals=[];let last=0,warm=60;await new Promise(resolve=>{const run=t=>{gameFrame(t);if(last&&warm--<=0)intervals.push(t-last);last=t;if(intervals.length>=180)resolve();else nativeRAF(run);};nativeRAF(run);});
+  return {width:c.width,height:c.height,renderScale:R.display.renderScale,stages,rafIntervalMs:stats(intervals),over25ms:intervals.filter(v=>v>25).length,totalFrames:intervals.length,performance:R.perf.metrics||null};
+ });results.push({mode:mode.name,deviceScaleFactor:mode.dpr,errors,...samples});console.log(mode.name,JSON.stringify({size:[samples.width,samples.height],p95:samples.stages.map(s=>s.drawMs.p95),raf:samples.rafIntervalMs}));await context.close();
+}
+fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify({method:(process.env.RWB_ACCELERATED?'Headless Chromium/SwiftShader,':'Headless Chromium/software Canvas,')+' five stages, 90 simulation warmup (10 draws) + 30 measured draws; 60 RAF warmup + 180 measured native RAF frames. Not physical-device FPS.',results},null,2)+'\n');clearTimeout(timeout);await browser.close();server.close();if(results.some(r=>r.errors.length))process.exitCode=1;
+})().catch(e=>{console.error(e);server.close();process.exitCode=1;});

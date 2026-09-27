@@ -1,6 +1,25 @@
 'use strict';
 (function () {
   const R = window.RWB;
+  const RILEY16 = R.RILEY16 = {
+    height: 96,
+    frames: {
+      idle:[178,227,92,226], walk1:[173,229,95,229], walk2:[169,230,88,229],
+      walk3:[166,229,95,229], walk4:[167,226,89,226], punch:[210,214,105,214],
+      kick:[227,215,101,215], fireball:[303,206,144,205], hurt:[166,215,62,214], jump:[178,172,82,171]
+    }
+  };
+  const rims=new Map(),flashes=new Map();
+  function rimFrame(frame){
+    if(rims.has(frame))return rims.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
+    const c=document.createElement('canvas');c.width=img.width+16;c.height=img.height+16;const g=c.getContext('2d');
+    g.filter='drop-shadow(0 0 2.84px rgba(255,232,180,.7)) drop-shadow(0 2.36px 2.36px rgba(0,0,0,.65))';g.drawImage(img,8,8);rims.set(frame,c);return c;
+  }
+  function flashFrame(frame){
+    if(flashes.has(frame))return flashes.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
+    const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const g=c.getContext('2d');
+    g.drawImage(img,0,0);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,c.width,c.height);flashes.set(frame,c);return c;
+  }
   function degrees(value) {
     return value * Math.PI / 180;
   }
@@ -39,7 +58,10 @@
       this.owner = owner;
       this.x = owner.x + owner.facing * 25;
       this.y = owner.y + laneOffset;
-      this.z = 30;
+      this.z = 30 + owner.z;
+      const flyer = scene.enemies.find(e => e.flying && !e.dead && Math.abs(e.y - this.y) < 28 && (e.x - owner.x) * owner.facing > 0);
+      // Aim once on release, never home; makes fireballs a usable anti-air tool.
+      this.vz = flyer ? (flyer.z + 25 - this.z) / Math.max(0.15, Math.abs(flyer.x - this.x) / 330) : 0;
       this.vx = owner.facing * 330;
       this.life = 2.3;
       this.radius = owner.angreal > 0 ? 10 : 7;
@@ -48,6 +70,7 @@
     }
     update(dt) {
       this.x += this.vx * dt;
+      this.z += this.vz * dt;
       this.life -= dt;
       if (Math.random() < 0.55) this.g.fx.sparks(this.x, this.y - this.z, '#ffb33d', 1);
       for (const enemy of this.g.enemies) {
@@ -62,20 +85,19 @@
       }
     }
     draw(ctx, cameraX) {
-      const glow = ctx.createRadialGradient(this.x - cameraX, this.y - this.z, 1, this.x - cameraX, this.y - this.z, 16);
-      glow.addColorStop(0, '#ffffff');
-      glow.addColorStop(0.25, '#ffe06e');
-      glow.addColorStop(0.65, '#f46b28');
-      glow.addColorStop(1, 'rgba(244,60,20,0)');
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(this.x - cameraX, this.y - this.z, 16, 0, Math.PI * 2);
-      ctx.fill();
+      const x=this.x-cameraX,y=this.y-this.z,dir=Math.sign(this.vx)||1;
+      const phase=Math.floor(this.x*.08*4/Math.PI)%8;
+      const texture=R.effects.stamp('fireball:'+phase,(g)=>{
+        g.translate(68,48);g.lineCap='round';g.globalCompositeOperation='lighter';
+        for(let i=0;i<4;i++){const trail=g.createLinearGradient(-42,0,0,0);trail.addColorStop(0,'#ff7b0000');trail.addColorStop(1,i%2?'#ffd86caa':'#ff6633aa');g.strokeStyle=trail;g.lineWidth=2+i*.6;g.beginPath();g.moveTo(-(34+i*4),Math.sin(phase*Math.PI/4+i)*6);g.quadraticCurveTo(-16,(i-1.5)*5,0,0);g.stroke();}
+        g.globalCompositeOperation='source-over';const glow=g.createRadialGradient(0,0,1,0,0,16);glow.addColorStop(0,'#ffffff');glow.addColorStop(.25,'#ffe06e');glow.addColorStop(.65,'#f46b28');glow.addColorStop(1,'rgba(244,60,20,0)');g.fillStyle=glow;g.beginPath();g.arc(0,0,16,0,Math.PI*2);g.fill();
+      });
+      ctx.save();ctx.translate(x,y);ctx.scale(dir,1);ctx.drawImage(texture,-68,-48);ctx.restore();
     }
   }
   class Riley extends R.Entity {
     constructor(scene, carry) {
-      super(scene, 110, 268, { hp: 100, bw: 25, bh: 67, gravity: R.TUNE.gravity });
+      super(scene, 110, 268, { hp: 100, bw: 25, bh: 92, gravity: R.TUNE.gravity });
       const saved = carry || {};
       this.hpMax = 100;
       this.powerMax = 100;
@@ -83,6 +105,8 @@
       this.score = saved.score || 0;
       this.lives = saved.lives == null ? 3 : saved.lives;
       this.loialReady = saved.loial !== false;
+      this.callandor = !!saved.callandor;
+      this.stunTimer = 0;
       this.angreal = 0;
       this.fireCooldown = 0;
       this.comboStep = 0;
@@ -247,7 +271,9 @@
       this.comboWindow = finished === 'front' || finished === 'round' ? R.TUNE.comboWindow : 0;
     }
     updateTaint(dt) {
+      if (this.g.paused || this.dead) return;
       if (this.power < this.powerMax || this.g.phase !== 'play') {
+        this.taintWarned = false;
         this.taintAge = 0;
         this.taintClock = 0;
         this.taintTell = 0;
@@ -270,10 +296,19 @@
         this.taintTell = R.TUNE.taintTell;
         this.g.warning = 'TAINT STRIKE INCOMING!';
         this.g.warningTimer = R.TUNE.taintTell;
-        R.voice('moiraine_taint_01');
+        if (!this.taintWarned) { R.voice('moiraine_taint_01'); this.taintWarned = true; }
       }
     }
     update(dt, input) {
+      if (this.grabbedBy) {
+        this.grabTimer -= dt + (R.keyPressed(input, 'attack') ? 0.23 : 0);
+        this.grabDamageClock += dt;
+        this.vx = this.vy = 0;
+        if (this.grabDamageClock >= 0.4) { this.grabDamageClock = 0; this.g.hitPlayer(3, this.grabbedBy.x, { kb:0, knockdown:false, source:'HYPNOTIC KISS' }); }
+        if (this.grabTimer <= 0 || this.grabbedBy.dead) { this.grabbedBy = null; this.invuln = 0.7; }
+        this.updateTaint(dt); super.update(dt); return;
+      }
+      if (this.stunTimer > 0) { this.stunTimer -= dt; this.vx = this.vy = 0; this.updateTaint(dt); super.update(dt); return; }
       this.fireCooldown = Math.max(0, this.fireCooldown - dt);
       this.angreal = Math.max(0, this.angreal - dt);
       this.comboWindow = Math.max(0, this.comboWindow - dt);
@@ -338,7 +373,7 @@
       }
     }
     onHurt(damage, opts) {
-      this.hitFlash = 0.12;
+      this.hitFlash = 0.16;
       this.friction = opts && opts.launch ? 2.4 : 3.1;
       this.attackMove = null;
       this.queuedAttack = false;
@@ -361,166 +396,52 @@
       else if (key === 'idle') index = Math.floor(this.stateT * 2) % frames.length;
       return frames[index];
     }
-    draw(ctx, cameraX) {
-      this.drawShadow(ctx, cameraX, 14);
-      const pose = this.pose();
-      const hipY = -23;
-      const leftFoot = limbPoint(limbPoint(-4, hipY, 12, pose.hip[0]).x, limbPoint(-4, hipY, 12, pose.hip[0]).y, 11, pose.hip[0] + pose.knee[0]);
-      const rightHipPoint = limbPoint(4, hipY, 12, pose.hip[1]);
-      const rightFoot = limbPoint(rightHipPoint.x, rightHipPoint.y, 11, pose.hip[1] + pose.knee[1]);
-      const contact = leftFoot.y >= rightFoot.y ? 'l' : 'r';
-      const plant = contact === 'l' ? leftFoot : rightFoot;
-      let slide = 0;
-      if (this.state === 'walk' && this.grounded) {
-        if (this.plantFoot !== contact) {
-          this.plantFoot = contact;
-          this.plantWorld = this.x + this.facing * plant.x;
-        }
-        slide = R.util.clamp((this.plantWorld - this.x) * this.facing - plant.x, -7, 7);
-      } else this.plantFoot = '';
-      const x = this.x - cameraX;
-      const y = this.y - this.z + pose.bob * 0.6;
+    spriteFrame() {
+      const state = this.attackMove ? this.attackName : this.state;
+      if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 20) % 4 + 1);
+      if (!this.grounded || ['rise', 'fall', 'jump'].includes(state)) return this.attackMove ? 'kick' : 'jump';
+      if (['front', 'round', 'back', 'spin', 'knee', 'kick', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'kick';
+      if (['punch', 'jab', 'combo', 'combo1', 'combo2', 'combo3'].includes(state)) return 'punch';
+      if (['channel', 'fireball', 'throw', 'special', 'super', 'balefire'].includes(state)) return 'fireball';
+      if (['hurt', 'knockback', 'knockdown', 'lying', 'getup', 'death'].includes(state) || this.dead) return 'hurt';
+      return 'idle';
+    }
+    drawSprite(ctx, cameraX, forcedFrame) {
+      const frame = forcedFrame || this.spriteFrame();
+      const img = R.assets.get('riley16-' + frame), data = RILEY16.frames[frame];
+      if (!img || !data) return false;
+      const [w,h,ax,ay] = data, scale = RILEY16.height / RILEY16.frames.idle[1];
+      const lying = !forcedFrame && (this.dead || ['knockdown', 'lying', 'death'].includes(this.state));
       ctx.save();
-      ctx.translate(x, y);
+      ctx.translate(this.x - cameraX, this.y - this.z);
+      if (lying) ctx.rotate(this.facing * 80 * Math.PI / 180);
       ctx.scale(this.facing, 1);
-      ctx.translate(slide, 0);
-      if (this.invuln > 0 && Math.floor(this.invuln * 18) % 2 === 0) ctx.globalAlpha = 0.55;
-      if (this.angreal > 0) {
-        ctx.strokeStyle = 'rgba(255,221,100,0.75)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(0, -32, 24 + Math.sin(this.stateT * 8) * 1.5, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-      drawLimb(ctx, { x: -4, y: hipY }, pose.hip[0], pose.knee[0], 12, 11, 4.2, true, '#1a2030');
-      drawLimb(ctx, { x: 4, y: hipY }, pose.hip[1], pose.knee[1], 12, 11, 4.2, true, '#1a2030');
-      const coat = ctx.createLinearGradient(-12, -48, 12, -14);
-      coat.addColorStop(0, '#2a3342');
-      coat.addColorStop(0.4, '#10151e');
-      coat.addColorStop(1, '#05070c');
-      ctx.fillStyle = coat;
-      ctx.beginPath();
-      ctx.moveTo(-8, -46);
-      ctx.lineTo(-10, -40);
-      ctx.quadraticCurveTo(-13, -30, -11, -16);
-      ctx.lineTo(-6, -12);
-      ctx.lineTo(0, -18);
-      ctx.lineTo(6, -12);
-      ctx.lineTo(11, -16);
-      ctx.quadraticCurveTo(13, -30, 10, -40);
-      ctx.lineTo(8, -46);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = '#07090e';
-      ctx.beginPath();
-      ctx.moveTo(-7, -46);
-      ctx.lineTo(-5, -50);
-      ctx.lineTo(0, -47);
-      ctx.lineTo(5, -50);
-      ctx.lineTo(7, -46);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = '#3a4554';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      drawLimb(ctx, { x: -8, y: -40 }, pose.shoulder[0], pose.elbow[0], 10, 9, 3.4, false, '#121722');
-      drawLimb(ctx, { x: 8, y: -40 }, pose.shoulder[1], pose.elbow[1], 10, 9, 3.4, false, '#121722');
-      ctx.strokeStyle = '#8d7a45';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(-9, -22);
-      ctx.lineTo(9, -22);
-      ctx.stroke();
-      ctx.fillStyle = '#d7c37a';
-      ctx.fillRect(-2, -24, 4, 4);
-      for (let i = 0; i < 3; i += 1) {
-        ctx.fillStyle = '#d5dde4';
-        ctx.beginPath();
-        ctx.arc(0, -38 + i * 5, 1.1, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.fillStyle = '#d9dee6';
-      ctx.beginPath();
-      ctx.moveTo(-7, -46);
-      ctx.lineTo(-3, -50);
-      ctx.lineTo(-2, -44);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = '#f2f6fb';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(-6, -49);
-      ctx.lineTo(-3, -45);
-      ctx.stroke();
-      ctx.fillStyle = '#c43232';
-      ctx.beginPath();
-      ctx.moveTo(3, -49);
-      ctx.quadraticCurveTo(8, -47, 5, -43);
-      ctx.quadraticCurveTo(2, -45, 3, -49);
-      ctx.fill();
-      ctx.strokeStyle = '#e8be48';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      const skin = ctx.createRadialGradient(-2, -54, 1, 0, -52, 11);
-      skin.addColorStop(0, '#f6d0ae');
-      skin.addColorStop(1, '#c48868');
-      ctx.fillStyle = skin;
-      ctx.beginPath();
-      ctx.ellipse(0, -52, 8.5, 9.2, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#16141a';
-      ctx.beginPath();
-      ctx.moveTo(-8, -54);
-      ctx.lineTo(-9, -62);
-      ctx.lineTo(-4, -56);
-      ctx.lineTo(-1, -66);
-      ctx.lineTo(2, -56);
-      ctx.lineTo(5, -64);
-      ctx.lineTo(8, -55);
-      ctx.lineTo(8, -50);
-      ctx.quadraticCurveTo(0, -56, -8, -50);
-      ctx.closePath();
-      ctx.fill();
-      const hair = ctx.createLinearGradient(0, -66, 0, -52);
-      hair.addColorStop(0, '#3c3844');
-      hair.addColorStop(1, '#16141a');
-      ctx.strokeStyle = hair;
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.moveTo(-1, -64);
-      ctx.quadraticCurveTo(-5, -58, -2, -51);
-      ctx.stroke();
-      ctx.strokeStyle = '#3d86c9';
-      ctx.lineWidth = 1.15;
-      ctx.beginPath();
-      ctx.ellipse(-4.2, -52, 3.3, 2.5, 0, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.ellipse(4.2, -52, 3.3, 2.5, 0, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(-0.9, -52);
-      ctx.lineTo(0.9, -52);
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(-5.6, -53);
-      ctx.lineTo(-3.6, -53.2);
-      ctx.moveTo(2.8, -53);
-      ctx.lineTo(4.6, -53.2);
-      ctx.stroke();
-      if (this.hitFlash > 0) {
-        ctx.globalAlpha = Math.min(0.65, this.hitFlash * 6);
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.ellipse(0, -36, 14, 22, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      }
+      if (this.invuln > 0 && Math.floor(this.invuln * 18) % 2 === 0) ctx.globalAlpha *= .55;
+      if (this.dead) ctx.globalAlpha *= Math.max(.1, Math.min(1, 1 - this.deadTimer / .75));
+      // Thin warm rim + contact shadow keep Riley readable against busy art.
+      const rim=!this.ghost&&rimFrame(frame);
+      if(rim)ctx.drawImage(rim,(-ax-8)*scale,(-ay-8)*scale,(w+16)*scale,(h+16)*scale);
+      else ctx.drawImage(img, -ax * scale, -ay * scale, w * scale, h * scale);
+      if(this.hitFlash>0){const flash=flashFrame(frame);if(flash){ctx.globalAlpha*=Math.min(.75,this.hitFlash*6);ctx.drawImage(flash,-ax*scale,-ay*scale,w*scale,h*scale);}}
       ctx.restore();
+      return true;
+    }
+    draw(ctx, cameraX) {
+      this.drawShadow(ctx, cameraX, 18);
+      if (!this.drawSprite(ctx, cameraX)) {
+        // The compact procedural actor is retained only as a load-failure fallback.
+        if (R.paint && R.paint(ctx, 'cg-riley', this.x-cameraX-40, this.y-this.z-96, 80, 96)) return;
+      }
+      if (this.angreal > 0) {
+        ctx.save();ctx.strokeStyle='rgba(255,221,100,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.x-cameraX,this.y-this.z-48,31+Math.sin(this.stateT*8)*2,0,Math.PI*2);ctx.stroke();ctx.restore();
+      }
+      if (this.callandor) {
+        ctx.save();ctx.lineCap='round';ctx.strokeStyle='rgba(100,220,255,.35)';ctx.lineWidth=11;ctx.beginPath();ctx.moveTo(this.x-cameraX-13,this.y-this.z-31);ctx.lineTo(this.x-cameraX-25,this.y-this.z-86);ctx.stroke();ctx.strokeStyle='#e8ffff';ctx.lineWidth=3;ctx.stroke();ctx.restore();
+      }
+      // Hit tint is baked into Riley's own pixels inside drawSprite.
     }
   }
   R.Fireball = Fireball;
   R.Riley = Riley;
+  R.Riley.prepare=()=>Object.keys(RILEY16.frames).forEach(frame=>{rimFrame(frame);flashFrame(frame);});
 }());
