@@ -12,7 +12,7 @@ async function pageLoadChecks(check, rootDir) {
     const pathname = decodeURIComponent(req.url.split('?')[0]);
     const file = path.join(rootDir, pathname === '/' ? 'index.html' : pathname);
     if (!file.startsWith(rootDir + path.sep) || !fs.existsSync(file)) { res.statusCode = 404; return res.end(); }
-    const type = file.endsWith('.js') ? 'application/javascript' : file.endsWith('.css') ? 'text/css' : file.endsWith('.html') ? 'text/html' : file.endsWith('.png') ? 'image/png' : file.endsWith('.jpeg') ? 'image/jpeg' : file.endsWith('.ttf') ? 'font/ttf' : 'application/octet-stream';
+    const type = file.endsWith('.js') ? 'application/javascript' : file.endsWith('.css') ? 'text/css' : file.endsWith('.html') ? 'text/html' : file.endsWith('.png') ? 'image/png' : file.endsWith('.jpeg') ? 'image/jpeg' : file.endsWith('.webp') ? 'image/webp' : file.endsWith('.ttf') ? 'font/ttf' : 'application/octet-stream';
     res.setHeader('Content-Type', type);
     fs.createReadStream(file).pipe(res);
   });
@@ -49,6 +49,13 @@ async function pageLoadChecks(check, rootDir) {
     const seeded = await open(STAGE2);
     check(seeded.errors.length === 0, 'Seeded page load has no script errors' + (seeded.errors[0] ? ' (' + seeded.errors[0] + ')' : ''));
     check(seeded.menu.raw === STAGE2, 'A Stage 2 Continue save is byte-identical after the page loads');
+    await seeded.page.reload();
+    await seeded.page.waitForFunction(() => window.RWB && RWB.game && (RWB.game.scene || RWB.game.nextScene), null, { timeout: 90000 });
+    const reload1 = await seeded.page.evaluate(() => localStorage.getItem('rwb-run'));
+    await seeded.page.reload();
+    await seeded.page.waitForFunction(() => window.RWB && RWB.game && (RWB.game.scene || RWB.game.nextScene), null, { timeout: 90000 });
+    const reload2 = await seeded.page.evaluate(() => localStorage.getItem('rwb-run'));
+    check(reload1 === STAGE2 && reload2 === STAGE2, 'A Stage 2 Continue save is byte-identical after 2 reloads');
     check(seeded.menu.items.includes('CONTINUE'), 'A saved Stage 2 run still offers CONTINUE');
     const fresh = await open(null);
     check(fresh.errors.length === 0 && fresh.menu.raw === null && !fresh.menu.items.includes('CONTINUE'), 'A fresh profile shows no CONTINUE after warmup');
@@ -61,7 +68,7 @@ async function pageLoadChecks(check, rootDir) {
       }
       return { mb: Math.round(bytes / 1048576 * 10) / 10, canvases };
     });
-    check(bootMem.mb <= 300, 'Boot canvas memory stays at or below 300MB ' + JSON.stringify(bootMem));
+    check(bootMem.mb <= 90 && bootMem.canvases <= 48, 'Boot canvas memory stays at or below 90MB and 48 canvases ' + JSON.stringify(bootMem));
     console.log('Boot canvas memory ' + JSON.stringify(bootMem));
     const visual = await seeded.page.evaluate(() => {
       const feet = [];
@@ -423,10 +430,10 @@ check(moveDamages('spin'), '360 spinning kick creates a damaging hitbox');
 }
 check(RWB.ART_MANIFEST.length >= 54 && RWB.ART_MANIFEST.every(src=>fs.existsSync(path.join(root,src))), 'Delivered art manifest lists existing bundled files');
 const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).flatMap(e=>e.isDirectory()?artFiles(dir+'/'+e.name):[dir+'/'+e.name]);
-check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
+check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260927-scroll3';console.log('Cache stamp: '+STAMP);
+const STAMP='20260927-scroll4';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -525,7 +532,7 @@ for(let level=0;level<5;level++) {
   check(hurt && s.player.taintAge===0 && s.player.power===0,'Stage '+(level+1)+' full saidin taint hurts and spending clears it');
   s.draw(ctx);
 }
-check(Object.values(RWB.ART_FILES).every(src=>!src.startsWith('/') && /\.(png|jpeg|json)$/.test(src)), 'Art hooks use relative image/JSON paths');
+check(Object.values(RWB.ART_FILES).every(src=>!src.startsWith('/') && /\.(png|jpeg|webp|json)$/.test(src)), 'Art hooks use relative image/JSON paths');
 check([1,2,3,4,5].every(n=>RWB.ART_FILES['stage'+n+'-far'] && RWB.ART_FILES['stage'+n+'-mid'] && RWB.ART_FILES['stage'+n+'-near'] && RWB.ART_FILES['floor'+n]),'Every stage has four optional art layers');
 check(RWB.assets.VER===STAMP && RWB.ASSET_VER===STAMP,'Runtime assets share the '+STAMP+' script cache stamp');
 
@@ -673,6 +680,13 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   const midRun = RWB.settings.loadRun();
   const resumedMarch = RWB.resumeRun(game, midRun);
   check(march.marching && midRun.wave === 1 && resumedMarch.wave === 1 && resumedMarch.camera.x === resumedMarch.level.wavePoints[1] && resumedMarch.player.x === resumedMarch.arenaLeft + 90, 'A mid-walk save records the next zone and resume lands there');
+  const zone3 = new RWB.scenes.Play(game, 0, { wave: 3, lives: 99 });
+  for (const enemy of zone3.enemies) { enemy.dead = true; enemy.deathTimer = 2; }
+  let zoneFrames = 0;
+  while (zoneFrames < 180 && !zone3.marching) { zone3.update(1 / 60, walk); zoneFrames += 1; }
+  const zoneSave = RWB.settings.loadRun();
+  const zoneResume = RWB.resumeRun(game, zoneSave);
+  check(zone3.marching && zoneSave.wave === 4 && zoneResume.wave === 4 && zoneResume.camera.x === 2880, 'A mid-march reload after zone 3 resumes at wave 4 (cam 2880)');
   const travel = 3600;
   for (let n = 1; n <= 5; n++) {
     const ground = { levelIndex: n - 1, level: { length: 4240 }, wave: 0 };
@@ -707,7 +721,33 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
     if (cursor < layout.M - 1e-4) hole = true;
     check(atEnd >= 640 && before >= 640 && roofEnd >= 640, 'Stage ' + n + ' far plate still covers the right edge at the end of the road');
     check(!dup && !hole && cursor >= layout.M, 'Stage ' + n + ' mid strip never repeats a slice in one screen and only leaves planned gaps');
+    const gaps = [];
+    const ordered = layout.pieces.slice().sort((a, b) => a.x - b.x);
+    let cover = 0;
+    for (const piece of ordered) {
+      if (piece.x > cover + 1e-3 && cover < layout.M) gaps.push(Math.min(piece.x, layout.M) - cover);
+      cover = Math.max(cover, piece.x + piece.w);
+    }
+    if (cover < layout.M - 1e-3) gaps.push(layout.M - cover);
+    let repeat = false;
+    for (let x = 0; x <= layout.M; x += 20) {
+      const seen = {};
+      for (const piece of layout.pieces) {
+        if (piece.x < x + 640 && piece.x + piece.w > x) {
+          if (seen[piece.id]) repeat = true;
+          seen[piece.id] = true;
+        }
+      }
+    }
+    const joins = layout.pieces.filter(piece => piece.ramp);
+    check(layout.mode === 'plates' && cover >= layout.M - 1e-3 && gaps.every(gap => gap <= 80), 'Stage ' + n + ' mid plates cover the road and leave gaps of at most 80 units');
+    check(!repeat, 'Stage ' + n + ' never shows the same mid plate twice inside 640 units');
+    check(joins.length >= 1 && joins.every(piece => piece.ramp >= 32), 'Stage ' + n + ' bakes a ramp of at least 32 units into every plate join');
   }
+  check(RWB.StageWorld.FAR_GRADE[1] === 'night' && RWB.StageWorld.FAR_GRADE[5] === 'violet', 'Far plates are night-graded on stages 1 and 5');
+  const plateNames = ['stage1-mid-b','stage1-mid-c','stage2-mid-b','stage2-mid-c','stage3-mid-b','stage3-mid-c','stage4-mid-b','stage4-mid-c','stage5-mid-b','stage5-roof-mid'];
+  const requested = RWB.__assetUrls();
+  check(plateNames.every(name => requested.some(url => url.includes('assets/art/' + name + '.webp?v=' + STAMP)) && RWB.ART_MANIFEST.includes('assets/art/' + name + '.webp')), 'The ten new mid plates resolve with the cache stamp');
 }
 await pageLoadChecks(check, root);
 

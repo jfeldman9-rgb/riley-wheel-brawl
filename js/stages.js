@@ -58,9 +58,20 @@
     const slices=sliceList(n);
     return {k:K_MID,pools:[slices,slices,slices]};
   }
+  // Whole plates, drawn at the original plate's pixels per unit. Pool 0 is the
+  // original plate. S5 reuses that plate whole on the right instead of slicing it.
+  const PPU={1:1672/720,2:1774/700,3:1774/700,4:2172/700,5:2172/700};
+  const MID_POOL={
+    1:[{id:'stage1-mid',key:'stage1-mid',px:1672},{id:'stage1-mid-b',key:'stage1-mid-b',px:2196},{id:'stage1-mid-c',key:'stage1-mid-c',px:1672}],
+    2:[{id:'stage2-mid',key:'stage2-mid',px:1774},{id:'stage2-mid-b',key:'stage2-mid-b',px:2070},{id:'stage2-mid-c',key:'stage2-mid-c',px:1774}],
+    3:[{id:'stage3-mid',key:'stage3-mid',px:1774},{id:'stage3-mid-b',key:'stage3-mid-b',px:2070},{id:'stage3-mid-c',key:'stage3-mid-c',px:1774}],
+    4:[{id:'stage4-mid',key:'stage4-mid',px:2172},{id:'stage4-mid-b',key:'stage4-mid-b',px:2172},{id:'stage4-mid-c',key:'stage4-mid-c',px:2400}],
+    5:[{id:'stage5-mid',key:'stage5-mid',px:2172},{id:'stage5-mid-b',key:'stage5-mid-b',px:2300},{id:'stage5-mid',key:'stage5-mid',px:2172}]
+  };
+  const FAR_GRADE={1:'night',5:'violet'};
   const layoutCache=new Map();
-  function midLayout(n,travel){
-    const id=n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
+  function sliceLayout(n,travel){
+    const id='slice:'+n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
     const spec=MID_SRC[n],slices=sliceList(n),M=640+K_MID*travel,pieces=[],lastEnd={},planned=[];
     let nx=0;
     for(const s of slices){
@@ -68,7 +79,6 @@
       pieces.push({id:s.id,x:nx,w,x0:s.x0,x1:s.x1,full:false,native:true});
       nx+=w;lastEnd[s.id]=nx;
     }
-    // The native slices reconstruct the plate from x=0, so the first screen matches live.
     const plateW=nx;
     const strips=midStrips(n);
     let cursor=plateW,guard=0,cycle=0;
@@ -82,7 +92,30 @@
       pieces.push({id:s.id,x,w,x0:s.x0,x1:s.x1,full:false,native:false,pool});
       lastEnd[s.id]=x+w;cursor=x+w;
     }
-    const layout={M,plateW,k:K_MID,pieces,planned,pools:3};
+    const layout={M,plateW,k:K_MID,pieces,planned,pools:3,mode:'slices'};
+    layoutCache.set(id,layout);return layout;
+  }
+  function midLayout(n,travel){
+    const id='plates:'+n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
+    const M=640+K_MID*travel,ppu=PPU[n],items=MID_POOL[n].map(p=>({id:p.id,key:p.key,w:p.px/ppu}));
+    const a=items[0],b=items[1],c=items[2],lastX=M-c.w,slack=a.w+b.w+c.w-M;
+    let ovL,ovR;
+    if(slack>=80){ovL=40;ovR=slack-40;}
+    else ovL=ovR=slack/2;
+    const xB=a.w-ovL,rampOf=ov=>ov>=48?48:ov>=40?40:32;
+    const pieces=[
+      {id:a.id,key:a.key,x:0,w:a.w,ramp:0,pool:0},
+      {id:b.id,key:b.key,x:xB,w:b.w,ramp:rampOf(ovL),pool:1},
+      {id:c.id,key:c.key,x:lastX,w:c.w,ramp:rampOf(ovR),pool:2}
+    ];
+    const planned=[];
+    const sorted=pieces.slice().sort((p,q)=>p.x-q.x);
+    let cursor=0;
+    for(const piece of sorted){
+      if(piece.x>cursor+1e-4&&cursor<M)planned.push([cursor,Math.min(piece.x,M)]);
+      cursor=Math.max(cursor,piece.x+piece.w);
+    }
+    const layout={M,plateW:a.w,k:K_MID,pieces,planned,pools:3,mode:'plates',slack};
     layoutCache.set(id,layout);return layout;
   }
   function evictStage(n){
@@ -156,6 +189,52 @@
       g.globalCompositeOperation='source-over';
     }
     c.logicalW=plateW;c.logicalH=drawH;sliceCache.set(id,c);return c;
+  }
+  function bakedPlate(piece,drawH){
+    const rs=rsNow(),rampU=piece.ramp||0;
+    const id=piece.key+':plate:'+rampU+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
+    if(sliceCache.has(id))return sliceCache.get(id);
+    const img=R.assets.get(piece.key);if(!img)return null;
+    const c=document.createElement('canvas');
+    c.width=Math.max(1,Math.ceil(piece.w*rs));c.height=Math.max(1,Math.ceil(drawH*rs));
+    const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+    g.drawImage(img,0,0,c.width,c.height);
+    if(rampU>0&&c.width>2){
+      const rampPx=Math.max(1,Math.min(c.width-1,Math.round(rampU/piece.w*c.width)));
+      g.globalCompositeOperation='destination-in';
+      const fade=g.createLinearGradient(0,0,rampPx,0);
+      for(let i=0;i<=8;i++){const t=i/8,s=t*t*(3-2*t);fade.addColorStop(t,'rgba(0,0,0,'+s+')');}
+      g.fillStyle=fade;g.fillRect(0,0,c.width,c.height);
+      g.globalCompositeOperation='source-over';
+    }
+    c.rampU=rampU;sliceCache.set(id,c);return c;
+  }
+  function gradedFar(key,logicalW,logicalH,stageN){
+    const mode=FAR_GRADE[stageN]||'';
+    const rs=rsNow(),id=key+':far:'+mode+'@'+rs+':'+Math.round(logicalW)+'x'+Math.round(logicalH);
+    if(sized.has(id))return sized.get(id);
+    const img=R.assets.get(key);if(!img)return null;
+    const c=document.createElement('canvas');
+    c.width=Math.max(1,Math.ceil(logicalW*rs));c.height=Math.max(1,Math.ceil(logicalH*rs));
+    const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+    if(mode==='night'){
+      g.filter='brightness(0.72) saturate(0.78)';
+      g.drawImage(img,0,0,c.width,c.height);
+      g.filter='none';
+      g.globalCompositeOperation='multiply';g.globalAlpha=0.45;g.fillStyle='#34466e';
+      g.fillRect(0,0,c.width,c.height);
+      g.globalAlpha=1;g.globalCompositeOperation='source-over';
+    }else if(mode==='violet'){
+      g.filter='saturate(0.35) brightness(0.68)';
+      g.drawImage(img,0,0,c.width,c.height);
+      g.filter='none';
+      g.globalCompositeOperation='multiply';g.globalAlpha=0.42;g.fillStyle='#4c3d6e';
+      g.fillRect(0,0,c.width,c.height);
+      g.globalAlpha=1;g.globalCompositeOperation='source-over';
+    }else g.drawImage(img,0,0,c.width,c.height);
+    sized.set(id,c);
+    if(mode)R.StageWorld.farGraded[stageN]=mode;
+    return c;
   }
   function haze(ctx,y,color='#c9d7df') {ctx.drawImage(overlay('haze:'+y+color,g=>{const f=g.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');g.fillStyle=f;g.fillRect(0,y-9,640,21);}),0,0,640,360);}
   function architecture(ctx, level, cam, time) {
@@ -278,8 +357,9 @@
   }
   R.StageWorld = {
     lowAlphaDraws:0,
-    K_FAR,K_MID,K_NEAR,
-    travelOf,midLayout,midStrips,
+    K_FAR,K_MID,K_NEAR,PPU,MID_POOL,FAR_GRADE,
+    farGraded:{},
+    travelOf,midLayout,midStrips,sliceLayout,
     farRight(scene,cam){return farGeom(scene,cam==null?(scene.camera&&scene.camera.x)||0:cam).right;},
     prepare(level){
       if(!R.assets.has('stage'+(level+1)+'-far'))return;
@@ -360,7 +440,8 @@
           if(farW-640<K_FAR*travel)throw new Error('far plate ends inside the view');
           const drawH=farW*img.height/img.width,drawY=-0.376*drawH;
           const x=roof?-(farW-640)/2:-cam*K_FAR;
-          const plate=displayPlate(farKey,farW,drawH);
+          const plate=gradedFar(farKey,farW,drawH,roof?0:n);
+          ctx.globalAlpha=1;
           noteScrollAlpha(ctx);
           if(plate)ctx.drawImage(plate,x,drawY,farW,drawH);
         }
@@ -368,27 +449,57 @@
         R.StageWorld._layerFactor=factor;
       }
       if(show('mid')){
-        if(!roofing(scene)){
-          const spec=MID_SRC[n],img=spec&&R.assets.get(spec.key);
+        const roof=roofing(scene);
+        const spec=MID_SRC[n];
+        const usePlates=!roof&&R.assets.has('stage'+n+'-mid-b');
+        if(roof){
+          const key='stage5-roof-mid',img=R.assets.get(key);
           if(img){
-            const travel=travelOf(scene),layout=midLayout(n,travel);
+            const lw=2172/PPU[5],lh=lw*img.height/img.width;
+            const plate=bakedPlate({key:key,w:lw,ramp:0,id:'roof'},lh);
+            ctx.globalAlpha=1;
+            noteScrollAlpha(ctx);
+            if(plate)ctx.drawImage(plate,(640-lw)/2,10+MID_HEIGHTS[4]-lh,lw,lh);
+          }
+          R.StageWorld._layerFactor=0;
+        }else if(usePlates){
+          const travel=travelOf(scene),layout=midLayout(n,travel);
+          const viewL=cam*K_MID-80,viewR=cam*K_MID+720;
+          for(const piece of layout.pieces){
+            if(piece.x+piece.w<viewL||piece.x>viewR)continue;
+            const img=R.assets.get(piece.key);if(!img)continue;
+            const fullH=piece.w*img.height/img.width;
+            const y=n===4?0:10+MID_HEIGHTS[n-1]-fullH;
+            const dh=n===4?MID_HEIGHTS[3]:fullH;
+            const plate=bakedPlate(piece,dh);
+            if(!plate)continue;
+            ctx.globalAlpha=1;
+            noteScrollAlpha(ctx);
+            ctx.drawImage(plate,piece.x-cam*K_MID,y,piece.w,dh);
+          }
+          haze(ctx,20);
+          R.StageWorld._layerFactor=K_MID;
+        }else{
+          const img=spec&&R.assets.get(spec.key);
+          if(img){
+            const travel=travelOf(scene),layout=sliceLayout(n,travel);
             const drawH=spec.plateW*img.height/img.width,drawY=10+MID_HEIGHTS[n-1]-drawH;
             const viewL=cam*K_MID-80,viewR=cam*K_MID+720;
             const plate=displayPlate(spec.key,spec.plateW,drawH);
-            if(plate&&layout.plateW>viewL&&0<viewR){noteScrollAlpha(ctx);ctx.drawImage(plate,-cam*K_MID,drawY,spec.plateW,drawH);}
+            if(plate&&layout.plateW>viewL&&0<viewR){noteScrollAlpha(ctx);ctx.globalAlpha=1;ctx.drawImage(plate,-cam*K_MID,drawY,spec.plateW,drawH);}
             for(const piece of layout.pieces){
               if(piece.native||piece.x+piece.w<viewL||piece.x>viewR)continue;
               const slice=bakedSlice(spec,piece,drawH);
               if(!slice)continue;
               noteScrollAlpha(ctx);
+              ctx.globalAlpha=1;
               ctx.drawImage(slice,piece.x-cam*K_MID,drawY,piece.w,drawH);
             }
           }else if(n>1)architecture(ctx,n-1,cam,time);
           else R.Stage1.layers.mid(ctx,cam);
           haze(ctx,20);
+          R.StageWorld._layerFactor=K_MID;
         }
-        let factor=K_MID;
-        R.StageWorld._layerFactor=factor;
       }
       if(show('floor')){
       const roof=roofing(scene);

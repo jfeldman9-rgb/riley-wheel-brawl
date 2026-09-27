@@ -17,10 +17,10 @@
       "over33": 0,
       "over50": 0,
       "maxMs": 16.8,
-      "meanUpdateDrawMs": 0.31,
+      "meanUpdateDrawMs": 0.33,
       "runtimeLite": false,
-      "enterMs": 674.2,
-      "poseMs": 550.7
+      "enterMs": 717.8,
+      "poseMs": 532.9
     },
     {
       "name": "Stage 3 wave 3",
@@ -37,10 +37,10 @@
       "over33": 0,
       "over50": 0,
       "maxMs": 16.8,
-      "meanUpdateDrawMs": 0.33,
+      "meanUpdateDrawMs": 0.34,
       "runtimeLite": false,
-      "enterMs": 381.1,
-      "poseMs": 310.6
+      "enterMs": 431.2,
+      "poseMs": 326.3
     },
     {
       "name": "Stage 5 wave 3",
@@ -57,10 +57,10 @@
       "over33": 0,
       "over50": 0,
       "maxMs": 16.8,
-      "meanUpdateDrawMs": 0.27,
+      "meanUpdateDrawMs": 0.28,
       "runtimeLite": false,
-      "enterMs": 574.3,
-      "poseMs": 514.3
+      "enterMs": 573.5,
+      "poseMs": 499.2
     },
     {
       "name": "Stage 4 boss",
@@ -79,8 +79,8 @@
       "maxMs": 16.8,
       "meanUpdateDrawMs": 0.21,
       "runtimeLite": false,
-      "enterMs": 245.1,
-      "poseMs": 173.1
+      "enterMs": 241.3,
+      "poseMs": 157.8
     },
     {
       "name": "Stage 1 walking",
@@ -97,10 +97,10 @@
       "over33": 0,
       "over50": 0,
       "maxMs": 16.8,
-      "meanUpdateDrawMs": 3.87,
+      "meanUpdateDrawMs": 4.42,
       "runtimeLite": false,
-      "enterMs": 224.6,
-      "poseMs": 168.6
+      "enterMs": 253.6,
+      "poseMs": 169.7
     },
     {
       "name": "Stage 3 walking",
@@ -109,18 +109,18 @@
         1280,
         720
       ],
-      "frames": 1981,
-      "avgFps": 60,
-      "p95Ms": 16.8,
+      "frames": 1980,
+      "avgFps": 59.97,
+      "p95Ms": 16.7,
       "p99Ms": 16.8,
-      "over20": 0,
-      "over33": 0,
+      "over20": 1,
+      "over33": 1,
       "over50": 0,
-      "maxMs": 16.8,
-      "meanUpdateDrawMs": 3.73,
+      "maxMs": 33.4,
+      "meanUpdateDrawMs": 3.92,
       "runtimeLite": false,
-      "enterMs": 326.8,
-      "poseMs": 272.6
+      "enterMs": 352.9,
+      "poseMs": 284.2
     },
     {
       "name": "Stage 5 walking",
@@ -129,18 +129,18 @@
         1280,
         720
       ],
-      "frames": 1981,
-      "avgFps": 60,
+      "frames": 1980,
+      "avgFps": 59.97,
       "p95Ms": 16.7,
       "p99Ms": 16.8,
-      "over20": 0,
-      "over33": 0,
+      "over20": 1,
+      "over33": 1,
       "over50": 0,
-      "maxMs": 16.8,
-      "meanUpdateDrawMs": 3.62,
+      "maxMs": 33.4,
+      "meanUpdateDrawMs": 4.02,
       "runtimeLite": false,
-      "enterMs": 519.9,
-      "poseMs": 472.1
+      "enterMs": 541.1,
+      "poseMs": 472.4
     }
   ]
 }

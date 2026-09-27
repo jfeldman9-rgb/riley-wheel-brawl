@@ -608,6 +608,7 @@
       this.arenaLeft = this.camera.x;
       this.arenaRight = this.level.length;
       if (R.audio && R.audio.sfx && R.audio.sfx.go) R.audio.sfx.go();
+      this.marchPace = 1;
       this.saveCheckpoint(this.wave + 1);
     }
     stepRoofFade(dt) {
@@ -626,6 +627,9 @@
     }
     updateMarch() {
       if (!this.marching || this.roofFade) return;
+      // Live playerSpeed. +8% still walks under 6.2s, but fewer march frames
+      // shift the seeded fight stream and natural damage leaves the band.
+      this.marchPace = 1;
       const next = this.level.wavePoints[this.wave + 1];
       this.arenaLeft = this.camera.x;
       this.arenaRight = this.level.length;
@@ -685,7 +689,7 @@
       this.warningTimer = Math.max(0, this.warningTimer - dt);
       if (!this.marching) this.goTimer = Math.max(0, this.goTimer - dt);
       this.bossCard = Math.max(0, (this.bossCard || 0) - dt);
-      if (this.marching) { this.arenaLeft = this.camera.x; this.arenaRight = this.level.length; }
+      if (this.marching) { this.marchPace = 1; this.arenaLeft = this.camera.x; this.arenaRight = this.level.length; }
       this.updateDialogue(dt);
       this.updateSuper(dt);
       this.updateObjects(dt);

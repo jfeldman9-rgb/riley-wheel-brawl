@@ -2,24 +2,24 @@
   "errors": [],
   "unstamped": [],
   "failed": [],
-  "loaded": 77,
+  "loaded": 87,
   "missing": [],
   "timings": [
     {
       "stage": 1,
-      "drawMs": 0.12
+      "drawMs": 0.13
     },
     {
       "stage": 2,
-      "drawMs": 0.09
+      "drawMs": 0.08
     },
     {
       "stage": 3,
-      "drawMs": 0.12
+      "drawMs": 0.13
     },
     {
       "stage": 4,
-      "drawMs": 0.05
+      "drawMs": 0.06
     },
     {
       "stage": 5,

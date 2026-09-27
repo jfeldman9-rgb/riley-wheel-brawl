@@ -351,7 +351,8 @@
       const recovering = this.attackMove && this.stateT > this.attackMove.active[1];
       if (!locked && !channeling && (!this.attackMove || recovering)) {
         const scale = this.attackMove ? 0.45 : 1;
-        this.vx = axis.x * R.TUNE.playerSpeed * scale;
+        const pace = this.g && this.g.marching ? (this.g.marchPace || 1) : 1;
+        this.vx = axis.x * R.TUNE.playerSpeed * scale * pace;
         this.vy = axis.y * R.TUNE.laneSpeed * scale;
         if (axis.x && !this.attackMove) this.facing = Math.sign(axis.x);
         this.walkDistance += Math.abs(this.vx) * dt;
