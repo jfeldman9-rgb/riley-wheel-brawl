@@ -80,7 +80,26 @@
         this.g.hitPlayer(this.attack.damage + bonus, this.x, { kb: this.attack.knockdown ? 210 : 120, knockdown: this.attack.knockdown, source: this.attack.name });
       }
     }
+    advanceEntry(dt) {
+      if (this.entryX == null || this.boss) return false;
+      const cam = this.g.camera ? this.g.camera.x : 0;
+      const onScreen = this.x >= cam + 24 && this.x <= cam + 616;
+      const nearPlayer = this.g.player && Math.abs(this.x - this.g.player.x) <= 90;
+      const dx = this.entryX - this.x;
+      if (Math.abs(dx) <= 6 || onScreen || nearPlayer) {
+        this.entryX = null;
+        this.vx = 0;
+        return false;
+      }
+      this.facing = dx >= 0 ? 1 : -1;
+      this.vx = Math.sign(dx) * this.speed * 3.0;
+      this.vy = 0;
+      this.walkDistance += Math.abs(this.vx) * dt;
+      this.setState('walk');
+      return true;
+    }
     updateAI(dt) {
+      if (this.advanceEntry(dt)) return;
       const player = this.g.player;
       const dx = player.x - this.x;
       const dy = player.y - this.y;
@@ -185,7 +204,8 @@
         }
       } else this.updateAI(dt);
       super.update(dt);
-      this.x = R.util.clamp(this.x, this.g.arenaLeft + 12, this.g.arenaRight - 12);
+      const leash = this.boss || !this.g.leash ? [this.g.arenaLeft, this.g.arenaRight] : this.g.leash();
+      this.x = R.util.clamp(this.x, leash[0] + 12, leash[1] - 12);
       if (!this.dead && !this.grabbedBy) this.separate();
     }
     onHurt(damage, opts) {
@@ -376,9 +396,19 @@
       if (this.introTimer > 0) {
         this.introTimer -= dt;
         this.invuln = Math.max(this.invuln, 0.12);
-        this.vx = 0;
-        this.vy = 0;
-        this.setState('idle');
+        const mark = this.g.arenaLeft + 400;
+        const dx = mark - this.x;
+        if (Math.abs(dx) > 4) {
+          const step = Math.min(Math.abs(dx), 240 * dt);
+          this.x += Math.sign(dx) * step;
+          this.facing = dx >= 0 ? 1 : -1;
+          this.walkDistance += step;
+          this.setState('walk');
+        } else {
+          this.vx = 0;
+          this.vy = 0;
+          this.setState('idle');
+        }
         return;
       }
       super.updateAI(dt);

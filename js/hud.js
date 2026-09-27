@@ -60,8 +60,16 @@
       bar(ctx, 160, big ? 104 : 94, 320, 7, scene.boss.hp / scene.boss.hpMax, '#b94147', '#331f26');
     }
     if (scene.warningTimer > 0) R.drawText(ctx, scene.warning, 320, 122, 8, '#ffe67a', 'center');
-    if (scene.goTimer > 0) R.drawText(ctx, 'GO  →', 562, 174, 12, '#fff2a0', 'center');
-    if (scene.tutorial) { R.drawPanel(ctx, 125, 314, 390, 20); R.drawText(ctx, R.input.fillKeys(scene.tutorial), 320, 325, 6, '#ffffff', 'center'); }
+    if (scene.fog && scene.levelIndex === 2) {
+      const phase = scene.fog.age % 8;
+      if (phase < 6.4) {
+        const line = scene.fog.active ? 'MASHADAR: CHANGE LANE OR JUMP' : 'MASHADAR IS GATHERING';
+        const y = scene.warningTimer > 0 ? 134 : 122;
+        R.drawText(ctx, line, 320, y, 6, '#eee7ff', 'center');
+      }
+    }
+    if (scene.goTimer > 0 && (!scene.marching || Math.floor((scene.time || 0) * 8) % 2 === 0)) R.drawText(ctx, 'GO  →', 562, 174, 12, '#fff2a0', 'center');
+    if (scene.tutorial) { R.drawPanel(ctx, 125, 304, 390, 18); R.drawText(ctx, R.input.fillKeys(scene.tutorial), 320, 315, 6, '#ffffff', 'center'); }
   }
   R.drawHUD = function (ctx, scene) {
     const player = scene.player;
@@ -72,8 +80,10 @@
       bw, Math.ceil(player.hp), Math.ceil(player.power), player.lives, player.score, player.loialReady ? 1 : 0,
       scene.wave, scene.levelIndex, bossHp, player.angreal > 0 ? player.angreal.toFixed(1) : '',
       player.healPortrait > 0 ? 1 : 0, scene.warningTimer > 0 ? scene.warning : '', scene.goTimer > 0 ? 1 : 0,
+      scene.marching ? Math.floor((scene.time || 0) * 8) % 2 : 0,
       scene.tutorial || '', R.settings.data.bigHud ? 1 : 0, R.settings.data.colorblind ? 1 : 0,
-      player.taintAge > R.TUNE.taintGrace ? 1 : 0
+      player.taintAge > R.TUNE.taintGrace ? 1 : 0,
+      scene.fog && scene.levelIndex === 2 ? ((scene.fog.age % 8) < 6.4 ? (scene.fog.active ? 'move' : 'gather') + (scene.warningTimer > 0 ? '@134' : '@122') : '') : ''
     ].join('|');
     if (!hudLayer.canvas) hudLayer.canvas = document.createElement('canvas');
     const sizeChanged = hudLayer.canvas.width !== bw || hudLayer.canvas.height !== bh;

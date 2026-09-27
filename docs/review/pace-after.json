@@ -1,5 +1,5 @@
 {
-  "method": "Headless Chromium software Canvas, real requestAnimationFrame, 10s per case, 1280x720 viewport, AUTO adaptation disabled and LITE forced off. The clock starts after stage enter and two frames, so pose-atlas upload is not inside the mid-fight sample.",
+  "method": "Headless Chromium software Canvas, real requestAnimationFrame, 10s fights and 33s walks, 1280x720 viewport, AUTO adaptation disabled and LITE forced off. The clock starts after stage enter and two frames, so pose-atlas upload is not inside the mid-fight sample.",
   "errors": [],
   "rows": [
     {
@@ -11,14 +11,16 @@
       ],
       "frames": 601,
       "avgFps": 60,
-      "p95Ms": 16.7,
+      "p95Ms": 16.8,
       "p99Ms": 16.8,
+      "over20": 0,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.32,
+      "maxMs": 16.8,
+      "meanUpdateDrawMs": 0.47,
       "runtimeLite": false,
-      "enterMs": 634.4,
-      "poseMs": 563.9
+      "enterMs": 243.4,
+      "poseMs": 70.5
     },
     {
       "name": "Stage 3 wave 3",
@@ -31,12 +33,14 @@
       "avgFps": 60,
       "p95Ms": 16.7,
       "p99Ms": 16.8,
+      "over20": 0,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.41,
+      "maxMs": 16.8,
+      "meanUpdateDrawMs": 0.59,
       "runtimeLite": false,
-      "enterMs": 350.8,
-      "poseMs": 303.5
+      "enterMs": 159.2,
+      "poseMs": 35.8
     },
     {
       "name": "Stage 5 wave 3",
@@ -47,14 +51,16 @@
       ],
       "frames": 601,
       "avgFps": 60,
-      "p95Ms": 16.8,
+      "p95Ms": 16.7,
       "p99Ms": 16.8,
+      "over20": 0,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.36,
+      "maxMs": 16.8,
+      "meanUpdateDrawMs": 0.45,
       "runtimeLite": false,
-      "enterMs": 644,
-      "poseMs": 613.9
+      "enterMs": 191.2,
+      "poseMs": 68.2
     },
     {
       "name": "Stage 4 boss",
@@ -67,12 +73,74 @@
       "avgFps": 60,
       "p95Ms": 16.7,
       "p99Ms": 16.8,
+      "over20": 0,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.25,
+      "maxMs": 16.8,
+      "meanUpdateDrawMs": 0.21,
       "runtimeLite": false,
-      "enterMs": 197.2,
-      "poseMs": 159.2
+      "enterMs": 134.1,
+      "poseMs": 13.6
+    },
+    {
+      "name": "Stage 1 walking",
+      "seconds": 33,
+      "canvas": [
+        1280,
+        720
+      ],
+      "frames": 1949,
+      "avgFps": 59.03,
+      "p95Ms": 16.7,
+      "p99Ms": 16.8,
+      "over20": 7,
+      "over33": 7,
+      "over50": 3,
+      "maxMs": 199.9,
+      "meanUpdateDrawMs": 4.61,
+      "runtimeLite": false,
+      "enterMs": 149.1,
+      "poseMs": 20.9
+    },
+    {
+      "name": "Stage 3 walking",
+      "seconds": 33,
+      "canvas": [
+        1280,
+        720
+      ],
+      "frames": 1959,
+      "avgFps": 59.34,
+      "p95Ms": 16.8,
+      "p99Ms": 16.8,
+      "over20": 8,
+      "over33": 8,
+      "over50": 3,
+      "maxMs": 150,
+      "meanUpdateDrawMs": 4.05,
+      "runtimeLite": false,
+      "enterMs": 163.1,
+      "poseMs": 10
+    },
+    {
+      "name": "Stage 5 walking",
+      "seconds": 33,
+      "canvas": [
+        1280,
+        720
+      ],
+      "frames": 1958,
+      "avgFps": 59.31,
+      "p95Ms": 16.8,
+      "p99Ms": 16.8,
+      "over20": 5,
+      "over33": 5,
+      "over50": 3,
+      "maxMs": 183.3,
+      "meanUpdateDrawMs": 4,
+      "runtimeLite": false,
+      "enterMs": 136.2,
+      "poseMs": 20
     }
   ]
 }

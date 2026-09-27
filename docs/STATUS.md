@@ -1,6 +1,42 @@
 # Riley Wheel Brawl — current status
 
-Runtime stamp: `?v=20260926-grok3d`. PR #5 (`rwb-grok3` at `12ac675`) was merged into `rwb-w2` as `860119c` on 2026-09-26 at 10:23 PM PT. Jason approved the merge in chat right after the independent grok3d review came back GO. `rwb-w2` is the branch GitHub Pages serves, so this build is live. `main` is untouched at `3991948`. GitHub Pages settings are unchanged.
+Runtime stamp on this branch: `?v=20260927-scroll11`. The scroll2 query on raw.githack.com had cached `js/assets.js` without `crossOrigin`, so the preview canvas stayed tainted; scroll11 is the current cache key. Branch `rwb-scroll`, cut from `rwb-w2` at `a65e981`. Not merged. GitHub Pages still serves `rwb-w2` (PR #5, live). `main` is untouched at `3991948`. This branch does not change Pages.
+
+## Scrolling stages (scroll2)
+
+Before: a cleared wave added one to the wave index and dropped Riley back at the left of the next fight on the same plate. The stage was 3000 units and the picture did not travel. The first scroll pass crossfaded zoomed crops, so the street still felt still.
+
+After: every stage is a 4240-unit street (6.625 screens at the 640-wide view). Six fight zones sit at 0, 720, 1440, 2160, 2880, and 3600. The last zone is the boss arena. Clearing a wave plays a chime, holds a flashing `GO →`, unlocks the camera, and Riley walks right. The camera only moves forward (the Whale Lance lock: `camX = max(camX, target)`, reused as `Camera.noForwardBacktrack`). Walking onto the next zone line locks the camera there and the next group walks in from off the left and right edges. Nothing teleports between waves. A save taken during the walk records the next zone. Continue starts at the saved zone.
+
+The backdrop is the painted plates at full resolution. Far scrolls at 0.08× the floor, one plate, no crop. Mid is a strip of slices of that stage's own plate at 0.40× (stage 1 is 720 units wide, the others 700), with the far plate showing through the gaps. Near tiles at 1.15× along the bottom 26 units. The floor stays 1:1. Nothing is crossfaded. Stage 5's roof is a hard cut behind a 0.2s fade to black and a 0.2s fade back in, and the boss walks in after that. Paintings that would replace the slice pools are listed in `NEEDED_ART.md`.
+
+Damage scales are `[1.60, 1.55, 0.76, 1.50, 1.00]`. The first try (`[1.60, 2.95, 0.78, 1.80, 1.35]`) overshot Stages 2 and 5; these are the values that land in the live damage band at 7–8 clears.
+
+Mooks spawn past the screen and dash at 3× until they are fully on screen or within 90 units of Riley. Shadow bosses walk to a fixed mark during the intro, then stay clamped to the arena. The chieftain covers the gap to his mark during the short intro.
+
+### scroll2 measurements on this machine
+
+Software canvas, 1280×720, clock after stage enter and two frames, LITE off. 0 errors.
+
+| Case | fps | p99 | frames >20ms | max | enter |
+| --- | --- | --- | --- | --- | --- |
+| Stage 1 wave 3 | 60 | 16.8 | 0 | 16.8 | 674.2ms |
+| Stage 3 wave 3 | 60 | 16.8 | 0 | 16.8 | 381.1ms |
+| Stage 5 wave 3 | 60 | 16.8 | 0 | 16.8 | 574.3ms |
+| Stage 4 boss | 60 | 16.8 | 0 | 16.8 | 245.1ms |
+| Stage 1 walking (33s) | 60 | 16.8 | 0 | 16.8 | 224.6ms |
+| Stage 3 walking (33s) | 60 | 16.8 | 0 | 16.8 | 326.8ms |
+| Stage 5 walking (33s) | 60 | 16.8 | 0 | 16.8 | 519.9ms |
+
+Natural soak (3 lives, seeds 1–10, exit 1 because some seeds die): clears 8/8/7/8/8, every boss attack seen 10/10. Median damage 248.7, 253.5, 284.4, 199, 289.5 (live targets 250, 252, 271, 214, 296, all inside ±12%). Assisted soak: 10/10 on every stage, exit 0.
+
+`node tools/check.cjs`: All checks passed (112), including the mid-walk save and the per-stage far-edge and mid-strip checks. Parallax max deviation 0.02px. Boot canvas memory 77.6 MB, 41 canvases. Mid-fight at render scale 2: Stage 1 105.3 MB, Stage 4 155.1 MB. `tools/review.cjs`: 77 loaded, 0 missing, 0 unstamped, fallback stage playable. Smoothness checks: 9.
+
+SwiftShader was not re-run. It was not 60 fps on the grok3d measurement.
+
+## grok3d (merged, historical)
+
+Runtime stamp on the merged branch was `?v=20260926-grok3d`. PR #5 (`rwb-grok3` at `12ac675`) was merged into `rwb-w2` as `860119c` on 2026-09-26 at 10:23 PM PT. Jason approved the merge in chat right after the independent grok3d review came back GO. `rwb-w2` is the branch GitHub Pages serves. `main` is untouched at `3991948`. GitHub Pages settings are unchanged.
 
 Natural soak at `12ac675` (3 lives, no HP top-up, seeds 1–10, with the new damage and knockback numbers in `js/data.js`): 7/8/8/8/8, every boss attack seen 10/10. Assisted soak: 10/10 on every stage (50/50).
 

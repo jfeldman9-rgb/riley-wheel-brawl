@@ -351,7 +351,8 @@
       const recovering = this.attackMove && this.stateT > this.attackMove.active[1];
       if (!locked && !channeling && (!this.attackMove || recovering)) {
         const scale = this.attackMove ? 0.45 : 1;
-        this.vx = axis.x * R.TUNE.playerSpeed * scale;
+        const pace = this.g && this.g.marching ? (this.g.marchPace || 1) : 1;
+        this.vx = axis.x * R.TUNE.playerSpeed * scale * pace;
         this.vy = axis.y * R.TUNE.laneSpeed * scale;
         if (axis.x && !this.attackMove) this.facing = Math.sign(axis.x);
         this.walkDistance += Math.abs(this.vx) * dt;
@@ -391,14 +392,14 @@
       if (key === 'jump') key = 'fall';
       const frames = R.RILEY_POSES[key] || R.RILEY_POSES.idle;
       let index = 0;
-      if (key === 'walk') index = Math.floor(this.walkDistance / 12) % frames.length;
+      if (key === 'walk') index = Math.floor(this.walkDistance / 16) % frames.length;
       else if (frames.length > 1) index = Math.min(frames.length - 1, Math.floor(this.stateT / Math.max(0.08, (this.attackMove ? this.attackMove.duration : 0.4) / frames.length)));
       else if (key === 'idle') index = Math.floor(this.stateT * 2) % frames.length;
       return frames[index];
     }
     spriteFrame() {
       const state = this.attackMove ? this.attackName : this.state;
-      if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 20) % 4 + 1);
+      if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 16) % 4 + 1);
       if (!this.grounded || ['rise', 'fall', 'jump'].includes(state)) return this.attackMove ? 'kick' : 'jump';
       if (['front', 'round', 'back', 'spin', 'knee', 'kick', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'kick';
       if (['punch', 'jab', 'combo', 'combo1', 'combo2', 'combo3'].includes(state)) return 'punch';
@@ -412,8 +413,18 @@
       if (!img || !data) return false;
       const [w,h,ax,ay] = data, scale = RILEY16.height / RILEY16.frames.idle[1];
       const lying = !forcedFrame && (this.dead || ['knockdown', 'lying', 'death'].includes(this.state));
+      // The body tracks the hitbox every frame. Four rigid poses cannot keep a
+      // sole planted, so the pose only changes with distance walked. A 3px bob
+      // still marks the step. Holding the sprite to fake a planted foot made
+      // the body freeze and then teleport.
+      let drawX = this.x, drawY = this.y;
+      if (!forcedFrame && !lying && this.grounded && frame && frame.indexOf('walk') === 0) {
+        const into = this.walkDistance % 32;
+        drawY = this.y - Math.sin(into / 32 * Math.PI) * 3;
+      }
+      this._spriteX = drawX;
       ctx.save();
-      ctx.translate(this.x - cameraX, this.y - this.z);
+      ctx.translate(drawX - cameraX, drawY - this.z);
       if (lying) ctx.rotate(this.facing * 80 * Math.PI / 180);
       ctx.scale(this.facing, 1);
       if (this.invuln > 0 && Math.floor(this.invuln * 18) % 2 === 0) ctx.globalAlpha *= .55;

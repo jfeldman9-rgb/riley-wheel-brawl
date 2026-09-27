@@ -355,9 +355,9 @@
           ['boss'],
         ],
         index: 1,
-        length: 3000,
+        length: 4240,
         waves: [0, 1, 2, 3, 4, 5],
-        wavePoints: [360, 820, 1280, 1780, 2280, 2720],
+        wavePoints: [0, 720, 1440, 2160, 2880, 3600],
       },
       {
         name: 'SHADAR LOGOTH',
@@ -374,9 +374,9 @@
           ['boss'],
         ],
         index: 2,
-        length: 3000,
+        length: 4240,
         waves: [0, 1, 2, 3, 4, 5],
-        wavePoints: [360, 820, 1280, 1780, 2280, 2720],
+        wavePoints: [0, 720, 1440, 2160, 2880, 3600],
       },
       {
         name: 'STONE OF TEAR',
@@ -393,9 +393,9 @@
           ['boss'],
         ],
         index: 3,
-        length: 3000,
+        length: 4240,
         waves: [0, 1, 2, 3, 4, 5],
-        wavePoints: [360, 820, 1280, 1780, 2280, 2720],
+        wavePoints: [0, 720, 1440, 2160, 2880, 3600],
       },
       {
         name: 'BLACK TOWER',
@@ -412,17 +412,22 @@
           ['boss'],
         ],
         index: 4,
-        length: 3000,
+        length: 4240,
         waves: [0, 1, 2, 3, 4, 5],
-        wavePoints: [360, 820, 1280, 1780, 2280, 2720],
+        wavePoints: [0, 720, 1440, 2160, 2880, 3600],
       },
     ],
   );
-  R.LEVELS.forEach((level, i) => { level.banner = ["EMOND'S FIELD", 'CAEMLYN', 'SHADAR LOGOTH', 'TEAR - CALLANDOR', 'THE BLACK TOWER'][i]; });
+  R.LEVELS.forEach((level, i) => {
+    level.banner = ["EMOND'S FIELD", 'CAEMLYN', 'SHADAR LOGOTH', 'TEAR - CALLANDOR', 'THE BLACK TOWER'][i];
+    level.length = R.SCROLL.length;
+    level.wavePoints = [0, 1, 2, 3, 4, 5].map(zone => R.SCROLL.left(zone));
+    level.sections = R.SCROLL.names[i];
+  });
   // Natural-play pressure is stage-specific: later bosses retain their full
   // move sets and health, while their hits leave a fair three-life margin.
-  R.LEVELS.forEach((level, i) => { level.damageScale = [1.34, 2.66, 0.72, 1.52, 0.76][i]; });
-  R.LEVELS[0].wavePoints = R.Stage1.wavePoints;
+  R.LEVELS.forEach((level, i) => { level.damageScale = [1.60, 1.55, 0.76, 1.50, 1.00][i]; });
+  R.LEVELS[0].wavePoints = [0, 1, 2, 3, 4, 5].map(zone => R.SCROLL.left(zone));
   R.LEVELS[0].mix = R.Stage1.waveTable;
   R.LEVELS[0].kind = 'chieftain';
   R.storyArt = function (id) {
@@ -458,5 +463,5 @@
     return true;
   };
   for (const [key, src] of Object.entries(R.ART_FILES))
-    R.assets.register(key, src, { lazy: key.startsWith('cut-') });
+    R.assets.register(key, src, { lazy: key.startsWith('cut-') || key.includes('transition-') });
 })();

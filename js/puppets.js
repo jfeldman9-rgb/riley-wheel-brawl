@@ -24,8 +24,8 @@
   function knee(hip,foot,l1,l2,bend=1){const dx=foot.x-hip.x,dy=foot.y-hip.y,dist=Math.max(.001,Math.hypot(dx,dy)),d=Math.min(dist,l1+l2-.001),along=(l1*l1-l2*l2+d*d)/(2*d),side=Math.sqrt(Math.max(0,l1*l1-along*along))*bend;return{x:hip.x+dx/dist*along+dy/dist*side,y:hip.y+dy/dist*along-dx/dist*side};}
   function bakedImage(d,image){
     const c=document.createElement('canvas');
-    c.width=image.width;c.height=image.height;c.getContext('2d').drawImage(image,0,0);
-    const g=c.getContext('2d');
+    c.width=image.width;c.height=image.height;c.getContext('2d',{willReadFrequently:true}).drawImage(image,0,0);
+    const g=c.getContext('2d',{willReadFrequently:true});
     if(d.variant==='belal'){
       const data=g.getImageData(0,0,c.width,c.height),p=data.data,source=new Uint8ClampedArray(p),removed=new Uint8Array(c.width*c.height);
       const luminance=new Float32Array(c.width*c.height);
@@ -54,52 +54,180 @@
     }
     return c;
   }
-  function getRig(d){
-    const primary=R.assets.get(d.key),raw=primary||R.assets.get(d.fallback);if(!raw)return null;const cacheKey=(primary?d.key:d.fallback)+':'+(d.variant||'base');if(rigs.has(cacheKey))return rigs.get(cacheKey);const image=bakedImage(primary?d:{...d,sourcePanel:null},raw);
-    const w=image.width,h=image.height,point=p=>({x:p[0]*w,y:p[1]*h});
-    const neck=point(d.neck),hip=point(d.pelvis),arms=d.arms.map(a=>a.map(point)),legs=d.legs.map(a=>a.map(point));
-    const bones=[[hip,neck],[neck,{x:neck.x,y:0}],...arms.flatMap(a=>[[a[0],a[1]],[a[1],a[2]]]),...legs.flatMap(a=>[[a[0],a[1]],[a[1],a[2]]])];
-    const root={x:(legs[0][2].x+legs[1][2].x)/2,y:h};
-    // A single connected skin avoids exposing square cuts at knees and hems.
-    // Cache topology once; only vertex positions change while the actor moves.
-    const cols=16,rows=24,vertices=[],triangles=[];
-    const bake=document.createElement('canvas');bake.width=cols*4;bake.height=rows*4;
-    const bc=bake.getContext('2d');bc.drawImage(image,0,0,bake.width,bake.height);
-    const alpha=bc.getImageData(0,0,bake.width,bake.height).data;
-    const texture=document.createElement('canvas');texture.width=Math.round(w*384/h);texture.height=384;
-    const tc=texture.getContext('2d');tc.drawImage(image,0,0,texture.width,texture.height);
-    // Grade the source once, keeping every runtime pose on one painted texture.
-    tc.globalCompositeOperation='source-atop';const shade=tc.createLinearGradient(0,0,texture.width,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');tc.fillStyle=shade;tc.fillRect(0,0,texture.width,texture.height);tc.globalCompositeOperation='source-over';
-    const pixels=tc.getImageData(0,0,texture.width,texture.height).data,soles=legs.map(leg=>({x:leg[2].x,y:leg[2].y}));
-    for(let yy=0;yy<texture.height;yy++)for(let xx=0;xx<texture.width;xx++){
-      if(pixels[(yy*texture.width+xx)*4+3]<96)continue;
-      const px=xx*w/texture.width,py=(yy+1)*h/texture.height;
-      const i=Math.abs(px-legs[0][2].x)<Math.abs(px-legs[1][2].x)?0:1;
-      if(py>legs[i][1].y&&Math.abs(px-legs[i][2].x)<w*.19&&py>=soles[i].y){
-        const sole=soles[i];if(py>sole.y){sole.y=py;sole.sum=0;sole.count=0;}sole.sum+=px;sole.count++;sole.x=sole.sum/sole.count;
+  const building=new Map();
+  function advanceRig(d,st,end){
+    if(st.phase==='image'){
+      const primary=R.assets.get(d.key),raw=primary||R.assets.get(d.fallback);
+      if(!raw){st.phase='done';st.rig=null;return true;}
+      st.cacheKey=(primary?d.key:d.fallback)+':'+(d.variant||'base');
+      if(rigs.has(st.cacheKey)){st.rig=rigs.get(st.cacheKey);st.phase='done';return true;}
+      const t0=performance.now();
+      // Be'lal's cloth regrade is the only reason to copy the source. Every
+      // other rig uses the decoded image. A full-size canvas copy of cg-fade
+      // was a 9.6 ms step inside the clear-screen pump.
+      st.image=d.variant==='belal'?bakedImage(primary?d:{...d,sourcePanel:null},raw):raw;
+      R.perf.markStep&&R.perf.markStep('bakedImage:'+st.cacheKey,performance.now()-t0);
+      const image=st.image,w=image.width,h=image.height,point=p=>({x:p[0]*w,y:p[1]*h});
+      st.w=w;st.h=h;st.point=point;
+      st.neck=point(d.neck);st.hip=point(d.pelvis);
+      st.arms=d.arms.map(a=>a.map(point));st.legs=d.legs.map(a=>a.map(point));
+      st.bones=[[st.hip,st.neck],[st.neck,{x:st.neck.x,y:0}],...st.arms.flatMap(a=>[[a[0],a[1]],[a[1],a[2]]]),...st.legs.flatMap(a=>[[a[0],a[1]],[a[1],a[2]]])];
+      st.root={x:(st.legs[0][2].x+st.legs[1][2].x)/2,y:h};
+      st.cols=16;st.rows=24;
+      st.phase='texture';
+      if(performance.now()>=end)return false;
+    }
+    if(st.phase==='texture'){
+      const w=st.w,h=st.h,tw=st.tw||Math.round(w*384/h),th=st.th||384;
+      const sync=end>1e12;
+      if(!sync&&!st.pending&&!st.texture){
+        try{
+          st.pending=createImageBitmap(st.image,{resizeWidth:tw,resizeHeight:th,resizeQuality:'high'});
+          st.pending.then(bmp=>{st.bmp=bmp;}).catch(()=>{st.bmp=false;});
+        }catch(e){st.bmp=false;}
+        st.tw=tw;st.th=th;
+        return false;
       }
+      if(!sync&&!st.texture&&st.bmp==null)return false;
+      const t0=performance.now();
+      if(!st.texture){
+        const texture=document.createElement('canvas');texture.width=tw;texture.height=th;
+        // willReadFrequently keeps the texture on the CPU. The first getImageData
+        // of a default canvas is an atomic ~10 ms readback, which blows the pump.
+        const tc=texture.getContext('2d',{willReadFrequently:true});
+        st.texture=texture;st.tc=tc;st.tw=tw;st.th=th;st.copyY=0;st.ry=0;st.pixels=new Uint8ClampedArray(tw*th*4);
+      }
+      if(st.copyY<st.th){
+        const tc=st.tc;
+        if(sync||!(st.bmp&&st.bmp!==false)){
+          if(st.bmp&&st.bmp!==false){tc.drawImage(st.bmp,0,0,tw,th);if(st.bmp.close)st.bmp.close();st.bmp=null;}
+          else tc.drawImage(st.image,0,0,tw,th);
+          st.copyY=st.th;
+        }else{
+          // The bitmap is already the texture size, so each strip is a 1:1 copy.
+          while(st.copyY<st.th&&performance.now()-t0<1.2&&(sync||performance.now()<end)){
+            const rows=Math.min(32,st.th-st.copyY);
+            tc.drawImage(st.bmp,0,st.copyY,tw,rows,0,st.copyY,tw,rows);
+            st.copyY+=rows;
+          }
+          if(st.copyY<st.th)return false;
+          if(st.bmp.close)st.bmp.close();st.bmp=null;
+        }
+        tc.globalCompositeOperation='source-atop';const shade=tc.createLinearGradient(0,0,tw,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');tc.fillStyle=shade;tc.fillRect(0,0,tw,th);tc.globalCompositeOperation='source-over';
+        const shadeMs=performance.now()-t0;
+        if(shadeMs>4&&R.perf.markStep)R.perf.markStep('rig-shade:'+st.cacheKey,shadeMs);
+        if(!sync&&performance.now()>=end)return false;
+      }
+      do{
+        const y=st.ry||0;if(y>=th)break;
+        const rows=Math.min(64,th-y),slice=st.tc.getImageData(0,y,tw,rows);
+        st.pixels.set(slice.data,y*tw*4);st.ry=y+rows;
+        if(!sync&&(performance.now()>=end||performance.now()-t0>1.2))break;
+      }while(sync||performance.now()-t0<1.2);
+      const readMs=performance.now()-t0;
+      if(readMs>4&&R.perf.markStep)R.perf.markStep('rig-read:'+st.cacheKey,readMs);
+      if(st.ry<th)return false;
+      st.soles=st.legs.map(leg=>({x:leg[2].x,y:leg[2].y}));
+      st.yy=0;st.phase='alpha';
+      if(performance.now()>=end)return false;
     }
-    // The guard's overlapping boots require authored contacts; automatic column
-    // segmentation would mistake the forward toe for the rear sole.
-    if(d.soles)d.soles.forEach((p,i)=>{soles[i]=point(p);});
-    for(let row=0;row<=rows;row++)for(let col=0;col<=cols;col++)vertices.push({x:col*w/cols,y:row*h/rows});
-    for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
-      let visible=false;for(let yy=row*4;yy<(row+1)*4;yy++)for(let xx=col*4;xx<(col+1)*4;xx++)if(alpha[(yy*bake.width+xx)*4+3])visible=true;
-      if(!visible)continue;const a=row*(cols+1)+col,b=a+1,c=a+cols+1,d=c+1;triangles.push([a,b,c],[b,d,c]);
+    if(st.phase==='alpha'){
+      const t0=performance.now();
+      const bake=document.createElement('canvas');bake.width=st.cols*4;bake.height=st.rows*4;
+      const bc=bake.getContext('2d',{willReadFrequently:true});bc.drawImage(st.texture,0,0,bake.width,bake.height);
+      st.alpha=bc.getImageData(0,0,bake.width,bake.height).data;
+      st.bakeW=bake.width;
+      R.perf.markStep&&R.perf.markStep('rig-alpha:'+st.cacheKey,performance.now()-t0);
+      st.phase='soles';
+      if(performance.now()>=end)return false;
     }
-    // Side-view rigs overlap their legs, so one mesh would smear the kicking leg
-    // across the standing one. Split the far leg into its own texture layer.
-    let split=null;
-    if(d.splitLegs){
-      const kick=document.createElement('canvas'),body=document.createElement('canvas');kick.width=body.width=texture.width;kick.height=body.height=texture.height;
-      const kd=tc.getImageData(0,0,texture.width,texture.height),bd=tc.getImageData(0,0,texture.width,texture.height);
-      for(let yy=0;yy<texture.height;yy++){const py=yy*h/texture.height;const lx=leg=>{const a=py<leg[1].y?leg[0]:leg[1],b=py<leg[1].y?leg[1]:leg[2],t=Math.max(0,Math.min(1,(py-a.y)/(b.y-a.y||1)));return a.x+(b.x-a.x)*t;};const mid=(lx(legs[0])+lx(legs[1]))/2;
-        for(let xx=0;xx<texture.width;xx++){const px=xx*w/texture.width,j=(yy*texture.width+xx)*4,isKick=py>hip.y+h*.02&&px>=mid;if(isKick)bd.data[j+3]=0;else kd.data[j+3]=0;}}
-      kick.getContext('2d').putImageData(kd,0,0);body.getContext('2d').putImageData(bd,0,0);split={kick,body};
+    if(st.phase==='soles'){
+      const texture=st.texture,w=st.w,h=st.h,pixels=st.pixels,legs=st.legs,soles=st.soles;
+      const yEnd=Math.min(texture.height,st.yy+32);
+      for(let yy=st.yy;yy<yEnd;yy++)for(let xx=0;xx<texture.width;xx++){
+        if(pixels[(yy*texture.width+xx)*4+3]<96)continue;
+        const px=xx*w/texture.width,py=(yy+1)*h/texture.height;
+        const i=Math.abs(px-legs[0][2].x)<Math.abs(px-legs[1][2].x)?0:1;
+        if(py>legs[i][1].y&&Math.abs(px-legs[i][2].x)<w*.19&&py>=soles[i].y){
+          const sole=soles[i];if(py>sole.y){sole.y=py;sole.sum=0;sole.count=0;}sole.sum+=px;sole.count++;sole.x=sole.sum/sole.count;
+        }
+      }
+      st.yy=yEnd;
+      if(st.yy<texture.height)return false;
+      if(d.soles)d.soles.forEach((p,i)=>{soles[i]=st.point(p);});
+      st.vertices=[];st.triangles=[];st.row=0;
+      for(let row=0;row<=st.rows;row++)for(let col=0;col<=st.cols;col++)st.vertices.push({x:col*w/st.cols,y:row*h/st.rows});
+      st.phase='grid';
+      if(performance.now()>=end)return false;
     }
-    const rig={image,w,h,neck,hip,arms,legs,bones,root,vertices,triangles,texture,soles,cols,rows,split,height:d.height,sword:!!d.sword,kind:Object.keys(defs).find(name=>defs[name]===d)||''};for(const p of vertices)p.weights=skinWeights(p,rig);
-    rig.faces=triangles.map(([a,b,c])=>{const p=vertices[a],q=vertices[b],v=vertices[c],bx=q.x-p.x,by=q.y-p.y,cx=v.x-p.x,cy=v.y-p.y,det=bx*cy-cx*by;return {a,b,c,bx:bx/det,by:by/det,cx:cx/det,cy:cy/det};});
-    rigs.set(cacheKey,rig);return rig;
+    if(st.phase==='grid'){
+      const {cols,rows,alpha,bakeW,vertices}=st;
+      const rowEnd=Math.min(rows,st.row+4);
+      for(let row=st.row;row<rowEnd;row++)for(let col=0;col<cols;col++){
+        let visible=false;for(let yy=row*4;yy<(row+1)*4;yy++)for(let xx=col*4;xx<(col+1)*4;xx++)if(alpha[(yy*bakeW+xx)*4+3])visible=true;
+        if(!visible)continue;const a=row*(cols+1)+col,b=a+1,c=a+cols+1,e=c+1;st.triangles.push([a,b,c],[b,e,c]);
+      }
+      st.row=rowEnd;
+      if(st.row<rows)return false;
+      st.phase='split';
+      if(performance.now()>=end)return false;
+    }
+    if(st.phase==='split'){
+      let split=null;
+      if(d.splitLegs){
+        const texture=st.texture,tc=st.tc,w=st.w,h=st.h,legs=st.legs,hip=st.hip;
+        const kick=document.createElement('canvas'),body=document.createElement('canvas');kick.width=body.width=texture.width;kick.height=body.height=texture.height;
+        const kd=tc.getImageData(0,0,texture.width,texture.height),bd=tc.getImageData(0,0,texture.width,texture.height);
+        for(let yy=0;yy<texture.height;yy++){const py=yy*h/texture.height;const lx=leg=>{const a=py<leg[1].y?leg[0]:leg[1],b=py<leg[1].y?leg[1]:leg[2],t=Math.max(0,Math.min(1,(py-a.y)/(b.y-a.y||1)));return a.x+(b.x-a.x)*t;};const mid=(lx(legs[0])+lx(legs[1]))/2;
+          for(let xx=0;xx<texture.width;xx++){const px=xx*w/texture.width,j=(yy*texture.width+xx)*4,isKick=py>hip.y+h*.02&&px>=mid;if(isKick)bd.data[j+3]=0;else kd.data[j+3]=0;}}
+        kick.getContext('2d').putImageData(kd,0,0);body.getContext('2d').putImageData(bd,0,0);split={kick,body};
+      }
+      st.split=split;
+      st.wi=0;
+      st.rig={image:st.image,w:st.w,h:st.h,neck:st.neck,hip:st.hip,arms:st.arms,legs:st.legs,bones:st.bones,root:st.root,vertices:st.vertices,triangles:st.triangles,texture:st.texture,soles:st.soles,cols:st.cols,rows:st.rows,split,height:d.height,sword:!!d.sword,kind:Object.keys(defs).find(name=>defs[name]===d)||''};
+      st.phase='weights';
+      if(performance.now()>=end)return false;
+    }
+    if(st.phase==='weights'){
+      const rig=st.rig,verts=rig.vertices;
+      const t0=performance.now();
+      const to=Math.min(verts.length,st.wi+60);
+      for(let i=st.wi;i<to;i++)verts[i].weights=skinWeights(verts[i],rig);
+      st.wi=to;
+      R.perf.markStep&&R.perf.markStep('skinWeights:'+rig.kind,performance.now()-t0);
+      if(st.wi<verts.length)return false;
+      rig.faces=rig.triangles.map(([a,b,c])=>{const p=verts[a],q=verts[b],v=verts[c],bx=q.x-p.x,by=q.y-p.y,cx=v.x-p.x,cy=v.y-p.y,det=bx*cy-cx*by;return {a,b,c,bx:bx/det,by:by/det,cx:cx/det,cy:cy/det};});
+      rigs.set(st.cacheKey,rig);
+      building.delete(st.cacheKey);
+      st.phase='done';
+      return true;
+    }
+    return st.phase==='done';
+  }
+  function ensureRig(d,end){
+    const primary=R.assets.get(d.key),raw=primary||R.assets.get(d.fallback);if(!raw)return {done:true,rig:null};
+    const cacheKey=(primary?d.key:d.fallback)+':'+(d.variant||'base');
+    if(rigs.has(cacheKey))return {done:true,rig:rigs.get(cacheKey)};
+    let st=building.get(cacheKey);
+    if(!st){st={phase:'image'};building.set(cacheKey,st);}
+    const sync=end>1e12,t0=performance.now();
+    let guard=0;
+    while(st.phase!=='done'&&guard++<(sync?20000:8)){
+      advanceRig(d,st,end);
+      if(st.phase==='done')break;
+      if(!sync&&(performance.now()>=end||performance.now()-t0>1.2))break;
+    }
+    return {done:st.phase==='done',rig:st.phase==='done'?st.rig:null};
+  }
+  function peekRig(d){
+    const primary=R.assets.get(d.key),raw=primary||R.assets.get(d.fallback);if(!raw)return null;
+    return rigs.get((primary?d.key:d.fallback)+':'+(d.variant||'base'))||null;
+  }
+  function getRig(d){
+    const t0=performance.now();
+    const out=ensureRig(d,1e15);
+    if(R.perf.noteBake)R.perf.noteBake('getRig:'+(d.variant||d.key),performance.now()-t0);
+    return out.rig;
   }
 
   function targets(a,d,r,pose){
@@ -194,6 +322,24 @@
     const live=Math.max(1,(R.display&&R.display.renderScale)||1);
     return r.height*Math.min(3,live)/r.h;
   }
+  function faceBox(r,a,b,c){
+    let x0=Math.min(a.x,b.x,c.x)-2,y0=Math.min(a.y,b.y,c.y)-2,x1=Math.max(a.x,b.x,c.x)+2,y1=Math.max(a.y,b.y,c.y)+2;
+    x0=Math.max(0,x0);y0=Math.max(0,y0);x1=Math.min(r.w,x1);y1=Math.min(r.h,y1);
+    if(x1-x0<1||y1-y0<1)return null;
+    return {sx:x0/r.w,sy:y0/r.h,sw:(x1-x0)/r.w,sh:(y1-y0)/r.h,dx:x0,dy:y0,dw:x1-x0,dh:y1-y0};
+  }
+  function drawFace(ctx,r,f,vertices,tex,padding){
+    const a=vertices[f.a],b=vertices[f.b],c=vertices[f.c],bx=b.X-a.X,by=b.Y-a.Y,cx=c.X-a.X,cy=c.Y-a.Y,A=bx*f.cy-cx*f.by,B=by*f.cy-cy*f.by,C=cx*f.bx-bx*f.cx,D=cy*f.bx-by*f.cx,centerX=(a.X+b.X+c.X)/3,centerY=(a.Y+b.Y+c.Y)/3;
+    ctx.save();ctx.beginPath();
+    for(let k=0;k<3;k++){const p=k===0?a:k===1?b:c,dx=p.X-centerX,dy=p.Y-centerY,l=Math.hypot(dx,dy)||1;ctx[k?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);}
+    ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);
+    if(R.perf.fullFace)ctx.drawImage(tex,0,0,r.w,r.h);
+    else {
+      const box=faceBox(r,a,b,c);
+      if(box)ctx.drawImage(tex,box.sx*tex.width,box.sy*tex.height,box.sw*tex.width,box.sh*tex.height,box.dx,box.dy,box.dw,box.dh);
+    }
+    ctx.restore();
+  }
   function bakePose(r,bones,pose){
     const scale=poseScaleFor(r),transforms=boneTransforms(r,bones),layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
     r.buffers=r.buffers||layers.map(()=>r.vertices.map(()=>({})));
@@ -201,24 +347,137 @@
     for(let n=0;n<layers.length;n++)for(let i=0;i<r.vertices.length;i++){const v=skinPoint(r.vertices[i],r,bones,pose,layers[n][1],transforms,r.buffers[n][i]);minX=Math.min(minX,v.X);minY=Math.min(minY,v.Y);maxX=Math.max(maxX,v.X);maxY=Math.max(maxY,v.Y);}
     const left=Math.floor(minX*scale)-2,top=Math.floor(minY*scale)-2,width=Math.max(1,Math.ceil(maxX*scale)-left+2),height=Math.max(1,Math.ceil(maxY*scale)-top+2);
     const surface=document.createElement('canvas');surface.width=width;surface.height=height;
+    // Not willReadFrequently: nothing reads this surface back. That flag made
+    // the first blit copy pixels off the CPU and cost 8–13 ms inside the draw.
     const ctx=surface.getContext('2d'),bounds={left,top,width,height},padding=.8/scale;
+    const bakeAt=performance.now();
     ctx.setTransform(scale,0,0,scale,-left,-top);
     if(!gpuSkin(r,r.buffers[0],bounds,scale,ctx))for(let n=0;n<layers.length;n++){const vertices=r.buffers[n],tex=layers[n][0];
-      for(const f of r.faces){const a=vertices[f.a],b=vertices[f.b],c=vertices[f.c],bx=b.X-a.X,by=b.Y-a.Y,cx=c.X-a.X,cy=c.Y-a.Y,A=bx*f.cy-cx*f.by,B=by*f.cy-cy*f.by,C=cx*f.bx-bx*f.cx,D=cy*f.bx-by*f.cx,centerX=(a.X+b.X+c.X)/3,centerY=(a.Y+b.Y+c.Y)/3;
-        ctx.save();ctx.beginPath();for(let k=0;k<3;k++){const p=k===0?a:k===1?b:c,dx=p.X-centerX,dy=p.Y-centerY,l=Math.hypot(dx,dy)||1;ctx[k?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);}ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(tex,0,0,r.w,r.h);ctx.restore();
-      }
+      for(const f of r.faces)drawFace(ctx,r,f,vertices,tex,padding);
     }
+    if(R.perf.noteBake)R.perf.noteBake('bakePose:'+(r.kind||''),performance.now()-bakeAt);
     return {surface,bounds,scale};
+  }
+  // The warm-white hit copy is built in short strips. One full-surface copy
+  // measured 6–12 ms, which is over the gameplay pump cap.
+  function stepFlash(job,end){
+    const entry=job.entry;if(!entry||entry.flash)return true;
+    const b=entry.bounds,st=job.state||(job.state={y:0});
+    if(!st.c){
+      st.c=document.createElement('canvas');st.c.width=b.width;st.c.height=b.height;
+      st.g=st.c.getContext('2d',{willReadFrequently:true});
+    }
+    while(st.y<b.height&&performance.now()<end){
+      const h=Math.min(24,b.height-st.y),t0=performance.now();
+      st.g.drawImage(entry.surface,0,st.y,b.width,h,0,st.y,b.width,h);
+      st.g.globalCompositeOperation='source-atop';st.g.fillStyle='#fff4c8';st.g.fillRect(0,st.y,b.width,h);st.g.globalCompositeOperation='source-over';
+      st.y+=h;
+      if(performance.now()-t0>1.2)break;
+    }
+    if(st.y<b.height)return false;
+    entry.flash=st.c;return true;
+  }
+  function finishPose(r,key,entry){
+    const lib=r.library||(r.library=new Map());
+    if(key)lib.set(key,entry);
+    const q=R.perf.poseQueue;
+    if(q){const i=q.findIndex(it=>it.kind===r.kind&&it.key===key);if(i>=0)q.splice(i,1);}
+    if(q&&!q.length&&!R.perf.queueEmptyAt)R.perf.queueEmptyAt=performance.now();
+    // Idle and walk frames are uploaded during enter. Other poses are uploaded
+    // on the frame a draw asks for them (Play.draw flushes before the world),
+    // not while the scheduler is merely filling the library.
+    if(R.Bake&&(key==='idle'||(key&&key[0]==='w')))R.Bake.queueTouch(entry);
+    return entry;
+  }
+  function stepPose(job,end){
+    const d=defs[job.kind];if(!d)return true;
+    const st=job.state||(job.state={phase:'rig'});
+    if(st.phase==='rig'){
+      const got=ensureRig(d,end);
+      if(!got.done)return false;
+      if(!got.rig)return true;
+      job.rig=got.rig;
+      const lib=job.rig.library;
+      if(lib&&lib.has(job.key)){if(R.Bake)R.Bake.queueTouch(lib.get(job.key));return true;}
+      const a=actorFor(d,job.key);
+      st.pose=R.Puppet.pose(a,d.height);
+      st.bones=targets(a,d,job.rig,st.pose);
+      st.phase='skin';st.vi=0;
+      const r=job.rig;
+      st.scale=poseScaleFor(r);
+      st.transforms=boneTransforms(r,st.bones);
+      st.layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
+      r.buffers=r.buffers||st.layers.map(()=>r.vertices.map(()=>({})));
+      st.minX=Infinity;st.minY=Infinity;st.maxX=-Infinity;st.maxY=-Infinity;
+      if(performance.now()>=end)return false;
+    }
+    if(st.phase==='skin'){
+      const r=job.rig;
+      const t0=performance.now();
+      while(st.vi<r.vertices.length&&performance.now()-t0<1.5&&performance.now()<end){
+        const i=st.vi++;
+        for(let n=0;n<st.layers.length;n++){
+          const v=skinPoint(r.vertices[i],r,st.bones,st.pose,st.layers[n][1],st.transforms,r.buffers[n][i]);
+          st.minX=Math.min(st.minX,v.X);st.minY=Math.min(st.minY,v.Y);st.maxX=Math.max(st.maxX,v.X);st.maxY=Math.max(st.maxY,v.Y);
+        }
+      }
+      if(st.vi<r.vertices.length)return false;
+      const skinMs=performance.now()-t0;
+      const scale=st.scale,left=Math.floor(st.minX*scale)-2,top=Math.floor(st.minY*scale)-2;
+      const width=Math.max(1,Math.ceil(st.maxX*scale)-left+2),height=Math.max(1,Math.ceil(st.maxY*scale)-top+2);
+      const allocAt=performance.now();
+      const surface=document.createElement('canvas');surface.width=width;surface.height=height;
+      if(R.perf.markStep)R.perf.markStep('pose-alloc:'+job.kind,performance.now()-allocAt);
+      st.surface=surface;st.ctx=surface.getContext('2d');st.bounds={left,top,width,height};st.padding=.8/scale;
+      st.ctx.setTransform(scale,0,0,scale,-left,-top);
+      st.phase='rast';st.ln=0;st.fi=0;st.gpu=true;
+      // Raster starts on a later slice so one pose invocation stays near 1 ms.
+      // The GPU whole-pose path measured 8–17 ms, over the pump cap, so the
+      // scheduler stays on this chunked canvas path.
+      if(! (end>1e12) && (performance.now()>=end || skinMs>0.4))return false;
+    }
+    if(st.phase==='rast'){
+      const r=job.rig;
+      while(st.ln<st.layers.length){
+        const vertices=r.buffers[st.ln],tex=st.layers[st.ln][0];
+        while(st.fi<r.faces.length){
+          if(performance.now()>=end)return false;
+          const t0=performance.now();
+          drawFace(st.ctx,r,r.faces[st.fi],vertices,tex,st.padding);
+          const ms=performance.now()-t0;
+          if(ms>4)R.perf.markStep&&R.perf.markStep('face:'+job.kind+':'+job.key,ms);
+          st.fi++;
+          if(performance.now()>=end||ms>1.2)return false;
+        }
+        st.ln++;st.fi=0;
+      }
+      finishPose(r,job.key,{surface:st.surface,bounds:st.bounds,scale:st.scale});
+      return true;
+    }
+    return true;
+  }
+  function fallbackEntry(lib,key){
+    if(!lib)return null;
+    if(key&&key[0]==='w'){
+      const n=+key.slice(1);let best=null,dist=99;
+      for(const [k,v] of lib){if(k[0]!=='w'||!v)continue;const distK=Math.abs(+k.slice(1)-n);if(distK<dist){dist=distK;best=v;}}
+      if(best)return best;
+    }
+    return lib.get('idle')||null;
   }
   function blitPose(output,r,entry){
     const scale=entry.scale,b=entry.bounds;
     output.drawImage(entry.surface,0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);
+    entry.touched=true;
   }
   // Tint only the baked character's pixels. source-atop stays on this copy,
   // never on the main canvas (that lit a box around Be'lal).
   function flashOf(entry){
-    if(entry.flash)return entry.flash;const b=entry.bounds,c=document.createElement('canvas');c.width=b.width;c.height=b.height;const g=c.getContext('2d');
-    g.drawImage(entry.surface,0,0,b.width,b.height);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,b.width,b.height);entry.flash=c;return c;
+    if(entry.flash)return entry.flash;const b=entry.bounds,c=document.createElement('canvas');c.width=b.width;c.height=b.height;const g=c.getContext('2d',{willReadFrequently:true});
+    const t0=performance.now();
+    g.drawImage(entry.surface,0,0,b.width,b.height);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,b.width,b.height);entry.flash=c;
+    if(R.perf.noteBake)R.perf.noteBake('flashOf',performance.now()-t0);
+    return c;
   }
   function frameKey(a){
     if(a.attackMove){const t=Math.min(1,(a.stateT||0)/(a.attackMove.duration||.4));return 'k'+Math.min(KICK_FRAMES-1,Math.floor(t*KICK_FRAMES));}
@@ -254,22 +513,24 @@
     const lib=r.library||(r.library=new Map());
     let entry=key?lib.get(key):null;
     if(!entry){
-      if(!R.perf.poseWarm){
-        const now=performance.now();
-        if(now-(R.perf.poseStamp||0)>14){R.perf.poseStamp=now;R.perf.poseBuilds=0;}
-        if((R.perf.poseBuilds||0)>=1)entry=lib.get('idle')||lib.values().next().value;
-      }
-      if(!entry){
+      if(R.perf.poseWarm){
         if(!bones)return null;
         entry=bakePose(r,bones,pose);
         if(key)lib.set(key,entry);
-        if(!R.perf.poseWarm)R.perf.poseBuilds=(R.perf.poseBuilds||0)+1;
+      }else{
+        R.perf.poseFallbacks=(R.perf.poseFallbacks||0)+1;
+        const missed=R.perf.poseMiss||(R.perf.poseMiss=[]);
+        if(missed.length<24)missed.push(r.kind+':'+key);
+        if(R.Bake&&key)R.Puppet.wantPose(r.kind,key,0);
+        entry=fallbackEntry(lib,key);
       }
     }
     if(!output||!entry)return entry;
-    // A single tightly bounded composite prevents triangle-edge alpha seams.
     blitPose(output,r,entry);
-    if(actor&&actor.hitFlash>0){const alpha=output.globalAlpha,b=entry.bounds,scale=entry.scale;output.globalAlpha=alpha*Math.min(.72,actor.hitFlash*6);output.drawImage(flashOf(entry),0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);output.globalAlpha=alpha;}
+    // A second draw of the pose that is already on screen, added with lighter
+    // so the hit reads brighter. A warm-white canvas copy was a 6–12 ms
+    // readback, over the gameplay pump cap. source-atop stays off the main canvas.
+    if(actor&&actor.hitFlash>0){const alpha=output.globalAlpha,op=output.globalCompositeOperation;output.globalCompositeOperation='lighter';output.globalAlpha=alpha*Math.min(.55,actor.hitFlash*4);blitPose(output,r,entry);output.globalAlpha=alpha;output.globalCompositeOperation=op;}
     return entry;
   }
   function drawSword(ctx,a,d,r,bones,pose){
@@ -284,12 +545,24 @@
     ctx.strokeStyle='#edf5fb';ctx.lineWidth=r.h*.006;ctx.beginPath();ctx.moveTo(r.h*.07,-r.h*.006);ctx.lineTo(len*.94,-r.h*.002);ctx.stroke();
     ctx.restore();
   }
+  // Hold the body on the walk frame it was skinned for, so the sole stays
+  // where that frame planted it instead of skating with the actor.
+  function plantShift(a){
+    const g=a.gait;
+    if(!g||!g.moving||!(g.feet&&g.feet.some(f=>f&&f.stance)))return 0;
+    const scale=(a.visualHeight||83)/80,cycle=32*scale*2;
+    const phase=((g.phase%1)+1)%1,frame=Math.floor(phase*WALK_FRAMES)%WALK_FRAMES,base=frame/WALK_FRAMES;
+    // Hold the pose on the body position it was skinned for (the middle of this
+    // frame) so the sole stays down instead of skating ahead with the actor.
+    return -(phase-(base+0.5/WALK_FRAMES))*cycle*(g.dir||1);
+  }
   function updateGait(a, dt) {
     if(!a.visualHeight){const kind=a instanceof R.Riley?'riley':a instanceof R.Loial?'loial':a.kind||(a.boss?'chieftain':'trolloc');a.visualHeight=defs[kind]?.height||83;}
     const old=a.gait || (a.gait={x:a.x,y:a.y,phase:0,feet:[],moving:false});
     const dx=a.x-old.x,dy=a.y-old.y,dist=Math.hypot(dx,dy),scale=(a.visualHeight||83)/80;
     const walking=(a.state==='walk'||a instanceof R.Loial)&&!a.dead&&(a.z||0)<.1&&dist>.001&&dist<40;
     old.moving=walking;
+    if(Math.abs(dx)>0.001)old.dir=Math.sign(dx);
     if(walking) {
       const stride=32*scale; old.phase+=dist/(stride*2);
       const ux=dx/dist,uy=dy/dist;
@@ -325,6 +598,8 @@
       if(meshGPU&&meshGPU.rigs){const data=meshGPU.rigs.get(rig);if(data){meshGPU.gl.deleteTexture(data.texture);meshGPU.gl.deleteBuffer(data.vertex);meshGPU.gl.deleteBuffer(data.indices);meshGPU.rigs.delete(rig);}}
       rigs.delete(key);
     }
+    const d=defs[kind];
+    if(d)for(const key of [...building.keys()])if(key.startsWith(d.key+':')||(d.fallback&&key.startsWith(d.fallback+':')))building.delete(key);
   }
   R.Puppet={defs,updateGait,knee,prepare(kind){
     const d=defs[kind],r=d&&getRig(d);if(!r)return null;
@@ -332,22 +607,118 @@
     const prev=R.perf.poseWarm;R.perf.poseWarm=true;
     for(const key of POSE_KEYS){const a=actorFor(d,key),pose=this.pose(a,d.height);paintedBody(null,r,targets(a,d,r,pose),pose,a,key);}
     R.perf.poseWarm=prev;return r;
+  },stageReady(level){
+    const kinds=STAGE_RIGS[level]||STAGE_RIGS[0];
+    return kinds.every(kind=>{const d=defs[kind],r=d&&peekRig(d);return r&&r.library&&POSE_KEYS.every(key=>r.library.has(key));});
+  },prefetch(level){
+    // Enqueue only. Calling prepare() here skinned a whole rig inside the
+    // clear-screen frame (the stage 1 walk's 483 ms hitch).
+    const kinds=STAGE_RIGS[level]||[];
+    for(const kind of kinds)for(const key of POSE_KEYS)this.wantPose(kind,key,4);
+    return kinds.every(kind=>{const d=defs[kind],r=d&&peekRig(d);return r&&r.library&&POSE_KEYS.every(key=>r.library.has(key));});
+  },touchEntry(entry){
+    if(!entry||entry.touched||!entry.surface)return false;
+    const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
+    if(!ctx)return false;
+    const rs=(R.display&&R.display.renderScale)||1;
+    ctx.save();
+    ctx.setTransform(rs,0,0,rs,0,0);
+    // Same scaled blit the fight uses. A 1px copy does not warm that path.
+    blitPose(ctx,null,entry);
+    ctx.restore();
+    return true;
+  },warmRig(rig){
+    // A rig that was skinned ahead of time (title, reel, clear screen) only
+    // needs its first blit. That blit is one pose a frame, not the enter.
+    if(!rig||!rig.library)return;
+    const later=R.perf.poseQueue||(R.perf.poseQueue=[]);
+    for(const entry of rig.library.values()){
+      if(!entry||!entry.surface||entry.touched)continue;
+      later.push(entry);
+    }
+  },drainPoses(limit){
+    if(!R.Bake)return 0;
+    const before=(R.perf.poseQueue&&R.perf.poseQueue.length)||0;
+    R.Bake.pump(limit||4);
+    const after=(R.perf.poseQueue&&R.perf.poseQueue.length)||0;
+    return Math.max(0,before-after);
   },prepareStage(level){
+    // Stage entry needs only the idle surfaces that the first frame displays.
+    // Every other pose is a resumable Bake job; this reverses scroll8's full
+    // synchronous atlas build without restoring its gameplay-sized work steps.
     const bakeAt=performance.now();
+    R.perf.allowSync=true;R.perf.poseFallbacks=0;R.perf.poseMiss=[];
+    R.perf.queueEmptyAt=0;R.perf.stageEnteredAt=bakeAt;R.perf.stageLevel=level;
     const kinds=STAGE_RIGS[level]||STAGE_RIGS[0],keep=new Set(kinds);
     for(const kind of Object.keys(defs))if(!keep.has(kind))dropRig(kind);
-    const baked=[];
-    for(const kind of kinds){const rig=this.prepare(kind);if(rig)baked.push(rig);}
-    // The first drawImage of a new pose surface uploads it. Do that here, on
-    // stage enter, so the opening fight frame is not the one that pays for it.
-    const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
-    if(!ctx)return;
-    ctx.save();
-    ctx.setTransform(1,0,0,1,0,0);
-    for(const rig of baked)for(const entry of (rig.library?rig.library.values():[]))if(entry.surface)ctx.drawImage(entry.surface,0,0,1,1,0,0,1,1);
-    try{ctx.getImageData(0,0,1,1);}catch(e){}
-    ctx.restore();
-    R.perf.lastPoseMs=performance.now()-bakeAt;
+    if(R.Bake)R.Bake.drop(j=>j.kind&&!keep.has(j.kind));
+    const pending=[],boss={0:['chieftain'],1:['fade'],4:['taim','twinkle']}[level]||[];
+    for(const kind of kinds){
+      const d=defs[kind];if(!d)continue;
+      const r=getRig(d);if(!r)continue;
+      if(!(r.library&&r.library.has('idle'))){
+        const prev=R.perf.poseWarm;R.perf.poseWarm=true;
+        const a=actorFor(d,'idle'),pose=this.pose(a,d.height);
+        paintedBody(null,r,targets(a,d,r,pose),pose,a,'idle');
+        R.perf.poseWarm=prev;
+      }
+      const idle=r.library&&r.library.get('idle');if(idle)this.touchEntry(idle);
+      for(const key of POSE_KEYS){
+        if(key==='idle'||(r.library&&r.library.has(key)))continue;
+        const pri=boss.includes(kind)?1:key[0]==='w'?2:3;
+        pending.push({kind,key,pri});this.wantPose(kind,key,pri);
+      }
+      r.warmed=true;
+    }
+    R.perf.poseQueue=pending;
+    if(!pending.length)R.perf.queueEmptyAt=performance.now();
+    this.warmBitmaps(level);
+    R.perf.allowSync=false;R.perf.lastPoseMs=performance.now()-bakeAt;
+  },wantPose(kind,key,pri){
+    if(!kind||!key)return;
+    const d=defs[kind];if(!d)return;
+    const r=peekRig(d);
+    if(r&&r.library&&r.library.has(key)){
+      const entry=r.library.get(key);
+      if(entry&&R.Bake)R.Bake.queueTouch(entry);
+      const q=R.perf.poseQueue;
+      if(q){const i=q.findIndex(it=>it.kind===kind&&it.key===key);if(i>=0)q.splice(i,1);if(q&&!q.length&&!R.perf.queueEmptyAt)R.perf.queueEmptyAt=performance.now();}
+      return;
+    }
+    const stage=R.perf.stageLevel;
+    const name='pose:'+kind+':'+key;
+    if(!R.Bake)return;
+    const job=R.Bake.enqueue(pri==null?3:pri,name,(item,end)=>stepPose(item,end),{kind,key,level:pri>=4?null:stage});
+    if(job)job.kind=kind,job.key=key;
+    if(pri<4){
+      const q=R.perf.poseQueue||(R.perf.poseQueue=[]);
+      if(!q.some(it=>it.kind===kind&&it.key===key))q.push({kind,key,pri});
+    }
+  },warmBitmaps(level){
+    if(!R.Bake)return;
+    if(level===2){
+      R.Bake.enqueue(1,'blit:cg-draghkar',(job,end)=>{
+        const img=R.assets.get('cg-draghkar');if(!img)return true;
+        const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
+        if(!ctx)return true;
+        const t0=performance.now();
+        ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(img,0,0,8,8);ctx.restore();
+        R.perf.markStep&&R.perf.markStep('blit:cg-draghkar',performance.now()-t0);
+        return true;
+      },{level});
+    }
+    if(level===3){
+      const names=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];
+      names.forEach((name)=>R.Bake.enqueue(1,'belal:'+name,(job)=>{
+        const img=R.assets.get('belal-'+name);if(!img)return true;
+        const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
+        if(!ctx)return true;
+        const t0=performance.now();
+        ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(img,0,0,8,8);ctx.restore();
+        R.perf.markStep&&R.perf.markStep('belal:'+name,performance.now()-t0);
+        return true;
+      },{level}));
+    }
   },contacts(a,kind){
     const d=defs[kind],r=d&&getRig(d);if(!r)return [];
     const pose=this.pose(a,d.height),bones=targets(a,d,r,pose),scale=d.height/r.h,flip=(a.facing||1)*(d.front?1:-1);
@@ -376,14 +747,16 @@
     return {feet,arms,bob,lean,walking,attack,hurt};
   },draw(ctx,a,cam,kind){
     if(kind==='forsaken'&&R.drawBelal&&R.assets.has('belal-idle'))return R.drawBelal(ctx,a,cam,defs.forsaken.height);
-    const d=defs[kind];if(!d)return false;const r=getRig(d);if(!r)return false;
+    const d=defs[kind];if(!d)return false;
+    const key=frameKey(a);
+    const r=peekRig(d);
+    if(!r){if(!R.perf.poseWarm&&R.Bake)R.Puppet.wantPose(kind,'idle',0);return false;}
     a.visualHeight=d.height;const pose=this.pose(a,d.height);
-
-    ctx.save();ctx.translate(a.x-cam,a.y-(a.z||0));ctx.scale((a.facing||1)*(d.front?1:-1),1);
+    ctx.save();ctx.translate(a.x-cam+plantShift(a),a.y-(a.z||0));ctx.scale((a.facing||1)*(d.front?1:-1),1);
     if(a.dead||['knockdown','lying','death'].includes(a.state)){ctx.translate(0,-8);ctx.rotate(d.front?-1.35:1.35);}
     if(a.dead)ctx.globalAlpha=Math.max(.1,Math.min(1,(a.deathTimer||.5)/.75));
     ctx.scale(d.height/r.h,d.height/r.h);ctx.translate(-r.root.x,-r.root.y);
-    const key=frameKey(a),lib=r.library,cached=lib&&lib.has(key);
+    const lib=r.library,cached=lib&&lib.has(key);
     // Idle breathing is a translate of the baked stance. Walk and kick frames
     // already include their own bob, so they are not shifted again.
     if(cached&&key[0]!=='w'&&key[0]!=='k')ctx.translate(0,pose.bob*r.h/80);
@@ -414,7 +787,7 @@
     return 'idle';
   }
   const belalFlashCache={};
-  function belalFlash(name,img,w,h){let c=belalFlashCache[name];if(!c){c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(w));c.height=Math.max(1,Math.ceil(h));const g=c.getContext('2d');g.drawImage(img,0,0,w,h);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,w,h);belalFlashCache[name]=c;}return c;}
+  function belalFlash(name,img,w,h){let c=belalFlashCache[name];if(!c){const t0=performance.now();c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(w));c.height=Math.max(1,Math.ceil(h));const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,0,0,w,h);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,w,h);belalFlashCache[name]=c;if(R.perf.noteBake)R.perf.noteBake('belalFlash:'+name,performance.now()-t0);}return c;}
   R.drawBelal=function(ctx,a,cam,height){
     const name=a.belalFrame||belalFrame(a),img=R.assets.get('belal-'+name);if(!img)return false;
     const [w,h,ax,ay]=BELAL.frames[name],s=(height||116)/BELAL.frames.idle[1];
@@ -424,8 +797,9 @@
     if(['knockdown','lying'].includes(a.state)||a.dead)ctx.rotate(-(a.facing||-1)*Math.min(1,(a.stateT||0)*4)*1.25);
     ctx.scale(a.facing===1?-s:s,s);
     ctx.drawImage(img,-ax,-ay,w,h);
-    // Tint only Be'lal's own pixels: source-atop on the live canvas would light a box over the scene.
-    if(a.hitFlash>0){ctx.globalAlpha*=Math.min(.65,a.hitFlash*5);ctx.drawImage(belalFlash(name,img,w,h),-ax,-ay,w,h);}
+    // Brighter ghost of the same frame. A white source-atop copy is a full
+    // extra canvas, and source-atop on the live canvas lights a box over the scene.
+    if(a.hitFlash>0){const op=ctx.globalCompositeOperation;ctx.globalCompositeOperation='lighter';ctx.globalAlpha*=Math.min(.55,a.hitFlash*4);ctx.drawImage(img,-ax,-ay,w,h);ctx.globalCompositeOperation=op;}
     ctx.restore();
     return true;
   };

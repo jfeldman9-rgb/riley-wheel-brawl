@@ -158,6 +158,7 @@ RWB.audio = (function () {
   /* Generic UI / combat cues. Content adds more with defineSfx(name, fn). */
   const sfx = {
     blip() { tone({ f0: 880, f1: 1200, dur: 0.06, vol: 0.2 }); },
+    go() { tone({ f0: 523, f1: 784, dur: 0.09, vol: 0.22 }); tone({ f0: 1046, dur: 0.14, delay: 0.1, vol: 0.2 }); },
     select() { tone({ f0: 660, f1: 990, dur: 0.08, vol: 0.25 }); tone({ f0: 990, f1: 1320, dur: 0.1, delay: 0.07, vol: 0.25 }); },
     swing() { if (!gate('swing', 40)) return; noise({ f0: vary(1900), f1: 380, dur: 0.08, vol: 0.13, filter: 'bandpass', q: 0.9 }); },
     hit(heavy) {

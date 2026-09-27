@@ -15,7 +15,7 @@
    from an older deploy can't pin the fallback. */
 'use strict';
 
-RWB.ASSET_VER = '20260926-grok3d';
+RWB.ASSET_VER = '20260927-scroll11';
 RWB.assets = (function () {
   const images = {};
   const cs = typeof document !== 'undefined' && document.currentScript;
@@ -45,6 +45,7 @@ RWB.assets = (function () {
       const img = new Image();
       img.onload = async () => { try { if (img.decode) await img.decode(); resolve(img); } catch (_) { resolve(null); } };
       img.onerror = () => resolve(null);
+      img.crossOrigin = 'anonymous';
       img.src = url;
     });
   }

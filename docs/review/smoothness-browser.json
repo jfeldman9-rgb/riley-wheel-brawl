@@ -3,17 +3,17 @@
   "refresh": [
     {
       "hz": 60,
-      "distance": 127.99999999999955,
+      "distance": 127.9999999999998,
       "state": "walk"
     },
     {
       "hz": 120,
-      "distance": 127.99999999999955,
+      "distance": 127.9999999999998,
       "state": "walk"
     },
     {
       "hz": 144,
-      "distance": 127.99999999999955,
+      "distance": 127.9999999999998,
       "state": "walk"
     }
   ],

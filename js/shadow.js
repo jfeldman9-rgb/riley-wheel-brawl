@@ -149,6 +149,7 @@
       this.setState('telegraph');
     }
     updateAI(dt) {
+      if (this.advanceEntry(dt)) return;
       if (
         this.kind === 'ashaman' &&
         this.ai === 'approach' &&
@@ -435,6 +436,20 @@
       this.flightTime += dt;
       if (this.introTimer > 0) {
         this.introTimer -= dt;
+        // Stride to a fixed on-screen mark. Do not chase Riley during the intro.
+        const mark = this.g.arenaLeft + 490;
+        const dx = mark - this.x;
+        if (Math.abs(dx) > 4) {
+          const step = Math.min(Math.abs(dx), this.speed * dt);
+          this.x += Math.sign(dx) * step;
+          this.facing = dx >= 0 ? 1 : -1;
+          this.walkDistance += step;
+          this.setState('walk');
+        } else {
+          this.x = mark;
+          this.vx = 0;
+          this.setState('idle');
+        }
         return;
       }
       if (this.kind === 'taim' && !this.phaseTwo && this.hp < this.hpMax * 0.55) {
