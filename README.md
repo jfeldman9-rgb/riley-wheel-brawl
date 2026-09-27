@@ -51,5 +51,8 @@ The default soak keeps the inherited HP top-up below 28 HP and 99 lives; it is a
 completion/attack-coverage test. `--natural` disables those assists and reports
 3-life masher balance. See `docs/STATUS.md` for both sets of measured results.
 
-Painted files can be added using `docs/ART_LIST.md` and `js/artmanifest.js`.
+All supplied painted assets are wired through `js/artmanifest.js`.
+`CHROMIUM_PATH=/path/to/chromium node tools/review.cjs` regenerates the headless
+review screenshots and image-loading audit (requires Playwright). See
+`docs/review/README.md` for evidence, reproduction, and visual limitations.
 No build step or new runtime dependency is required.

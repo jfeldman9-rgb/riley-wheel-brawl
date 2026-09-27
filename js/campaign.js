@@ -57,7 +57,7 @@
     st4_forsaken_01: {
       id: 'st4_forsaken_01',
       who: 'forsaken',
-      name: 'FORSAKEN',
+      name: "BE'LAL",
       text: 'Callandor belongs to me.',
     },
     st4_riley_01: { id: 'st4_riley_01', who: 'riley', name: 'RILEY', text: 'Not today.' },
@@ -217,7 +217,7 @@
     forsaken_intro_01: {
       id: 'forsaken_intro_01',
       who: 'forsaken',
-      name: 'FORSAKEN',
+      name: "BE'LAL",
       text: "Kneel, little Asha'man.",
     },
     ashaman_intro_01: {
@@ -280,7 +280,7 @@
       {
         id: 'st4_forsaken_01',
         who: 'forsaken',
-        name: 'FORSAKEN',
+        name: "BE'LAL",
         text: 'Callandor belongs to me.',
       },
       { id: 'st4_riley_01', who: 'riley', name: 'RILEY', text: 'Not today.' },
@@ -418,6 +418,10 @@
       },
     ],
   );
+  R.LEVELS.forEach((level, i) => { level.banner = ["EMOND'S FIELD", 'CAEMLYN', 'SHADAR LOGOTH', 'TEAR - CALLANDOR', 'THE BLACK TOWER'][i]; });
+  // Natural-play pressure is stage-specific: later bosses retain their full
+  // move sets and health, while their hits leave a fair three-life margin.
+  R.LEVELS.forEach((level, i) => { level.damageScale = [1.34, 2.66, 0.72, 1.52, 0.76][i]; });
   R.LEVELS[0].wavePoints = R.Stage1.wavePoints;
   R.LEVELS[0].mix = R.Stage1.waveTable;
   R.LEVELS[0].kind = 'chieftain';
@@ -442,7 +446,13 @@
     R.drawText(ctx, 'ART LOAD FAILED - USING DRAWN ART', 320, 175, 7, '#fff', 'center');
   };
   R.paint = function (ctx, key, x, y, w, h) {
-    const img = R.assets.get(key);
+    let img = R.assets.get(key);
+    if (!img && typeof key === 'string' && key.startsWith('portrait-')) {
+      const who=key.slice(9),def=R.Puppet && R.Puppet.defs[who === 'trolloc-chieftain' ? 'chieftain' : who];
+      img=R.assets.get(who==='forsaken'?'cg-turned-ashaman':'cg-'+who);
+      if(img && def) {const b=def.head;ctx.drawImage(img,b[0]*img.width,b[1]*img.height,(b[2]-b[0])*img.width,(b[3]-b[1])*img.height,x,y,w,h);return true;}
+      if(img) {ctx.drawImage(img,0,0,img.width,img.height*.65,x,y,w,h);return true;}
+    }
     if (!img) return false;
     ctx.drawImage(img, x, y, w, h);
     return true;

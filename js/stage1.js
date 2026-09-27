@@ -202,13 +202,16 @@
     }
     draw(ctx) {
       ctx.fillStyle = 'rgba(238,248,255,0.75)';
-      for (const flake of this.flakes) ctx.fillRect(flake.x, flake.y, flake.size, flake.size);
+      ctx.beginPath();
+      for (const flake of this.flakes) ctx.rect(flake.x, flake.y, flake.size, flake.size);
+      ctx.fill();
     }
   }
   R.Stage1 = {
     wavePoints: WAVE_POINTS,
     waveTable: WAVE_TABLE,
     SnowField,
+    layers: { sky: drawSky, mid: drawMid, floor: drawFloor, near: drawNear },
     draw(ctx, cameraX, time) {
       drawSky(ctx, cameraX);
       drawMid(ctx, cameraX);

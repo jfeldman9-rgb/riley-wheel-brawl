@@ -15,7 +15,7 @@
    from an older deploy can't pin the fallback. */
 'use strict';
 
-RWB.ASSET_VER = '20260926-w1';
+RWB.ASSET_VER = '20260926-grok3d';
 RWB.assets = (function () {
   const images = {};
   const cs = typeof document !== 'undefined' && document.currentScript;
@@ -43,16 +43,20 @@ RWB.assets = (function () {
   function fetchImage(url) {
     return new Promise(resolve => {
       const img = new Image();
-      img.onload = () => resolve(img);
+      img.onload = async () => { try { if (img.decode) await img.decode(); resolve(img); } catch (_) { resolve(null); } };
       img.onerror = () => resolve(null);
       img.src = url;
     });
   }
+  function fetchResource(url) {
+    if (!/\.json(?:[?&]|$)/.test(url)) return fetchImage(url);
+    return fetch(url).then(response => response.ok ? response.json() : null).catch(() => null);
+  }
   async function fetchKey(k, src) {
     if (!listed(src)) { images[k] = null; skipped.push(k); return null; }
     const url = src + (src.includes('?') ? '&' : '?') + 'v=' + VER;
-    let img = await fetchImage(url);
-    if (!img) img = await fetchImage(url + '&r=' + Date.now());
+    let img = await fetchResource(url);
+    if (!img) img = await fetchResource(url + '&r=' + Date.now());
     images[k] = img;
     if (!img) { failed.push(k); if (k in lazy && typeof console !== 'undefined') console.info('[RWB] story art unavailable; using drawn art:', k); }
     return img;

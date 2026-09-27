@@ -27,12 +27,12 @@ RWB.Camera = class Camera {
     const hi = this.lockMax != null ? Math.max(lo, this.lockMax - RWB.W) : this.max;
     want = RWB.util.clamp(want, lo, hi);
     if (this.noForwardBacktrack) want = Math.max(want, Math.min(this.x, hi));
-    this.x += (want - this.x) * Math.min(1, dt * 8);
+    this.x += (want - this.x) * (1-Math.exp(-dt*8));
     this.x = RWB.util.clamp(this.x, lo, hi);
   }
   shake(amount, dur) {
     const a = amount * (Camera.reduced ? 0.35 : 1);
-    this.shakeAmt = Math.max(this.shakeAmt, a); this.shakeT = Math.max(this.shakeT, dur);
+    this.shakeAmt = Math.max(this.shakeAmt, a); this.shakeT = Math.max(this.shakeT, dur);this.shakeDuration=this.shakeT;
   }
   punch(dirX, amount, y) { const k = Camera.reduced ? 0.5 : 1; this.punchX = dirX * amount * k; this.punchY = (y || 0) * k; }
   stop(sec) { this.hitstop = Math.max(this.hitstop, sec); }
@@ -44,18 +44,20 @@ RWB.Camera = class Camera {
   /** Named impact presets. Returns the hit-stop added. */
   impact(dirX, kind) {
     const P = RWB.Camera.IMPACTS[kind] || RWB.Camera.IMPACTS.light;
-    this.stop(P.stop); this.punch(dirX, P.punch, P.y); this.shake(P.shake, P.shakeT);
+    if(kind==='super'||!(this.impactCooldown>0)){this.stop(P.stop);this.impactCooldown=.09;} this.punch(dirX, P.punch, P.y); this.shake(P.shake, P.shakeT);
     if (P.flash) this.flash(P.flash, P.flashColor);
     return P.stop;
   }
   /** Returns true while frozen by hit-stop (the caller should skip simulation). */
   update(dt) {
+    this.impactCooldown=Math.max(0,(this.impactCooldown||0)-dt);
     if (this.shakeT > 0) {
       this.shakeT -= dt;
-      this.shakeX = RWB.util.rand(-1, 1) * this.shakeAmt; this.shakeY = RWB.util.rand(-1, 1) * this.shakeAmt * 0.6;
+      const fade=Math.max(0,this.shakeT/(this.shakeDuration||1)),mix=1-Math.exp(-dt*30);
+      this.shakeX+=(RWB.util.rand(-1,1)*this.shakeAmt*fade-this.shakeX)*mix;this.shakeY+=(RWB.util.rand(-1,1)*this.shakeAmt*.6*fade-this.shakeY)*mix;
       if (this.shakeT <= 0) this.shakeAmt = 0;
     } else { this.shakeX = this.shakeY = 0; }
-    this.punchX *= Math.max(0, 1 - dt * 18); this.punchY *= Math.max(0, 1 - dt * 18);
+    this.punchX *= Math.exp(-dt*18); this.punchY *= Math.exp(-dt*18);
     if (this.flashT > 0) this.flashT -= dt;
     if (this.hitstop > 0) { this.hitstop -= dt; return true; }
     return false;
@@ -72,8 +74,8 @@ RWB.Camera = class Camera {
   }
 };
 RWB.Camera.IMPACTS = {
-  light: { stop: 0.07, punch: 7, y: -2, shake: 3.4, shakeT: 0.12 },
-  heavy: { stop: 0.11, punch: 12, y: 4, shake: 6.8, shakeT: 0.2, flash: 0.06, flashColor: '#fff6d0' },
-  boss: { stop: 0.13, punch: 14, y: 5, shake: 9, shakeT: 0.32, flash: 0.08, flashColor: '#ffe0a8' },
-  super: { stop: 0.2, punch: 4, y: -8, shake: 16, shakeT: 0.95, flash: 0.22 }
+  light: { stop: 0.025, punch: 12, y: -4, shake: 5.6, shakeT: 0.16 },
+  heavy: { stop: 0.09, punch: 18, y: 6, shake: 10, shakeT: 0.28, flash: 0.08, flashColor: '#fff6d0' },
+  boss: { stop: 0.11, punch: 20, y: 7, shake: 13, shakeT: 0.4, flash: 0.1, flashColor: '#ffe0a8' },
+  super: { stop: 0.14, punch: 4, y: -8, shake: 16, shakeT: 0.95, flash: 0.22 }
 };
