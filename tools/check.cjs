@@ -154,7 +154,7 @@ async function pageLoadChecks(check, rootDir) {
         return { holes, far: +farL.toFixed(2), mid: +midL.toFixed(2), ratio: midL ? +(farL / midL).toFixed(3) : 0 };
       }
       const detail = SW.detailEnergy().map(s => ({ stage: s.stage, ratio: +s.ratio.toFixed(4) }));
-      return { joins, detail, s1: lum(550, 0), s5: lum(3430, 4) };
+      return { joins, detail, s1: lum(550, 0), s5: [150, 1990, 3030, 3430].map(cam => ({ cam, ...lum(cam, 4) })) };
     });
     const joinOk = seams.joins.filter(j => j.winMax != null).every(j => j.winMax <= 4) &&
       seams.joins.filter(j => j.n >= 4).every(j => j.continuous === true);
@@ -164,7 +164,7 @@ async function pageLoadChecks(check, rootDir) {
     check(edgeOk, 'The right edge at cam 3600 stays at or under 3x ' + JSON.stringify(seams.joins.filter(j => j.edge != null)));
     check(detailOk, 'Interior energy stays at least 95% of the unfiltered plate. A stage 5 ratio above 1 is the nightGrade contrast grade, not recovered detail ' + JSON.stringify(seams.detail));
     check(seams.s1.holes === 3213 && Math.abs(seams.s1.far - 69.35) < 0.05, 'Stage 1 far/mid luminance calibration is unchanged ' + JSON.stringify(seams.s1));
-    check(seams.s5.ratio >= 0.8 && seams.s5.ratio <= 1.2, 'Stage 5 far/mid luminance at cam 3430 stays between 0.8 and 1.2 ' + JSON.stringify(seams.s5));
+    check(seams.s5.every(s => s.ratio >= 0.8 && s.ratio <= 1.2), 'Stage 5 far/mid luminance at cams 150, 1990, 3030 and 3430 stays between 0.8 and 1.2 ' + JSON.stringify(seams.s5));
     console.log('Seam joins ' + JSON.stringify(seams.joins));
     console.log('Detail energy ' + JSON.stringify(seams.detail));
     console.log('Luminance ' + JSON.stringify({ s1: seams.s1, s5: seams.s5 }));
@@ -620,7 +620,7 @@ const retiredStreet=new Set(['assets/art/stage4-mid.png','assets/art/stage5-mid.
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')&&!retiredStreet.has(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every active committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260927-scroll10';console.log('Cache stamp: '+STAMP);
+const STAMP='20260927-scroll11';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -937,7 +937,7 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
       return piece.seam ? ov >= 32 : piece.ramp >= 32;
     }), 'Stage ' + n + ' overlaps at least 32 units at every plate join, with either a ramp or a recorded min-error seam');
   }
-  check(RWB.StageWorld.FAR_GRADE[1] === 'night' && RWB.StageWorld.FAR_GRADE[5] === 'violet', 'Far plates are night-graded on stages 1 and 5');
+  check(RWB.StageWorld.FAR_GRADE[1] === 'night' && RWB.StageWorld.FAR_GRADE[5] === 'black-tower-dusk', 'Far plates are night-graded on stages 1 and 5');
   const plateNames = ['stage1-mid-b','stage1-mid-c','stage2-mid-b','stage2-mid-c','stage3-mid-b','stage3-mid-c','stage4-mid-cont','stage5-mid-cont','stage5-roof-mid'];
   const requested = RWB.__assetUrls();
   check(plateNames.every(name => requested.some(url => url.includes('assets/art/' + name + '.webp?v=' + STAMP)) && RWB.ART_MANIFEST.includes('assets/art/' + name + '.webp')), 'All active additional mid plates resolve with the cache stamp');

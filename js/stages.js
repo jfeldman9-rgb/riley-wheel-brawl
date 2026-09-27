@@ -71,7 +71,7 @@
     4:[{id:'stage4-mid',key:'stage4-mid',px:2172},{id:'stage4-mid-b',key:'stage4-mid-b',px:2172},{id:'stage4-transition-bc',key:'stage4-transition-bc',px:2172},{id:'stage4-mid-c',key:'stage4-mid-c',px:2400}],
     5:[{id:'stage5-mid',key:'stage5-mid',px:2172},{id:'stage5-transition-ab',key:'stage5-transition-ab',px:2300},{id:'stage5-mid-b',key:'stage5-mid-b',px:2300}]
   };
-  const FAR_GRADE={1:'night',5:'violet'};
+  const FAR_GRADE={1:'night',5:'black-tower-dusk'};
   const layoutCache=new Map();
   function sliceLayout(n,travel){
     const id='slice:'+n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
@@ -641,10 +641,13 @@
       g.globalCompositeOperation='multiply';g.globalAlpha=0.45;g.fillStyle='#34466e';
       g.fillRect(0,0,c.width,c.height);
       g.globalAlpha=1;g.globalCompositeOperation='source-over';
-    }else if(mode==='violet'){
-      // Night, a step under the scroll6 sky, still close enough to the street
-      // that the far/mid luminance ratio stays inside 0.8–1.2.
-      g.filter='saturate(0.80) brightness(1.90) contrast(1.14)';
+    }else if(mode==='black-tower-dusk'){
+      // The source is a daylight plate: its white sky is visible through the
+      // transparent street painting. Grade the complete far plate into a
+      // narrow dusk range, preserving local colour/detail without a blur.
+      // The low brightness followed by 0.70 contrast supplies the dusk floor
+      // across the image instead of clipping its daylight sky to white.
+      g.filter='saturate(0.20) brightness(0.03) contrast(0.70)';
       g.drawImage(img,0,0,c.width,c.height);
       g.filter='none';
     }else g.drawImage(img,0,0,c.width,c.height);
