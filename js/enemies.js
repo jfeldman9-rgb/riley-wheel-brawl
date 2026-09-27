@@ -80,7 +80,23 @@
         this.g.hitPlayer(this.attack.damage + bonus, this.x, { kb: this.attack.knockdown ? 210 : 120, knockdown: this.attack.knockdown, source: this.attack.name });
       }
     }
+    advanceEntry(dt) {
+      if (this.entryX == null || this.boss) return false;
+      const dx = this.entryX - this.x;
+      if (Math.abs(dx) <= 6) {
+        this.entryX = null;
+        this.vx = 0;
+        return false;
+      }
+      this.facing = dx >= 0 ? 1 : -1;
+      this.vx = Math.sign(dx) * this.speed * 2.2;
+      this.vy = 0;
+      this.walkDistance += Math.abs(this.vx) * dt;
+      this.setState('walk');
+      return true;
+    }
     updateAI(dt) {
+      if (this.advanceEntry(dt)) return;
       const player = this.g.player;
       const dx = player.x - this.x;
       const dy = player.y - this.y;

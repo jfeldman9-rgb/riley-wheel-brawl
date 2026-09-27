@@ -335,10 +335,12 @@
         entries.forEach((variant, i) => {
           const side = i % 2 ? -1 : 1;
           const cam = this.camera.x;
-          const x = side > 0 ? cam + R.SCROLL.fight + 42 + (i >> 1) * 28 : cam - 42 - (i >> 1) * 28;
+          // Enter from off-screen, then dash to the on-screen slot the fight was tuned for.
+          const x = side > 0 ? cam + R.SCROLL.fight + 36 + (i >> 1) * 28 : cam - 36 - (i >> 1) * 28;
           const y = 235 + (i % 3) * 32;
           const enemy = ['axe','hound','spear'].includes(variant) ? new R.Trolloc(this, x, y, variant) : new R.ShadowSoldier(this, x, y, variant);
           enemy.facing = side > 0 ? -1 : 1;
+          enemy.entryX = side > 0 ? cam + 460 + (i >> 1) * 36 : cam + 140 - (i >> 1) * 28;
           this.enemies.push(enemy);
           const entry = { darkfriend:'darkfriend_intro_01', guard:'stone_guard_intro_01', ashaman:'ashaman_intro_01' }[variant];
           if (entry && !this.seenEntrances.has(entry)) { this.seenEntrances.add(entry); this.say(entry); }

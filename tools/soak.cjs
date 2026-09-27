@@ -87,14 +87,14 @@ function soak(RWB, seedValue, levelIndex = 0, options = {}) {
     frame += 1;
     input.pressed = {};
     input.held = {};
-    if (frame % 10 === 0) input.pressed.attack = true;
-    if (frame % 173 === 0) input.pressed.jump = true;
-    if (frame % 173 === 1) input.pressed.attack = true;
-    if (frame % 211 === 0) {
+    if (!scene.marching && frame % 10 === 0) input.pressed.attack = true;
+    if (!scene.marching && frame % 173 === 0) input.pressed.jump = true;
+    if (!scene.marching && frame % 173 === 1) input.pressed.attack = true;
+    if (!scene.marching && frame % 211 === 0) {
       input.pressed.attack = true;
       input.held.down = true;
     }
-    if (frame % 89 === 0) input.pressed.special = true;
+    if (!scene.marching && frame % 89 === 0) input.pressed.special = true;
     if (frame % 401 === 0) input.pressed.assist = true;
     if (player.power >= player.powerMax && frame % 31 === 0) input.pressed.power = true;
     scene.update(1 / 60, input);

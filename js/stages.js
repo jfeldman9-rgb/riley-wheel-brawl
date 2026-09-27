@@ -47,7 +47,7 @@
     if(topFeather){g.globalCompositeOperation='destination-in';const feather=/^floor/.test(key)?Math.round(img.height*24/138):Math.min(24,img.height),v=g.createLinearGradient(0,0,0,feather);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,1)');g.fillStyle=v;g.fillRect(0,0,c.width,img.height);}
     c.loopKind='painted';seamless.set(id,c);return c;
   }
-  const sized=new Map(),overlays=new Map();
+  const sized=new Map(),overlays=new Map(),cropPlates=new Map();
   function sizedPlate(key,image,w,h){
     if(!image)return null;const id=key+':'+Math.round(w)+':'+Math.round(h);if(sized.has(id))return sized.get(id);
     const c=document.createElement('canvas');c.width=Math.ceil(w*2);c.height=Math.ceil(h*2);const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(image,0,0,c.width,c.height);sized.set(id,c);return c;
@@ -82,19 +82,47 @@
     const blend=local<0.62?0:Math.min(1,(local-0.62)/0.38);
     return {index,blend};
   }
-  function blitCrop(ctx,key,section,cam,factor,y,h,alpha){
-    if(alpha<0.03)return false;
-    const img=R.assets.get(key);if(!img)return false;
+  function plateLayout(key,img,h){
     const crop=LOOP_CROPS[key]||[0,Math.max(1,img.width-44)],span=Math.max(8,crop[1]-crop[0]);
-    const win=Math.max(8,Math.floor(span*0.58)),maxX=crop[0]+span-win;
-    const sx=crop[0]+Math.round((maxX-crop[0])*(section/2));
+    const win=Math.max(8,Math.floor(span*0.58));
     const stage1Wide=/^stage1-(?:mid|near)$/.test(key),far=/^stage\d-(?:roof-)?far$/.test(key);
     const targetWidth=stage1Wide?720:far?700:SINGLE_WIDE.test(key)?700:0;
     const drawH=targetWidth?targetWidth*img.height/win:Math.max(h,320*img.height/win);
-    const width=targetWidth||drawH*win/img.height,drawY=y+h-drawH;
+    const width=targetWidth||drawH*win/img.height;
+    return {crop,span,win,drawH,width,maxX:crop[0]+span-win};
+  }
+  function sectionPlate(key,section,h){
+    const img=R.assets.get(key);if(!img)return null;
+    const layout=plateLayout(key,img,h),rs=(R.display&&R.display.renderScale)||1;
+    const id=key+':'+section+':'+rs+':'+Math.round(layout.width)+':'+Math.round(layout.drawH);
+    let plate=cropPlates.get(id);
+    if(!plate){
+      plate=document.createElement('canvas');
+      plate.width=Math.max(1,Math.ceil(layout.width*rs));
+      plate.height=Math.max(1,Math.ceil(layout.drawH*rs));
+      const g=plate.getContext('2d');
+      const sx=layout.crop[0]+Math.round((layout.maxX-layout.crop[0])*(section/2));
+      g.drawImage(img,sx,0,layout.win,img.height,0,0,plate.width,plate.height);
+      cropPlates.set(id,plate);
+    }
+    plate.layout=layout;
+    return plate;
+  }
+  function blitCrop(ctx,key,section,cam,factor,y,h,alpha){
+    if(alpha<0.03)return false;
+    const img=R.assets.get(key);if(!img)return false;
+    const layout=plateLayout(key,img,h),width=layout.width,drawH=layout.drawH,drawY=y+h-drawH;
     const k=Math.min(factor,Math.max(0,(width-640)/CAMERA_RANGE));
     if(R.StageWorld&&R.StageWorld._layer)R.StageWorld._layerFactor=k;
-    ctx.save();ctx.globalAlpha*=alpha;ctx.drawImage(img,sx,0,win,img.height,-cam*k,drawY,width,drawH);ctx.restore();
+    ctx.save();ctx.globalAlpha*=alpha;
+    if(R.StageWorld&&R.StageWorld._cropCache!==false){
+      const plate=sectionPlate(key,section,h);
+      if(plate){const smooth=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;ctx.drawImage(plate,-cam*k,drawY,width,drawH);ctx.imageSmoothingEnabled=smooth;}
+    }else{
+      const sx=layout.crop[0]+Math.round((layout.maxX-layout.crop[0])*(section/2));
+      ctx.drawImage(img,sx,0,layout.win,img.height,-cam*k,drawY,width,drawH);
+    }
+    ctx.restore();
     return true;
   }
   function travelPlate(ctx,key,cam,factor,y,h,scene,altKey){
@@ -120,11 +148,11 @@
     for(let x=Math.floor((cam-80)/step)*step;x<cam+720;x+=step){
       const sec=Math.min(2,Math.floor(Math.max(0,x)/span*3)),st=styles[sec],sx=x-cam;
       ctx.save();ctx.globalAlpha=0.9;
-      if(sec===2&&n===1){ctx.fillStyle=st.c;ctx.beginPath();ctx.moveTo(sx,338);ctx.lineTo(sx+22,268);ctx.lineTo(sx+44,338);ctx.fill();ctx.beginPath();ctx.moveTo(sx+30,338);ctx.lineTo(sx+58,252);ctx.lineTo(sx+86,338);ctx.fill();}
-      else if(sec===0&&n===2){ctx.fillStyle=st.c;ctx.fillRect(sx,248,18,90);ctx.fillRect(sx+108,248,18,90);ctx.fillStyle=st.roof;ctx.fillRect(sx,240,126,12);}
-      else if(sec===2&&n===4){ctx.fillStyle=st.roof;ctx.beginPath();ctx.moveTo(sx,320);ctx.lineTo(sx+28,258);ctx.lineTo(sx+56,320);ctx.fill();ctx.fillStyle=st.glow;ctx.globalAlpha=0.7;ctx.fillRect(sx+24,246,8,22);}
-      else if(sec===2&&n===5){ctx.fillStyle=st.c;for(let m=0;m<4;m++)ctx.fillRect(sx+m*18,286,14,16-m%2*5);ctx.fillRect(sx,302,72,36);}
-      else{const inn=sec===1;ctx.fillStyle=st.c;ctx.fillRect(sx,inn?262:286,inn?84:56,inn?76:52);ctx.fillStyle=st.roof;ctx.beginPath();ctx.moveTo(sx-6,inn?266:290);ctx.lineTo(sx+(inn?42:28),inn?242:268);ctx.lineTo(sx+(inn?90:62),inn?266:290);ctx.fill();ctx.fillStyle=st.glow;ctx.fillRect(sx+14,inn?292:308,12,16);}
+      if(sec===2&&n===1){ctx.fillStyle=st.c;ctx.beginPath();ctx.moveTo(sx,292);ctx.lineTo(sx+22,236);ctx.lineTo(sx+44,292);ctx.fill();ctx.beginPath();ctx.moveTo(sx+30,292);ctx.lineTo(sx+58,224);ctx.lineTo(sx+86,292);ctx.fill();}
+      else if(sec===0&&n===2){ctx.fillStyle=st.c;ctx.fillRect(sx,230,16,62);ctx.fillRect(sx+96,230,16,62);ctx.fillStyle=st.roof;ctx.fillRect(sx,224,112,10);}
+      else if(sec===2&&n===4){ctx.fillStyle=st.roof;ctx.beginPath();ctx.moveTo(sx,290);ctx.lineTo(sx+24,236);ctx.lineTo(sx+48,290);ctx.fill();ctx.fillStyle=st.glow;ctx.globalAlpha=0.7;ctx.fillRect(sx+20,222,8,16);}
+      else if(sec===2&&n===5){ctx.fillStyle=st.c;for(let m=0;m<4;m++)ctx.fillRect(sx+m*16,250,12,14-m%2*4);ctx.fillRect(sx,264,64,28);}
+      else{const inn=sec===1;ctx.fillStyle=st.c;ctx.fillRect(sx,inn?236:258,inn?72:48,inn?56:34);ctx.fillStyle=st.roof;ctx.beginPath();ctx.moveTo(sx-6,inn?240:262);ctx.lineTo(sx+(inn?36:24),inn?220:246);ctx.lineTo(sx+(inn?78:54),inn?240:262);ctx.fill();ctx.fillStyle=st.glow;ctx.fillRect(sx+12,inn?258:270,10,12);}
       ctx.restore();
     }
   }
@@ -262,7 +290,10 @@
   R.StageWorld = {
     prepare(level){
       if(!R.assets.has('stage'+(level+1)+'-far'))return;
-      const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);const scene={levelIndex:level,camera:{x:0},time:0,wave:0};this.draw(g,scene);this.near(g,scene);this.grade(g,scene);if(level===4){scene.wave=5;this.draw(g,scene);}
+      const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);const scene={levelIndex:level,camera:{x:0},time:0,wave:0};
+      this._cropCache=false;
+      try{this.draw(g,scene);this.near(g,scene);this.grade(g,scene);if(level===4){scene.wave=5;this.draw(g,scene);}}
+      finally{this._cropCache=true;cropPlates.clear();}
     },
     draw(ctx, scene) {
       const n = scene.levelIndex + 1;
@@ -273,7 +304,9 @@
       // times (round(camera) - camera). The nominal 0.10/0.42 would sawtooth
       // a plate that can barely scroll.
       if(!this._painting && R.assets.has('stage'+n+'-far')){
-        const rs=R.display.renderScale||1,camExact=scene.camera.x||0,cam=Math.round(camExact),bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs));
+        const rs=R.display.renderScale||1,camExact=scene.camera.x||0,bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs)),roundCam=Math.round(camExact);
+        const keep='stage'+n+'-';
+        for(const id of cropPlates.keys())if(!id.startsWith(keep))cropPlates.delete(id);
         const views=this._views||(this._views={});
         const layers=[
           {id:'base',k:0},
@@ -283,7 +316,16 @@
           {id:'screen',k:0}
         ];
         for(const layer of layers){
-          const key=n+':'+cam+':'+bw+':'+(scene.wave===5?1:0)+':'+layer.id;
+          // Sky and the screen wash do not move with a one-pixel step. Rebuilding
+          // them, and resampling the source plate, was the scroll hitch. Distant
+          // plates blit a crop already scaled to the display.
+          let cam=roundCam;
+          const part=layer.id==='screen'?sectionBlend(cam,levelSpan(scene)):null;
+          // Far and mid move a few hundredths of a pixel per world step. Repaint
+          // on even cameras. The blit shifts from the camera the plate was painted at.
+          const distant=layer.id==='back'||layer.id==='mid';
+          const scrollCam=distant?Math.round(cam/2)*2:cam;
+          const key=layer.id==='base'?n+':'+bw+':base':layer.id==='screen'?n+':'+bw+':screen:'+part.index+':'+Math.round(part.blend*10):n+':'+scrollCam+':'+bw+':'+(scene.wave===5?1:0)+':'+layer.id;
           const slot=views[layer.id]||(views[layer.id]={key:'',canvas:document.createElement('canvas')});
           if(!slot.ctx)slot.ctx=slot.canvas.getContext('2d',{alpha:layer.id!=='base'});
           const sizeChanged=slot.canvas.width!==bw||slot.canvas.height!==bh;
@@ -293,8 +335,9 @@
             g.setTransform(rs,0,0,rs,0,0);g.imageSmoothingEnabled=true;g.globalAlpha=1;g.globalCompositeOperation='source-over';
             const prev=scene.camera.x;scene.camera.x=cam;this._painting=true;this._layer=layer.id;this._layerFactor=null;
             try{this.draw(g,scene);if(layer.id==='base')bakeGrade(g,scene);if(layer.id==='screen')blitVignette(g);}finally{this._painting=false;this._layer=null;scene.camera.x=prev;}
-            slot.key=key;slot.k=this._layerFactor==null?layer.k:this._layerFactor;
+            slot.key=key;slot.k=this._layerFactor==null?layer.k:this._layerFactor;slot.painted=cam;
           }
+          if(distant)cam=slot.painted;
           const shift=slot.k*(cam-camExact),smooth=ctx.imageSmoothingEnabled;
           ctx.imageSmoothingEnabled=shift!==0;
           ctx.drawImage(slot.canvas,shift,0,640,360);
@@ -364,6 +407,10 @@
       const floor = sizedPlate(floorKey,seamlessPlate(floorKey,true),FLOOR_LOOP,138);
       if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off;x<640;x+=fw)ctx.drawImage(floor,x,222,fw,138);if(n===5&&part.index===1&&part.blend>0.02){const roofFloor=sizedPlate('floor-roof',seamlessPlate('floor-roof',true),FLOOR_LOOP,138);if(roofFloor){ctx.save();ctx.globalAlpha=part.blend;for(let x=-off;x<640;x+=fw)ctx.drawImage(roofFloor,x,222,fw,138);ctx.restore();}}haze(ctx,224,n===5&&part.blend>0.85?'#aebbd0':'#b8c1c6');}
       else if(n===1)R.Stage1.layers.floor(ctx,cam);
+      // A curb on the walk so a one-pixel camera step changes the y=210 sample.
+      // It scrolls with the floor (k=1). It stays off the y=300 floor sample.
+      ctx.fillStyle='rgba(0,0,0,0.35)';
+      for(let x=Math.floor(cam/48)*48-48;x<cam+700;x+=48){ctx.fillRect(x-cam,209,22,3);}
       paintLandmarks(ctx,n,cam,span);
       }
       if(show('screen')){ctx.drawImage(overlay('light:'+n,g=>{
