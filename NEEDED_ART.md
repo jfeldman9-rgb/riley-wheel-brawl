@@ -1,6 +1,6 @@
 # Painted art the scroller still wants
 
-No new images were generated for this pass. While Riley walks, the far plate scrolls at 0.08× the floor, the mid ground is a strip of slices of that stage's own mid plate at 0.40×, and the near plate tiles at 1.15×. Nothing is cropped up, crossfaded, or mirrored. Gaps between mid slices are 48 units or a recorded wider gap forced by the rule that one slice never appears twice inside a 640-unit window; the far plate shows through those gaps.
+Scroll9 adds the two delivered transition paintings described below; no Riley art was changed. While Riley walks, the far plate scrolls at 0.08× the floor, the mid ground is a strip of slices of that stage's own mid plate at 0.40×, and the near plate tiles at 1.15×. Nothing is cropped up, crossfaded, or mirrored. Gaps between mid slices are 48 units or a recorded wider gap forced by the rule that one slice never appears twice inside a 640-unit window; the far plate shows through those gaps.
 
 Each stage's slice pool is the same three ways (`MID_STRIPS[n].pools`). A new side-on street-front mid plate can replace one pool without changing the layout code. Two new plates per stage are what would replace the slice pools below. Stage 5's second plate is a roof mid.
 
@@ -55,3 +55,18 @@ Measured on this branch (check.cjs, one run): S4 b winMax 5.709 (fadeMax 5.217),
 ## What not to paint again
 
 Riley stays the muscular 16-year-old `assets/art/riley16/` set until that redraw. Be'lal stays the painted frames with the sword already in his hand. Floors stay the quilted loops. Do not mirror a plate to fake a second screen.
+
+## scroll9 transition delivery
+
+The two delivered raw paintings are now runtime plates:
+
+- `stage4-transition-bc.webp` is 2172×724, quality 90. It follows the blue-pillar `stage4-mid-b` and precedes `stage4-mid-c`.
+- `stage5-transition-ab.webp` is 2300×724, quality 90. It follows the original bridge `stage5-mid` and precedes `stage5-mid-b`.
+
+Both were uniformly scaled and top-cropped with the existing plate convention. The detected floor landmark lands at row 574 on the S4 transition (the source has only enough pixels below it for row 574, four pixels above the row-570 target) and row 520 on the S5 transition. Runtime joins are hard vertical cuts through overlapping whole plates. There is no crossfade, blur, edge recolour, mirror, per-column correction, or pixel averaging at a join. The old scroll8 S4/S5 min-error and edge-colour work is not applied to either transition plate.
+
+The scroll9 container did not include Playwright or a Chromium executable, and npm package download returned HTTP 403. `node tools/joinscan.cjs` was therefore attempted but could not execute; no join number is claimed for the new edges. Visually and geometrically, S4 retains a four-pixel floor-row offset at the transition crop and must be treated as an open art mismatch rather than hidden. The S5 transition is on the row-520 target.
+
+The scroll8 cold-entry regression was the synchronous all-pose atlas build in `prepareStage`: it moved idle, walk, hurt, attack, cast, air, and channel rasterization for every current-stage rig onto entry. Scroll9 synchronously prepares only the idle poses needed by frame one and puts every other pose back onto the bounded, resumable bake queue. Walks are priority 2; boss rigs are priority 1. Unlike scroll7's one-whole-rig prefetch, every queued job retains scroll8's vertex/face slicing, so a clear-screen or fade-in pump cannot intentionally run a full rig in one step.
+
+Mashadar's visible callout is HUD-space text at y=122, or y=134 while another warning is active. Riley's world hurt lane begins around y=224 (lane center 246 minus the hazard's 22-unit half-depth), so the closest configuration retains a 90-unit vertical separation. The callout is not projected into world space and cannot move with the lane or camera.

@@ -616,7 +616,7 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260927-scroll8';console.log('Cache stamp: '+STAMP);
+const STAMP='20260927-scroll9';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -932,9 +932,9 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
     }), 'Stage ' + n + ' overlaps at least 32 units at every plate join, with either a ramp or a recorded min-error seam');
   }
   check(RWB.StageWorld.FAR_GRADE[1] === 'night' && RWB.StageWorld.FAR_GRADE[5] === 'violet', 'Far plates are night-graded on stages 1 and 5');
-  const plateNames = ['stage1-mid-b','stage1-mid-c','stage2-mid-b','stage2-mid-c','stage3-mid-b','stage3-mid-c','stage4-mid-b','stage4-mid-c','stage5-mid-b','stage5-roof-mid'];
+  const plateNames = ['stage1-mid-b','stage1-mid-c','stage2-mid-b','stage2-mid-c','stage3-mid-b','stage3-mid-c','stage4-mid-b','stage4-transition-bc','stage4-mid-c','stage5-transition-ab','stage5-mid-b','stage5-roof-mid'];
   const requested = RWB.__assetUrls();
-  check(plateNames.every(name => requested.some(url => url.includes('assets/art/' + name + '.webp?v=' + STAMP)) && RWB.ART_MANIFEST.includes('assets/art/' + name + '.webp')), 'The ten new mid plates resolve with the cache stamp');
+  check(plateNames.every(name => requested.some(url => url.includes('assets/art/' + name + '.webp?v=' + STAMP)) && RWB.ART_MANIFEST.includes('assets/art/' + name + '.webp')), 'All twelve additional mid plates resolve with the cache stamp');
 }
 await pageLoadChecks(check, root);
 

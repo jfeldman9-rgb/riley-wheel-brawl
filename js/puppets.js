@@ -643,56 +643,37 @@
     const after=(R.perf.poseQueue&&R.perf.poseQueue.length)||0;
     return Math.max(0,before-after);
   },prepareStage(level){
-    // Current-stage poses except kicks are skinned here so the fight does not
-    // allocate them. Kicks stay resumable jobs. Enter has to stay within 700 ms.
+    // Stage entry needs only the idle surfaces that the first frame displays.
+    // Every other pose is a resumable Bake job; this reverses scroll8's full
+    // synchronous atlas build without restoring its gameplay-sized work steps.
     const bakeAt=performance.now();
-    R.perf.allowSync=true;
-    R.perf.poseFallbacks=0;
-    R.perf.poseMiss=[];
-    R.perf.queueEmptyAt=0;
-    R.perf.stageEnteredAt=bakeAt;
-    R.perf.stageLevel=level;
+    R.perf.allowSync=true;R.perf.poseFallbacks=0;R.perf.poseMiss=[];
+    R.perf.queueEmptyAt=0;R.perf.stageEnteredAt=bakeAt;R.perf.stageLevel=level;
     const kinds=STAGE_RIGS[level]||STAGE_RIGS[0],keep=new Set(kinds);
     for(const kind of Object.keys(defs))if(!keep.has(kind))dropRig(kind);
     if(R.Bake)R.Bake.drop(j=>j.kind&&!keep.has(j.kind));
-    const pending=[];
-    const boss={0:['chieftain'],1:['fade'],4:['taim','twinkle']}[level]||[];
+    const pending=[],boss={0:['chieftain'],1:['fade'],4:['taim','twinkle']}[level]||[];
     for(const kind of kinds){
       const d=defs[kind];if(!d)continue;
       const r=getRig(d);if(!r)continue;
-      // Every current-stage pose is skinned here, inside the measured enter,
-      // while that still fits the 700 ms cap. Leaving them for the fight made
-      // the first blit miss a vsync (a 33 ms gap) even when the pump stayed at 4 ms.
-      for(const key of POSE_KEYS){
-        // Kick frames are the extra canvases that pushed a full atlas over the
-        // 700 ms enter. They stay on the scheduler; the march does not draw them.
-        if(key[0]==='k')continue;
-        if(r.library&&r.library.has(key))continue;
+      if(!(r.library&&r.library.has('idle'))){
         const prev=R.perf.poseWarm;R.perf.poseWarm=true;
-        const a=actorFor(d,key),pose=this.pose(a,d.height);
-        paintedBody(null,r,targets(a,d,r,pose),pose,a,key);
+        const a=actorFor(d,'idle'),pose=this.pose(a,d.height);
+        paintedBody(null,r,targets(a,d,r,pose),pose,a,'idle');
         R.perf.poseWarm=prev;
       }
-      if(r.library)for(const [key,entry] of r.library)if(key==='idle'||key[0]==='w')this.touchEntry(entry);
+      const idle=r.library&&r.library.get('idle');if(idle)this.touchEntry(idle);
       for(const key of POSE_KEYS){
-        if(key==='idle')continue;
-        if(r.library&&r.library.has(key))continue;
-        const pri=boss.includes(kind)?1:(key[0]==='w'||key==='hurt'||key==='attack')?2:3;
-        pending.push({kind,key,pri});
-        this.wantPose(kind,key,pri);
+        if(key==='idle'||(r.library&&r.library.has(key)))continue;
+        const pri=boss.includes(kind)?1:key[0]==='w'?2:3;
+        pending.push({kind,key,pri});this.wantPose(kind,key,pri);
       }
       r.warmed=true;
     }
     R.perf.poseQueue=pending;
     if(!pending.length)R.perf.queueEmptyAt=performance.now();
     this.warmBitmaps(level);
-    const flush=document.createElement('canvas');
-    flush.width=512;flush.height=512;
-    const fg=flush.getContext('2d',{willReadFrequently:true});
-    if(fg){fg.fillStyle='#000';fg.fillRect(0,0,512,512);fg.getImageData(0,0,1,1);}
-    flush.width=1;flush.height=1;
-    R.perf.allowSync=false;
-    R.perf.lastPoseMs=performance.now()-bakeAt;
+    R.perf.allowSync=false;R.perf.lastPoseMs=performance.now()-bakeAt;
   },wantPose(kind,key,pri){
     if(!kind||!key)return;
     const d=defs[kind];if(!d)return;

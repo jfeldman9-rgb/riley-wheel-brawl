@@ -68,8 +68,8 @@
     1:[{id:'stage1-mid',key:'stage1-mid',px:1672},{id:'stage1-mid-b',key:'stage1-mid-b',px:2196},{id:'stage1-mid-c',key:'stage1-mid-c',px:1672}],
     2:[{id:'stage2-mid',key:'stage2-mid',px:1774},{id:'stage2-mid-b',key:'stage2-mid-b',px:2070},{id:'stage2-mid-c',key:'stage2-mid-c',px:1774}],
     3:[{id:'stage3-mid',key:'stage3-mid',px:1774},{id:'stage3-mid-b',key:'stage3-mid-b',px:2070},{id:'stage3-mid-c',key:'stage3-mid-c',px:1774}],
-    4:[{id:'stage4-mid',key:'stage4-mid',px:2172},{id:'stage4-mid-b',key:'stage4-mid-b',px:2172},{id:'stage4-mid-c',key:'stage4-mid-c',px:2400}],
-    5:[{id:'stage5-mid',key:'stage5-mid',px:2172},{id:'stage5-mid-b',key:'stage5-mid-b',px:2300},{id:'stage5-mid',key:'stage5-mid',px:2172}]
+    4:[{id:'stage4-mid',key:'stage4-mid',px:2172},{id:'stage4-mid-b',key:'stage4-mid-b',px:2172},{id:'stage4-transition-bc',key:'stage4-transition-bc',px:2172},{id:'stage4-mid-c',key:'stage4-mid-c',px:2400}],
+    5:[{id:'stage5-mid',key:'stage5-mid',px:2172},{id:'stage5-transition-ab',key:'stage5-transition-ab',px:2300},{id:'stage5-mid-b',key:'stage5-mid-b',px:2300}]
   };
   const FAR_GRADE={1:'night',5:'violet'};
   const layoutCache=new Map();
@@ -101,6 +101,20 @@
   function midLayout(n,travel){
     const id='plates:'+n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
     const M=640+K_MID*travel,ppu=PPU[n],items=MID_POOL[n].map(p=>({id:p.id,key:p.key,w:p.px/ppu,px:p.px}));
+    // The supplied transition paintings are complete plates. Keep every pixel
+    // intact and use hard, vertical overlaps: no ramp, colour match, blur or
+    // per-column seam selection is applied to either transition.
+    if(n===4||n===5){
+      const overlap=(items.reduce((sum,p)=>sum+p.w,0)-M)/(items.length-1);
+      let x=0;
+      const pieces=items.map((p,index)=>{
+        const piece={id:p.id,key:p.key,x,w:p.w,px:p.px,ramp:0,rampOut:0,fade:index?overlap:0,pool:index,sx0:0,repeat:null,seam:index?{overlap,cut:'hard'}:null};
+        x+=p.w-overlap;
+        return piece;
+      });
+      const layout={M,plateW:items[0].w,k:K_MID,pieces,planned:[],pools:items.length,mode:'plates',slack:overlap*(items.length-1)};
+      layoutCache.set(id,layout);return layout;
+    }
     const a=items[0],b=items[1],c=items[2];
     // Stage 4's hall repeats about every 446 source pixels. Two of plate b's
     // own bays are cloned on so the b→c join can sit in plate c's dark niche

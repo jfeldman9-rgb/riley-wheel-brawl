@@ -1,6 +1,6 @@
 # Riley Wheel Brawl — current status
 
-Runtime stamp on this branch: `?v=20260927-scroll8`. The scroll2 query on raw.githack.com had cached `js/assets.js` without `crossOrigin`, so the preview canvas stayed tainted; scroll8 is a new cache key. Branch `rwb-scroll`, cut from `rwb-w2` at `a65e981`. Not merged. GitHub Pages still serves `rwb-w2` (PR #5, live). `main` is untouched at `3991948`. This branch does not change Pages.
+Runtime stamp on this branch: `?v=20260927-scroll9`. The scroll2 query on raw.githack.com had cached `js/assets.js` without `crossOrigin`, so the preview canvas stayed tainted; scroll9 is the current cache key. Branch `rwb-scroll`, cut from `rwb-w2` at `a65e981`. Not merged. GitHub Pages still serves `rwb-w2` (PR #5, live). `main` is untouched at `3991948`. This branch does not change Pages.
 
 ## Scrolling stages (scroll2)
 
