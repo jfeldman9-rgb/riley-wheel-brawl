@@ -213,6 +213,7 @@
   function blitPose(output,r,entry){
     const scale=entry.scale,b=entry.bounds;
     output.drawImage(entry.surface,0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);
+    entry.touched=true;
   }
   // Tint only the baked character's pixels. source-atop stays on this copy,
   // never on the main canvas (that lit a box around Be'lal).
@@ -344,21 +345,102 @@
     const prev=R.perf.poseWarm;R.perf.poseWarm=true;
     for(const key of POSE_KEYS){const a=actorFor(d,key),pose=this.pose(a,d.height);paintedBody(null,r,targets(a,d,r,pose),pose,a,key);}
     R.perf.poseWarm=prev;return r;
+  },stageReady(level){
+    const kinds=STAGE_RIGS[level]||STAGE_RIGS[0];
+    return kinds.every(kind=>{const d=defs[kind],r=d&&getRig(d);return r&&r.library&&POSE_KEYS.every(key=>r.library.has(key));});
+  },prefetch(level){
+    // One rig per call. Title, the story reel, and a wave-clear screen call
+    // this so stage enter is not the frame that skins every pose.
+    const kinds=STAGE_RIGS[level]||[];
+    for(const kind of kinds){
+      const d=defs[kind];if(!d)continue;
+      const r=getRig(d);
+      if(r&&r.library&&POSE_KEYS.every(key=>r.library.has(key))){
+        if(!r.warmed){this.warmRig(r);r.warmed=true;}
+        continue;
+      }
+      this.prepare(kind);
+      const baked=getRig(d);
+      this.warmRig(baked);
+      if(baked)baked.warmed=true;
+      return false;
+    }
+    return true;
+  },touchEntry(entry){
+    if(!entry||entry.touched||!entry.surface)return false;
+    const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
+    if(!ctx)return false;
+    const rs=(R.display&&R.display.renderScale)||1;
+    ctx.save();
+    ctx.setTransform(rs,0,0,rs,0,0);
+    // Same scaled blit the fight uses. A 1px copy does not warm that path.
+    blitPose(ctx,null,entry);
+    ctx.restore();
+    return true;
+  },warmRig(rig){
+    // A rig that was skinned ahead of time (title, reel, clear screen) only
+    // needs its first blit. That blit is one pose a frame, not the enter.
+    if(!rig||!rig.library)return;
+    const later=R.perf.poseQueue||(R.perf.poseQueue=[]);
+    for(const entry of rig.library.values()){
+      if(!entry||!entry.surface||entry.touched)continue;
+      later.push(entry);
+    }
+  },drainPoses(limit){
+    const q=R.perf.poseQueue;if(!q||!q.length)return 0;
+    let n=0;
+    const stop=performance.now()+4;
+    while(q.length&&n<(limit||1)){
+      if(n&&performance.now()>stop)break;
+      const item=q.shift();
+      if(item&&item.surface){if(this.touchEntry(item))n++;continue;}
+      const d=item&&defs[item.kind],r=d&&getRig(d);
+      if(!r||(r.library&&r.library.has(item.key)))continue;
+      const prev=R.perf.poseWarm;R.perf.poseWarm=true;
+      const a=actorFor(d,item.key),pose=this.pose(a,d.height);
+      paintedBody(null,r,targets(a,d,r,pose),pose,a,item.key);
+      R.perf.poseWarm=prev;
+      n++;
+    }
+    return n;
   },prepareStage(level){
+    // Idle is painted here so the first frame has a body. Every other pose
+    // is skinned later, one a frame, including across the fade. Baking the
+    // whole library in this call was the multi-hundred-millisecond enter.
     const bakeAt=performance.now();
     const kinds=STAGE_RIGS[level]||STAGE_RIGS[0],keep=new Set(kinds);
     for(const kind of Object.keys(defs))if(!keep.has(kind))dropRig(kind);
-    const baked=[];
-    for(const kind of kinds){const rig=this.prepare(kind);if(rig)baked.push(rig);}
-    // The first drawImage of a new pose surface uploads it. Do that here, on
-    // stage enter, so the opening fight frame is not the one that pays for it.
-    const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
-    if(!ctx)return;
-    ctx.save();
-    ctx.setTransform(1,0,0,1,0,0);
-    for(const rig of baked)for(const entry of (rig.library?rig.library.values():[]))if(entry.surface)ctx.drawImage(entry.surface,0,0,1,1,0,0,1,1);
-    try{ctx.getImageData(0,0,1,1);}catch(e){}
-    ctx.restore();
+    const pending=[];
+    for(const kind of kinds){
+      const d=defs[kind];if(!d)continue;
+      const r=getRig(d);if(!r)continue;
+      if(!(r.library&&r.library.has('idle'))){
+        const prev=R.perf.poseWarm;R.perf.poseWarm=true;
+        const a=actorFor(d,'idle'),pose=this.pose(a,d.height);
+        paintedBody(null,r,targets(a,d,r,pose),pose,a,'idle');
+        R.perf.poseWarm=prev;
+      }
+      // The first blit of a fresh pose is the expensive one. Pay it here
+      // for idle, which every enemy draws on frame one, so the fight
+      // itself does not miss a vsync uploading those surfaces.
+      const idle=r.library&&r.library.get('idle');
+      if(idle)this.touchEntry(idle);
+      const later=POSE_KEYS.filter(key=>key[0]==='w').concat(POSE_KEYS.filter(key=>key!=='idle'&&key[0]!=='w'));
+      for(const key of later){
+        if(r.library&&r.library.has(key))continue;
+        pending.push({kind,key});
+      }
+      r.warmed=true;
+    }
+    R.perf.poseQueue=pending;
+    // Releasing the previous stage's pose bitmaps is deferred by the browser
+    // until a later frame, which stalled the next walk. A readback here
+    // collects them before enter returns.
+    const flush=document.createElement('canvas');
+    flush.width=512;flush.height=512;
+    const fg=flush.getContext('2d',{willReadFrequently:true});
+    if(fg){fg.fillStyle='#000';fg.fillRect(0,0,512,512);fg.getImageData(0,0,1,1);}
+    flush.width=1;flush.height=1;
     R.perf.lastPoseMs=performance.now()-bakeAt;
   },contacts(a,kind){
     const d=defs[kind],r=d&&getRig(d);if(!r)return [];

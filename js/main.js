@@ -253,6 +253,11 @@
         else {clock.reset();scene.update(dt,RWB.input);}
       }
       RWB.Motion.alpha=scene.isGameplay?clock.alpha:1;
+      // Finish leftover kick/hit poses while the screen is fading or idle.
+      // A live fight draws at most one new pose a frame, from the attack itself.
+      // Menus and the fade skin queued poses a few at a time. A live fight
+      // bakes at most one missing pose inside the draw that needs it.
+      if(RWB.Puppet&&RWB.Puppet.drainPoses&&(game.fadeDir!==0||!scene.isGameplay))RWB.Puppet.drainPoses(game.fadeDir?4:2);
       scene.draw(ctx);
     }
     if (game.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${game.fade})`; ctx.fillRect(0, 0, W, H); }

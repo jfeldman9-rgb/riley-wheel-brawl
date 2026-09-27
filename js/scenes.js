@@ -16,6 +16,7 @@
     }
     update(dt, input) {
       if (this.done) return;
+      if (R.Puppet && R.Puppet.prefetch) R.Puppet.prefetch(0);
       this.timer += dt;
       if (!this.spoken) {
         R.voice(this.lines[this.i].id);
@@ -96,6 +97,10 @@
       return R.settings.loadRun() ? ['START', 'CONTINUE', 'OPTIONS', 'CONTROLS'] : ['START', 'OPTIONS', 'CONTROLS'];
     }
     update(dt, input) {
+      if (this.game.fadeDir === 0) {
+        this._idle = (this._idle || 0) + dt;
+        if (this._idle > 0.8 && R.Puppet && R.Puppet.prefetch) R.Puppet.prefetch(0);
+      }
       const items = this.items();
       if (R.keyPressed(input, 'click')) {
         const pointer = input.pointer || R.input.pointer;
@@ -264,6 +269,15 @@
           const rs = (R.display && R.display.renderScale) || 1;
           ctx.save();
           ctx.setTransform(rs, 0, 0, rs, 0, 0);
+          // Bake every plate the march will cross, so the first time the
+          // camera reaches it is not a stall in the middle of the walk.
+          if (R.StageWorld) {
+            for (const cam of [800, 1600, 2400, 3200, 3600]) {
+              const ghost = { levelIndex: this.levelIndex, camera: { x: cam }, time: 0, wave: this.wave, roofOn: false, level: this.level };
+              R.StageWorld.draw(ctx, ghost);
+              R.StageWorld.near(ctx, ghost);
+            }
+          }
           this.draw(ctx);
           ctx.getImageData(0, 0, 1, 1);
           ctx.restore();
@@ -675,6 +689,7 @@
       }
       if (this.phase === 'clear') {
         this.clearTimer -= dt;
+        if (this.levelIndex < 4 && R.Puppet && R.Puppet.prefetch) R.Puppet.prefetch(this.levelIndex + 1);
         if (this.clearTimer <= 0 && !this.clearQueued) { this.clearQueued = true; this.game.setScene(this.nextStage()); }
         return;
       }
@@ -778,12 +793,12 @@
         ctx.fillRect(0, 0, 640, 360);
       }
       if (this.subtitle) {
-        // Stage 4's hall caption used to sit across the fighters' chests.
-        const y = this.levelIndex === 3 ? 328 : 192;
-        R.drawPanel(ctx, 42, y, 556, this.levelIndex === 3 ? 22 : 27);
+        // Below the fighter band on every stage. y=192 crossed chests.
+        const y = 328;
+        R.drawPanel(ctx, 42, y, 556, 22);
         R.drawText(ctx, this.subtitle.line.name + ': ' + this.subtitle.line.text, 320, y + 14, 6, '#e4f6ff', 'center');
       }
-      if (this.twinkleFreed && !this.joint) R.drawText(ctx, R.input.fillKeys('FULL SAIDIN + {power}: TOGETHER!'), 320, 283, 7, '#a9edff', 'center');
+      if (this.twinkleFreed && !this.joint) R.drawText(ctx, R.input.fillKeys('FULL SAIDIN + {power}: TOGETHER!'), 320, 292, 7, '#a9edff', 'center');
       if (this.paused) this.pauseMenu.draw(ctx);
       this.camera.drawFlash(ctx);
       if (this.roofFade) {

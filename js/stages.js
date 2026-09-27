@@ -100,10 +100,11 @@
     const M=640+K_MID*travel,ppu=PPU[n],items=MID_POOL[n].map(p=>({id:p.id,key:p.key,w:p.px/ppu}));
     const a=items[0],b=items[1],c=items[2],lastX=M-c.w,slack=a.w+b.w+c.w-M;
     let ovL,ovR;
-    // Stage 4's right join: plate c's left 32 units are a dark pier, and the
-    // banner on plate b sits closer to b's right edge. A long overlap lets the
-    // ramp stay on the pier while the banner is covered by opaque c.
-    if(n===4){ovL=32;ovR=slack-ovL;}
+    // Stage 4's right join lands on a pillar, not through two of them. Plate c's
+    // first pier is 113 source pixels in; plate b's matching pier is 2084
+    // pixels in. ovL ≈ 29 puts those edges on the same world x so the crossfade
+    // does not leave a second, half-transparent pillar beside the first.
+    if(n===4){ovL=29;ovR=slack-ovL;}
     else if(slack>=80){ovL=40;ovR=slack-40;}
     else ovL=ovR=slack/2;
     const xB=a.w-ovL,rampOf=ov=>n===1?(ov>=48?48:ov>=40?40:32):Math.max(32,Math.min(48,Math.round(ov)));
@@ -239,6 +240,19 @@
       d[i]=clampByte(d[i]+18*t);
       d[i+1]=clampByte(d[i+1]-6*t);
       d[i+2]=clampByte(d[i+2]-22*t);
+    }
+    g.putImageData(img,0,0);
+  }
+  // stage4-mid-b is the cool blue-pillar room between the original hall and
+  // plate c. Shift the whole plate toward that same torchlight. The shift is
+  // a per-pixel add, so columns are not smeared into each other.
+  function hallGrade(canvas){
+    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
+    for(let i=0;i<d.length;i+=4){
+      if(d[i+3]<16)continue;
+      d[i]=clampByte(d[i]+14);
+      d[i+1]=clampByte(d[i+1]+4);
+      d[i+2]=clampByte(d[i+2]-12);
     }
     g.putImageData(img,0,0);
   }
@@ -396,6 +410,7 @@
     const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
     g.drawImage(img,0,0,c.width,c.height);
     if(piece.key==='stage4-mid-c')warmPlate(c);
+    if(piece.key==='stage4-mid-b')hallGrade(c);
     if(piece.key==='stage5-mid'||piece.key==='stage5-mid-b')nightGrade(c);
     if(piece.key==='stage2-mid-c'||piece.key==='stage4-mid-b'||piece.key==='stage5-mid')trimFringe(c,'right');
     if(piece.under&&rampU>0){
@@ -469,9 +484,9 @@
       g.fillRect(0,0,c.width,c.height);
       g.globalAlpha=1;g.globalCompositeOperation='source-over';
     }else if(mode==='violet'){
-      // Brighter than the scroll5 crush, still night, contrast kept so torches read.
-      // Bright enough that the sky behind the street sits near the stone, not under it.
-      g.filter='saturate(0.82) brightness(2.05) contrast(1.16)';
+      // Night, a step under the scroll6 sky, still close enough to the street
+      // that the far/mid luminance ratio stays inside 0.8–1.2.
+      g.filter='saturate(0.80) brightness(1.90) contrast(1.14)';
       g.drawImage(img,0,0,c.width,c.height);
       g.filter='none';
     }else g.drawImage(img,0,0,c.width,c.height);
@@ -791,10 +806,6 @@
       if(show('screen')){ctx.drawImage(overlay('light:'+n,g=>{
         const depth=g.createLinearGradient(0,218,0,360);depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');g.fillStyle=depth;g.fillRect(0,218,640,142);
         const light=['#9bcfff','#ffdca0','#a99aff','#ffe8b0','#9ac2ff'][n-1],glow=g.createRadialGradient(440,100,10,440,100,310);glow.addColorStop(0,light+'28');glow.addColorStop(1,light+'00');g.fillStyle=glow;g.fillRect(0,0,640,360);
-        // Behind the fighters only. A per-pose outline on every enemy bake pushed stage enter past 700ms, so the separation is this band: darker on the brown hall, light on the night street.
-        if(n===2){g.fillStyle='rgba(8,10,16,0.22)';g.fillRect(0,168,640,132);}
-        else if(n===4){g.fillStyle='rgba(8,10,16,0.34)';g.fillRect(0,168,640,132);}
-        else if(n===5){g.fillStyle='rgba(4,6,12,0.16)';g.fillRect(0,176,640,120);}
       }),0,0,640,360);}
       if (n === 5 && !this._painting && Math.sin(time * 0.8) > 0.995) strokeLightning(ctx);
     },

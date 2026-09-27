@@ -413,21 +413,16 @@
       if (!img || !data) return false;
       const [w,h,ax,ay] = data, scale = RILEY16.height / RILEY16.frames.idle[1];
       const lying = !forcedFrame && (this.dead || ['knockdown', 'lying', 'death'].includes(this.state));
-      // Contact-foot offsets, in world units, of the lowest sole in each pose.
-      const footOf = { walk1: (131 - 95) * scale, walk2: (128.5 - 88) * scale, walk3: (126.5 - 95) * scale, walk4: (126.5 - 89) * scale };
+      // The body tracks the hitbox every frame. Four rigid poses cannot keep a
+      // sole planted, so the pose only changes with distance walked. A 3px bob
+      // still marks the step. Holding the sprite to fake a planted foot made
+      // the body freeze and then teleport.
       let drawX = this.x, drawY = this.y;
-      if (!forcedFrame && !lying && this.grounded && footOf[frame] != null) {
-        const step = 32; // two poses, one planted foot
-        const into = this.walkDistance % step;
-        const pairX = this.x - this.facing * into;
-        // Hold the sprite for the step, then cancel the small sole shift
-        // between the two poses so the contact foot stays on one point.
-        // The poses already swing the arms; a rigid frame cannot move them apart.
-        const plant = frame === 'walk2' ? 'walk1' : frame === 'walk4' ? 'walk3' : frame;
-        drawX = pairX - this.facing * (footOf[frame] - footOf[plant]);
-        const phase = into / step;
-        drawY = this.y - Math.sin(phase * Math.PI) * 3;
+      if (!forcedFrame && !lying && this.grounded && frame && frame.indexOf('walk') === 0) {
+        const into = this.walkDistance % 32;
+        drawY = this.y - Math.sin(into / 32 * Math.PI) * 3;
       }
+      this._spriteX = drawX;
       ctx.save();
       ctx.translate(drawX - cameraX, drawY - this.z);
       if (lying) ctx.rotate(this.facing * 80 * Math.PI / 180);

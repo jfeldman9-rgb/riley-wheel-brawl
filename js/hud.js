@@ -61,7 +61,7 @@
     }
     if (scene.warningTimer > 0) R.drawText(ctx, scene.warning, 320, 122, 8, '#ffe67a', 'center');
     if (scene.goTimer > 0 && (!scene.marching || Math.floor((scene.time || 0) * 8) % 2 === 0)) R.drawText(ctx, 'GO  →', 562, 174, 12, '#fff2a0', 'center');
-    if (scene.tutorial) { R.drawPanel(ctx, 125, 314, 390, 20); R.drawText(ctx, R.input.fillKeys(scene.tutorial), 320, 325, 6, '#ffffff', 'center'); }
+    if (scene.tutorial) { R.drawPanel(ctx, 125, 304, 390, 18); R.drawText(ctx, R.input.fillKeys(scene.tutorial), 320, 315, 6, '#ffffff', 'center'); }
   }
   R.drawHUD = function (ctx, scene) {
     const player = scene.player;
