@@ -578,14 +578,19 @@
     }
     update(dt, input) {
       input = input || { pressed: {}, held: {}, axis: () => ({ x: 0, y: 0 }) };
+      let openedPause = false;
       if (R.keyPressed(input, 'pause')) {
         this.paused = !this.paused;
-        if (this.paused) this.pauseMenu.open();
+        if (this.paused) { this.pauseMenu.open(); openedPause = true; }
       }
       if (this.paused) {
         this.currentInput = input;
-        const result = this.pauseMenu.update(input, dt);
-        if (result === 'resume') this.paused = false;
+        // The press that opened the menu is still in this update. Feeding it
+        // to the menu selects RESUME and closes the pause on the same frame.
+        if (!openedPause) {
+          const result = this.pauseMenu.update(input, dt);
+          if (result === 'resume') this.paused = false;
+        }
         return;
       }
       if (this.phase === 'death') {

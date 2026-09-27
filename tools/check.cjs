@@ -163,13 +163,69 @@ async function pageLoadChecks(check, rootDir) {
       }
       const floorShift = bestShift(row(100, 300), row(100.8, 300));
       const midShift = bestShift(row(100, 180), row(100.8, 180));
-      return { feet, dust: puff('dust'), chunk: puff('chunk', '#c4b8a4'), bg: { sub: diff(whole, frac), step: diff(whole, next), floorShift, midShift } };
+      function alignError(live, shown) {
+        const sample = (data, x) => {
+          const x0 = Math.max(0, Math.min(638, Math.floor(x)));
+          const t = Math.min(1, Math.max(0, x - x0));
+          const o = x0 * 4, p = o + 4;
+          const a = data[o] + data[o + 1] + data[o + 2];
+          const b = data[p] + data[p + 1] + data[p + 2];
+          return a * (1 - t) + b * t;
+        };
+        let best = 0, bestN = Infinity;
+        const shifts = [0];
+        for (let s = 0.02; s <= 1.2; s += 0.02) shifts.push(s, -s);
+        for (const s of shifts) {
+          let n = 0;
+          for (let x = 24; x < 616; x += 2) n += Math.abs(sample(live, x) - sample(shown, x + s));
+          if (n < bestN) { bestN = n; best = s; }
+        }
+        return Math.abs(best);
+      }
+      function layerDeviation(cam) {
+        const world = RWB.StageWorld;
+        RWB.display.renderScale = 1;
+        const scene = { levelIndex: 0, camera: { x: cam }, time: 0, wave: 3 };
+        const host = document.createElement('canvas'); host.width = 640; host.height = 360;
+        world._painting = false; world._layer = null;
+        world.draw(host.getContext('2d'), scene);
+        const rows = { base: 24, back: 120, mid: 180, floor: 300, screen: 250 };
+        const round = Math.round(cam), out = {};
+        for (const id of Object.keys(rows)) {
+          const slot = world._views[id];
+          const shift = slot.k * (round - cam);
+          const shown = document.createElement('canvas'); shown.width = 640; shown.height = 360;
+          const sctx = shown.getContext('2d', { willReadFrequently: true });
+          sctx.imageSmoothingEnabled = shift !== 0;
+          sctx.drawImage(slot.canvas, shift, 0, 640, 360);
+          let liveData;
+          if (id === 'back' || id === 'mid' || id === 'floor') {
+            const live = document.createElement('canvas'); live.width = 640; live.height = 360;
+            const lctx = live.getContext('2d', { willReadFrequently: true });
+            world._painting = true; world._layer = id;
+            world.draw(lctx, scene);
+            world._painting = false; world._layer = null;
+            liveData = lctx.getImageData(0, rows[id], 640, 1).data;
+          } else {
+            liveData = slot.ctx.getImageData(0, rows[id], 640, 1).data;
+          }
+          const shownData = sctx.getImageData(0, rows[id], 640, 1).data;
+          out[id] = { k: +slot.k.toFixed(4), err: alignError(liveData, shownData) };
+        }
+        return out;
+      }
+      const layers = layerDeviation(100.5);
+      const layersEdge = layerDeviation(100.8);
+      let maxDev = 0;
+      for (const id of Object.keys(layers)) maxDev = Math.max(maxDev, layers[id].err, layersEdge[id].err);
+      return { feet, dust: puff('dust'), chunk: puff('chunk', '#c4b8a4'), bg: { sub: diff(whole, frac), step: diff(whole, next), floorShift, midShift, maxDev, layers, layersEdge } };
     });
     const planted = visual.feet.every(r => r.early && r.late && r.early.drift <= 8 && r.late.drift <= 8 && r.early.drift < r.early.travel * 0.7 && r.late.drift < r.late.travel * 0.7);
     check(planted, 'Baked walk frames keep the planted hoof fixed in world space ' + JSON.stringify(visual.feet));
     check(visual.dust.corner < visual.dust.peak * 0.5 && visual.dust.peak > 40 && visual.chunk.corner < visual.chunk.peak * 0.5 && visual.chunk.peak > 40, 'Dust and debris pixels are soft rounds, not hard rectangles ' + JSON.stringify({ dust: visual.dust, chunk: visual.chunk }));
     check(visual.bg.sub > 0 && visual.bg.step > 0, 'A fractional camera moves the cached background off the whole-pixel snap ' + JSON.stringify(visual.bg));
     check(Math.abs(visual.bg.floorShift) === 1 && visual.bg.midShift === 0, 'Parallax layers keep their own sub-pixel step (floor moves, distant mid does not jump a pixel) ' + JSON.stringify(visual.bg));
+    check(visual.bg.maxDev <= 0.1, 'Every parallax layer stays within 0.1px of the scroll tiled() actually used ' + JSON.stringify(visual.bg));
     console.log('Baked hoof drift ' + JSON.stringify(visual.feet));
     console.log('Background subpixel delta ' + JSON.stringify(visual.bg));
     const hit = await seeded.page.evaluate(() => {
@@ -369,7 +425,7 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260926-grok3c';console.log('Cache stamp: '+STAMP);
+const STAMP='20260926-grok3d';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -543,17 +599,48 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   const fxSource=fs.readFileSync(path.join(root,'js/fx.js'),'utf8');
   check(/effects\.glow\('#d8d0c0'\)/.test(fxSource)&&/effects\.glow\(f\.color\)/.test(fxSource)&&!/fillRect\(sx -/.test(fxSource),'Dust and debris draw a cached radial sprite');
   const stageBlit=fs.readFileSync(path.join(root,'js/stages.js'),'utf8');
-  check(/const shift=layer\.k\*\(cam-camExact\)/.test(stageBlit)&&/drawImage\(slot\.canvas,shift,0,640,360\)/.test(stageBlit),'Cached backgrounds blit each parallax layer at its own sub-pixel offset');
+  check(/const shift=slot\.k\*\(cam-camExact\)/.test(stageBlit)&&/slot\.k=this\._layerFactor==null\?layer\.k:this\._layerFactor/.test(stageBlit)&&/R\.StageWorld\._layerFactor=factor/.test(stageBlit)&&/drawImage\(slot\.canvas,shift,0,640,360\)/.test(stageBlit),'Cached backgrounds blit each parallax layer at the capped factor tiled() used');
   const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8');
   const inputSource=fs.readFileSync(path.join(root,'js/input.js'),'utf8');
   const hudReuse=fs.readFileSync(path.join(root,'js/hud.js'),'utf8');
   const puppetReuse=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
   check(/function clearPresentedFrame/.test(mainSource)&&/Math\.ceil\(48 \* rs\)/.test(mainSource)&&/RWB\.clearPresentedFrame/.test(mainSource),'Fight frames clear the border a camera punch can expose');
+  check(/game\._swap\(\); game\.fadeDir = -1; last = performance\.now\(\)/.test(mainSource),'The fade-in clock starts after the scene enter bake, not before it');
   check(/drawImage\(slot\.canvas, 0, 0, RWB\.W, RWB\.H\)/.test(inputSource)&&!/RWB\.H - 160/.test(inputSource),'The cached control layer includes the pause button, not only the bottom cluster');
   check(/g\.clearRect\(0, 0, bw, bh\)/.test(inputSource)&&/g\.clearRect\(0, 0, bw, bh\)/.test(hudReuse),'HUD and touch caches clear and reuse their buffer instead of reallocating it');
   check(/function poseScaleFor/.test(puppetReuse)&&/prepareStage\(level\)/.test(puppetReuse)&&!/library\.values\(\)\)flashOf/.test(puppetReuse),'Pose atlases bake at the capped on-screen size, per stage, and flash copies are lazy');
   const crate=new RWB.FX();crate.chunks(10,10,'#8a6039',6);
   check(crate.list.length>0&&crate.list.every(p=>p.color==='#8a6039'),'Crate debris accepts a single colour string');
+  const sceneSource=fs.readFileSync(path.join(root,'js/scenes.js'),'utf8');
+  check(/openedPause/.test(sceneSource)&&/if \(!openedPause\)/.test(sceneSource),'The pause press that opens the menu is not fed to the menu on that update');
+  const blank = { pressed: {}, held: {}, axis: () => ({ x: 0, y: 0 }), pointer: { x: 0, y: 0 } };
+  const tap = (pressed, pointer) => ({ pressed, held: {}, axis: () => ({ x: 0, y: 0 }), pointer: pointer || { x: 0, y: 0 } });
+  const ii = RWB.input.touch.buttons.find(b => b.id === 'pause');
+  const resumeAt = { x: 240, y: RWB.PauseMenu.Y0 };
+  const fight = new RWB.scenes.Play(game, 0, { wave: 0 });
+  fight.update(1 / 60, tap({ pause: true }));
+  const escOpen = fight.paused;
+  fight.update(1 / 60, blank);
+  const escStays = fight.paused;
+  fight.update(1 / 60, tap({ pause: true }));
+  const escClose = !fight.paused;
+  fight.update(1 / 60, blank);
+  const escStaysClosed = !fight.paused;
+  fight.update(1 / 60, tap({ pause: true, click: true }, { x: ii.x, y: ii.y }));
+  const iiOpen = fight.paused;
+  fight.update(1 / 60, blank);
+  const iiStays = fight.paused;
+  fight.update(1 / 60, tap({ click: true }, resumeAt));
+  const iiResume = !fight.paused;
+  fight.update(1 / 60, tap({ pause: true }, { x: ii.x, y: ii.y }));
+  const clickOpen = fight.paused;
+  fight.update(1 / 60, blank);
+  const clickStays = fight.paused;
+  fight.update(1 / 60, tap({ start: true }));
+  const clickResume = !fight.paused;
+  check(escOpen && escStays && escClose && escStaysClosed, 'ESC opens the pause menu, it stays open, and pressing pause again resumes');
+  check(iiOpen && iiStays && iiResume, 'Tapping II opens the pause menu, it stays open, and choosing RESUME closes it');
+  check(clickOpen && clickStays && clickResume, 'Clicking II opens the pause menu, it stays open, and confirming RESUME closes it');
 }
 await pageLoadChecks(check, root);
 

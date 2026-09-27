@@ -66,6 +66,7 @@
     if(copies===2){const id=key+':'+!!topFeather+':strip';plate=strips.get(id);if(!plate){plate=document.createElement('canvas');plate.width=tile.width*2;plate.height=tile.height;const pg=plate.getContext('2d');pg.drawImage(tile,0,0);pg.drawImage(tile,tile.width,0);strips.set(id,plate);}}
     plate=sizedPlate(key+':'+!!topFeather,plate,width,drawH);
     factor=Math.min(factor,Math.max(0,(width-640)/CAMERA_RANGE));
+    if(R.StageWorld&&R.StageWorld._layer)R.StageWorld._layerFactor=factor;
     const offset=cam*factor;
     for(let stripX=-offset;stripX<640;stripX+=width){
       ctx.drawImage(plate,stripX,drawY,width,drawH);
@@ -202,9 +203,10 @@
       const n = scene.levelIndex + 1;
       // Stage 1's alpha plates plus the saved world layer were a synchronous
       // ~9ms composite on software canvas. Reuse one view per parallax group
-      // while the camera sits on the same pixel. Each group is blitted at
-      // k * (round(camera) - camera), so a fractional step moves the far
-      // plates by k and not by a full pixel with the floor.
+      // while the camera sits on the same pixel. Each group is blitted by the
+      // factor tiled() actually applied (capped to the plate's spare width),
+      // times (round(camera) - camera). The nominal 0.10/0.42 would sawtooth
+      // a plate that can barely scroll.
       if(!this._painting && R.assets.has('stage'+n+'-far')){
         const rs=R.display.renderScale||1,camExact=scene.camera.x||0,cam=Math.round(camExact),bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs));
         const views=this._views||(this._views={});
@@ -224,11 +226,11 @@
             if(sizeChanged){slot.canvas.width=bw;slot.canvas.height=bh;}
             const g=slot.ctx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,bw,bh);
             g.setTransform(rs,0,0,rs,0,0);g.imageSmoothingEnabled=true;g.globalAlpha=1;g.globalCompositeOperation='source-over';
-            const prev=scene.camera.x;scene.camera.x=cam;this._painting=true;this._layer=layer.id;
+            const prev=scene.camera.x;scene.camera.x=cam;this._painting=true;this._layer=layer.id;this._layerFactor=null;
             try{this.draw(g,scene);if(layer.id==='base')bakeGrade(g,scene);if(layer.id==='screen')blitVignette(g);}finally{this._painting=false;this._layer=null;scene.camera.x=prev;}
-            slot.key=key;
+            slot.key=key;slot.k=this._layerFactor==null?layer.k:this._layerFactor;
           }
-          const shift=layer.k*(cam-camExact),smooth=ctx.imageSmoothingEnabled;
+          const shift=slot.k*(cam-camExact),smooth=ctx.imageSmoothingEnabled;
           ctx.imageSmoothingEnabled=shift!==0;
           ctx.drawImage(slot.canvas,shift,0,640,360);
           if(shift>0)ctx.drawImage(slot.canvas,0,0,1,slot.canvas.height,0,0,shift,360);

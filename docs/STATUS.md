@@ -1,6 +1,6 @@
 # Riley Wheel Brawl — current status
 
-Branch `rwb-grok3`; draft PR targets `rwb-w2` at `08c74ae`. Runtime stamp: `?v=20260926-grok3c`.
+Branch `rwb-grok3`; draft PR targets `rwb-w2` at `08c74ae`. Runtime stamp: `?v=20260926-grok3d`.
 No changes or merges to `main`. GitHub Pages settings are unchanged. Nothing was merged.
 
 ## What this pass changes
