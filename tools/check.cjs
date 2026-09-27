@@ -3,6 +3,142 @@ const fs = require('fs');
 const path = require('path');
 const { boot } = require('./soak.cjs');
 const root = path.resolve(__dirname, '..');
+async function pageLoadChecks(check, rootDir) {
+  let chromium;
+  try { ({ chromium } = require('playwright')); }
+  catch (e) { check(false, 'Page-load checks need Playwright'); return; }
+  const http = require('http');
+  const server = http.createServer((req, res) => {
+    const pathname = decodeURIComponent(req.url.split('?')[0]);
+    const file = path.join(rootDir, pathname === '/' ? 'index.html' : pathname);
+    if (!file.startsWith(rootDir + path.sep) || !fs.existsSync(file)) { res.statusCode = 404; return res.end(); }
+    const type = file.endsWith('.js') ? 'application/javascript' : file.endsWith('.css') ? 'text/css' : file.endsWith('.html') ? 'text/html' : file.endsWith('.png') ? 'image/png' : file.endsWith('.jpeg') ? 'image/jpeg' : file.endsWith('.ttf') ? 'font/ttf' : 'application/octet-stream';
+    res.setHeader('Content-Type', type);
+    fs.createReadStream(file).pipe(res);
+  });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  const url = 'http://127.0.0.1:' + server.address().port + '/';
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true, ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}), args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disable-accelerated-2d-canvas'] });
+    const STAGE2 = JSON.stringify({ v: 2, at: 1700000000000, level: 1, wave: 2, score: 1200, extra: { saidin: 40, loial: true, lives: 2, callandor: false } });
+    const open = async (seed) => {
+      const page = await browser.newPage();
+      const errors = [];
+      page.on('pageerror', e => errors.push(e.message));
+      if (seed != null) await page.addInitScript(save => localStorage.setItem('rwb-run', save), seed);
+      await page.goto(url);
+      await page.waitForFunction(() => window.RWB && RWB.game && (RWB.game.scene || RWB.game.nextScene), null, { timeout: 90000 });
+      const menu = await page.evaluate(() => {
+        const title = (RWB.game.scene && RWB.game.scene.items) ? RWB.game.scene : RWB.game.nextScene;
+        return { raw: localStorage.getItem('rwb-run'), items: title && title.items ? title.items() : [] };
+      });
+      return { page, errors, menu };
+    };
+    const seeded = await open(STAGE2);
+    check(seeded.errors.length === 0, 'Seeded page load has no script errors' + (seeded.errors[0] ? ' (' + seeded.errors[0] + ')' : ''));
+    check(seeded.menu.raw === STAGE2, 'A Stage 2 Continue save is byte-identical after the page loads');
+    check(seeded.menu.items.includes('CONTINUE'), 'A saved Stage 2 run still offers CONTINUE');
+    const fresh = await open(null);
+    check(fresh.errors.length === 0 && fresh.menu.raw === null && !fresh.menu.items.includes('CONTINUE'), 'A fresh profile shows no CONTINUE after warmup');
+    const visual = await seeded.page.evaluate(() => {
+      const feet = [];
+      for (const kind of Object.keys(RWB.Puppet.defs)) {
+        if (kind === 'forsaken' && RWB.assets.has('belal-idle')) continue;
+        const d = RWB.Puppet.defs[kind], scale = d.height / 80, stride = 32 * scale;
+        const measure = (frames) => {
+          const rows = [];
+          for (const frame of frames) {
+            const phase = frame / 12, body = 280 + phase * stride * 2;
+            const c = document.createElement('canvas'); c.width = 720; c.height = 400;
+            const ctx = c.getContext('2d', { willReadFrequently: true });
+            // Bin centers select the baked frame; the body stays where that frame was skinned.
+            const actor = { x: body, y: 300, z: 0, facing: 1, state: 'walk', visualHeight: d.height, gait: { moving: true, phase: phase + 0.5 / 12, feet: [] } };
+            if (!RWB.Puppet.draw(ctx, actor, 0, kind)) return null;
+            const data = ctx.getImageData(0, 0, 720, 400).data;
+            let maxY = -1;
+            for (let y = 399; y >= 0; y--) {
+              for (let x = 0; x < 720; x++) if (data[(y * 720 + x) * 4 + 3] > 48) { maxY = y; break; }
+              if (maxY >= 0) break;
+            }
+            const bands = [];
+            for (let dy = 0; dy < 5; dy++) {
+              const y = maxY - dy; if (y < 0) break;
+              const line = [];
+              for (let x = 0; x < 720; x++) if (data[(y * 720 + x) * 4 + 3] > 48) line.push(x);
+              line.sort((p, q) => p - q);
+              const groups = [];
+              for (const x of line) {
+                const g = groups[groups.length - 1];
+                if (g && x - g[g.length - 1] <= 8) g.push(x); else groups.push([x]);
+              }
+              bands.push(groups.filter(g => g.length >= 2).map(g => g[g.length >> 1]));
+            }
+            rows.push(bands);
+          }
+          let best = null;
+          for (let depth = 1; depth <= 5; depth++) {
+            const xs = rows.map(bands => {
+              const flat = bands.slice(0, depth).flat();
+              flat.sort((p, q) => p - q);
+              const groups = [];
+              for (const x of flat) {
+                const g = groups[groups.length - 1];
+                if (g && x - g[g.length - 1] <= 8) g.push(x); else groups.push([x]);
+              }
+              return groups.map(g => g[g.length >> 1]);
+            });
+            for (const seed of xs[0] || []) {
+              let prev = seed, lo = seed, hi = seed, ok = true;
+              for (let i = 1; i < xs.length; i++) {
+                let near = null, nd = Infinity;
+                for (const c of xs[i]) if (Math.abs(c - prev) < nd) { nd = Math.abs(c - prev); near = c; }
+                if (near == null || nd > 14) { ok = false; break; }
+                prev = near; lo = Math.min(lo, near); hi = Math.max(hi, near);
+              }
+              if (ok && (best == null || hi - lo < best)) best = hi - lo;
+            }
+          }
+          const travel = (frames[frames.length - 1] - frames[0]) / 12 * stride * 2;
+          return best == null ? null : { drift: +best.toFixed(2), travel: +travel.toFixed(2) };
+        };
+        feet.push({ kind, early: measure([2, 3, 4]), late: measure([8, 9, 10]) });
+      }
+      function puff(kind, color) {
+        const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+        const ctx = c.getContext('2d', { willReadFrequently: true });
+        RWB.FX.KINDS[kind].draw(ctx, { t: 0, life: 1, r: 14, y: 32, color: color || '#d8d0c0' }, 32);
+        const data = ctx.getImageData(0, 0, 64, 64).data;
+        let minX = 64, minY = 64, maxX = -1, maxY = -1, peak = 0;
+        for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+          const a = data[(y * 64 + x) * 4 + 3];
+          if (a > 20) { if (x < minX) minX = x; if (y < minY) minY = y; if (x > maxX) maxX = x; if (y > maxY) maxY = y; }
+          if (a > peak) peak = a;
+        }
+        return { corner: data[(minY * 64 + minX) * 4 + 3], peak, w: maxX - minX, h: maxY - minY };
+      }
+      function row(cam) {
+        const c = document.createElement('canvas'); c.width = 640; c.height = 360;
+        const ctx = c.getContext('2d', { willReadFrequently: true });
+        RWB.display.renderScale = 1;
+        RWB.StageWorld.draw(ctx, { levelIndex: 0, camera: { x: cam }, time: 0, wave: 3 });
+        return Array.from(ctx.getImageData(0, 210, 640, 1).data);
+      }
+      const whole = row(100), frac = row(100.4), next = row(101);
+      const diff = (a, b) => { let n = 0; for (let i = 0; i < a.length; i += 4) if (a[i] !== b[i] || a[i + 1] !== b[i + 1] || a[i + 2] !== b[i + 2]) n++; return n; };
+      return { feet, dust: puff('dust'), chunk: puff('chunk', '#c4b8a4'), bg: { sub: diff(whole, frac), step: diff(whole, next) } };
+    });
+    const planted = visual.feet.every(r => r.early && r.late && r.early.drift <= 8 && r.late.drift <= 8 && r.early.drift < r.early.travel * 0.7 && r.late.drift < r.late.travel * 0.7);
+    check(planted, 'Baked walk frames keep the planted hoof fixed in world space ' + JSON.stringify(visual.feet));
+    check(visual.dust.corner < visual.dust.peak * 0.5 && visual.dust.peak > 40 && visual.chunk.corner < visual.chunk.peak * 0.5 && visual.chunk.peak > 40, 'Dust and debris pixels are soft rounds, not hard rectangles ' + JSON.stringify({ dust: visual.dust, chunk: visual.chunk }));
+    check(visual.bg.sub > 0 && visual.bg.step > 0, 'A fractional camera moves the cached background off the whole-pixel snap ' + JSON.stringify(visual.bg));
+    console.log('Baked hoof drift ' + JSON.stringify(visual.feet));
+    console.log('Background subpixel delta ' + JSON.stringify(visual.bg));
+  } finally {
+    if (browser) await browser.close();
+    server.close();
+  }
+}
 async function main() {
 const RWB = boot(root);
 const failures = [];
@@ -111,13 +247,13 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260926-grok3';console.log('Cache stamp: '+STAMP);
+const STAMP='20260926-grok3b';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
 check(perfSource.includes('this.pending[key]=true') && perfSource.includes('const pressed=this.pending;this.pending={}'), 'Pressed input edges are buffered and consumed by one simulation tick');
-const hotSpriteSource=fs.readFileSync(path.join(root,'js/riley.js'),'utf8')+fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
-check(!/ctx\.filter\s*=/.test(hotSpriteSource) && !/shadowBlur\s*=/.test(hotSpriteSource), 'Riley, enemy hit flashes and Callandor avoid per-frame Canvas filters');
+const hotSpriteSource=fs.readFileSync(path.join(root,'js/riley.js'),'utf8')+fs.readFileSync(path.join(root,'js/puppets.js'),'utf8')+fs.readFileSync(path.join(root,'js/fx.js'),'utf8');
+check(!/ctx\.filter\s*=/.test(hotSpriteSource) && !/shadowBlur\s*=/.test(hotSpriteSource), 'Riley, enemy hit flashes, Callandor, dust and debris avoid per-frame Canvas filters');
 // Chunk B: exercise real collision, persistence and scene transitions, not only metadata.
 const neutral = { pressed: {}, held: {}, axis: () => ({x:0,y:0}) };
 const ctx = new Proxy({ createLinearGradient:()=>({addColorStop(){}}), createRadialGradient:()=>({addColorStop(){}}), measureText:t=>({width:String(t).length*8}) }, {get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
@@ -277,6 +413,17 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   check(/kind==='forsaken'&&R\.assets\.has\('belal-idle'\)/.test(puppetSource)&&/m==='combo'\?'windup'/.test(puppetSource)&&/t<\.55\?'slash':'lunge'/.test(puppetSource),"Be'lal SWORD FLURRY telegraph/attack use painted windup/slash/lunge frames (no composited sword, cannot detach)");
   check(!/if\s*\(\s*!articulated\s*\)\s*ctx\.drawImage/.test(puppetSource)&&/Processed connected skin is mandatory even at idle/.test(puppetSource),'Idle uses the same processed connected rig as action states');
 }
+
+{
+  const warmStart=perfSource.indexOf('function warmDisplay'),warmEnd=perfSource.indexOf('R.warmDisplay=warmDisplay');
+  const warmSource=perfSource.slice(warmStart,warmEnd);
+  check(warmStart>0&&warmEnd>warmStart&&!/setSceneNow\(/.test(warmSource)&&warmSource.includes('getItem(runKey)')&&warmSource.includes('setItem(runKey,saved)')&&warmSource.includes('removeItem(runKey)'),'Display warmup restores the Continue save and does not enter a fight');
+  const fxSource=fs.readFileSync(path.join(root,'js/fx.js'),'utf8');
+  check(/effects\.glow\('#d8d0c0'\)/.test(fxSource)&&/effects\.glow\(f\.color\)/.test(fxSource)&&!/fillRect\(sx -/.test(fxSource),'Dust and debris draw a cached radial sprite');
+  const stageBlit=fs.readFileSync(path.join(root,'js/stages.js'),'utf8');
+  check(/const shift=cam-camExact/.test(stageBlit)&&/drawImage\(slot\.canvas,shift,0,640,360\)/.test(stageBlit),'Cached backgrounds blit at the sub-pixel camera offset');
+}
+await pageLoadChecks(check, root);
 
 if (failures.length) {
   console.error(failures.length + ' check(s) failed');

@@ -231,7 +231,11 @@
     else if(key==='channel'){a.state='channel';}
     else if(key[0]==='w'){
       const phase=Number(key.slice(1))/WALK_FRAMES;a.state='walk';a.gait.moving=true;a.gait.phase=phase;
-      for(let i=0;i<2;i++){const p=(phase+i*.5)%1,stance=p<.5;if(stance)a.gait.feet.push({x:stride/2,y:0,lift:0,stance:true});else{const t=(p-.5)*2;a.gait.feet.push({x:-stride/2+stride*t,y:0,lift:Math.sin(t*Math.PI)*7*scale,stance:false});}}
+      // A full cycle covers stride*2 at the enemy's walk speed. Hold the stance
+      // hoof at the body position where that step began so the baked frame
+      // slides the foot backward instead of skating it forward with the body.
+      const body=phase*stride*2;a.x=body;
+      for(let i=0;i<2;i++){const p=(phase+i*.5)%1,stance=p<.5;if(stance)a.gait.feet.push({x:(phase-p)*stride*2+stride/2,y:0,lift:0,stance:true});else{const t=(p-.5)*2;a.gait.feet.push({x:body-stride/2+stride*t,y:0,lift:Math.sin(t*Math.PI)*7*scale,stance:false});}}
     }else if(key[0]==='k'){
       const step=Number(key.slice(1));a.state='attack';a.attackName='front';a.attackMove={duration:.4};a.stateT=((step+.5)/KICK_FRAMES)*.4;
     }

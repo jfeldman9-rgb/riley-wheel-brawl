@@ -1,6 +1,6 @@
 # Riley Wheel Brawl — current status
 
-Branch `rwb-grok3`; draft PR targets `rwb-w2` at `08c74ae`. Runtime stamp: `?v=20260926-grok3`.
+Branch `rwb-grok3`; draft PR targets `rwb-w2` at `08c74ae`. Runtime stamp: `?v=20260926-grok3b`.
 No changes or merges to `main`. GitHub Pages settings are unchanged. Nothing was merged.
 
 ## What this pass changes
@@ -16,6 +16,34 @@ Mid-fight time on a software canvas was per-enemy mesh skinning (about 8 ms each
 - Natural damage scales are `[1.34, 2.66, 0.72, 1.52, 0.76]`. Boss health, move lists, and Riley's damage are unchanged.
 
 Riley still draws only the muscular 16-year-old frames in `assets/art/riley16/`. Be'lal still uses his painted frames with the sword in hand. Plates are not mirrored. No new image assets, runtime dependencies, or build step.
+
+## grok3b review fixes
+
+Independent review of `935a6f2` confirmed the pace and balance numbers. This stamp fixes four regressions from that pass.
+
+### Continue save
+
+Before: `warmDisplay()` constructed four fights and `setSceneNow` entered each one. `spawnWave()` and `enter()` both write `localStorage['rwb-run']`. A page load replaced any Continue slot with Stage 4, wave 5 (Be'lal), 99 lives, boss HP 1100. A fresh profile was left with that save, so the title showed CONTINUE. Measured on a seeded Stage 2 string (`level: 1`, `wave: 2`): after load the stored JSON was the Be'lal checkpoint, not the seed.
+
+After: warmup still draws those four scenes onto the game canvas, but it does not call `setSceneNow` / `enter()`, and it puts the exact `rwb-run` string back afterwards (or removes the key if there was none). The seeded Stage 2 string is byte-identical after the page loads, and a fresh profile has no `rwb-run` and no CONTINUE.
+
+### Planted hooves
+
+Before: each baked walk frame kept the stance foot at a fixed offset from the body, so the hoof skated forward at the walk speed. Sampling the baked blit (bottom opaque pixels, not the gait targets) while the body advanced at `stride * 2` per cycle, a Trolloc's ground contact moved 60px and 23px across the two halves of a step. Body travel in that same window was 22.4px.
+
+After: the stance hoof is baked at the world position where that step began, so it moves backward in the frame as the body walks on. The same pixel measurement, on the interior of each stance, is 0px of drift for a Trolloc, chieftain, darkfriend, guard, Asha'man, and Taim. The worst rig is the cultist's trailing hem at 8px while the body travels 13.6px; Loial's late contact moves 6px against 18.7px of body travel. A body-locked hoof moves about as far as the body and fails the check.
+
+### Dust and debris
+
+Before: dust and chunks were `fillRect`s, so foot impacts read as small hard rectangles.
+
+After: both draw the cached radial sprite from `RWB.effects.glow` (one canvas per color, no `filter`, no `shadowBlur`). A dust puff's corner alpha is 0 and its center alpha is 107; a debris puff is the same shape in the particle color.
+
+### Background scroll
+
+Before: the opaque stage cache was keyed and painted on whole camera pixels, then blitted at `x = 0` with smoothing off. Sprites use the raw camera, so the plate sat still for up to 1px and then jumped. A Stage 1 row at camera 100 and camera 100.4 was the same bitmap.
+
+After: the cache is still one view per whole pixel. It is drawn at `round(camera) - camera` (smoothing on only for that fractional blit), and the uncovered sliver repeats the edge pixel. Camera 100.4 now differs from camera 100 on 607 of 640 pixels in the sampled row.
 
 ## Pacing
 
@@ -75,12 +103,12 @@ Every boss attack is seen on every seed, including seeds that do not clear. Natu
 
 ## Checks
 
-- `node tools/check.cjs`: **69 passes**, All checks passed. No check was weakened.
+- `node tools/check.cjs`: All checks passed. No previous check was weakened. New checks: a seeded Stage 2 save is byte-identical after a real page load, a fresh profile has no CONTINUE, baked walk frames keep the planted hoof within 8px (and under 70% of body travel) in world space, dust and debris pixels are soft rounds, and a fractional camera moves the cached background.
 - `node tools/smoothness-check.cjs`: **9 passes**, including the light hit-stop cooldown and the super hit-stop.
 
 ## Still weak / limits
 
 - SwiftShader at 1280×720 does not hold 60 fps. The CPU-side frame is cheap; the present is not. This does not certify a phone GPU. AUTO can still lower the buffer when `observe` is left enabled; the pace run forces that off.
-- Walk and kick poses are 12 and 6 baked frames. Feet in the contact metric still come from the live IK pose, not from the blit.
+- Walk and kick poses are 12 and 6 baked frames. Inside one frame the hoof is fixed while the body keeps moving, so a step can drift by up to one twelfth of a cycle before the next frame. The live IK contact check is unchanged; the new check reads the baked pixels.
 - The background grade is baked into the opaque view, so fighters are not re-tinted with soft-light every frame.
 - Ten natural seeds are a small deterministic sample. No gamepad, phone, or child playtest is claimed.

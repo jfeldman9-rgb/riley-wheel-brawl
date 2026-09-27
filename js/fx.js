@@ -107,8 +107,8 @@ RWB.FX.KINDS = {
     draw(ctx, f, sx) {
       const alpha = ctx.globalAlpha;
       ctx.globalAlpha = alpha * Math.max(0, Math.min(1, (f.life - f.t) / (f.life * 0.35)));
-      ctx.fillStyle = f.color;
-      ctx.fillRect(sx - f.r, f.y - f.r, f.r * 2, f.r * 1.4);
+      const r = f.r;
+      ctx.drawImage(RWB.effects.glow(f.color), sx - r, f.y - r * 0.7, r * 2, r * 1.4);
       ctx.globalAlpha = alpha;
     }
   },
@@ -117,8 +117,7 @@ RWB.FX.KINDS = {
     draw(ctx, f, sx) {
       const k = f.t / f.life, alpha = ctx.globalAlpha, r = f.r * (1 + k);
       ctx.globalAlpha = alpha * 0.45 * (1 - k);
-      ctx.fillStyle = '#d8d0c0';
-      ctx.fillRect(sx - r, f.y - r * 0.6, r * 2, r * 1.2);
+      ctx.drawImage(RWB.effects.glow('#d8d0c0'), sx - r, f.y - r * 0.6, r * 2, r * 1.2);
       ctx.globalAlpha = alpha;
     }
   },

@@ -204,7 +204,7 @@
       // ~9ms composite on software canvas. Reuse one opaque view while the
       // camera sits on the same pixel; a moving camera repaints that view.
       if(!this._painting && R.assets.has('stage'+n+'-far')){
-        const rs=R.display.renderScale||1,cam=Math.round(scene.camera.x||0),bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs));
+        const rs=R.display.renderScale||1,camExact=scene.camera.x||0,cam=Math.round(camExact),bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs));
         const key=n+':'+cam+':'+bw+':'+(scene.wave===5?1:0);
         const slot=this._view||(this._view={key:'',canvas:document.createElement('canvas')});
         if(!slot.ctx)slot.ctx=slot.canvas.getContext('2d',{alpha:false});
@@ -216,7 +216,14 @@
           try{this.draw(g,scene);bakeGrade(g,scene);blitVignette(g);}finally{this._painting=false;scene.camera.x=prev;}
           slot.key=key;
         }
-        const smooth=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;ctx.drawImage(slot.canvas,0,0,640,360);ctx.imageSmoothingEnabled=smooth;
+        // The cache is one whole camera pixel. Place it at the leftover
+        // fraction so the plate tracks sprites instead of jumping by a pixel.
+        const shift=cam-camExact,smooth=ctx.imageSmoothingEnabled;
+        ctx.imageSmoothingEnabled=shift!==0;
+        ctx.drawImage(slot.canvas,shift,0,640,360);
+        if(shift>0)ctx.drawImage(slot.canvas,0,0,1,slot.canvas.height,0,0,shift,360);
+        else if(shift<0)ctx.drawImage(slot.canvas,slot.canvas.width-1,0,1,slot.canvas.height,640+shift,0,-shift,360);
+        ctx.imageSmoothingEnabled=smooth;
         if(n===5&&Math.sin((scene.time||0)*0.8)>0.995)strokeLightning(ctx);
         return;
       }

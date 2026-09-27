@@ -57,20 +57,29 @@
     // First draws of stage art onto the onscreen canvas upload textures.
     // On SwiftShader that present can stall for hundreds of milliseconds, so
     // do it before gameplay samples frames.
+    // A fight constructor autosaves. Never enter those scenes, and put the
+    // Continue slot back so a page load cannot replace the player's run.
     const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
     if(!ctx||!R.scenes||!R.scenes.Play||!R.game)return Promise.resolve();
-    const rs=R.display.renderScale||1;
+    const rs=R.display.renderScale||1,runKey='rwb-run';
+    let saved=null,had=false;
+    try{saved=localStorage.getItem(runKey);had=saved!==null;}catch(e){}
+    const scene=R.game.scene,next=R.game.nextScene,fade=R.game.fade,fadeDir=R.game.fadeDir;
     try{
       ctx.setTransform(rs,0,0,rs,0,0);
       for(const [level,wave] of [[0,3],[2,3],[4,3],[3,5]]){
-        const scene=new R.scenes.Play(R.game,level,{wave,lives:99,callandor:level===4});
-        R.game.setSceneNow(scene);
-        scene.draw(ctx);
+        const fight=new R.scenes.Play(R.game,level,{wave,lives:99,callandor:level===4});
+        fight.draw(ctx);
       }
       ctx.getImageData(0,0,1,1);
     }catch(e){}
+    finally{
+      try{if(had)localStorage.setItem(runKey,saved);else localStorage.removeItem(runKey);}catch(e){}
+      R.game.scene=scene;R.game.nextScene=next;R.game.fade=fade;R.game.fadeDir=fadeDir;
+    }
     // Do not call requestAnimationFrame here. review.cjs and smoothness-browser.cjs
     // stub it and keep the last registered callback as the manual game pump.
     return Promise.resolve();
-  };
+  }
+  R.warmDisplay=warmDisplay;
 })();
