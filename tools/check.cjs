@@ -20,12 +20,23 @@ async function pageLoadChecks(check, rootDir) {
   const url = 'http://127.0.0.1:' + server.address().port + '/';
   let browser;
   try {
-    browser = await chromium.launch({ headless: true, ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}), args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disable-accelerated-2d-canvas'] });
+    browser = await chromium.launch({ headless: true, ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}), args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disable-accelerated-2d-canvas', '--js-flags=--expose-gc'] });
     const STAGE2 = JSON.stringify({ v: 2, at: 1700000000000, level: 1, wave: 2, score: 1200, extra: { saidin: 40, loial: true, lives: 2, callandor: false } });
     const open = async (seed) => {
       const page = await browser.newPage();
+      page.setDefaultTimeout(180000);
       const errors = [];
       page.on('pageerror', e => errors.push(e.message));
+      await page.addInitScript(() => {
+        const refs = [];
+        const orig = Document.prototype.createElement;
+        Document.prototype.createElement = function (tag) {
+          const el = orig.call(this, String(tag));
+          if (String(tag).toLowerCase() === 'canvas') refs.push(new WeakRef(el));
+          return el;
+        };
+        window.__rwbCanvasRefs = refs;
+      });
       if (seed != null) await page.addInitScript(save => localStorage.setItem('rwb-run', save), seed);
       await page.goto(url);
       await page.waitForFunction(() => window.RWB && RWB.game && (RWB.game.scene || RWB.game.nextScene), null, { timeout: 90000 });
@@ -41,10 +52,22 @@ async function pageLoadChecks(check, rootDir) {
     check(seeded.menu.items.includes('CONTINUE'), 'A saved Stage 2 run still offers CONTINUE');
     const fresh = await open(null);
     check(fresh.errors.length === 0 && fresh.menu.raw === null && !fresh.menu.items.includes('CONTINUE'), 'A fresh profile shows no CONTINUE after warmup');
+    const bootMem = await fresh.page.evaluate(() => {
+      if (window.gc) window.gc();
+      let bytes = 0, canvases = 0;
+      for (const ref of window.__rwbCanvasRefs || []) {
+        const c = ref.deref();
+        if (c && c.width && c.height) { bytes += c.width * c.height * 4; canvases++; }
+      }
+      return { mb: Math.round(bytes / 1048576 * 10) / 10, canvases };
+    });
+    check(bootMem.mb <= 300, 'Boot canvas memory stays at or below 300MB ' + JSON.stringify(bootMem));
+    console.log('Boot canvas memory ' + JSON.stringify(bootMem));
     const visual = await seeded.page.evaluate(() => {
       const feet = [];
       for (const kind of Object.keys(RWB.Puppet.defs)) {
         if (kind === 'forsaken' && RWB.assets.has('belal-idle')) continue;
+        RWB.Puppet.prepare(kind);
         const d = RWB.Puppet.defs[kind], scale = d.height / 80, stride = 32 * scale;
         const measure = (frames) => {
           const rows = [];
@@ -117,23 +140,122 @@ async function pageLoadChecks(check, rootDir) {
         }
         return { corner: data[(minY * 64 + minX) * 4 + 3], peak, w: maxX - minX, h: maxY - minY };
       }
-      function row(cam) {
+      function row(cam, y) {
         const c = document.createElement('canvas'); c.width = 640; c.height = 360;
         const ctx = c.getContext('2d', { willReadFrequently: true });
         RWB.display.renderScale = 1;
         RWB.StageWorld.draw(ctx, { levelIndex: 0, camera: { x: cam }, time: 0, wave: 3 });
-        return Array.from(ctx.getImageData(0, 210, 640, 1).data);
+        return Array.from(ctx.getImageData(0, y, 640, 1).data);
       }
-      const whole = row(100), frac = row(100.4), next = row(101);
+      const whole = row(100, 210), frac = row(100.4, 210), next = row(101, 210);
       const diff = (a, b) => { let n = 0; for (let i = 0; i < a.length; i += 4) if (a[i] !== b[i] || a[i + 1] !== b[i + 1] || a[i + 2] !== b[i + 2]) n++; return n; };
-      return { feet, dust: puff('dust'), chunk: puff('chunk', '#c4b8a4'), bg: { sub: diff(whole, frac), step: diff(whole, next) } };
+      function bestShift(a, b) {
+        let best = 0, bestN = Infinity;
+        for (let s = -3; s <= 3; s++) {
+          let n = 0;
+          for (let x = 12; x < 628; x++) {
+            const i = x * 4, j = (x + s) * 4;
+            n += Math.abs(a[i] - b[j]) + Math.abs(a[i + 1] - b[j + 1]) + Math.abs(a[i + 2] - b[j + 2]);
+          }
+          if (n < bestN) { bestN = n; best = s; }
+        }
+        return best;
+      }
+      const floorShift = bestShift(row(100, 300), row(100.8, 300));
+      const midShift = bestShift(row(100, 180), row(100.8, 180));
+      return { feet, dust: puff('dust'), chunk: puff('chunk', '#c4b8a4'), bg: { sub: diff(whole, frac), step: diff(whole, next), floorShift, midShift } };
     });
     const planted = visual.feet.every(r => r.early && r.late && r.early.drift <= 8 && r.late.drift <= 8 && r.early.drift < r.early.travel * 0.7 && r.late.drift < r.late.travel * 0.7);
     check(planted, 'Baked walk frames keep the planted hoof fixed in world space ' + JSON.stringify(visual.feet));
     check(visual.dust.corner < visual.dust.peak * 0.5 && visual.dust.peak > 40 && visual.chunk.corner < visual.chunk.peak * 0.5 && visual.chunk.peak > 40, 'Dust and debris pixels are soft rounds, not hard rectangles ' + JSON.stringify({ dust: visual.dust, chunk: visual.chunk }));
     check(visual.bg.sub > 0 && visual.bg.step > 0, 'A fractional camera moves the cached background off the whole-pixel snap ' + JSON.stringify(visual.bg));
+    check(Math.abs(visual.bg.floorShift) === 1 && visual.bg.midShift === 0, 'Parallax layers keep their own sub-pixel step (floor moves, distant mid does not jump a pixel) ' + JSON.stringify(visual.bg));
     console.log('Baked hoof drift ' + JSON.stringify(visual.feet));
     console.log('Background subpixel delta ' + JSON.stringify(visual.bg));
+    const hit = await seeded.page.evaluate(() => {
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const rs = RWB.display.renderScale || 1;
+      function pass(sign) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.fillStyle = '#ff00ff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const fight = new RWB.scenes.Play(RWB.game, 0, { wave: 3 });
+        fight.camera.punchX = 20 * sign;
+        fight.camera.punchY = 8 * sign;
+        fight.camera.shakeX = 13 * sign;
+        fight.camera.shakeY = 8 * sign;
+        const prev = RWB.game.scene, prevFade = RWB.game.fade;
+        RWB.game.scene = fight;
+        RWB.game.fade = 0;
+        RWB.clearPresentedFrame();
+        ctx.setTransform(rs, 0, 0, rs, 0, 0);
+        fight.draw(ctx);
+        const snap = RWB.display.mode === 'classic' ? 1 : rs;
+        const dx = Math.round((fight.camera.shakeX + fight.camera.punchX) * snap) / snap;
+        const dy = Math.round((fight.camera.shakeY + fight.camera.punchY) * snap) / snap;
+        const pushX = Math.max(1, Math.round(Math.abs(dx) * rs));
+        const pushY = Math.max(1, Math.round(Math.abs(dy) * rs));
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        const w = canvas.width, h = canvas.height;
+        const mag = (x, y) => { const i = (y * w + x) * 4; return data[i] > 200 && data[i + 1] < 40 && data[i + 2] > 200; };
+        let stale = 0, samples = 0;
+        const xs = dx > 0 ? [0, pushX] : [w - pushX, w];
+        const ys = dy > 0 ? [0, pushY] : [h - pushY, h];
+        for (let y = 0; y < h; y += 3) for (let x = xs[0]; x < xs[1]; x += 2) { samples++; if (mag(x, y)) stale++; }
+        for (let x = 0; x < w; x += 3) for (let y = ys[0]; y < ys[1]; y += 2) { samples++; if (mag(x, y)) stale++; }
+        RWB.game.scene = prev;
+        RWB.game.fade = prevFade;
+        return { stale, samples, pushX, pushY, dx, dy };
+      }
+      return { pos: pass(1), neg: pass(-1) };
+    });
+    check(hit.pos.stale === 0 && hit.neg.stale === 0 && hit.pos.samples > 0, 'A heavy hit at max push leaves no stale pixels on the exposed edges ' + JSON.stringify(hit));
+    const pause = await seeded.page.evaluate(() => {
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const rs = RWB.display.renderScale || 1;
+      const fight = new RWB.scenes.Play(RWB.game, 0, { wave: 3 });
+      fight.phase = 'play';
+      fight.goTimer = 0;
+      fight.bossCard = 0;
+      fight.paused = false;
+      const button = RWB.input.touch.buttons.find(b => b.id === 'pause');
+      const prevPc = RWB.display.pc, prevTouch = RWB.input.touch.enabled;
+      function stats(wx, wy, ww, wh) {
+        const x = Math.max(0, Math.floor(wx * rs)), y = Math.max(0, Math.floor(wy * rs));
+        const w = Math.max(1, Math.ceil(ww * rs)), h = Math.max(1, Math.ceil(wh * rs));
+        const data = ctx.getImageData(x, y, w, h).data;
+        let max = 0;
+        for (let i = 0; i < data.length; i += 4) max = Math.max(max, data[i] + data[i + 1] + data[i + 2]);
+        return max;
+      }
+      function shot(pc, enabled) {
+        RWB.display.pc = pc;
+        RWB.input.touch.enabled = enabled;
+        ctx.setTransform(rs, 0, 0, rs, 0, 0);
+        fight.paused = true;
+        fight.draw(ctx);
+        const before = {
+          ii: stats(button.x - 10, button.y - 8, 20, 16),
+          esc: stats(button.x + button.r + 1, button.y - 6, 24, 12)
+        };
+        fight.paused = false;
+        fight.draw(ctx);
+        const after = {
+          ii: stats(button.x - 10, button.y - 8, 20, 16),
+          esc: stats(button.x + button.r + 1, button.y - 6, 24, 12)
+        };
+        return { before, after };
+      }
+      const touch = shot(false, true);
+      const desktop = shot(true, false);
+      RWB.display.pc = prevPc;
+      RWB.input.touch.enabled = prevTouch;
+      return { touch, desktop, button };
+    });
+    check(pause.touch.after.ii > pause.touch.before.ii + 40, 'The pause button II is visible mid-fight on touch ' + JSON.stringify(pause));
+    check(pause.desktop.after.esc > pause.desktop.before.esc + 30, 'The desktop ESC badge is visible mid-fight ' + JSON.stringify(pause));
   } finally {
     if (browser) await browser.close();
     server.close();
@@ -247,7 +369,7 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260926-grok3b';console.log('Cache stamp: '+STAMP);
+const STAMP='20260926-grok3c';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -421,7 +543,17 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   const fxSource=fs.readFileSync(path.join(root,'js/fx.js'),'utf8');
   check(/effects\.glow\('#d8d0c0'\)/.test(fxSource)&&/effects\.glow\(f\.color\)/.test(fxSource)&&!/fillRect\(sx -/.test(fxSource),'Dust and debris draw a cached radial sprite');
   const stageBlit=fs.readFileSync(path.join(root,'js/stages.js'),'utf8');
-  check(/const shift=cam-camExact/.test(stageBlit)&&/drawImage\(slot\.canvas,shift,0,640,360\)/.test(stageBlit),'Cached backgrounds blit at the sub-pixel camera offset');
+  check(/const shift=layer\.k\*\(cam-camExact\)/.test(stageBlit)&&/drawImage\(slot\.canvas,shift,0,640,360\)/.test(stageBlit),'Cached backgrounds blit each parallax layer at its own sub-pixel offset');
+  const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8');
+  const inputSource=fs.readFileSync(path.join(root,'js/input.js'),'utf8');
+  const hudReuse=fs.readFileSync(path.join(root,'js/hud.js'),'utf8');
+  const puppetReuse=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
+  check(/function clearPresentedFrame/.test(mainSource)&&/Math\.ceil\(48 \* rs\)/.test(mainSource)&&/RWB\.clearPresentedFrame/.test(mainSource),'Fight frames clear the border a camera punch can expose');
+  check(/drawImage\(slot\.canvas, 0, 0, RWB\.W, RWB\.H\)/.test(inputSource)&&!/RWB\.H - 160/.test(inputSource),'The cached control layer includes the pause button, not only the bottom cluster');
+  check(/g\.clearRect\(0, 0, bw, bh\)/.test(inputSource)&&/g\.clearRect\(0, 0, bw, bh\)/.test(hudReuse),'HUD and touch caches clear and reuse their buffer instead of reallocating it');
+  check(/function poseScaleFor/.test(puppetReuse)&&/prepareStage\(level\)/.test(puppetReuse)&&!/library\.values\(\)\)flashOf/.test(puppetReuse),'Pose atlases bake at the capped on-screen size, per stage, and flash copies are lazy');
+  const crate=new RWB.FX();crate.chunks(10,10,'#8a6039',6);
+  check(crate.list.length>0&&crate.list.every(p=>p.color==='#8a6039'),'Crate debris accepts a single colour string');
 }
 await pageLoadChecks(check, root);
 

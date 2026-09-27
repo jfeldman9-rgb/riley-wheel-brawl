@@ -1,6 +1,6 @@
 # Riley Wheel Brawl — current status
 
-Branch `rwb-grok3`; draft PR targets `rwb-w2` at `08c74ae`. Runtime stamp: `?v=20260926-grok3b`.
+Branch `rwb-grok3`; draft PR targets `rwb-w2` at `08c74ae`. Runtime stamp: `?v=20260926-grok3c`.
 No changes or merges to `main`. GitHub Pages settings are unchanged. Nothing was merged.
 
 ## What this pass changes
@@ -101,17 +101,62 @@ Every boss attack is seen on every seed, including seeds that do not clear. Natu
 | 4 | 10/10 | 62.6–88.1 | 253.84 | 10/10 |
 | 5 | 10/10 | 68.1–98.5 | 298.96 | 10/10 |
 
+## grok3c review fixes
+
+Independent review of `cb2d0ed` confirmed the grok3b save, hoof, dust, and sub-pixel blit fixes. This stamp fixes three more before go-live.
+
+### Exposed edges on a hit
+
+Before: a live fight skipped the framebuffer clear. `camera.apply` then shifted the world by shake plus knockback (punch is 12–20px, and shake adds more). The strip that shift uncovers kept the previous frame. A 13px push left a stale band.
+
+After: every fight frame fills a 48px black border on all four sides before the world is drawn. Menus still clear the whole buffer. After a heavy hit at the max push (punch 20 + shake 13, and the opposite signs), the exposed rows and columns contain no leftover marker pixels (`stale: 0` on both corners, 7496 samples each).
+
+### Pause control
+
+Before: the control chrome was cached full-frame but only the bottom 160 rows were blitted. The pause button sits at y=34, so the `II` never appeared during a touch fight, and the desktop `ESC` badge beside it was clipped too.
+
+After: the cached layer is blitted whole. Mid-fight, drawing the controls raises the pause-button luminance from 177 to 457 on touch and the ESC-badge luminance from 166 to 405 on desktop. The HUD and the control cache also clear and reuse their buffer when the picture changes, instead of assigning `canvas.width` again.
+
+### Pose-atlas memory
+
+Before, on this machine at the title: **498.2 MB**, 577 live canvases. Boot pre-baked every rig at a fixed 384px pose height and a flash copy of each (the review's ~270 MB → ~520 MB, +484 canvases).
+
+After, at the title, before any stage is entered: **227.0 MB**, 78 live canvases. Poses bake at the live render scale, capped at 3× (the AUTO desktop budget). Flash copies are created on the first hit. Only the rigs for the current stage are baked, on stage enter, and the previous stage's atlases are released. Stage enter on this software canvas costs about 180–540 ms of baking (Stage 1 537 ms, Stage 4 boss 178 ms); the mid-fight clock starts after that.
+
+### Also
+
+- Parallax groups blit at `k * (round(camera) - camera)`. On a 0.8px camera step the floor shifts one pixel and the distant mid layer stays on its sub-pixel offset (best shift 0, not 1).
+- Crate debris passed a single colour string into `pick`. `chunks` now wraps a string as a one-colour list. Particles from `'#8a6039'` keep that colour.
+
+## Pacing (grok3c)
+
+Software canvas, same tool and cases as grok3b. LITE forced off. The sample starts after stage enter and two frames.
+
+| Stage | grok3b fps | grok3b p95 / p99 | grok3b >33 / >50 | grok3b update+draw | grok3c fps | grok3c p95 / p99 | grok3c >33 / >50 | grok3c update+draw |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 wave 3 | 59.9 | 16.8 / 16.8 | 1 / 0 | 0.39 ms | 60 | 16.8 / 16.8 | 0 / 0 | 0.33 ms |
+| 3 wave 3 | 60 | 16.7 / 16.8 | 0 / 0 | 0.37 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.34 ms |
+| 5 wave 3 | 60 | 16.8 / 16.8 | 0 / 0 | 0.27 ms | 60 | 16.8 / 16.8 | 0 / 0 | 0.29 ms |
+| 4 boss | 60 | 16.7 / 16.8 | 0 / 0 | 0.25 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.22 ms |
+
+SwiftShader was not re-run. It is still not 60 fps. See the grok3b table above.
+
+## Difficulty (unchanged)
+
+Natural soak re-run: **7/8/8/8/8**, attacks 10/10, same medians as grok3b (249.58, 251.87, 270.56, 214.44, 296.06). Assisted: **50/50**, exit 0, same medians (311.55, 329.84, 273.24, 253.84, 298.96). Damage scales were not changed.
+
 ## Checks
 
-- `node tools/check.cjs`: All checks passed. No previous check was weakened. New checks: a seeded Stage 2 save is byte-identical after a real page load, a fresh profile has no CONTINUE, baked walk frames keep the planted hoof within 8px (and under 70% of body travel) in world space, dust and debris pixels are soft rounds, and a fractional camera moves the cached background.
-- `node tools/smoothness-check.cjs`: **9 passes**, including the light hit-stop cooldown and the super hit-stop.
-- `tools/review.cjs`: **77 loaded, 0 missing, 0 errors**, stamp `20260926-grok3b`.
+- `node tools/check.cjs`: All checks passed. No previous check was weakened. New checks: exposed edges after max push have no stale pixels, the pause `II` is on screen mid-fight on touch, the desktop `ESC` badge is on screen, boot canvas memory is at or below 300 MB, each parallax layer keeps its own sub-pixel step, and crate debris accepts one colour string. Save, hooves, and soft dust still pass.
+- `node tools/smoothness-check.cjs`: **9 passes**.
+- `tools/review.cjs`: **77 loaded, 0 missing, 0 errors**, stamp `20260926-grok3c`.
 - `tools/smoothness-browser.cjs`: mesh missing fraction 0, context loss still paints, no page errors.
-- Natural soak re-run: **7/8/8/8/8**, all attacks 10/10. Assisted: **50/50**, exit 0. Damage scales were not changed.
+- Natural soak: **7/8/8/8/8**. Assisted: **50/50**, exit 0.
 
 ## Still weak / limits
 
 - SwiftShader at 1280×720 does not hold 60 fps. The CPU-side frame is cheap; the present is not. This does not certify a phone GPU. AUTO can still lower the buffer when `observe` is left enabled; the pace run forces that off.
 - Walk and kick poses are 12 and 6 baked frames. Inside one frame the hoof is fixed while the body keeps moving, so a step can drift by up to one twelfth of a cycle before the next frame. The live IK contact check is unchanged; the new check reads the baked pixels.
-- The background grade is baked into the opaque view, so fighters are not re-tinted with soft-light every frame.
+- The sky plate still gets the soft-light wash, and the vignette is still drawn. The scrolling plates are not re-graded on each camera step: doing that on every layer was a several-hundred-millisecond hitch. Fighters are not re-tinted every frame.
+- Entering a stage bakes that stage's pose atlas on the CPU. On this software canvas that is about 180–540 ms (Stage 1 is 537 ms) before the first fight frame. Mid-fight stays at 60 fps after that.
 - Ten natural seeds are a small deterministic sample. No gamepad, phone, or child playtest is claimed.

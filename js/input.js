@@ -465,18 +465,23 @@ RWB.input = (function () {
       const heldKey = touch.buttons.map(b => (held[b.id] ? '1' : '0') + b.label).join(',');
       const key = [bw, base, pad ? 1 : 0, opts.powerReady ? 1 : 0, opts.assistReady === false ? 0 : 1, opts.buttons === false ? 0 : 1, held.up ? 1 : 0, held.down ? 1 : 0, held.left ? 1 : 0, held.right ? 1 : 0, heldKey].join('|');
       const slot = drawControlChrome.layer || (drawControlChrome.layer = { key: '', canvas: document.createElement('canvas') });
-      if (slot.key !== key || slot.canvas.width !== bw || slot.canvas.height !== bh) {
+      const sizeChanged = slot.canvas.width !== bw || slot.canvas.height !== bh;
+      if (sizeChanged) {
         slot.canvas.width = bw;
         slot.canvas.height = bh;
+      }
+      if (slot.key !== key || sizeChanged) {
         const g = slot.canvas.getContext('2d');
+        g.setTransform(1, 0, 0, 1, 0, 0);
+        g.clearRect(0, 0, bw, bh);
         g.setTransform(rs, 0, 0, rs, 0, 0);
         paintControlChrome(g, opts);
         slot.key = key;
       }
       const smooth = ctx.imageSmoothingEnabled;
       ctx.imageSmoothingEnabled = false;
-      const y0 = RWB.H - 160;
-      ctx.drawImage(slot.canvas, 0, Math.floor(y0 * rs), bw, Math.ceil(160 * rs), 0, y0, RWB.W, 160);
+      // The pause control sits at y=34. Blit the whole layer, not the bottom cluster.
+      ctx.drawImage(slot.canvas, 0, 0, RWB.W, RWB.H);
       ctx.imageSmoothingEnabled = smooth;
       return;
     }

@@ -70,6 +70,26 @@
      retina). Sprites are redrawn in vectors into that buffer, so actors,
      the HUD, and the backdrops pick up the extra pixels. Classic mode keeps
      the old 640x360 nearest-neighbor picture. */
+  // camera.apply translates the world by shake and knockback. A live fight
+  // still covers the centre, but the shift uncovers a strip of the previous
+  // frame. Boss punch is 20px and shake reaches about 13, so a 48px border
+  // (every side, every frame) is enough; the rest of the buffer stays.
+  function clearPresentedFrame() {
+    const rs = RWB.display.renderScale || 1;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = '#000';
+    const w = canvas.width, h = canvas.height;
+    if (!(game.scene && game.scene.isGameplay && game.fade <= 0)) {
+      ctx.fillRect(0, 0, w, h);
+      return;
+    }
+    const pad = Math.min(w, h, Math.ceil(48 * rs));
+    ctx.fillRect(0, 0, w, pad);
+    ctx.fillRect(0, h - pad, w, pad);
+    ctx.fillRect(0, 0, pad, h);
+    ctx.fillRect(w - pad, 0, pad, h);
+  }
+  RWB.clearPresentedFrame = clearPresentedFrame;
   function applyTransform() {
     const rs = RWB.display.renderScale || 1;
     ctx.setTransform(rs, 0, 0, rs, 0, 0);
@@ -222,14 +242,7 @@
     else if (game.fadeDir === -1) { game.fade = Math.max(0, game.fade - dt * 6); if (game.fade <= 0) game.fadeDir = 0; }
     else if (game.nextScene && !game.scene) { game._swap(); }
 
-    const rs = RWB.display.renderScale || 1;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    // A live fight covers the buffer with an opaque backdrop. Skipping the
-    // full clear avoids an extra framebuffer fill on software GL.
-    if (!(game.scene && game.scene.isGameplay && game.fade <= 0)) {
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
+    clearPresentedFrame();
     applyTransform();
     if (loading) drawLoading();
     else if (game.scene) {
@@ -245,6 +258,7 @@
     if (game.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${game.fade})`; ctx.fillRect(0, 0, W, H); }
     if (RWB.audio.muted) RWB.text.draw(ctx, 'MUTE', W - 6, H - 10, { size: 6, align: 'right', color: '#aaa' });
     if (window.location.hash === '#fps') {
+      const rs = RWB.display.renderScale || 1;
       RWB.text.draw(ctx, `${fps} FPS  ${rs}x`, 4, H - 10, { size: 6, color: '#0f0' });
     }
     RWB.perf.observe(performance.now()-started,dt,!!(game.scene?.isGameplay&&!game.scene.paused&&!document.hidden));

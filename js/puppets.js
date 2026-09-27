@@ -97,7 +97,7 @@
         for(let xx=0;xx<texture.width;xx++){const px=xx*w/texture.width,j=(yy*texture.width+xx)*4,isKick=py>hip.y+h*.02&&px>=mid;if(isKick)bd.data[j+3]=0;else kd.data[j+3]=0;}}
       kick.getContext('2d').putImageData(kd,0,0);body.getContext('2d').putImageData(bd,0,0);split={kick,body};
     }
-    const rig={image,w,h,neck,hip,arms,legs,bones,root,vertices,triangles,texture,soles,cols,rows,split,height:d.height,sword:!!d.sword};for(const p of vertices)p.weights=skinWeights(p,rig);
+    const rig={image,w,h,neck,hip,arms,legs,bones,root,vertices,triangles,texture,soles,cols,rows,split,height:d.height,sword:!!d.sword,kind:Object.keys(defs).find(name=>defs[name]===d)||''};for(const p of vertices)p.weights=skinWeights(p,rig);
     rig.faces=triangles.map(([a,b,c])=>{const p=vertices[a],q=vertices[b],v=vertices[c],bx=q.x-p.x,by=q.y-p.y,cx=v.x-p.x,cy=v.y-p.y,det=bx*cy-cx*by;return {a,b,c,bx:bx/det,by:by/det,cx:cx/det,cy:cy/det};});
     rigs.set(cacheKey,rig);return rig;
   }
@@ -185,8 +185,17 @@
   // Live draws blit that composite. Skinning a mesh every frame was the whole
   // mid-fight cost (about 8ms per enemy on software canvas).
   const WALK_FRAMES=12,KICK_FRAMES=6;
+  // On-screen height at the largest scale this display mode will request.
+  // Capped at the AUTO desktop budget (1920/640 = 3) so a Sharp 4K window
+  // does not bake six-times pose surfaces for every enemy.
+  function poseScaleFor(r){
+    // On-screen height at the live render scale, never above the AUTO desktop
+    // budget (1920/640 = 3). A Sharp 4K window still bakes at 3x.
+    const live=Math.max(1,(R.display&&R.display.renderScale)||1);
+    return r.height*Math.min(3,live)/r.h;
+  }
   function bakePose(r,bones,pose){
-    const scale=384/r.h,transforms=boneTransforms(r,bones),layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
+    const scale=poseScaleFor(r),transforms=boneTransforms(r,bones),layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
     r.buffers=r.buffers||layers.map(()=>r.vertices.map(()=>({})));
     let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
     for(let n=0;n<layers.length;n++)for(let i=0;i<r.vertices.length;i++){const v=skinPoint(r.vertices[i],r,bones,pose,layers[n][1],transforms,r.buffers[n][i]);minX=Math.min(minX,v.X);minY=Math.min(minY,v.Y);maxX=Math.max(maxX,v.X);maxY=Math.max(maxY,v.Y);}
@@ -199,10 +208,10 @@
         ctx.save();ctx.beginPath();for(let k=0;k<3;k++){const p=k===0?a:k===1?b:c,dx=p.X-centerX,dy=p.Y-centerY,l=Math.hypot(dx,dy)||1;ctx[k?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);}ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(tex,0,0,r.w,r.h);ctx.restore();
       }
     }
-    return {surface,bounds};
+    return {surface,bounds,scale};
   }
   function blitPose(output,r,entry){
-    const scale=384/r.h,b=entry.bounds;
+    const scale=entry.scale,b=entry.bounds;
     output.drawImage(entry.surface,0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);
   }
   // Tint only the baked character's pixels. source-atop stays on this copy,
@@ -260,7 +269,7 @@
     if(!output||!entry)return entry;
     // A single tightly bounded composite prevents triangle-edge alpha seams.
     blitPose(output,r,entry);
-    if(actor&&actor.hitFlash>0){const alpha=output.globalAlpha,b=entry.bounds,scale=384/r.h;output.globalAlpha=alpha*Math.min(.72,actor.hitFlash*6);output.drawImage(flashOf(entry),0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);output.globalAlpha=alpha;}
+    if(actor&&actor.hitFlash>0){const alpha=output.globalAlpha,b=entry.bounds,scale=entry.scale;output.globalAlpha=alpha*Math.min(.72,actor.hitFlash*6);output.drawImage(flashOf(entry),0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);output.globalAlpha=alpha;}
     return entry;
   }
   function drawSword(ctx,a,d,r,bones,pose){
@@ -298,15 +307,47 @@
     } else { old.feet=[]; }
     old.x=a.x;old.y=a.y;
   }
+  const POSE_KEYS=['idle','hurt','cast','attack','air','channel'];
+  for(let i=0;i<WALK_FRAMES;i++)POSE_KEYS.push('w'+i);
+  for(let i=0;i<KICK_FRAMES;i++)POSE_KEYS.push('k'+i);
+  // axe/hound/spear share the trolloc rig. Draghkar and Be'lal are bitmaps.
+  const STAGE_RIGS=[
+    ['trolloc','chieftain','loial'],
+    ['trolloc','darkfriend','fade','loial'],
+    ['trolloc','cultist','darkfriend','loial'],
+    ['trolloc','guard','darkfriend','ashaman','loial'],
+    ['ashaman','darkfriend','guard','taim','twinkle','loial']
+  ];
+  function dropRig(kind){
+    for(const [key,rig] of [...rigs]){
+      if(rig.kind!==kind)continue;
+      if(rig.library){rig.library.clear();rig.library=null;}
+      if(meshGPU&&meshGPU.rigs){const data=meshGPU.rigs.get(rig);if(data){meshGPU.gl.deleteTexture(data.texture);meshGPU.gl.deleteBuffer(data.vertex);meshGPU.gl.deleteBuffer(data.indices);meshGPU.rigs.delete(rig);}}
+      rigs.delete(key);
+    }
+  }
   R.Puppet={defs,updateGait,knee,prepare(kind){
     const d=defs[kind],r=d&&getRig(d);if(!r)return null;
+    if(r.library&&POSE_KEYS.every(key=>r.library.has(key)))return r;
     const prev=R.perf.poseWarm;R.perf.poseWarm=true;
-    const keys=['idle','hurt','cast','attack','air','channel'];
-    for(let i=0;i<WALK_FRAMES;i++)keys.push('w'+i);
-    for(let i=0;i<KICK_FRAMES;i++)keys.push('k'+i);
-    for(const key of keys){const a=actorFor(d,key),pose=this.pose(a,d.height);paintedBody(null,r,targets(a,d,r,pose),pose,a,key);}
-    if(r.library)for(const entry of r.library.values())flashOf(entry);
+    for(const key of POSE_KEYS){const a=actorFor(d,key),pose=this.pose(a,d.height);paintedBody(null,r,targets(a,d,r,pose),pose,a,key);}
     R.perf.poseWarm=prev;return r;
+  },prepareStage(level){
+    const bakeAt=performance.now();
+    const kinds=STAGE_RIGS[level]||STAGE_RIGS[0],keep=new Set(kinds);
+    for(const kind of Object.keys(defs))if(!keep.has(kind))dropRig(kind);
+    const baked=[];
+    for(const kind of kinds){const rig=this.prepare(kind);if(rig)baked.push(rig);}
+    // The first drawImage of a new pose surface uploads it. Do that here, on
+    // stage enter, so the opening fight frame is not the one that pays for it.
+    const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
+    if(!ctx)return;
+    ctx.save();
+    ctx.setTransform(1,0,0,1,0,0);
+    for(const rig of baked)for(const entry of (rig.library?rig.library.values():[]))if(entry.surface)ctx.drawImage(entry.surface,0,0,1,1,0,0,1,1);
+    try{ctx.getImageData(0,0,1,1);}catch(e){}
+    ctx.restore();
+    R.perf.lastPoseMs=performance.now()-bakeAt;
   },contacts(a,kind){
     const d=defs[kind],r=d&&getRig(d);if(!r)return [];
     const pose=this.pose(a,d.height),bones=targets(a,d,r,pose),scale=d.height/r.h,flip=(a.facing||1)*(d.front?1:-1);

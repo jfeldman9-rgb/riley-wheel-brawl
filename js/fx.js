@@ -25,8 +25,9 @@ RWB.FX = class FX {
     }
   }
   chunks(x, y, colors, count, floor) {
+    const list = Array.isArray(colors) ? colors : (colors ? [colors] : ['#ccc']);
     for (let i = 0, n = this.n(count || 10); i < n; i++) {
-      if (!this.spawn('chunk', x, y, RWB.util.rand(0.8, 1.3), { vx: RWB.util.rand(-200, 200), vy: RWB.util.rand(-300, -80), color: RWB.util.pick(colors || ['#ccc']), r: RWB.util.rand(2, 4.5), floor: floor || y + 30, rot: RWB.util.rand(0, 6.28), vr: RWB.util.rand(-12, 12) })) return;
+      if (!this.spawn('chunk', x, y, RWB.util.rand(0.8, 1.3), { vx: RWB.util.rand(-200, 200), vy: RWB.util.rand(-300, -80), color: RWB.util.pick(list), r: RWB.util.rand(2, 4.5), floor: floor || y + 30, rot: RWB.util.rand(0, 6.28), vr: RWB.util.rand(-12, 12) })) return;
     }
   }
   dust(x, y, r) { for (let i = 0, n = RWB.perf.lite ? 2 : 4; i < n; i++) { const f = this.spawn('dust', x + RWB.util.rand(-8, 8), y + RWB.util.rand(-3, 3), 0.5, { r: (r || 6) * RWB.util.rand(0.6, 1) }); if (!f) return; f.t = -i * 0.03; } }

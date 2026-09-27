@@ -76,10 +76,15 @@
       player.taintAge > R.TUNE.taintGrace ? 1 : 0
     ].join('|');
     if (!hudLayer.canvas) hudLayer.canvas = document.createElement('canvas');
-    if (hudLayer.key !== key || hudLayer.canvas.width !== bw || hudLayer.canvas.height !== bh) {
+    const sizeChanged = hudLayer.canvas.width !== bw || hudLayer.canvas.height !== bh;
+    if (sizeChanged) {
       hudLayer.canvas.width = bw;
       hudLayer.canvas.height = bh;
+    }
+    if (hudLayer.key !== key || sizeChanged) {
       const g = hudLayer.canvas.getContext('2d');
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.clearRect(0, 0, bw, bh);
       g.setTransform(rs, 0, 0, rs, 0, 0);
       paintHud(g, scene);
       hudLayer.key = key;

@@ -256,6 +256,18 @@
       this.spawnWave(this.wave);
     }
     enter() {
+      if (R.Puppet && R.Puppet.prepareStage) R.Puppet.prepareStage(this.levelIndex);
+      const canvas = document.getElementById('game'), ctx = canvas && canvas.getContext('2d');
+      if (ctx) {
+        try {
+          const rs = (R.display && R.display.renderScale) || 1;
+          ctx.save();
+          ctx.setTransform(rs, 0, 0, rs, 0, 0);
+          this.draw(ctx);
+          ctx.getImageData(0, 0, 1, 1);
+          ctx.restore();
+        } catch (e) { /* warmup is best-effort */ }
+      }
       R.audio.playMusic(this.music);
       this.saveCheckpoint();
     }

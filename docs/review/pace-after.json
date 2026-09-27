@@ -1,5 +1,5 @@
 {
-  "method": "Headless Chromium software Canvas, real requestAnimationFrame, 10s per case, 1280x720 viewport, AUTO adaptation disabled and LITE forced off",
+  "method": "Headless Chromium software Canvas, real requestAnimationFrame, 10s per case, 1280x720 viewport, AUTO adaptation disabled and LITE forced off. The clock starts after stage enter and two frames, so pose-atlas upload is not inside the mid-fight sample.",
   "errors": [],
   "rows": [
     {
@@ -9,14 +9,16 @@
         1280,
         720
       ],
-      "frames": 600,
-      "avgFps": 59.9,
+      "frames": 601,
+      "avgFps": 60,
       "p95Ms": 16.8,
       "p99Ms": 16.8,
-      "over33": 1,
+      "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.39,
-      "runtimeLite": false
+      "meanUpdateDrawMs": 0.33,
+      "runtimeLite": false,
+      "enterMs": 607.3,
+      "poseMs": 537.3
     },
     {
       "name": "Stage 3 wave 3",
@@ -31,8 +33,10 @@
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.37,
-      "runtimeLite": false
+      "meanUpdateDrawMs": 0.34,
+      "runtimeLite": false,
+      "enterMs": 362.2,
+      "poseMs": 317.9
     },
     {
       "name": "Stage 5 wave 3",
@@ -47,8 +51,10 @@
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.27,
-      "runtimeLite": false
+      "meanUpdateDrawMs": 0.29,
+      "runtimeLite": false,
+      "enterMs": 531.4,
+      "poseMs": 495.4
     },
     {
       "name": "Stage 4 boss",
@@ -63,8 +69,10 @@
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.25,
-      "runtimeLite": false
+      "meanUpdateDrawMs": 0.22,
+      "runtimeLite": false,
+      "enterMs": 221,
+      "poseMs": 177.8
     }
   ]
 }

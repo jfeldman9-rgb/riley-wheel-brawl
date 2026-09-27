@@ -48,7 +48,7 @@
   let preparation=null;
   R.prepareRendering=function(){
     if(preparation)return preparation;
-    const jobs=[];if(R.Puppet)for(const kind of Object.keys(R.Puppet.defs))if(kind!=='forsaken'||!R.assets.has('belal-idle'))jobs.push(()=>R.Puppet.prepare(kind));
+    const jobs=[];
     if(R.StageWorld)for(let n=0;n<5;n++)jobs.push(()=>R.StageWorld.prepare(n));
     if(R.Riley.prepare)jobs.push(()=>R.Riley.prepare());
     preparation=new Promise(resolve=>{const next=()=>{const until=performance.now()+4;do{const job=jobs.shift();if(job)job();}while(jobs.length&&performance.now()<until);if(jobs.length)setTimeout(next,0);else warmDisplay().then(resolve);};next();});return preparation;
@@ -56,11 +56,11 @@
   function warmDisplay(){
     // First draws of stage art onto the onscreen canvas upload textures.
     // On SwiftShader that present can stall for hundreds of milliseconds, so
-    // do it before gameplay samples frames.
-    // A fight constructor autosaves. Never enter those scenes, and put the
-    // Continue slot back so a page load cannot replace the player's run.
+    // do it before gameplay samples frames. Pose atlases wait for stage enter
+    // so the title screen does not hold every enemy. Snapshot the Continue
+    // slot anyway: a fight constructor autosaves, and this must not replace it.
     const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
-    if(!ctx||!R.scenes||!R.scenes.Play||!R.game)return Promise.resolve();
+    if(!ctx||!R.StageWorld||!R.game)return Promise.resolve();
     const rs=R.display.renderScale||1,runKey='rwb-run';
     let saved=null,had=false;
     try{saved=localStorage.getItem(runKey);had=saved!==null;}catch(e){}
@@ -68,8 +68,9 @@
     try{
       ctx.setTransform(rs,0,0,rs,0,0);
       for(const [level,wave] of [[0,3],[2,3],[4,3],[3,5]]){
-        const fight=new R.scenes.Play(R.game,level,{wave,lives:99,callandor:level===4});
-        fight.draw(ctx);
+        const view={levelIndex:level,camera:{x:0},time:0,wave};
+        R.StageWorld.draw(ctx,view);
+        R.StageWorld.near(ctx,view);
       }
       ctx.getImageData(0,0,1,1);
     }catch(e){}
