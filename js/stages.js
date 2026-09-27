@@ -127,28 +127,42 @@
     const layout={M,plateW:a.w,k:K_MID,pieces,planned,pools:3,mode:'plates',slack};
     layoutCache.set(id,layout);return layout;
   }
+  // Dropping a cache entry has to release the bitmap too. A later stage
+  // change still saw the old plate's pixels until the element itself was collected.
+  function releaseCanvas(c){
+    if(c&&c.width>1){c.width=1;c.height=1;}
+  }
+  function dropKey(map,id){
+    releaseCanvas(map.get(id));
+    map.delete(id);
+  }
   function evictStage(n){
     const keep='stage'+n+'-',floorKeep='floor'+n;
+    for(const id of [...overlays.keys()]){
+      const s=String(id);
+      if(s==='vignette'||s==='light:'+n)continue;
+      if(s.startsWith('light:')||s.startsWith('haze:'))dropKey(overlays,id);
+    }
     for(const id of [...sized.keys()]){
       const s=String(id);
       if(s.startsWith('pin:'))continue;
-      if(s.startsWith('stage')&&!s.startsWith(keep))sized.delete(id);
-      else if(s.startsWith('floor')&&!s.startsWith(floorKeep)&&!s.startsWith('floor-roof'))sized.delete(id);
+      if(s.startsWith('stage')&&!s.startsWith(keep))dropKey(sized,id);
+      else if(s.startsWith('floor')&&!s.startsWith(floorKeep)&&!s.startsWith('floor-roof'))dropKey(sized,id);
     }
     for(const id of [...sliceCache.keys()]){
       const s=String(id);
       if(s.startsWith('pin:'))continue;
-      if(!s.startsWith(keep))sliceCache.delete(id);
+      if(!s.startsWith(keep))dropKey(sliceCache,id);
     }
     for(const id of [...seamless.keys()]){
       const s=String(id);
-      if(s.startsWith('floor')&&!s.startsWith(floorKeep)&&!s.startsWith('floor-roof'))seamless.delete(id);
+      if(s.startsWith('floor')&&!s.startsWith(floorKeep)&&!s.startsWith('floor-roof'))dropKey(seamless,id);
     }
   }
   function evictStreet(){
     const drop=s=>!s.includes('roof')&&(s.includes('stage5-mid')||s.includes('stage5-far')||s.includes('stage5-near')||s.includes('floor5'));
     for(const map of [sized,sliceCache,seamless]){
-      for(const id of [...map.keys()])if(drop(String(id)))map.delete(id);
+      for(const id of [...map.keys()])if(drop(String(id)))dropKey(map,id);
     }
   }
   function roofing(scene){return !!(scene&&scene.levelIndex===4&&(scene.wave===5||scene.roofOn));}
@@ -595,7 +609,11 @@
       const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);
       const scene={levelIndex:level,camera:{x:0},time:0,wave:0,level:{length:(R.SCROLL&&R.SCROLL.length)||4240}};
       try{this.draw(g,scene);this.near(g,scene);this.grade(g,scene);if(level===4){scene.wave=5;scene.roofOn=true;this.draw(g,scene);this.near(g,scene);}}
-      finally{sized.clear();sliceCache.clear();evictStage(9);}
+      finally{
+        for(const c of sized.values())releaseCanvas(c);
+        for(const c of sliceCache.values())releaseCanvas(c);
+        sized.clear();sliceCache.clear();evictStage(9);
+      }
     },
     draw(ctx, scene) {
       const n = scene.levelIndex + 1;
