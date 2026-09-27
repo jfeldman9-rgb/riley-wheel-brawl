@@ -248,17 +248,29 @@
     else if (game.scene) {
       const scene=game.scene;
       if(clockScene!==scene){clock.reset();clockScene=scene;}
+      const updateAt=performance.now();
       if(game.fadeDir!==1){
         if(scene.isGameplay)clock.advance(dt,RWB.input,(step,input)=>{RWB.Motion.capture(scene);scene.update(step,input);});
         else {clock.reset();scene.update(dt,RWB.input);}
       }
+      const updateMs=performance.now()-updateAt;
       RWB.Motion.alpha=scene.isGameplay?clock.alpha:1;
-      // Finish leftover kick/hit poses while the screen is fading or idle.
-      // A live fight draws at most one new pose a frame, from the attack itself.
-      // Menus and the fade skin queued poses a few at a time. A live fight
-      // bakes at most one missing pose inside the draw that needs it.
-      if(RWB.Puppet&&RWB.Puppet.drainPoses&&(game.fadeDir!==0||!scene.isGameplay))RWB.Puppet.drainPoses(game.fadeDir?4:2);
+      const gameplay=!!(scene.isGameplay&&game.fadeDir===0);
+      const budget=gameplay?Math.min(4,Math.max(1,14-(RWB.perf.lastUpdateDraw||8))):8;
+      RWB.perf.frameJobs=[];
+      const pumpAt=performance.now();
+      if(RWB.Bake)RWB.Bake.pump(budget);
+      else if(RWB.Puppet&&RWB.Puppet.drainPoses)RWB.Puppet.drainPoses(budget);
+      const pumpMs=performance.now()-pumpAt;
+      const drawAt=performance.now();
       scene.draw(ctx);
+      const drawMs=performance.now()-drawAt;
+      RWB.perf.lastUpdateDraw=updateMs+drawMs;
+      const jobs=(RWB.perf.frameJobs||[]).slice();
+      const row={t:now,scene:(scene.constructor&&scene.constructor.name)||'',wave:scene.wave||0,cam:scene.camera?+scene.camera.x.toFixed(1):0,updateMs:+updateMs.toFixed(2),drawMs:+drawMs.toFixed(2),pumpMs:+pumpMs.toFixed(2),jobs};
+      const ring=RWB.perf.work||(RWB.perf.work=[]);
+      ring.push(row);if(ring.length>360)ring.shift();
+      if(updateMs+drawMs+pumpMs>20){const hitches=RWB.perf.hitches||(RWB.perf.hitches=[]);hitches.push(row);if(hitches.length>500)hitches.shift();}
     }
     if (game.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${game.fade})`; ctx.fillRect(0, 0, W, H); }
     if (RWB.audio.muted) RWB.text.draw(ctx, 'MUTE', W - 6, H - 10, { size: 6, align: 'right', color: '#aaa' });

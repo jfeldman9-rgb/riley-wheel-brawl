@@ -32,19 +32,22 @@
     const img = R.assets.get(key);
     if (!img) return null;
     const id=key+':'+!!topFeather;if(seamless.has(id))return seamless.get(id);
+    const tBake=performance.now();
     // floorN-loop plates are pre-quilted offline, so they wrap with no dissolve.
     const start=0,end=img.width,sourceWidth=end-start;
     const overlap=0 /* floors are pre-quilted; nothing is dissolved or mirrored */,step=sourceWidth-overlap;
     const c=document.createElement('canvas');c.width=step;c.height=img.height;
     const g=c.getContext('2d');g.drawImage(img,start,0,step,img.height,0,0,step,img.height);
     if(topFeather){g.globalCompositeOperation='destination-in';const feather=/^floor/.test(key)?Math.round(img.height*24/138):Math.min(24,img.height),v=g.createLinearGradient(0,0,0,feather);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,1)');g.fillStyle=v;g.fillRect(0,0,c.width,img.height);}
-    c.loopKind='painted';seamless.set(id,c);return c;
+    c.loopKind='painted';seamless.set(id,c);if(R.perf&&R.perf.noteBake)R.perf.noteBake('seamlessPlate:'+key,performance.now()-tBake);return c;
   }
   function sizedPlate(key,image,w,h){
     if(!image)return null;const id=key+':'+Math.round(w)+':'+Math.round(h);if(sized.has(id))return sized.get(id);
-    const c=document.createElement('canvas');c.width=Math.ceil(w*2);c.height=Math.ceil(h*2);const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(image,0,0,c.width,c.height);sized.set(id,c);return c;
+    const tBake=performance.now();
+    const c=document.createElement('canvas');c.width=Math.ceil(w*2);c.height=Math.ceil(h*2);const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(image,0,0,c.width,c.height);sized.set(id,c);
+    if(R.perf&&R.perf.noteBake)R.perf.noteBake('sizedPlate:'+key,performance.now()-tBake);return c;
   }
-  function overlay(key,paint){if(overlays.has(key))return overlays.get(key);const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);paint(g);overlays.set(key,c);return c;}
+  function overlay(key,paint){if(overlays.has(key))return overlays.get(key);const tBake=performance.now();const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);paint(g);overlays.set(key,c);if(R.perf&&R.perf.noteBake)R.perf.noteBake('overlay:'+key,performance.now()-tBake);return c;}
   function levelSpan(scene){return (scene&&scene.level&&scene.level.length)||(R.SCROLL&&R.SCROLL.length)||4240;}
   function travelOf(scene){return Math.max(1,levelSpan(scene)-640);}
   function rsNow(){return (R.display&&R.display.renderScale)||1;}
@@ -97,27 +100,49 @@
   }
   function midLayout(n,travel){
     const id='plates:'+n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
-    const M=640+K_MID*travel,ppu=PPU[n],items=MID_POOL[n].map(p=>({id:p.id,key:p.key,w:p.px/ppu}));
-    const a=items[0],b=items[1],c=items[2],lastX=M-c.w,slack=a.w+b.w+c.w-M;
+    const M=640+K_MID*travel,ppu=PPU[n],items=MID_POOL[n].map(p=>({id:p.id,key:p.key,w:p.px/ppu,px:p.px}));
+    const a=items[0],b=items[1],c=items[2];
+    // Stage 4's hall repeats about every 446 source pixels. Two of plate b's
+    // own bays are cloned on so the b→c join can sit in plate c's dark niche
+    // (source 810–910) instead of on a pillar. Stage 5's palisade gains one
+    // quiet span of itself so both joins can overlap by at least 32 units.
+    if(n===4){
+      b.w+=2*(446/ppu);
+      // Plate b's bay is 446 source px. The quiet niche at 562–631 repeats
+      // three bays later at 1900–1964. Tiles of that bay overlap on the niche
+      // and a min-error cut joins them there, not on a pillar.
+      b.repeat={period:446,copies:2,from:562,seam:1900,ov:64};
+      const crop=810/ppu;
+      c.w-=crop;c.sx0=810;c.sx1=2400;
+    }else if(n===5){
+      const srcW=2300;
+      b.w+=200*(b.w/srcW);
+      // One quiet span of the palisade, seamed inside that span (2100 and 900).
+      b.repeat={period:200,copies:1,from:900,seam:2100,ov:40};
+    }
+    const lastX=M-c.w,slack=a.w+b.w+c.w-M;
     let ovL,ovR;
     // Stage 4's right join lands on a pillar, not through two of them. Plate c's
     // first pier is 113 source pixels in; plate b's matching pier is 2084
     // pixels in. ovL ≈ 29 puts those edges on the same world x so the crossfade
     // does not leave a second, half-transparent pillar beside the first.
-    if(n===4){ovL=29;ovR=slack-ovL;}
+    if(n===4){ovL=Math.max(32,slack-36);ovR=slack-ovL;}
+    else if(n===5){ovL=32;ovR=Math.max(32,slack-32);}
     else if(slack>=80){ovL=40;ovR=slack-40;}
     else ovL=ovR=slack/2;
     const xB=a.w-ovL,rampOf=ov=>n===1?(ov>=48?48:ov>=40?40:32):Math.max(32,Math.min(48,Math.round(ov)));
     const rampL=rampOf(ovL),rampR=rampOf(ovR);
-    // The fade never runs past the real overlap. A stored ramp of 32 still
-    // satisfies the join check when the plates only overlap by a hair less.
+    // Stage 4 and 5 joins are a recorded min-error seam across the real
+    // overlap, not an alpha ramp. The seam is the whole overlap.
     let fadeL=Math.min(rampL,ovL),fadeR=Math.min(rampR,ovR);
-    if(n===4)fadeR=Math.min(32,ovR);
-    const pieces=[
-      {id:a.id,key:a.key,x:0,w:a.w,ramp:0,rampOut:n===1?0:fadeL,fade:0,pool:0},
-      {id:b.id,key:b.key,x:xB,w:b.w,ramp:rampL,rampOut:n===1?0:fadeR,fade:n===1?rampL:fadeL,pool:1,under:n===1?null:{key:a.key,w:a.w,ramp:0,rampOut:n===1?0:fadeL,ov:ovL}},
-      {id:c.id,key:c.key,x:lastX,w:c.w,ramp:n===4?32:rampR,rampOut:0,fade:n===1?rampR:fadeR,pool:2,under:n===1?null:{key:b.key,w:b.w,ramp:rampL,rampOut:n===1?0:fadeR,ov:ovR}}
-    ];
+    const seamed=n===4||n===5;
+    if(seamed){fadeL=ovL;fadeR=ovR;}
+    const pieceA={id:a.id,key:a.key,x:0,w:a.w,ramp:0,rampOut:seamed||n===1?0:fadeL,fade:0,pool:0,sx0:a.sx0||0,repeat:a.repeat||null};
+    const pieceB={id:b.id,key:b.key,x:xB,w:b.w,sx0:b.sx0||0,sx1:b.sx1,repeat:b.repeat||null,ramp:seamed?0:rampL,rampOut:seamed||n===1?0:fadeR,fade:n===1?rampL:fadeL,pool:1,seam:seamed?{overlap:+ovL.toFixed(2),cut:'min-error'}:null};
+    const pieceC={id:c.id,key:c.key,x:lastX,w:c.w,sx0:c.sx0||0,sx1:c.sx1,ramp:seamed?0:rampR,rampOut:0,fade:n===1?rampR:fadeR,pool:2,seam:seamed?{overlap:+ovR.toFixed(2),cut:'min-error'}:null};
+    const specOf=(piece,ov)=>({key:piece.key,w:piece.w,ramp:piece.ramp||0,rampOut:piece.rampOut||0,ov,sx0:piece.sx0||0,repeat:piece.repeat||null,seam:piece.seam?1:0});
+    if(n!==1){pieceB.under=specOf(pieceA,ovL);pieceC.under=specOf(pieceB,ovR);}
+    const pieces=[pieceA,pieceB,pieceC];
     const planned=[];
     const sorted=pieces.slice().sort((p,q)=>p.x-q.x);
     let cursor=0;
@@ -176,10 +201,12 @@
     const img=R.assets.get(key);if(!img)return null;
     const rs=rsNow(),id=key+'@'+rs+':'+Math.round(logicalW)+'x'+Math.round(logicalH);
     if(sized.has(id))return sized.get(id);
+    const tBake=performance.now();
     const c=document.createElement('canvas');
     c.width=Math.max(1,Math.ceil(logicalW*rs));c.height=Math.max(1,Math.ceil(logicalH*rs));
     const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
-    g.drawImage(img,0,0,c.width,c.height);sized.set(id,c);return c;
+    g.drawImage(img,0,0,c.width,c.height);sized.set(id,c);
+    if(R.perf&&R.perf.noteBake)R.perf.noteBake('displayPlate:'+key,performance.now()-tBake);return c;
   }
   function bakedSlice(spec,slice,drawH){
     const rs=rsNow(),id=spec.key+':'+slice.x0+':'+slice.x1+'@'+rs;
@@ -210,6 +237,7 @@
     const id=key+':near@'+rs;
     if(sliceCache.has(id))return sliceCache.get(id);
     const plate=displayPlate(key,plateW,drawH);if(!plate)return null;
+    const tBake=performance.now();
     const c=document.createElement('canvas');c.width=plate.width;c.height=plate.height;
     const g=c.getContext('2d');g.drawImage(plate,0,0);
     const feather=16*rs;
@@ -223,7 +251,7 @@
       g.fillStyle=fade;g.fillRect(0,0,c.width,c.height);
       g.globalCompositeOperation='source-over';
     }
-    c.logicalW=plateW;c.logicalH=drawH;sliceCache.set(id,c);return c;
+    c.logicalW=plateW;c.logicalH=drawH;sliceCache.set(id,c);if(R.perf&&R.perf.noteBake)R.perf.noteBake('bakedNear:'+key,performance.now()-tBake);return c;
   }
   function clampByte(v){return v<0?0:v>255?255:v|0;}
   // The right half of stage4-mid-c is a cool white hall. A light warm shift
@@ -369,7 +397,8 @@
   }
   function plateId(piece,drawH){
     const rs=rsNow(),pin=piece.key==='stage5-mid-b'?'pin:':'';
-    return pin+piece.key+':plate:'+(piece.ramp||0)+':'+(piece.rampOut||0)+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
+    const rep=piece.repeat?piece.repeat.copies+':'+piece.repeat.period+':'+piece.repeat.from+':'+(piece.repeat.seam||0)+':'+(piece.repeat.ov||0):0;
+    return pin+piece.key+':plate:'+(piece.ramp||0)+':'+(piece.rampOut||0)+':'+(piece.sx0||0)+':'+rep+':'+(piece.seam?1:0)+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
   }
   function pieceDrawH(piece){
     const img=R.assets.get(piece.key);if(!img)return 1;
@@ -399,21 +428,137 @@
     g.fillStyle=fade;g.fillRect(0,0,width,height);
     g.globalCompositeOperation='source-over';
   }
+  // Min-error cut across [x0, x1). Pixels left of the path stay on `base`.
+  // Pixels on and right of the path are copied from `over`. One plate per pixel.
+  function seamBand(base,over,x0,x1){
+    const width=base.canvas.width,height=base.canvas.height;
+    x0=Math.max(0,x0|0);x1=Math.min(width,x1|0);
+    const w=x1-x0;if(w<2||height<2)return;
+    const bd=base.getImageData(x0,0,w,height),od=over.getImageData(x0,0,w,height);
+    const B=bd.data,O=od.data,arg=new Array(height);
+    let prev=new Float64Array(w);
+    for(let y=0;y<height;y++){
+      const next=new Float64Array(w),from=new Int16Array(w);
+      for(let x=0;x<w;x++){
+        const i=(y*w+x)*4;
+        const cost=Math.abs(B[i]-O[i])+Math.abs(B[i+1]-O[i+1])+Math.abs(B[i+2]-O[i+2])+Math.abs(B[i+3]-O[i+3]);
+        let best=x,bestV=prev[x];
+        if(x>0&&prev[x-1]<bestV){bestV=prev[x-1];best=x-1;}
+        if(x+1<w&&prev[x+1]<bestV){bestV=prev[x+1];best=x+1;}
+        next[x]=(y?bestV:0)+cost;from[x]=best;
+      }
+      arg[y]=from;prev=next;
+    }
+    let x=0;for(let i=1;i<w;i++)if(prev[i]<prev[x])x=i;
+    for(let y=height-1;y>=0;y--){
+      const cut=x;
+      for(let xx=cut;xx<w;xx++){const i=(y*w+xx)*4;B[i]=O[i];B[i+1]=O[i+1];B[i+2]=O[i+2];B[i+3]=O[i+3];}
+      x=arg[y][x];
+    }
+    base.putImageData(bd,x0,0);
+  }
+  // Extend a plate with copies of one of its own bays. Each copy overlaps the
+  // previous bay on a niche and the overlap is a min-error seam, not a butt join.
+  function paintRepeat(g,img,piece,c){
+    const rep=piece.repeat,period=rep.period,from=rep.from,ov=rep.ov||48;
+    const seam=rep.seam==null?img.width:rep.seam;
+    const total=img.width+period*rep.copies;
+    const sc=c.width/total;
+    g.drawImage(img,0,0,img.width,img.height,0,0,img.width*sc,c.height);
+    const tileSrc=Math.min(img.width-from,period+ov);
+    const tiles=Math.ceil(Math.max(0,total-seam)/period);
+    for(let k=0;k<tiles;k++){
+      const place=seam+k*period;
+      const destX=place*sc,destW=tileSrc*sc;
+      const tileEnd=Math.min(c.width,Math.ceil(destX+destW));
+      const bandL=Math.max(0,Math.floor(destX));
+      const bandR=Math.min(c.width,Math.ceil(destX+Math.min(ov,tileSrc)*sc));
+      const temp=document.createElement('canvas');temp.width=c.width;temp.height=c.height;
+      const tg=temp.getContext('2d',{willReadFrequently:true});
+      tg.imageSmoothingEnabled=true;tg.imageSmoothingQuality='high';
+      tg.drawImage(img,from,0,tileSrc,img.height,destX,0,destW,c.height);
+      if(bandR<tileEnd)g.drawImage(temp,bandR,0,tileEnd-bandR,c.height,bandR,0,tileEnd-bandR,c.height);
+      seamBand(g,tg,bandL,bandR);
+    }
+  }
+  function paintPiece(g,img,piece,c){
+    const rep=piece.repeat;
+    if(rep&&rep.copies>0&&rep.seam!=null){paintRepeat(g,img,piece,c);return;}
+    if(rep&&rep.copies>0){
+      const total=img.width+rep.period*rep.copies;
+      const base=img.width/total*c.width;
+      g.drawImage(img,0,0,img.width,img.height,0,0,base,c.height);
+      const dw=rep.period/total*c.width;
+      for(let i=0;i<rep.copies;i++)g.drawImage(img,rep.from,0,rep.period,img.height,base+i*dw,0,dw,c.height);
+      return;
+    }
+    const sx0=piece.sx0||0,sx1=piece.sx1||img.width;
+    g.drawImage(img,sx0,0,Math.max(1,sx1-sx0),img.height,0,0,c.width,c.height);
+  }
+  // Each overlap pixel comes from exactly one plate. The cut is the minimum
+  // |ΔRGB|+|Δalpha| path, free to step one column per row.
+  function applySeam(top,under,overlapU,underPiece,topW){
+    const g=top.getContext('2d'),tw=top.width,th=top.height;
+    const td=g.getImageData(0,0,tw,th),ud=under.getContext('2d').getImageData(0,0,under.width,under.height);
+    const uw=under.width,uh=under.height;
+    const fadePx=Math.max(2,Math.min(tw-1,Math.round(overlapU/Math.max(1,topW)*tw)));
+    const worldW=underPiece.w||overlapU;
+    const ovPx=Math.max(2,Math.min(uw-1,Math.round(overlapU/worldW*uw)));
+    const W=fadePx;
+    let prev=new Float64Array(W);
+    const arg=new Array(th);
+    for(let y=0;y<th;y++){
+      const uy=Math.min(uh-1,Math.round(y*(uh-1)/Math.max(1,th-1)));
+      const next=new Float64Array(W),from=new Int16Array(W);
+      for(let x=0;x<W;x++){
+        const ti=(y*tw+x)*4;
+        const ux=Math.min(uw-1,Math.max(0,(uw-ovPx)+Math.round(x*(ovPx-1)/Math.max(1,W-1))));
+        const ui=(uy*uw+ux)*4;
+        const cost=Math.abs(td.data[ti]-ud.data[ui])+Math.abs(td.data[ti+1]-ud.data[ui+1])+Math.abs(td.data[ti+2]-ud.data[ui+2])+Math.abs(td.data[ti+3]-ud.data[ui+3]);
+        let best=x,bestV=prev[x];
+        if(x>0&&prev[x-1]<bestV){bestV=prev[x-1];best=x-1;}
+        if(x+1<W&&prev[x+1]<bestV){bestV=prev[x+1];best=x+1;}
+        next[x]=(y?bestV:0)+cost;from[x]=best;
+      }
+      arg[y]=from;prev=next;
+    }
+    let x=0;for(let i=1;i<W;i++)if(prev[i]<prev[x])x=i;
+    const path=new Int16Array(th);
+    for(let y=th-1;y>=0;y--){path[y]=x;x=arg[y][x];}
+    const out=td.data;
+    for(let y=0;y<th;y++){
+      const uy=Math.min(uh-1,Math.round(y*(uh-1)/Math.max(1,th-1)));
+      const cut=path[y];
+      for(let x=0;x<cut;x++){
+        const ux=Math.min(uw-1,Math.max(0,(uw-ovPx)+Math.round(x*(ovPx-1)/Math.max(1,W-1))));
+        const ui=(uy*uw+ux)*4,ti=(y*tw+x)*4;
+        out[ti]=ud.data[ui];out[ti+1]=ud.data[ui+1];out[ti+2]=ud.data[ui+2];out[ti+3]=ud.data[ui+3];
+      }
+    }
+    g.putImageData(td,0,0);
+    top.seamPath=path;
+  }
   function bakedPlate(piece,drawH,screenY){
     const rampU=piece.fade!=null?piece.fade:(piece.ramp||0),rampOut=piece.rampOut||0;
     const id=plateId(piece,drawH);
     if(sliceCache.has(id))return sliceCache.get(id);
     const img=R.assets.get(piece.key);if(!img)return null;
     const rs=rsNow();
+    const tBake=performance.now();
     const c=document.createElement('canvas');
     c.width=Math.max(1,Math.ceil(piece.w*rs));c.height=Math.max(1,Math.ceil(drawH*rs));
     const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
-    g.drawImage(img,0,0,c.width,c.height);
+    paintPiece(g,img,piece,c);
     if(piece.key==='stage4-mid-c')warmPlate(c);
     if(piece.key==='stage4-mid-b')hallGrade(c);
     if(piece.key==='stage5-mid'||piece.key==='stage5-mid-b')nightGrade(c);
     if(piece.key==='stage2-mid-c'||piece.key==='stage4-mid-b'||piece.key==='stage5-mid')trimFringe(c,'right');
-    if(piece.under&&rampU>0){
+    if(piece.under&&piece.seam){
+      const uid=plateId(piece.under,pieceDrawH(piece.under));
+      const under=sliceCache.get(uid);
+      c.underHit=!!under;
+      if(under){applySeam(c,under,piece.seam.overlap||piece.fade||32,piece.under,piece.w);c.seamed=true;}
+    }else if(piece.under&&rampU>0){
       const uid=plateId(piece.under,pieceDrawH(piece.under));
       const under=sliceCache.get(uid);
       c.underHit=!!under;
@@ -422,12 +567,14 @@
       const ovPx=Math.max(fadePx,Math.round(ovWorld/piece.under.w*(under?under.width:c.width)));
       if(under){matchEdge(c,under,fadePx,ovPx);c.matched=true;}
     }
-    if((rampU>0||rampOut>0)&&c.width>2){
+    if(!piece.seam&&(rampU>0||rampOut>0)&&c.width>2){
       const leftPx=rampU>0?Math.max(1,Math.round(rampU/piece.w*c.width)):0;
       const rightPx=rampOut>0?Math.max(1,Math.round(rampOut/piece.w*c.width)):0;
       bakeRamp(g,c.width,c.height,leftPx,rightPx);
     }
-    c.rampU=rampU;c.rampOutU=rampOut;sliceCache.set(id,c);return c;
+    c.rampU=rampU;c.rampOutU=rampOut;sliceCache.set(id,c);
+    if(R.perf&&R.perf.noteBake)R.perf.noteBake('bakedPlate:'+piece.key,performance.now()-tBake);
+    return c;
   }
   // Interior detail: mean adjacent-channel energy on opaque pixels, excluding
   // the join ramps. The unfiltered bake is the same drawImage with no grade.
@@ -473,6 +620,7 @@
     const rs=rsNow(),id=(stageN===5?'pin:':'')+key+':far:'+mode+'@'+rs+':'+Math.round(logicalW)+'x'+Math.round(logicalH);
     if(sized.has(id))return sized.get(id);
     const img=R.assets.get(key);if(!img)return null;
+    const tBake=performance.now();
     const c=document.createElement('canvas');
     c.width=Math.max(1,Math.ceil(logicalW*rs));c.height=Math.max(1,Math.ceil(logicalH*rs));
     const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
@@ -492,6 +640,7 @@
     }else g.drawImage(img,0,0,c.width,c.height);
     sized.set(id,c);
     if(mode)R.StageWorld.farGraded[stageN]=mode;
+    if(R.perf&&R.perf.noteBake)R.perf.noteBake('gradedFar:'+key,performance.now()-tBake);
     return c;
   }
   function haze(ctx,y,color='#c9d7df') {ctx.drawImage(overlay('haze:'+y+color,g=>{const f=g.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');g.fillStyle=f;g.fillRect(0,y-9,640,21);}),0,0,640,360);}
@@ -617,8 +766,36 @@
     lowAlphaDraws:0,
     K_FAR,K_MID,K_NEAR,PPU,MID_POOL,FAR_GRADE,evictStreet,detailEnergy,
     farGraded:{},
-    travelOf,midLayout,midStrips,sliceLayout,
+    travelOf,midLayout,midStrips,sliceLayout,bakedPlate,
     farRight(scene,cam){return farGeom(scene,cam==null?(scene.camera&&scene.camera.x)||0:cam).right;},
+    queueRoof(){
+      if(this._roofQueued||!R.Bake)return;
+      this._roofQueued=true;
+      const touch=img=>{
+        const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
+        if(!ctx||!img)return;
+        ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(img,0,0,8,8);ctx.restore();
+      };
+      R.Bake.enqueue(1,'roof-far',()=>{
+        const img=R.assets.get('stage5-roof-far');if(!img)return true;
+        const travel=3600,farW=640+K_FAR*travel,drawH=farW*img.height/img.width;
+        const t0=performance.now();
+        const plate=gradedFar('stage5-roof-far',farW,drawH,0);
+        touch(plate);if(R.perf.markStep)R.perf.markStep('roof-far',performance.now()-t0);return true;
+      });
+      R.Bake.enqueue(1,'roof-mid',()=>{
+        const img=R.assets.get('stage5-roof-mid');if(!img)return true;
+        const lw=2172/PPU[5],lh=lw*img.height/img.width;
+        const t0=performance.now();
+        const plate=bakedPlate({key:'stage5-roof-mid',w:lw,ramp:0,id:'roof'},lh);
+        touch(plate);if(R.perf.markStep)R.perf.markStep('roof-mid',performance.now()-t0);return true;
+      });
+      R.Bake.enqueue(1,'roof-floor',()=>{
+        const t0=performance.now();
+        const plate=sizedPlate('floor-roof',seamlessPlate('floor-roof',true),FLOOR_LOOP,138);
+        touch(plate);if(R.perf.markStep)R.perf.markStep('roof-floor',performance.now()-t0);return true;
+      });
+    },
     prepare(level){
       if(!R.assets.has('stage'+(level+1)+'-far'))return;
       const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);
@@ -885,15 +1062,6 @@
       ctx.strokeStyle = edge; ctx.lineWidth = 1; ctx.setLineDash([10, 8]); ctx.lineDashOffset = -this.age * 12;
       ctx.beginPath(); ctx.moveTo(0, this.lane + 22); ctx.lineTo(640, this.lane + 22); ctx.moveTo(0, this.lane - 22); ctx.lineTo(640, this.lane - 22); ctx.stroke();
       ctx.restore();
-      R.drawText(
-        ctx,
-        this.active ? 'MASHADAR: CHANGE LANE OR JUMP' : 'MASHADAR IS GATHERING',
-        320,
-        148,
-        6,
-        '#eee7ff',
-        'center',
-      );
     }
   }
   R.Mashadar = Mashadar;

@@ -45,6 +45,93 @@
   R.effects={stamp(key,paint,size=96){if(stamps.has(key))return stamps.get(key);const c=document.createElement('canvas');c.width=c.height=size;paint(c.getContext('2d'),size);stamps.set(key,c);return c;},
     glow(color){return this.stamp('glow:'+color,(g,s)=>{const r=s/2,v=g.createRadialGradient(r,r,0,r,r,r);v.addColorStop(0,color);v.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=v;g.fillRect(0,0,s,s);});}
   };
+  R.perf.work=[];
+  R.perf.hitches=[];
+  R.perf.poseFallbacks=0;
+  R.perf.frameJobs=null;
+  R.perf.slowSteps=[];
+  R.perf.markStep=function(name,ms){
+    if(!(ms>4))return;
+    const row=[name,+ms.toFixed(2)];
+    (this.frameJobs||(this.frameJobs=[])).push(row);
+    if(this.slowSteps.length<80)this.slowSteps.push(row);
+  };
+  R.perf.noteBake=function(name,ms){
+    if(this.inBake||this.allowSync)return;
+    const sc=R.game&&R.game.scene;
+    if(!sc||!sc.isGameplay||R.game.fadeDir)return;
+    this.markStep(name,ms==null?0:ms);
+    const out=this.outside||(this.outside=[]);
+    out.push({name,ms:+(ms||0).toFixed(2),t:performance.now()});
+    if(out.length>100)out.shift();
+  };
+  // One priority queue for every canvas bake. A job's run(job, end) returns
+  // false when the frame budget is spent and the job must resume next frame.
+  R.Bake={
+    q:[],seq:0,touches:[],names:new Set(),
+    enqueue(pri,name,run,data){
+      if(name&&this.names.has(name)){
+        const hit=this.q.find(j=>j.name===name);
+        if(hit&&pri<hit.pri)hit.pri=pri;
+        return hit;
+      }
+      const job=Object.assign({pri,seq:this.seq++,name,run},data||{});
+      this.q.push(job);
+      if(name)this.names.add(name);
+      return job;
+    },
+    drop(pred){
+      this.q=this.q.filter(j=>{
+        if(!pred(j))return true;
+        if(j.name)this.names.delete(j.name);
+        return false;
+      });
+    },
+    pump(ms){
+      const end=performance.now()+Math.max(0,ms);
+      const started=performance.now();
+      R.perf.inBake=true;
+      let guard=0;
+      while(this.q.length&&performance.now()<end&&guard++<64){
+        let best=0;
+        for(let i=1;i<this.q.length;i++){
+          const a=this.q[i],b=this.q[best];
+          if(a.pri<b.pri||(a.pri===b.pri&&a.seq<b.seq))best=i;
+        }
+        const job=this.q[best];
+        const t0=performance.now();
+        let done=false;
+        try{done=job.run(job,end)!==false;}catch(e){done=true;}
+        const dt=performance.now()-t0;
+        if(dt>4)R.perf.markStep(job.name||'bake',dt);
+        if(done){
+          this.q.splice(best,1);
+          if(job.name)this.names.delete(job.name);
+        }else if(performance.now()>=end||dt<0.05)break;
+      }
+      R.perf.inBake=false;
+      R.perf.lastPumpMs=performance.now()-started;
+      return R.perf.lastPumpMs;
+    },
+    queueTouch(entry){
+      if(!entry||entry.touched||entry._touchQueued)return;
+      entry._touchQueued=true;
+      this.touches.push(entry);
+    },
+    flushTouches(limitMs){
+      if(!this.touches.length||!R.Puppet||!R.Puppet.touchEntry)return 0;
+      const end=performance.now()+(limitMs==null?2:limitMs);
+      const prev=R.perf.inBake;R.perf.inBake=true;
+      let n=0;
+      while(this.touches.length&&performance.now()<end){
+        const entry=this.touches.shift();
+        entry._touchQueued=false;
+        if(R.Puppet.touchEntry(entry))n++;
+      }
+      R.perf.inBake=prev;
+      return n;
+    }
+  };
   let preparation=null;
   R.prepareRendering=function(){
     if(preparation)return preparation;

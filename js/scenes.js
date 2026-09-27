@@ -2,11 +2,12 @@
 (function () {
   const R = window.RWB;
   class Reel {
-    constructor(game, lines, next, label) {
+    constructor(game, lines, next, label, prefetchLevel) {
       this.game = game;
       this.lines = lines;
       this.next = next;
       this.label = label || 'STORY';
+      this.prefetchLevel = prefetchLevel;
       this.i = 0;
       this.timer = 0;
       this.spoken = false;
@@ -16,7 +17,7 @@
     }
     update(dt, input) {
       if (this.done) return;
-      if (R.Puppet && R.Puppet.prefetch) R.Puppet.prefetch(0);
+      if (R.Puppet && R.Puppet.prefetch && this.prefetchLevel != null) R.Puppet.prefetch(this.prefetchLevel);
       this.timer += dt;
       if (!this.spoken) {
         R.voice(this.lines[this.i].id);
@@ -97,10 +98,6 @@
       return R.settings.loadRun() ? ['START', 'CONTINUE', 'OPTIONS', 'CONTROLS'] : ['START', 'OPTIONS', 'CONTROLS'];
     }
     update(dt, input) {
-      if (this.game.fadeDir === 0) {
-        this._idle = (this._idle || 0) + dt;
-        if (this._idle > 0.8 && R.Puppet && R.Puppet.prefetch) R.Puppet.prefetch(0);
-      }
       const items = this.items();
       if (R.keyPressed(input, 'click')) {
         const pointer = input.pointer || R.input.pointer;
@@ -114,7 +111,7 @@
       const chosen = items[this.selection];
       if (chosen === 'START') {
         R.settings.clearRun();
-        this.game.setScene(new Reel(this.game, R.CAPTIONS.opening, () => new Reel(this.game, R.CAPTIONS.intro, () => new Play(this.game, 0, {}), "EMOND'S FIELD"), 'THE WHEEL TURNS'));
+        this.game.setScene(new Reel(this.game, R.CAPTIONS.opening, () => new Reel(this.game, R.CAPTIONS.intro, () => new Play(this.game, 0, {}), "EMOND'S FIELD", 0), 'THE WHEEL TURNS', 0));
       } else if (chosen === 'CONTINUE') {
         const run = R.settings.loadRun();
         this.game.setScene(resumeRun(this.game, run));
@@ -163,8 +160,8 @@
       return new Reel(game, R.CAPTIONS.callandor, () => {
         delete carry.pendingReveal;
         R.settings.saveRun({ level: run.level, wave: run.wave, score: run.score, extra: carry });
-        return new Reel(game, R.CAPTIONS.stage5, play, R.LEVELS[4].name);
-      }, 'CALLANDOR ANSWERS');
+        return new Reel(game, R.CAPTIONS.stage5, play, R.LEVELS[4].name, 4);
+      }, 'CALLANDOR ANSWERS', 4);
     }
     return play();
   }
@@ -281,6 +278,7 @@
           this.draw(ctx);
           ctx.getImageData(0, 0, 1, 1);
           ctx.restore();
+          if (R.perf) { R.perf.poseFallbacks = 0; R.perf.poseMiss = []; }
         } catch (e) { /* warmup is best-effort */ }
       }
       R.audio.playMusic(this.music);
@@ -320,6 +318,7 @@
       this.marching = false;
       this.goTimer = 0;
       if (this.levelIndex === 2) { this.fog = new R.Mashadar(this); this.hazards.push(this.fog); }
+      if (this.levelIndex === 4 && index === 4 && R.StageWorld && R.StageWorld.queueRoof) R.StageWorld.queueRoof();
       this.attackers.clear();
       const left = this.level.wavePoints[index];
       this.arenaLeft = left;
@@ -386,9 +385,9 @@
     nextStage() {
       const next = this.levelIndex + 1;
       const carry = this.carryToNext();
-      const start = () => new Reel(this.game, R.CAPTIONS['stage' + (next + 1)], () => new Play(this.game, next, carry), R.LEVELS[next].name);
+      const start = () => new Reel(this.game, R.CAPTIONS['stage' + (next + 1)], () => new Play(this.game, next, carry), R.LEVELS[next].name, next);
       if (this.levelIndex === 4) return new Reel(this.game, R.CAPTIONS.ending, () => new Victory(this.game), 'HOMECOMING');
-      if (this.levelIndex === 0) return new Reel(this.game, R.CAPTIONS.clear, start, 'STAGE 1 CLEAR');
+      if (this.levelIndex === 0) return new Reel(this.game, R.CAPTIONS.clear, start, 'STAGE 1 CLEAR', next);
       if (this.levelIndex === 3) return resumeRun(this.game, { level: 4, wave: 0, score: this.player.score, extra: Object.assign(carry, { pendingReveal: 'callandor' }) });
       return start();
     }
@@ -768,6 +767,7 @@
       R.StageWorld.grade(ctx,this);
     }
     draw(ctx) {
+      if (R.Bake) R.Bake.flushTouches(2);
       R.Motion.apply(this);ctx.save();
       try {this.camera.apply(ctx);this.drawWorld(ctx);} finally {ctx.restore();R.Motion.restore(this);}
       R.drawHUD(ctx, this);

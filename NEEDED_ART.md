@@ -39,6 +39,10 @@ Existing: `stage5-far`, `stage5-mid`, `stage5-near`, `floor5-loop`, and for the 
 - Tower grounds, side-on — the yard frontage, replacing pool 0.
 - The roof, side-on — a roof mid plate (the second plate) to sit with `stage5-roof-far` and `floor-roof`. There is still no roof near plate; the ground near strip stays until one exists.
 
+## Riley's walk
+
+Riley stays the muscular 16-year-old `assets/art/riley16/` set until the redraw. The four current walk frames are the same wide stance: the boots sit about 53 units apart, with no contact phase and no passing phase. A sub-pose shift inside ±4 units cannot reach a 30 u/s slip target, and it brings back the hop that was removed. The redraw is the sleeveless black Asha'man coat, and it needs at least 8 walk frames: contact, down, passing, and up for each leg. A step is about 55 units (110 units per cycle). `frames.json` should give a planted-sole x for every frame so the sole can stay down while the body tracks the hitbox.
+
 ## What not to paint again
 
-Riley stays the muscular 16-year-old `assets/art/riley16/` set. Be'lal stays the painted frames with the sword already in his hand. Floors stay the quilted loops. Do not mirror a plate to fake a second screen.
+Riley stays the muscular 16-year-old `assets/art/riley16/` set until that redraw. Be'lal stays the painted frames with the sword already in his hand. Floors stay the quilted loops. Do not mirror a plate to fake a second screen.
