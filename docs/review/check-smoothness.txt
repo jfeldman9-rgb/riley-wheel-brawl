@@ -14,8 +14,8 @@ PASS Player takes zero damage in 30 seconds with no attackers
 PASS Reduced Shake lowers super shake and flash
 PASS Delivered art manifest lists existing bundled files
 PASS Every committed painted image has a registered manifest key
-Cache stamp: 20260927-smooth1
-PASS Every script, stylesheet, and font URL has the 20260927-smooth1 cache stamp
+Cache stamp: 20260926-sol1
+PASS Every script, stylesheet, and font URL has the 20260926-sol1 cache stamp
 PASS Every reel skips past its last caption safely and transitions exactly once
 PASS Every campaign subtitle is exact text from VOICE_LINES.md
 PASS Twinkle Toes uses speaker id kenzie
@@ -40,7 +40,7 @@ PASS Stage 4 full saidin taint hurts and spending clears it
 PASS Stage 5 full saidin taint hurts and spending clears it
 PASS Art hooks use relative image/JSON paths
 PASS Every stage has four optional art layers
-PASS Runtime assets share the 20260927-smooth1 script cache stamp
+PASS Runtime assets share the 20260926-sol1 script cache stamp
 PASS A listed broken image retries once and settles to fallback
 PASS Stage 1 boss Continue preserves HP and attack progress
 PASS Stage 2 boss Continue preserves HP and attack progress

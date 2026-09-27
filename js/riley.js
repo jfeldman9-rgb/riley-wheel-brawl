@@ -430,7 +430,7 @@
         ctx.save();ctx.strokeStyle='rgba(255,221,100,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.x-cameraX,this.y-this.z-48,31+Math.sin(this.stateT*8)*2,0,Math.PI*2);ctx.stroke();ctx.restore();
       }
       if (this.callandor) {
-        ctx.save();ctx.strokeStyle='#e8ffff';ctx.shadowColor='#9deaff';ctx.shadowBlur=10;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(this.x-cameraX-13,this.y-this.z-31);ctx.lineTo(this.x-cameraX-25,this.y-this.z-86);ctx.stroke();ctx.restore();
+        ctx.save();ctx.lineCap='round';ctx.strokeStyle='rgba(100,220,255,.35)';ctx.lineWidth=11;ctx.beginPath();ctx.moveTo(this.x-cameraX-13,this.y-this.z-31);ctx.lineTo(this.x-cameraX-25,this.y-this.z-86);ctx.stroke();ctx.strokeStyle='#e8ffff';ctx.lineWidth=3;ctx.stroke();ctx.restore();
       }
       if (this.hitFlash > 0) {
         ctx.save();ctx.globalAlpha=Math.min(.65,this.hitFlash*6);ctx.fillStyle='#fff4d5';ctx.beginPath();ctx.ellipse(this.x-cameraX,this.y-this.z-48,23,43,0,0,Math.PI*2);ctx.fill();ctx.restore();

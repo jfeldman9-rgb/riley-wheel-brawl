@@ -282,7 +282,7 @@
     // alternate palette, or uncomposited joint path can leak through.
     paintedBody(ctx,r,bones,pose,a);drawSword(ctx,a,d,r,bones,pose);
     ctx.restore();
-    if(a.callandor){ctx.save();ctx.strokeStyle='#e8ffff';ctx.shadowColor='#9deaff';ctx.shadowBlur=10;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(a.x-cam-12,a.y-a.z-22);ctx.lineTo(a.x-cam-22,a.y-a.z-66);ctx.stroke();ctx.restore();}
+    if(a.callandor){ctx.save();ctx.lineCap='round';ctx.strokeStyle='rgba(100,220,255,.35)';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(a.x-cam-12,a.y-a.z-22);ctx.lineTo(a.x-cam-22,a.y-a.z-66);ctx.stroke();ctx.strokeStyle='#e8ffff';ctx.lineWidth=2;ctx.stroke();ctx.restore();}
     if(a.hitFlash>0){ctx.save();ctx.globalAlpha=Math.min(.55,a.hitFlash*4);ctx.fillStyle='#ffe9ac';ctx.beginPath();ctx.ellipse(a.x-cam,a.y-(a.z||0)-40,18,24,0,0,7);ctx.fill();ctx.restore();}
     return true;
   }};
@@ -311,8 +311,8 @@
     ctx.translate(a.x-cam,a.y-(a.z||0));
     if(['knockdown','lying'].includes(a.state)||a.dead)ctx.rotate(-(a.facing||-1)*Math.min(1,(a.stateT||0)*4)*1.25);
     ctx.scale(a.facing===1?-s:s,s);
-    if(a.hitFlash>0)ctx.filter='brightness('+(1+Math.min(1,a.hitFlash*6))+')';
     ctx.drawImage(img,-ax,-ay,w,h);
+    if(a.hitFlash>0){ctx.globalCompositeOperation='source-atop';ctx.globalAlpha=Math.min(.65,a.hitFlash*5);ctx.fillStyle='#fff4c8';ctx.fillRect(-ax,-ay,w,h);}
     ctx.restore();
     return true;
   };
