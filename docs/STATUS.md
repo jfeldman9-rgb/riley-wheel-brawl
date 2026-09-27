@@ -153,10 +153,55 @@ Natural soak re-run: **7/8/8/8/8**, attacks 10/10, same medians as grok3b (249.5
 - `tools/smoothness-browser.cjs`: mesh missing fraction 0, context loss still paints, no page errors.
 - Natural soak: **7/8/8/8/8**. Assisted: **50/50**, exit 0.
 
+## grok3d
+
+`fa7da17` kept the edges, the pause pixels, and the 227 MB boot. Two bugs were still in that build, and in live `08c74ae`.
+
+### Pause stays open
+
+Before: `Play.update` set `paused` on the pause press, then `PauseMenu.update` saw that same press and returned `resume`. Tap `II`, click, and ESC never left the menu up.
+
+After: the update that opens the menu does not feed that press into the menu. A later pause press, or choosing RESUME, closes it. The check covers ESC, a tap on `II` (pause plus the touch click), and a click on `II`: each opens, stays open on the next update, then resumes.
+
+### Capped parallax
+
+Before: cached layers shifted by the nominal factor, 0.10 and 0.42. `tiled()` caps the real factor at `(width - 640) / CAMERA_RANGE`. On these plates that is about 0.025 (far) and 0.034 (Stage 1 mid). The leftover was a sawtooth of about 0.35 device px. Live scroll of the same plates is about 0.03.
+
+After: while a layer is painted, `tiled()` records the capped factor, and the blit uses that. Floor stays at 1. Sky and the screen wash stay at 0. Against a live paint of the same layer, at camera 100.5 and 100.8, the residual is 0 px on base, back (k 0.0254), mid (k 0.0339), floor, and screen. The check requires ≤ 0.1 px.
+
+### Fade-in
+
+The stage-enter bake ran inside the frame that flipped the fade from out to in. The next frame's dt is capped at 0.1 s, so the overlay fell from fully black to 40% dark in one step. The fade-in clock now starts when that bake returns.
+
+## Pacing (grok3d)
+
+Software canvas, same tool and cases. LITE forced off. The sample still starts after stage enter and two frames. 0 errors. Canvas 1280×720.
+
+| Stage | fps | p95 / p99 | >33 / >50 | update+draw | enter | pose bake |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 wave 3 | 60 | 16.7 / 16.8 | 0 / 0 | 0.32 ms | 634 ms | 564 ms |
+| 3 wave 3 | 60 | 16.7 / 16.8 | 0 / 0 | 0.41 ms | 351 ms | 304 ms |
+| 5 wave 3 | 60 | 16.8 / 16.8 | 0 / 0 | 0.36 ms | 644 ms | 614 ms |
+| 4 boss | 60 | 16.7 / 16.8 | 0 / 0 | 0.25 ms | 197 ms | 159 ms |
+
+SwiftShader was not re-run. It is still not 60 fps.
+
+## Difficulty (grok3d, unchanged scales)
+
+Natural soak: **7/8/8/8/8**, attacks 10/10. Medians 249.58, 251.87, 270.56, 214.44, 296.06. Time ranges 69.7–95.1, 54.5–64.7, 107.1–137.8, 63.2–84.9, 73.2–95.2. Exit code is nonzero because some seeds fail. Assisted: **50/50**, exit 0. Medians 311.55, 329.84, 273.24, 253.84, 298.96. Ranges 76.1–98.8, 56.4–71.4, 105.4–155.3, 62.6–88.1, 68.1–98.5. Damage scales were not changed.
+
+## Checks (grok3d)
+
+- `node tools/check.cjs`: All checks passed. New checks: pause opens and stays open for ESC, tap `II`, and click, then resumes; every parallax layer stays within 0.1 px of the factor `tiled()` used. Save is byte-identical, hooves and soft dust still pass, edges stay clean, pause `II` luminance 189→493 and ESC badge 166→405.
+- Boot canvas memory: **227.0 MB**, 78 canvases.
+- `node tools/smoothness-check.cjs`: **9 passes**.
+- `tools/review.cjs`: **77 loaded, 0 missing, 0 errors**, stamp `20260926-grok3d`.
+- `tools/smoothness-browser.cjs`: mesh missing fraction 0, mean channel error ~0, context loss still paints, no page errors.
+
 ## Still weak / limits
 
 - SwiftShader at 1280×720 does not hold 60 fps. The CPU-side frame is cheap; the present is not. This does not certify a phone GPU. AUTO can still lower the buffer when `observe` is left enabled; the pace run forces that off.
 - Walk and kick poses are 12 and 6 baked frames. Inside one frame the hoof is fixed while the body keeps moving, so a step can drift by up to one twelfth of a cycle before the next frame. The live IK contact check is unchanged; the new check reads the baked pixels.
 - The sky plate still gets the soft-light wash, and the vignette is still drawn. The scrolling plates are not re-graded on each camera step: doing that on every layer was a several-hundred-millisecond hitch. Fighters are not re-tinted every frame.
-- Entering a stage bakes that stage's pose atlas on the CPU. On this software canvas that is about 180–540 ms (Stage 1 is 537 ms) before the first fight frame. Mid-fight stays at 60 fps after that.
+- Entering a stage bakes that stage's pose atlas on the CPU before the fade-in starts. On this software canvas the grok3d enter is 197–644 ms (Stage 5 pose bake 614 ms, Stage 1 564 ms). Mid-fight stays at 60 fps after the two-frame settle. The first presented frame is the start of the fade-in, not a frame that is already 40% dark.
 - Ten natural seeds are a small deterministic sample. No gamepad, phone, or child playtest is claimed.
