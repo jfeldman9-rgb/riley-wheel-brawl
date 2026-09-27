@@ -100,21 +100,17 @@
   }
   function midLayout(n,travel){
     const id='plates:'+n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
-    const M=640+K_MID*travel,ppu=PPU[n],items=MID_POOL[n].map(p=>({id:p.id,key:p.key,w:p.px/ppu,px:p.px}));
+    const M=640+K_MID*travel,ppu=PPU[n];
+    if(n===4||n===5){
+      const px=n===4?3667:4169,key='stage'+n+'-mid-cont',w=px/ppu;
+      const piece={id:key,key,x:0,w,px,ramp:0,rampOut:0,fade:0,pool:0,sx0:0,repeat:null,seam:null};
+      const layout={M,available:w,shortfall:Math.max(0,M-w),plateW:w,k:K_MID,pieces:[piece],planned:[],pools:1,mode:'continuous',clamp:true,slack:w-M};
+      layoutCache.set(id,layout);return layout;
+    }
+    const items=MID_POOL[n].map(p=>({id:p.id,key:p.key,w:p.px/ppu,px:p.px}));
     // The supplied transition paintings are complete plates. Keep every pixel
     // intact and use hard, vertical overlaps: no ramp, colour match, blur or
     // per-column seam selection is applied to either transition.
-    if(n===4||n===5){
-      const overlap=(items.reduce((sum,p)=>sum+p.w,0)-M)/(items.length-1);
-      let x=0;
-      const pieces=items.map((p,index)=>{
-        const piece={id:p.id,key:p.key,x,w:p.w,px:p.px,ramp:0,rampOut:0,fade:index?overlap:0,pool:index,sx0:0,repeat:null,seam:index?{overlap,cut:'hard'}:null};
-        x+=p.w-overlap;
-        return piece;
-      });
-      const layout={M,plateW:items[0].w,k:K_MID,pieces,planned:[],pools:items.length,mode:'plates',slack:overlap*(items.length-1)};
-      layoutCache.set(id,layout);return layout;
-    }
     const a=items[0],b=items[1],c=items[2];
     // Stage 4's hall repeats about every 446 source pixels. Two of plate b's
     // own bays are cloned on so the b→c join can sit in plate c's dark niche
@@ -968,7 +964,7 @@
       if(show('mid')){
         const roof=roofing(scene);
         const spec=MID_SRC[n];
-        const usePlates=!roof&&R.assets.has('stage'+n+'-mid-b');
+        const usePlates=!roof&&R.assets.has(n>=4?'stage'+n+'-mid-cont':'stage'+n+'-mid-b');
         if(roof){
           const key='stage5-roof-mid',img=R.assets.get(key);
           if(img){
@@ -981,7 +977,8 @@
           R.StageWorld._layerFactor=0;
         }else if(usePlates){
           const travel=travelOf(scene),layout=midLayout(n,travel);
-          const viewL=cam*K_MID-80,viewR=cam*K_MID+720;
+          const midX=layout.clamp?Math.min(cam*K_MID,Math.max(0,layout.available-640)):cam*K_MID;
+          const viewL=midX-80,viewR=midX+720;
           for(const piece of layout.pieces){
             if(piece.x+piece.w<viewL||piece.x>viewR)continue;
             const img=R.assets.get(piece.key);if(!img)continue;
@@ -992,10 +989,10 @@
             if(!plate)continue;
             ctx.globalAlpha=1;
             noteScrollAlpha(ctx);
-            ctx.drawImage(plate,piece.x-cam*K_MID,y,piece.w,dh);
+            ctx.drawImage(plate,piece.x-midX,y,piece.w,dh);
           }
           haze(ctx,20);
-          R.StageWorld._layerFactor=K_MID;
+          R.StageWorld._layerFactor=layout.clamp&&cam*K_MID>=layout.available-640?0:K_MID;
         }else{
           const img=spec&&R.assets.get(spec.key);
           if(img){

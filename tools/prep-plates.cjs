@@ -22,8 +22,10 @@ const PLATES = [
   { name: 'stage4-mid-b', scale: 1.061, outW: 2172, outH: 724, ground: 570 },
   { name: 'stage4-transition-bc', scale: 1.061, outW: 2172, outH: 724, ground: 570 },
   { name: 'stage4-mid-c', scale: 0.872, outW: 2400, outH: 724, ground: 570 },
+  { name: 'stage4-mid-cont', scale: 1.061, outW: 3667, outH: 724, ground: 570 },
   { name: 'stage5-mid-b', scale: 1.123, outW: 2300, outH: 724, ground: 520 },
   { name: 'stage5-transition-ab', scale: 1.123, outW: 2300, outH: 724, ground: 520 },
+  { name: 'stage5-mid-cont', scale: 1.123, outW: 4169, outH: 724, ground: 520 },
   { name: 'stage5-roof-mid', scale: 0.789, outW: 2172, outH: 724, ground: 520 }
 ];
 

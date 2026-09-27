@@ -124,10 +124,12 @@ async function pageLoadChecks(check, rootDir) {
           const winMax = maxRatio(st, dev(win0), dev(win1));
           joins.push({ n, key: cur.key, fade: +fade.toFixed(2), fadeMax: +fadeMax.toFixed(3), winMax: +winMax.toFixed(3) });
         }
-        const end = energy(grab(n, 3600), 1280);
-        let edge = 0;
-        for (let x = 1272; x <= 1278; x++) edge = Math.max(edge, end.cols[x] / end.med);
-        joins.push({ n, edge: +edge.toFixed(3) });
+        if (n < 4) {
+          const end = energy(grab(n, 3600), 1280);
+          let edge = 0;
+          for (let x = 1272; x <= 1278; x++) edge = Math.max(edge, end.cols[x] / end.med);
+          joins.push({ n, edge: +edge.toFixed(3) });
+        } else joins.push({ n, continuous: pieces.length === 1 && !pieces[0].seam && !pieces[0].ramp });
       }
       function layer(level, cam, id) {
         const c = document.createElement('canvas');
@@ -154,10 +156,11 @@ async function pageLoadChecks(check, rootDir) {
       const detail = SW.detailEnergy().map(s => ({ stage: s.stage, ratio: +s.ratio.toFixed(4) }));
       return { joins, detail, s1: lum(550, 0), s5: lum(3430, 4) };
     });
-    const joinOk = seams.joins.filter(j => j.winMax != null).every(j => j.winMax <= 4);
+    const joinOk = seams.joins.filter(j => j.winMax != null).every(j => j.winMax <= 4) &&
+      seams.joins.filter(j => j.n >= 4).every(j => j.continuous === true);
     const edgeOk = seams.joins.filter(j => j.edge != null).every(j => j.edge <= 3);
     const detailOk = seams.detail.every(s => s.ratio >= 0.95);
-    check(joinOk, 'Real plate joins stay at or under 4x in a ±40u window around each overlap ' + JSON.stringify(seams.joins.filter(j => j.winMax != null)));
+    check(joinOk, 'Real plate joins stay at or under 4x, while S4/S5 have one continuous piece and no join ' + JSON.stringify(seams.joins));
     check(edgeOk, 'The right edge at cam 3600 stays at or under 3x ' + JSON.stringify(seams.joins.filter(j => j.edge != null)));
     check(detailOk, 'Interior energy stays at least 95% of the unfiltered plate. A stage 5 ratio above 1 is the nightGrade contrast grade, not recovered detail ' + JSON.stringify(seams.detail));
     check(seams.s1.holes === 3213 && Math.abs(seams.s1.far - 69.35) < 0.05, 'Stage 1 far/mid luminance calibration is unchanged ' + JSON.stringify(seams.s1));
@@ -613,10 +616,11 @@ check(moveDamages('spin'), '360 spinning kick creates a damaging hitbox');
 }
 check(RWB.ART_MANIFEST.length >= 54 && RWB.ART_MANIFEST.every(src=>fs.existsSync(path.join(root,src))), 'Delivered art manifest lists existing bundled files');
 const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).flatMap(e=>e.isDirectory()?artFiles(dir+'/'+e.name):[dir+'/'+e.name]);
-check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
+const retiredStreet=new Set(['assets/art/stage4-mid.png','assets/art/stage5-mid.png']);
+check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')&&!retiredStreet.has(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every active committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260927-scroll9';console.log('Cache stamp: '+STAMP);
+const STAMP='20260927-scroll10';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -904,7 +908,7 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
     }
     if (cursor < layout.M - 1e-4) hole = true;
     check(atEnd >= 640 && before >= 640 && roofEnd >= 640, 'Stage ' + n + ' far plate still covers the right edge at the end of the road');
-    check(!dup && !hole && cursor >= layout.M, 'Stage ' + n + ' mid strip never repeats a slice in one screen and only leaves planned gaps');
+    if (n < 4) check(!dup && !hole && cursor >= layout.M, 'Stage ' + n + ' mid strip never repeats a slice in one screen and only leaves planned gaps');
     const gaps = [];
     const ordered = layout.pieces.slice().sort((a, b) => a.x - b.x);
     let cover = 0;
@@ -924,17 +928,19 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
       }
     }
     const joins = layout.pieces.filter(piece => piece.ramp || piece.seam);
-    check(layout.mode === 'plates' && cover >= layout.M - 1e-3 && gaps.every(gap => gap <= 80), 'Stage ' + n + ' mid plates cover the road and leave gaps of at most 80 units');
+    if (n < 4) check(layout.mode === 'plates' && cover >= layout.M - 1e-3 && gaps.every(gap => gap <= 80), 'Stage ' + n + ' mid plates cover the road and leave gaps of at most 80 units');
+    else check(layout.mode === 'continuous' && layout.clamp && layout.pieces.length === 1 && layout.shortfall > 0,
+      'Stage ' + n + ' uses one seam-free continuous panorama and clamps at its measured end (required ' + layout.M.toFixed(2) + 'u, available ' + layout.available.toFixed(2) + 'u, shortfall ' + layout.shortfall.toFixed(2) + 'u)');
     check(!repeat, 'Stage ' + n + ' never shows the same mid plate twice inside 640 units');
-    check(joins.length >= 1 && joins.every(piece => {
+    if (n < 4) check(joins.length >= 1 && joins.every(piece => {
       const ov = (piece.under && piece.under.ov) || piece.fade || piece.ramp || 0;
       return piece.seam ? ov >= 32 : piece.ramp >= 32;
     }), 'Stage ' + n + ' overlaps at least 32 units at every plate join, with either a ramp or a recorded min-error seam');
   }
   check(RWB.StageWorld.FAR_GRADE[1] === 'night' && RWB.StageWorld.FAR_GRADE[5] === 'violet', 'Far plates are night-graded on stages 1 and 5');
-  const plateNames = ['stage1-mid-b','stage1-mid-c','stage2-mid-b','stage2-mid-c','stage3-mid-b','stage3-mid-c','stage4-mid-b','stage4-transition-bc','stage4-mid-c','stage5-transition-ab','stage5-mid-b','stage5-roof-mid'];
+  const plateNames = ['stage1-mid-b','stage1-mid-c','stage2-mid-b','stage2-mid-c','stage3-mid-b','stage3-mid-c','stage4-mid-cont','stage5-mid-cont','stage5-roof-mid'];
   const requested = RWB.__assetUrls();
-  check(plateNames.every(name => requested.some(url => url.includes('assets/art/' + name + '.webp?v=' + STAMP)) && RWB.ART_MANIFEST.includes('assets/art/' + name + '.webp')), 'All twelve additional mid plates resolve with the cache stamp');
+  check(plateNames.every(name => requested.some(url => url.includes('assets/art/' + name + '.webp?v=' + STAMP)) && RWB.ART_MANIFEST.includes('assets/art/' + name + '.webp')), 'All active additional mid plates resolve with the cache stamp');
 }
 await pageLoadChecks(check, root);
 

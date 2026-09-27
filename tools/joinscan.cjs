@@ -130,7 +130,8 @@ const server = http.createServer((req, res) => {
           joins.push({ stage: n, from: left.entry.id, to: right.entry.id, overlapU: +ovU.toFixed(2), cost });
         }
       }
-      return { plates: plates.map(p => ({ stage: p.stage, id: p.id, key: p.key, x: p.x, w: p.w, seam: p.seam, repeat: p.repeat, sx0: p.sx0, wpx: p.wpx, hpx: p.hpx, med: p.med, windows: p.windows })), joins };
+      const continuous = [4, 5].map(stage => ({ stage, pieces: plates.filter(p => p.stage === stage).length, joins: joins.filter(j => j.stage === stage).length }));
+      return { plates: plates.map(p => ({ stage: p.stage, id: p.id, key: p.key, x: p.x, w: p.w, seam: p.seam, repeat: p.repeat, sx0: p.sx0, wpx: p.wpx, hpx: p.hpx, med: p.med, windows: p.windows })), joins, continuous };
     });
     report.errors = errors;
     report.note = 'E is mean |ΔRGB| over rows 0.15h–0.85h divided by the plate median. A quiet window is at least 40 units wide, max E ≤ 1.5, and skyline slope ≤ 2 px/col. Seam cost is the min-error DP on |ΔRGB|+|Δalpha| across the live join overlap. Nothing is blurred or rewritten.';
@@ -139,6 +140,8 @@ const server = http.createServer((req, res) => {
     console.log('wrote', out);
     for (const p of report.plates) console.log('S' + p.stage, p.id, 'windows', p.windows.length, p.windows.slice(0, 3));
     for (const j of report.joins) console.log('join', j.stage, j.from, '->', j.to, 'ov', j.overlapU, 'cost', j.cost && j.cost.mean);
+    for (const c of report.continuous) console.log('S' + c.stage, 'continuous pieces', c.pieces, 'joins', c.joins);
+    if (report.continuous.some(c => c.pieces !== 1 || c.joins !== 0)) process.exitCode = 1;
     if (errors.length) process.exitCode = 1;
   } finally {
     if (browser) await browser.close();
