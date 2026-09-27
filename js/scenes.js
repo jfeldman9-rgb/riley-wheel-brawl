@@ -281,8 +281,13 @@
       };
       return extra;
     }
-    saveCheckpoint() {
-      R.settings.saveRun({ level: this.levelIndex, wave: this.wave, score: this.player.score, extra: this.checkpointExtra() });
+    saveCheckpoint(waveOverride) {
+      const wave = waveOverride == null ? this.wave : waveOverride;
+      const prev = this.wave;
+      this.wave = wave;
+      const extra = this.checkpointExtra();
+      this.wave = prev;
+      R.settings.saveRun({ level: this.levelIndex, wave, score: this.player.score, extra });
     }
     restartStage() {
       const carry = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, score: this.player.score, callandor: this.player.callandor, wave: 0 };
@@ -409,10 +414,12 @@
     }
 
     directorCanAttack(enemy) {
-      return this.attackers.has(enemy) || this.attackers.size < 2;
+      const cap = this.level.maxAttackers || 2;
+      return this.attackers.has(enemy) || this.attackers.size < cap;
     }
     registerAttacker(enemy) {
-      if (this.attackers.size < 2) this.attackers.add(enemy);
+      const cap = this.level.maxAttackers || 2;
+      if (this.attackers.size < cap) this.attackers.add(enemy);
     }
     releaseAttacker(enemy) {
       this.attackers.delete(enemy);
@@ -601,14 +608,39 @@
       this.arenaLeft = this.camera.x;
       this.arenaRight = this.level.length;
       if (R.audio && R.audio.sfx && R.audio.sfx.go) R.audio.sfx.go();
-      this.saveCheckpoint();
+      this.saveCheckpoint(this.wave + 1);
+    }
+    stepRoofFade(dt) {
+      const fade = this.roofFade;
+      if (!fade) return;
+      fade.t += dt;
+      if (fade.phase === 'out' && fade.t >= 0.2) {
+        this.roofOn = true;
+        fade.phase = 'in';
+        fade.t = 0;
+      } else if (fade.phase === 'in' && fade.t >= 0.2) {
+        this.roofFade = null;
+        this.wave = 5;
+        this.spawnWave(5, { place: false });
+      }
     }
     updateMarch() {
-      if (!this.marching) return;
+      if (!this.marching || this.roofFade) return;
       const next = this.level.wavePoints[this.wave + 1];
       this.arenaLeft = this.camera.x;
       this.arenaRight = this.level.length;
       if (this.player.x >= next && this.camera.x >= next - 2) {
+        if (this.levelIndex === 4 && this.wave === 4) {
+          this.camera.x = next;
+          this.camera.lead = 0.42;
+          this.arenaLeft = next;
+          this.arenaRight = Math.min(this.level.length, next + R.SCROLL.fight);
+          this.camera.lock(this.arenaLeft, this.arenaRight);
+          this.marching = false;
+          this.goTimer = 0;
+          this.roofFade = { phase: 'out', t: 0 };
+          return;
+        }
         this.camera.x = next;
         this.wave += 1;
         this.spawnWave(this.wave, { place: false });
@@ -659,6 +691,7 @@
       this.updateObjects(dt);
       this.updateJoint(dt);
       this.finishWave(dt);
+      this.stepRoofFade(dt);
       this.updateMarch();
       this.camera.follow(this.player.x, dt);
       if (this.boss && !this.boss.dead && this.time >= (this.nextBossSave || 0)) { this.nextBossSave = this.time + 1; this.saveCheckpoint(); }
@@ -746,6 +779,15 @@
       if (this.twinkleFreed && !this.joint) R.drawText(ctx, R.input.fillKeys('FULL SAIDIN + {power}: TOGETHER!'), 320, 283, 7, '#a9edff', 'center');
       if (this.paused) this.pauseMenu.draw(ctx);
       this.camera.drawFlash(ctx);
+      if (this.roofFade) {
+        const fade = this.roofFade;
+        const alpha = fade.phase === 'out' ? Math.min(1, fade.t / 0.2) : Math.max(0, 1 - fade.t / 0.2);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, 640, 360);
+        ctx.restore();
+      }
     }
   }
   R.scenes = R.scenes || {};

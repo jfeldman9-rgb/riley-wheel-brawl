@@ -37,7 +37,7 @@ function boot(root) {
     requestAnimationFrame() {},
     fetch: url => { const clean=String(url).split('?')[0],file=path.join(root,clean); if (!clean.endsWith('.json') || !fs.existsSync(file)) return Promise.resolve({ok:false}); return Promise.resolve({ok:true,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(file,'utf8')))}); },
     document: { getElementById: () => canvas, createElement: () => createCanvas(1, 1), addEventListener() {}, fonts: { load: () => Promise.resolve() } },
-    Image: class { set src(value) { sandbox.__assetRequests += 1; sandbox.__assetUrls.push(value); if (this.onerror) this.onerror(); } }
+    Image: class { constructor() { this.crossOrigin = ''; } set src(value) { sandbox.__assetRequests += 1; sandbox.__assetUrls.push(value); if (this.onerror) this.onerror(); } }
   };
   sandbox.__assetRequests = 0; sandbox.__assetUrls = [];
   sandbox.window = sandbox;
@@ -73,6 +73,7 @@ function soak(RWB, seedValue, levelIndex = 0, options = {}) {
   let lastHp = player.hp;
   let measuredDamage = 0;
   let measuredHits = 0;
+  const waveDamage = [0, 0, 0, 0, 0, 0];
   const input = { pressed: {}, held: {}, axis() {
     const enemy = scene.enemies.filter(item => !item.dead).sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
     if (!enemy) return scene.marching ? { x: 1, y: 0 } : { x: 0, y: 0 };
@@ -99,8 +100,11 @@ function soak(RWB, seedValue, levelIndex = 0, options = {}) {
     if (player.power >= player.powerMax && frame % 31 === 0) input.pressed.power = true;
     scene.update(1 / 60, input);
     if (player.hp < lastHp) {
-      measuredDamage += lastHp - player.hp;
+      const dealt = lastHp - player.hp;
+      measuredDamage += dealt;
       measuredHits += 1;
+      const wave = scene.wave | 0;
+      waveDamage[wave] = (waveDamage[wave] || 0) + dealt;
     }
     if (options.natural && player.lives <= 0) break;
     if (!options.natural && player.hp < 28 && scene.phase === 'play') player.hp = player.hpMax;
@@ -114,6 +118,7 @@ function soak(RWB, seedValue, levelIndex = 0, options = {}) {
     receivedMoves: scene.boss && scene.boss.receivedMoves ? [...scene.boss.receivedMoves] : [],
     seconds: Number(seconds.toFixed(1)),
     damage: measuredDamage,
+    waveDamage: waveDamage.slice(),
     hits: measuredHits,
     deaths: scene.deaths,
     pickups: scene.pickupsTaken,
@@ -129,13 +134,17 @@ if (require.main === module) {
   if (stages.some(stage => !RWB.LEVELS[stage])) throw new Error('Use --stage=1 through --stage=5');
   const rows = [];
   for (const stage of stages) for (let seed = 1; seed <= 10; seed++) rows.push({ seed, result: soak(RWB, seed, stage, { natural: process.argv.includes('--natural') }) });
-  console.log('STAGE | SEED | CLEAR | SECONDS | DAMAGE | HITS | DEATHS | ATTACKS');
-  for (const {seed, result:r} of rows) console.log([r.stage,seed,r.cleared?'YES':'NO',r.seconds,r.damage,r.hits,r.deaths,r.attacks.join(', ')].join(' | '));
-  console.log('\nSTAGE | CLEARS | TIME RANGE | MEDIAN DAMAGE | ALL ATTACKS / SEED');
+  console.log('STAGE | SEED | CLEAR | SECONDS | DAMAGE | HITS | DEATHS | WAVES | ATTACKS');
+  for (const {seed, result:r} of rows) console.log([r.stage,seed,r.cleared?'YES':'NO',r.seconds,r.damage,r.hits,r.deaths,(r.waveDamage||[]).map(n=>Math.round(n)).join('/'),r.attacks.join(', ')].join(' | '));
+  console.log('\nSTAGE | CLEARS | TIME RANGE | MEDIAN DAMAGE | ALL ATTACKS / SEED | MEDIAN WAVE DAMAGE');
   for (const stage of stages) {
     const set = rows.filter(row=>row.result.stage === stage+1).map(row=>row.result);
     const damages = set.map(r=>r.damage).sort((a,b)=>a-b);
-    console.log([stage+1, set.filter(r=>r.cleared).length+'/10', Math.min(...set.map(r=>r.seconds))+'-'+Math.max(...set.map(r=>r.seconds)), (damages[4]+damages[5])/2, set.filter(r=>RWB.LEVELS[stage].attacks.every(a=>r.attacks.includes(a))).length+'/10'].join(' | '));
+    const waveMed = [0,1,2,3,4,5].map(w => {
+      const vals = set.map(r => (r.waveDamage && r.waveDamage[w]) || 0).sort((a,b)=>a-b);
+      return Math.round((vals[4] + vals[5]) / 2);
+    }).join('/');
+    console.log([stage+1, set.filter(r=>r.cleared).length+'/10', Math.min(...set.map(r=>r.seconds))+'-'+Math.max(...set.map(r=>r.seconds)), (damages[4]+damages[5])/2, set.filter(r=>RWB.LEVELS[stage].attacks.every(a=>r.attacks.includes(a))).length+'/10', waveMed].join(' | '));
   }
   const failed = rows.some(({result:r}) => !r.cleared || r.damage <= 0 || !RWB.LEVELS[r.stage-1].attacks.every(a=>r.attacks.includes(a)) || (r.stage===5 && !r.jointHit) || (r.stage===3 && r.receivedMoves.some(m=>!['jump','fireball'].includes(m))));
   const identical = stages.some(stage=>new Set(rows.filter(row=>row.result.stage===stage+1).map(({result:r})=>[r.seconds,r.damage,r.hits].join('/'))).size===1);

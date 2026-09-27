@@ -82,14 +82,17 @@
     }
     advanceEntry(dt) {
       if (this.entryX == null || this.boss) return false;
+      const cam = this.g.camera ? this.g.camera.x : 0;
+      const onScreen = this.x >= cam + 24 && this.x <= cam + 616;
+      const nearPlayer = this.g.player && Math.abs(this.x - this.g.player.x) <= 90;
       const dx = this.entryX - this.x;
-      if (Math.abs(dx) <= 6) {
+      if (Math.abs(dx) <= 6 || onScreen || nearPlayer) {
         this.entryX = null;
         this.vx = 0;
         return false;
       }
       this.facing = dx >= 0 ? 1 : -1;
-      this.vx = Math.sign(dx) * this.speed * 2.2;
+      this.vx = Math.sign(dx) * this.speed * 3.0;
       this.vy = 0;
       this.walkDistance += Math.abs(this.vx) * dt;
       this.setState('walk');

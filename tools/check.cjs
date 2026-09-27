@@ -320,9 +320,10 @@ async function pageLoadChecks(check, rootDir) {
 async function main() {
 const RWB = boot(root);
 const failures = [];
+let passed = 0;
 function check(value, message) {
   console.log((value ? 'PASS ' : 'FAIL ') + message);
-  if (!value) failures.push(message);
+  if (!value) failures.push(message); else passed += 1;
 }
 const game = RWB.game;
 let title = new RWB.scenes.Title(game);
@@ -425,7 +426,7 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260927-scroll1';console.log('Cache stamp: '+STAMP);
+const STAMP='20260927-scroll2';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -580,8 +581,8 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   const puppetSource=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
   check(!/scale\(\s*-1\s*,\s*1\s*\)/.test(stageSource),'Stage plate and floor tiling never mirrors a repeat');
   check(['1','2','3','4','5','-roof'].every(n=>RWB.ART_FILES['floor'+n]==='assets/art/floor'+n+'-loop.jpeg')&&/FLOOR_LOOP=1100/.test(stageSource)&&/const overlap=0/.test(stageSource),'Floors use offline-quilted seamless loops (min-error cut, no hard join) spanning 1100 units, >1.7 screens');
-  check(/SINGLE_WIDE=\/\^stage\[2-5\]-\(\?:mid\|near\)\$\//.test(stageSource)&&/SINGLE_WIDE\.test\(key\)\?700/.test(stageSource)&&/\(\?:roof-\)\?far/.test(stageSource),'Mid/near/far (incl. roof) plates draw one full-width painting per view: no repeated landmark or internal join on screen');
-  check(/stage1Wide\?720/.test(stageSource)&&/far\?700/.test(stageSource)&&/factor=Math\.min\(factor,Math\.max\(0,\(width-640\)\/CAMERA_RANGE\)\)/.test(stageSource),'Stage 1 mid/near plates are 720 units wide and far skies cap parallax to one soft join');
+  check(/K_FAR=0\.08,K_MID=0\.40,K_NEAR=1\.15/.test(stageSource)&&/const farW=640\+K_FAR\*travel/.test(stageSource)&&/stage5-roof-far/.test(stageSource)&&!/sectionBlend|CAMERA_RANGE|paintLandmarks|sectionWash/.test(stageSource),'Far layer is one full-width plate at 0.08, the roof plate is locked on the arena, and nothing crossfades two versions');
+  check(/plateW:720/.test(stageSource)&&/\{key:'stage2-mid',imgW:1774,plateW:700/.test(stageSource)&&/bakedNear/.test(stageSource),'Stage 1 mid plate is 720 units; later mids and the near strip are 700 and scroll on their own factors');
   const rileySource=fs.readFileSync(path.join(root,'js/riley.js'),'utf8');
   check(rileyFrames.every(frame=>RWB.ART_MANIFEST.includes('assets/art/riley16/'+frame+'.png'))&&RWB.ART_MANIFEST.includes('assets/art/riley16/portrait.png')&&/drawImage\(img, -ax \* scale, -ay \* scale/.test(rileySource),'Riley draws from all ten anchored riley16 runtime frames and the new portrait is manifested');
   check(RWB.RILEY16.height>=90&&RWB.RILEY16.height<=100&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height>=.80&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height<=.90,'Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc');
@@ -665,6 +666,48 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   check(boss.wave === 5 && boss.arenaLeft === boss.level.wavePoints[5] && boss.enemies.some(enemy => enemy.boss) && boss.camera.x === boss.level.wavePoints[5], 'The boss is the last zone');
   const continued = RWB.resumeRun(game, { level: 1, wave: 2, score: 100, extra: { lives: 3 } });
   check(continued.wave === 2 && continued.camera.x === continued.level.wavePoints[2] && continued.arenaLeft === continued.level.wavePoints[2] && continued.player.x === continued.arenaLeft + 90, 'Continue resumes at the saved zone');
+  const march = new RWB.scenes.Play(game, 0, { wave: 0, lives: 99 });
+  for (const enemy of march.enemies) { enemy.dead = true; enemy.deathTimer = 2; }
+  let marchFrames = 0;
+  while (marchFrames < 120 && !march.marching) { march.update(1 / 60, walk); marchFrames += 1; }
+  const midRun = RWB.settings.loadRun();
+  const resumedMarch = RWB.resumeRun(game, midRun);
+  check(march.marching && midRun.wave === 1 && resumedMarch.wave === 1 && resumedMarch.camera.x === resumedMarch.level.wavePoints[1] && resumedMarch.player.x === resumedMarch.arenaLeft + 90, 'A mid-walk save records the next zone and resume lands there');
+  const travel = 3600;
+  for (let n = 1; n <= 5; n++) {
+    const ground = { levelIndex: n - 1, level: { length: 4240 }, wave: 0 };
+    const atEnd = RWB.StageWorld.farRight(ground, travel);
+    const before = RWB.StageWorld.farRight(ground, travel - 0.5);
+    const roofScene = { levelIndex: n - 1, level: { length: 4240 }, wave: 5, roofOn: n === 5 };
+    const roofEnd = RWB.StageWorld.farRight(roofScene, travel);
+    const layout = RWB.StageWorld.midLayout(n, travel);
+    const edges = [0];
+    for (const piece of layout.pieces) edges.push(piece.x, piece.x + piece.w);
+    let dup = false;
+    for (const start of edges) {
+      if (start >= layout.M) continue;
+      const end = start + 640, seen = {};
+      for (const piece of layout.pieces) {
+        if (piece.x < end && piece.x + piece.w > start) {
+          if (seen[piece.id]) dup = true;
+          seen[piece.id] = true;
+        }
+      }
+    }
+    const pieces = layout.pieces.slice().sort((a, b) => a.x - b.x);
+    let cursor = 0, hole = false;
+    for (const piece of pieces) {
+      if (piece.x > cursor + 1e-4 && cursor < layout.M) {
+        const w = Math.min(piece.x, layout.M) - cursor;
+        const planned = layout.planned.some(gap => Math.abs(gap[0] - cursor) < 0.1 && Math.abs(gap[1] - piece.x) < 0.1);
+        if (w > 110 && !planned) hole = true;
+      }
+      cursor = Math.max(cursor, piece.x + piece.w);
+    }
+    if (cursor < layout.M - 1e-4) hole = true;
+    check(atEnd >= 640 && before >= 640 && roofEnd >= 640, 'Stage ' + n + ' far plate still covers the right edge at the end of the road');
+    check(!dup && !hole && cursor >= layout.M, 'Stage ' + n + ' mid strip never repeats a slice in one screen and only leaves planned gaps');
+  }
 }
 await pageLoadChecks(check, root);
 
@@ -672,7 +715,7 @@ if (failures.length) {
   console.error(failures.length + ' check(s) failed');
   process.exit(1);
 }
-console.log('All checks passed.');
+console.log('All checks passed (' + passed + ').');
 
 }
 main().catch(error => { console.error(error); process.exitCode=1; });

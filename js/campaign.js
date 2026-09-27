@@ -426,7 +426,7 @@
   });
   // Natural-play pressure is stage-specific: later bosses retain their full
   // move sets and health, while their hits leave a fair three-life margin.
-  R.LEVELS.forEach((level, i) => { level.damageScale = [1.34, 2.66, 0.72, 1.52, 0.76][i]; });
+  R.LEVELS.forEach((level, i) => { level.damageScale = [1.60, 2.95, 0.78, 1.80, 1.35][i]; });
   R.LEVELS[0].wavePoints = [0, 1, 2, 3, 4, 5].map(zone => R.SCROLL.left(zone));
   R.LEVELS[0].mix = R.Stage1.waveTable;
   R.LEVELS[0].kind = 'chieftain';

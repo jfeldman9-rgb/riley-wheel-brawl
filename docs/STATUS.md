@@ -1,20 +1,22 @@
 # Riley Wheel Brawl — current status
 
-Runtime stamp on this branch: `?v=20260927-scroll1`. Branch `rwb-scroll`, cut from `rwb-w2` at `a65e981`. Not merged. GitHub Pages still serves `rwb-w2` (PR #5, live). `main` is untouched at `3991948`. This branch does not change Pages.
+Runtime stamp on this branch: `?v=20260927-scroll2`. Branch `rwb-scroll`, cut from `rwb-w2` at `a65e981`. Not merged. GitHub Pages still serves `rwb-w2` (PR #5, live). `main` is untouched at `3991948`. This branch does not change Pages.
 
-## Scrolling stages (scroll1)
+## Scrolling stages (scroll2)
 
-Before: a cleared wave added one to the wave index and dropped Riley back at the left of the next fight on the same plate. The stage was 3000 units and the picture did not travel.
+Before: a cleared wave added one to the wave index and dropped Riley back at the left of the next fight on the same plate. The stage was 3000 units and the picture did not travel. The first scroll pass crossfaded zoomed crops, so the street still felt still.
 
-After: every stage is a 4240-unit street (6.625 screens at the 640-wide view). Six fight zones sit at 0, 720, 1440, 2160, 2880, and 3600. The last zone is the boss arena. Clearing a wave plays a chime, holds a flashing `GO →`, unlocks the camera, and Riley walks right. The camera only moves forward (the Whale Lance lock: `camX = max(camX, target)`, reused as `Camera.noForwardBacktrack`). Walking onto the next zone line locks the camera there and the next group walks in from off the left and right edges. Nothing teleports between waves. Continue starts at the saved zone.
+After: every stage is a 4240-unit street (6.625 screens at the 640-wide view). Six fight zones sit at 0, 720, 1440, 2160, 2880, and 3600. The last zone is the boss arena. Clearing a wave plays a chime, holds a flashing `GO →`, unlocks the camera, and Riley walks right. The camera only moves forward (the Whale Lance lock: `camX = max(camX, target)`, reused as `Camera.noForwardBacktrack`). Walking onto the next zone line locks the camera there and the next group walks in from off the left and right edges. Nothing teleports between waves. A save taken during the walk records the next zone. Continue starts at the saved zone.
 
-The far and mid plates crossfade three crops of the existing painting, so the street changes as the camera advances. Stage 5's last third crossfades `stage5-roof-far` and `floor-roof`. Ground silhouettes and a section wash mark the third of the level you are in. Seams are alpha blends, never a mirrored tile. Paintings that would replace those crops are listed in `NEEDED_ART.md`.
+The backdrop is the painted plates at full resolution. Far scrolls at 0.08× the floor, one plate, no crop. Mid is a strip of slices of that stage's own plate at 0.40× (stage 1 is 720 units wide, the others 700), with the far plate showing through the gaps. Near tiles at 1.15× along the bottom 26 units. The floor stays 1:1. Nothing is crossfaded. Stage 5's roof is a hard cut behind a 0.2s fade to black and a 0.2s fade back in, and the boss walks in after that. Paintings that would replace the slice pools are listed in `NEEDED_ART.md`.
 
-Damage scales are unchanged: `[1.34, 2.66, 0.72, 1.52, 0.76]`.
+Damage scales start at `[1.60, 2.95, 0.78, 1.80, 1.35]`.
 
-Mooks spawn past the screen and dash to the old fight slots before they swing. Shadow bosses walk to a fixed mark during the intro, then stay clamped to the arena the way they did before the scroll (a swoop that left the screen was why Stage 3 fell off). The chieftain covers the gap to his mark during the short intro, so all three attacks still go active. Holding right, the walk between locks is 5.25–5.58s.
+Mooks spawn past the screen and dash at 3× until they are fully on screen or within 90 units of Riley. Shadow bosses walk to a fixed mark during the intro, then stay clamped to the arena. The chieftain covers the gap to his mark during the short intro.
 
-### Measured on this machine (software canvas, LITE off)
+### scroll1 baseline on this machine (replaced by the scroll2 remeasure)
+
+These rows are the scroll1 run, kept so the remeasure has a before. They are not the scroll2 result.
 
 Pace, 10s, clock after stage enter and two frames, canvas 1280×720, 0 errors:
 
@@ -28,7 +30,7 @@ Pace, 10s, clock after stage enter and two frames, canvas 1280×720, 0 errors:
 
 Natural soak (3 lives, seeds 1–10): clears 10/9/10/10/10, every boss attack seen 10/10 on every stage. The one miss is a Stage 2 seed that dies on the Fade after all three attacks. Median damage 204, 199, 254, 179, 122. Assisted soak: 50/50, exit 0.
 
-`node tools/check.cjs`: all passed, including the new zone checks (clear unlocks the camera, the walk locks the next zone and the camera never retreats, the next wave is off-screen, the boss is the last zone, Continue resumes that zone). Parallax max deviation 0.04px. Boot canvas memory 138.5 MB, 55 canvases (the title no longer keeps a seamless plate for every stage; crops build for the stage you enter). `tools/review.cjs`: 77 loaded, 0 missing, 0 errors, stamp `20260927-scroll1`. Smoothness checks: 9. Smoothness browser: mesh missing fraction 0, context loss still paints.
+`node tools/check.cjs`: all passed, including the new zone checks (clear unlocks the camera, the walk locks the next zone and the camera never retreats, the next wave is off-screen, the boss is the last zone, Continue resumes that zone). Parallax max deviation 0.04px. Boot canvas memory 138.5 MB, 55 canvases (the title no longer keeps a seamless plate for every stage; crops build for the stage you enter). `tools/review.cjs`: 77 loaded, 0 missing, 0 errors, stamp `20260927-scroll2`. Smoothness checks: 9. Smoothness browser: mesh missing fraction 0, context loss still paints.
 
 SwiftShader was not re-run. It was not 60 fps on the grok3d measurement.
 

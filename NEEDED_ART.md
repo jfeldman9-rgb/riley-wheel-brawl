@@ -1,48 +1,43 @@
 # Painted art the scroller still wants
 
-No new images were generated for this pass. Each stage is one painted far plate, one mid plate, and one near plate (plus the floor loop). The scroller crossfades three crops of that same plate, shifts a lighting wash, and drops ground silhouettes so the walk is not a single repeating view. Seams are alpha blends. Nothing is mirrored.
+No new images were generated for this pass. While Riley walks, the far plate scrolls at 0.08× the floor, the mid ground is a strip of slices of that stage's own mid plate at 0.40×, and the near plate tiles at 1.15×. Nothing is cropped up, crossfaded, or mirrored. Gaps between mid slices are 48 units or a recorded wider gap forced by the rule that one slice never appears twice inside a 640-unit window; the far plate shows through those gaps.
 
-A real Streets of Rage street would be a new painting at each beat below. The crop/wash/prop stand-in is what ships until those exist.
+Each stage's slice pool is the same three ways (`MID_STRIPS[n].pools`). A new side-on street-front mid plate can replace one pool without changing the layout code. Two new plates per stage are what would replace the slice pools below. Stage 5's second plate is a roof mid.
 
 ## Emond's Field (stage 1)
 
-Existing: `stage1-far`, `stage1-mid`, `stage1-near`, `floor1-loop`.
+Existing: `stage1-far`, `stage1-mid`, `stage1-near`, `floor1-loop`. Slices of `stage1-mid` (1672px): A 0–550, B 550–903, C 903–1672.
 
-- Village edge — cottages and the road out of the village. The first crop is this, loosely.
-- Winespring Inn and the Green — the inn front, the green, evening lamps. There is no inn plate.
-- Forest road — trees closing over the Two Rivers road. There is no forest plate. Ground trees are flat silhouettes.
+- Village street, side-on — cottages and the road out, one continuous frontage to replace pool 0.
+- Winespring Inn and the Green, side-on — the inn front and the green, to replace pool 1. Pool 2 can stay the village street until a third plate exists.
 
 ## Caemlyn (stage 2)
 
-Existing: `stage2-far`, `stage2-mid`, `stage2-near`, `floor2-loop`.
+Existing: `stage2-far`, `stage2-mid`, `stage2-near`, `floor2-loop`. Slices of `stage2-mid` (1774px): A 0–352, B 352–762, C 762–1398, D 1398–1774.
 
-- The gates — wall, gatehouse, the road in. Gate posts are silhouettes.
-- The streets — inner-city houses and shops. Same plate, a later crop.
-- The palace — the approach to the palace. There is no palace plate.
+- The gates, side-on — wall and gatehouse as a street front, replacing pool 0.
+- Inner-city shops, side-on — the streets toward the palace, replacing pool 1.
 
 ## Shadar Logoth (stage 3)
 
-Existing: `stage3-far`, `stage3-mid`, `stage3-near`, `floor3-loop`.
+Existing: `stage3-far`, `stage3-mid`, `stage3-near`, `floor3-loop`. Slices of `stage3-mid` (1774px): A 0–422, B 422–1065, C 1065–1774.
 
-- The ruins — broken stone at the edge of the city.
-- Mashadar fog streets — the fog should be a painted street, not only the purple wash.
-- The square — an open ruined square for the Draghkar. There is no square plate.
+- The ruins, side-on — broken stone frontage, replacing pool 0.
+- Mashadar street, side-on — the fog-lit street as a painting, replacing pool 1. The hazard itself stays gameplay, not a stand-in plate.
 
 ## Stone of Tear (stage 4)
 
-Existing: `stage4-far`, `stage4-mid`, `stage4-near`, `floor4-loop`.
+Existing: `stage4-far`, `stage4-mid`, `stage4-near`, `floor4-loop`. Slices of `stage4-mid` (2172px): A 0–697, B 697–1460, C 1460–2172.
 
-- Stone halls — the first corridors.
-- Inner Stone — deeper halls, tighter light. Same plate, a later crop.
-- Heart of the Stone — Callandor's chamber. The gold wash and a peak silhouette are not that room.
+- Stone halls, side-on — the first corridors as a continuous wall, replacing pool 0.
+- Inner Stone, side-on — the deeper hall, replacing pool 1.
 
 ## The Black Tower (stage 5)
 
-Existing: `stage5-far`, `stage5-mid`, `stage5-near`, `floor5-loop`, and for the roof only `stage5-roof-far` plus `floor-roof`.
+Existing: `stage5-far`, `stage5-mid`, `stage5-near`, `floor5-loop`, and for the locked roof arena `stage5-roof-far` plus `floor-roof`. The roof swap is a hard cut under a 0.2s black fade. There is no roof mid. Slices of `stage5-mid` (2172px): A 0–546, B 546–1344, C 1344–2172.
 
-- Tower grounds — the yard outside. The first crop of the ground plates.
-- The yard — training yard between the grounds and the stair. No yard plate.
-- The roof — `stage5-roof-far` and `floor-roof` crossfade in on the last third. There is no roof mid plate and no roof near plate, so the buildings stay the ground-level mid/near art with battlement silhouettes on top.
+- Tower grounds, side-on — the yard frontage, replacing pool 0.
+- The roof, side-on — a roof mid plate (the second plate) to sit with `stage5-roof-far` and `floor-roof`. There is still no roof near plate; the ground near strip stays until one exists.
 
 ## What not to paint again
 
