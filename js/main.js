@@ -224,8 +224,12 @@
 
     const rs = RWB.display.renderScale || 1;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // A live fight covers the buffer with an opaque backdrop. Skipping the
+    // full clear avoids an extra framebuffer fill on software GL.
+    if (!(game.scene && game.scene.isGameplay && game.fade <= 0)) {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
     applyTransform();
     if (loading) drawLoading();
     else if (game.scene) {

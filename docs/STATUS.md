@@ -1,131 +1,86 @@
 # Riley Wheel Brawl — current status
 
-Branch `rwb-w2`; PR #4 targets `rwb-w1`. This smoothness pass starts from
-`ae8022a421331ef99a6991f35d5e7ea33d8f4bc7`, including the later Riley 16,
-Be’lal sprite and seamless-floor work. Runtime stamp: `?v=20260926-sol1`.
-No changes or merges to `main`; no PR merged.
+Branch `rwb-grok3`; draft PR targets `rwb-w2` at `08c74ae`. Runtime stamp: `?v=20260926-grok3`.
+No changes or merges to `main`. GitHub Pages settings are unchanged. Nothing was merged.
 
-## Smoothness pass
+## What this pass changes
 
-All [twenty improvements](SMOOTHNESS.md) are implemented and were audited again at
-60 fixed ticks/second, with render interpolation and retained input edges. A
-stall cannot trigger an unlimited catch-up loop. Blur/visibility changes clear
-held input and accumulated time. AUTO caps device pixels, adapts after sustained
-slow frames and recovers gradually; SHARP remains an explicit higher-resolution
-option. Resize events are coalesced.
+Mid-fight time on a software canvas was per-enemy mesh skinning (about 8 ms each) plus, on Stage 1, a `ctx.restore()` that composited alpha plates (about 9 ms). This pass:
 
-Decoded assets, rig weights, texture grading, Riley’s rim, stage plates and
-lighting are prepared/cached. The connected painted skin now uses an indexed
-WebGL batch when supported, with optimized Canvas fallback on unavailable/lost
-contexts. Each live actor retains a bounded pose composite for unchanged poses.
-Offscreen drawing is culled; simulation remains active. Fireballs, glows and mist
-reuse textures. Light impact pauses fall from 70ms to 25ms, ordinary impacts have
-a 90ms cooldown, and camera follow/punch/shake use smoother damping. Stage 5’s
-incoming damage was adjusted after changing impact timing.
+- Bakes one shared pose atlas per rig (12 walk frames, 6 kick frames, plus idle, hurt, cast, attack, air, and channel) and blits it. Hit tint uses `source-atop` only on that private copy, never on the main canvas.
+- Reuses one opaque background view per camera pixel, with the stage soft-light grade and vignette baked in, so the live frame does not blend the framebuffer.
+- Caches the HUD and the on-screen control diagram and redraws them only when the displayed values change.
+- Batches sparks and glows under one blend-mode switch, and draws snow as one fill. No per-frame `filter` or `shadowBlur`.
+- Warms the on-screen canvas during `prepareRendering` so the first texture upload is not inside the measured fight.
+- Stronger heavy/boss hit-stop, punch, shake, knockback, slash, and debris. Light hit-stop stays 25 ms and super stays 140 ms.
+- Natural damage scales are `[1.34, 2.66, 0.72, 1.52, 0.76]`. Boss health, move lists, and Riley's damage are unchanged.
 
-This follow-up removes the remaining per-frame brightness filter on painted
-enemy hit flashes and the two live `shadowBlur` Callandor strokes. Alpha overlays
-and layered cached-looking strokes preserve the flash/glow without filter passes.
-`tools/pace.cjs` now specifies the requested real-rAF, LITE-disabled 1280×720 bot
-run for Stage 1/3/5 wave 3 and the Stage 4 boss, for at least ten seconds each.
+Riley still draws only the muscular 16-year-old frames in `assets/art/riley16/`. Be'lal still uses his painted frames with the sword in hand. Plates are not mirrored. No new image assets, runtime dependencies, or build step.
 
-## Art and campaign retained
+## Pacing
 
-- All 77 manifested resources load. Painted far/mid/near layers and quilted floors
-  cover all five stages, with a separate Taim roof. Portraits, sprite crops,
-  cutscene stills, title art and logo remain connected. Missing art retries once
-  and uses the playable fallback.
-- Riley retains ten anchored painted frames, four distance-driven walking
-  frames, his 96-unit height and updated portrait. Be’lal uses ten painted frames
-  with his sword in-hand. Other ground characters keep their connected painted
-  rigs, opposite arm swing, body bob and world-space sole contacts. Draghkar
-  retains its airborne rendering. Lighting, grounded shadows and combat effects
-  stay above the painted scenery; the HUD stays outside camera shake.
-- Boss Continue preserves HP, attack-cycle progress, phase and Taim rescue state.
-  Reload after Stage 4 still replays the pending Callandor reveal until its final
-  caption is acknowledged. No boss attack has been removed.
+`tools/pace.cjs`, headless Chromium, 1280×720 viewport, real `requestAnimationFrame`, 10 s per case, LITE forced off (`runtimeLite=false`, `observe` replaced with a no-op). Cases are Stage 1/3/5 wave 3 and the Stage 4 boss. Canvas backing store is 1280×720.
 
-## Verification
+The numbers below are from this VM. The starting point quoted for the task, measured elsewhere, was Stage 1 about 31–36 fps (p95 50 ms, 26–31 ms update+draw), Stage 3 about 31–33 fps (p95 33–50 ms, ~18 ms), Stage 5 about 40 fps (11–13 ms), and the Stage 4 boss at 60 fps under 1 ms.
 
-- `node tools/check.cjs`: **69 passes**, including combat, all boss checkpoints,
-  Callandor persistence, art paths and fresh cache stamps.
-- `node tools/smoothness-check.cjs`: **9 passes** for fixed ticks, edge retention,
-  catch-up bounds, restoration after interpolation, teleports, camera damping,
-  hit-stop cooldown, AUTO hysteresis and cleared input.
-- `tools/smoothness-browser.cjs`: real DOM keyboard input/main-loop timestamps
-  cover 60/120/144Hz, one-shot buffered attacks, blur pause/release, AUTO/SHARP,
-  GPU/Canvas painted coverage and loss of the WebGL context. See its JSON report.
-- `tools/review.cjs`: refreshed headless screenshots for all five stages, bosses,
-  character closeups, walk strips, Callandor still, title and comparison boards.
-  Normal load: **77 resources, zero errors/missing/unstamped requests**. Deliberate
-  missing Stage 3 mid art: two attempts, then playable fallback.
-- Rendered mesh-contact audit: zero measured drift/contact error for the eleven
-  bind definitions, both facings, diagonal travel, changing speeds and 30/60/120Hz
-  steps. The Be’lal bind definition is fallback-only; his active frames and Riley’s
-  frames are represented by the separate strips/closeups, not by this mesh metric.
-- Assisted soak: **50/50 clears**; all attacks active on all ten seeds for every
-  boss. Natural pressure was retuned without changing boss health or Riley's
-  damage: **41/50 clears**, with full attack coverage on every seed.
+### Software canvas (`--disable-gpu --disable-accelerated-2d-canvas`)
 
-### Natural — three lives, no HP top-ups, seeds 1–10
+Before is `08c74ae`. After is this branch.
+
+| Stage | Before fps | Before p95 / p99 | Before >33 / >50 | Before update+draw | After fps | After p95 / p99 | After >33 / >50 | After update+draw |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 wave 3 | 20.53 | 66.7 / 83.4 | 204 / 37 | 46.41 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.32 ms |
+| 3 wave 3 | 23.28 | 50.1 / 50.1 | 228 / 22 | 30.01 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.31 ms |
+| 5 wave 3 | 39.74 | 33.4 / 33.4 | 203 / 0 | 14.52 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.31 ms |
+| 4 boss | 60 | 16.7 / 16.8 | 0 / 0 | 0.42 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.22 ms |
+
+Software mode meets ~60 fps, p99 under 20 ms, and 0 frames over 50 ms on every measured stage.
+
+### SwiftShader / WebGL (`RWB_ACCELERATED=1`)
+
+Same tool and cases. Update+draw on the after run is under half a millisecond; the gap is the SwiftShader present, not the simulation. A blank 1280×720 canvas on these flags holds about 56 fps, so a full fight does not reach 60 here.
+
+| Stage | Before fps | Before p95 / p99 | Before >33 / >50 | Before update+draw | After fps | After p95 / p99 | After >33 / >50 | After update+draw |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 wave 3 | 4.24 | 483.3 / 533.2 | 21 / 21 | 2.22 ms | 30.45 | 66.7 / 100 | 142 / 37 | 0.36 ms |
+| 3 wave 3 | 5.56 | 500 / 533.3 | 28 / 28 | 1.83 ms | 32.05 | 66.7 / 83.4 | 127 / 53 | 0.34 ms |
+| 5 wave 3 | 5.98 | 500 / 516.6 | 29 / 29 | 1.13 ms | 33.65 | 66.7 / 100 | 128 / 34 | 0.30 ms |
+| 4 boss | 7.59 | 316.6 / 416.7 | 37 / 37 | 0.63 ms | 49.04 | 33.4 / 83.3 | 63 / 15 | 0.21 ms |
+
+The before SwiftShader run shared the machine with another Chromium. It is a floor, not a quieter baseline. The after run was alone. Neither meets 60 fps, p99 under 20 ms, or 0 frames over 50 ms.
+
+## Difficulty
+
+`node tools/soak.cjs --natural` (3 lives, no HP top-up, seeds 1–10). Before, on `08c74ae`, was 10/8/7/8/8. After:
 
 | Stage | Clears | Seconds | Median damage | All boss attacks/seed |
 | --- | --- | --- | --- | --- |
-| 1 — Emond’s Field | 10/10 | 76.7–104.9 | 156.26 | 10/10 |
-| 2 — Caemlyn | 8/10 | 58.2–72.1 | 255.00 | 10/10 |
-| 3 — Shadar Logoth | 7/10 | 124.1–152.2 | 265.69 | 10/10 |
-| 4 — Tear | 8/10 | 57.9–70.3 | 219.55 | 10/10 |
-| 5 — Black Tower | 8/10 | 61.7–88.2 | 257.55 | 10/10 |
+| 1 — Emond's Field | 7/10 | 69.7–95.1 | 249.58 | 10/10 |
+| 2 — Caemlyn | 8/10 | 54.5–64.7 | 251.87 | 10/10 |
+| 3 — Shadar Logoth | 8/10 | 107.1–137.8 | 270.56 | 10/10 |
+| 4 — Tear | 8/10 | 63.2–84.9 | 214.44 | 10/10 |
+| 5 — Black Tower | 8/10 | 73.2–95.2 | 296.06 | 10/10 |
 
-Natural mode still returns a nonzero exit status when individual seeds fail.
-Ordinary healing pickups remain available. These are bot results, not child
-playtesting.
+Every boss attack is seen on every seed, including seeds that do not clear. Natural mode still exits nonzero when a seed fails. These are bot results, not playtests.
 
-### Pacing measurements
-
-The inherited pre-pass 1280×720 wave-3 observation was roughly **11–15 fps**,
-**83–100 ms p99**, **21–40 ms update+draw**, with every frame over 33 ms in
-software raster; SwiftShader reduced JS work to about 8 ms but suffered repeated
-650–850 ms compositor gaps. The committed post-pass synthetic report improved
-desktop software-raster median rAF spacing from **116.7 ms to 66.6 ms** and its
-five-stage median draw work from **112.9–120.4 ms to 15.6–50.7 ms**. These are
-software-renderer results and remain well short of the 60 fps target.
-
-A fresh real-rAF before/after comparison could not honestly be produced in this
-container: neither Chromium nor the optional Playwright package is installed.
-Running `node tools/pace.cjs` reports that limitation immediately; no fabricated
-after figures are recorded. On an environment with Playwright/Chromium, the tool
-records average fps, p95, p99, counts over 33/50 ms, and mean combined update/draw
-work for four requested fights with runtime LITE forced off.
-
-### Assisted — inherited 99 lives and HP top-ups, seeds 1–10
+`node tools/soak.cjs` (assisted, 99 lives and HP top-up) is 50/50:
 
 | Stage | Clears | Seconds | Median damage | All boss attacks/seed |
 | --- | --- | --- | --- | --- |
-| 1 | 10/10 | 75.2–132.4 | 188.36 | 10/10 |
-| 2 | 10/10 | 55.9–70.3 | 237.00 | 10/10 |
-| 3 | 10/10 | 125.3–157.8 | 297.37 | 10/10 |
-| 4 | 10/10 | 56.4–74.4 | 267.60 | 10/10 |
-| 5 | 10/10 | 60.1–104.0 | 263.50 | 10/10 |
+| 1 | 10/10 | 76.1–98.8 | 311.55 | 10/10 |
+| 2 | 10/10 | 56.4–71.4 | 329.84 | 10/10 |
+| 3 | 10/10 | 105.4–155.3 | 273.24 | 10/10 |
+| 4 | 10/10 | 62.6–88.1 | 253.84 | 10/10 |
+| 5 | 10/10 | 68.1–98.5 | 298.96 | 10/10 |
 
-Complete logs and browser reports are in [review/](review/README.md).
+## Checks
+
+- `node tools/check.cjs`: **69 passes**, All checks passed. No check was weakened.
+- `node tools/smoothness-check.cjs`: **9 passes**, including the light hit-stop cooldown and the super hit-stop.
 
 ## Still weak / limits
 
-- Headless CPU Canvas and SwiftShader are software renderers. The GPU-batched
-  path substantially reduces CPU submission work, but this environment still
-  exhibits compositor/driver stalls. It does not certify sustained 60fps on a
-  physical phone. AUTO trades some sharpness for headroom; SHARP can be expensive.
-- Riley and Be’lal still have four discrete walking frames. Interpolation smooths
-  movement between ticks; it does not invent extra painted poses. Long cloaks can
-  still look elastic, and the mesh-contact metric is not an anatomy/art-quality
-  judgment. Trolloc variants share a supplied cutout.
-- The first load does more preparation; large art files still make cold network
-  loading and image memory significant. WebGL loss falls back to Canvas, whose
-  worst crowded scenes remain heavier than the batched path.
-- Stage 3 remains longest. Ten seeds are a small deterministic balance sample;
-  no physical gamepad/phone campaign run or child playtest is claimed.
-- Lido parity remains a visual-review judgment. Fresh comparison images are
-  committed for review; automated checks do not certify that artistic gate.
-- Floor/backdrop styles still differ in some stages. Dialogue uses text and
-  synthesized audio; no recorded character voices are claimed.
+- SwiftShader at 1280×720 does not hold 60 fps. The CPU-side frame is cheap; the present is not. This does not certify a phone GPU. AUTO can still lower the buffer when `observe` is left enabled; the pace run forces that off.
+- Walk and kick poses are 12 and 6 baked frames. Feet in the contact metric still come from the live IK pose, not from the blit.
+- The background grade is baked into the opaque view, so fighters are not re-tinted with soft-light every frame.
+- Ten natural seeds are a small deterministic sample. No gamepad, phone, or child playtest is claimed.

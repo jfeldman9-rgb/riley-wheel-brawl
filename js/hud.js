@@ -19,7 +19,8 @@
     ctx.fillStyle='#101c2d';ctx.beginPath();ctx.arc(x,y,21,0,Math.PI*2);ctx.fill();
     R.drawText(ctx,'R',x,y+5,15,'#61c6ff','center');
   }
-  R.drawHUD = function (ctx, scene) {
+  const hudLayer = { key: '', canvas: null };
+  function paintHud(ctx, scene) {
     const player = scene.player;
     const big = !!R.settings.data.bigHud;
     const font = big ? 9 : 7;
@@ -61,5 +62,32 @@
     if (scene.warningTimer > 0) R.drawText(ctx, scene.warning, 320, 122, 8, '#ffe67a', 'center');
     if (scene.goTimer > 0) R.drawText(ctx, 'GO  →', 562, 174, 12, '#fff2a0', 'center');
     if (scene.tutorial) { R.drawPanel(ctx, 125, 314, 390, 20); R.drawText(ctx, R.input.fillKeys(scene.tutorial), 320, 325, 6, '#ffffff', 'center'); }
+  }
+  R.drawHUD = function (ctx, scene) {
+    const player = scene.player;
+    const bossHp = scene.boss && !scene.boss.dead ? Math.ceil(scene.boss.hp) : -1;
+    const rs = (R.display && R.display.renderScale) || 1;
+    const bw = Math.max(1, Math.ceil(640 * rs)), bh = Math.max(1, Math.ceil(360 * rs));
+    const key = [
+      bw, Math.ceil(player.hp), Math.ceil(player.power), player.lives, player.score, player.loialReady ? 1 : 0,
+      scene.wave, scene.levelIndex, bossHp, player.angreal > 0 ? player.angreal.toFixed(1) : '',
+      player.healPortrait > 0 ? 1 : 0, scene.warningTimer > 0 ? scene.warning : '', scene.goTimer > 0 ? 1 : 0,
+      scene.tutorial || '', R.settings.data.bigHud ? 1 : 0, R.settings.data.colorblind ? 1 : 0,
+      player.taintAge > R.TUNE.taintGrace ? 1 : 0
+    ].join('|');
+    if (!hudLayer.canvas) hudLayer.canvas = document.createElement('canvas');
+    if (hudLayer.key !== key || hudLayer.canvas.width !== bw || hudLayer.canvas.height !== bh) {
+      hudLayer.canvas.width = bw;
+      hudLayer.canvas.height = bh;
+      const g = hudLayer.canvas.getContext('2d');
+      g.setTransform(rs, 0, 0, rs, 0, 0);
+      paintHud(g, scene);
+      hudLayer.key = key;
+    }
+    const smooth = ctx.imageSmoothingEnabled;
+    ctx.imageSmoothingEnabled = false;
+    const top = scene.tutorial ? 340 : (scene.goTimer > 0 ? 200 : 150);
+    ctx.drawImage(hudLayer.canvas, 0, 0, bw, Math.ceil(top * rs), 0, 0, 640, top);
+    ctx.imageSmoothingEnabled = smooth;
   };
 }());

@@ -33,10 +33,10 @@
   },
   "mesh": {
     "webgl": true,
-    "opaque": 21376,
-    "missing": 4,
-    "missingFraction": 0.00018712574850299402,
-    "meanOpaqueChannelError": 0.33722602632648596
+    "opaque": 20097,
+    "missing": 0,
+    "missingFraction": 0,
+    "meanOpaqueChannelError": 0.00018244845831052726
   },
   "loss": {
     "contextLost": true,

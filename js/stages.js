@@ -165,6 +165,34 @@
     ctx.fillStyle = pal[3];
     ctx.fillRect(0, 218, 640, 7);
   }
+  function bakeGrade(ctx, scene) {
+    const colors = ['#73a7e6', '#ffb65a', '#a087ed', '#f0cd89', '#7d9cde'];
+    ctx.save();
+    ctx.globalCompositeOperation = 'soft-light';
+    ctx.fillStyle = colors[scene.levelIndex] || colors[0];
+    ctx.globalAlpha = 0.13;
+    ctx.fillRect(0, 0, 640, 360);
+    ctx.restore();
+  }
+  function blitVignette(ctx) {
+    ctx.drawImage(overlay('vignette', g => {
+      const v = g.createRadialGradient(320, 220, 145, 320, 210, 410);
+      v.addColorStop(0, '#050c2000');
+      v.addColorStop(1, '#050c2050');
+      g.fillStyle = v;
+      g.fillRect(0, 0, 640, 360);
+    }), 0, 0, 640, 360);
+  }
+  function strokeLightning(ctx) {
+    ctx.strokeStyle = '#bccfed';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(500, 0);
+    ctx.lineTo(472, 60);
+    ctx.lineTo(495, 56);
+    ctx.lineTo(465, 110);
+    ctx.stroke();
+  }
   R.StageWorld = {
     prepare(level){
       if(!R.assets.has('stage'+(level+1)+'-far'))return;
@@ -175,18 +203,21 @@
       // Stage 1's alpha plates plus the saved world layer were a synchronous
       // ~9ms composite on software canvas. Reuse one opaque view while the
       // camera sits on the same pixel; a moving camera repaints that view.
-      if(!this._painting && n!==5 && R.assets.has('stage'+n+'-far')){
+      if(!this._painting && R.assets.has('stage'+n+'-far')){
         const rs=R.display.renderScale||1,cam=Math.round(scene.camera.x||0),bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs));
         const key=n+':'+cam+':'+bw+':'+(scene.wave===5?1:0);
         const slot=this._view||(this._view={key:'',canvas:document.createElement('canvas')});
+        if(!slot.ctx)slot.ctx=slot.canvas.getContext('2d',{alpha:false});
         if(slot.key!==key||slot.canvas.width!==bw||slot.canvas.height!==bh){
           slot.canvas.width=bw;slot.canvas.height=bh;
-          const g=slot.canvas.getContext('2d');g.setTransform(rs,0,0,rs,0,0);g.imageSmoothingEnabled=true;
+          const g=slot.ctx;g.setTransform(rs,0,0,rs,0,0);g.imageSmoothingEnabled=true;g.globalAlpha=1;g.globalCompositeOperation='source-over';
+          g.fillStyle='#142b45';g.fillRect(0,0,640,360);
           const prev=scene.camera.x;scene.camera.x=cam;this._painting=true;
-          try{this.draw(g,scene);}finally{this._painting=false;scene.camera.x=prev;}
+          try{this.draw(g,scene);bakeGrade(g,scene);blitVignette(g);}finally{this._painting=false;scene.camera.x=prev;}
           slot.key=key;
         }
-        ctx.drawImage(slot.canvas,0,0,640,360);
+        const smooth=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;ctx.drawImage(slot.canvas,0,0,640,360);ctx.imageSmoothingEnabled=smooth;
+        if(n===5&&Math.sin((scene.time||0)*0.8)>0.995)strokeLightning(ctx);
         return;
       }
       const cam = scene.camera.x,
@@ -241,21 +272,15 @@
         const depth=g.createLinearGradient(0,218,0,360);depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');g.fillStyle=depth;g.fillRect(0,218,640,142);
         const light=['#9bcfff','#ffdca0','#a99aff','#ffe8b0','#9ac2ff'][n-1],glow=g.createRadialGradient(440,100,10,440,100,310);glow.addColorStop(0,light+'28');glow.addColorStop(1,light+'00');g.fillStyle=glow;g.fillRect(0,0,640,360);
       }),0,0,640,360);
-      if (n === 5 && Math.sin(time * 0.8) > 0.995) {
-        ctx.strokeStyle = '#bccfed';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(500, 0);
-        ctx.lineTo(472, 60);
-        ctx.lineTo(495, 56);
-        ctx.lineTo(465, 110);
-        ctx.stroke();
-      }
+      if (n === 5 && !this._painting && Math.sin(time * 0.8) > 0.995) strokeLightning(ctx);
     },
     grade(ctx,scene){
-      const colors=['#73a7e6','#ffb65a','#a087ed','#f0cd89','#7d9cde'];
-      ctx.save();ctx.globalCompositeOperation='soft-light';ctx.fillStyle=colors[scene.levelIndex];ctx.globalAlpha=.13;ctx.fillRect(0,0,640,360);ctx.restore();
-      ctx.drawImage(overlay('vignette',g=>{const v=g.createRadialGradient(320,220,145,320,210,410);v.addColorStop(0,'#050c2000');v.addColorStop(1,'#050c2050');g.fillStyle=v;g.fillRect(0,0,640,360);}),0,0,640,360);
+      const n=scene.levelIndex+1;
+      // Painted stages bake soft-light and the vignette into the opaque view.
+      // A live full-frame blend was a SwiftShader present stall.
+      if(R.assets.has('stage'+n+'-far'))return;
+      bakeGrade(ctx,scene);
+      blitVignette(ctx);
     },
     near(ctx, scene) {
       const n = scene.levelIndex + 1;

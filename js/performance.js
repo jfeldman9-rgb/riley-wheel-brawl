@@ -51,6 +51,26 @@
     const jobs=[];if(R.Puppet)for(const kind of Object.keys(R.Puppet.defs))if(kind!=='forsaken'||!R.assets.has('belal-idle'))jobs.push(()=>R.Puppet.prepare(kind));
     if(R.StageWorld)for(let n=0;n<5;n++)jobs.push(()=>R.StageWorld.prepare(n));
     if(R.Riley.prepare)jobs.push(()=>R.Riley.prepare());
-    preparation=new Promise(resolve=>{const next=()=>{const until=performance.now()+4;do{const job=jobs.shift();if(job)job();}while(jobs.length&&performance.now()<until);if(jobs.length)setTimeout(next,0);else resolve();};next();});return preparation;
+    preparation=new Promise(resolve=>{const next=()=>{const until=performance.now()+4;do{const job=jobs.shift();if(job)job();}while(jobs.length&&performance.now()<until);if(jobs.length)setTimeout(next,0);else warmDisplay().then(resolve);};next();});return preparation;
+  };
+  function warmDisplay(){
+    // First draws of stage art onto the onscreen canvas upload textures.
+    // On SwiftShader that present can stall for hundreds of milliseconds, so
+    // do it before gameplay samples frames.
+    const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
+    if(!ctx||!R.scenes||!R.scenes.Play||!R.game)return Promise.resolve();
+    const rs=R.display.renderScale||1;
+    try{
+      ctx.setTransform(rs,0,0,rs,0,0);
+      for(const [level,wave] of [[0,3],[2,3],[4,3],[3,5]]){
+        const scene=new R.scenes.Play(R.game,level,{wave,lives:99,callandor:level===4});
+        R.game.setSceneNow(scene);
+        scene.draw(ctx);
+      }
+      ctx.getImageData(0,0,1,1);
+    }catch(e){}
+    // Do not call requestAnimationFrame here. review.cjs and smoothness-browser.cjs
+    // stub it and keep the last registered callback as the manual game pump.
+    return Promise.resolve();
   };
 })();

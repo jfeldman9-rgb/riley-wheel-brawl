@@ -47,8 +47,45 @@ RWB.FX = class FX {
     list.length = j;
   }
   draw(ctx, camX) {
-    const K = FX.KINDS;
-    for (const f of this.list) { if (f.t < 0 || Math.abs(f.x-(camX||0)-320)>440+f.r || f.y < -100-f.r || f.y > 460+f.r) continue; const k = K[f.kind]; if (k && k.draw) k.draw(ctx, f, f.x - (camX || 0)); }
+    const K = FX.KINDS, sparks = [], glows = [], rest = [];
+    for (const f of this.list) {
+      if (f.t < 0 || Math.abs(f.x - (camX || 0) - 320) > 440 + f.r || f.y < -100 - f.r || f.y > 460 + f.r) continue;
+      if (f.kind === 'spark') sparks.push(f);
+      else if (f.kind === 'glow') glows.push(f);
+      else rest.push(f);
+    }
+    // One blend-mode switch for the whole burst. Per-particle 'lighter'
+    // was a full framebuffer copy on SwiftShader and blew the frame budget.
+    if (sparks.length) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 1.5;
+      for (const f of sparks) {
+        const k = f.t / f.life, sx = f.x - (camX || 0);
+        ctx.globalAlpha = 1 - k;
+        ctx.strokeStyle = f.color;
+        ctx.beginPath();
+        ctx.moveTo(sx, f.y);
+        ctx.lineTo(sx - f.vx * 0.022, f.y - f.vy * 0.022);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+    if (glows.length) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      for (const f of glows) {
+        const sx = f.x - (camX || 0);
+        ctx.globalAlpha = 1 - f.t / f.life;
+        ctx.drawImage(RWB.effects.glow(f.color), sx - f.r, f.y - f.r, f.r * 2, f.r * 2);
+      }
+      ctx.restore();
+    }
+    for (const f of rest) {
+      const k = K[f.kind];
+      if (k && k.draw) k.draw(ctx, f, f.x - (camX || 0));
+    }
   }
   static defineKind(name, def) { FX.KINDS[name] = def; }
 };
@@ -68,14 +105,22 @@ RWB.FX.KINDS = {
       if (f.floor && f.y > f.floor && f.vy > 0) { f.y = f.floor; f.vy *= -0.36; f.vx *= 0.6; f.vr *= 0.5; if (f.vy > -45) { f.vy = 0; f.rest = true; } }
     },
     draw(ctx, f, sx) {
-      ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, (f.life - f.t) / (f.life * 0.35)));
-      ctx.translate(sx, f.y); ctx.rotate(f.rot); ctx.fillStyle = f.color;
-      ctx.beginPath(); ctx.moveTo(-f.r, f.r * 0.6); ctx.lineTo(f.r, 0); ctx.lineTo(0, -f.r); ctx.closePath(); ctx.fill(); ctx.restore();
+      const alpha = ctx.globalAlpha;
+      ctx.globalAlpha = alpha * Math.max(0, Math.min(1, (f.life - f.t) / (f.life * 0.35)));
+      ctx.fillStyle = f.color;
+      ctx.fillRect(sx - f.r, f.y - f.r, f.r * 2, f.r * 1.4);
+      ctx.globalAlpha = alpha;
     }
   },
   dust: {
     update(f, dt) { f.y -= 10 * dt; },
-    draw(ctx, f, sx) { const k = f.t / f.life; ctx.save(); ctx.globalAlpha = 0.45 * (1 - k); RWB.draw.circle(ctx, sx, f.y, f.r * (1 + k), '#d8d0c0'); ctx.restore(); }
+    draw(ctx, f, sx) {
+      const k = f.t / f.life, alpha = ctx.globalAlpha, r = f.r * (1 + k);
+      ctx.globalAlpha = alpha * 0.45 * (1 - k);
+      ctx.fillStyle = '#d8d0c0';
+      ctx.fillRect(sx - r, f.y - r * 0.6, r * 2, r * 1.2);
+      ctx.globalAlpha = alpha;
+    }
   },
   ring: {
     draw(ctx, f, sx) {

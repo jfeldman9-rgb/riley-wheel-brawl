@@ -1,0 +1,70 @@
+{
+  "method": "Headless Chromium software Canvas, real requestAnimationFrame, 10s per case, 1280x720 viewport, AUTO adaptation disabled and LITE forced off",
+  "errors": [],
+  "rows": [
+    {
+      "name": "Stage 1 wave 3",
+      "seconds": 10,
+      "canvas": [
+        1280,
+        720
+      ],
+      "frames": 601,
+      "avgFps": 60,
+      "p95Ms": 16.7,
+      "p99Ms": 16.8,
+      "over33": 0,
+      "over50": 0,
+      "meanUpdateDrawMs": 0.32,
+      "runtimeLite": false
+    },
+    {
+      "name": "Stage 3 wave 3",
+      "seconds": 10,
+      "canvas": [
+        1280,
+        720
+      ],
+      "frames": 601,
+      "avgFps": 60,
+      "p95Ms": 16.7,
+      "p99Ms": 16.8,
+      "over33": 0,
+      "over50": 0,
+      "meanUpdateDrawMs": 0.31,
+      "runtimeLite": false
+    },
+    {
+      "name": "Stage 5 wave 3",
+      "seconds": 10,
+      "canvas": [
+        1280,
+        720
+      ],
+      "frames": 601,
+      "avgFps": 60,
+      "p95Ms": 16.7,
+      "p99Ms": 16.8,
+      "over33": 0,
+      "over50": 0,
+      "meanUpdateDrawMs": 0.31,
+      "runtimeLite": false
+    },
+    {
+      "name": "Stage 4 boss",
+      "seconds": 10,
+      "canvas": [
+        1280,
+        720
+      ],
+      "frames": 601,
+      "avgFps": 60,
+      "p95Ms": 16.7,
+      "p99Ms": 16.8,
+      "over33": 0,
+      "over50": 0,
+      "meanUpdateDrawMs": 0.22,
+      "runtimeLite": false
+    }
+  ]
+}
