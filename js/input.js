@@ -607,8 +607,9 @@ RWB.input = (function () {
     ctx.restore();
   }
 
+  function clear(){anyKey=false;for(const o of [held,pressed,keyDown,padDown])for(const k in o)delete o[k];queue.length=0;touch.pointers.clear();touch.joy.active=false;touch.joy.id=null;gamepad.x=gamepad.y=gamepad.stickX=gamepad.stickY=0;}
   return {
-    attach, beginFrame, axis, drawTouch, consumeAny, layoutButtons, rumble,
+    clear, attach, beginFrame, axis, drawTouch, consumeAny, layoutButtons, rumble,
     held, pressed, touch, pointer, gamepad,
     badgeFor, hint, fillKeys, legend, moveHint, beginCapture, cancelCapture,
     get capturing() { return capture ? capture.kind : null; },

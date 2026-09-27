@@ -93,11 +93,12 @@
     cssH = Math.max(1, cssH);
 
     const classic = RWB.display.mode === 'classic';
-    // Native device pixels on phones too. Sharp supersamples 1x screens;
-    // both modes have a 4K / 8.3 MP ceiling to bound GPU memory and fill cost.
+    // AUTO budgets device pixels; SHARP explicitly opts into up to 4K.
     // Keep an exact 16:9 buffer so circles and input coordinates stay aligned.
     const dpr = RWB.display.mode === 'sharp' ? Math.max(2, rawDpr) : rawDpr;
-    const bw = classic ? W : Math.min(3840, Math.max(W, Math.ceil(cssW * dpr / 16) * 16));
+    const auto=RWB.display.mode==='auto',cap=auto?(RWB.perf.coarse?1280:1920):3840;
+    const budget=auto?(RWB.perf.quality||1):1;
+    const bw = classic ? W : Math.max(W,Math.floor(Math.min(cap,cssW*dpr)*budget/16)*16);
     const bh = bw * H / W;
     const renderScale = bw / W;
     RWB.display.renderScale = renderScale;
@@ -142,8 +143,11 @@
     if (this.mode === 'sharp') return 'SHARP ' + scale;
     return 'AUTO ' + scale;
   };
-  window.addEventListener('resize', resize);
-  window.addEventListener('orientationchange', () => setTimeout(resize, 100));
+  let resizeTimer=0;
+  function scheduleResize(){clearTimeout(resizeTimer);resizeTimer=setTimeout(resize,50);}
+  RWB.display.resizeHandler=scheduleResize;
+  window.addEventListener('resize', scheduleResize);
+  window.addEventListener('orientationchange', scheduleResize);
   // Moving the window onto a retina monitor doesn't always fire resize.
   let dprWatch = null;
   function bindDprWatch() {
@@ -151,19 +155,21 @@
     dprWatch = window.matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
     dprWatch.addEventListener('change', onDprChange);
   }
-  function onDprChange() { resize(); bindDprWatch(); }
+  function onDprChange() { scheduleResize(); bindDprWatch(); }
   bindDprWatch();
   document.addEventListener('fullscreenchange', () => {
     RWB.display.fullscreen = !!document.fullscreenElement;
-    setTimeout(resize, 50);
+    scheduleResize();
   });
   document.addEventListener('visibilitychange', () => {
+    clock.reset();RWB.input.clear();last=performance.now();
     if (!document.hidden) return;
     const s = game.scene;
     if (s && s.isGameplay && s.phase === 'play' && !s.paused) {
       if (s.pause) s.pause(); else s.paused = true;
     }
   });
+  window.addEventListener('blur',()=>{clock.reset();RWB.input.clear();last=performance.now();const s=game.scene;if(s?.isGameplay&&!s.paused&&s.phase==='play')s.pause?s.pause():s.paused=true;});
   resize();
   function toCanvas(cx, cy) {
     const r = canvas.getBoundingClientRect();
@@ -187,24 +193,22 @@
     document.fonts.load(`8px ${RWB.FONT}`).catch(() => {}),
     new Promise(resolve => setTimeout(resolve, 1500))
   ]) : Promise.resolve();
-  Promise.all([RWB.assets.load(p => { progress = p; }), fontReady]).then(() => {
+  Promise.all([RWB.assets.load(p => { progress = p; }), fontReady]).then(()=>RWB.prepareRendering()).then(() => {
     loading = false; game.boot();
   });
 
   /* ---- loop ---- */
+  const clock=new RWB.FrameClock();let clockScene=null;
   let last = performance.now();
-  let fpsT = 0, frames = 0, fps = 0, slowSeconds = 0;
+  let fpsT = 0, frames = 0, fps = 0;
   function frame(now) {
+    const started=performance.now();
     let dt = (now - last) / 1000; last = now;
     if (dt > 0.1) dt = 0.1; // tab switch protection
     frames++; fpsT += dt;
     if (fpsT >= 1) {
       fps = frames; frames = 0; fpsT = 0;
-      // Three slow seconds in a live fight and AUTO effects drop to LITE.
-      const s = game.scene;
-      const fighting = s && s.isGameplay && s.phase === 'play' && !s.paused && !document.hidden;
-      slowSeconds = fighting && fps < 48 ? slowSeconds + 1 : 0;
-      if (slowSeconds >= 3 && !RWB.perf.runtimeLite) RWB.perf.runtimeLite = true;
+
     }
     RWB.input.beginFrame();
     if (RWB.input.pressed.fullscreen) RWB.display.toggleFullscreen();
@@ -225,14 +229,21 @@
     applyTransform();
     if (loading) drawLoading();
     else if (game.scene) {
-      if (game.fadeDir !== 1) game.scene.update(dt, RWB.input);
-      game.scene.draw(ctx);
+      const scene=game.scene;
+      if(clockScene!==scene){clock.reset();clockScene=scene;}
+      if(game.fadeDir!==1){
+        if(scene.isGameplay)clock.advance(dt,RWB.input,(step,input)=>{RWB.Motion.capture(scene);scene.update(step,input);});
+        else {clock.reset();scene.update(dt,RWB.input);}
+      }
+      RWB.Motion.alpha=scene.isGameplay?clock.alpha:1;
+      scene.draw(ctx);
     }
     if (game.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${game.fade})`; ctx.fillRect(0, 0, W, H); }
     if (RWB.audio.muted) RWB.text.draw(ctx, 'MUTE', W - 6, H - 10, { size: 6, align: 'right', color: '#aaa' });
     if (window.location.hash === '#fps') {
       RWB.text.draw(ctx, `${fps} FPS  ${rs}x`, 4, H - 10, { size: 6, color: '#0f0' });
     }
+    RWB.perf.observe(performance.now()-started,dt,!!(game.scene?.isGameplay&&!game.scene.paused&&!document.hidden));
     requestAnimationFrame(frame);
   }
   function drawLoading() {

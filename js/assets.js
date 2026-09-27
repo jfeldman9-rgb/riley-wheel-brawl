@@ -15,7 +15,7 @@
    from an older deploy can't pin the fallback. */
 'use strict';
 
-RWB.ASSET_VER = '20260926-w3f';
+RWB.ASSET_VER = '20260927-smooth1';
 RWB.assets = (function () {
   const images = {};
   const cs = typeof document !== 'undefined' && document.currentScript;
@@ -43,7 +43,7 @@ RWB.assets = (function () {
   function fetchImage(url) {
     return new Promise(resolve => {
       const img = new Image();
-      img.onload = () => resolve(img);
+      img.onload = async () => { try { if (img.decode) await img.decode(); resolve(img); } catch (_) { resolve(null); } };
       img.onerror = () => resolve(null);
       img.src = url;
     });

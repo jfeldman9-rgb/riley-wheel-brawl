@@ -9,6 +9,12 @@
       kick:[227,215,101,215], fireball:[303,206,144,205], hurt:[166,215,62,214], jump:[178,172,82,171]
     }
   };
+  const rims=new Map();
+  function rimFrame(frame){
+    if(rims.has(frame))return rims.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
+    const c=document.createElement('canvas');c.width=img.width+16;c.height=img.height+16;const g=c.getContext('2d');
+    g.filter='drop-shadow(0 0 2.84px rgba(255,232,180,.7)) drop-shadow(0 2.36px 2.36px rgba(0,0,0,.65))';g.drawImage(img,8,8);rims.set(frame,c);return c;
+  }
   function degrees(value) {
     return value * Math.PI / 180;
   }
@@ -75,18 +81,13 @@
     }
     draw(ctx, cameraX) {
       const x=this.x-cameraX,y=this.y-this.z,dir=Math.sign(this.vx)||1;
-      ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineCap='round';
-      for(let i=0;i<4;i++) {const trail=ctx.createLinearGradient(x-dir*42,y,x,y);trail.addColorStop(0,'#ff7b0000');trail.addColorStop(1,i%2?'#ffd86caa':'#ff6633aa');ctx.strokeStyle=trail;ctx.lineWidth=2+i*.6;ctx.beginPath();ctx.moveTo(x-dir*(34+i*4),y+Math.sin(this.x*.08+i)*6);ctx.quadraticCurveTo(x-dir*16,y+(i-1.5)*5,x,y);ctx.stroke();}
-      ctx.restore();
-      const glow = ctx.createRadialGradient(this.x - cameraX, this.y - this.z, 1, this.x - cameraX, this.y - this.z, 16);
-      glow.addColorStop(0, '#ffffff');
-      glow.addColorStop(0.25, '#ffe06e');
-      glow.addColorStop(0.65, '#f46b28');
-      glow.addColorStop(1, 'rgba(244,60,20,0)');
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(this.x - cameraX, this.y - this.z, 16, 0, Math.PI * 2);
-      ctx.fill();
+      const phase=Math.floor(this.x*.08*4/Math.PI)%8;
+      const texture=R.effects.stamp('fireball:'+phase,(g)=>{
+        g.translate(68,48);g.lineCap='round';g.globalCompositeOperation='lighter';
+        for(let i=0;i<4;i++){const trail=g.createLinearGradient(-42,0,0,0);trail.addColorStop(0,'#ff7b0000');trail.addColorStop(1,i%2?'#ffd86caa':'#ff6633aa');g.strokeStyle=trail;g.lineWidth=2+i*.6;g.beginPath();g.moveTo(-(34+i*4),Math.sin(phase*Math.PI/4+i)*6);g.quadraticCurveTo(-16,(i-1.5)*5,0,0);g.stroke();}
+        g.globalCompositeOperation='source-over';const glow=g.createRadialGradient(0,0,1,0,0,16);glow.addColorStop(0,'#ffffff');glow.addColorStop(.25,'#ffe06e');glow.addColorStop(.65,'#f46b28');glow.addColorStop(1,'rgba(244,60,20,0)');g.fillStyle=glow;g.beginPath();g.arc(0,0,16,0,Math.PI*2);g.fill();
+      });
+      ctx.save();ctx.translate(x,y);ctx.scale(dir,1);ctx.drawImage(texture,-68,-48);ctx.restore();
     }
   }
   class Riley extends R.Entity {
@@ -413,9 +414,9 @@
       if (this.invuln > 0 && Math.floor(this.invuln * 18) % 2 === 0) ctx.globalAlpha *= .55;
       if (this.dead) ctx.globalAlpha *= Math.max(.1, Math.min(1, 1 - this.deadTimer / .75));
       // Thin warm rim + contact shadow keep Riley readable against busy art.
-      if (!this.ghost) ctx.filter = 'drop-shadow(0 0 1.2px rgba(255,232,180,.7)) drop-shadow(0 1px 1px rgba(0,0,0,.65))';
-      ctx.drawImage(img, -ax * scale, -ay * scale, w * scale, h * scale);
-      ctx.filter = 'none';
+      const rim=!this.ghost&&rimFrame(frame);
+      if(rim)ctx.drawImage(rim,(-ax-8)*scale,(-ay-8)*scale,(w+16)*scale,(h+16)*scale);
+      else ctx.drawImage(img, -ax * scale, -ay * scale, w * scale, h * scale);
       ctx.restore();
       return true;
     }
@@ -438,4 +439,5 @@
   }
   R.Fireball = Fireball;
   R.Riley = Riley;
+  R.Riley.prepare=()=>Object.keys(RILEY16.frames).forEach(rimFrame);
 }());

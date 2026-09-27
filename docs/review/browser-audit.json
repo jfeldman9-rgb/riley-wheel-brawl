@@ -7,23 +7,23 @@
   "timings": [
     {
       "stage": 1,
-      "drawMs": 7.78
+      "drawMs": 0.6
     },
     {
       "stage": 2,
-      "drawMs": 7.68
+      "drawMs": 0.49
     },
     {
       "stage": 3,
-      "drawMs": 2.35
+      "drawMs": 0.68
     },
     {
       "stage": 4,
-      "drawMs": 4.04
+      "drawMs": 0.66
     },
     {
       "stage": 5,
-      "drawMs": 4.78
+      "drawMs": 0.52
     }
   ],
   "fallback": {

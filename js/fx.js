@@ -48,7 +48,7 @@ RWB.FX = class FX {
   }
   draw(ctx, camX) {
     const K = FX.KINDS;
-    for (const f of this.list) { if (f.t < 0) continue; const k = K[f.kind]; if (k && k.draw) k.draw(ctx, f, f.x - (camX || 0)); }
+    for (const f of this.list) { if (f.t < 0 || Math.abs(f.x-(camX||0)-320)>440+f.r || f.y < -100-f.r || f.y > 460+f.r) continue; const k = K[f.kind]; if (k && k.draw) k.draw(ctx, f, f.x - (camX || 0)); }
   }
   static defineKind(name, def) { FX.KINDS[name] = def; }
 };
@@ -87,8 +87,7 @@ RWB.FX.KINDS = {
   glow: {
     draw(ctx, f, sx) {
       const k = f.t / f.life; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1 - k;
-      const g = ctx.createRadialGradient(sx, f.y, 0, sx, f.y, f.r); g.addColorStop(0, f.color); g.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g; ctx.fillRect(sx - f.r, f.y - f.r, f.r * 2, f.r * 2); ctx.restore();
+      ctx.drawImage(RWB.effects.glow(f.color),sx-f.r,f.y-f.r,f.r*2,f.r*2); ctx.restore();
     }
   },
   text: {

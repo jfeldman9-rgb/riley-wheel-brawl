@@ -1,54 +1,69 @@
-# W3 review evidence
+# Current review evidence — smoothness pass
 
-Evidence is generated from `rwb-w2`; the PR embeds the required images directly.
+All current screenshots and `*-smoothness.txt` logs were regenerated from the
+smoothness changes on `rwb-w2`. PR #4 targets `rwb-w1`.
 
 ## Reproduce
 
 ```sh
 node tools/check.cjs
+node tools/smoothness-check.cjs
 node tools/soak.cjs
 node tools/soak.cjs --natural
 CHROMIUM_PATH=/path/to/chromium node tools/review.cjs
+CHROMIUM_PATH=/path/to/chromium node tools/smoothness-browser.cjs
+CHROMIUM_PATH=/path/to/chromium node tools/performance.cjs . docs/review/performance-after.json
+RWB_ACCELERATED=1 CHROMIUM_PATH=/path/to/chromium node tools/performance.cjs . docs/review/performance-accelerated-after.json
 ```
 
-The browser tool requires Playwright. `CHROMIUM_PATH` is optional if Playwright's
-Chromium is installed. It serves the checkout locally, waits for painted images
-and fonts, simulates normal gameplay input, and captures the real Canvas renderer.
-The natural soak retains a failing exit code for failed individual runs; consult
-its table rather than treating that status as an assisted-completion failure.
+Browser tools require Playwright. `CHROMIUM_PATH` is optional for the review and
+performance tools when Playwright’s Chromium is installed. The input test also
+uses Playwright’s installed browser if no path is provided. Tools serve the
+checkout locally. Natural mode intentionally returns a failing exit code when
+individual seeds fail; consult its table. Assisted mode must clear every seed.
 
-- `stage1-midfight.jpeg` through `stage5-midfight.jpeg`: regular fights with painted layers and effects.
-- `stage1-boss.jpeg` through `stage5-boss.jpeg`: the five boss arenas, including the separate Taim roof.
-- `character-closeups.jpeg`: all twelve walking rigs, including Riley, Twinkle and Loial.
-- `walk-riley.jpeg`, `walk-trolloc.jpeg`, `walk-darkfriend.jpeg`: eight phases across a full stride, drawn by the runtime rig.
-- `rig-poses.jpeg`: runtime walk, attack, channel, hurt and knockdown diagnostics for Riley, Trolloc and Darkfriend.
-- `rendered-foot-contacts.json`: all twelve rigs; actual mesh-interpolated sole positions across both directions, diagonal travel, varying speed and 30/60/120 Hz steps. The browser command fails if drift/contact error exceeds 0.15 world pixels.
-- Matching walk JSON files: maximum measured stance-contact drift and sample count.
-- `cutscene-callandor.jpeg`: painted reveal with the dialogue portrait and caption.
-- `title.jpeg`: supplied key art and logo.
-- `lido-reference.png`: headless Chromium capture of level 0 from
-  `jfeldman9-rgb/whale-lance-buffet-brawl`, commit
-  `34fbd7c3728cf74f33988b99a39058717a38ecc9`, for visual comparison.
-- `check.txt`, `soak-natural.txt`, `soak-assisted.txt`, `browser-audit.json`: complete verification outputs.
+## Current evidence
 
-Fight captures use seeds fixed by `tools/review.cjs` and the normal update/input
-path. They do not inject damage, an attack pose or a projectile for the screenshot.
-They clear intro cards/expired subtitles and tutorial text to expose the scene.
-Closeups, walk strips and the pose board are diagnostic drawings, not representations of a live
-encounter. Screenshots are captured directly as JPEG at quality 85 to keep review uploads small; they have not been composited or retouched.
+- `stage1-midfight.jpeg` … `stage5-midfight.jpeg`: live painted fights.
+- `stage1-boss.jpeg` … `stage5-boss.jpeg`: bosses, including the separate Taim roof.
+- `character-closeups.jpeg`, `riley-closeup.jpeg`, `belal-closeup.jpeg`: runtime art.
+- `walk-riley.jpeg`: eight steps using Riley’s four distance-driven painted frames.
+- `walk-trolloc.jpeg`, `walk-darkfriend.jpeg`, `walk-cultist.jpeg`: eight mesh phases.
+- `rig-poses.jpeg`, `joints-closeup.jpeg`: runtime articulation diagnostics.
+- `rendered-foot-contacts.json`: eleven bind definitions (Be’lal’s legacy bind is
+  fallback-only); mesh-interpolated soles in both directions, diagonal travel,
+  changing speed and 30/60/120Hz steps. Maximum permitted error: 0.15 world pixels.
+- `cutscene-callandor.jpeg`, `title.jpeg`: painted reveal, portrait, key art and logo.
+- `stageN-vs-lido.jpeg`: labelled equal-height comparisons. `seams-stageN.jpeg`:
+  four-camera stage boards. These boards are composed by the browser from actual
+  runtime drawings, not retouched images.
+- `lido-reference.png`: inherited headless capture of Buffet Brawl level 0, commit
+  `34fbd7c3728cf74f33988b99a39058717a38ecc9`.
+- `check-smoothness.txt`, `smoothness-check.txt`: current checks.
+- `natural-smoothness.txt`, `assisted-smoothness.txt`: complete current seed outputs.
+- `browser-audit.json`: 77-resource load, cache stamps, missing-art retry/fallback.
+- `smoothness-browser.json`: actual DOM keyboard/main-loop tests; GPU/Canvas mask
+  comparison and successful fallback after deliberately losing the WebGL context.
+- `performance-before.json`, `performance-after.json`: matched software-Canvas
+  benchmark, before at `ae8022a421331ef99a6991f35d5e7ea33d8f4bc7` and current after.
+  The same current benchmark script is used against both checkout roots; WebGL
+  skinning is disabled in these two runs to exercise the slower Canvas fallback.
+- `performance-accelerated-after.json`: current indexed WebGL path on SwiftShader.
 
-The browser audit includes a separate intentional failure test for `stage3-mid`:
-one initial request, one retry, then a playable fallback. Its normal-load missing
-and failed lists remain empty.
+Fight captures use deterministic normal input, without injecting damage, a pose
+or a projectile. Intro cards, expired captions and tutorial text are cleared for
+inspection. Closeups and walk strips are explicitly diagnostic drawings. All
+JPEGs are native browser/canvas exports at quality 85.
 
-The background/foreground integration and source-detail comparison are visible
-here. The follow-up replaces hard leg cuts with continuous skinning and rigid sole contacts; elastic cloth deformation remains a reviewable limitation; Riley now uses the top-middle side panel. See
-`../STATUS.md` for the exact natural/assisted tables and remaining weaknesses.
+The performance tool samples five fights after 90 simulation warmup frames,
+including ten rendered warmup frames, then 30 timed update/draw submissions per
+stage. It separately measures 180 native RAF intervals after 60 RAF warmup frames.
+The benchmark alone restores HP to keep each sample alive; difficulty comes from
+the separate soak. Submitted draw cost is not GPU completion latency. Headless
+software/SwiftShader intervals include driver/compositor stalls and are not
+physical-phone FPS. Final canvas size may reflect AUTO’s adaptation during the
+RAF sample; per-stage draw samples start at the initial AUTO resolution.
 
-## Fixes in this round (`w3b`)
-
-`tools/review.cjs` retains every listed output, including four-camera seam boards for each actual stage, and writes oversized canvases through `toDataURL` rather than hanging on element screenshots larger than the viewport. All JPEGs use quality 85. Runtime plates are bottom-anchored at a minimum 896px width, so the 640px view contains at most one narrow, misted join.
-
-Riley is runtime-baked from the top-middle side panel of `riley-sheet.jpeg`: the neutral-grey background is soft-keyed, the coat ends at the hip with trouser texture continued beneath it, and the 64-unit rig has a >=1/4.6 head plus short child limbs. `rig-riley.png` is fallback only. The transparent composite is cleared every frame and drawn once. Be'lal's blade is bound to his front hand and the pivot-like pommel dot is gone.
-
-Playwright is not installed in this checkout, so regenerate the JPEGs with the command above before visual sign-off. This text-only round does not claim refreshed images.
+`check.txt`, `soak-natural.txt`, `soak-assisted.txt` and `PR_W3.md` are historical
+artifacts. Use the current files above and [STATUS](../STATUS.md), which supersede
+older statements that browser evidence was unavailable.

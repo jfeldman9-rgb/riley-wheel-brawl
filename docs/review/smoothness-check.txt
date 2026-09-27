@@ -1,0 +1,10 @@
+PASS 60, 120 and 144 Hz displays produce identical 60 Hz simulation distance
+PASS A press between ticks survives and is consumed once across catch-up ticks
+PASS Long stalls have a five-tick catch-up bound; resetting clears stale input/time
+PASS Render interpolation restores authoritative actor, gait, camera and projectile values
+PASS Teleports and paused scenes do not interpolate across arenas
+PASS Camera follow and punch damping agree at 60 and 120 updates/second
+PASS A repeated light hit does not extend hit-stop; big finish remains available
+PASS AUTO adapts after sustained overload, recovers gradually and leaves SHARP alone
+PASS Focus reset releases held keyboard, gamepad and touch state
+9 smoothness checks passed.

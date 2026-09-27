@@ -68,6 +68,8 @@
     const alpha=bc.getImageData(0,0,bake.width,bake.height).data;
     const texture=document.createElement('canvas');texture.width=Math.round(w*384/h);texture.height=384;
     const tc=texture.getContext('2d');tc.drawImage(image,0,0,texture.width,texture.height);
+    // Grade the source once, keeping every runtime pose on one painted texture.
+    tc.globalCompositeOperation='source-atop';const shade=tc.createLinearGradient(0,0,texture.width,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');tc.fillStyle=shade;tc.fillRect(0,0,texture.width,texture.height);tc.globalCompositeOperation='source-over';
     const pixels=tc.getImageData(0,0,texture.width,texture.height).data,soles=legs.map(leg=>({x:leg[2].x,y:leg[2].y}));
     for(let yy=0;yy<texture.height;yy++)for(let xx=0;xx<texture.width;xx++){
       if(pixels[(yy*texture.width+xx)*4+3]<96)continue;
@@ -95,7 +97,9 @@
         for(let xx=0;xx<texture.width;xx++){const px=xx*w/texture.width,j=(yy*texture.width+xx)*4,isKick=py>hip.y+h*.02&&px>=mid;if(isKick)bd.data[j+3]=0;else kd.data[j+3]=0;}}
       kick.getContext('2d').putImageData(kd,0,0);body.getContext('2d').putImageData(bd,0,0);split={kick,body};
     }
-    const rig={image,w,h,neck,hip,arms,legs,bones,root,vertices,triangles,texture,soles,cols,rows,split,height:d.height,sword:!!d.sword};rigs.set(cacheKey,rig);return rig;
+    const rig={image,w,h,neck,hip,arms,legs,bones,root,vertices,triangles,texture,soles,cols,rows,split,height:d.height,sword:!!d.sword};for(const p of vertices)p.weights=skinWeights(p,rig);
+    rig.faces=triangles.map(([a,b,c])=>{const p=vertices[a],q=vertices[b],v=vertices[c],bx=q.x-p.x,by=q.y-p.y,cx=v.x-p.x,cy=v.y-p.y,det=bx*cy-cx*by;return {a,b,c,bx:bx/det,by:by/det,cx:cx/det,cy:cy/det};});
+    rigs.set(cacheKey,rig);return rig;
   }
 
   function targets(a,d,r,pose){
@@ -131,58 +135,77 @@
     const a=(dx*ex+dy*ey)/l,b=(dx*ey-dy*ex)/l;
     return {x:dst[0].x+a*(p.x-src[0].x)-b*(p.y-src[0].y),y:dst[0].y+b*(p.x-src[0].x)+a*(p.y-src[0].y)};
   }
-  function skinPoint(p,r,bones,pose,forceSide){
-    const {x,y}=p;let X=x+pose.lean*(r.root.y-y),Y=y+pose.bob*r.h/80;
-    if(y>r.neck.y)for(let i=0;i<2;i++){
-      const elbow=r.arms[i][1],hand=r.arms[i][2];let dx=0,dy=0,total=1;
-      for(const [source,target] of [[elbow,bones[2+i*2][1]],[hand,bones[3+i*2][1]]]){
-        const distance=Math.hypot(x-source.x,y-source.y),weight=Math.exp(-distance*distance/(r.h*r.h*.004));
-        const capX=r.sword&&i===0?Infinity:r.h*.12,capY=r.sword&&i===0?Infinity:r.h*.08;
-        dx+=Math.max(-capX,Math.min(capX,target.x-source.x))*weight;
-        dy+=Math.max(-capY,Math.min(capY,target.y-source.y))*weight;total+=weight;
-      }
-      X+=dx/total;Y+=dy/total;
-    }
-    if(y>r.hip.y){
-      const legX=leg=>{const a=y<leg[1].y?leg[0]:leg[1],b=y<leg[1].y?leg[1]:leg[2],t=Math.max(0,Math.min(1,(y-a.y)/(b.y-a.y||1)));return a.x+(b.x-a.x)*t;};
-      const centers=r.legs.map(legX),mid=(centers[0]+centers[1])/2;
-      const side=forceSide!==undefined?forceSide:x<mid?0:1,[hp,kn,ft]=r.legs[side],index=6+side*2;
-      const upper=transformPoint(p,r.bones[index],bones[index]),lower=transformPoint(p,r.bones[index+1],bones[index+1]);
-      const kneeWeight=smooth(kn.y-r.h*.055,kn.y+r.h*.055,y),bootWeight=pose.attack&&side===1?0:smooth(ft.y-r.h*.105,ft.y-r.h*.035,y);
-      let lx=upper.x+(lower.x-upper.x)*kneeWeight,ly=upper.y+(lower.y-upper.y)*kneeWeight;
-      // Soles translate rigidly with their world contact. The ankle blends into
-      // the shin above the boot; neither a planted sole nor its texture rotates.
-      const dst=bones[index+1][1];lx+=(x+dst.x-ft.x-lx)*bootWeight;ly+=(y+dst.y-ft.y-ly)*bootWeight;
-      const weight=smooth(r.hip.y,r.hip.y+r.h*.16,y);X+=(lx-X)*weight;Y+=(ly-Y)*weight;
-    }
-    return {x,y,X,Y};
+  function skinWeights(p,r,forceSide){
+    const {x,y}=p,arms=[];
+    if(y>r.neck.y)for(const arm of r.arms){const weights=[arm[1],arm[2]].map(q=>Math.exp(-((x-q.x)**2+(y-q.y)**2)/(r.h*r.h*.004))),total=1+weights[0]+weights[1];arms.push(weights.map(w=>w/total));}
+    let leg=null;
+    if(y>r.hip.y){const centers=r.legs.map(l=>{const a=y<l[1].y?l[0]:l[1],b=y<l[1].y?l[1]:l[2],t=Math.max(0,Math.min(1,(y-a.y)/(b.y-a.y||1)));return a.x+(b.x-a.x)*t;});const side=forceSide!==undefined?forceSide:x<(centers[0]+centers[1])/2?0:1,[hp,kn,ft]=r.legs[side];leg={side,knee:smooth(kn.y-r.h*.055,kn.y+r.h*.055,y),boot:smooth(ft.y-r.h*.105,ft.y-r.h*.035,y),pelvis:smooth(r.hip.y,r.hip.y+r.h*.16,y)};}
+    return {arms,leg};
   }
-  function paintedBody(output,r,bones,pose){
-    // Composite the connected skin at full opacity before applying actor opacity.
-    // Otherwise overlapping antialiased triangle edges show through during death.
-    const composite=true,scale=384/r.h,actorAlpha=output.globalAlpha;
-    if(composite&&!r.surface){r.surface=document.createElement('canvas');r.surface.width=r.texture.width+512;r.surface.height=896;}
-    const ctx=composite?r.surface.getContext('2d'):output;
-    if(composite){ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,r.surface.width,r.surface.height);ctx.setTransform(scale,0,0,scale,256,256);}
-    const padding=composite?.8/scale:r.h/r.height*.45;
-    for(const [tex,side] of (r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]])){
-    const vertices=r.vertices.map(p=>skinPoint(p,r,bones,pose,side));
-    for(const indices of r.triangles){
-      const [a,b,c]=indices.map(i=>vertices[i]);
-      const det=(b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y),A=((b.X-a.X)*(c.y-a.y)-(c.X-a.X)*(b.y-a.y))/det,B=((b.Y-a.Y)*(c.y-a.y)-(c.Y-a.Y)*(b.y-a.y))/det,C=((c.X-a.X)*(b.x-a.x)-(b.X-a.X)*(c.x-a.x))/det,D=((c.Y-a.Y)*(b.x-a.x)-(b.Y-a.Y)*(c.x-a.x))/det;
-      ctx.save();ctx.beginPath();const center={x:(a.X+b.X+c.X)/3,y:(a.Y+b.Y+c.Y)/3};[a,b,c].forEach((p,i)=>{const dx=p.X-center.x,dy=p.Y-center.y,l=Math.hypot(dx,dy)||1;ctx[i?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);});ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(tex,0,0,r.w,r.h);ctx.restore();
+  function boneTransforms(r,bones){return r.bones.map((src,i)=>{const dst=bones[i],dx=src[1].x-src[0].x,dy=src[1].y-src[0].y,l=dx*dx+dy*dy||1,ex=dst[1].x-dst[0].x,ey=dst[1].y-dst[0].y,a=(dx*ex+dy*ey)/l,b=(dx*ey-dy*ex)/l;return {a,b,x:dst[0].x-a*src[0].x+b*src[0].y,y:dst[0].y-b*src[0].x-a*src[0].y};});}
+  function skinPoint(p,r,bones,pose,forceSide,transforms,out){
+    const {x,y}=p,w=forceSide===undefined?(p.weights||skinWeights(p,r)):skinWeights(p,r,forceSide);let X=x+pose.lean*(r.root.y-y),Y=y+pose.bob*r.h/80;
+    for(let i=0;i<w.arms.length;i++)for(let j=0;j<2;j++){const source=r.arms[i][j+1],target=bones[2+i*2+j][1],capX=r.sword&&i===0?Infinity:r.h*.12,capY=r.sword&&i===0?Infinity:r.h*.08;X+=Math.max(-capX,Math.min(capX,target.x-source.x))*w.arms[i][j];Y+=Math.max(-capY,Math.min(capY,target.y-source.y))*w.arms[i][j];}
+    if(w.leg){const l=w.leg,index=6+l.side*2,ft=r.legs[l.side][2],t=transforms||boneTransforms(r,bones),u=t[index],v=t[index+1],ux=u.a*x-u.b*y+u.x,uy=u.b*x+u.a*y+u.y,lx0=v.a*x-v.b*y+v.x,ly0=v.b*x+v.a*y+v.y,boot=pose.attack&&l.side===1?0:l.boot,dst=bones[index+1][1];let lx=ux+(lx0-ux)*l.knee,ly=uy+(ly0-uy)*l.knee;lx+=(x+dst.x-ft.x-lx)*boot;ly+=(y+dst.y-ft.y-ly)*boot;X+=(lx-X)*l.pelvis;Y+=(ly-Y)*l.pelvis;}
+    const q=out||{};q.x=x;q.y=y;q.X=X;q.Y=Y;return q;
+  }
+  // Batch the connected skin in one indexed GPU draw. Keep Canvas skinning for
+  // disabled/lost WebGL contexts. No image/pose quality is dropped in either path.
+  let meshGPU;
+  function gpuRenderer(){
+    if(meshGPU!==undefined)return meshGPU;
+    meshGPU=null;
+    try {
+      const canvas=document.createElement('canvas');canvas.width=canvas.height=1024;
+      const gl=canvas.getContext('webgl',{alpha:true,antialias:false,premultipliedAlpha:true,preserveDrawingBuffer:true,depth:false,stencil:false});if(!gl)return null;
+      const shader=(type,source)=>{const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error('Mesh shader unavailable');return s;};
+      const program=gl.createProgram(),vs=shader(gl.VERTEX_SHADER,'attribute vec2 position;attribute vec2 uv;uniform vec4 bounds;varying vec2 tex;void main(){gl_Position=vec4((position.x-bounds.x)/bounds.z*2.0-1.0,1.0-(position.y-bounds.y)/bounds.w*2.0,0.0,1.0);tex=uv;}'),fs=shader(gl.FRAGMENT_SHADER,'precision mediump float;varying vec2 tex;uniform sampler2D image;void main(){gl_FragColor=texture2D(image,tex);}');
+      gl.attachShader(program,vs);gl.attachShader(program,fs);gl.linkProgram(program);gl.deleteShader(vs);gl.deleteShader(fs);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error('Mesh program unavailable');
+      gl.useProgram(program);gl.disable(gl.DEPTH_TEST);gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,true);
+      const position=gl.getAttribLocation(program,'position'),uv=gl.getAttribLocation(program,'uv'),bounds=gl.getUniformLocation(program,'bounds');gl.uniform1i(gl.getUniformLocation(program,'image'),0);
+      canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();meshGPU=null;});
+      meshGPU={canvas,gl,position,uv,bounds,rigs:new WeakMap()};
+    } catch(_){meshGPU=null;}
+    return meshGPU;
+  }
+  function gpuSkin(r,vertices,bounds,scale,destination){
+    if(r.split||R.perf.canvasSkin)return false;const gpu=gpuRenderer();if(!gpu)return false;
+    const {gl,canvas}=gpu,{left,top,width,height}=bounds;if(width>canvas.width||height>canvas.height||gl.isContextLost())return false;
+    let data=gpu.rigs.get(r);
+    if(!data){
+      const texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,texture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,r.texture);
+      const vertex=gl.createBuffer(),indices=gl.createBuffer(),array=new Float32Array(vertices.length*4),faces=new Uint16Array(r.triangles.flat());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,indices);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,faces,gl.STATIC_DRAW);
+      r.vertices.forEach((v,i)=>{array[i*4+2]=v.x/r.w;array[i*4+3]=v.y/r.h;});data={texture,vertex,indices,array,count:faces.length};gpu.rigs.set(r,data);
     }
+    vertices.forEach((v,i)=>{data.array[i*4]=v.X*scale;data.array[i*4+1]=v.Y*scale;});
+    gl.viewport(0,0,width,height);gl.enable(gl.SCISSOR_TEST);gl.scissor(0,0,width,height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.bindTexture(gl.TEXTURE_2D,data.texture);gl.bindBuffer(gl.ARRAY_BUFFER,data.vertex);gl.bufferData(gl.ARRAY_BUFFER,data.array,gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(gpu.position);gl.vertexAttribPointer(gpu.position,2,gl.FLOAT,false,16,0);gl.enableVertexAttribArray(gpu.uv);gl.vertexAttribPointer(gpu.uv,2,gl.FLOAT,false,16,8);gl.uniform4f(gpu.bounds,left,top,width,height);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,data.indices);gl.drawElements(gl.TRIANGLES,data.count,gl.UNSIGNED_SHORT,0);
+    destination.setTransform(1,0,0,1,0,0);destination.drawImage(canvas,0,canvas.height-height,width,height,0,0,width,height);return true;
+  }
+  function paintedBody(output,r,bones,pose,actor){
+    const cache=actor&&actor.g?(actor._paintedPose||(actor._paintedPose={})):r;
+    // A single tightly bounded composite prevents triangle-edge alpha seams.
+    const scale=384/r.h,signature=[pose.lean,pose.bob,!!pose.attack,!!R.perf.canvasSkin];
+    for(const bone of bones)for(const p of bone)signature.push(p.x,p.y);
+    const same=cache.signature&&signature.every((v,i)=>v===cache.signature[i]);
+    if(!same){
+      cache.signature=signature;const transforms=boneTransforms(r,bones),layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
+      r.buffers=r.buffers||layers.map(()=>r.vertices.map(()=>({})));
+      let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+      for(let n=0;n<layers.length;n++)for(let i=0;i<r.vertices.length;i++){const v=skinPoint(r.vertices[i],r,bones,pose,layers[n][1],transforms,r.buffers[n][i]);minX=Math.min(minX,v.X);minY=Math.min(minY,v.Y);maxX=Math.max(maxX,v.X);maxY=Math.max(maxY,v.Y);}
+      const left=Math.floor(minX*scale)-2,top=Math.floor(minY*scale)-2,width=Math.ceil(maxX*scale)-left+2,height=Math.ceil(maxY*scale)-top+2;
+      if(!cache.surface)cache.surface=document.createElement('canvas');
+      // Quantized capacity avoids reallocating the canvas for tiny pose changes.
+      const capacityW=Math.ceil(width/32)*32,capacityH=Math.ceil(height/32)*32;
+      if(cache.surface.width<capacityW)cache.surface.width=capacityW;if(cache.surface.height<capacityH)cache.surface.height=capacityH;
+      cache.bounds={left,top,width,height};const ctx=cache.surface.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cache.surface.width,cache.surface.height);ctx.setTransform(scale,0,0,scale,-left,-top);
+      const padding=.8/scale;
+      if(!gpuSkin(r,r.buffers[0],cache.bounds,scale,ctx))for(let n=0;n<layers.length;n++){const vertices=r.buffers[n],tex=layers[n][0];
+        for(const f of r.faces){const a=vertices[f.a],b=vertices[f.b],c=vertices[f.c],bx=b.X-a.X,by=b.Y-a.Y,cx=c.X-a.X,cy=c.Y-a.Y,A=bx*f.cy-cx*f.by,B=by*f.cy-cy*f.by,C=cx*f.bx-bx*f.cx,D=cy*f.bx-by*f.cx,centerX=(a.X+b.X+c.X)/3,centerY=(a.Y+b.Y+c.Y)/3;
+          ctx.save();ctx.beginPath();for(let k=0;k<3;k++){const p=k===0?a:k===1?b:c,dx=p.X-centerX,dy=p.Y-centerY,l=Math.hypot(dx,dy)||1;ctx[k?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);}ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(tex,0,0,r.w,r.h);ctx.restore();
+        }
+      }
     }
-    if(composite){
-      const x=-256/scale,y=-256/scale,w=r.surface.width/scale,h=r.surface.height/scale;
-      // Shade only pixels belonging to the freshly cleared offscreen skin.
-      // source-atop on the destination canvas also tinted its background and
-      // exposed the full surface rectangle around every actor.
-      ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-atop';
-      const shade=ctx.createLinearGradient(256,0,256+r.w*scale,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');ctx.fillStyle=shade;ctx.fillRect(0,0,r.surface.width,r.surface.height);ctx.globalCompositeOperation='source-over';
-      output.save();output.globalAlpha=actorAlpha;output.drawImage(r.surface,x,y,w,h);
-      output.restore();
-    }
+    const b=cache.bounds;output.drawImage(cache.surface,0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);
   }
   function drawSword(ctx,a,d,r,bones,pose){
     // Anchor to the painted fist as actually skinned (bones[3] wrist), not the
@@ -219,7 +242,7 @@
     } else { old.feet=[]; }
     old.x=a.x;old.y=a.y;
   }
-  R.Puppet={defs,updateGait,knee,contacts(a,kind){
+  R.Puppet={defs,updateGait,knee,prepare(kind){const d=defs[kind],r=d&&getRig(d);if(!r)return null;const a={state:'idle',stateT:0},pose=this.pose(a,d.height),c=document.createElement('canvas');c.width=c.height=1;paintedBody(c.getContext('2d'),r,targets(a,d,r,pose),pose);return r;},contacts(a,kind){
     const d=defs[kind],r=d&&getRig(d);if(!r)return [];
     const pose=this.pose(a,d.height),bones=targets(a,d,r,pose),scale=d.height/r.h,flip=(a.facing||1)*(d.front?1:-1);
     // Barycentric interpolation uses the exact triangles drawn on screen, not
@@ -257,7 +280,7 @@
     const articulated=pose.walking||pose.attack||pose.hurt||a.state==='channel'||a.ai==='telegraph'||a.dead||['knockdown','lying','death'].includes(a.state);
     // Processed connected skin is mandatory even at idle: no raw adult Riley,
     // alternate palette, or uncomposited joint path can leak through.
-    paintedBody(ctx,r,bones,pose);drawSword(ctx,a,d,r,bones,pose);
+    paintedBody(ctx,r,bones,pose,a);drawSword(ctx,a,d,r,bones,pose);
     ctx.restore();
     if(a.callandor){ctx.save();ctx.strokeStyle='#e8ffff';ctx.shadowColor='#9deaff';ctx.shadowBlur=10;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(a.x-cam-12,a.y-a.z-22);ctx.lineTo(a.x-cam-22,a.y-a.z-66);ctx.stroke();ctx.restore();}
     if(a.hitFlash>0){ctx.save();ctx.globalAlpha=Math.min(.55,a.hitFlash*4);ctx.fillStyle='#ffe9ac';ctx.beginPath();ctx.ellipse(a.x-cam,a.y-(a.z||0)-40,18,24,0,0,7);ctx.fill();ctx.restore();}

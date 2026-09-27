@@ -18,14 +18,15 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 | `js/art.js` | pass3 | `RWB.art.has/frame/draw/castShadow/reflect/plate/plateLayer` for painted atlases; all no-ops when the art is absent. |
 | `js/input.js` | pass3 (neutralized) | `RWB.input`: keyboard, gamepad (deadzone, rumble), touch (virtual stick + buttons), mouse. Actions: `up down left right attack jump special assist power pause start mute fullscreen click`. `held`, `pressed`, `axis()`, `hint(id)`, `fillKeys('{attack}')`, `legend()`, `drawTouch(ctx, {always, powerReady, assistReady})`, remap capture. Touch buttons are live when the scene has `isGameplay && phase === 'play' && !paused`. |
 | `js/audio.js` | pass3 (content removed) | `RWB.audio`: buses (master, music→duck, sfx→compressor), `tone/noise/formant/brass` synth primitives, generic `sfx` (blip, select, swing, hit, hurt, thud, jump, pickup, whoosh, lastCall, levelClear, gameOver, impact, wipe, stinger, babble, voLine), 16-step sequencer (`playMusic/stopMusic`), `defineSfx/defineSong/defineStinger/defineVoice`, optional recorded clips `loadClip(key,url)/playClip(key)`, volume/music/mute, `trace` of fired cues, `level()` meter. Songs are registered by content (`title`, `story`, `stage1`, `gameover`), not by this file. |
-| `js/camera.js` | new (generic) | `RWB.Camera`: follow with lead, bounds, arena `lock/unlock`, `shake`, `punch`, `stop` (hit-stop), `flash`, `impact(dir, 'light'|'heavy'|'boss'|'super')`, `update(dt)` → true while frozen, `apply(ctx)`, `drawFlash(ctx)`. Reduced Shake scales shake 35%, punch 50%, flash dimmed/shortened. Impact presets were retuned so light hits stop for about 0.07s, heavy hits 0.11s, boss hits 0.13s, and supers 0.2s. |
+| `js/camera.js` | new (generic) | `RWB.Camera`: follow with lead, bounds, arena `lock/unlock`, `shake`, `punch`, `stop` (hit-stop), `flash`, `impact(dir, 'light'|'heavy'|'boss'|'super')`, `update(dt)` → true while frozen, `apply(ctx)`, `drawFlash(ctx)`. Reduced Shake scales shake 35%, punch 50%, flash dimmed/shortened. Impact presets were retuned so light hits stop for 0.025s, heavy hits 0.06s, boss hits 0.08s, and supers 0.14s; ordinary impacts have a 90ms anti-chain cooldown. |
 | `js/collide.js` | new (generic) | `RWB.collide`: `FAIR` tunables, `box`, `front(actor, reach, back, h, zOff, depth)`, `hurt(actor)`, `overlap(a,b)` (x overlap + lane depth + z range), `circle(...)` for projectiles/beams, `clampLane`, `debugDraw` (`#boxes`). |
 | `js/entity.js` | new (generic) | `RWB.Entity` base: x/y/z, velocities, gravity or `flying`, facing, `setState/stateT`, hp, `invuln`, `takeHit(dmg, fromX, {kb, launch})` with `onHurt/onDeath/onLand` hooks, `drawShadow`; `RWB.Entity.sortByDepth`. |
 | `js/fx.js` | new (generic) | `RWB.FX` pooled particles: `sparks`, `chunks`, `dust`, `ring`, `glow`, `text`, `spawn(kind,…)`, `update/draw`, `FX.defineKind(name,{update,draw})`. Respects `RWB.perf.fxCap/fxScale`. |
 | `js/options.js` | pass3 (unchanged) | `RWB.OptionsPanel('options'|'controls', {full})`: sound, music, display mode, overlay, HUD size, colorblind health, effects, **Screen Shake FULL/REDUCED**, and live key/pad remapping. |
 | `js/pause.js` | new (generic) | `RWB.PauseMenu({onQuit, extra, quitLabel})`: RESUME / OPTIONS / CONTROLS / extras / QUIT; `open()`, `update(input, dt)` → `'resume'|'quit'|null`, `draw(ctx)`. |
 | `js/content.js` | original content | Title, reels, actors, combat, five arenas, HUD, bosses, finale, victory, songs, and optional-art registration. |
-| `js/main.js` | pass3 (flow removed) | Canvas scaling (AUTO / SHARP / CLASSIC, up to 4K, DPR watch, fullscreen), loading screen, audio unlock, main loop (dt clamp, auto-LITE after slow seconds, mute/fullscreen keys, `#fps`), `RWB.game` scene manager: `setScene(s)` (fade), `setSceneNow(s)`, `boot()` (starts `RWB.scenes.Title` or the stub; content may override), `debug` object. |
+| `js/performance.js` | smoothness pass | `FrameClock`: fixed 1/60s ticks, five-tick catch-up limit, retained pressed edges. `Motion`: temporary render interpolation with guaranteed restoration. AUTO frame-cost hysteresis, reusable effect stamps, incremental image/rig/stage preparation. |
+| `js/main.js` | pass3 (flow removed) | Canvas scaling (AUTO capped at 1280px coarse / 1920px desktop, SHARP up to 4K, CLASSIC 640px, DPR watch, fullscreen), loading screen, audio unlock, main loop (bounded 60Hz simulation, interpolated rendering, adaptive AUTO resolution/effects, mute/fullscreen keys, `#fps`), `RWB.game` scene manager: `setScene(s)` (fade), `setSceneNow(s)`, `boot()` (starts `RWB.scenes.Title` or the stub; content may override), `debug` object. |
 
 ## Scene contract
 
@@ -52,7 +53,7 @@ fixed 640x360 canvas; the floor band is `RWB.FLOOR_TOP`..`RWB.FLOOR_BOTTOM`.
 
 ## Content extensions
 
-`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes all five stages. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(levelIndex = 0)` opens any stage and `RWB.game.debug.boss()` summons that stage's boss. `RWB.ASSET_VER` is the shared external-resource cache stamp (`20260926-w3`).
+`RWB.CAPTIONS` exposes every reel caption for validation. `RWB.LEVELS` describes all five stages. `RWB.scenes.Play(game, levelIndex, carry)` implements the soak contract. `RWB.game.debug.play(levelIndex = 0)` opens any stage and `RWB.game.debug.boss()` summons that stage's boss. `RWB.ASSET_VER` is the shared external-resource cache stamp (`20260927-smooth1`).
 
 ## Chunk A content modules
 
@@ -145,3 +146,23 @@ caption removes that flag. Reloading partway through replays the reveal.
 `tools/review.cjs` serves this checkout and captures actual Canvas output with
 headless Playwright/Chromium. Set `CHROMIUM_PATH` for an existing executable.
 Evidence and audit data are under `docs/review/`. The rendered-contact audit samples the actual mesh triangles for all twelve rigs across varying speeds, directions, lane movement and update rates; it fails above 0.15 world pixels of drift/error. `rig-poses.jpeg` exposes walk, attack, channel, hurt and knockdown targets.
+
+## Smoothness rendering contract
+
+`Play.update` remains authoritative. `main.js` captures previous transforms before
+each fixed tick, then `Play.draw` interpolates only for drawing and restores the
+real values in `finally` before drawing the HUD. No interpolated coordinate is
+saved or used for collision. Gait phase/contacts and camera impulses interpolate
+with the actors. Blur/visibility changes clear input and accumulated time.
+
+The painted puppet skin retains its original connected 16×24 topology. Weights,
+source matrices, grading and texture data are prepared once. When WebGL is
+available, indexed mesh triangles render in one batch per actor; Canvas skinning
+remains the fallback after unavailability/context loss. Each live actor caches
+its own bounded pose composite, so a frozen crowd does not invalidate a shared
+pose surface. Stage plates/lighting and common effect textures are cached.
+
+AUTO starts at a practical pixel budget and steps down only after sustained
+overload; eight inexpensive seconds permit gradual recovery. SHARP remains
+manual. Browser-software performance measurements are regression evidence,
+not physical device guarantees. See `SMOOTHNESS.md` and `review/README.md`.

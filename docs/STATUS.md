@@ -1,89 +1,107 @@
-# Riley Wheel Brawl - W3 implementation status
+# Riley Wheel Brawl — current status
 
-Branch `rwb-w2`, based on the latest supplied-art commit on `rwb-w1`:
-`5a576d4ca36a1054e5b7f41a4489e7141ae91a54`.
-Runtime cache stamp: `?v=20260926-w3f`. No changes to `main`; no merge.
+Branch `rwb-w2`; PR #4 targets `rwb-w1`. This smoothness pass starts from
+`ae8022a421331ef99a6991f35d5e7ea33d8f4bc7`, including the later Riley 16,
+Be’lal sprite and seamless-floor work. Runtime stamp: `?v=20260927-smooth1`.
+No changes or merges to `main`; no PR merged.
 
-## Changed
+## Smoothness pass
 
-- w3e: Be'lal is drawn from the ten frames of his painted sheet, with the sword painted in his hand, so SWORD FLURRY cannot detach it. Floors use offline-quilted seamless loops of 1100 units. Mid/near/far plates on stages 2-5 are drawn as one full-width painting, so no landmark repeats on screen and there are no vertical joins. See `review/PR_W3.md`.
+All [twenty improvements](SMOOTHNESS.md) are implemented. Gameplay advances at
+60 fixed ticks/second, with render interpolation and retained input edges. A
+stall cannot trigger an unlimited catch-up loop. Blur/visibility changes clear
+held input and accumulated time. AUTO caps device pixels, adapts after sustained
+slow frames and recovers gradually; SHARP remains an explicit higher-resolution
+option. Resize events are coalesced.
 
-- All supplied paintings and all twelve Riley 16 resources are allowlisted and registered. Five painted far/mid/near/floor compositions replace procedural scenery when files are available. Measured best-match source crops, narrow non-mirrored joins, transparent mid-layer edge feathers, and stage-tinted join mist eliminate the broad double exposures and hard repeat seams. The Black Tower uses its interior art for regular encounters and the roof background/floor for Taim.
-- All enemy/boss cutouts, Loial, dialogue portraits, ten story stills, title key art and logo are connected. Missing boss portraits use face crops of their cutouts. Twinkle uses her supplied rig art. Riley uses ten purpose-made, anchor-aligned animation frames and the matching portrait; the old sheet/rig remain unused.
-- Eleven non-Riley character rigs preserve painted source pixels. Head, torso, upper/lower arms and upper/lower legs have authored bind joints. A connected triangle mesh blends upper/lower leg IK through the knees and coat hems, eliminating the hard segment gaps from the first W2 pass. Arms counter-swing visibly; rigid sole regions translate with measured painted contacts. The guard uses authored contacts for its overlapping boots. Partially transparent actors composite once so death fades do not reveal triangle seams. Kicks respect the authored leg length. Stance contacts stay fixed in world space until toe-off; stride advances with actual horizontal/lane displacement, not elapsed time. Arms counter-swing and the body bobs. Attacks, hurt and knockdown use the same rig. Idle uses the same processed connected composite; Draghkar retains its separate airborne wing motion.
-- Consistent visual heights and foot origins, grounded shadows, per-stage lighting/grade, floor depth wash, hit sparks/rings, step/impact dust and fireball trails. Camera shake/punch was being calculated but not applied by Play; it now affects the world while the HUD stays stable. Foreground props remain below the fight lanes. Default control opacity is reduced, with the sticky controls, hit regions and user-adjustable setting retained. Large-HUD boss bars no longer overlap the player panels.
-- Boss Continue restores HP, attack-cycle progress, attack coverage, phase two, and Taim rescue/readiness state. Death writes immediately; live boss progress writes once per second. An interrupted Twinkle readiness caption is replayed after Continue. Explicit Restart Stage still starts the stage over.
-- Stage 4 clear persists `pendingReveal: 'callandor'`. Reload/Continue must replay the reveal; only acknowledging its last caption removes the flag. Callandor remains awarded and Stage 5 starts afterward.
-- Incoming-damage scales are tuned per stage; boss move sets and hitbox rules remain intact. Chieftain attack-cycle advancement now occurs when a move activates, preventing a stagger during its tell from silently skipping that move.
+Decoded assets, rig weights, texture grading, Riley’s rim, stage plates and
+lighting are prepared/cached. The connected painted skin now uses an indexed
+WebGL batch when supported, with optimized Canvas fallback on unavailable/lost
+contexts. Each live actor retains a bounded pose composite for unchanged poses.
+Offscreen drawing is culled; simulation remains active. Fireballs, glows and mist
+reuse textures. Light impact pauses fall from 70ms to 25ms, ordinary impacts have
+a 90ms cooldown, and camera follow/punch/shake use smoother damping. Stage 5’s
+incoming damage was adjusted after changing impact timing.
+
+## Art and campaign retained
+
+- All 77 manifested resources load. Painted far/mid/near layers and quilted floors
+  cover all five stages, with a separate Taim roof. Portraits, sprite crops,
+  cutscene stills, title art and logo remain connected. Missing art retries once
+  and uses the playable fallback.
+- Riley retains ten anchored painted frames, four distance-driven walking
+  frames, his 96-unit height and updated portrait. Be’lal uses ten painted frames
+  with his sword in-hand. Other ground characters keep their connected painted
+  rigs, opposite arm swing, body bob and world-space sole contacts. Draghkar
+  retains its airborne rendering. Lighting, grounded shadows and combat effects
+  stay above the painted scenery; the HUD stays outside camera shake.
+- Boss Continue preserves HP, attack-cycle progress, phase and Taim rescue state.
+  Reload after Stage 4 still replays the pending Callandor reveal until its final
+  caption is acknowledged. No boss attack has been removed.
 
 ## Verification
 
-- `node tools/check.cjs`: passes. Includes inherited combat/campaign checks, every art path, w2 cache stamps, missing-image retry, all five boss Continue snapshots, final Taim readiness, interrupted Callandor reveal, fixed stance anchors and arm counter-swing.
-- `node tools/soak.cjs`: **50/50 assisted clears**, all three attacks active for every boss on every seed. It retains the inherited HP top-ups and 99 lives; these are completion/coverage results, not unassisted balance results.
-- `node tools/soak.cjs --natural`: **41/50 clears**, three lives, no HP top-ups. Same bot and seeds 1-10. Its exit status remains nonzero when any individual seed fails; the failures have not been hidden or converted to passes.
-- The last committed Headless Chromium audit loaded all **54 images**. This follow-up corrects the Riley and Be'lal defects found in those captures, but Chromium/Playwright is unavailable in this checkout (`node tools/review.cjs` stops at the missing `playwright` module), so the regenerated closeups still require the documented review command. The deliberate Stage 3 missing-image fallback remains covered by the prior audit.
-- The follow-up browser contact audit checks the actual rendered mesh triangles for all twelve rigs, both facing directions, diagonal travel, changing speed, and 30/60/120 Hz update steps: **zero measured sole drift/contact error** across 4,104 planted samples. It caught and fixed the Stone Guard overlapping-boot error. See `review/rendered-foot-contacts.json`.
-- Screenshots are actual browser Canvas output. Fight captures use deterministic normal input, without replacing actor poses or injecting projectiles. Intro cards/expired subtitles are cleared for inspection. Walk strips, closeups and `rig-poses.jpeg` are explicit diagnostic views of the runtime rigs.
+- `node tools/check.cjs`: **66 passes**, including combat, all boss checkpoints,
+  Callandor persistence, art paths and fresh cache stamps.
+- `node tools/smoothness-check.cjs`: **9 passes** for fixed ticks, edge retention,
+  catch-up bounds, restoration after interpolation, teleports, camera damping,
+  hit-stop cooldown, AUTO hysteresis and cleared input.
+- `tools/smoothness-browser.cjs`: real DOM keyboard input/main-loop timestamps
+  cover 60/120/144Hz, one-shot buffered attacks, blur pause/release, AUTO/SHARP,
+  GPU/Canvas painted coverage and loss of the WebGL context. See its JSON report.
+- `tools/review.cjs`: refreshed headless screenshots for all five stages, bosses,
+  character closeups, walk strips, Callandor still, title and comparison boards.
+  Normal load: **77 resources, zero errors/missing/unstamped requests**. Deliberate
+  missing Stage 3 mid art: two attempts, then playable fallback.
+- Rendered mesh-contact audit: zero measured drift/contact error for the eleven
+  bind definitions, both facings, diagonal travel, changing speeds and 30/60/120Hz
+  steps. The Be’lal bind definition is fallback-only; his active frames and Riley’s
+  frames are represented by the separate strips/closeups, not by this mesh metric.
+- Assisted soak: **50/50 clears**; all attacks active on all ten seeds for every
+  boss. Natural soak: **32/50 clears**, within 5–8/10 on every stage.
 
-### Natural, three lives and no HP top-ups
+### Natural — three lives, no HP top-ups, seeds 1–10
 
-| Stage | Clears | Seconds, min-max | Median damage | All boss attacks / seeds |
+| Stage | Clears | Seconds | Median damage | All boss attacks/seed |
 | --- | --- | --- | --- | --- |
-| 1 - Emond's Field | 10/10 | 82.9-97.4 | 196.74 | 10/10 |
-| 2 - Caemlyn | 9/10 | 58.0-73.2 | 238.25 | 10/10 |
-| 3 - Shadar Logoth | 8/10 | 121.2-153.9 | 242.21 | 10/10 |
-| 4 - Stone of Tear | 6/10 | 64.2-76.1 | 241.93 | 10/10 |
-| 5 - Black Tower | 8/10 | 67.2-107.1 | 244.89 | 10/10 |
+| 1 — Emond’s Field | 8/10 | 65.1–103.4 | 209.86 | 9/10 |
+| 2 — Caemlyn | 5/10 | 54.6–72.1 | 299.73 | 10/10 |
+| 3 — Shadar Logoth | 7/10 | 122.1–147.4 | 274.97 | 10/10 |
+| 4 — Tear | 5/10 | 53.1–66.6 | 295.15 | 10/10 |
+| 5 — Black Tower | 7/10 | 65.9–80.0 | 259.05 | 10/10 |
 
-### Assisted, inherited top-ups and 99 lives
+Natural mode still returns a nonzero exit status when individual seeds fail.
+Stage 1 has one run that ends before full boss attack coverage. Ordinary healing
+pickups remain available. These are bot results, not child playtesting.
 
-| Stage | Clears | Seconds, min-max | Median damage | All boss attacks / seeds |
+### Assisted — inherited 99 lives and HP top-ups, seeds 1–10
+
+| Stage | Clears | Seconds | Median damage | All boss attacks/seed |
 | --- | --- | --- | --- | --- |
-| 1 - Emond's Field | 10/10 | 81.8-96.1 | 211.97 | 10/10 |
-| 2 - Caemlyn | 10/10 | 55.5-69.1 | 281.05 | 10/10 |
-| 3 - Shadar Logoth | 10/10 | 116.6-147.6 | 259.25 | 10/10 |
-| 4 - Stone of Tear | 10/10 | 61.6-82.2 | 288.13 | 10/10 |
-| 5 - Black Tower | 10/10 | 69.7-109.0 | 245.65 | 10/10 |
+| 1 | 10/10 | 75.2–132.4 | 227.14 | 10/10 |
+| 2 | 10/10 | 54.8–70.3 | 312.38 | 10/10 |
+| 3 | 10/10 | 125.3–157.8 | 307.12 | 10/10 |
+| 4 | 10/10 | 56.4–76.6 | 338.10 | 10/10 |
+| 5 | 10/10 | 60.1–104.0 | 289.40 | 10/10 |
 
-Full seed rows: [natural](review/soak-natural.txt), [assisted](review/soak-assisted.txt).
-[Check output](review/check.txt), [browser audit](review/browser-audit.json),
-[visual review and reproduction](review/README.md).
+Complete logs and browser reports are in [review/](review/README.md).
 
 ## Still weak / limits
 
-- Enemy, boss, Twinkle, and Loial rigs deform single painted poses rather than animation atlases, so long cloaks and extreme poses can still look elastic. Riley no longer uses that system: all gameplay poses use the supplied Riley 16 frames at one anchored scale. Source-contact tests now cover the rendered mesh, not just skeleton targets; they do not assess anatomical appeal or every edge pixel. Closeups, walk strips and the action-pose board expose these limits.
-- Stage 1 is intentionally easiest at 10/10. Stage 2 is 9/10, slightly above the requested approximate 5-8/10 range. Stage 3 is still the longest encounter, and the ten-seed masher is not a substitute for child playtesting.
-- Be'lal now uses a distinct male swordsman bake. All Trolloc variants share the supplied Trolloc cutout; their AI differs, but their visual silhouettes are similar.
-- Painted repeats are non-mirrored, crop to per-layer best-match loop points, and render at least 896px wide. Their narrow 4.5% overlap dissolves at the single possible on-screen join, with a subtle mist column. Floor tops feather into the scene and near layers remain clipped below the fight lane.
-- Graphics comparison with Lido is visual review, not an automated quality score. The committed Lido reference and five stage captures make that comparison reviewable; automated checks alone cannot certify that subjective gate.
-- No new recorded voices, full physical gamepad/phone campaign run, or real-device performance certification. Existing controls and accessibility paths are retained; the current evidence is automated desktop/browser evidence.
-
-## Fixes in this round (`w3b`)
-
-- Enlarged every far/mid/near plate to at least 1.4x the view width, bottom anchoring it and allowing the source top to overflow. Loop crops, narrow cross-fades, mist, and non-mirroring remain.
-- Re-authored the 64-unit Riley rig around the sheet's top-middle side figure. Runtime baking soft-keys the grey, removes coat pixels below the hip, continues trousers beneath a short tunic, and enlarges the head beyond 1/4.6 height. `rig-riley.png` is fallback only.
-- Removed the duplicate blurred actor composite; each freshly cleared transparent surface now reaches gameplay/review exactly once.
-- Bound Be'lal's sword to the front hand and removed its dot-like pivot/pommel marker.
-- Reworked oversized review captures to use offscreen-canvas data URLs, creates the correct stage for each seam board, preserves every requested output at JPEG quality 85, and stamps runtime requests `20260926-w3c`.
-- `node tools/check.cjs` passes and the refreshed assisted soak is 50/50. No binary evidence changed. Playwright is unavailable locally, so refreshed visual evidence remains explicitly pending.
-
-## Headless-render follow-up
-
-- Riley now uses the measured 320x1140 side-figure crop. An edge-connected flood fill removes only the noisy neutral-grey exterior with a 28-40 colour-distance ramp; the short-jacket fill and 1.45x round-cheek head overlay both read back from that keyed canvas. Bind points, ankle contacts, and the authored 0.985 sole line match the measured figure.
-- Be'lal's complete sword is attached to front-arm bones 2/3, painted over the body, and rotated as one wrist-local pommel/grip/crossguard/blade assembly during SWORD FLURRY. His crimson coat grade uses locally blurred luminance and a gentler blend to suppress posterised striping.
-- The automated check now explicitly rejects a sword attachment other than `bones[3]`. Checks pass and the refreshed assisted soak clears 50/50. Visual regeneration remains pending solely because Playwright is not installed; no binary review evidence was changed.
-
-## Fixes in this round (`w3c`)
-
-- Restored the five skyline plates to their natural 222-260px height range. Narrow crops use one forward-only two-tile strip, and their per-layer parallax is capped so the full 2,360px camera range exposes no more than one soft internal join. Floor feathering, near clipping, haze, and non-mirrored rendering remain.
-- Locked Be'lal's sword grip to the same barycentrically skinned front-wrist point used by the painted mesh and removed the sword-arm displacement caps. The headless regression samples SWORD FLURRY from `t=0` through `t=1` in 0.1 increments and requires less than 1.5 source pixels of separation.
-- Replaced the coat recolour with a 5x5 blurred-luminance, smooth crimson ramp blended 70/30 with the source. Smooth masks protect skin while the existing silver-trim/hair treatment remains.
-- Expanded `belal-closeup.jpeg` generation to idle, walk, and SWORD FLURRY at `t=.2`, `.5`, and `.8`; all previous review outputs remain in the script. Runtime resource and audit stamps are now `20260926-w3c`.
-- This remains a text-only change: review binaries were deliberately not regenerated.
-- Not achieved locally: Chromium evidence regeneration could not run because the checkout does not provide the `playwright` module. The review script and its under-two-minute timeout target are updated, but visual sign-off remains pending in the documented Playwright environment.
-
-## Current w3c Riley 16 follow-up
-
-- Riley is a 96-world-unit frame sprite with a 92-unit hurtbox, four distance-driven walk frames, anchored left-facing mirroring, state-specific attacks/hurt/airborne/lying art, retained glow/flash/shadow/death presentation, and the new portrait in HUD/dialogue. Regular Trollocs draw at 112 units, giving a 0.857 Riley/Trolloc ratio; every non-Riley puppet height is scaled by about 1.12 with gameplay geometry untouched.
-- Stage 1 mid/near art is 720 units wide and bottom anchored; far skies are one 700-unit plate with capped parallax. This prevents two copies of the inn or a far-sky join from appearing inside a 640-unit screen.
-- `node tools/check.cjs` passes and assisted soak remains 50/50. The review generator covers ten runtime Riley frames, eight walk steps, a same-scale Trolloc, and all retained boards. JPEG regeneration was not performed because the requested diff is text-only and Playwright is unavailable in this checkout.
+- Headless CPU Canvas and SwiftShader are software renderers. The GPU-batched
+  path substantially reduces CPU submission work, but this environment still
+  exhibits compositor/driver stalls. It does not certify sustained 60fps on a
+  physical phone. AUTO trades some sharpness for headroom; SHARP can be expensive.
+- Riley and Be’lal still have four discrete walking frames. Interpolation smooths
+  movement between ticks; it does not invent extra painted poses. Long cloaks can
+  still look elastic, and the mesh-contact metric is not an anatomy/art-quality
+  judgment. Trolloc variants share a supplied cutout.
+- The first load does more preparation; large art files still make cold network
+  loading and image memory significant. WebGL loss falls back to Canvas, whose
+  worst crowded scenes remain heavier than the batched path.
+- Stage 3 remains longest. Ten seeds are a small deterministic balance sample;
+  no physical gamepad/phone campaign run or child playtest is claimed.
+- Lido parity remains a visual-review judgment. Fresh comparison images are
+  committed for review; automated checks do not certify that artistic gate.
+- Floor/backdrop styles still differ in some stages. Dialogue uses text and
+  synthesized audio; no recorded character voices are claimed.

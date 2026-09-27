@@ -603,12 +603,12 @@
       R.StageWorld.draw(ctx, this);
       const list = this.enemies.filter(item => !item.remove).concat(this.props.filter(item => !item.dead), this.pickups, this.allies, [this.player]);
       R.Entity.sortByDepth(list);
-      for (const item of list) item.draw(ctx, this.camera.x);
+      for (const item of list) if(Math.abs(item.x-this.camera.x-320)<520)item.draw(ctx, this.camera.x);
       // If a nearer actor covers Riley, redraw him faintly on top so the player
       // never loses track of him in a pack (depth order itself is by foot y).
       const p = this.player;
       if (p && p.drawSprite && !p.dead && list.some(e => e !== p && e.y > p.y && Math.abs(e.x - p.x) < 60 && !e.dead)) { ctx.save(); ctx.globalAlpha = .38; p.ghost = true; p.drawSprite(ctx, this.camera.x); p.ghost = false; ctx.restore(); }
-      for (const projectile of this.projectiles) projectile.draw(ctx, this.camera.x);
+      for (const projectile of this.projectiles) if(Math.abs(projectile.x-this.camera.x-320)<440)projectile.draw(ctx, this.camera.x);
       for (const hazard of this.hazards) hazard.draw(ctx, this.camera.x);
       this.fx.draw(ctx, this.camera.x);
       if (this.superTimer > 0) {
@@ -651,7 +651,8 @@
       R.StageWorld.grade(ctx,this);
     }
     draw(ctx) {
-      ctx.save(); this.camera.apply(ctx); this.drawWorld(ctx); ctx.restore();
+      R.Motion.apply(this);ctx.save();
+      try {this.camera.apply(ctx);this.drawWorld(ctx);} finally {ctx.restore();R.Motion.restore(this);}
       R.drawHUD(ctx, this);
       if (this.phase === 'play' && !this.paused) {
         for (const button of R.input.touch.buttons) {

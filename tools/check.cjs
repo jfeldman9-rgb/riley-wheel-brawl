@@ -111,7 +111,7 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260926-w3f';console.log('Cache stamp: '+STAMP);
+const STAMP='20260927-smooth1';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 // Chunk B: exercise real collision, persistence and scene transitions, not only metadata.
 const neutral = { pressed: {}, held: {}, axis: () => ({x:0,y:0}) };

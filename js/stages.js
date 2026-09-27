@@ -47,6 +47,12 @@
     if(topFeather){g.globalCompositeOperation='destination-in';const feather=/^floor/.test(key)?Math.round(img.height*24/138):Math.min(24,img.height),v=g.createLinearGradient(0,0,0,feather);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,1)');g.fillStyle=v;g.fillRect(0,0,c.width,img.height);}
     c.loopKind='painted';seamless.set(id,c);return c;
   }
+  const sized=new Map(),overlays=new Map();
+  function sizedPlate(key,image,w,h){
+    if(!image)return null;const id=key+':'+Math.round(w)+':'+Math.round(h);if(sized.has(id))return sized.get(id);
+    const c=document.createElement('canvas');c.width=Math.ceil(w*2);c.height=Math.ceil(h*2);const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(image,0,0,c.width,c.height);sized.set(id,c);return c;
+  }
+  function overlay(key,paint){if(overlays.has(key))return overlays.get(key);const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);paint(g);overlays.set(key,c);return c;}
   function tiled(ctx, key, cam, factor, y, h, topFeather=false, mistColor='#c9d7df') {
     const tile = seamlessPlate(key,topFeather);
     if (!tile) return false;
@@ -58,6 +64,7 @@
     const drawH=targetWidth?targetWidth*tile.height/tile.width:Math.max(h,320*tile.height/tile.width),tileWidth=targetWidth||drawH*tile.width/tile.height,copies=tileWidth<640?2:1,width=tileWidth*copies,drawY=y+h-drawH;
     let plate=tile;
     if(copies===2){const id=key+':'+!!topFeather+':strip';plate=strips.get(id);if(!plate){plate=document.createElement('canvas');plate.width=tile.width*2;plate.height=tile.height;const pg=plate.getContext('2d');pg.drawImage(tile,0,0);pg.drawImage(tile,tile.width,0);strips.set(id,plate);}}
+    plate=sizedPlate(key+':'+!!topFeather,plate,width,drawH);
     factor=Math.min(factor,Math.max(0,(width-640)/CAMERA_RANGE));
     const offset=cam*factor;
     for(let stripX=-offset;stripX<640;stripX+=width){
@@ -67,7 +74,7 @@
     }
     return true;
   }
-  function haze(ctx,y,color='#c9d7df') {const f=ctx.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');ctx.fillStyle=f;ctx.fillRect(0,y-9,640,21);}
+  function haze(ctx,y,color='#c9d7df') {ctx.drawImage(overlay('haze:'+y+color,g=>{const f=g.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');g.fillStyle=f;g.fillRect(0,y-9,640,21);}),0,0,640,360);}
   function architecture(ctx, level, cam, time) {
     const pal = PALETTES[level],
       offset = cam * 0.55;
@@ -159,6 +166,10 @@
     ctx.fillRect(0, 218, 640, 7);
   }
   R.StageWorld = {
+    prepare(level){
+      if(!R.assets.has('stage'+(level+1)+'-far'))return;
+      const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);const scene={levelIndex:level,camera:{x:0},time:0,wave:0};this.draw(g,scene);this.near(g,scene);this.grade(g,scene);if(level===4){scene.wave=5;this.draw(g,scene);}
+    },
     draw(ctx, scene) {
       const n = scene.levelIndex + 1,
         cam = scene.camera.x,
@@ -184,7 +195,8 @@
       const midHeights=[260,256,252,248,222];
       if (!roof && !tiled(ctx, 'stage' + n + '-mid', cam, 0.42, 10, midHeights[n-1], true,stagePalette[1])) { if(n>1)architecture(ctx,n-1,cam,time);else R.Stage1.layers.mid(ctx,cam); }
       if(!roof)haze(ctx,20);
-      if (n > 1) {
+      const floorKey=roof ? 'floor-roof' : 'floor' + n;
+      if (n > 1 && !R.assets.has(floorKey)) {
         ctx.fillStyle = PALETTES[n - 1][3];
         ctx.fillRect(0, 224, 640, 136);
         ctx.strokeStyle = n === 4 ? '#8d855b' : '#69717b';
@@ -205,14 +217,13 @@
         ctx.globalAlpha = 1;
       }
       // Wide floor plates are compressed in depth, not tiled into tiny squares.
-      const floorKey=roof ? 'floor-roof' : 'floor' + n;
-      const floor = seamlessPlate(floorKey,true);
-      if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off-fw;x<640+fw;x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
+      const floor = sizedPlate(floorKey,seamlessPlate(floorKey,true),FLOOR_LOOP,138);
+      if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off;x<640;x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
       else if(n===1)R.Stage1.layers.floor(ctx,cam);
-      const depth=ctx.createLinearGradient(0,218,0,360);
-      depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');ctx.fillStyle=depth;ctx.fillRect(0,218,640,142);
-      const light=['#9bcfff','#ffdca0','#a99aff','#ffe8b0','#9ac2ff'][n-1];
-      const glow=ctx.createRadialGradient(440,100,10,440,100,310);glow.addColorStop(0,light+'28');glow.addColorStop(1,light+'00');ctx.fillStyle=glow;ctx.fillRect(0,0,640,360);
+      ctx.drawImage(overlay('light:'+n,g=>{
+        const depth=g.createLinearGradient(0,218,0,360);depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');g.fillStyle=depth;g.fillRect(0,218,640,142);
+        const light=['#9bcfff','#ffdca0','#a99aff','#ffe8b0','#9ac2ff'][n-1],glow=g.createRadialGradient(440,100,10,440,100,310);glow.addColorStop(0,light+'28');glow.addColorStop(1,light+'00');g.fillStyle=glow;g.fillRect(0,0,640,360);
+      }),0,0,640,360);
       if (n === 5 && Math.sin(time * 0.8) > 0.995) {
         ctx.strokeStyle = '#bccfed';
         ctx.lineWidth = 2;
@@ -227,7 +238,7 @@
     grade(ctx,scene){
       const colors=['#73a7e6','#ffb65a','#a087ed','#f0cd89','#7d9cde'];
       ctx.save();ctx.globalCompositeOperation='soft-light';ctx.fillStyle=colors[scene.levelIndex];ctx.globalAlpha=.13;ctx.fillRect(0,0,640,360);ctx.restore();
-      const v=ctx.createRadialGradient(320,220,145,320,210,410);v.addColorStop(0,'#050c2000');v.addColorStop(1,'#050c2050');ctx.fillStyle=v;ctx.fillRect(0,0,640,360);
+      ctx.drawImage(overlay('vignette',g=>{const v=g.createRadialGradient(320,220,145,320,210,410);v.addColorStop(0,'#050c2000');v.addColorStop(1,'#050c2050');g.fillStyle=v;g.fillRect(0,0,640,360);}),0,0,640,360);
     },
     near(ctx, scene) {
       const n = scene.levelIndex + 1;
@@ -283,11 +294,9 @@
       ctx.globalCompositeOperation = 'screen';
       for (let i = 0; i < 16; i++) {
         const x = i * 44 + Math.sin(this.age * .7 + i * 1.7) * 26, y = this.lane + Math.sin(this.age + i) * 6, rx = 58 + (i % 3) * 12;
-        const g = ctx.createRadialGradient(x, y, 2, x, y, rx);
-        g.addColorStop(0, `rgba(196,182,236,${.20 * rise})`); g.addColorStop(1, 'rgba(196,182,236,0)');
-        ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, rx, 20, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha=.20*rise;ctx.drawImage(R.effects.glow('#c4b6ec'),x-rx,y-20,rx*2,40);
       }
-      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha=1;ctx.globalCompositeOperation = 'source-over';
       const edge = ctx.createLinearGradient(0, 0, 640, 0); edge.addColorStop(0, 'rgba(230,220,255,0)'); edge.addColorStop(.5, `rgba(230,220,255,${.28 + .2 * rise})`); edge.addColorStop(1, 'rgba(230,220,255,0)');
       ctx.strokeStyle = edge; ctx.lineWidth = 1; ctx.setLineDash([10, 8]); ctx.lineDashOffset = -this.age * 12;
       ctx.beginPath(); ctx.moveTo(0, this.lane + 22); ctx.lineTo(640, this.lane + 22); ctx.moveTo(0, this.lane - 22); ctx.lineTo(640, this.lane - 22); ctx.stroke();

@@ -13,8 +13,8 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
  p.on('pageerror',e=>errors.push(e.message));p.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});p.on('request',r=>requests.push(r.url()));
  await p.addInitScript(()=>{window.requestAnimationFrame=()=>0;});
  await p.goto('http://127.0.0.1:'+server.address().port+'/');
- await p.waitForFunction(()=>window.RWB?.assets.done);
- await p.evaluate(async()=>{await RWB.assets.ready(Object.keys(RWB.ART_FILES).filter(k=>k.startsWith('cut-')));await document.fonts.ready;});
+ await p.waitForFunction(()=>window.RWB?.assets.done,{},{polling:100,timeout:30000});
+ await p.evaluate(async()=>{await RWB.assets.ready(Object.keys(RWB.ART_FILES).filter(k=>k.startsWith('cut-')));await document.fonts.ready;await RWB.prepareRendering();});
  await p.evaluate(()=>{
    window.renderScene=(scene)=>{const c=document.getElementById('game');c.width=1280;c.height=720;const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';scene.draw(ctx);};
    window.reviewFight=(level,wave)=>{
@@ -43,7 +43,7 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
  await p.evaluate(()=>renderScene(new RWB.scenes.Title(RWB.game)));await p.screenshot({type:'jpeg',quality:85,path:path.join(out,'title.jpeg')});
  await p.evaluate(()=>{const r=new RWB.scenes.Reel(RWB.game,RWB.CAPTIONS.callandor,()=>new RWB.scenes.Title(RWB.game),'CALLANDOR ANSWERS');r.timer=4;renderScene(r);});await p.screenshot({type:'jpeg',quality:85,path:path.join(out,'cutscene-callandor.jpeg')});
  // Freeze automatic display resizing for diagnostic canvases with custom ratios.
- await p.evaluate(()=>window.removeEventListener('resize',RWB.display.resize));
+ await p.evaluate(()=>window.removeEventListener('resize',RWB.display.resizeHandler||RWB.display.resize));
  await p.setViewportSize({width:1600,height:1200});
  await p.evaluate(()=>{
    const c=document.getElementById('game');c.width=1600;c.height=1200;c.style.width='1600px';c.style.height='1200px';const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#1c293d';ctx.fillRect(0,0,800,600);
@@ -115,9 +115,9 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
    const results=[];for(let level=0;level<5;level++){reviewFight(level,3);const start=performance.now();for(let f=0;f<30;f++)renderScene(review);results.push({stage:level+1,drawMs:+((performance.now()-start)/30).toFixed(2)});}return results;
  });
  const audit=await p.evaluate(()=>({failed:RWB.assets.failed(),loaded:RWB.ART_MANIFEST.length,missing:Object.entries(RWB.ART_FILES).filter(([k,path])=>RWB.ART_MANIFEST.includes(path)&&!RWB.assets.has(k)).map(([k])=>k)}));
- const unstamped=requests.filter(url=>/\.(js|css|ttf|png|jpeg)(\?|$)/.test(url)&&!url.includes('/docs/review/lido-reference.png')&&!url.includes('v=20260926-w3f'));
+ const unstamped=requests.filter(url=>/\.(js|css|ttf|png|jpeg)(\?|$)/.test(url)&&!url.includes('/docs/review/lido-reference.png')&&!url.includes('v=20260927-smooth1'));
  let blocked=0;await p.route('**/assets/art/stage3-mid.png*',route=>{blocked++;return route.abort();});
- await p.reload();await p.waitForFunction(()=>RWB.assets.done);
+ await p.reload();await p.waitForFunction(()=>RWB.assets.done,{},{polling:100,timeout:30000});
  const fallback=await p.evaluate(()=>{const s=new RWB.scenes.Play(RWB.game,2,{}),c=document.getElementById('game'),ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);s.draw(ctx);return{failed:RWB.assets.failed(),playable:s.phase==='play'};});
  fallback.requests=blocked;
  if(blocked!==2||!fallback.playable||!fallback.failed.includes('stage3-mid'))errors.push('Missing-image retry/fallback regression');
