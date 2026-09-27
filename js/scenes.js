@@ -256,6 +256,18 @@
       this.spawnWave(this.wave);
     }
     enter() {
+      if (R.Puppet && R.Puppet.prepareStage) R.Puppet.prepareStage(this.levelIndex);
+      const canvas = document.getElementById('game'), ctx = canvas && canvas.getContext('2d');
+      if (ctx) {
+        try {
+          const rs = (R.display && R.display.renderScale) || 1;
+          ctx.save();
+          ctx.setTransform(rs, 0, 0, rs, 0, 0);
+          this.draw(ctx);
+          ctx.getImageData(0, 0, 1, 1);
+          ctx.restore();
+        } catch (e) { /* warmup is best-effort */ }
+      }
       R.audio.playMusic(this.music);
       this.saveCheckpoint();
     }
@@ -394,9 +406,12 @@
       if (!enemy.takeHit(damage, fromX, opts || {})) return false;
       this.player.power = Math.min(this.player.powerMax, this.player.power + Math.round((opts && opts.move === 'fireball' ? 8 : 10) * (this.player.angreal > 0 ? 1.6 : 1)));
       this.player.score += damage * 10;
-      this.fx.sparks(enemy.x, enemy.y - enemy.z - 35, '#ffd268', 12);
-      this.fx.ring(enemy.x, enemy.y - enemy.z - 35, false, '#fff3c7');
-      this.fx.dust(enemy.x, enemy.y, 5);
+      const hitY = enemy.y - enemy.z - 40;
+      this.fx.sparks(enemy.x, hitY, '#ffd268', 14);
+      this.fx.ring(enemy.x, enemy.y, !!(opts && opts.knockdown), '#fff3c7');
+      this.fx.dust(enemy.x, enemy.y, 6);
+      this.fx.spawn('slash', enemy.x, hitY, 0.16, { vx: this.player.facing || 1 });
+      if (opts && opts.knockdown) this.fx.chunks(enemy.x, hitY, ['#fff1c4', '#d8c48a', '#ffffff'], 7, enemy.y);
       this.camera.impact(this.player.facing, opts && opts.knockdown ? 'heavy' : 'light');
       this.playCue(opts && opts.knockdown ? 'thud' : 'hit');
       return true;
@@ -421,10 +436,14 @@
     hitPlayer(damage, fromX, opts) {
       if (this.phase !== 'play' || this.player.invuln > 0 || this.player.dead) return false;
       damage *= this.level.damageScale || 1;
-      const landed = this.player.takeHit(damage, fromX, { kb: opts.kb, launch: opts.knockdown ? 250 : 80 });
+      const kb = opts.kb == null ? 110 : opts.kb * (opts.knockdown ? 1.2 : 1.28);
+      const landed = this.player.takeHit(damage, fromX, { kb, launch: opts.knockdown ? 320 : 150 });
       if (!landed) return false;
       this.damageTaken += damage;
       this.timesHit += 1;
+      this.fx.sparks(this.player.x, this.player.y - 48, '#ffd0d0', 10);
+      this.fx.spawn('slash', this.player.x, this.player.y - 48, 0.14, { vx: fromX < this.player.x ? 1 : -1, color: '#ffe1e1' });
+      if (opts.knockdown) this.fx.chunks(this.player.x, this.player.y - 30, ['#d7e4ee', '#ffffff'], 5, this.player.y);
       this.player.invuln = opts.knockdown ? 0.85 : 0.5;
       if (opts.knockdown && this.player.hp > 0) this.player.setState('knockdown');
       this.camera.impact(fromX < this.player.x ? 1 : -1, opts.knockdown ? 'boss' : 'heavy');
@@ -559,14 +578,19 @@
     }
     update(dt, input) {
       input = input || { pressed: {}, held: {}, axis: () => ({ x: 0, y: 0 }) };
+      let openedPause = false;
       if (R.keyPressed(input, 'pause')) {
         this.paused = !this.paused;
-        if (this.paused) this.pauseMenu.open();
+        if (this.paused) { this.pauseMenu.open(); openedPause = true; }
       }
       if (this.paused) {
         this.currentInput = input;
-        const result = this.pauseMenu.update(input, dt);
-        if (result === 'resume') this.paused = false;
+        // The press that opened the menu is still in this update. Feeding it
+        // to the menu selects RESUME and closes the pause on the same frame.
+        if (!openedPause) {
+          const result = this.pauseMenu.update(input, dt);
+          if (result === 'resume') this.paused = false;
+        }
         return;
       }
       if (this.phase === 'death') {

@@ -48,7 +48,7 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
  await p.evaluate(()=>{
    const c=document.getElementById('game');c.width=1600;c.height=1200;c.style.width='1600px';c.style.height='1200px';const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#1c293d';ctx.fillRect(0,0,800,600);
    const kinds=Object.keys(RWB.Puppet.defs);
-   kinds.forEach((kind,i)=>{const x=100+(i%4)*200,y=168+Math.floor(i/4)*198;ctx.save();ctx.translate(x,y);ctx.scale(1.20,1.20);RWB.Puppet.draw(ctx,{x:0,y:0,z:0,facing:1,state:'idle',stateT:0},0,kind);ctx.restore();RWB.drawText(ctx,kind.toUpperCase(),x,y+13,5,'#e7d499','center');});const scene=new RWB.scenes.Play(RWB.game,0,{}),r=scene.player;r.x=700;r.y=564;r.drawSprite(ctx,0,'idle');RWB.drawText(ctx,'RILEY 16',700,577,5,'#e7d499','center');
+   kinds.forEach((kind,i)=>{if(!(kind==='forsaken'&&RWB.assets.has('belal-idle')))RWB.Puppet.prepare(kind);const x=100+(i%4)*200,y=168+Math.floor(i/4)*198;ctx.save();ctx.translate(x,y);ctx.scale(1.20,1.20);RWB.Puppet.draw(ctx,{x:0,y:0,z:0,facing:1,state:'idle',stateT:0},0,kind);ctx.restore();RWB.drawText(ctx,kind.toUpperCase(),x,y+13,5,'#e7d499','center');});const scene=new RWB.scenes.Play(RWB.game,0,{}),r=scene.player;r.x=700;r.y=564;r.drawSprite(ctx,0,'idle');RWB.drawText(ctx,'RILEY 16',700,577,5,'#e7d499','center');
  });await p.screenshot({type:'jpeg',quality:85,path:path.join(out,'character-closeups.jpeg')});
  await p.setViewportSize({width:1280,height:720});
  await p.evaluate(()=>{const c=document.getElementById('game');c.width=1920;c.height=420;c.style.width='1280px';c.style.height='280px';const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);g.fillStyle='#1c293d';g.fillRect(0,0,960,210);const scene=new RWB.scenes.Play(RWB.game,0,{}),r=scene.player;for(let f=0;f<8;f++){r.x=60+f*120;r.y=167;r.walkDistance=f*20;r.drawSprite(g,0,'walk'+(f%4+1));g.fillStyle='#91bad555';g.fillRect(f*120+12,169,96,1);RWB.drawText(g,String(f+1).padStart(2,'0'),60+f*120,190,7,'#e7d499','center');}RWB.drawText(g,'RILEY / 8 STEPS / 4-FRAME DISTANCE CYCLE',480,14,8,'#fff','center');});
@@ -57,7 +57,7 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
    const metric=await p.evaluate(kind=>{
      const c=document.getElementById('game');c.width=1920;c.height=420;c.style.width='1280px';c.style.height='280px';
      const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#1c293d';ctx.fillRect(0,0,960,210);
-     const d=RWB.Puppet.defs[kind],a={x:0,y:0,z:0,facing:1,state:'walk',stateT:0,visualHeight:d.height};RWB.Puppet.updateGait(a,1/60);
+     RWB.Puppet.prepare(kind);const d=RWB.Puppet.defs[kind],a={x:0,y:0,z:0,facing:1,state:'walk',stateT:0,visualHeight:d.height};RWB.Puppet.updateGait(a,1/60);
      const distance=64*d.height/80;let maxDrift=0,stanceSamples=0;
      for(let f=0;f<8;f++){
        for(let j=0;j<12;j++){const before=a.gait.feet.map(p=>({...p}));a.x+=distance/96;RWB.Puppet.updateGait(a,1/60);a.gait.feet.forEach((p,i)=>{if(p.stance&&before[i]?.stance){maxDrift=Math.max(maxDrift,Math.hypot(p.x-before[i].x,p.y-before[i].y));stanceSamples++;}});}
@@ -71,7 +71,7 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
  // True 3x action crops, plus age/scale and Be'lal sword proof boards. All use
  // RWB.Puppet.draw, never pasted source art.
  await p.setViewportSize({width:1600,height:900});
- await p.evaluate(()=>{const c=document.getElementById('game');c.width=1600;c.height=900;c.style.width='1600px';c.style.height='900px';const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);g.fillStyle='#17243a';g.fillRect(0,0,800,450);const specs=[['trolloc','walk','WAIST'],['darkfriend','walk','CLOAK'],['cultist','attack','SHOULDER / HIP'],['forsaken','attack','SWORD HAND']];specs.forEach(([kind,state,label],i)=>{const a={x:0,y:0,z:0,facing:1,state,stateT:.22,ai:state==='attack'?'attack':'',attackMove:state==='attack'?{duration:.55}:null,attackName:'front'};if(state==='walk'){RWB.Puppet.updateGait(a,1/60);for(let n=0;n<20;n++){a.x++;RWB.Puppet.updateGait(a,1/60);}}g.save();g.beginPath();g.rect(i*200,0,200,450);g.clip();g.translate(i*200+100,335);g.scale(3,3);RWB.Puppet.draw(g,a,a.x,kind);g.restore();RWB.drawText(g,label,i*200+100,420,6,'#fff','center');});});
+ await p.evaluate(()=>{const c=document.getElementById('game');c.width=1600;c.height=900;c.style.width='1600px';c.style.height='900px';const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);g.fillStyle='#17243a';g.fillRect(0,0,800,450);['trolloc','darkfriend','cultist'].forEach(kind=>RWB.Puppet.prepare(kind));const specs=[['trolloc','walk','WAIST'],['darkfriend','walk','CLOAK'],['cultist','attack','SHOULDER / HIP'],['forsaken','attack','SWORD HAND']];specs.forEach(([kind,state,label],i)=>{const a={x:0,y:0,z:0,facing:1,state,stateT:.22,ai:state==='attack'?'attack':'',attackMove:state==='attack'?{duration:.55}:null,attackName:'front'};if(state==='walk'){RWB.Puppet.updateGait(a,1/60);for(let n=0;n<20;n++){a.x++;RWB.Puppet.updateGait(a,1/60);}}g.save();g.beginPath();g.rect(i*200,0,200,450);g.clip();g.translate(i*200+100,335);g.scale(3,3);RWB.Puppet.draw(g,a,a.x,kind);g.restore();RWB.drawText(g,label,i*200+100,420,6,'#fff','center');});});
  await saveCanvas('joints-closeup.jpeg');
  await p.setViewportSize({width:1800,height:700});
  await p.evaluate(()=>{const c=document.getElementById('game');c.width=2700;c.height=1000;c.style.width='2700px';c.style.height='1000px';const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);g.fillStyle='#17243a';g.fillRect(0,0,1350,500);const frames=['idle','walk1','walk2','walk3','walk4','punch','kick','fireball','hurt','jump'],scene=new RWB.scenes.Play(RWB.game,0,{}),r=scene.player;frames.forEach((frame,i)=>{r.x=75+(i%5)*205;r.y=190+Math.floor(i/5)*220;r.facing=1;r.drawSprite(g,0,frame);RWB.drawText(g,frame.toUpperCase(),r.x,r.y+20,6,'#fff','center');});const tx=1250,ty=410,a={x:tx,y:ty,z:0,facing:-1,state:'idle',stateT:0};RWB.Puppet.draw(g,a,0,'trolloc');RWB.drawText(g,'TROLLOC',tx,ty+20,6,'#fff','center');r.x=1115;r.y=410;r.facing=1;r.drawSprite(g,0,'idle');RWB.drawText(g,'RILEY / SAME WORLD SCALE',1115,430,6,'#fff','center');});
@@ -86,7 +86,7 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
    const c=document.getElementById('game');c.width=1600;c.height=1000;c.style.width='1600px';c.style.height='1000px';const ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#1c293d';ctx.fillRect(0,0,800,500);
    const poses=['walk','attack','channel','hurt','knockdown'];
    poses.forEach((pose,i)=>RWB.drawText(ctx,pose.toUpperCase(),80+i*160,16,7,'#e7d499','center'));
-   ['cultist','trolloc','darkfriend'].forEach((kind,row)=>poses.forEach((pose,col)=>{
+   ['cultist','trolloc','darkfriend'].forEach(kind=>RWB.Puppet.prepare(kind));['cultist','trolloc','darkfriend'].forEach((kind,row)=>poses.forEach((pose,col)=>{
      const d=RWB.Puppet.defs[kind],a={x:0,y:0,z:0,facing:1,state:pose,stateT:.15,visualHeight:d.height};
      if(pose==='walk'){RWB.Puppet.updateGait(a,1/60);for(let i=0;i<20;i++){a.x+=1;RWB.Puppet.updateGait(a,1/60);}}
      if(pose==='attack'){if(kind==='cultist')a.ai='attack';else a.ai='attack';}
@@ -115,7 +115,7 @@ const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(req
    const results=[];for(let level=0;level<5;level++){reviewFight(level,3);const start=performance.now();for(let f=0;f<30;f++)renderScene(review);results.push({stage:level+1,drawMs:+((performance.now()-start)/30).toFixed(2)});}return results;
  });
  const audit=await p.evaluate(()=>({failed:RWB.assets.failed(),loaded:RWB.ART_MANIFEST.length,missing:Object.entries(RWB.ART_FILES).filter(([k,path])=>RWB.ART_MANIFEST.includes(path)&&!RWB.assets.has(k)).map(([k])=>k)}));
- const unstamped=requests.filter(url=>/\.(js|css|ttf|png|jpeg)(\?|$)/.test(url)&&!url.includes('/docs/review/lido-reference.png')&&!url.includes('v=20260926-sol1'));
+ const unstamped=requests.filter(url=>/\.(js|css|ttf|png|jpeg)(\?|$)/.test(url)&&!url.includes('/docs/review/lido-reference.png')&&!url.includes('v=20260926-grok3d'));
  let blocked=0;await p.route('**/assets/art/stage3-mid.png*',route=>{blocked++;return route.abort();});
  await p.reload();await p.waitForFunction(()=>RWB.assets.done,{},{polling:100,timeout:30000});
  const fallback=await p.evaluate(()=>{const s=new RWB.scenes.Play(RWB.game,2,{}),c=document.getElementById('game'),ctx=c.getContext('2d');ctx.setTransform(2,0,0,2,0,0);s.draw(ctx);return{failed:RWB.assets.failed(),playable:s.phase==='play'};});

@@ -39,8 +39,7 @@
       const x = this.x - cameraX;
       const y = this.y - 12 + Math.sin(this.age * 5) * 3;
       const color = this.kind === 'spark' ? '#77d8ff' : this.kind === 'heal' ? '#d7f7ff' : '#f1cf69';
-      ctx.shadowColor = color;
-      ctx.shadowBlur = 12;
+      ctx.drawImage(RWB.effects.glow(color), x - 20, y - 20, 40, 40);
       ctx.fillStyle = color;
       ctx.beginPath();
       if (this.kind === 'angreal') {
@@ -50,7 +49,6 @@
         ctx.lineTo(x - 9, y);
       } else ctx.arc(x, y, this.kind === 'heal' ? 9 : 6, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowBlur = 0;
       if (this.kind === 'heal') {
         ctx.strokeStyle = '#639ee5';
         ctx.beginPath();

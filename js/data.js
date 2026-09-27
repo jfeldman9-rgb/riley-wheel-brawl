@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   const R = window.RWB;
-  R.ASSET_VER = '20260926-sol1';
+  R.ASSET_VER = '20260926-grok3d';
   R.TUNE = {
     stageLength: 3000,
     playerSpeed: 128,
@@ -20,12 +20,12 @@
     bossHp: 2200
   };
   R.MOVES = {
-    front: { name: 'FRONT KICK', duration: 0.36, active: [0.1, 0.18], reach: 46, back: 5, height: 32, depth: 26, damage: 9, knockback: 36, meter: 7 },
-    round: { name: 'ROUNDHOUSE', duration: 0.4, active: [0.12, 0.22], reach: 54, back: 8, height: 40, depth: 28, damage: 12, knockback: 48, meter: 8 },
+    front: { name: 'FRONT KICK', duration: 0.36, active: [0.1, 0.18], reach: 46, back: 5, height: 32, depth: 26, damage: 9, knockback: 72, meter: 7 },
+    round: { name: 'ROUNDHOUSE', duration: 0.4, active: [0.12, 0.22], reach: 54, back: 8, height: 40, depth: 28, damage: 12, knockback: 92, meter: 8 },
     back: { name: 'BACK KICK', duration: 0.5, active: [0.18, 0.28], reach: 64, back: 8, height: 38, depth: 30, damage: 16, knockback: 240, knockdown: true, meter: 11 },
     jump: { name: 'FLYING KICK', duration: 0.48, active: [0.08, 0.3], reach: 58, back: 6, height: 34, depth: 28, damage: 15, knockback: 200, knockdown: true, meter: 10 },
     spin: { name: 'SPINNING KICK', duration: 0.64, active: [0.18, 0.38], reach: 54, back: 54, height: 42, depth: 32, damage: 16, knockback: 220, knockdown: true, meter: 11 },
-    knee: { name: 'KNEE', duration: 0.28, active: [0.08, 0.15], reach: 28, back: 3, height: 32, depth: 22, damage: 8, knockback: 0, meter: 6 },
+    knee: { name: 'KNEE', duration: 0.28, active: [0.08, 0.15], reach: 28, back: 3, height: 32, depth: 22, damage: 8, knockback: 40, meter: 6 },
     throw: { name: 'THROW', duration: 0.52, active: [0.22, 0.3], reach: 46, back: 8, height: 48, depth: 30, damage: 22, knockback: 280, knockdown: true, meter: 12 }
   };
   R.RILEY_POSES = {

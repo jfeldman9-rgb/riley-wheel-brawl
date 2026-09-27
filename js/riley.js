@@ -9,11 +9,16 @@
       kick:[227,215,101,215], fireball:[303,206,144,205], hurt:[166,215,62,214], jump:[178,172,82,171]
     }
   };
-  const rims=new Map();
+  const rims=new Map(),flashes=new Map();
   function rimFrame(frame){
     if(rims.has(frame))return rims.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
     const c=document.createElement('canvas');c.width=img.width+16;c.height=img.height+16;const g=c.getContext('2d');
     g.filter='drop-shadow(0 0 2.84px rgba(255,232,180,.7)) drop-shadow(0 2.36px 2.36px rgba(0,0,0,.65))';g.drawImage(img,8,8);rims.set(frame,c);return c;
+  }
+  function flashFrame(frame){
+    if(flashes.has(frame))return flashes.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
+    const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const g=c.getContext('2d');
+    g.drawImage(img,0,0);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,c.width,c.height);flashes.set(frame,c);return c;
   }
   function degrees(value) {
     return value * Math.PI / 180;
@@ -368,7 +373,7 @@
       }
     }
     onHurt(damage, opts) {
-      this.hitFlash = 0.12;
+      this.hitFlash = 0.16;
       this.friction = opts && opts.launch ? 2.4 : 3.1;
       this.attackMove = null;
       this.queuedAttack = false;
@@ -417,6 +422,7 @@
       const rim=!this.ghost&&rimFrame(frame);
       if(rim)ctx.drawImage(rim,(-ax-8)*scale,(-ay-8)*scale,(w+16)*scale,(h+16)*scale);
       else ctx.drawImage(img, -ax * scale, -ay * scale, w * scale, h * scale);
+      if(this.hitFlash>0){const flash=flashFrame(frame);if(flash){ctx.globalAlpha*=Math.min(.75,this.hitFlash*6);ctx.drawImage(flash,-ax*scale,-ay*scale,w*scale,h*scale);}}
       ctx.restore();
       return true;
     }
@@ -432,12 +438,10 @@
       if (this.callandor) {
         ctx.save();ctx.lineCap='round';ctx.strokeStyle='rgba(100,220,255,.35)';ctx.lineWidth=11;ctx.beginPath();ctx.moveTo(this.x-cameraX-13,this.y-this.z-31);ctx.lineTo(this.x-cameraX-25,this.y-this.z-86);ctx.stroke();ctx.strokeStyle='#e8ffff';ctx.lineWidth=3;ctx.stroke();ctx.restore();
       }
-      if (this.hitFlash > 0) {
-        ctx.save();ctx.globalAlpha=Math.min(.65,this.hitFlash*6);ctx.fillStyle='#fff4d5';ctx.beginPath();ctx.ellipse(this.x-cameraX,this.y-this.z-48,23,43,0,0,Math.PI*2);ctx.fill();ctx.restore();
-      }
+      // Hit tint is baked into Riley's own pixels inside drawSprite.
     }
   }
   R.Fireball = Fireball;
   R.Riley = Riley;
-  R.Riley.prepare=()=>Object.keys(RILEY16.frames).forEach(rimFrame);
+  R.Riley.prepare=()=>Object.keys(RILEY16.frames).forEach(frame=>{rimFrame(frame);flashFrame(frame);});
 }());

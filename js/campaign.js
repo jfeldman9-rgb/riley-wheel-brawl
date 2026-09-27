@@ -421,7 +421,7 @@
   R.LEVELS.forEach((level, i) => { level.banner = ["EMOND'S FIELD", 'CAEMLYN', 'SHADAR LOGOTH', 'TEAR - CALLANDOR', 'THE BLACK TOWER'][i]; });
   // Natural-play pressure is stage-specific: later bosses retain their full
   // move sets and health, while their hits leave a fair three-life margin.
-  R.LEVELS.forEach((level, i) => { level.damageScale = [0.68, 2.0, 0.61, 1.7, 0.7][i]; });
+  R.LEVELS.forEach((level, i) => { level.damageScale = [1.34, 2.66, 0.72, 1.52, 0.76][i]; });
   R.LEVELS[0].wavePoints = R.Stage1.wavePoints;
   R.LEVELS[0].mix = R.Stage1.waveTable;
   R.LEVELS[0].kind = 'chieftain';
