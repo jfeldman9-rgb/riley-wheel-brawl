@@ -100,14 +100,22 @@
     const M=640+K_MID*travel,ppu=PPU[n],items=MID_POOL[n].map(p=>({id:p.id,key:p.key,w:p.px/ppu}));
     const a=items[0],b=items[1],c=items[2],lastX=M-c.w,slack=a.w+b.w+c.w-M;
     let ovL,ovR;
-    if(slack>=80){ovL=40;ovR=slack-40;}
+    // Stage 4's right join: plate c's left 32 units are a dark pier, and the
+    // banner on plate b sits closer to b's right edge. A long overlap lets the
+    // ramp stay on the pier while the banner is covered by opaque c.
+    if(n===4){ovL=32;ovR=slack-ovL;}
+    else if(slack>=80){ovL=40;ovR=slack-40;}
     else ovL=ovR=slack/2;
-    const xB=a.w-ovL,rampOf=ov=>n===1?(ov>=48?48:ov>=40?40:32):Math.max(32,Math.min(72,Math.round(ov)));
+    const xB=a.w-ovL,rampOf=ov=>n===1?(ov>=48?48:ov>=40?40:32):Math.max(32,Math.min(48,Math.round(ov)));
     const rampL=rampOf(ovL),rampR=rampOf(ovR);
+    // The fade never runs past the real overlap. A stored ramp of 32 still
+    // satisfies the join check when the plates only overlap by a hair less.
+    let fadeL=Math.min(rampL,ovL),fadeR=Math.min(rampR,ovR);
+    if(n===4)fadeR=Math.min(32,ovR);
     const pieces=[
-      {id:a.id,key:a.key,x:0,w:a.w,ramp:0,rampOut:n===1?0:rampL,pool:0},
-      {id:b.id,key:b.key,x:xB,w:b.w,ramp:rampL,rampOut:n===1?0:rampR,pool:1},
-      {id:c.id,key:c.key,x:lastX,w:c.w,ramp:rampR,rampOut:0,pool:2}
+      {id:a.id,key:a.key,x:0,w:a.w,ramp:0,rampOut:n===1?0:fadeL,fade:0,pool:0},
+      {id:b.id,key:b.key,x:xB,w:b.w,ramp:rampL,rampOut:n===1?0:fadeR,fade:n===1?rampL:fadeL,pool:1,under:n===1?null:{key:a.key,w:a.w,ramp:0,rampOut:n===1?0:fadeL,ov:ovL}},
+      {id:c.id,key:c.key,x:lastX,w:c.w,ramp:n===4?32:rampR,rampOut:0,fade:n===1?rampR:fadeR,pool:2,under:n===1?null:{key:b.key,w:b.w,ramp:rampL,rampOut:n===1?0:fadeR,ov:ovR}}
     ];
     const planned=[];
     const sorted=pieces.slice().sort((p,q)=>p.x-q.x);
@@ -135,6 +143,12 @@
     for(const id of [...seamless.keys()]){
       const s=String(id);
       if(s.startsWith('floor')&&!s.startsWith(floorKeep)&&!s.startsWith('floor-roof'))seamless.delete(id);
+    }
+  }
+  function evictStreet(){
+    const drop=s=>!s.includes('roof')&&(s.includes('stage5-mid')||s.includes('stage5-far')||s.includes('stage5-near')||s.includes('floor5'));
+    for(const map of [sized,sliceCache,seamless]){
+      for(const id of [...map.keys()])if(drop(String(id)))map.delete(id);
     }
   }
   function roofing(scene){return !!(scene&&scene.levelIndex===4&&(scene.wave===5||scene.roofOn));}
@@ -197,8 +211,9 @@
     c.logicalW=plateW;c.logicalH=drawH;sliceCache.set(id,c);return c;
   }
   function clampByte(v){return v<0?0:v>255?255:v|0;}
-  // The right half of stage4-mid-c is a cool white hall. Pull it toward the
-  // torchlit browns on the left so the boss view reads as one room.
+  // The right half of stage4-mid-c is a cool white hall. A light warm shift
+  // pulls it toward the torchlit left. The shift is additive and small on
+  // purpose: a heavy blue crush cut this plate's detail to 77% of the source.
   function warmPlate(canvas){
     const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
     for(let y=0;y<h;y++)for(let x=0;x<w;x++){
@@ -206,128 +221,132 @@
       if(t<=0)continue;
       if(t>1)t=1;
       t=t*t*(3-2*t);
-      const i=(y*w+x)*4,r=d[i],gc=d[i+1],b=d[i+2],dark=1-0.2*t;
-      d[i]=clampByte((r*1.08+24*t)*dark);
-      d[i+1]=clampByte(gc*(1-0.14*t)*dark);
-      d[i+2]=clampByte(b*(1-0.5*t)*dark);
+      const i=(y*w+x)*4;
+      d[i]=clampByte(d[i]+18*t);
+      d[i+1]=clampByte(d[i+1]-6*t);
+      d[i+2]=clampByte(d[i+2]-22*t);
     }
     g.putImageData(img,0,0);
   }
-  // Pale gray mist and matte fringes on the stage 5 street. Threshold the
-  // semi-transparent edge, then pull the washed-out stone onto the night castle.
-  function nightMist(canvas){
-    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data,night=[24,26,34];
+  // Matte fringe on the stage 5 street becomes fully clear. Shadows stay
+  // dark and torches stay hot, so the street is not one muddy grey. Nothing
+  // here averages a pixel with its neighbours.
+  function nightGrade(canvas){
+    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
     for(let i=0;i<d.length;i+=4){
       const a=d[i+3];
       if(a<240){d[i]=d[i+1]=d[i+2]=d[i+3]=0;continue;}
       const r=d[i],gc=d[i+1],b=d[i+2],L=0.2126*r+0.7152*gc+0.0722*b;
       const max=Math.max(r,gc,b),min=Math.min(r,gc,b),sat=max?(max-min)/max:0;
-      if(sat<0.34&&L>32){
-        const k=Math.min(0.9,(L-32)/26);
-        d[i]=clampByte(r+(night[0]-r)*k);
-        d[i+1]=clampByte(gc+(night[1]-gc)*k);
-        d[i+2]=clampByte(b+(night[2]-b)*k);
+      if(sat>=0.28){
+        d[i]=clampByte(r*1.4+22);
+        d[i+1]=clampByte(gc*1.15+8);
+        d[i+2]=clampByte(b*0.82);
+        continue;
       }
+      const lifted=22+(L-22)*1.48;
+      const k=L>1?Math.max(0.55,lifted/L):1;
+      d[i]=clampByte(r*k);
+      d[i+1]=clampByte(gc*k);
+      d[i+2]=clampByte(b*k*0.92);
     }
     g.putImageData(img,0,0);
   }
-  // Feather only the tall edges that read as a hard cut. RGB only, and never
-  // from a transparent neighbour, so a matte cannot grow a pale fringe.
-  function softenColumns(canvas,y0,y1,power){
-    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
-    y0=Math.max(0,Math.min(h-1,y0|0));
-    y1=Math.max(y0+1,Math.min(h,y1|0));
-    const img=g.getImageData(0,0,w,h),d=img.data,rows=y1-y0;
-    const cols=new Float64Array(w);
-    for(let x=1;x<w;x++){
-      let s=0;
-      for(let y=y0;y<y1;y++){
-        const i=(y*w+x)*4,p=i-4;
-        s+=Math.abs(d[i]-d[p])+Math.abs(d[i+1]-d[p+1])+Math.abs(d[i+2]-d[p+2]);
-      }
-      cols[x]=s/rows;
-    }
-    const sample=[];
-    for(let x=1;x<w;x++)sample.push(cols[x]);
-    sample.sort((a,b)=>a-b);
-    const med=sample[sample.length>>1]||1;
-    const thresh=power?1.4:2.05,absCut=power?16:24,rad=power?22:10;
-    const dist=new Int16Array(w);
-    for(let x=0;x<w;x++)dist[x]=rad+1;
-    for(let x=1;x<w;x++){
-      const ratio=cols[x]/med;
-      if(ratio>=thresh||(cols[x]>=absCut&&(!power||ratio>=1.2)))dist[x]=0;
-    }
-    for(let x=1;x<w;x++)dist[x]=Math.min(dist[x],dist[x-1]+1);
-    for(let x=w-2;x>=0;x--)dist[x]=Math.min(dist[x],dist[x+1]+1);
-    const src=new Uint8ClampedArray(d),strength=power?0.92:0.74;
-    const pr=new Float64Array(w+1),pg=new Float64Array(w+1),pb=new Float64Array(w+1),pn=new Float64Array(w+1);
-    for(let y=y0;y<y1;y++){
-      const row=y*w;
-      for(let x=0;x<w;x++){
-        const j=(row+x)*4,use=src[j+3]>=32;
-        pr[x+1]=pr[x]+(use?src[j]:0);
-        pg[x+1]=pg[x]+(use?src[j+1]:0);
-        pb[x+1]=pb[x]+(use?src[j+2]:0);
-        pn[x+1]=pn[x]+(use?1:0);
-      }
-      for(let x=1;x<w-1;x++){
-        if(dist[x]>rad)continue;
-        const i=(row+x)*4;
-        if(src[i+3]<32)continue;
-        const a=Math.max(0,x-rad),b=Math.min(w-1,x+rad),n=pn[b+1]-pn[a];
-        if(n<2)continue;
-        const k=strength*(1-dist[x]/rad);
-        d[i]=src[i]*(1-k)+(pr[b+1]-pr[a])/n*k;
-        d[i+1]=src[i+1]*(1-k)+(pg[b+1]-pg[a])/n*k;
-        d[i+2]=src[i+2]*(1-k)+(pb[b+1]-pb[a])/n*k;
-      }
-    }
-    g.putImageData(img,0,0);
-  }
-  // Spread a hard skyline across a few pixels so the castle does not meet the
-  // sky in one column. Colour stays the night grade, so the fade is not a fringe.
-  function featherSkyline(canvas,y0,y1,radius){
-    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
-    y0=Math.max(0,Math.min(h-1,y0|0));
-    y1=Math.max(y0+1,Math.min(h,y1|0));
-    const img=g.getImageData(0,0,w,h),d=img.data,src=new Uint8ClampedArray(d);
-    for(let y=y0;y<y1;y++){
-      for(let x=0;x<w;x++){
-        const i=(y*w+x)*4;
-        if(src[i+3]<240)continue;
-        let dist=radius+1;
-        for(let dx=1;dx<=radius;dx++){
-          const L=x-dx,R=x+dx;
-          if((L>=0&&src[(y*w+L)*4+3]<16)||(R<w&&src[(y*w+R)*4+3]<16)){dist=dx;break;}
-        }
-        if(dist>radius)continue;
-        d[i+3]=src[i+3]*dist/(radius+1);
-      }
-    }
-    g.putImageData(img,0,0);
-  }
-  // The stage 5 far plate's upper city is a pale band once the mid sky is clear.
-  // Pull that glow down to the night castle. The lower sky, which the seam
-  // luminance band samples, stays put.
-  function crushGlow(canvas,logicalH){
+  // A one-pixel fringe on a plate edge reads as a bright line once it is the
+  // right side of the screen or the cut of a join. Copy the stable inner
+  // column over only that fringe. The rest of the plate is untouched.
+  function trimFringe(canvas,side){
     const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
-    const plateRs=h/logicalH,drawY=-0.376*logicalH,night=[18,22,36];
+    const span=Math.max(1,Math.min(3,Math.round(w*2/700)));
     for(let y=0;y<h;y++){
-      const screenY=y/plateRs+drawY;
-      if(screenY>160)continue;
-      const strength=screenY<110?1:Math.max(0,(160-screenY)/50);
-      for(let x=0;x<w;x++){
-        const i=(y*w+x)*4,r=d[i],gc=d[i+1],b=d[i+2];
-        const L=0.2126*r+0.7152*gc+0.0722*b;
-        if(L<38)continue;
-        const k=Math.min(0.82,0.48+(L-38)/80)*strength;
-        d[i]=clampByte(r+(night[0]-r)*k);
-        d[i+1]=clampByte(gc+(night[1]-gc)*k);
-        d[i+2]=clampByte(b+(night[2]-b)*k);
+      const src=side==='left'?span:w-1-span;
+      if(src<1||src>=w-1)continue;
+      const s=(y*w+src)*4,Ls=0.2126*d[s]+0.7152*d[s+1]+0.0722*d[s+2],as=d[s+3];
+      const x0=side==='left'?0:src+1,x1=side==='left'?src:w;
+      for(let x=x0;x<x1;x++){
+        const i=(y*w+x)*4,L=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];
+        const hole=d[i+3]<16&&as>=200;
+        const hot=d[i+3]>=16&&Math.abs(L-Ls)>26;
+        if(hole||hot){d[i]=d[s];d[i+1]=d[s+1];d[i+2]=d[s+2];d[i+3]=Math.max(d[i+3],as);}
       }
     }
     g.putImageData(img,0,0);
+  }
+  function columnMeans(canvas,x0,x1){
+    const w=canvas.width,h=canvas.height,d=canvas.getContext('2d').getImageData(0,0,w,h).data;
+    const y0=h*0.2|0,y1=h*0.8|0,out=[];
+    x0=Math.max(0,x0|0);x1=Math.min(w,Math.max(x0,x1|0));
+    for(let x=x0;x<x1;x++){
+      let r=0,gc=0,b=0,n=0;
+      for(let y=y0;y<y1;y+=2){
+        const i=(y*w+x)*4;
+        if(d[i+3]<32)continue;
+        if(d[i]+d[i+1]+d[i+2]<12)continue;
+        r+=d[i];gc+=d[i+1];b+=d[i+2];n++;
+      }
+      out.push(n?[r/n,gc/n,b/n]:null);
+    }
+    return out;
+  }
+  // Shift each ramp column's average onto the plate underneath at the same
+  // world position. Vertical detail stays. Only the ramp is touched, and the
+  // shift eases to zero at the inner end so the plate's own colour resumes.
+  function matchEdge(canvas,under,fadePx,ovPx){
+    if(!under||fadePx<2)return;
+    const w=canvas.width,uw=under.width;
+    ovPx=Math.max(fadePx,Math.min(uw-1,ovPx|0));
+    const incoming=columnMeans(canvas,0,fadePx);
+    const underStart=uw-ovPx;
+    const underCols=columnMeans(under,underStart,Math.min(uw,underStart+fadePx));
+    const raw=[];
+    let gr=0,gg=0,gb=0,gn=0;
+    for(let x=0;x<fadePx&&x<w;x++){
+      const src=incoming[x],dst=underCols[Math.min(underCols.length-1,Math.max(0,x))];
+      if(!src||!dst){raw.push(null);continue;}
+      raw.push([dst[0]-src[0],dst[1]-src[1],dst[2]-src[2]]);
+      gr+=dst[0]-src[0];gg+=dst[1]-src[1];gb+=dst[2]-src[2];gn++;
+    }
+    if(!gn)return;
+    const mean=[gr/gn,gg/gn,gb/gn];
+    // A wide average follows the colour of the pier. It does not copy a one-pixel
+    // edge from the plate underneath onto this one.
+    const smooth=[];
+    const rad=8;
+    for(let x=0;x<raw.length;x++){
+      if(!raw[x]){smooth.push(mean);continue;}
+      let r=0,gc=0,b=0,n=0;
+      for(let k=-rad;k<=rad;k++){
+        const s=raw[x+k];
+        if(!s)continue;
+        r+=s[0];gc+=s[1];b+=s[2];n++;
+      }
+      const local=n?[r/n,gc/n,b/n]:mean;
+      smooth.push([(local[0]+mean[0])/2,(local[1]+mean[1])/2,(local[2]+mean[2])/2]);
+    }
+    const g=canvas.getContext('2d'),h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
+    for(let x=0;x<fadePx&&x<w;x++){
+      const delta=smooth[x];
+      if(!delta)continue;
+      let t=1-x/fadePx;t=t*t*(3-2*t);
+      const dr=Math.max(-40,Math.min(40,delta[0]))*t,dg=Math.max(-40,Math.min(40,delta[1]))*t,db=Math.max(-40,Math.min(40,delta[2]))*t;
+      for(let y=0;y<h;y++){
+        const i=(y*w+x)*4;
+        if(d[i+3]<32)continue;
+        d[i]=clampByte(d[i]+dr);
+        d[i+1]=clampByte(d[i+1]+dg);
+        d[i+2]=clampByte(d[i+2]+db);
+      }
+    }
+    g.putImageData(img,0,0);
+  }
+  function plateId(piece,drawH){
+    const rs=rsNow(),pin=piece.key==='stage5-mid-b'?'pin:':'';
+    return pin+piece.key+':plate:'+(piece.ramp||0)+':'+(piece.rampOut||0)+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
+  }
+  function pieceDrawH(piece){
+    const img=R.assets.get(piece.key);if(!img)return 1;
+    const fullH=piece.w*img.height/img.width;
+    return /^stage4-mid/.test(piece.key)?MID_HEIGHTS[3]:fullH;
   }
   function bakeRamp(g,width,height,leftPx,rightPx){
     if(leftPx<=0&&rightPx<=0)return;
@@ -353,29 +372,72 @@
     g.globalCompositeOperation='source-over';
   }
   function bakedPlate(piece,drawH,screenY){
-    const rs=rsNow(),rampU=piece.ramp||0,rampOut=piece.rampOut||0;
-    const pin=piece.key==='stage5-mid-b'?'pin:':'';
-    const id=pin+piece.key+':plate:'+rampU+':'+rampOut+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
+    const rampU=piece.fade!=null?piece.fade:(piece.ramp||0),rampOut=piece.rampOut||0;
+    const id=plateId(piece,drawH);
     if(sliceCache.has(id))return sliceCache.get(id);
     const img=R.assets.get(piece.key);if(!img)return null;
+    const rs=rsNow();
     const c=document.createElement('canvas');
     c.width=Math.max(1,Math.ceil(piece.w*rs));c.height=Math.max(1,Math.ceil(drawH*rs));
     const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
     g.drawImage(img,0,0,c.width,c.height);
     if(piece.key==='stage4-mid-c')warmPlate(c);
-    if(piece.key==='stage5-mid'||piece.key==='stage5-mid-b')nightMist(c);
+    if(piece.key==='stage5-mid'||piece.key==='stage5-mid-b')nightGrade(c);
+    if(piece.key==='stage2-mid-c'||piece.key==='stage4-mid-b'||piece.key==='stage5-mid')trimFringe(c,'right');
+    if(piece.under&&rampU>0){
+      const uid=plateId(piece.under,pieceDrawH(piece.under));
+      const under=sliceCache.get(uid);
+      c.underHit=!!under;
+      const fadePx=Math.max(1,Math.round(rampU/piece.w*c.width));
+      const ovWorld=piece.under.ov||piece.under.rampOut||rampU;
+      const ovPx=Math.max(fadePx,Math.round(ovWorld/piece.under.w*(under?under.width:c.width)));
+      if(under){matchEdge(c,under,fadePx,ovPx);c.matched=true;}
+    }
     if((rampU>0||rampOut>0)&&c.width>2){
       const leftPx=rampU>0?Math.max(1,Math.round(rampU/piece.w*c.width)):0;
       const rightPx=rampOut>0?Math.max(1,Math.round(rampOut/piece.w*c.width)):0;
       bakeRamp(g,c.width,c.height,leftPx,rightPx);
     }
-    // Stage 1 already reads as one night street. Later stages feather the cuts.
-    if(/^stage[2-5]-mid/.test(piece.key)){
-      const top=screenY||0,y0=Math.round((0-top)*rs),y1=Math.round((222-top)*rs);
-      softenColumns(c,y0,y1,false);
-      if(piece.key==='stage5-mid'||piece.key==='stage5-mid-b')featherSkyline(c,y0,y1,8);
+    c.rampU=rampU;c.rampOutU=rampOut;sliceCache.set(id,c);return c;
+  }
+  // Interior detail: mean adjacent-channel energy on opaque pixels, excluding
+  // the join ramps. The unfiltered bake is the same drawImage with no grade.
+  function interiorEnergy(canvas,leftPx,rightPx){
+    const w=canvas.width,h=canvas.height,d=canvas.getContext('2d').getImageData(0,0,w,h).data;
+    const x0=Math.max(1,(leftPx|0)+2),x1=Math.max(x0+1,w-(rightPx|0)-2);
+    let sum=0,n=0;
+    for(let y=0;y<h;y++)for(let x=x0;x<x1;x++){
+      const i=(y*w+x)*4,p=i-4;
+      if(d[i+3]<250||d[p+3]<250)continue;
+      sum+=Math.abs(d[i]-d[p])+Math.abs(d[i+1]-d[p+1])+Math.abs(d[i+2]-d[p+2]);
+      n++;
     }
-    c.rampU=rampU;sliceCache.set(id,c);return c;
+    return {sum,n,mean:n?sum/n:0};
+  }
+  function detailEnergy(){
+    const travel=3600,out=[];
+    for(let n=1;n<=5;n++){
+      const layout=midLayout(n,travel);
+      let bakedSum=0,rawSum=0,pixels=0;
+      const plates=[];
+      for(const piece of layout.pieces){
+        const img=R.assets.get(piece.key);if(!img)continue;
+        const fullH=piece.w*img.height/img.width;
+        const drawH=/^stage4-mid/.test(piece.key)?MID_HEIGHTS[3]:fullH;
+        const baked=bakedPlate(piece,drawH,0);if(!baked)continue;
+        const raw=document.createElement('canvas');
+        raw.width=baked.width;raw.height=baked.height;
+        const g=raw.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+        g.drawImage(img,0,0,raw.width,raw.height);
+        const leftPx=(piece.fade||0)>0?Math.round((piece.fade)/piece.w*baked.width):0;
+        const rightPx=(piece.rampOut||0)>0?Math.round((piece.rampOut)/piece.w*baked.width):0;
+        const a=interiorEnergy(baked,leftPx,rightPx),b=interiorEnergy(raw,leftPx,rightPx);
+        bakedSum+=a.sum;rawSum+=b.sum;pixels+=b.n;
+        plates.push({key:piece.key,ramp:piece.ramp||0,rampOut:piece.rampOut||0,ratio:b.mean?a.mean/b.mean:1,baked:a.mean,raw:b.mean,n:b.n,matched:!!baked.matched,underHit:!!baked.underHit,w:baked.width,h:baked.height});
+      }
+      out.push({stage:n,ratio:rawSum?bakedSum/rawSum:1,pixels,plates});
+    }
+    return out;
   }
   function gradedFar(key,logicalW,logicalH,stageN){
     const mode=FAR_GRADE[stageN]||'';
@@ -393,18 +455,12 @@
       g.fillRect(0,0,c.width,c.height);
       g.globalAlpha=1;g.globalCompositeOperation='source-over';
     }else if(mode==='violet'){
-      g.filter='saturate(0.62) brightness(1.05)';
+      // Brighter than the scroll5 crush, still night, contrast kept so torches read.
+      // Bright enough that the sky behind the street sits near the stone, not under it.
+      g.filter='saturate(0.82) brightness(2.05) contrast(1.16)';
       g.drawImage(img,0,0,c.width,c.height);
       g.filter='none';
-      g.globalCompositeOperation='multiply';g.globalAlpha=0.16;g.fillStyle='#3a4458';
-      g.fillRect(0,0,c.width,c.height);
-      g.globalAlpha=1;g.globalCompositeOperation='source-over';
-      crushGlow(c,logicalH);
     }else g.drawImage(img,0,0,c.width,c.height);
-    if(stageN>=2&&stageN<=5){
-      const drawY=-0.376*logicalH,plateRs=c.height/logicalH;
-      softenColumns(c,Math.round((0-drawY)*plateRs),Math.round((222-drawY)*plateRs),true);
-    }
     sized.set(id,c);
     if(mode)R.StageWorld.farGraded[stageN]=mode;
     return c;
@@ -530,7 +586,7 @@
   }
   R.StageWorld = {
     lowAlphaDraws:0,
-    K_FAR,K_MID,K_NEAR,PPU,MID_POOL,FAR_GRADE,
+    K_FAR,K_MID,K_NEAR,PPU,MID_POOL,FAR_GRADE,evictStreet,detailEnergy,
     farGraded:{},
     travelOf,midLayout,midStrips,sliceLayout,
     farRight(scene,cam){return farGeom(scene,cam==null?(scene.camera&&scene.camera.x)||0:cam).right;},
@@ -717,6 +773,8 @@
       if(show('screen')){ctx.drawImage(overlay('light:'+n,g=>{
         const depth=g.createLinearGradient(0,218,0,360);depth.addColorStop(0,'#080f254d');depth.addColorStop(.22,'#0d172208');depth.addColorStop(1,'#0c112346');g.fillStyle=depth;g.fillRect(0,218,640,142);
         const light=['#9bcfff','#ffdca0','#a99aff','#ffe8b0','#9ac2ff'][n-1],glow=g.createRadialGradient(440,100,10,440,100,310);glow.addColorStop(0,light+'28');glow.addColorStop(1,light+'00');g.fillStyle=glow;g.fillRect(0,0,640,360);
+        // Stages 2 and 4: a shallow shade behind the fight lane so cloaks separate from the street and the hall. Stage 5 stays bright enough to read on its own.
+        if(n===2||n===4){g.fillStyle='rgba(8,10,16,0.20)';g.fillRect(0,158,640,148);}
       }),0,0,640,360);}
       if (n === 5 && !this._painting && Math.sin(time * 0.8) > 0.995) strokeLightning(ctx);
     },

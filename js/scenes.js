@@ -617,6 +617,7 @@
       fade.t += dt;
       if (fade.phase === 'out' && fade.t >= 0.2) {
         this.roofOn = true;
+        if (R.StageWorld && R.StageWorld.evictStreet) R.StageWorld.evictStreet();
         fade.phase = 'in';
         fade.t = 0;
       } else if (fade.phase === 'in' && fade.t >= 0.2) {
@@ -777,8 +778,10 @@
         ctx.fillRect(0, 0, 640, 360);
       }
       if (this.subtitle) {
-        R.drawPanel(ctx, 42, 192, 556, 27);
-        R.drawText(ctx, this.subtitle.line.name + ': ' + this.subtitle.line.text, 320, 206, 6, '#e4f6ff', 'center');
+        // Stage 4's hall caption used to sit across the fighters' chests.
+        const y = this.levelIndex === 3 ? 328 : 192;
+        R.drawPanel(ctx, 42, y, 556, this.levelIndex === 3 ? 22 : 27);
+        R.drawText(ctx, this.subtitle.line.name + ': ' + this.subtitle.line.text, 320, y + 14, 6, '#e4f6ff', 'center');
       }
       if (this.twinkleFreed && !this.joint) R.drawText(ctx, R.input.fillKeys('FULL SAIDIN + {power}: TOGETHER!'), 320, 283, 7, '#a9edff', 'center');
       if (this.paused) this.pauseMenu.draw(ctx);

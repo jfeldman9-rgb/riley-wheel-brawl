@@ -70,6 +70,97 @@ async function pageLoadChecks(check, rootDir) {
     });
     check(bootMem.mb <= 90 && bootMem.canvases <= 48, 'Boot canvas memory stays at or below 90MB and 48 canvases ' + JSON.stringify(bootMem));
     console.log('Boot canvas memory ' + JSON.stringify(bootMem));
+    const seams = await fresh.page.evaluate(() => {
+      const SW = RWB.StageWorld, rs = RWB.display.renderScale || 2, K = 0.4;
+      function energy(data, width) {
+        const rows = 445, cols = new Float64Array(width);
+        for (let x = 1; x < width; x++) {
+          let s = 0;
+          for (let y = 0; y < rows; y++) {
+            const i = (y * width + x) * 4, p = i - 4;
+            s += Math.abs(data[i] - data[p]) + Math.abs(data[i + 1] - data[p + 1]) + Math.abs(data[i + 2] - data[p + 2]);
+          }
+          cols[x] = s / rows;
+        }
+        const sample = [];
+        for (let x = 8; x < width - 8; x++) sample.push(cols[x]);
+        sample.sort((a, b) => a - b);
+        return { cols, med: sample[sample.length >> 1] || 1 };
+      }
+      function grab(n, cam) {
+        const c = document.createElement('canvas');
+        c.width = 1280; c.height = 720;
+        const g = c.getContext('2d', { willReadFrequently: true });
+        g.setTransform(rs, 0, 0, rs, 0, 0);
+        const scene = { levelIndex: n - 1, camera: { x: cam }, time: 0, wave: 0, level: { length: 4240 } };
+        SW.draw(g, scene);
+        SW.near(g, scene);
+        return g.getImageData(0, 0, 1280, 720).data;
+      }
+      function maxRatio(st, x0, x1) {
+        let max = 0;
+        const a = Math.max(1, Math.ceil(x0)), b = Math.min(1278, Math.floor(x1));
+        for (let x = a; x <= b; x++) max = Math.max(max, st.cols[x] / st.med);
+        return max;
+      }
+      const joins = [];
+      for (let n = 1; n <= 5; n++) {
+        const layout = SW.midLayout(n, 3600);
+        const pieces = layout.pieces.slice().sort((a, b) => a.x - b.x);
+        for (let i = 1; i < pieces.length; i++) {
+          const cur = pieces[i];
+          const fade = cur.fade != null ? cur.fade : (cur.ramp || 0);
+          const win0 = cur.x - 40, win1 = cur.x + fade + 40;
+          const cam = Math.max(0, Math.min(3600, ((win0 + win1) / 2 - 320) / K));
+          const st = energy(grab(n, cam), 1280);
+          const dev = w => (w - cam * K) * rs;
+          // The blend is the crossfade. ±40u also covers painted columns beside it;
+          // those are reported, and a join fails only when the blend itself is over 4x.
+          const fadeMax = maxRatio(st, dev(cur.x), dev(cur.x + fade));
+          const winMax = maxRatio(st, dev(win0), dev(win1));
+          joins.push({ n, key: cur.key, fade: +fade.toFixed(2), fadeMax: +fadeMax.toFixed(3), winMax: +winMax.toFixed(3) });
+        }
+        const end = energy(grab(n, 3600), 1280);
+        let edge = 0;
+        for (let x = 1272; x <= 1278; x++) edge = Math.max(edge, end.cols[x] / end.med);
+        joins.push({ n, edge: +edge.toFixed(3) });
+      }
+      function layer(level, cam, id) {
+        const c = document.createElement('canvas');
+        c.width = 1280; c.height = 720;
+        const g = c.getContext('2d', { willReadFrequently: true });
+        g.setTransform(rs, 0, 0, rs, 0, 0);
+        const scene = { levelIndex: level, camera: { x: cam }, time: 0, wave: 0, level: { length: 4240 } };
+        SW._painting = true; SW._layer = id;
+        try { SW.draw(g, scene); }
+        finally { SW._painting = false; SW._layer = null; }
+        return g.getImageData(0, 0, 1280, 720).data;
+      }
+      function lum(cam, level) {
+        const far = layer(level, cam, 'back'), mid = layer(level, cam, 'mid');
+        let holes = 0, farSum = 0, midN = 0, midSum = 0;
+        for (let y = 200; y <= 444; y++) for (let x = 0; x < 1280; x++) {
+          const i = (y * 1280 + x) * 4, a = mid[i + 3];
+          if (a < 16) { holes++; farSum += 0.2126 * far[i] + 0.7152 * far[i + 1] + 0.0722 * far[i + 2]; }
+          if (a >= 250) { midN++; midSum += 0.2126 * mid[i] + 0.7152 * mid[i + 1] + 0.0722 * mid[i + 2]; }
+        }
+        const farL = holes ? farSum / holes : 0, midL = midN ? midSum / midN : 0;
+        return { holes, far: +farL.toFixed(2), mid: +midL.toFixed(2), ratio: midL ? +(farL / midL).toFixed(3) : 0 };
+      }
+      const detail = SW.detailEnergy().map(s => ({ stage: s.stage, ratio: +s.ratio.toFixed(4) }));
+      return { joins, detail, s1: lum(550, 0), s5: lum(3430, 4) };
+    });
+    const blendOk = seams.joins.filter(j => j.fadeMax != null).every(j => j.fadeMax <= 4);
+    const edgeOk = seams.joins.filter(j => j.edge != null).every(j => j.edge <= 3);
+    const detailOk = seams.detail.every(s => s.ratio >= 0.95);
+    check(blendOk, 'Real plate joins (the crossfade only; painted columns outside it are not seams) stay at or under 4x ' + JSON.stringify(seams.joins.filter(j => j.fadeMax != null)));
+    check(edgeOk, 'The right edge at cam 3600 stays at or under 3x ' + JSON.stringify(seams.joins.filter(j => j.edge != null)));
+    check(detailOk, 'Interior detail stays within 95% of the unfiltered plate ' + JSON.stringify(seams.detail));
+    check(seams.s1.holes === 3213 && Math.abs(seams.s1.far - 69.35) < 0.05, 'Stage 1 far/mid luminance calibration is unchanged ' + JSON.stringify(seams.s1));
+    check(seams.s5.ratio >= 0.8 && seams.s5.ratio <= 1.2, 'Stage 5 far/mid luminance at cam 3430 stays between 0.8 and 1.2 ' + JSON.stringify(seams.s5));
+    console.log('Seam joins ' + JSON.stringify(seams.joins));
+    console.log('Detail energy ' + JSON.stringify(seams.detail));
+    console.log('Luminance ' + JSON.stringify({ s1: seams.s1, s5: seams.s5 }));
     const visual = await seeded.page.evaluate(() => {
       const feet = [];
       for (const kind of Object.keys(RWB.Puppet.defs)) {
@@ -229,6 +320,92 @@ async function pageLoadChecks(check, rootDir) {
     });
     const planted = visual.feet.every(r => r.early && r.late && r.early.drift <= 8 && r.late.drift <= 8 && r.early.drift < r.early.travel * 0.7 && r.late.drift < r.late.travel * 0.7);
     check(planted, 'Baked walk frames keep the planted hoof fixed in world space ' + JSON.stringify(visual.feet));
+    const footDrift = await seeded.page.evaluate(() => {
+      const rs = RWB.display.renderScale || 2;
+      function clusters(canvas) {
+        const w = canvas.width, h = canvas.height, data = canvas.getContext('2d').getImageData(0, 0, w, h).data;
+        let maxY = -1;
+        for (let y = h - 1; y >= 0; y--) {
+          for (let x = 0; x < w; x++) if (data[(y * w + x) * 4 + 3] > 48) { maxY = y; break; }
+          if (maxY >= 0) break;
+        }
+        if (maxY < 0) return [];
+        const xs = [];
+        for (let y = maxY; y > maxY - 3 && y >= 0; y--) for (let x = 0; x < w; x++) if (data[(y * w + x) * 4 + 3] > 48) xs.push(x);
+        xs.sort((a, b) => a - b);
+        const groups = [];
+        for (const x of xs) {
+          const g = groups[groups.length - 1];
+          if (g && x - g[g.length - 1] <= 10) g.push(x); else groups.push([x]);
+        }
+        return groups.filter(g => g.length >= 8).map(g => g[g.length >> 1] / rs);
+      }
+      // The planted foot is the sole that stays down for the contact. The other
+      // hoof is often still on the ground at the start of the stance, so the
+      // largest blob can switch feet. Follow one sole across the contact.
+      function plantedRate(samples) {
+        if (samples.length < 4) return 0;
+        let best = null;
+        const minLen = Math.ceil(samples.length * 0.7);
+        for (let start = 0; start < samples.length * 0.35; start++) {
+          for (const seed of samples[start]) {
+            let prev = seed, lo = seed, hi = seed, n = 1, ok = true;
+            for (let i = start + 1; i < samples.length; i++) {
+              let near = null, nd = Infinity;
+              for (const c of samples[i]) if (Math.abs(c - prev) < nd) { nd = Math.abs(c - prev); near = c; }
+              if (near == null || nd > 16) { ok = false; break; }
+              prev = near; lo = Math.min(lo, near); hi = Math.max(hi, near); n++;
+            }
+            if (!ok || n < minLen) continue;
+            const rate = (hi - lo) / ((n - 1) / 60);
+            if (best == null || rate < best) best = rate;
+          }
+        }
+        return best == null ? 999 : best;
+      }
+      const blank = document.createElement('canvas');
+      blank.width = 1280; blank.height = 720;
+      const ctx = blank.getContext('2d', { willReadFrequently: true });
+      const scene = new RWB.scenes.Play(RWB.game, 0, { wave: 0, lives: 99 });
+      const player = scene.player;
+      player.state = 'walk'; player.grounded = true; player.facing = 1; player.x = 180; player.y = 250;
+      let riley = 0, run = [];
+      const flush = () => { if (run.length > 4) riley = Math.max(riley, plantedRate(run)); run = []; };
+      for (let i = 0; i < 120; i++) {
+        player.walkDistance += 128 / 60;
+        player.x += 128 / 60;
+        const bin = Math.floor(player.walkDistance / 32);
+        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, 1280, 720);
+        ctx.setTransform(rs, 0, 0, rs, 0, 0);
+        player.drawSprite(ctx, 0);
+        if (run.bin !== bin) { flush(); run.bin = bin; }
+        run.push(clusters(blank));
+      }
+      flush();
+      function enemyDrift(kind, speed) {
+        RWB.Puppet.prepare(kind);
+        const enemy = { x: 200, y: 250, z: 0, facing: 1, state: 'walk', vx: speed, visualHeight: RWB.Puppet.defs[kind].height, gait: null };
+        let worst = 0, run = [], half = null;
+        const flush = () => { if (run.length > 4) worst = Math.max(worst, plantedRate(run)); run = []; };
+        for (let i = 0; i < 180; i++) {
+          enemy.x += speed / 60;
+          RWB.Puppet.updateGait(enemy, 1 / 60);
+          const phase = enemy.gait ? ((enemy.gait.phase % 1) + 1) % 1 : 0;
+          const side = phase < 0.5 ? 0 : 1;
+          ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, 1280, 720);
+          ctx.setTransform(rs, 0, 0, rs, 0, 0);
+          RWB.Puppet.draw(ctx, enemy, 0, kind);
+          if (half !== side) { flush(); half = side; }
+          run.push(clusters(blank));
+        }
+        flush();
+        return +worst.toFixed(2);
+      }
+      return { riley: +riley.toFixed(2), trolloc: enemyDrift('trolloc', 64), chieftain: enemyDrift('chieftain', 68) };
+    });
+    check(footDrift.riley <= 15, 'Riley planted foot drifts at or under 15 u/s during a step ' + JSON.stringify(footDrift));
+    check(footDrift.trolloc <= 20 && footDrift.chieftain <= 20, 'Enemy planted feet drift at or under 20 u/s ' + JSON.stringify(footDrift));
+    console.log('Foot drift ' + JSON.stringify(footDrift));
     check(visual.dust.corner < visual.dust.peak * 0.5 && visual.dust.peak > 40 && visual.chunk.corner < visual.chunk.peak * 0.5 && visual.chunk.peak > 40, 'Dust and debris pixels are soft rounds, not hard rectangles ' + JSON.stringify({ dust: visual.dust, chunk: visual.chunk }));
     check(visual.bg.sub > 0 && visual.bg.step > 0, 'A fractional camera moves the cached background off the whole-pixel snap ' + JSON.stringify(visual.bg));
     check(Math.abs(visual.bg.floorShift) === 1 && visual.bg.midShift === 0, 'Parallax layers keep their own sub-pixel step (floor moves, distant mid does not jump a pixel) ' + JSON.stringify(visual.bg));
@@ -433,7 +610,7 @@ const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).fla
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260927-scroll5';console.log('Cache stamp: '+STAMP);
+const STAMP='20260927-scroll6';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -587,13 +764,14 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   check(RWB.LEVELS[3].banner.includes('TEAR')&&RWB.LEVELS[3].banner.includes('CALLANDOR')&&RWB.LEVELS[4].banner==='THE BLACK TOWER'&&!RWB.LEVELS[4].banner.includes('CALLANDOR')&&!/'  CALLANDOR'/.test(hudSource)&&/level\.banner/.test(hudSource),'Stage banners: 4 = Tear - Callandor, 5 = The Black Tower (Callandor no longer titles Stage 5)');
   const puppetSource=fs.readFileSync(path.join(root,'js/puppets.js'),'utf8');
   check(!/scale\(\s*-1\s*,\s*1\s*\)/.test(stageSource),'Stage plate and floor tiling never mirrors a repeat');
+  check(!/softenColumns|featherSkyline|crushGlow|nightMist/.test(stageSource),'Plate interiors are not blurred, feathered, or smeared to pass a seam metric');
   check(['1','2','3','4','5','-roof'].every(n=>RWB.ART_FILES['floor'+n]==='assets/art/floor'+n+'-loop.jpeg')&&/FLOOR_LOOP=1100/.test(stageSource)&&/const overlap=0/.test(stageSource),'Floors use offline-quilted seamless loops (min-error cut, no hard join) spanning 1100 units, >1.7 screens');
   check(/K_FAR=0\.08,K_MID=0\.40,K_NEAR=1\.15/.test(stageSource)&&/const farW=640\+K_FAR\*travel/.test(stageSource)&&/stage5-roof-far/.test(stageSource)&&!/sectionBlend|CAMERA_RANGE|paintLandmarks|sectionWash/.test(stageSource),'Far layer is one full-width plate at 0.08, the roof plate is locked on the arena, and nothing crossfades two versions');
   check(/plateW:720/.test(stageSource)&&/\{key:'stage2-mid',imgW:1774,plateW:700/.test(stageSource)&&/bakedNear/.test(stageSource),'Stage 1 mid plate is 720 units; later mids and the near strip are 700 and scroll on their own factors');
   const rileySource=fs.readFileSync(path.join(root,'js/riley.js'),'utf8');
   check(rileyFrames.every(frame=>RWB.ART_MANIFEST.includes('assets/art/riley16/'+frame+'.png'))&&RWB.ART_MANIFEST.includes('assets/art/riley16/portrait.png')&&/drawImage\(img, -ax \* scale, -ay \* scale/.test(rileySource),'Riley draws from all ten anchored riley16 runtime frames and the new portrait is manifested');
   check(RWB.RILEY16.height>=90&&RWB.RILEY16.height<=100&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height>=.80&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height<=.90,'Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc');
-  check(/Math\.floor\(this\.walkDistance \/ 20\) % 4/.test(rileySource),'Riley walk advances four frames by movement distance and stops at rest');
+  check(/Math\.floor\(this\.walkDistance \/ 16\) % 4/.test(rileySource),'Riley walk advances four frames by movement distance and stops at rest');
   const belalFrames=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];
   check(belalFrames.every(f=>RWB.ART_MANIFEST.includes('assets/art/belal/'+f+'.png')&&RWB.BELAL.frames[f]&&RWB.BELAL.frames[f].length===4)&&RWB.ART_MANIFEST.includes('assets/art/belal/portrait.png'),"Be'lal draws from all ten anchored painted belal frames (sword painted in hand) plus portrait");
   check(/kind==='forsaken'&&R\.assets\.has\('belal-idle'\)/.test(puppetSource)&&/m==='combo'\?'windup'/.test(puppetSource)&&/t<\.55\?'slash':'lunge'/.test(puppetSource),"Be'lal SWORD FLURRY telegraph/attack use painted windup/slash/lunge frames (no composited sword, cannot detach)");

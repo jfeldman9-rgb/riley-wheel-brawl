@@ -208,7 +208,18 @@
         ctx.save();ctx.beginPath();for(let k=0;k<3;k++){const p=k===0?a:k===1?b:c,dx=p.X-centerX,dy=p.Y-centerY,l=Math.hypot(dx,dy)||1;ctx[k?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);}ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(tex,0,0,r.w,r.h);ctx.restore();
       }
     }
-    return {surface,bounds,scale};
+    return outlineSurface(surface, bounds, scale);
+  }
+  // 1px dark rim baked into the pose so cloaks separate from the background.
+  // The source pose canvas is dropped; the outlined one replaces it.
+  function outlineSurface(surface, bounds, scale){
+    const pad=1,c=document.createElement('canvas');
+    c.width=bounds.width+pad*2;c.height=bounds.height+pad*2;
+    const g=c.getContext('2d');g.imageSmoothingEnabled=false;
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])g.drawImage(surface,pad+dx,pad+dy);
+    g.globalCompositeOperation='source-in';g.fillStyle='#140e0a';g.fillRect(0,0,c.width,c.height);
+    g.globalCompositeOperation='source-over';g.drawImage(surface,pad,pad);
+    return {surface:c,bounds:{left:bounds.left-pad,top:bounds.top-pad,width:c.width,height:c.height},scale};
   }
   function blitPose(output,r,entry){
     const scale=entry.scale,b=entry.bounds;
@@ -284,12 +295,24 @@
     ctx.strokeStyle='#edf5fb';ctx.lineWidth=r.h*.006;ctx.beginPath();ctx.moveTo(r.h*.07,-r.h*.006);ctx.lineTo(len*.94,-r.h*.002);ctx.stroke();
     ctx.restore();
   }
+  // Hold the body on the walk frame it was skinned for, so the sole stays
+  // where that frame planted it instead of skating with the actor.
+  function plantShift(a){
+    const g=a.gait;
+    if(!g||!g.moving||!(g.feet&&g.feet.some(f=>f&&f.stance)))return 0;
+    const scale=(a.visualHeight||83)/80,cycle=32*scale*2;
+    const phase=((g.phase%1)+1)%1,frame=Math.floor(phase*WALK_FRAMES)%WALK_FRAMES,base=frame/WALK_FRAMES;
+    // Hold the pose on the body position it was skinned for (the middle of this
+    // frame) so the sole stays down instead of skating ahead with the actor.
+    return -(phase-(base+0.5/WALK_FRAMES))*cycle*(g.dir||1);
+  }
   function updateGait(a, dt) {
     if(!a.visualHeight){const kind=a instanceof R.Riley?'riley':a instanceof R.Loial?'loial':a.kind||(a.boss?'chieftain':'trolloc');a.visualHeight=defs[kind]?.height||83;}
     const old=a.gait || (a.gait={x:a.x,y:a.y,phase:0,feet:[],moving:false});
     const dx=a.x-old.x,dy=a.y-old.y,dist=Math.hypot(dx,dy),scale=(a.visualHeight||83)/80;
     const walking=(a.state==='walk'||a instanceof R.Loial)&&!a.dead&&(a.z||0)<.1&&dist>.001&&dist<40;
     old.moving=walking;
+    if(Math.abs(dx)>0.001)old.dir=Math.sign(dx);
     if(walking) {
       const stride=32*scale; old.phase+=dist/(stride*2);
       const ux=dx/dist,uy=dy/dist;
@@ -379,7 +402,7 @@
     const d=defs[kind];if(!d)return false;const r=getRig(d);if(!r)return false;
     a.visualHeight=d.height;const pose=this.pose(a,d.height);
 
-    ctx.save();ctx.translate(a.x-cam,a.y-(a.z||0));ctx.scale((a.facing||1)*(d.front?1:-1),1);
+    ctx.save();ctx.translate(a.x-cam+plantShift(a),a.y-(a.z||0));ctx.scale((a.facing||1)*(d.front?1:-1),1);
     if(a.dead||['knockdown','lying','death'].includes(a.state)){ctx.translate(0,-8);ctx.rotate(d.front?-1.35:1.35);}
     if(a.dead)ctx.globalAlpha=Math.max(.1,Math.min(1,(a.deathTimer||.5)/.75));
     ctx.scale(d.height/r.h,d.height/r.h);ctx.translate(-r.root.x,-r.root.y);
