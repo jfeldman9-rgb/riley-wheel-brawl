@@ -53,16 +53,16 @@ The numbers below are from this VM. The starting point quoted for the task, meas
 
 ### Software canvas (`--disable-gpu --disable-accelerated-2d-canvas`)
 
-Before is `08c74ae`. After is this branch.
+Before is `08c74ae`. After is grok3b on this branch (re-measured after the review fixes; `935a6f2` was 60 fps, p99 16.8 ms, and 0 frames over 33 ms on all four).
 
 | Stage | Before fps | Before p95 / p99 | Before >33 / >50 | Before update+draw | After fps | After p95 / p99 | After >33 / >50 | After update+draw |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 wave 3 | 20.53 | 66.7 / 83.4 | 204 / 37 | 46.41 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.32 ms |
-| 3 wave 3 | 23.28 | 50.1 / 50.1 | 228 / 22 | 30.01 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.31 ms |
-| 5 wave 3 | 39.74 | 33.4 / 33.4 | 203 / 0 | 14.52 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.31 ms |
-| 4 boss | 60 | 16.7 / 16.8 | 0 / 0 | 0.42 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.22 ms |
+| 1 wave 3 | 20.53 | 66.7 / 83.4 | 204 / 37 | 46.41 ms | 59.9 | 16.8 / 16.8 | 1 / 0 | 0.39 ms |
+| 3 wave 3 | 23.28 | 50.1 / 50.1 | 228 / 22 | 30.01 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.37 ms |
+| 5 wave 3 | 39.74 | 33.4 / 33.4 | 203 / 0 | 14.52 ms | 60 | 16.8 / 16.8 | 0 / 0 | 0.27 ms |
+| 4 boss | 60 | 16.7 / 16.8 | 0 / 0 | 0.42 ms | 60 | 16.7 / 16.8 | 0 / 0 | 0.25 ms |
 
-Software mode meets ~60 fps, p99 under 20 ms, and 0 frames over 50 ms on every measured stage.
+Software mode stays at ~60 fps, p99 16.8 ms, and 0 frames over 50 ms. Stage 1 had one frame between 33 and 50 ms. Update+draw is still under half a millisecond.
 
 ### SwiftShader / WebGL (`RWB_ACCELERATED=1`)
 
@@ -105,6 +105,9 @@ Every boss attack is seen on every seed, including seeds that do not clear. Natu
 
 - `node tools/check.cjs`: All checks passed. No previous check was weakened. New checks: a seeded Stage 2 save is byte-identical after a real page load, a fresh profile has no CONTINUE, baked walk frames keep the planted hoof within 8px (and under 70% of body travel) in world space, dust and debris pixels are soft rounds, and a fractional camera moves the cached background.
 - `node tools/smoothness-check.cjs`: **9 passes**, including the light hit-stop cooldown and the super hit-stop.
+- `tools/review.cjs`: **77 loaded, 0 missing, 0 errors**, stamp `20260926-grok3b`.
+- `tools/smoothness-browser.cjs`: mesh missing fraction 0, context loss still paints, no page errors.
+- Natural soak re-run: **7/8/8/8/8**, all attacks 10/10. Assisted: **50/50**, exit 0. Damage scales were not changed.
 
 ## Still weak / limits
 

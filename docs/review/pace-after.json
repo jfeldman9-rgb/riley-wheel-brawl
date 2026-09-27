@@ -9,13 +9,13 @@
         1280,
         720
       ],
-      "frames": 601,
-      "avgFps": 60,
-      "p95Ms": 16.7,
+      "frames": 600,
+      "avgFps": 59.9,
+      "p95Ms": 16.8,
       "p99Ms": 16.8,
-      "over33": 0,
+      "over33": 1,
       "over50": 0,
-      "meanUpdateDrawMs": 0.32,
+      "meanUpdateDrawMs": 0.39,
       "runtimeLite": false
     },
     {
@@ -31,7 +31,7 @@
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.31,
+      "meanUpdateDrawMs": 0.37,
       "runtimeLite": false
     },
     {
@@ -43,11 +43,11 @@
       ],
       "frames": 601,
       "avgFps": 60,
-      "p95Ms": 16.7,
+      "p95Ms": 16.8,
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.31,
+      "meanUpdateDrawMs": 0.27,
       "runtimeLite": false
     },
     {
@@ -63,7 +63,7 @@
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.22,
+      "meanUpdateDrawMs": 0.25,
       "runtimeLite": false
     }
   ]
