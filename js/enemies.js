@@ -190,7 +190,7 @@
     }
     onHurt(damage, opts) {
       this.g.releaseAttacker(this);
-      this.hitFlash = 0.1;
+      this.hitFlash = 0.16;
       if (opts.knockdown) {
         this.setState('knockdown');
         this.stun = 0.72;
@@ -198,8 +198,8 @@
       } else {
         this.setState('hurt');
         this.stun = 0.4;
-        this.friction = 11;
-        this.vx *= 0.4;
+        this.friction = 6.5;
+        this.vx *= 0.78;
       }
     }
     onDeath() {
@@ -400,7 +400,7 @@
     }
     onHurt(damage, opts) {
       if (this.dead) return;
-      this.hitFlash = 0.1;
+      this.hitFlash = 0.16;
       if (opts.stagger || opts.knockdown) {
         this.g.releaseAttacker(this);
         this.setState('hurt');

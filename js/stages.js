@@ -171,8 +171,25 @@
       const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);const scene={levelIndex:level,camera:{x:0},time:0,wave:0};this.draw(g,scene);this.near(g,scene);this.grade(g,scene);if(level===4){scene.wave=5;this.draw(g,scene);}
     },
     draw(ctx, scene) {
-      const n = scene.levelIndex + 1,
-        cam = scene.camera.x,
+      const n = scene.levelIndex + 1;
+      // Stage 1's alpha plates plus the saved world layer were a synchronous
+      // ~9ms composite on software canvas. Reuse one opaque view while the
+      // camera sits on the same pixel; a moving camera repaints that view.
+      if(!this._painting && n!==5 && R.assets.has('stage'+n+'-far')){
+        const rs=R.display.renderScale||1,cam=Math.round(scene.camera.x||0),bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs));
+        const key=n+':'+cam+':'+bw+':'+(scene.wave===5?1:0);
+        const slot=this._view||(this._view={key:'',canvas:document.createElement('canvas')});
+        if(slot.key!==key||slot.canvas.width!==bw||slot.canvas.height!==bh){
+          slot.canvas.width=bw;slot.canvas.height=bh;
+          const g=slot.canvas.getContext('2d');g.setTransform(rs,0,0,rs,0,0);g.imageSmoothingEnabled=true;
+          const prev=scene.camera.x;scene.camera.x=cam;this._painting=true;
+          try{this.draw(g,scene);}finally{this._painting=false;scene.camera.x=prev;}
+          slot.key=key;
+        }
+        ctx.drawImage(slot.canvas,0,0,640,360);
+        return;
+      }
+      const cam = scene.camera.x,
         time = scene.time;
       const stagePalette=PALETTES[n - 1] || ['#142b45','#6689a3','#8b9daf','#253443'];
       if (n === 1 && !R.assets.has('stage1-far')) R.Stage1.draw(ctx, cam, time);

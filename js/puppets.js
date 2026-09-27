@@ -181,31 +181,83 @@
     gl.viewport(0,0,width,height);gl.enable(gl.SCISSOR_TEST);gl.scissor(0,0,width,height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.bindTexture(gl.TEXTURE_2D,data.texture);gl.bindBuffer(gl.ARRAY_BUFFER,data.vertex);gl.bufferData(gl.ARRAY_BUFFER,data.array,gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(gpu.position);gl.vertexAttribPointer(gpu.position,2,gl.FLOAT,false,16,0);gl.enableVertexAttribArray(gpu.uv);gl.vertexAttribPointer(gpu.uv,2,gl.FLOAT,false,16,8);gl.uniform4f(gpu.bounds,left,top,width,height);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,data.indices);gl.drawElements(gl.TRIANGLES,data.count,gl.UNSIGNED_SHORT,0);
     destination.setTransform(1,0,0,1,0,0);destination.drawImage(canvas,0,canvas.height-height,width,height,0,0,width,height);return true;
   }
-  function paintedBody(output,r,bones,pose,actor){
-    const cache=actor&&actor.g?(actor._paintedPose||(actor._paintedPose={})):r;
-    // A single tightly bounded composite prevents triangle-edge alpha seams.
-    const scale=384/r.h,signature=[pose.lean,pose.bob,!!pose.attack,!!R.perf.canvasSkin];
-    for(const bone of bones)for(const p of bone)signature.push(p.x,p.y);
-    const same=cache.signature&&signature.every((v,i)=>v===cache.signature[i]);
-    if(!same){
-      cache.signature=signature;const transforms=boneTransforms(r,bones),layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
-      r.buffers=r.buffers||layers.map(()=>r.vertices.map(()=>({})));
-      let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
-      for(let n=0;n<layers.length;n++)for(let i=0;i<r.vertices.length;i++){const v=skinPoint(r.vertices[i],r,bones,pose,layers[n][1],transforms,r.buffers[n][i]);minX=Math.min(minX,v.X);minY=Math.min(minY,v.Y);maxX=Math.max(maxX,v.X);maxY=Math.max(maxY,v.Y);}
-      const left=Math.floor(minX*scale)-2,top=Math.floor(minY*scale)-2,width=Math.ceil(maxX*scale)-left+2,height=Math.ceil(maxY*scale)-top+2;
-      if(!cache.surface)cache.surface=document.createElement('canvas');
-      // Quantized capacity avoids reallocating the canvas for tiny pose changes.
-      const capacityW=Math.ceil(width/32)*32,capacityH=Math.ceil(height/32)*32;
-      if(cache.surface.width<capacityW)cache.surface.width=capacityW;if(cache.surface.height<capacityH)cache.surface.height=capacityH;
-      cache.bounds={left,top,width,height};const ctx=cache.surface.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cache.surface.width,cache.surface.height);ctx.setTransform(scale,0,0,scale,-left,-top);
-      const padding=.8/scale;
-      if(!gpuSkin(r,r.buffers[0],cache.bounds,scale,ctx))for(let n=0;n<layers.length;n++){const vertices=r.buffers[n],tex=layers[n][0];
-        for(const f of r.faces){const a=vertices[f.a],b=vertices[f.b],c=vertices[f.c],bx=b.X-a.X,by=b.Y-a.Y,cx=c.X-a.X,cy=c.Y-a.Y,A=bx*f.cy-cx*f.by,B=by*f.cy-cy*f.by,C=cx*f.bx-bx*f.cx,D=cy*f.bx-by*f.cx,centerX=(a.X+b.X+c.X)/3,centerY=(a.Y+b.Y+c.Y)/3;
-          ctx.save();ctx.beginPath();for(let k=0;k<3;k++){const p=k===0?a:k===1?b:c,dx=p.X-centerX,dy=p.Y-centerY,l=Math.hypot(dx,dy)||1;ctx[k?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);}ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(tex,0,0,r.w,r.h);ctx.restore();
-        }
+  // Walk / attack / hurt poses are baked once per rig and shared by every actor.
+  // Live draws blit that composite. Skinning a mesh every frame was the whole
+  // mid-fight cost (about 8ms per enemy on software canvas).
+  const WALK_FRAMES=12,KICK_FRAMES=6;
+  function bakePose(r,bones,pose){
+    const scale=384/r.h,transforms=boneTransforms(r,bones),layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
+    r.buffers=r.buffers||layers.map(()=>r.vertices.map(()=>({})));
+    let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+    for(let n=0;n<layers.length;n++)for(let i=0;i<r.vertices.length;i++){const v=skinPoint(r.vertices[i],r,bones,pose,layers[n][1],transforms,r.buffers[n][i]);minX=Math.min(minX,v.X);minY=Math.min(minY,v.Y);maxX=Math.max(maxX,v.X);maxY=Math.max(maxY,v.Y);}
+    const left=Math.floor(minX*scale)-2,top=Math.floor(minY*scale)-2,width=Math.max(1,Math.ceil(maxX*scale)-left+2),height=Math.max(1,Math.ceil(maxY*scale)-top+2);
+    const surface=document.createElement('canvas');surface.width=width;surface.height=height;
+    const ctx=surface.getContext('2d'),bounds={left,top,width,height},padding=.8/scale;
+    ctx.setTransform(scale,0,0,scale,-left,-top);
+    if(!gpuSkin(r,r.buffers[0],bounds,scale,ctx))for(let n=0;n<layers.length;n++){const vertices=r.buffers[n],tex=layers[n][0];
+      for(const f of r.faces){const a=vertices[f.a],b=vertices[f.b],c=vertices[f.c],bx=b.X-a.X,by=b.Y-a.Y,cx=c.X-a.X,cy=c.Y-a.Y,A=bx*f.cy-cx*f.by,B=by*f.cy-cy*f.by,C=cx*f.bx-bx*f.cx,D=cy*f.bx-by*f.cx,centerX=(a.X+b.X+c.X)/3,centerY=(a.Y+b.Y+c.Y)/3;
+        ctx.save();ctx.beginPath();for(let k=0;k<3;k++){const p=k===0?a:k===1?b:c,dx=p.X-centerX,dy=p.Y-centerY,l=Math.hypot(dx,dy)||1;ctx[k?'lineTo':'moveTo'](p.X+dx/l*padding,p.Y+dy/l*padding);}ctx.closePath();ctx.clip();ctx.transform(A,B,C,D,a.X-A*a.x-C*a.y,a.Y-B*a.x-D*a.y);ctx.drawImage(tex,0,0,r.w,r.h);ctx.restore();
       }
     }
-    const b=cache.bounds;output.drawImage(cache.surface,0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);
+    return {surface,bounds};
+  }
+  function blitPose(output,r,entry){
+    const scale=384/r.h,b=entry.bounds;
+    output.drawImage(entry.surface,0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);
+  }
+  // Tint only the baked character's pixels. source-atop stays on this copy,
+  // never on the main canvas (that lit a box around Be'lal).
+  function flashOf(entry){
+    if(entry.flash)return entry.flash;const b=entry.bounds,c=document.createElement('canvas');c.width=b.width;c.height=b.height;const g=c.getContext('2d');
+    g.drawImage(entry.surface,0,0,b.width,b.height);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,b.width,b.height);entry.flash=c;return c;
+  }
+  function frameKey(a){
+    if(a.attackMove){const t=Math.min(1,(a.stateT||0)/(a.attackMove.duration||.4));return 'k'+Math.min(KICK_FRAMES-1,Math.floor(t*KICK_FRAMES));}
+    if(a.hitFlash>0||a.state==='hurt'||a.state==='knockback')return 'hurt';
+    if(a.state==='channel')return 'channel';
+    if(a.ai==='telegraph')return 'cast';
+    if(a.ai==='attack'||a.state==='attack')return 'attack';
+    if((a.z||0)>6&&!a.flying)return 'air';
+    if(a.gait&&a.gait.moving){const phase=((a.gait.phase%1)+1)%1;return 'w'+(Math.floor(phase*WALK_FRAMES)%WALK_FRAMES);}
+    return 'idle';
+  }
+  function actorFor(d,key){
+    const height=d.height,scale=height/80,stride=32*scale;
+    const a={x:0,y:0,z:0,facing:1,state:'idle',stateT:0,ai:'',visualHeight:height,attackMove:null,attackName:'',hitFlash:0,dead:false,flying:false,gait:{moving:false,phase:0,feet:[]}};
+    if(key==='hurt'){a.state='hurt';a.hitFlash=.1;}
+    else if(key==='cast'){a.ai='telegraph';a.state='telegraph';}
+    else if(key==='attack'){a.ai='attack';a.state='attack';}
+    else if(key==='air'){a.z=18;a.state='rise';}
+    else if(key==='channel'){a.state='channel';}
+    else if(key[0]==='w'){
+      const phase=Number(key.slice(1))/WALK_FRAMES;a.state='walk';a.gait.moving=true;a.gait.phase=phase;
+      for(let i=0;i<2;i++){const p=(phase+i*.5)%1,stance=p<.5;if(stance)a.gait.feet.push({x:stride/2,y:0,lift:0,stance:true});else{const t=(p-.5)*2;a.gait.feet.push({x:-stride/2+stride*t,y:0,lift:Math.sin(t*Math.PI)*7*scale,stance:false});}}
+    }else if(key[0]==='k'){
+      const step=Number(key.slice(1));a.state='attack';a.attackName='front';a.attackMove={duration:.4};a.stateT=((step+.5)/KICK_FRAMES)*.4;
+    }
+    return a;
+  }
+  function paintedBody(output,r,bones,pose,actor,key){
+    const lib=r.library||(r.library=new Map());
+    let entry=key?lib.get(key):null;
+    if(!entry){
+      if(!R.perf.poseWarm){
+        const now=performance.now();
+        if(now-(R.perf.poseStamp||0)>14){R.perf.poseStamp=now;R.perf.poseBuilds=0;}
+        if((R.perf.poseBuilds||0)>=1)entry=lib.get('idle')||lib.values().next().value;
+      }
+      if(!entry){
+        if(!bones)return null;
+        entry=bakePose(r,bones,pose);
+        if(key)lib.set(key,entry);
+        if(!R.perf.poseWarm)R.perf.poseBuilds=(R.perf.poseBuilds||0)+1;
+      }
+    }
+    if(!output||!entry)return entry;
+    // A single tightly bounded composite prevents triangle-edge alpha seams.
+    blitPose(output,r,entry);
+    if(actor&&actor.hitFlash>0){const alpha=output.globalAlpha,b=entry.bounds,scale=384/r.h;output.globalAlpha=alpha*Math.min(.72,actor.hitFlash*6);output.drawImage(flashOf(entry),0,0,b.width,b.height,b.left/scale,b.top/scale,b.width/scale,b.height/scale);output.globalAlpha=alpha;}
+    return entry;
   }
   function drawSword(ctx,a,d,r,bones,pose){
     // Anchor to the painted fist as actually skinned (bones[3] wrist), not the
@@ -242,7 +294,16 @@
     } else { old.feet=[]; }
     old.x=a.x;old.y=a.y;
   }
-  R.Puppet={defs,updateGait,knee,prepare(kind){const d=defs[kind],r=d&&getRig(d);if(!r)return null;const a={state:'idle',stateT:0},pose=this.pose(a,d.height),c=document.createElement('canvas');c.width=c.height=1;paintedBody(c.getContext('2d'),r,targets(a,d,r,pose),pose);return r;},contacts(a,kind){
+  R.Puppet={defs,updateGait,knee,prepare(kind){
+    const d=defs[kind],r=d&&getRig(d);if(!r)return null;
+    const prev=R.perf.poseWarm;R.perf.poseWarm=true;
+    const keys=['idle','hurt','cast','attack','air','channel'];
+    for(let i=0;i<WALK_FRAMES;i++)keys.push('w'+i);
+    for(let i=0;i<KICK_FRAMES;i++)keys.push('k'+i);
+    for(const key of keys){const a=actorFor(d,key),pose=this.pose(a,d.height);paintedBody(null,r,targets(a,d,r,pose),pose,a,key);}
+    if(r.library)for(const entry of r.library.values())flashOf(entry);
+    R.perf.poseWarm=prev;return r;
+  },contacts(a,kind){
     const d=defs[kind],r=d&&getRig(d);if(!r)return [];
     const pose=this.pose(a,d.height),bones=targets(a,d,r,pose),scale=d.height/r.h,flip=(a.facing||1)*(d.front?1:-1);
     // Barycentric interpolation uses the exact triangles drawn on screen, not
@@ -271,19 +332,23 @@
   },draw(ctx,a,cam,kind){
     if(kind==='forsaken'&&R.drawBelal&&R.assets.has('belal-idle'))return R.drawBelal(ctx,a,cam,defs.forsaken.height);
     const d=defs[kind];if(!d)return false;const r=getRig(d);if(!r)return false;
-    a.visualHeight=d.height;const pose=this.pose(a,d.height),bones=targets(a,d,r,pose);
+    a.visualHeight=d.height;const pose=this.pose(a,d.height);
 
     ctx.save();ctx.translate(a.x-cam,a.y-(a.z||0));ctx.scale((a.facing||1)*(d.front?1:-1),1);
     if(a.dead||['knockdown','lying','death'].includes(a.state)){ctx.translate(0,-8);ctx.rotate(d.front?-1.35:1.35);}
     if(a.dead)ctx.globalAlpha=Math.max(.1,Math.min(1,(a.deathTimer||.5)/.75));
     ctx.scale(d.height/r.h,d.height/r.h);ctx.translate(-r.root.x,-r.root.y);
-    const articulated=pose.walking||pose.attack||pose.hurt||a.state==='channel'||a.ai==='telegraph'||a.dead||['knockdown','lying','death'].includes(a.state);
+    const key=frameKey(a),lib=r.library,cached=lib&&lib.has(key);
+    // Idle breathing is a translate of the baked stance. Walk and kick frames
+    // already include their own bob, so they are not shifted again.
+    if(cached&&key[0]!=='w'&&key[0]!=='k')ctx.translate(0,pose.bob*r.h/80);
+    const sample=cached?null:actorFor(d,key),skinPose=sample?this.pose(sample,d.height):pose,skinBones=cached?null:targets(sample,d,r,skinPose);
     // Processed connected skin is mandatory even at idle: no raw adult Riley,
     // alternate palette, or uncomposited joint path can leak through.
-    paintedBody(ctx,r,bones,pose,a);drawSword(ctx,a,d,r,bones,pose);
+    paintedBody(ctx,r,skinBones,skinPose,a,key);
+    if(d.sword)drawSword(ctx,a,d,r,cached?targets(a,d,r,pose):skinBones,cached?pose:skinPose);
     ctx.restore();
     if(a.callandor){ctx.save();ctx.lineCap='round';ctx.strokeStyle='rgba(100,220,255,.35)';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(a.x-cam-12,a.y-a.z-22);ctx.lineTo(a.x-cam-22,a.y-a.z-66);ctx.stroke();ctx.strokeStyle='#e8ffff';ctx.lineWidth=2;ctx.stroke();ctx.restore();}
-    if(a.hitFlash>0){ctx.save();ctx.globalAlpha=Math.min(.55,a.hitFlash*4);ctx.fillStyle='#ffe9ac';ctx.beginPath();ctx.ellipse(a.x-cam,a.y-(a.z||0)-40,18,24,0,0,7);ctx.fill();ctx.restore();}
     return true;
   }};
   // Movement is sampled after each full gameplay update (including arena clamp).

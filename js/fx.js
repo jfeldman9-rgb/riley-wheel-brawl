@@ -90,6 +90,13 @@ RWB.FX.KINDS = {
       ctx.drawImage(RWB.effects.glow(f.color),sx-f.r,f.y-f.r,f.r*2,f.r*2); ctx.restore();
     }
   },
+  slash: {
+    draw(ctx, f, sx) {
+      const k = f.t / f.life, dir = f.vx || 1;
+      ctx.save(); ctx.globalAlpha = Math.max(0, 1 - k); ctx.strokeStyle = f.color || '#fff6d0'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(sx - dir * 16, f.y - 12); ctx.lineTo(sx + dir * 24, f.y + 8); ctx.moveTo(sx - dir * 6, f.y - 20); ctx.lineTo(sx + dir * 16, f.y - 2); ctx.stroke(); ctx.restore();
+    }
+  },
   text: {
     update(f, dt) { f.y += f.vy * dt; },
     draw(ctx, f, sx) {
