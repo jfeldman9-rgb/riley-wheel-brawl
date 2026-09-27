@@ -15,10 +15,10 @@
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.35,
+      "meanUpdateDrawMs": 0.41,
       "runtimeLite": false,
-      "enterMs": 604.4,
-      "poseMs": 526.9
+      "enterMs": 636.2,
+      "poseMs": 554.4
     },
     {
       "name": "Stage 3 wave 3",
@@ -33,10 +33,10 @@
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.35,
+      "meanUpdateDrawMs": 0.39,
       "runtimeLite": false,
-      "enterMs": 376.8,
-      "poseMs": 325
+      "enterMs": 355.4,
+      "poseMs": 307.6
     },
     {
       "name": "Stage 5 wave 3",
@@ -47,14 +47,14 @@
       ],
       "frames": 601,
       "avgFps": 60,
-      "p95Ms": 16.8,
+      "p95Ms": 16.7,
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
       "meanUpdateDrawMs": 0.3,
       "runtimeLite": false,
-      "enterMs": 638.6,
-      "poseMs": 591.8
+      "enterMs": 585.8,
+      "poseMs": 538
     },
     {
       "name": "Stage 4 boss",
@@ -69,10 +69,10 @@
       "p99Ms": 16.8,
       "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 0.22,
+      "meanUpdateDrawMs": 0.23,
       "runtimeLite": false,
-      "enterMs": 220.1,
-      "poseMs": 175.9
+      "enterMs": 197.2,
+      "poseMs": 156.4
     },
     {
       "name": "Stage 1 scrolling",
@@ -81,16 +81,16 @@
         1280,
         720
       ],
-      "frames": 599,
-      "avgFps": 59.8,
+      "frames": 601,
+      "avgFps": 60,
       "p95Ms": 16.7,
       "p99Ms": 16.8,
-      "over33": 2,
+      "over33": 0,
       "over50": 0,
-      "meanUpdateDrawMs": 2.17,
+      "meanUpdateDrawMs": 2.06,
       "runtimeLite": false,
-      "enterMs": 241.6,
-      "poseMs": 195.9
+      "enterMs": 214.5,
+      "poseMs": 171.8
     }
   ]
 }

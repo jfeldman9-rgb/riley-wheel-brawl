@@ -485,8 +485,7 @@
       }
       if (this.flying && this.ai !== 'attack') this.z = 47 + Math.sin(this.flightTime * 2.8) * 9;
       R.Entity.prototype.update.call(this, dt);
-      const leash = this.g.leash ? this.g.leash() : [this.g.arenaLeft, this.g.arenaRight];
-      this.x = R.util.clamp(this.x, leash[0] + 25, leash[1] - 25);
+      this.x = R.util.clamp(this.x, this.g.arenaLeft + 25, this.g.arenaRight - 25);
     }
     drawTell(ctx, cam) {
       if (this.ai !== 'telegraph' || !this.target) return;

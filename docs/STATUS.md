@@ -10,7 +10,27 @@ After: every stage is a 4240-unit street (6.625 screens at the 640-wide view). S
 
 The far and mid plates crossfade three crops of the existing painting, so the street changes as the camera advances. Stage 5's last third crossfades `stage5-roof-far` and `floor-roof`. Ground silhouettes and a section wash mark the third of the level you are in. Seams are alpha blends, never a mirrored tile. Paintings that would replace those crops are listed in `NEEDED_ART.md`.
 
-Damage scales are unchanged: `[1.34, 2.66, 0.72, 1.52, 0.76]`. Pace, soak, and check numbers for this stamp are filled in after the run below.
+Damage scales are unchanged: `[1.34, 2.66, 0.72, 1.52, 0.76]`.
+
+Mooks spawn past the screen and dash to the old fight slots before they swing. Shadow bosses walk to a fixed mark during the intro, then stay clamped to the arena the way they did before the scroll (a swoop that left the screen was why Stage 3 fell off). The chieftain covers the gap to his mark during the short intro, so all three attacks still go active. Holding right, the walk between locks is 5.25–5.58s.
+
+### Measured on this machine (software canvas, LITE off)
+
+Pace, 10s, clock after stage enter and two frames, canvas 1280×720, 0 errors:
+
+| Case | fps | p95 | p99 | >33ms | >50ms | update+draw |
+| --- | --- | --- | --- | --- | --- | --- |
+| Stage 1 wave 3 | 60 | 16.7 | 16.8 | 0 | 0 | 0.41ms |
+| Stage 3 wave 3 | 60 | 16.7 | 16.8 | 0 | 0 | 0.39ms |
+| Stage 5 wave 3 | 60 | 16.7 | 16.8 | 0 | 0 | 0.30ms |
+| Stage 4 boss | 60 | 16.7 | 16.8 | 0 | 0 | 0.23ms |
+| Stage 1 scrolling | 60 | 16.7 | 16.8 | 0 | 0 | 2.06ms |
+
+Natural soak (3 lives, seeds 1–10): clears 10/9/10/10/10, every boss attack seen 10/10 on every stage. The one miss is a Stage 2 seed that dies on the Fade after all three attacks. Median damage 204, 199, 254, 179, 122. Assisted soak: 50/50, exit 0.
+
+`node tools/check.cjs`: all passed, including the new zone checks (clear unlocks the camera, the walk locks the next zone and the camera never retreats, the next wave is off-screen, the boss is the last zone, Continue resumes that zone). Parallax max deviation 0.04px. Boot canvas memory 138.5 MB, 55 canvases (the title no longer keeps a seamless plate for every stage; crops build for the stage you enter). `tools/review.cjs`: 77 loaded, 0 missing, 0 errors, stamp `20260927-scroll1`. Smoothness checks: 9. Smoothness browser: mesh missing fraction 0, context loss still paints.
+
+SwiftShader was not re-run. It was not 60 fps on the grok3d measurement.
 
 ## grok3d (merged, historical)
 

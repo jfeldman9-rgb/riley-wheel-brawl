@@ -201,7 +201,7 @@
         }
       } else this.updateAI(dt);
       super.update(dt);
-      const leash = this.g.leash ? this.g.leash() : [this.g.arenaLeft, this.g.arenaRight];
+      const leash = this.boss || !this.g.leash ? [this.g.arenaLeft, this.g.arenaRight] : this.g.leash();
       this.x = R.util.clamp(this.x, leash[0] + 12, leash[1] - 12);
       if (!this.dead && !this.grabbedBy) this.separate();
     }
@@ -393,9 +393,19 @@
       if (this.introTimer > 0) {
         this.introTimer -= dt;
         this.invuln = Math.max(this.invuln, 0.12);
-        this.vx = 0;
-        this.vy = 0;
-        this.setState('idle');
+        const mark = this.g.arenaLeft + 400;
+        const dx = mark - this.x;
+        if (Math.abs(dx) > 4) {
+          const step = Math.min(Math.abs(dx), 240 * dt);
+          this.x += Math.sign(dx) * step;
+          this.facing = dx >= 0 ? 1 : -1;
+          this.walkDistance += step;
+          this.setState('walk');
+        } else {
+          this.vx = 0;
+          this.vy = 0;
+          this.setState('idle');
+        }
         return;
       }
       super.updateAI(dt);
