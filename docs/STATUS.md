@@ -10,27 +10,27 @@ After: every stage is a 4240-unit street (6.625 screens at the 640-wide view). S
 
 The backdrop is the painted plates at full resolution. Far scrolls at 0.08× the floor, one plate, no crop. Mid is a strip of slices of that stage's own plate at 0.40× (stage 1 is 720 units wide, the others 700), with the far plate showing through the gaps. Near tiles at 1.15× along the bottom 26 units. The floor stays 1:1. Nothing is crossfaded. Stage 5's roof is a hard cut behind a 0.2s fade to black and a 0.2s fade back in, and the boss walks in after that. Paintings that would replace the slice pools are listed in `NEEDED_ART.md`.
 
-Damage scales start at `[1.60, 2.95, 0.78, 1.80, 1.35]`.
+Damage scales are `[1.60, 1.55, 0.76, 1.50, 1.00]`. The first try (`[1.60, 2.95, 0.78, 1.80, 1.35]`) overshot Stages 2 and 5; these are the values that land in the live damage band at 7–8 clears.
 
 Mooks spawn past the screen and dash at 3× until they are fully on screen or within 90 units of Riley. Shadow bosses walk to a fixed mark during the intro, then stay clamped to the arena. The chieftain covers the gap to his mark during the short intro.
 
-### scroll1 baseline on this machine (replaced by the scroll2 remeasure)
+### scroll2 measurements on this machine
 
-These rows are the scroll1 run, kept so the remeasure has a before. They are not the scroll2 result.
+Software canvas, 1280×720, clock after stage enter and two frames, LITE off. 0 errors.
 
-Pace, 10s, clock after stage enter and two frames, canvas 1280×720, 0 errors:
+| Case | fps | p99 | frames >20ms | max | enter |
+| --- | --- | --- | --- | --- | --- |
+| Stage 1 wave 3 | 60 | 16.8 | 0 | 16.8 | 674.2ms |
+| Stage 3 wave 3 | 60 | 16.8 | 0 | 16.8 | 381.1ms |
+| Stage 5 wave 3 | 60 | 16.8 | 0 | 16.8 | 574.3ms |
+| Stage 4 boss | 60 | 16.8 | 0 | 16.8 | 245.1ms |
+| Stage 1 walking (33s) | 60 | 16.8 | 0 | 16.8 | 224.6ms |
+| Stage 3 walking (33s) | 60 | 16.8 | 0 | 16.8 | 326.8ms |
+| Stage 5 walking (33s) | 60 | 16.8 | 0 | 16.8 | 519.9ms |
 
-| Case | fps | p95 | p99 | >33ms | >50ms | update+draw |
-| --- | --- | --- | --- | --- | --- | --- |
-| Stage 1 wave 3 | 60 | 16.7 | 16.8 | 0 | 0 | 0.41ms |
-| Stage 3 wave 3 | 60 | 16.7 | 16.8 | 0 | 0 | 0.39ms |
-| Stage 5 wave 3 | 60 | 16.7 | 16.8 | 0 | 0 | 0.30ms |
-| Stage 4 boss | 60 | 16.7 | 16.8 | 0 | 0 | 0.23ms |
-| Stage 1 scrolling | 60 | 16.7 | 16.8 | 0 | 0 | 2.06ms |
+Natural soak (3 lives, seeds 1–10, exit 1 because some seeds die): clears 8/8/7/8/8, every boss attack seen 10/10. Median damage 248.7, 253.5, 284.4, 199, 289.5 (live targets 250, 252, 271, 214, 296, all inside ±12%). Assisted soak: 10/10 on every stage, exit 0.
 
-Natural soak (3 lives, seeds 1–10): clears 10/9/10/10/10, every boss attack seen 10/10 on every stage. The one miss is a Stage 2 seed that dies on the Fade after all three attacks. Median damage 204, 199, 254, 179, 122. Assisted soak: 50/50, exit 0.
-
-`node tools/check.cjs`: all passed, including the new zone checks (clear unlocks the camera, the walk locks the next zone and the camera never retreats, the next wave is off-screen, the boss is the last zone, Continue resumes that zone). Parallax max deviation 0.04px. Boot canvas memory 138.5 MB, 55 canvases (the title no longer keeps a seamless plate for every stage; crops build for the stage you enter). `tools/review.cjs`: 77 loaded, 0 missing, 0 errors, stamp `20260927-scroll2`. Smoothness checks: 9. Smoothness browser: mesh missing fraction 0, context loss still paints.
+`node tools/check.cjs`: All checks passed (112), including the mid-walk save and the per-stage far-edge and mid-strip checks. Parallax max deviation 0.02px. Boot canvas memory 77.6 MB, 41 canvases. Mid-fight at render scale 2: Stage 1 105.3 MB, Stage 4 155.1 MB. `tools/review.cjs`: 77 loaded, 0 missing, 0 unstamped, fallback stage playable. Smoothness checks: 9.
 
 SwiftShader was not re-run. It was not 60 fps on the grok3d measurement.
 

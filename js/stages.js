@@ -58,7 +58,9 @@
     const slices=sliceList(n);
     return {k:K_MID,pools:[slices,slices,slices]};
   }
+  const layoutCache=new Map();
   function midLayout(n,travel){
+    const id=n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
     const spec=MID_SRC[n],slices=sliceList(n),M=640+K_MID*travel,pieces=[],lastEnd={},planned=[];
     let nx=0;
     for(const s of slices){
@@ -80,7 +82,8 @@
       pieces.push({id:s.id,x,w,x0:s.x0,x1:s.x1,full:false,native:false,pool});
       lastEnd[s.id]=x+w;cursor=x+w;
     }
-    return {M,plateW,k:K_MID,pieces,planned,pools:3};
+    const layout={M,plateW,k:K_MID,pieces,planned,pools:3};
+    layoutCache.set(id,layout);return layout;
   }
   function evictStage(n){
     const keep='stage'+n+'-',floorKeep='floor'+n;
@@ -143,10 +146,14 @@
     const g=c.getContext('2d');g.drawImage(plate,0,0);
     const feather=16*rs;
     if(feather>0&&c.width>feather*2){
+      // destination-in keeps pixels only where this fill is opaque, so the
+      // gradient has to cover the whole plate or the unfilled span is cleared.
       g.globalCompositeOperation='destination-in';
-      const fade=g.createLinearGradient(c.width-feather,0,c.width,0);
-      fade.addColorStop(0,'#000');fade.addColorStop(1,'rgba(0,0,0,0)');
-      g.fillStyle=fade;g.fillRect(c.width-feather,0,feather,c.height);
+      const fade=g.createLinearGradient(0,0,c.width,0);
+      const b=1-feather/c.width;
+      fade.addColorStop(0,'#000');fade.addColorStop(b,'#000');fade.addColorStop(1,'rgba(0,0,0,0)');
+      g.fillStyle=fade;g.fillRect(0,0,c.width,c.height);
+      g.globalCompositeOperation='source-over';
     }
     c.logicalW=plateW;c.logicalH=drawH;sliceCache.set(id,c);return c;
   }
@@ -287,7 +294,7 @@
       // shifts by the factor this layer actually used, times (round - camera).
       if(!this._painting && R.assets.has('stage'+n+'-far')){
         const rs=R.display.renderScale||1,camExact=scene.camera.x||0,bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs)),roundCam=Math.round(camExact);
-        evictStage(n);
+        if(this._stageKept!==n){evictStage(n);this._stageKept=n;}
         const views=this._views||(this._views={});
         const roof=roofing(scene)?1:0;
         const layers=[
@@ -311,11 +318,13 @@
             try{this.draw(g,scene);if(layer.id==='base')bakeGrade(g,scene);if(layer.id==='screen')blitVignette(g);}finally{this._painting=false;this._layer=null;scene.camera.x=prev;}
             slot.key=key;slot.k=this._layerFactor==null?layer.k:this._layerFactor;slot.painted=cam;
           }
-          const shift=slot.k*(cam-camExact),smooth=ctx.imageSmoothingEnabled;
+          const shift=slot.k*(cam-camExact),smooth=ctx.imageSmoothingEnabled,quality=ctx.imageSmoothingQuality;
           ctx.imageSmoothingEnabled=shift!==0;
+          if(shift!==0)ctx.imageSmoothingQuality='low';
           ctx.drawImage(slot.canvas,shift,0,640,360);
           if(shift>0)ctx.drawImage(slot.canvas,0,0,1,slot.canvas.height,0,0,shift,360);
           else if(shift<0)ctx.drawImage(slot.canvas,slot.canvas.width-1,0,1,slot.canvas.height,640+shift,0,-shift,360);
+          ctx.imageSmoothingQuality=quality;
           ctx.imageSmoothingEnabled=smooth;
         }
         if(n===5&&Math.sin((scene.time||0)*0.8)>0.995)strokeLightning(ctx);
