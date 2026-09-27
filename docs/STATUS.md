@@ -1,7 +1,8 @@
 # Riley Wheel Brawl — current status
 
-Branch `rwb-grok3`; draft PR targets `rwb-w2` at `08c74ae`. Runtime stamp: `?v=20260926-grok3d`.
-No changes or merges to `main`. GitHub Pages settings are unchanged. Nothing was merged.
+Runtime stamp: `?v=20260926-grok3d`. PR #5 (`rwb-grok3` at `12ac675`) was merged into `rwb-w2` as `860119c` on 2026-09-26 at 10:23 PM PT. Jason approved the merge in chat right after the independent grok3d review came back GO. `rwb-w2` is the branch GitHub Pages serves, so this build is live. `main` is untouched at `3991948`. GitHub Pages settings are unchanged.
+
+Natural soak at `12ac675` (3 lives, no HP top-up, seeds 1–10, with the new damage and knockback numbers in `js/data.js`): 7/8/8/8/8, every boss attack seen 10/10. Assisted soak: 10/10 on every stage (50/50).
 
 ## What this pass changes
 
