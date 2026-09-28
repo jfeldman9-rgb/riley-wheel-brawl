@@ -20,6 +20,14 @@
   R.audio.defineSong('story', { bpm: 72, bass: [0, null, null, null, 5, null, null, null], lead: [7, null, null, 9, null, null, 5, null], kick: pulse, snare: pulse.map((value, index) => index % 8 === 4 ? 1 : 0) });
   R.audio.defineSong('stage1', { bpm: 116, bass: [0, 0, 3, null, 5, 5, 3, null], lead: [7, null, 9, 10, 12, null, 10, 9], kick: pulse, snare: pulse.map((value, index) => index % 8 === 4 ? 1 : 0) });
   for (let n = 2; n <= 5; n++) R.audio.defineSong('stage' + n, { bpm: 104 + n * 7, bass: [0, null, n, 3, 5, null, 3, n], lead: [7, 10, null, 7+n, 12, null, 9, 7], kick: pulse, snare: pulse.map((v,i) => i % 8 === 4 ? 1 : 0) });
+  // Jason's Suno theme. The file's last 2 bars are crossfaded into the 2 bars before
+  // loopStart (tools notes in docs/AUDIO.md), so loopEnd -> loopStart is seamless.
+  // The first pass plays the intro; every repeat is the 128.0 s (76-bar) loop.
+  if (R.audio.defineTrack) {
+    const v = '?v=' + (R.ASSET_VER || '1');
+    R.audio.defineTrack('main', { urls: ['assets/audio/music-main.ogg' + v, 'assets/audio/music-main.mp3' + v], loopStart: 1371650 / 44100, loopEnd: 7016442 / 44100 });
+    R.audio.aliasTrack(['title', 'story', 'stage1', 'stage2', 'stage3', 'stage4', 'stage5'], 'main');
+  }
   R.audio.defineSong('gameover', { bpm: 55, bass: [0, null, null, null, -2, null, null, null], lead: [3, null, 2, null, 0, null, null, null], kick: pulse, snare: [] });
   R.audio.defineSfx('kick', function () {
     R.audio.noise({ f0: 1600, f1: 420, dur: 0.07, vol: 0.22, filter: 'bandpass' });

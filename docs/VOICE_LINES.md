@@ -91,3 +91,42 @@ Use each line once, the first time that enemy archetype appears. These introduct
 | --- | --- | --- | --- |
 | `st1_clear_moiraine_01` | Moiraine | “The road is open. The Shadow fled east.” | Stage 1 clear reel. |
 | `st1_clear_riley_01` | Riley | “Twinkle Toes, I am coming.” | Stage 1 clear reel. |
+
+## Audio pass (20260927-audio1)
+
+Villain and narrator lines below (and the existing villain lines above) play generated voice clips from `assets/audio/voice/<id>.mp3`. Riley and Twinkle Toes are never generated; Jason records them (see `assets/audio/voice/RECORDING_LIST.md`). Moiraine and Loial stay subtitle + chirp for now.
+
+### Narrator (stage intro cards)
+
+| ID | Character | Exact line | When it plays |
+| --- | --- | --- | --- |
+| `st1_narrator_01` | Narrator | “Emond's Field, on Winternight. The Two Rivers sleeps, but the Shadow is on the road.” | First card of the Emond's Field intro. |
+| `st2_narrator_01` | Narrator | “Caemlyn, the great city of Andor. Somewhere in its crowded streets, a Fade is hiding.” | First card of the Caemlyn intro. |
+| `st3_narrator_01` | Narrator | “Shadar Logoth. A city lost long ago, where the silver fog still creeps.” | First card of the Shadar Logoth intro. |
+| `st4_narrator_01` | Narrator | “The Stone of Tear. No army has ever taken it. Deep inside, Callandor waits.” | First card of the Stone of Tear intro. |
+| `st5_narrator_01` | Narrator | “The roof of the Black Tower. The storm is gathering. The Wheel turns, and the last battle begins.” | First card of the Black Tower intro. |
+
+### Boss mid-fight and defeat
+
+| ID | Character | Exact line | When it plays |
+| --- | --- | --- | --- |
+| `chieftain_mid_01` | Trolloc chieftain | “Grrr! Small human kicks hard!” | Chieftain drops to half health (bubble). |
+| `chieftain_defeat_01` | Trolloc chieftain | “Retreat! Back to the Blight!” | Chieftain defeated. |
+| `fade_mid_01` | Fade | “Run, boy. The Eyeless are patient.” | Myrddraal drops to half health. |
+| `fade_defeat_01` | Fade | “The shadows will remember you.” | Myrddraal defeated. |
+| `draghkar_mid_01` | Draghkar | “Why won't you sleep, little one?” | Draghkar drops to half health. |
+| `draghkar_defeat_01` | Draghkar | “My song is fading.” | Draghkar defeated. |
+| `belal_mid_01` | Be'lal | “You dare strike one of the Chosen?” | Be'lal drops to half health. |
+| `belal_defeat_01` | Be'lal | “Impossible! Beaten by a child!” | Be'lal defeated. |
+| `taim_defeat_01` | Mazrim Taim | “No! My tower!” | The joint finish lands. |
+
+Boss entrances: the chieftain now says `trolloc_heavy_intro_01` on his card, and the first Stage 1 Trolloc pack says `trolloc_intro_01`. Taim's mid-fight line is `taim_phase_02`.
+
+### Riley and Twinkle Toes (recorded by Jason)
+
+| ID | Character | Exact line | When it plays |
+| --- | --- | --- | --- |
+| `riley_bighit_01` | Riley | “Oof! That one hurt!” | Riley is knocked down (at most every 20 s, alternating). |
+| `riley_bighit_02` | Riley | “I'm okay! Keep going!” | Alternate big-hit line. |
+| `riley_bosswin_05` | Riley | “We did it!” | Taim defeated. Stages 1–4 use `riley_victory_01` / `riley_victory_02` after the boss's defeat line. |
+| `st5_kenzie_03` | Twinkle Toes | “Riley! You came for me!” | The moment Twinkle Toes is freed, before “Ready when you are, big brother!” |

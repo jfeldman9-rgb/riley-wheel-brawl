@@ -1,6 +1,15 @@
 # Riley Wheel Brawl — current status
 
-Runtime stamp on this branch: `?v=20260927-scroll11`. The scroll2 query on raw.githack.com had cached `js/assets.js` without `crossOrigin`, so the preview canvas stayed tainted; scroll11 is the current cache key. Branch `rwb-scroll`, cut from `rwb-w2` at `a65e981`. Not merged. GitHub Pages still serves `rwb-w2` (PR #5, live). `main` is untouched at `3991948`. This branch does not change Pages.
+Runtime stamp on this branch: `?v=20260927-audio1`. Branch `rwb-audio`, cut from `rwb-w2` at `8937b6b` (scroll11). Not merged. GitHub Pages still serves `rwb-w2`. `main` is untouched. This branch does not change Pages.
+
+## Audio (audio1)
+
+Jason's Suno theme now loops on the title, story cards and all five stages, and villains plus a narrator speak. Riley and Twinkle Toes are never generated: their lines show as bubbles/subtitles and play automatically once Jason drops recordings into `assets/audio/voice/` (list: `assets/audio/voice/RECORDING_LIST.md`). Details, voices and trigger points: `docs/AUDIO.md`.
+
+- Music: 159.10 s file, intro once, then a sample-exact 128.0 s loop (31.103 s to 159.103 s) with a baked 2-bar equal-power crossfade; 0.35 x MUSIC level, ducks to 42% under voice lines. M toggles music (saved); N now mutes all. Starts on the first key/click/tap; fetched and decoded lazily.
+- Voices: 30 generated clips (edge-tts, -16 LUFS, 564 KB) for the narrator (5 stage intro cards), Taim, the Trolloc chieftain, the Fade, the Draghkar, Be'lal and the four mook types. New subtitle lines are in `docs/VOICE_LINES.md`.
+- Boss clears hold 3.6 s instead of 1.4 s so the defeat line and Riley's boss-win line both land. Bubbles never touch the subtitle queue; the joint finish still unlocks at the same moment. Natural soak is identical to scroll11 (8/8/7/8/8 clears, same median damage), assisted soak 10/10 on every stage.
+- `node tools/check.cjs`: All checks passed (135). `node tools/smoothness-check.cjs`: 9 passes. `node tools/audio-check.cjs`: see `docs/AUDIO.md`. Frame pacing on this shared box: headless software canvas shows occasional single missed vsyncs (33.3–33.4 ms) in both scroll11 and audio1, with game work under 12 ms in those frames. Stage 2's cold enter sits near 400 ms in both builds on this box (scroll11 median 385 ms, audio1 with music playing median 401 ms, 6 runs each); the other stages enter in 210–300 ms.
 
 ## Scrolling stages (scroll2)
 

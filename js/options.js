@@ -14,8 +14,8 @@
     const s = ST.data;
     const rows = [];
     if (full) {
-      rows.push({ id: 'sound', label: () => 'SOUND: ' + A.volumeLabel(), adj: dir => { A.cycleVolume(dir); persistAudio(); }, desc: 'Master volume. M mutes any time.' });
-      rows.push({ id: 'music', label: () => 'MUSIC: ' + A.musicLabel(), adj: dir => { A.cycleMusic(dir); persistAudio(); }, desc: 'Music level. It also ducks under big hits and barks.' });
+      rows.push({ id: 'sound', label: () => 'SOUND: ' + A.volumeLabel(), adj: dir => { A.cycleVolume(dir); persistAudio(); }, desc: 'Master volume. N mutes any time.' });
+      rows.push({ id: 'music', label: () => 'MUSIC: ' + A.musicLabel(), adj: dir => { A.cycleMusic(dir); persistAudio(); }, desc: 'Music level. M turns music on/off any time. Ducks under hits and voices.' });
       rows.push({ id: 'display', label: () => 'DISPLAY: ' + RWB.display.modeLabel(), adj: dir => RWB.display.cycleMode(dir), desc: 'AUTO = device pixels. SHARP = 2x+. CLASSIC = 640x360 pixels + scanlines.' });
     }
     rows.push(
