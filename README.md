@@ -26,6 +26,8 @@ python3 -m http.server 8000
 | Call Loial (**LOIAL**, once per stage) | R / I / V / U | LB / RB |
 | Spend full meter (**SAIDIN**) | F / B | B |
 | Pause | Escape / P | Back |
+| Music on/off | M | Options → MUSIC |
+| Mute all sound | N | Options → SOUND |
 
 The ground chain is front kick, roundhouse, then spinning back kick. FIRE has a
 cooldown and no health cost. A full SAIDIN meter enables Balefire; holding it
@@ -50,6 +52,10 @@ requires every boss attack on every seed. Use `--stage=3` for one stage.
 The default soak keeps the inherited HP top-up below 28 HP and 99 lives; it is a
 completion/attack-coverage test. `--natural` disables those assists and reports
 3-life masher balance. See `docs/STATUS.md` for both sets of measured results.
+
+## Audio
+
+Jason's theme loops on the title, story cards and stages (starts on the first key, click or tap); M toggles it. Villains and the narrator speak with generated voices; Riley and Twinkle Toes are recorded by Jason: drop the files listed in `assets/audio/voice/RECORDING_LIST.md` into that folder and they play. See `docs/AUDIO.md`. `node tools/audio-check.cjs` checks it in a browser.
 
 All supplied painted assets are wired through `js/artmanifest.js`.
 `CHROMIUM_PATH=/path/to/chromium node tools/review.cjs` regenerates the headless

@@ -6,12 +6,14 @@
 'use strict';
 
 RWB.audio = (function () {
-  let ctx = null, master = null, musicGain = null, duckGain = null, sfxGain = null, comp = null;
+  let ctx = null, master = null, musicGain = null, duckGain = null, sfxGain = null, comp = null, voiceGain = null, trackGain = null;
   let muted = false;
   let unlocked = false;
   let volume = 1; // 0..1, multiplied into the master gain
   let musicLevel = 1; // 0..1, the music bus only
   const MUSIC_BASE = 0.32;
+  const TRACK_BASE = 0.35;
+  let lastMusicOn = 1; // level M restores
   let duckUntil = 0, duckDepth = 1;
 
   function init() {
@@ -22,6 +24,10 @@ RWB.audio = (function () {
       // Music: level -> duck -> master. The duck stage dips under big hits and barks.
       duckGain = ctx.createGain(); duckGain.gain.value = 1; duckGain.connect(master);
       musicGain = ctx.createGain(); musicGain.gain.value = MUSIC_BASE * musicLevel; musicGain.connect(duckGain);
+      // Recorded music track: its own level (TRACK_BASE, about 0.35) into the same duck stage.
+      trackGain = ctx.createGain(); trackGain.gain.value = TRACK_BASE * musicLevel; trackGain.connect(duckGain);
+      // Voice clips skip the SFX compressor so hits don't pump the speech.
+      voiceGain = ctx.createGain(); voiceGain.gain.value = 1; voiceGain.connect(master);
       // SFX get a fast compressor so stacked hits punch instead of clipping.
       sfxGain = ctx.createGain(); sfxGain.gain.value = 1.05;
       if (ctx.createDynamicsCompressor) {
@@ -51,8 +57,14 @@ RWB.audio = (function () {
     duckUntil = now + 0.025 + hold; duckDepth = depth;
   }
   function setMusicLevel(v) {
+    const was = musicLevel;
     musicLevel = v < 0 ? 0 : v > 1 ? 1 : v;
+    if (musicLevel > 0) lastMusicOn = musicLevel;
     if (musicGain) musicGain.gain.value = MUSIC_BASE * musicLevel;
+    if (trackGain) trackGain.gain.value = TRACK_BASE * musicLevel;
+    // Off stops the track (no silent decoding); on picks it back up where it was.
+    if (musicLevel <= 0 && was > 0) pauseTrack();
+    else if (musicLevel > 0 && was <= 0 && requested) playMusic(requested);
     return musicLevel;
   }
   const MUSIC_STEPS = [1, 0.7, 0.4, 0];
@@ -62,6 +74,8 @@ RWB.audio = (function () {
     i = (i + (dir || 1) + MUSIC_STEPS.length) % MUSIC_STEPS.length;
     return setMusicLevel(MUSIC_STEPS[i]);
   }
+  /** M key: music on/off, keeping the chosen level for when it comes back. */
+  function toggleMusic() { return setMusicLevel(musicLevel > 0 ? 0 : (lastMusicOn || 1)); }
   function musicLabel() { return musicLevel <= 0 ? 'OFF' : Math.round(musicLevel * 100) + '%'; }
 
   // The same cue fired twice inside one frame just stacks volume; drop it.
@@ -78,7 +92,7 @@ RWB.audio = (function () {
   function unlock() {
     init();
     if (!ctx) return;
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state === 'suspended') { const p = ctx.resume(); if (p && p.then) p.then(() => { if (requested) playMusic(requested); }, () => {}); }
     unlocked = true;
   }
 
@@ -255,25 +269,40 @@ RWB.audio = (function () {
 
   /* Optional recorded clips (e.g. voice lines). Only URLs the caller knows exist
      should be passed; a failed fetch resolves to null and is remembered. */
-  const clips = {};
-  function loadClip(key, url) {
-    init();
-    if (!ctx) return Promise.resolve(null);
-    if (key in clips) return Promise.resolve(clips[key]);
-    return fetch(url).then(r => (r.ok ? r.arrayBuffer() : null))
-      .then(b => (b ? new Promise(res => ctx.decodeAudioData(b, res, () => res(null))) : null))
-      .catch(() => null).then(buf => (clips[key] = buf));
+  const clips = {}, pending = {};
+  function decode(b) {
+    return new Promise(res => {
+      try { const p = ctx.decodeAudioData(b, res, () => res(null)); if (p && p.catch) p.catch(() => res(null)); }
+      catch (e) { res(null); }
+    });
   }
+  /** opts.minDuration: shorter clips count as missing (silent placeholders). */
+  function loadClip(key, url, opts) {
+    const min = (opts && opts.minDuration) || 0;
+    init();
+    if (!ctx || typeof fetch !== 'function') return Promise.resolve(null);
+    if (key in clips) return Promise.resolve(clips[key]);
+    if (pending[key]) return pending[key];
+    return (pending[key] = fetch(url).then(r => (r && r.ok && r.arrayBuffer ? r.arrayBuffer() : null))
+      .then(b => (b ? decode(b) : null))
+      .catch(() => null).then(buf => { delete pending[key]; return (clips[key] = buf && buf.duration >= min ? buf : null); }));
+  }
+  let voiceSrc = null, voiceKey = null;
+  /** Play a loaded clip. opts.voice: one voice at a time (a new line cuts the old), voice bus, music ducks. */
   function playClip(key, opts) {
     const buf = clips[key];
     if (!ctx || muted || !buf) return false;
+    const voice = !!(opts && opts.voice);
+    if (voice && voiceSrc) { try { voiceSrc.stop(); } catch (e) { /* already ended */ } voiceSrc = null; }
     const src = ctx.createBufferSource(); src.buffer = buf;
     const g = ctx.createGain(); g.gain.value = (opts && opts.vol) || 1;
-    src.connect(g); g.connect(sfxGain); src.start();
-    if (!opts || opts.duck !== false) duck(0.5, buf.duration, 0.4);
+    src.connect(g); g.connect(voice && voiceGain ? voiceGain : sfxGain); src.start();
+    if (voice) { voiceSrc = src; voiceKey = key; src.onended = () => { if (voiceSrc === src) { voiceSrc = null; voiceKey = null; } }; }
+    if (!opts || opts.duck !== false) duck(voice ? 0.42 : 0.5, buf.duration, 0.45);
     trace.push({ name: 'clip:' + key, t: ctx.currentTime });
     return true;
   }
+  const hasClip = key => !!clips[key];
   let meter = null, meterBuf = null;
   /** Peak level on the master bus right now (0..1), after mute/volume. */
   function level() {
@@ -316,10 +345,94 @@ RWB.audio = (function () {
     }
   }
 
+  /* ---------- Music: recorded tracks ----------
+     defineTrack(name, { urls: [ogg, mp3], loopStart, loopEnd }). The file is fetched
+     and decoded lazily (first request, off the main thread), then loops sample-exactly
+     between loopStart and loopEnd through trackGain -> duck -> master.
+     aliasTrack(['title', 'stage1', ...], name) sends those scene songs to the track. */
+  const TRACKS = {}, ALIAS = {};
+  let trackName = null, trackSrc = null, trackStartedAt = 0, trackOffset = 0, trackWant = null;
+  function defineTrack(name, def) { TRACKS[name] = Object.assign({ buffer: null, loading: null, failed: false }, def); }
+  function aliasTrack(names, name) { for (const n of names) ALIAS[n] = name; }
+  function pickUrl(urls) {
+    try {
+      const probe = typeof Audio === 'function' ? new Audio() : null;
+      if (probe && probe.canPlayType) for (const u of urls) {
+        const type = /\.ogg(\?|$)/.test(u) ? 'audio/ogg; codecs="vorbis"' : /\.mp3(\?|$)/.test(u) ? 'audio/mpeg' : '';
+        if (type && probe.canPlayType(type)) return u;
+      }
+    } catch (e) { /* fall through */ }
+    return urls[urls.length - 1];
+  }
+  function loadTrack(name) {
+    init();
+    const t = TRACKS[name];
+    if (!t || !ctx || typeof fetch !== 'function') return Promise.resolve(null);
+    if (t.buffer || t.failed) return Promise.resolve(t.buffer);
+    if (t.loading) return t.loading;
+    const url = pickUrl(t.urls);
+    t.url = url;
+    return (t.loading = fetch(url).then(r => (r && r.ok ? r.arrayBuffer() : null)).then(b => (b ? decode(b) : null)).catch(() => null)
+      .then(buf => { t.loading = null; t.buffer = buf; t.failed = !buf; if (buf) trace.push({ name: 'track-loaded:' + name, t: ctx.currentTime }); return buf; }));
+  }
+  function trackPosition() {
+    const t = TRACKS[trackName];
+    if (!trackSrc || !t) return trackOffset;
+    let p = trackOffset + (ctx.currentTime - trackStartedAt);
+    const a = t.loopStart || 0, b = t.loopEnd || t.buffer.duration;
+    if (p >= b) p = a + ((p - a) % (b - a));
+    return p;
+  }
+  function startTrack(name) {
+    const t = TRACKS[name];
+    trackWant = name;
+    if (trackName === name && trackSrc) return;
+    if (trackName && trackName !== name) { stopTrack(); trackOffset = 0; }
+    if (musicLevel <= 0) { trackName = name; return; }
+    if (!t.buffer) {
+      trackName = name;
+      // Before the first click/key the context is locked: fetch a little later, in the background.
+      const go = () => loadTrack(name).then(buf => {
+        if (buf) { if (trackWant === name && !trackSrc && musicLevel > 0) startTrack(name); }
+        else if (trackWant === name) { trackName = null; trackWant = null; if (requested) playMusic(requested); }
+      });
+      if (ctx.state === 'running' || t.loading) go(); else setTimeout(go, 1500);
+      return;
+    }
+    if (ctx.state !== 'running') { trackName = name; return; } // autoplay rule: unlock() restarts it
+    const src = ctx.createBufferSource();
+    src.buffer = t.buffer; src.loop = true;
+    src.loopStart = t.loopStart || 0; src.loopEnd = t.loopEnd || t.buffer.duration;
+    src.connect(trackGain);
+    const at = trackName === name ? Math.min(trackOffset, src.loopEnd - 0.05) : 0;
+    // Short fade-in so a resume never clicks.
+    const now = ctx.currentTime;
+    trackGain.gain.cancelScheduledValues(now);
+    trackGain.gain.setValueAtTime(0.0001, now);
+    trackGain.gain.linearRampToValueAtTime(TRACK_BASE * musicLevel, now + 0.4);
+    src.start(now, at);
+    trackSrc = src; trackName = name; trackOffset = at; trackStartedAt = now;
+    trace.push({ name: 'track:' + name, t: now });
+  }
+  function pauseTrack() {
+    if (!trackSrc) return;
+    trackOffset = trackPosition();
+    try { trackSrc.stop(); } catch (e) { /* ended */ }
+    trackSrc.disconnect(); trackSrc = null;
+  }
+  function stopTrack() { pauseTrack(); trackName = null; trackWant = null; trackOffset = 0; }
+
   function playMusic(name) {
     requested = name;
     init();
     if (!ctx) return;
+    const tname = ALIAS[name] || (TRACKS[name] ? name : null);
+    if (tname && !TRACKS[tname].failed) {
+      if (timer) { clearInterval(timer); timer = null; song = null; songName = null; }
+      startTrack(tname);
+      return;
+    }
+    if (trackName) stopTrack();
     if (songName === name && timer) return;
     stopMusic();
     requested = name;
@@ -331,16 +444,26 @@ RWB.audio = (function () {
   function stopMusic() {
     if (timer) clearInterval(timer);
     timer = null; song = null; songName = null; requested = null;
+    if (trackName) stopTrack();
   }
 
   return {
     init, unlock, sfx, playMusic, stopMusic, toggleMute, setMuted, setVolume, cycleVolume, volumeLabel,
-    duck, setMusicLevel, cycleMusic, musicLabel, level, trace,
-    tone, noise, formant, brass, defineSfx, defineSong, defineStinger, defineVoice, loadClip, playClip,
+    duck, setMusicLevel, cycleMusic, toggleMusic, musicLabel, level, trace,
+    tone, noise, formant, brass, defineSfx, defineSong, defineStinger, defineVoice, loadClip, playClip, hasClip,
+    defineTrack, aliasTrack, loadTrack,
+    /** Audio clock in seconds (0 without WebAudio). */
+    now() { return ctx ? ctx.currentTime : 0; },
+    /** Recorded-track state for tests: { name, loaded, playing, position, loopStart, loopEnd, url }. */
+    get track() {
+      const t = TRACKS[trackName || trackWant];
+      return t ? { name: trackName || trackWant, loaded: !!t.buffer, playing: !!trackSrc, position: ctx ? trackPosition() : 0, loopStart: t.loopStart, loopEnd: t.loopEnd, duration: t.buffer ? t.buffer.duration : 0, url: t.url || null } : null;
+    },
+    get voicePlaying() { return voiceKey; },
     get muted() { return muted; }, get unlocked() { return unlocked; }, get volume() { return volume; },
     get musicLevel() { return musicLevel; },
     /** The song the game asked for (set even when WebAudio is unavailable). */
     get song() { return requested; },
-    get playing() { return !!timer && !!song; }
+    get playing() { return (!!timer && !!song) || !!trackSrc; }
   };
 })();

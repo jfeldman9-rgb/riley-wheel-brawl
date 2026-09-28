@@ -16,11 +16,11 @@ RWB.settings = (function () {
   };
   // Standard mapping: A jump, B power, X attack, Y special, RB/LB assist, Back pause.
   const DEFAULT_PAD = { attack: [2], jump: [0], special: [3], assist: [5, 4], power: [1], pause: [8] };
-  // Enter confirms menus, M mutes, backslash / F11 go fullscreen. Start and the
-  // d-pad always work so a bad remap can't lock anyone out of the menus.
-  const FIXED_KEYS = { Enter: 'start', m: 'mute', '\\': 'fullscreen', F11: 'fullscreen' };
+  // Enter confirms menus, M toggles music, N mutes everything, backslash / F11 go
+  // fullscreen. Start and the d-pad always work so a bad remap can't lock anyone out.
+  const FIXED_KEYS = { Enter: 'start', m: 'music', n: 'mute', '\\': 'fullscreen', F11: 'fullscreen' };
   const FIXED_PAD = { 9: 'start', 12: 'up', 13: 'down', 14: 'left', 15: 'right' };
-  const RESERVED_KEYS = ['Enter', 'm', '\\', 'F11', 'Tab', 'Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'ContextMenu', 'OS', 'Dead', 'Unidentified'];
+  const RESERVED_KEYS = ['Enter', 'm', 'n', '\\', 'F11', 'Tab', 'Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'ContextMenu', 'OS', 'Dead', 'Unidentified'];
   const RESERVED_PAD = [9, 12, 13, 14, 15];
 
   const ACTIONS = ['up', 'down', 'left', 'right', 'attack', 'jump', 'special', 'assist', 'power', 'pause'];

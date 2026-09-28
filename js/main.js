@@ -203,8 +203,11 @@
     saveSettings();
     if (game.scene && game.scene.music) RWB.audio.playMusic(game.scene.music);
   };
+  // Browsers only let sound start from a gesture: the first key, click or tap
+  // resumes the context and starts the scene's music.
   window.addEventListener('keydown', unlock, { once: true });
   canvas.addEventListener('pointerdown', unlock, { once: true });
+  window.addEventListener('touchend', unlock, { once: true });
 
   /* ---- loading ---- */
   let loading = true, progress = 0;
@@ -220,6 +223,7 @@
   /* ---- loop ---- */
   const clock=new RWB.FrameClock();let clockScene=null;
   let last = performance.now();
+  let musicToast = 0;
   let fpsT = 0, frames = 0, fps = 0;
   function frame(now) {
     const started=performance.now();
@@ -235,6 +239,11 @@
     if (RWB.input.pressed.mute && !(game.scene && game.scene.paused)) {
       RWB.audio.toggleMute();
       saveSettings();
+    }
+    if (RWB.input.pressed.music) {
+      RWB.audio.toggleMusic();
+      saveSettings();
+      musicToast = 1.4;
     }
 
     // scene fade transition
@@ -275,6 +284,7 @@
     }
     if (game.fade > 0) { ctx.fillStyle = `rgba(0,0,0,${game.fade})`; ctx.fillRect(0, 0, W, H); }
     if (RWB.audio.muted) RWB.text.draw(ctx, 'MUTE', W - 6, H - 10, { size: 6, align: 'right', color: '#aaa' });
+    if (musicToast > 0) { musicToast -= dt; RWB.text.draw(ctx, 'MUSIC ' + (RWB.audio.musicLevel > 0 ? 'ON' : 'OFF') + '  (M)', W - 6, 12, { size: 6, align: 'right', color: '#e8cd74', stroke: '#000', strokeWidth: 3 }); }
     if (window.location.hash === '#fps') {
       const rs = RWB.display.renderScale || 1;
       RWB.text.draw(ctx, `${fps} FPS  ${rs}x`, 4, H - 10, { size: 6, color: '#0f0' });
