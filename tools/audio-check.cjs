@@ -14,6 +14,13 @@ const server = http.createServer((req, res) => {
   if (!file.startsWith(root + path.sep) || !fs.existsSync(file)) { res.statusCode = 404; return res.end(); }
   res.setHeader('Content-Type', TYPES[path.extname(file)] || 'application/octet-stream'); fs.createReadStream(file).pipe(res);
 });
+// raw.githack.com shows a one-time "External Content Notice" before proxied HTML; press its "Open the page".
+async function openGame(p, url) {
+  await p.goto(url);
+  if (/External Content Notice/i.test(await p.title())) {
+    await Promise.all([p.waitForNavigation({ timeout: 60000 }), p.click('button.url-action-button')]);
+  }
+}
 const results = []; const check = (ok, name, info) => { results.push({ ok: !!ok, name }); console.log((ok ? 'PASS ' : 'FAIL ') + name + (info !== undefined ? ' ' + JSON.stringify(info) : '')); };
 (async () => {
   let browser;
@@ -21,7 +28,10 @@ const results = []; const check = (ok, name, info) => { results.push({ ok: !!ok,
     let url = arg;
     if (!url) { await new Promise(r => server.listen(0, '127.0.0.1', r)); url = 'http://127.0.0.1:' + server.address().port + '/'; }
     browser = await chromium.launch({ headless: true, ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}), args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disable-accelerated-2d-canvas'] });
-    const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+    // Remote previews (raw.githack.com) sit behind Cloudflare, which refuses the HeadlessChrome UA.
+    const ua = process.env.RWB_UA || (arg ? (await browser.version(), 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/' + (await browser.version()).split('.')[0] + '.0.0.0 Safari/537.36') : undefined);
+    const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...(ua ? { userAgent: ua } : {}) });
+    const page = await context.newPage();
     const consoleErrors = [], pageErrors = [], missing = [];
     page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
     page.on('pageerror', e => pageErrors.push(e.message));
@@ -30,7 +40,7 @@ const results = []; const check = (ok, name, info) => { results.push({ ok: !!ok,
     // file name), to prove the drop-in path. Riley's real voice is never generated.
     const standIn = fs.readFileSync(path.join(root, 'assets/audio/voice/taim_phase_01.mp3'));
     await page.route(/\/assets\/audio\/voice\/riley_fire_01\.mp3/, r => r.fulfill({ status: 200, contentType: 'audio/mpeg', body: standIn }));
-    await page.goto(url);
+    await openGame(page, url);
     await page.waitForFunction(() => window.RWB && RWB.assets && RWB.assets.done && RWB.game && RWB.game.scene, null, { timeout: 120000 });
     const before = await page.evaluate(() => ({ scene: RWB.game.scene.constructor.name, state: RWB.audio.track, unlocked: RWB.audio.unlocked }));
     check(before.scene === 'Title' && !before.unlocked && !(before.state && before.state.playing), 'Before any gesture the title is silent (autoplay rule)', before);
@@ -70,11 +80,11 @@ const results = []; const check = (ok, name, info) => { results.push({ ok: !!ok,
     check(kid.placeholderIgnored && kid.droppedPlays && kid.bubble === 'Fire!', 'Kid lines: silent placeholder is ignored (chirp + bubble); a dropped-in riley_fire_01.mp3 plays automatically', kid);
     // Cold enters (fresh page per stage, music already playing) and 10 s fights.
     const measure = async (level, wave, seconds) => {
-      const p = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+      const p = await context.newPage();
       p.on('pageerror', e => pageErrors.push(e.message));
       p.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
       p.on('response', r => { if (r.status() >= 400) missing.push(r.status() + ' ' + r.url()); });
-      await p.goto(url);
+      await openGame(p, url);
       await p.waitForFunction(() => window.RWB && RWB.assets && RWB.assets.done && RWB.game && RWB.game.scene, null, { timeout: 120000 });
       await p.keyboard.press('Shift');
       await p.waitForFunction(() => RWB.audio.track && RWB.audio.track.playing, null, { timeout: 60000 });
@@ -93,7 +103,7 @@ const results = []; const check = (ok, name, info) => { results.push({ ok: !!ok,
         await new Promise(done => { const tick = t => { gaps.push(t - prior); prior = t; if (t - start < seconds * 1000) requestAnimationFrame(tick); else done(); }; requestAnimationFrame(tick); });
         gaps.shift();
         const sorted = [...gaps].sort((a, b) => a - b);
-        return { enterMs: +enterMs.toFixed(1), frames: gaps.length, fps: +(gaps.length / seconds).toFixed(1), p99: +sorted[Math.floor((sorted.length - 1) * 0.99)].toFixed(1), over33: gaps.filter(g => g > 33).length, over34: gaps.filter(g => g > 34).length, max: +sorted[sorted.length - 1].toFixed(1), music: R.audio.track.playing, voices: R.audio.trace.filter(t => /^clip:/.test(t.name)).length };
+        return { enterMs: +enterMs.toFixed(1), frames: gaps.length, fps: +(gaps.length / seconds).toFixed(1), p99: +sorted[Math.floor((sorted.length - 1) * 0.99)].toFixed(1), over33: gaps.filter(g => g > 33).length, over34: gaps.filter(g => g > 34).length, longAtMs: gaps.reduce((a, g, i) => (g > 34 && a.push(Math.round(gaps.slice(0, i + 1).reduce((x, y) => x + y, 0))), a), []), max: +sorted[sorted.length - 1].toFixed(1), music: R.audio.track.playing, voices: R.audio.trace.filter(t => /^clip:/.test(t.name)).length };
       }, { level, wave, seconds });
       await p.close();
       return r;

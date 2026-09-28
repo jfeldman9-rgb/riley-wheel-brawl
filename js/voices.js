@@ -91,10 +91,20 @@
   const url = id => { const f = voiceFile(id); return f ? DIR + f + '?v=' + (R.ASSET_VER || '1') : null; };
 
   /** Start fetching clips (lazy, cached for the session). Recorded kid lines are probed. */
-  function preload(ids) {
+  // One clip at a time with a short gap, so a stage's lines never land as a burst mid-fight.
+  const queue = [];
+  let loading = false;
+  function pump() {
     const A = R.audio;
-    if (!A || !A.loadClip) return;
-    for (const id of ids || []) { const u = url(id); if (u) A.loadClip(id, u, LOAD_OPTS); }
+    if (loading || !queue.length || !A || !A.loadClip) return;
+    const id = queue.shift(), u = url(id);
+    if (!u || A.hasClip(id)) { pump(); return; }
+    loading = true;
+    A.loadClip(id, u, LOAD_OPTS).then(() => { loading = false; setTimeout(pump, 40); });
+  }
+  function preload(ids) {
+    for (const id of ids || []) if (!queue.includes(id)) queue.push(id);
+    pump();
   }
   /** Warm a stage's lines after entry settles, so it never costs the cold enter. */
   function preloadStage(levelIndex) {
