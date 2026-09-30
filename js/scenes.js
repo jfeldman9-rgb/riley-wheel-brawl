@@ -338,7 +338,7 @@
     enter() {
       if (R.voiceReset) R.voiceReset();
       const entryAt=performance.now();
-      if (R.Puppet && R.Puppet.prepareStage) R.Puppet.prepareStage(this.levelIndex,this);
+      if (R.Puppet && R.Puppet.prepareScene) R.Puppet.prepareScene(this.levelIndex,this);
       const rigReadyAt=performance.now();
       // Paintings are already finished before a fade starts. Direct/debug entry
       // still prepares the same cache, without five redundant camera renders.
@@ -740,6 +740,7 @@
       if (!this.enemies.length && this.waveClearTimer <= 0) return;
       if (this.wave === 5) {
         this.phase = 'clear';
+        this.tutorial = null; this.warningTimer = 0; this.bossCard = 0;
         if (this.levelIndex === 3) this.player.callandor = true;
         if (this.levelIndex === 4) R.settings.clearRun();
         else R.settings.saveRun({ level: this.levelIndex + 1, wave: 0, score: this.player.score, extra: Object.assign(this.carryToNext(), this.levelIndex === 3 ? { pendingReveal: 'callandor' } : {}) });

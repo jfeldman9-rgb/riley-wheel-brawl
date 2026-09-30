@@ -15,7 +15,7 @@ const root=path.resolve(__dirname,'..');
  });
  check('Every first-frame enemy and boss kind remains synchronously prepared',()=>{
    for(let level=0;level<5;level++)for(const wave of [0,3,5]){
-     const scene=new R.scenes.Play(R.game,level,{wave});R.Puppet.prepareStage(level,scene);const ready=new Set(R.perf.stageVisibleKinds);
+     const scene=new R.scenes.Play(R.game,level,{wave});R.Puppet.prepareScene(level,scene);const ready=new Set(R.perf.stageVisibleKinds);
      for(const actor of scene.enemies){const kind=R.Puppet.defs[actor.kind]?actor.kind:actor instanceof R.Trolloc?(actor.boss?'chieftain':'trolloc'):null;if(kind)assert.ok(ready.has(kind),'stage '+(level+1)+' wave '+wave+' '+kind);}
      assert.ok(ready.has('loial'));if(scene.twinkle)assert.ok(ready.has('twinkle'));
    }

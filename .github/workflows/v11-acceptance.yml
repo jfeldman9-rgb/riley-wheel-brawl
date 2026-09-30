@@ -27,6 +27,11 @@ jobs:
           git worktree add --detach "$RUNNER_TEMP/rwb-old-parity" 7f3f94b
           git worktree add --detach "$RUNNER_TEMP/rwb-live-visual" 816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc
           NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/ci-v11.cjs unit "$RUNNER_TEMP/rwb-old-parity" "$RUNNER_TEMP/rwb-live-visual"
+      - name: Exact identity-pose and transformed-mesh comparisons
+        if: always()
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/rwb-pre-identity" ecb36da649796bffaacc1d698b0c824b63ce6fd7
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-idle-v11.cjs . "$RUNNER_TEMP/rwb-pre-identity"
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -44,43 +49,36 @@ jobs:
       - name: Inherited regression and browser contracts
         id: regression
         if: always()
-        continue-on-error: true
         run: node --expose-gc tools/check.cjs
       - name: Inherited release, cold entry and pacing
         id: release
         if: always()
-        continue-on-error: true
         run: node --expose-gc tools/release-browser.cjs
       - name: Protected voice sequencing
         id: voice
         if: always()
-        continue-on-error: true
         run: node --expose-gc tools/voice-sequence-check.cjs
       - name: Inherited audio browser checks
         id: audio
         if: always()
-        continue-on-error: true
         run: node --expose-gc tools/audio-check.cjs
       - name: Inherited background seam scan
         id: seams
         if: always()
-        continue-on-error: true
         run: node --expose-gc tools/joinscan.cjs
       - name: Independent audio mix checks
         id: mix
         if: always()
-        continue-on-error: true
         run: node --expose-gc tools/audio/audio-mix-check.cjs
       - name: Phone, iPad and controller emulation
         id: devices
         if: always()
-        continue-on-error: true
         run: node --expose-gc tools/v11-device-browser.cjs
       - name: Painted outcomes and enemy cards
         id: presentation
         if: always()
-        continue-on-error: true
         run: node --expose-gc tools/presentation-browser-v11.cjs
+      # Every test uses always(), so failures remain visible and later gates still run.
       - name: Report each browser gate honestly
         if: always()
         env:

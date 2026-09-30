@@ -80,7 +80,7 @@
     if(st.phase==='texture'){
       const w=st.w,h=st.h,tw=st.tw||Math.round(w*384/h),th=st.th||384;
       const sync=end>1e12;
-      if(!sync&&!st.pending&&!st.texture){
+      if(!sync&&!st.pending&&!st.texture&&st.bmp==null){
         try{
           st.pending=createImageBitmap(st.image,{resizeWidth:tw,resizeHeight:th,resizeQuality:'high'});
           st.pending.then(bmp=>{st.bmp=bmp;}).catch(()=>{st.bmp=false;});
@@ -346,6 +346,13 @@
     }
     ctx.restore();
   }
+  function identityPose(r,bones,pose,vertices){
+    // Exact pose/bone comparisons reject even a tiny intentional deformation.
+    // The vertex epsilon only permits floating-point roundoff in identity math.
+    return !r.split&&pose.lean===0&&pose.bob===0&&bones.length===r.bones.length&&
+      bones.every((bone,i)=>bone.every((p,j)=>p.x===r.bones[i][j].x&&p.y===r.bones[i][j].y))&&
+      vertices.every(v=>Math.abs(v.X-v.x)<1e-8&&Math.abs(v.Y-v.y)<1e-8);
+  }
   function bakePose(r,bones,pose){
     const scale=poseScaleFor(r),transforms=boneTransforms(r,bones),layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
     r.buffers=r.buffers||layers.map(()=>r.vertices.map(()=>({})));
@@ -358,11 +365,18 @@
     const ctx=surface.getContext('2d'),bounds={left,top,width,height},padding=.8/scale;
     const bakeAt=performance.now();
     ctx.setTransform(scale,0,0,scale,-left,-top);
-    if(!gpuSkin(r,r.buffers[0],bounds,scale,ctx))for(let n=0;n<layers.length;n++){const vertices=r.buffers[n],tex=layers[n][0];
+    // A neutral cached stance is the processed texture without any deformation.
+    // Rasterizing hundreds of overlapping triangles here resampled that same
+    // texture hundreds of times and increased alpha along their shared edges.
+    // Prove identity from the final skin coordinates, not the requested key:
+    // cast/channel and special rigs can move joints even with zero lean/bob.
+    const identity=identityPose(r,bones,pose,r.buffers[0]);
+    if(identity)ctx.drawImage(r.texture,0,0,r.w,r.h);
+    else if(!gpuSkin(r,r.buffers[0],bounds,scale,ctx))for(let n=0;n<layers.length;n++){const vertices=r.buffers[n],tex=layers[n][0];
       for(const f of r.faces)drawFace(ctx,r,f,vertices,tex,padding);
     }
     if(R.perf.noteBake)R.perf.noteBake('bakePose:'+(r.kind||''),performance.now()-bakeAt);
-    return {surface,bounds,scale};
+    return {surface,bounds,scale,identity};
   }
   // The warm-white hit copy is built in short strips. One full-surface copy
   // measured 6–12 ms, which is over the gameplay pump cap.
@@ -437,10 +451,24 @@
       st.surface=surface;st.ctx=surface.getContext('2d');st.bounds={left,top,width,height};st.padding=.8/scale;
       st.ctx.setTransform(scale,0,0,scale,-left,-top);
       st.phase='rast';st.ln=0;st.fi=0;st.gpu=true;
+      st.identity=identityPose(r,st.bones,st.pose,r.buffers[0]);
+      if(st.identity){st.phase='flat';st.copyY=0;}
       // Raster starts on a later slice so one pose invocation stays near 1 ms.
       // The GPU whole-pose path measured 8–17 ms, over the pump cap, so the
       // scheduler stays on this chunked canvas path.
       if(! (end>1e12) && (performance.now()>=end || skinMs>0.4))return false;
+    }
+    if(st.phase==='flat'){
+      const r=job.rig,g=st.ctx,b=st.bounds,t0=performance.now();
+      while(st.copyY<b.height&&performance.now()<end){
+        const rows=Math.min(16,b.height-st.copyY);
+        g.save();g.setTransform(1,0,0,1,0,0);g.beginPath();g.rect(0,st.copyY,b.width,rows);g.clip();
+        g.setTransform(st.scale,0,0,st.scale,-b.left,-b.top);g.drawImage(r.texture,0,0,r.w,r.h);g.restore();
+        g.getImageData(0,st.copyY,1,rows);st.copyY+=rows;
+        if(performance.now()-t0>1.2)break;
+      }
+      if(st.copyY<b.height)return false;
+      finishPose(r,job.key,{surface:st.surface,bounds:b,scale:st.scale,identity:true});return true;
     }
     if(st.phase==='rast'){
       const r=job.rig;
@@ -648,7 +676,10 @@
     R.Bake.pump(limit||4);
     const after=(R.perf.poseQueue&&R.perf.poseQueue.length)||0;
     return Math.max(0,before-after);
-  },prepareStage(level,scene){
+  },prepareStage(level){
+    // Preserve the original public API for callers that require every stage rig.
+    return this.prepareScene(level,null);
+  },prepareScene(level,scene){
     // Stage entry needs only the idle surfaces that the first frame displays.
     // Every other pose is a resumable Bake job; this reverses scroll8's full
     // synchronous atlas build without restoring its gameplay-sized work steps.
@@ -666,20 +697,23 @@
       if(scene.twinkle)visible.add('twinkle');
     }
     R.perf.stageVisibleKinds=Array.from(visible);
+    R.perf.stageRigTimings=[];
     for(const kind of Object.keys(defs))if(!keep.has(kind))dropRig(kind);
     if(R.Bake)R.Bake.drop(j=>j.kind&&!keep.has(j.kind));
     const pending=[],boss={0:['chieftain'],1:['fade'],4:['taim','twinkle']}[level]||[];
     for(const kind of kinds){
       const d=defs[kind];if(!d)continue;
       if(!visible.has(kind)){for(const key of POSE_KEYS){pending.push({kind,key,pri:key==='idle'?1:4});this.wantPose(kind,key,key==='idle'?1:4);}continue;}
-      const r=getRig(d);if(!r)continue;
+      const rigAt=performance.now(),r=getRig(d),rigMs=performance.now()-rigAt;if(!r)continue;
+      const poseAt=performance.now(),cached=!!(r.library&&r.library.has('idle'));
       if(!(r.library&&r.library.has('idle'))){
         const prev=R.perf.poseWarm;R.perf.poseWarm=true;
         const a=actorFor(d,'idle'),pose=this.pose(a,d.height);
         paintedBody(null,r,targets(a,d,r,pose),pose,a,'idle');
         R.perf.poseWarm=prev;
       }
-      const idle=r.library&&r.library.get('idle');if(idle)this.touchEntry(idle);
+      const poseMs=performance.now()-poseAt,idle=r.library&&r.library.get('idle'),touchAt=performance.now();if(idle)this.touchEntry(idle);
+      R.perf.stageRigTimings.push({kind,rigMs,poseMs,touchMs:performance.now()-touchAt,cached,identity:!!idle?.identity});
       for(const key of POSE_KEYS){
         if(key==='idle'||(r.library&&r.library.has(key)))continue;
         const pri=boss.includes(kind)?1:key[0]==='w'?2:3;
