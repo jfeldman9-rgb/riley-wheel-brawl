@@ -297,9 +297,3 @@ Runtime stamp: `20260929-sol61r8`. Riley's continuous lower-body shear and warm 
 The browser regression suite now compares the fully opaque (`alpha >= 250`) share of the lower skinned silhouette against an unskinned rimmed frame at render scales 1, 2, and 3, with a maximum two-percentage-point difference. The existing eight-frame adjacent-row tear limit remains unchanged.
 
 Chromium/Playwright was unavailable in this container, so the opacity comparison was simulated offline from the integer-row coverage rule. Normalized against the rimmed plain lower-body opacity, r7 measured `0.000 / 0.690` at render scale 1 and `0.040 / 0.730` at render scale 2 (derived from the captured partial-alpha shares); r8's device-row coverage is `1.000 / 1.000` at render scales 1, 2, and 3. The browser check remains authoritative when Chromium is available and evaluates all three scales directly.
-
-## sol61 final round — device-scale cached leg shear (2026-09-30)
-
-Runtime stamp: `20260929-sol61r9`. On the first skinned draw of a walk pose, Riley's complete source or warm-rim frame is now rasterised by one ordinary, nearest-neighbour `drawImage` at the active device scale. The compositor copies the torso unchanged and shears the cached lower body one device row at a time with a 1:1 vertical copy, so its source-row sampling is the same whole-frame sampling used by an unskinned sprite while retaining r8's fully opaque device-row coverage. A scale change clears the cache; its LRU hard limit is 16 small canvases (the eight plain and eight rimmed walk poses), and no canvas is created per animation frame or during boot/title/stage entry.
-
-The contact lock, 32-unit foot window, two-unit body correction, grip anchors, gameplay, RNG, difficulty, saves, audio, and all 19 painted PNGs are unchanged.
