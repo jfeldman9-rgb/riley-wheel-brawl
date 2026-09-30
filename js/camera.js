@@ -54,7 +54,7 @@ RWB.Camera = class Camera {
     if (this.shakeT > 0) {
       this.shakeT -= dt;
       const fade=Math.max(0,this.shakeT/(this.shakeDuration||1)),mix=1-Math.exp(-dt*30);
-      this.shakeX+=(RWB.util.rand(-1,1)*this.shakeAmt*fade-this.shakeX)*mix;this.shakeY+=(RWB.util.rand(-1,1)*this.shakeAmt*.6*fade-this.shakeY)*mix;
+      this.shakeX+=(RWB.util.fxRand(-1,1)*this.shakeAmt*fade-this.shakeX)*mix;this.shakeY+=(RWB.util.fxRand(-1,1)*this.shakeAmt*.6*fade-this.shakeY)*mix;
       if (this.shakeT <= 0) this.shakeAmt = 0;
     } else { this.shakeX = this.shakeY = 0; }
     this.punchX *= Math.exp(-dt*18); this.punchY *= Math.exp(-dt*18);

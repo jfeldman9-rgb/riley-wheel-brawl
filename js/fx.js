@@ -20,16 +20,16 @@ RWB.FX = class FX {
   spawn(kind, x, y, life, props) { const f = this._p(kind, x, y, life); if (f && props) Object.assign(f, props); return f; }
   sparks(x, y, color, count, speed) {
     for (let i = 0, n = this.n(count || 8); i < n; i++) {
-      const a = RWB.util.rand(0, Math.PI * 2), v = RWB.util.rand(0.4, 1) * (speed || 300);
-      if (!this.spawn('spark', x, y, RWB.util.rand(0.2, 0.4), { vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, color: color || '#fff6c8' })) return;
+      const a = RWB.util.fxRand(0, Math.PI * 2), v = RWB.util.fxRand(0.4, 1) * (speed || 300);
+      if (!this.spawn('spark', x, y, RWB.util.fxRand(0.2, 0.4), { vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, color: color || '#fff6c8' })) return;
     }
   }
   impact(x, y, dir, weight, color) {
     const scale=weight==='boss'?1.8:weight==='finisher'?1.55:weight==='heavy'?1.3:1;
     const n=this.n(Math.round(8*scale)), d=dir||1;
     for(let i=0;i<n;i++){
-      const a=RWB.util.rand(-1.05,1.05),v=RWB.util.rand(150,340)*scale;
-      const f=this._p('spark',x,y,RWB.util.rand(.18,.38));if(!f)break;
+      const a=RWB.util.fxRand(-1.05,1.05),v=RWB.util.fxRand(150,340)*scale;
+      const f=this._p('spark',x,y,RWB.util.fxRand(.18,.38));if(!f)break;
       f.vx=Math.cos(a)*v*d;f.vy=Math.sin(a)*v-35;f.color=color||'#fff6c8';
     }
     this.ring(x,y,scale>1.25,color);this.glow(x,y,10+scale*8,color,.16);
@@ -37,10 +37,10 @@ RWB.FX = class FX {
   chunks(x, y, colors, count, floor) {
     const list = Array.isArray(colors) ? colors : (colors ? [colors] : ['#ccc']);
     for (let i = 0, n = this.n(count || 10); i < n; i++) {
-      if (!this.spawn('chunk', x, y, RWB.util.rand(0.8, 1.3), { vx: RWB.util.rand(-200, 200), vy: RWB.util.rand(-300, -80), color: RWB.util.pick(list), r: RWB.util.rand(2, 4.5), floor: floor || y + 30, rot: RWB.util.rand(0, 6.28), vr: RWB.util.rand(-12, 12) })) return;
+      if (!this.spawn('chunk', x, y, RWB.util.fxRand(0.8, 1.3), { vx: RWB.util.fxRand(-200, 200), vy: RWB.util.fxRand(-300, -80), color: RWB.util.fxPick(list), r: RWB.util.fxRand(2, 4.5), floor: floor || y + 30, rot: RWB.util.fxRand(0, 6.28), vr: RWB.util.fxRand(-12, 12) })) return;
     }
   }
-  dust(x, y, r) { for (let i = 0, n = RWB.perf.lite ? 2 : 4; i < n; i++) { const f = this.spawn('dust', x + RWB.util.rand(-8, 8), y + RWB.util.rand(-3, 3), 0.5, { r: (r || 6) * RWB.util.rand(0.6, 1) }); if (!f) return; f.t = -i * 0.03; } }
+  dust(x, y, r) { for (let i = 0, n = RWB.perf.lite ? 2 : 4; i < n; i++) { const f = this.spawn('dust', x + RWB.util.fxRand(-8, 8), y + RWB.util.fxRand(-3, 3), 0.5, { r: (r || 6) * RWB.util.fxRand(0.6, 1) }); if (!f) return; f.t = -i * 0.03; } }
   ring(x, y, big, color) { this.spawn('ring', x, y, 0.26, { big: !!big, color: color || '#fff' }); }
   glow(x, y, r, color, life) { this.spawn('glow', x, y, life || 0.4, { r: r || 20, color: color || '#9eeaff' }); }
   text(x, y, str, color, life) { const f = this._p('text', x, y, life || 1.1, true); f.str = str; f.color = color || '#fff'; f.vy = -30; return f; }

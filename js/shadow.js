@@ -82,7 +82,10 @@
         // Cached gradient strip: only a stretch/blit occurs in the hot path.
         const start=this.beamStartX==null?this.x-this.w/2:this.beamStartX,end=this.beamEndX==null?this.x+this.w/2:this.beamEndX;
         const left=start-cam,right=end-cam,cy=this.beamY==null?this.y-55:this.beamY;
-        ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.9;ctx.drawImage(beamTexture(),Math.min(left,right),cy-32,Math.abs(right-left),64);
+        // Preserve the violet-black heart under normal compositing; only the
+        // edge energy, tendrils and blooms are additive.
+        ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.96;ctx.drawImage(beamTexture(),Math.min(left,right),cy-32,Math.abs(right-left),64);
+        ctx.globalCompositeOperation='lighter';
         ctx.strokeStyle='rgba(190,112,255,.75)';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();for(let n=0;n<=12;n++){const x=left+(right-left)*n/12,yy=cy+(i-1)*14+Math.sin(n*1.7+this.age*34+i)*6;n?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}ctx.stroke();}
         for(const p of [[left,10],[right,17]]){ctx.globalAlpha=.8;ctx.drawImage(R.effects.glow('#d9a6ff'),p[0]-p[1],cy-p[1],p[1]*2,p[1]*2);}
       } else ctx.fillRect(this.x - cam - this.w / 2, this.y - this.z - this.h, this.w, this.h);

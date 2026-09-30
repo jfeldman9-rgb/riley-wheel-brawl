@@ -16,10 +16,17 @@
   // beside the atlas makes Callandor follow the actual pose instead of Riley's
   // collision box. Angles point from the grip toward the blade tip.
   const HANDS=R.RILEY16.hands={
-    idle:[19.7,-69,-.22],walk1:[20.1,-43,-2.25],walk2:[22.6,-49.5,-2.08],walk3:[17.6,-49.5,-1.94],
-    walk4:[19.7,-46.5,-2.12],walk5:[10.5,-40,-2.34],walk6:[19.3,-40,-2.16],walk7:[14.7,-51,-1.98],walk8:[22.2,-51,-2.12],
-    punch:[32.3,-62,.72],kick:[0,-64,-1.02],fireball:[17.6,-37,.58],hurt:[29.3,-45,-.82],jump:[8.8,-40,-.65],
+    idle:[19.7,-69,-.22],walk1:[20.1,-47,-2.25],walk2:[22.6,-49.5,-2.08],walk3:[17.6,-55,-1.94],
+    walk4:[19.7,-53,-2.12],walk5:[10.5,-40,-2.34],walk6:[19.3,-45.3,-2.16],walk7:[14.7,-55.3,-1.98],walk8:[22.2,-55.8,-2.12],
+    punch:[32.3,-73,.72],kick:[0,-64,-1.02],fireball:[9.6,-35.6,.58],hurt:[29.3,-45,-.82],jump:[8.8,-40,-.65],
     roundhouse:[20.5,-71,-1.22],knee:[18,-77,-.28],channel:[10,-57,-.08],lying:[-21,-5,-1.42],getup:[6,-4,.72]
+  };
+  // [sole x, sole y, planted side, distance span], in actor units relative to
+  // the atlas anchor.  Contact follows the front boot through 1-3, hands to
+  // the rear boot at 4, then repeats on the opposite stride in 5-8.
+  R.RILEY16.feet={
+    walk1:[15.1,0,'front',4],walk2:[8.8,0,'front',4],walk3:[1.7,0,'front',4],walk4:[-11.7,-1.3,'rear',4],
+    walk5:[17.6,0,'front',4],walk6:[9.6,0,'front',4],walk7:[0,0,'front',4],walk8:[-13.4,0,'rear',4]
   };
   let swordCanvas=null;
   function prepareSword(){
@@ -98,7 +105,7 @@
       this.x += this.vx * dt;
       this.z += this.vz * dt;
       this.life -= dt;
-      if (Math.random() < 0.55) this.g.fx.sparks(this.x, this.y - this.z, '#ffb33d', 1);
+      if (R.util.fxRand(0, 1) < 0.55) this.g.fx.sparks(this.x, this.y - this.z, '#ffb33d', 1);
       for (const enemy of this.g.enemies) {
         if (enemy.dead || this.hit.has(enemy)) continue;
         if (!R.collide.circle(this.x, this.y, this.z, this.radius, 25, enemy.hurtbox())) continue;
@@ -426,9 +433,7 @@
     }
     spriteFrame() {
       const state = this.attackMove ? this.attackName : this.state;
-      // Four actor-units per exposure matches the painted sole travel.  Thus a
-      // 32-unit gait uses all eight drawings, with contact handed to the other
-      // boot halfway through instead of teleporting a planted boot every 8u.
+      // Four actor-units per exposure matches the measured stance-sole travel.
       if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 4) % 8 + 1);
       if (!this.grounded || ['rise', 'fall', 'jump'].includes(state)) return this.attackMove ? 'kick' : 'jump';
       if (['round', 'back', 'spin', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'roundhouse';
@@ -448,14 +453,13 @@
       if (!img || !data) return false;
       const [w,h,ax,ay] = data, scale = RILEY16.height / RILEY16.frames.idle[1];
       const lying = !forcedFrame && (this.dead || ['knockdown', 'lying', 'death'].includes(this.state));
-      // The body tracks the hitbox every frame. Four rigid poses cannot keep a
-      // sole planted, so the pose only changes with distance walked. A 3px bob
-      // still marks the step. Holding the sprite to fake a planted foot made
-      // the body freeze and then teleport.
+      // The per-frame sole table drives the distance cadence; a tiny correction
+      // removes pixel-rounding error without detaching the body from its hitbox.
       let drawX = this.x, drawY = this.y;
       if (!forcedFrame && !lying && this.grounded && frame && frame.indexOf('walk') === 0) {
-        const into = this.walkDistance % 32;
-        drawY = this.y - Math.sin(into / 32 * Math.PI) * 3;
+        const foot=RILEY16.feet[frame],into=this.walkDistance%4;
+        drawX+=Math.max(-2,Math.min(2,2-into));
+        drawY=this.y-(foot?foot[1]:0);
       }
       this._spriteX = drawX;
       ctx.save();

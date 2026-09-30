@@ -534,6 +534,10 @@
       // Stage 2's Fade is the endurance gate; keep its multi-hit strings from
       // crossing a whole-heart breakpoint while ordinary soldiers stay sharp.
       if(this.levelIndex===1 && opts && ['SWORD COMBO','SHADOW BLINK','FEAR STUN'].includes(opts.source)) damage*=.94;
+      // Preserve ordinary Black Tower wave breakpoints while making Taim the
+      // final-stage pressure gate; applying this only to his named techniques
+      // avoids the cliff caused by raising the whole stage damage scale.
+      if(this.levelIndex===4 && opts && ['DARK BALEFIRE','STORM STRIKES','SHADOW SURGE'].includes(opts.source)) damage*=1.08;
       const kb = opts.kb == null ? 110 : opts.kb * (opts.knockdown ? 1.2 : 1.28);
       const landed = this.player.takeHit(damage, fromX, { kb, launch: opts.knockdown ? 320 : 150 });
       if (!landed) return false;
