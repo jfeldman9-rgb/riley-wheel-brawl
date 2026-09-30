@@ -24,6 +24,16 @@ RWB.FX = class FX {
       if (!this.spawn('spark', x, y, RWB.util.rand(0.2, 0.4), { vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, color: color || '#fff6c8' })) return;
     }
   }
+  impact(x, y, dir, weight, color) {
+    const scale=weight==='boss'?1.8:weight==='finisher'?1.55:weight==='heavy'?1.3:1;
+    const n=this.n(Math.round(8*scale)), d=dir||1;
+    for(let i=0;i<n;i++){
+      const a=RWB.util.rand(-1.05,1.05),v=RWB.util.rand(150,340)*scale;
+      const f=this._p('spark',x,y,RWB.util.rand(.18,.38));if(!f)break;
+      f.vx=Math.cos(a)*v*d;f.vy=Math.sin(a)*v-35;f.color=color||'#fff6c8';
+    }
+    this.ring(x,y,scale>1.25,color);this.glow(x,y,10+scale*8,color,.16);
+  }
   chunks(x, y, colors, count, floor) {
     const list = Array.isArray(colors) ? colors : (colors ? [colors] : ['#ccc']);
     for (let i = 0, n = this.n(count || 10); i < n; i++) {

@@ -1,6 +1,16 @@
 'use strict';
 (function () {
   const R = window.RWB;
+  function beamTexture(){
+    return R.effects.stamp('dark-balefire-r4',g=>{
+      const grad=g.createLinearGradient(0,10,0,54);
+      grad.addColorStop(0,'rgba(114,42,190,0)');grad.addColorStop(.16,'rgba(151,82,230,.42)');
+      grad.addColorStop(.31,'rgba(247,226,255,.96)');grad.addColorStop(.4,'#1a071f');
+      grad.addColorStop(.6,'#08030d');grad.addColorStop(.7,'rgba(247,226,255,.96)');
+      grad.addColorStop(.84,'rgba(151,82,230,.42)');grad.addColorStop(1,'rgba(114,42,190,0)');
+      g.fillStyle=grad;g.fillRect(0,0,136,64);
+    },136,64);
+  }
   // Strikes snapshot their lane; tells and collision share the same dimensions.
   class ShadowStrike {
     constructor(g, x, y, opts) {
@@ -69,15 +79,12 @@
           ctx.stroke();
         }
       } else if (beam) {
-        // The collision rectangle remains untouched; the visible weave is a
-        // narrow hand-height channel with a dark core, hot glassy edges and
-        // deterministic tendrils (no gradients/canvases allocated here).
+        // Cached gradient strip: only a stretch/blit occurs in the hot path.
         const start=this.beamStartX==null?this.x-this.w/2:this.beamStartX,end=this.beamEndX==null?this.x+this.w/2:this.beamEndX;
         const left=start-cam,right=end-cam,cy=this.beamY==null?this.y-55:this.beamY;
-        ctx.globalAlpha=.94;ctx.fillStyle='#130619';ctx.fillRect(Math.min(left,right),cy-8,Math.abs(right-left),16);
-        ctx.strokeStyle='#fff8ff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(left,cy-10);ctx.lineTo(right,cy-10);ctx.moveTo(left,cy+10);ctx.lineTo(right,cy+10);ctx.stroke();
-        ctx.strokeStyle='rgba(151,96,214,.88)';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();for(let n=0;n<=12;n++){const x=left+(right-left)*n/12,yy=cy+(i-1)*13+Math.sin(n*1.7+this.age*34+i)*5;n?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}ctx.stroke();}
-        ctx.globalAlpha=.82;ctx.fillStyle='#fff5ff';ctx.beginPath();ctx.arc(right,cy,15+Math.sin(this.age*40)*2,0,Math.PI*2);ctx.fill();
+        ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.9;ctx.drawImage(beamTexture(),Math.min(left,right),cy-32,Math.abs(right-left),64);
+        ctx.strokeStyle='rgba(190,112,255,.75)';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();for(let n=0;n<=12;n++){const x=left+(right-left)*n/12,yy=cy+(i-1)*14+Math.sin(n*1.7+this.age*34+i)*6;n?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}ctx.stroke();}
+        for(const p of [[left,10],[right,17]]){ctx.globalAlpha=.8;ctx.drawImage(R.effects.glow('#d9a6ff'),p[0]-p[1],cy-p[1],p[1]*2,p[1]*2);}
       } else ctx.fillRect(this.x - cam - this.w / 2, this.y - this.z - this.h, this.w, this.h);
       ctx.restore();
     }

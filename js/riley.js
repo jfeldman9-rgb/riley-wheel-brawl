@@ -16,10 +16,10 @@
   // beside the atlas makes Callandor follow the actual pose instead of Riley's
   // collision box. Angles point from the grip toward the blade tip.
   const HANDS=R.RILEY16.hands={
-    idle:[-10,-43,-.34],walk1:[-9,-42,-.42],walk2:[-7,-44,-.28],walk3:[-11,-43,-.18],
-    walk4:[-12,-41,-.38],walk5:[-11,-43,-.18],walk6:[-7,-44,-.28],walk7:[-9,-42,-.42],walk8:[-12,-41,-.38],
-    punch:[30,-48,.62],kick:[-5,-48,-.55],fireball:[18,-49,.42],hurt:[-18,-41,-.9],jump:[-2,-44,-.18],
-    roundhouse:[24,-50,-.7],knee:[9,-48,.25],channel:[2,-52,0],lying:[-25,-18,-1.2],getup:[12,-37,.1]
+    idle:[19.7,-69,-.22],walk1:[20.1,-43,-2.25],walk2:[22.6,-49.5,-2.08],walk3:[17.6,-49.5,-1.94],
+    walk4:[19.7,-46.5,-2.12],walk5:[10.5,-40,-2.34],walk6:[19.3,-40,-2.16],walk7:[14.7,-51,-1.98],walk8:[22.2,-51,-2.12],
+    punch:[32.3,-62,.72],kick:[0,-64,-1.02],fireball:[17.6,-37,.58],hurt:[29.3,-45,-.82],jump:[8.8,-40,-.65],
+    roundhouse:[20.5,-71,-1.22],knee:[18,-77,-.28],channel:[10,-57,-.08],lying:[-21,-5,-1.42],getup:[6,-4,.72]
   };
   let swordCanvas=null;
   function prepareSword(){
@@ -105,7 +105,7 @@
         this.hit.add(enemy);
         this.life = 0;
         this.g.damageEnemy(enemy, this.damage, this.owner.x, { kb: 105, move: 'fireball' });
-        this.g.fx.sparks(this.x, this.y - this.z, '#fff1a1', 10);
+        this.g.fx.impact(this.x,this.y-this.z,this.owner.facing,'heavy','#ff8b38');
         this.g.camera.impact(this.owner.facing, 'light');
         this.g.playCue('fireHit');
       }
@@ -257,6 +257,7 @@
       enemy.vz = 180;
       enemy.z = 2;
       enemy.takeHit(R.MOVES.throw.damage, this.x, { kb: 290, launch: 180, knockdown: true, ignoreInvuln: true });
+      this.g.fx.impact(enemy.x,enemy.y-enemy.z-40,direction,'heavy',this.callandor?'#9ff5ff':'#fff0ad');
       this.g.movesUsed.add('throw');
       this.setState('throw');
       this.channelTimer = R.MOVES.throw.duration;
@@ -425,7 +426,10 @@
     }
     spriteFrame() {
       const state = this.attackMove ? this.attackName : this.state;
-      if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 8) % 8 + 1);
+      // Four actor-units per exposure matches the painted sole travel.  Thus a
+      // 32-unit gait uses all eight drawings, with contact handed to the other
+      // boot halfway through instead of teleporting a planted boot every 8u.
+      if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 4) % 8 + 1);
       if (!this.grounded || ['rise', 'fall', 'jump'].includes(state)) return this.attackMove ? 'kick' : 'jump';
       if (['round', 'back', 'spin', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'roundhouse';
       if (state === 'knee') return 'knee';
@@ -489,9 +493,9 @@
       ctx.save();ctx.globalAlpha*=alpha;ctx.translate(this.x-cameraX,this.y-this.z);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]+swing);
       ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-76);ctx.restore();
       const angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:this.x+this.facing*(h[0]+sn*76),y:this.y-this.z+h[1]-cs*76};
-      if(this.attackMove){this.callandorTips=this.callandorTips||[];this.callandorTips.push(tip);if(this.callandorTips.length>6)this.callandorTips.shift();}
+      if(this.attackMove){this.callandorTips=this.callandorTips||[];this.callandorTips.push({x:tip.x,y:tip.y,t:performance.now()});if(this.callandorTips.length>9)this.callandorTips.shift();}
       else this.callandorTips=[];
-      if(this.callandorTips.length>1){ctx.save();ctx.lineCap='round';for(let i=1;i<this.callandorTips.length;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i];ctx.globalAlpha=.1+i/this.callandorTips.length*.38;ctx.strokeStyle='#bdf8ff';ctx.lineWidth=1+i*.65;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}
+      if(this.callandorTips.length>1){ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';const grip={x:this.x+this.facing*h[0],y:this.y-this.z+h[1]},n=this.callandorTips.length;for(let i=1;i<n;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i],fade=i/n,ma={x:(grip.x+a.x)*.5,y:(grip.y+a.y)*.5},mb={x:(grip.x+b.x)*.5,y:(grip.y+b.y)*.5};ctx.globalAlpha=.08+fade*.25;ctx.fillStyle='#75dfff';ctx.beginPath();ctx.moveTo(ma.x-cameraX,ma.y);ctx.lineTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.lineTo(mb.x-cameraX,mb.y);ctx.closePath();ctx.fill();ctx.globalAlpha=.18+fade*.55;ctx.strokeStyle='#efffff';ctx.lineWidth=2+fade*3;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}
     }
   }
   R.Fireball = Fireball;

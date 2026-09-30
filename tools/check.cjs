@@ -381,7 +381,9 @@ async function pageLoadChecks(check, rootDir) {
       for (let i = 0; i < 120; i++) {
         player.walkDistance += 128 / 60;
         player.x += 128 / 60;
-        const bin = Math.floor(player.walkDistance / 32);
+        // Each painted foot owns a 16u contact half-cycle; the other sole takes
+        // over at the midpoint of the complete 32u/eight-frame gait.
+        const bin = Math.floor(player.walkDistance / 16);
         ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, 1280, 720);
         ctx.setTransform(rs, 0, 0, rs, 0, 0);
         player.drawSprite(ctx, 0);
@@ -415,6 +417,18 @@ async function pageLoadChecks(check, rootDir) {
     check(footDrift.trolloc <= 20 && footDrift.chieftain <= 20, 'Enemy planted feet drift at or under 20 u/s ' + JSON.stringify(footDrift));
     check(footDrift.rileySlip <= 30, 'Riley planted foot slips at or under 30 u/s ' + JSON.stringify(footDrift));
     console.log('Foot drift ' + JSON.stringify(footDrift));
+    const gripPixels=await seeded.page.evaluate(()=>{
+      const scale=RWB.RILEY16.height/RWB.RILEY16.frames.idle[1],bad=[];
+      for(const [frame,h] of Object.entries(RWB.RILEY16.hands)){
+        const img=RWB.assets.get('riley16-'+frame),d=RWB.RILEY16.frames[frame];
+        if(!img||!d){bad.push(frame+':missing');continue;}
+        const c=document.createElement('canvas');c.width=d[0];c.height=d[1];const g=c.getContext('2d');g.drawImage(img,0,0);
+        const x=Math.round(d[2]+h[0]/scale),y=Math.round(d[3]+h[1]/scale);
+        if(x<0||y<0||x>=c.width||y>=c.height||g.getImageData(x,y,1,1).data[3]===0)bad.push(frame+'@'+x+','+y);
+      }
+      return bad;
+    });
+    check(gripPixels.length===0,'Callandor grip lies on an opaque fist pixel in every Riley frame '+JSON.stringify(gripPixels));
     check(visual.dust.corner < visual.dust.peak * 0.5 && visual.dust.peak > 40 && visual.chunk.corner < visual.chunk.peak * 0.5 && visual.chunk.peak > 40, 'Dust and debris pixels are soft rounds, not hard rectangles ' + JSON.stringify({ dust: visual.dust, chunk: visual.chunk }));
     check(visual.bg.sub > 0 && visual.bg.step > 0, 'A fractional camera moves the cached background off the whole-pixel snap ' + JSON.stringify(visual.bg));
     check(Math.abs(visual.bg.floorShift) === 1 && visual.bg.midShift === 0, 'Parallax layers keep their own sub-pixel step (floor moves, distant mid does not jump a pixel) ' + JSON.stringify(visual.bg));
@@ -620,7 +634,7 @@ const retiredStreet=new Set(['assets/art/stage4-mid.png','assets/art/stage5-mid.
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')&&!f.endsWith('/_contact-sheet.png')&&!retiredStreet.has(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every active committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260929-sol61r3';console.log('Cache stamp: '+STAMP);
+const STAMP='20260929-sol61r4';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -784,7 +798,7 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   let sceneLess=true;try{const r=new RWB.Riley(null,{});r.draw(ctx,0);}catch(e){sceneLess=false;}
   check(sceneLess,'A scene-less Riley fallback draws without throwing');
   check(RWB.RILEY16.height>=90&&RWB.RILEY16.height<=100&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height>=.80&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height<=.90,'Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc');
-  check(/Math\.floor\(this\.walkDistance \/ 8\) % 8/.test(rileySource),'Riley walk advances eight frames by movement distance and stops at rest');
+  check(/Math\.floor\(this\.walkDistance \/ 4\) % 8/.test(rileySource),'Riley walk advances all eight frames over its sole-locked 32u cycle and stops at rest');
   const belalFrames=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];
   check(belalFrames.every(f=>RWB.ART_MANIFEST.includes('assets/art/belal/'+f+'.png')&&RWB.BELAL.frames[f]&&RWB.BELAL.frames[f].length===4)&&RWB.ART_MANIFEST.includes('assets/art/belal/portrait.png'),"Be'lal draws from all ten anchored painted belal frames (sword painted in hand) plus portrait");
   check(/kind==='forsaken'&&R\.assets\.has\('belal-idle'\)/.test(puppetSource)&&/m==='combo'\?'windup'/.test(puppetSource)&&/t<\.55\?'slash':'lunge'/.test(puppetSource),"Be'lal SWORD FLURRY telegraph/attack use painted windup/slash/lunge frames (no composited sword, cannot detach)");

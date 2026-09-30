@@ -472,7 +472,7 @@
       const contact = this.joint.tips.map(tip => R.collide.circle(tip.x, tip.y, tip.z, 6, 12, b.hurtbox()));
       if (progress >= 1 && contact.every(Boolean)) {
         this.joint.hit = b.takeHit(b.hp, this.player.x, { jointFinish: true, move: 'joint' });
-        if (this.joint.hit) { this.camera.impact(1, 'super'); this.playCue('balefire'); this.player.invuln = 2; }
+        if (this.joint.hit) { this.fx.impact(b.x,b.y-b.z-b.bh/2,1,'finisher','#9ff5ff'); this.camera.impact(1, 'super'); this.playCue('balefire'); this.player.invuln = 2; }
       }
     }
 
@@ -501,7 +501,8 @@
       this.player.power = Math.min(this.player.powerMax, this.player.power + Math.round((opts && opts.move === 'fireball' ? 8 : 10) * (this.player.angreal > 0 ? 1.6 : 1)));
       this.player.score += damage * 10;
       const hitY = enemy.y - enemy.z - 40;
-      this.fx.sparks(enemy.x, hitY, '#ffd268', 14);
+      const move=opts&&opts.move, callandor=this.player.callandor&&move!=='fireball', tint=move==='fireball'?'#ff8b38':callandor?'#9ff5ff':'#fff0ad';
+      this.fx.impact(enemy.x,hitY,this.player.facing,(opts&&opts.knockdown)?(enemy.boss?'boss':'heavy'):'light',tint);
       this.fx.ring(enemy.x, enemy.y, !!(opts && opts.knockdown), '#fff3c7');
       this.fx.dust(enemy.x, enemy.y, 6);
       this.fx.spawn('slash', enemy.x, hitY, 0.16, { vx: this.player.facing || 1 });
@@ -538,7 +539,7 @@
       if (!landed) return false;
       this.damageTaken += damage;
       this.timesHit += 1;
-      this.fx.sparks(this.player.x, this.player.y - 48, '#ffd0d0', 10);
+      this.fx.impact(this.player.x,this.player.y-48,fromX<this.player.x?1:-1,opts.knockdown?(opts.source&&/BALEFIRE|BOSS/.test(opts.source)?'boss':'heavy'):'light','#ed79b7');
       this.fx.spawn('slash', this.player.x, this.player.y - 48, 0.14, { vx: fromX < this.player.x ? 1 : -1, color: '#ffe1e1' });
       if (opts.knockdown) this.fx.chunks(this.player.x, this.player.y - 30, ['#d7e4ee', '#ffffff'], 5, this.player.y);
       this.player.invuln = opts.knockdown ? 0.85 : 0.5;
@@ -825,6 +826,7 @@
         }
       }
       if (this.twinkle) {
+        R.draw.shadow(ctx,this.twinkle.x-this.camera.x,this.twinkle.y,14,null,0);
         R.drawTwinkle(ctx, this.twinkle.x - this.camera.x, this.twinkle.y, !!this.joint, this.time);
         if (this.twinkle.captive) { ctx.strokeStyle='#a684dd'; ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(this.twinkle.x-this.camera.x,this.twinkle.y-35,31,47,0,0,Math.PI*2); ctx.stroke(); }
       }
