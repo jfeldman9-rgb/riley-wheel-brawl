@@ -1,0 +1,11 @@
+{
+  "README.md": "8142c6e12560c65ab58f3eaaa592f8f2778f21827ba932aa5e175ce6e6137774",
+  "compare-readiness.cjs": "6a132d14a7599780f3ce82f713909dff3970b712f7816d2ab1acc8bc3cf25328",
+  "compare-readiness.test.cjs": "12f644f5e4468f9ba7afa74d98a15a2a26c6f132c09f39e5c4aaf6b0ff028f4f",
+  "performance-readiness-v11.cjs": "917bc6e6b4bc0a48e751d85078005c0401eb2c5f011430c58e434c904921bbd1",
+  "profiler-from-source.diff": "77eae8f5a4abfb26592b36c62982694958674ba61b8b047d3a09022346066b6e",
+  "readiness-probe.cjs": "2e3bf62d26c28e359814ee63e43b3e5d130212797e225251da4e426f012c515f",
+  "readiness-probe.test.cjs": "5c9204f3b75aa22a14700bfbbffd141a055f19b7cf6606e4437be5bfe00b129d",
+  "source-provenance.json": "7ab3e7b743ec88cae3104b071fa54553b49bcaf5d15766ca2ddac10f98c96bf5",
+  "validation.txt": "b83ad30f1eddb56937d83227770697a82bb3e888834a9f0c3b3123f85058ee3a"
+}

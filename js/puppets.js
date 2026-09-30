@@ -83,7 +83,11 @@
       if(!sync&&!st.pending&&!st.texture&&st.bmp==null){
         try{
           st.pending=createImageBitmap(st.image,{resizeWidth:tw,resizeHeight:th,resizeQuality:'high'});
-          st.pending.then(bmp=>{st.bmp=bmp;}).catch(()=>{st.bmp=false;});
+          st.pending.then(bmp=>{
+            // A removed/replaced rig cannot consume a late decoded bitmap.
+            if(building.get(st.cacheKey)!==st){if(bmp.close)bmp.close();return;}
+            st.bmp=bmp;
+          }).catch(()=>{st.bmp=false;});
         }catch(e){st.bmp=false;}
         st.tw=tw;st.th=th;
         return false;
@@ -220,6 +224,10 @@
     let guard=0;
     while(st.phase!=='done'&&guard++<(sync?20000:8)){
       advanceRig(d,st,end);
+      // Promise callbacks cannot run inside this synchronous pump. Readiness
+      // also wakes a queued job if its source or shared rig state is removed.
+      if(!sync&&st.phase==='texture'&&!st.texture&&st.bmp==null)return {done:false,rig:null,
+        ready:()=>st.bmp!=null||!!st.texture||building.get(cacheKey)!==st||!(R.assets.get(d.key)||R.assets.get(d.fallback))};
       if(st.phase==='done')break;
       if(!sync&&(performance.now()>=end||performance.now()-t0>1.2))break;
     }
@@ -409,11 +417,23 @@
     if(R.Bake&&(key==='idle'||(key&&key[0]==='w')))R.Bake.queueTouch(entry);
     return entry;
   }
+  const poseVertexPools=new WeakMap(),POSE_VERTEX_POOL_LIMIT=3;
+  function acquirePoseVertices(r,layers){
+    let pool=poseVertexPools.get(r);
+    if(!pool){pool=[];poseVertexPools.set(r,pool);}
+    return pool.pop()||layers.map(()=>r.vertices.map(()=>({})));
+  }
+  function releasePoseVertices(job){
+    const vertices=job.state.vertices;job.state.vertices=null;
+    const pool=poseVertexPools.get(job.rig);
+    if(vertices&&pool&&pool.length<POSE_VERTEX_POOL_LIMIT)pool.push(vertices);
+  }
   function stepPose(job,end){
     const d=defs[job.kind];if(!d)return true;
     const st=job.state||(job.state={phase:'rig'});
     if(st.phase==='rig'){
       const got=ensureRig(d,end);
+      job.ready=got.ready;
       if(!got.done)return false;
       if(!got.rig)return true;
       job.rig=got.rig;
@@ -429,9 +449,9 @@
       st.layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
       // A higher-priority pose can interrupt this job during skinning or raster.
       // Its transformed vertices must not overwrite an unfinished pose's data.
-      // One fixed-size snapshot belongs to each deduplicated queued pose and is
-      // released as soon as that pose finishes; synchronous bakes keep r.buffers.
-      st.vertices=st.layers.map(()=>r.vertices.map(()=>({})));
+      // Only completed snapshots enter the bounded per-rig free pool. Active or
+      // canceled jobs keep exclusive ownership; synchronous bakes keep r.buffers.
+      st.vertices=acquirePoseVertices(r,st.layers);
       st.minX=Infinity;st.minY=Infinity;st.maxX=-Infinity;st.maxY=-Infinity;
       if(performance.now()>=end)return false;
     }
@@ -472,7 +492,7 @@
         if(performance.now()-t0>1.2)break;
       }
       if(st.copyY<b.height)return false;
-      finishPose(r,job.key,{surface:st.surface,bounds:b,scale:st.scale,identity:true});st.vertices=null;return true;
+      finishPose(r,job.key,{surface:st.surface,bounds:b,scale:st.scale,identity:true});releasePoseVertices(job);return true;
     }
     if(st.phase==='rast'){
       const r=job.rig;
@@ -490,7 +510,7 @@
         st.ln++;st.fi=0;
       }
       finishPose(r,job.key,{surface:st.surface,bounds:st.bounds,scale:st.scale});
-      st.vertices=null;
+      releasePoseVertices(job);
       return true;
     }
     return true;
@@ -633,12 +653,22 @@
   function dropRig(kind){
     for(const [key,rig] of [...rigs]){
       if(rig.kind!==kind)continue;
-      if(rig.library){rig.library.clear();rig.library=null;}
+      poseVertexPools.delete(rig);
+      if(rig.library){
+        // A dropped rig must not leave speculative uploads retaining its poses.
+        if(R.Bake){const entries=new Set(rig.library.values());R.Bake.touches=R.Bake.touches.filter(entry=>{
+          if(!entries.has(entry))return true;
+          entry._touchQueued=false;return false;
+        });}
+        rig.library.clear();rig.library=null;
+      }
       if(meshGPU&&meshGPU.rigs){const data=meshGPU.rigs.get(rig);if(data){meshGPU.gl.deleteTexture(data.texture);meshGPU.gl.deleteBuffer(data.vertex);meshGPU.gl.deleteBuffer(data.indices);meshGPU.rigs.delete(rig);}}
       rigs.delete(key);
     }
     const d=defs[kind];
-    if(d)for(const key of [...building.keys()])if(key.startsWith(d.key+':')||(d.fallback&&key.startsWith(d.fallback+':')))building.delete(key);
+    if(d)for(const key of [...building.keys()])if(key.startsWith(d.key+':')||(d.fallback&&key.startsWith(d.fallback+':'))){
+      const st=building.get(key);if(st.bmp&&st.bmp.close)st.bmp.close();st.bmp=null;building.delete(key);
+    }
   }
   R.Puppet={defs,updateGait,knee,prepare(kind){
     const d=defs[kind],r=d&&getRig(d);if(!r)return null;

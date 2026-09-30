@@ -71,6 +71,8 @@
   };
   // One priority queue for every canvas bake. A job's run(job, end) returns
   // false when the frame budget is spent and the job must resume next frame.
+  // An optional ready() dependency predicate skips waiting jobs until their
+  // data is available, without changing runnable priority or FIFO order.
   R.Bake={
     q:[],seq:0,touches:[],names:new Set(),
     enqueue(pri,name,run,data){
@@ -96,22 +98,28 @@
       const started=performance.now();
       R.perf.inBake=true;
       let guard=0;
-      while(this.q.length&&performance.now()<end&&guard++<64){
-        let best=0;
-        for(let i=1;i<this.q.length;i++){
-          const a=this.q[i],b=this.q[best];
-          if(a.pri<b.pri||(a.pri===b.pri&&a.seq<b.seq))best=i;
+      while(this.q.length&&performance.now()<end&&guard<64){
+        let best=-1;
+        for(let i=0;i<this.q.length;i++){
+          const a=this.q[i];if(a.ready&&!a.ready())continue;
+          const b=this.q[best];
+          if(best<0||a.pri<b.pri||(a.pri===b.pri&&a.seq<b.seq))best=i;
         }
+        if(best<0||performance.now()>=end)break;
         const job=this.q[best];
         const t0=performance.now();
         let done=false;
         try{done=job.run(job,end)!==false;}catch(e){done=true;}
         const dt=performance.now()-t0;
+        const waiting=!done&&job.ready&&!job.ready();
+        // Newly discovered dependencies do not spend the runnable guard.
+        // On subsequent passes their predicate avoids another work attempt.
+        if(!waiting)guard++;
         if(dt>4)R.perf.markStep(job.name||'bake',dt);
         if(done){
           this.q.splice(best,1);
           if(job.name)this.names.delete(job.name);
-        }else if(performance.now()>=end||dt<0.05)break;
+        }else if(!waiting&&(performance.now()>=end||dt<0.05))break;
       }
       R.perf.inBake=false;
       R.perf.lastPumpMs=performance.now()-started;
@@ -127,7 +135,9 @@
       const end=performance.now()+(limitMs==null?2:limitMs);
       const prev=R.perf.inBake;R.perf.inBake=true;
       let n=0;
-      while(this.touches.length&&performance.now()<end){
+      // Count submitted warm blits too: Canvas may defer their expensive work.
+      // Demanded actor draws bypass this speculative queue.
+      while(this.touches.length&&n<1&&performance.now()<end){
         const entry=this.touches.shift();
         entry._touchQueued=false;
         if(R.Puppet.touchEntry(entry))n++;

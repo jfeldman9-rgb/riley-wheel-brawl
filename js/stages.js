@@ -172,6 +172,17 @@
   function releaseCanvas(c){
     if(c&&c.width>1){c.width=1;c.height=1;}
   }
+  // Only unfinished middle jobs own these canvases. Published surfaces are
+  // detached from the job before completion and keep their cache lifetime.
+  function releaseMidJob(job){
+    if(job.backgroundLayer)job.backgroundLayer.pending=false;
+    releaseCanvas(job.plate&&job.plate.c);releaseCanvas(job.window&&job.window.canvas);
+    job.plate=null;job.window=null;job.backgroundLayer=null;
+  }
+  function cancelBackgroundJobs(pred){
+    if(!R.Bake)return;
+    R.Bake.drop(job=>{if(!job.background||!pred(job))return false;releaseMidJob(job);return true;});
+  }
   function dropKey(map,id){
     releaseCanvas(map.get(id));
     map.delete(id);
@@ -1016,6 +1027,12 @@
       backgroundStats.windows=(backgroundStats.windows||0)+1;
       return {canvas:c,origin,viewW:width};
     },
+    activateStage(scene){
+      // Preloading the next view happens while the old stage is still visible.
+      // Only gameplay entry changes which stage may keep unfinished mid work.
+      const n=scene.levelIndex+1;
+      cancelBackgroundJobs(job=>job.backgroundStage!==n);
+    },
     queueMidWindow(entry,layer,left){
       if(!R.Bake||!layer.k||layer.w<=640||layer.pending||layer.next)return;
       if(left<layer.origin+Math.max(0,(layer.viewW-640)/2))return;
@@ -1024,13 +1041,13 @@
       if(origin===layer.origin&&width<=layer.viewW)return;
       layer.pending=true;
       R.Bake.enqueue(1.5,'background-mid:'+entry.key+':'+origin,(job,end)=>{
-        if(backgrounds.get(entry.key)!==entry){layer.pending=false;return true;}
+        if(backgrounds.get(entry.key)!==entry){releaseMidJob(job);return true;}
         // Source-plate preparation is one job slice per image; completed
         // windows never redo a source grade, overlap or downsample.
         if(!this.stepMidPrime(entry,origin,width,job,end))return false;
         const next=this.stepMidWindow(entry,layer,origin,width,job,end);if(!next)return false;
-        layer.next=next;layer.pending=false;return true;
-      },{background:entry.key});
+        layer.next=next;job.window=null;layer.pending=false;return true;
+      },{background:entry.key,backgroundStage:entry.scene.levelIndex+1,backgroundLayer:layer});
     },
     preload(scene){
       const n=scene.levelIndex+1,rs=rsNow(),roof=roofing(scene),travel=travelOf(scene);
@@ -1041,7 +1058,7 @@
       // but visiting another stage does not discard completed paintings.
       for(const [id,old] of backgrounds)if(old.rs!==rs){
         for(const layer of old.layers){releaseCanvas(layer.canvas);if(layer.next)releaseCanvas(layer.next.canvas);}
-        releaseCanvas(old.composite);releaseCanvas(old.near);backgrounds.delete(id);if(R.Bake)R.Bake.drop(j=>j.background===id);
+        releaseCanvas(old.composite);releaseCanvas(old.near);backgrounds.delete(id);cancelBackgroundJobs(j=>j.background===id);
       }
       const layout=midLayout(n,travel);
       const midWidth=roof?640:layout.clamp?Math.max(640,layout.available):640+K_MID*travel;
@@ -1084,7 +1101,7 @@
       // Two completed stage/roof variants cover the current and upcoming view.
       // Only visible source plates and two small mid windows are resident;
       // a full 2080-unit middle painting is never allocated at cold entry.
-      while(backgrounds.size>2){const id=backgrounds.keys().next().value,old=backgrounds.get(id);for(const layer of old.layers){releaseCanvas(layer.canvas);if(layer.next)releaseCanvas(layer.next.canvas);}releaseCanvas(old.composite);releaseCanvas(old.near);backgrounds.delete(id);if(R.Bake)R.Bake.drop(j=>j.background===id);}
+      while(backgrounds.size>2){const id=backgrounds.keys().next().value,old=backgrounds.get(id);for(const layer of old.layers){releaseCanvas(layer.canvas);if(layer.next)releaseCanvas(layer.next.canvas);}releaseCanvas(old.composite);releaseCanvas(old.near);backgrounds.delete(id);cancelBackgroundJobs(j=>j.background===id);}
       // Visible source plates stay resident for the queued neighboring window.
       // Unseen B/C paintings and Stage 5's roof are not part of cold entry.
       // queueRoof still prepares the roof in wave four, before the switch.
@@ -1115,7 +1132,7 @@
               if(left<layer.origin||left+640>layer.origin+layer.viewW+1e-7){
                 let next=layer.next;
                 if(!next||left<next.origin||left+640>next.origin+next.viewW+1e-7){
-                  if(R.Bake)R.Bake.drop(j=>j.background===entry.key);layer.pending=false;
+                  cancelBackgroundJobs(j=>j.background===entry.key);layer.pending=false;
                   next=this.paintMidWindow(entry,layer,left,640);
                 }
                 releaseCanvas(layer.canvas);if(layer.next&&layer.next!==next)releaseCanvas(layer.next.canvas);
@@ -1129,7 +1146,12 @@
             if(first<640)g.drawImage(c,0,0,(640-first)*rs,c.height,first,layer.y,640-first,layer.h);
           }
           entry.camera=cam;backgroundStats.composites++;
-        }else backgroundStats.hits++;
+        }else{
+          backgroundStats.hits++;
+          // A retained composite can return at the identical camera after its
+          // unfinished neighbor was canceled; retry without repainting it.
+          for(const layer of entry.layers)if(layer.windowed)this.queueMidWindow(entry,layer,Math.max(0,Math.min(cam*layer.k,layer.w-640)));
+        }
         const smooth=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;
         ctx.drawImage(entry.composite,0,0,640,360);ctx.imageSmoothingEnabled=smooth;
         if(n===5&&Math.sin((scene.time||0)*0.8)>0.995)strokeLightning(ctx);
