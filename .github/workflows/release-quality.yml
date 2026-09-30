@@ -1,0 +1,92 @@
+name: Release quality
+on:
+  pull_request:
+    branches: [rwb-w2]
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+concurrency:
+  group: release-quality-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  quality:
+    # Standard runner minutes are free for this public repository. No artifact
+    # or dependency caches are uploaded, and this workflow never deploys.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install test-only dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+          npx playwright install --with-deps chromium
+      - name: Existing regression suite
+        id: regression
+        continue-on-error: true
+        run: node tools/check.cjs
+      - name: Smoothness and release contracts
+        id: contracts
+        if: always()
+        continue-on-error: true
+        run: |
+          node tools/smoothness-check.cjs
+          node tools/release-check.cjs
+          node --expose-gc tools/campaign-check.cjs
+          git worktree add --detach "$RUNNER_TEMP/rwb-normal-base" 7f3f94b
+          node tools/hard-check.cjs --baseline="$RUNNER_TEMP/rwb-normal-base" --soak
+          node tools/callandor-check.cjs
+          node tools/balefire-check.cjs
+          node tools/voice-assets-check.cjs
+          node tools/utility-voice-check.cjs
+      - name: Forty-seed Normal balance
+        id: balance
+        if: always()
+        continue-on-error: true
+        run: node tools/normal-balance.cjs
+      - name: Assisted end-to-end combat coverage
+        id: soak
+        if: always()
+        continue-on-error: true
+        run: node --expose-gc tools/soak.cjs
+      - name: Browser release, cold enters, pacing and screenshots
+        id: browser
+        if: always()
+        continue-on-error: true
+        run: RWB_SCREENSHOT_LOG=1 node tools/release-browser.cjs
+      - name: Protected voice and recovery sequence
+        id: voice_sequence
+        if: always()
+        continue-on-error: true
+        run: node tools/voice-sequence-check.cjs
+      - name: Existing audio browser suite
+        id: audio
+        if: always()
+        continue-on-error: true
+        run: node tools/audio-check.cjs
+      - name: Seam-free stages
+        id: joins
+        if: always()
+        continue-on-error: true
+        run: node tools/joinscan.cjs
+      - name: Report final gate result
+        if: always()
+        env:
+          RESULTS: ${{ toJSON(steps) }}
+        run: |
+          node - <<'NODE'
+          const steps=JSON.parse(process.env.RESULTS);
+          let failed=false;
+          for(const id of ['regression','contracts','balance','soak','browser','voice_sequence','audio','joins']) {
+            const result=steps[id]?.outcome || 'not run';
+            console.log(id+': '+result);
+            if(result!=='success')failed=true;
+          }
+          process.exitCode=failed?1:0;
+          NODE

@@ -9,7 +9,8 @@ const js = fs.readdirSync(path.join(root, 'js')).filter(f => f.endsWith('.js') &
   .map(f => fs.readFileSync(path.join(root, 'js', f), 'utf8')).join('\n');
 const inReel = new Set([].concat(...Object.values(R.CAPTIONS)).map(l => l.id));
 const T = R.VOICE_TRIGGERS, triggered = new Set([].concat(T.bigHit, T.bossWin, T.combat));
-const wired = id => inReel.has(id) || triggered.has(id) || js.includes("'" + id + "'");
+const retired = id => !!(R.VOICE_RETIRED && R.VOICE_RETIRED[id]);
+const wired = id => !retired(id) && (inReel.has(id) || triggered.has(id) || js.includes("'" + id + "'"));
 const READS = {
   op_riley_01: 'Quiet, determined. A promise, not a shout.',
   op_kenzie_01: 'Sassy and brave, hands-on-hips. A little laugh is fine.',
@@ -51,10 +52,10 @@ const READS = {
 const rows = Object.values(R.VOICE_LINES).filter(l => R.VOICE_RECORDED[l.who]);
 rows.sort((a, b) => (wired(b.id) - wired(a.id)) || (a.who === b.who ? 0 : a.who === 'riley' ? -1 : 1));
 const table = list => ['| # | Speaker | Line | File to drop in | Suggested read | Plays |', '| --- | --- | --- | --- | --- | --- |']
-  .concat(list.map((l, i) => `| ${i + 1} | ${l.who === 'kenzie' ? 'Twinkle Toes' : 'Riley'} | “${l.text}” | \`${R.voiceFile(l.id)}\` | ${READS[l.id] || 'Natural, energetic.'} | ${wired(l.id) ? 'now' : 'catalogued (not wired yet)'} |`)).join('\n');
+  .concat(list.map((l, i) => `| ${i + 1} | ${l.who === 'kenzie' ? 'Twinkle Toes' : 'Riley'} | “${l.text}” | \`${R.voiceFile(l.id)}\` | ${READS[l.id] || 'Natural, energetic.'} | ${retired(l.id) ? 'retired trigger (clip retained)' : wired(l.id) ? 'now (context gated)' : 'catalogued (not wired yet)'} |`)).join('\n');
 const md = `# Recording list — Riley and Twinkle Toes
 
-Riley and Twinkle Toes are real kids. Their voices are **never** generated or cloned. Record them yourself and drop the files into this folder (\`assets/audio/voice/\`), replacing the placeholder with the same name. Each name below already exists as a tiny silent placeholder (216 bytes) so the game never hits a missing file. The game loads each file when a stage or story card starts and plays any clip 0.25 s or longer in place of the chirp. The subtitle or speech bubble still shows. Commit and push the new files and they play on the site; nothing else to edit.
+Riley and Twinkle Toes now use the user-approved original stock character voices documented in \`../VOICE_PROVENANCE.md\`. These are not cloned from real people. The filenames remain drop-in compatible with family recordings: replace a file with the same name, and it plays automatically. Clips shorter than 0.25 seconds are treated as silent placeholders; subtitles and fallback cues remain available. The generator never overwrites a delivered clip.
 
 How to record:
 
@@ -65,7 +66,7 @@ How to record:
 
 Speaker ids in the code: Riley = \`riley\` (files \`riley_*.mp3\`), Twinkle Toes = \`kenzie\` (files \`tt_*.mp3\`).
 
-${rows.length} lines (${rows.filter(l => wired(l.id)).length} play now, the rest are catalogued in docs/VOICE_LINES.md for later).
+${rows.length} lines (${rows.filter(l => wired(l.id)).length} have context-gated triggers; ${rows.filter(l => retired(l.id)).length} retired trigger retains its approved clip).
 
 ${table(rows)}
 
