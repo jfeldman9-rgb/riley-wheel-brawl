@@ -413,7 +413,7 @@ async function pageLoadChecks(check, rootDir) {
     });
     check(footDrift.rileyOffset <= 2, 'Riley drawn body stays within 2u of his hitbox ' + JSON.stringify(footDrift));
     check(footDrift.trolloc <= 20 && footDrift.chieftain <= 20, 'Enemy planted feet drift at or under 20 u/s ' + JSON.stringify(footDrift));
-    console.log('KNOWN-FAIL Riley draw offset ' + footDrift.rileyOffset + ' u; foot slip ' + footDrift.rileySlip + ' u/s (four rigid poses, target 30)');
+    check(footDrift.rileySlip <= 30, 'Riley planted foot slips at or under 30 u/s ' + JSON.stringify(footDrift));
     console.log('Foot drift ' + JSON.stringify(footDrift));
     check(visual.dust.corner < visual.dust.peak * 0.5 && visual.dust.peak > 40 && visual.chunk.corner < visual.chunk.peak * 0.5 && visual.chunk.peak > 40, 'Dust and debris pixels are soft rounds, not hard rectangles ' + JSON.stringify({ dust: visual.dust, chunk: visual.chunk }));
     check(visual.bg.sub > 0 && visual.bg.step > 0, 'A fractional camera moves the cached background off the whole-pixel snap ' + JSON.stringify(visual.bg));
@@ -523,8 +523,8 @@ let title = new RWB.scenes.Title(game);
 game.scene = title;
 title.update(0, { pressed: { start: true } });
 check(game.nextScene instanceof RWB.scenes.Reel, 'Title starts the opening reel');
-const rileyFrames=['idle','walk1','walk2','walk3','walk4','punch','kick','fireball','hurt','jump'];
-check(rileyFrames.slice(1,5).every(frame=>RWB.RILEY16.frames[frame]), 'Riley walk uses four distinct sprite frames');
+const rileyFrames=['idle','walk1','walk2','walk3','walk4','walk5','walk6','walk7','walk8','punch','kick','fireball','hurt','jump'];
+check(rileyFrames.slice(1,9).every(frame=>RWB.RILEY16.frames[frame]), 'Riley walk uses eight registered sprite frames');
 function moveDamages(name) {
   const scene = new RWB.scenes.Play(game, 0, {});
   scene.enemies = [];
@@ -620,7 +620,7 @@ const retiredStreet=new Set(['assets/art/stage4-mid.png','assets/art/stage5-mid.
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')&&!retiredStreet.has(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every active committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260927-audio1';console.log('Cache stamp: '+STAMP);
+const STAMP='20260929-sol61';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -779,9 +779,9 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   check(/K_FAR=0\.08,K_MID=0\.40,K_NEAR=1\.15/.test(stageSource)&&/const farW=640\+K_FAR\*travel/.test(stageSource)&&/stage5-roof-far/.test(stageSource)&&!/sectionBlend|CAMERA_RANGE|paintLandmarks|sectionWash/.test(stageSource),'Far layer is one full-width plate at 0.08, the roof plate is locked on the arena, and nothing crossfades two versions');
   check(/plateW:720/.test(stageSource)&&/\{key:'stage2-mid',imgW:1774,plateW:700/.test(stageSource)&&/bakedNear/.test(stageSource),'Stage 1 mid plate is 720 units; later mids and the near strip are 700 and scroll on their own factors');
   const rileySource=fs.readFileSync(path.join(root,'js/riley.js'),'utf8');
-  check(rileyFrames.every(frame=>RWB.ART_MANIFEST.includes('assets/art/riley16/'+frame+'.png'))&&RWB.ART_MANIFEST.includes('assets/art/riley16/portrait.png')&&/drawImage\(img, -ax \* scale, -ay \* scale/.test(rileySource),'Riley draws from all ten anchored riley16 runtime frames and the new portrait is manifested');
+  check(rileyFrames.every(frame=>RWB.ART_MANIFEST.includes('assets/art/riley16/'+frame+'.png'))&&RWB.ART_MANIFEST.includes('assets/art/riley16/portrait.png')&&/drawImage\(img, -ax \* scale, -ay \* scale/.test(rileySource),'Riley draws from all fourteen anchored riley16 runtime frames and the portrait is manifested');
   check(RWB.RILEY16.height>=90&&RWB.RILEY16.height<=100&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height>=.80&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height<=.90,'Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc');
-  check(/Math\.floor\(this\.walkDistance \/ 16\) % 4/.test(rileySource),'Riley walk advances four frames by movement distance and stops at rest');
+  check(/Math\.floor\(this\.walkDistance \/ 8\) % 8/.test(rileySource),'Riley walk advances eight frames by movement distance and stops at rest');
   const belalFrames=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];
   check(belalFrames.every(f=>RWB.ART_MANIFEST.includes('assets/art/belal/'+f+'.png')&&RWB.BELAL.frames[f]&&RWB.BELAL.frames[f].length===4)&&RWB.ART_MANIFEST.includes('assets/art/belal/portrait.png'),"Be'lal draws from all ten anchored painted belal frames (sword painted in hand) plus portrait");
   check(/kind==='forsaken'&&R\.assets\.has\('belal-idle'\)/.test(puppetSource)&&/m==='combo'\?'windup'/.test(puppetSource)&&/t<\.55\?'slash':'lunge'/.test(puppetSource),"Be'lal SWORD FLURRY telegraph/attack use painted windup/slash/lunge frames (no composited sword, cannot detach)");

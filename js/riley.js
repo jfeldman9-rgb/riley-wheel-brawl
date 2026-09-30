@@ -5,11 +5,34 @@
     height: 96,
     frames: {
       idle:[178,227,92,226], walk1:[173,229,95,229], walk2:[169,230,88,229],
-      walk3:[166,229,95,229], walk4:[167,226,89,226], punch:[210,214,105,214],
+      walk3:[166,229,95,229], walk4:[167,226,89,226], walk5:[166,229,95,229],
+      walk6:[169,230,88,229], walk7:[173,229,95,229], walk8:[167,226,89,226], punch:[210,214,105,214],
       kick:[227,215,101,215], fireball:[303,206,144,205], hurt:[166,215,62,214], jump:[178,172,82,171]
     }
   };
   const rims=new Map(),flashes=new Map();
+  // Hand positions are authored in actor-space game units.  Keeping this table
+  // beside the atlas makes Callandor follow the actual pose instead of Riley's
+  // collision box. Angles point from the grip toward the blade tip.
+  const HANDS=R.RILEY16.hands={
+    idle:[-10,-43,-.34],walk1:[-9,-42,-.42],walk2:[-7,-44,-.28],walk3:[-11,-43,-.18],
+    walk4:[-12,-41,-.38],walk5:[-11,-43,-.18],walk6:[-7,-44,-.28],walk7:[-9,-42,-.42],walk8:[-12,-41,-.38],
+    punch:[19,-49,.62],kick:[-4,-48,-.55],fireball:[24,-55,.42],hurt:[-18,-42,-.9],jump:[-4,-47,-.18]
+  };
+  let swordCanvas=null;
+  function prepareSword(){
+    if(swordCanvas)return swordCanvas;
+    const c=document.createElement('canvas');c.width=24;c.height=92;const g=c.getContext('2d');
+    // Point up, with the grip centred at (12,76). All gradients are built once.
+    const glass=g.createLinearGradient(5,0,19,0);glass.addColorStop(0,'rgba(25,54,92,.72)');glass.addColorStop(.28,'rgba(126,235,255,.30)');glass.addColorStop(.63,'rgba(235,255,255,.66)');glass.addColorStop(1,'rgba(37,88,132,.62)');
+    g.fillStyle=glass;g.beginPath();g.moveTo(12,1);g.lineTo(19,14);g.lineTo(17,65);g.lineTo(12,72);g.lineTo(6,65);g.lineTo(5,14);g.closePath();g.fill();
+    g.strokeStyle='rgba(238,255,255,.9)';g.lineWidth=1;g.beginPath();g.moveTo(12,2);g.lineTo(8,64);g.lineTo(12,70);g.moveTo(12,2);g.lineTo(16,64);g.stroke();
+    g.strokeStyle='rgba(14,25,58,.85)';g.beginPath();g.moveTo(6,15);g.lineTo(7,64);g.stroke();
+    g.strokeStyle='rgba(190,251,255,.75)';g.lineWidth=1.5;g.beginPath();g.moveTo(12,12);g.lineTo(12,61);g.stroke();
+    g.fillStyle='#c6d1d5';g.fillRect(2,70,20,4);g.fillStyle='#61717d';g.fillRect(7,74,10,3);
+    g.fillStyle='#17202b';g.fillRect(9,77,6,12);g.strokeStyle='#a9bdc8';g.lineWidth=1;for(let y=78;y<89;y+=3){g.beginPath();g.moveTo(9,y);g.lineTo(15,y+2);g.stroke();}
+    g.fillStyle='#d8eef2';g.beginPath();g.arc(12,90,3,0,Math.PI*2);g.fill();swordCanvas=c;return c;
+  }
   function rimFrame(frame){
     if(rims.has(frame))return rims.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
     const c=document.createElement('canvas');c.width=img.width+16;c.height=img.height+16;const g=c.getContext('2d');
@@ -399,7 +422,7 @@
     }
     spriteFrame() {
       const state = this.attackMove ? this.attackName : this.state;
-      if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 16) % 4 + 1);
+      if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 8) % 8 + 1);
       if (!this.grounded || ['rise', 'fall', 'jump'].includes(state)) return this.attackMove ? 'kick' : 'jump';
       if (['front', 'round', 'back', 'spin', 'knee', 'kick', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'kick';
       if (['punch', 'jab', 'combo', 'combo1', 'combo2', 'combo3'].includes(state)) return 'punch';
@@ -446,13 +469,18 @@
       if (this.angreal > 0) {
         ctx.save();ctx.strokeStyle='rgba(255,221,100,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.x-cameraX,this.y-this.z-48,31+Math.sin(this.stateT*8)*2,0,Math.PI*2);ctx.stroke();ctx.restore();
       }
-      if (this.callandor) {
-        ctx.save();ctx.lineCap='round';ctx.strokeStyle='rgba(100,220,255,.35)';ctx.lineWidth=11;ctx.beginPath();ctx.moveTo(this.x-cameraX-13,this.y-this.z-31);ctx.lineTo(this.x-cameraX-25,this.y-this.z-86);ctx.stroke();ctx.strokeStyle='#e8ffff';ctx.lineWidth=3;ctx.stroke();ctx.restore();
-      }
+      if (this.callandor) this.drawCallandor(ctx,cameraX);
       // Hit tint is baked into Riley's own pixels inside drawSprite.
+    }
+    drawCallandor(ctx,cameraX){
+      const frame=this.spriteFrame(),h=HANDS[frame]||HANDS.idle,lying=this.dead||['knockdown','lying','death'].includes(this.state);
+      const alpha=this.dead?Math.max(.1,Math.min(1,1-this.deadTimer/.75)):(this.invuln>0&&Math.floor(this.invuln*18)%2===0?.55:1);
+      ctx.save();ctx.globalAlpha*=alpha;ctx.translate(this.x-cameraX,this.y-this.z);if(lying)ctx.rotate(this.facing*80*Math.PI/180);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]);
+      ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-76);ctx.restore();
+      if(this.attackMove&&this.stateT>.06&&this.stateT<Math.min(.34,this.attackMove.duration)){const k=this.stateT/.34;ctx.save();ctx.globalAlpha*=.42*(1-k);ctx.strokeStyle='#bdf8ff';ctx.lineWidth=5*(1-k)+1;ctx.beginPath();ctx.arc(this.x-cameraX,this.y-this.z-45,43,-1.9*this.facing,.55*this.facing,this.facing<0);ctx.stroke();ctx.restore();}
     }
   }
   R.Fireball = Fireball;
   R.Riley = Riley;
-  R.Riley.prepare=()=>Object.keys(RILEY16.frames).forEach(frame=>{rimFrame(frame);flashFrame(frame);});
+  R.Riley.prepare=()=>{prepareSword();Object.keys(RILEY16.frames).forEach(frame=>{rimFrame(frame);flashFrame(frame);});};
 }());

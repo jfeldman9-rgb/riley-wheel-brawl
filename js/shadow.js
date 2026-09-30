@@ -47,6 +47,7 @@
       }
     }
     draw(ctx, cam) {
+      const beam = this.source === 'BALEFIRE' || this.source === 'DARK BALEFIRE';
       ctx.save();
       ctx.strokeStyle = this.color;
       ctx.fillStyle = this.color;
@@ -60,6 +61,15 @@
           ctx.lineTo(this.x - cam + x + 10, this.y - this.depth);
           ctx.stroke();
         }
+      } else if (beam) {
+        // The collision rectangle remains untouched; the visible weave is a
+        // narrow hand-height channel with a dark core, hot glassy edges and
+        // deterministic tendrils (no gradients/canvases allocated here).
+        const left=this.x-cam-this.w/2,right=left+this.w,cy=this.y-this.depth*.15;
+        ctx.globalAlpha=.94;ctx.fillStyle='#130b24';ctx.fillRect(left,cy-8,this.w,16);
+        ctx.strokeStyle='#f5edff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(left,cy-10);ctx.lineTo(right,cy-10);ctx.moveTo(left,cy+10);ctx.lineTo(right,cy+10);ctx.stroke();
+        ctx.strokeStyle='rgba(151,96,214,.78)';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();for(let x=left;x<=right;x+=18){const yy=cy+(i-1)*13+Math.sin(x*.075+this.age*34+i)*5;x===left?ctx.moveTo(x,yy):ctx.lineTo(x,yy);}ctx.stroke();}
+        ctx.globalAlpha=.78;ctx.fillStyle='#fff5ff';ctx.beginPath();ctx.arc(right,cy,15+Math.sin(this.age*40)*2,0,Math.PI*2);ctx.fill();
       } else ctx.fillRect(this.x - cam - this.w / 2, this.y - this.z - this.h, this.w, this.h);
       ctx.restore();
     }

@@ -130,23 +130,30 @@ if (require.main === module) {
   const root = process.argv.slice(2).find(arg => !arg.startsWith('--')) || path.resolve(__dirname, '..');
   const RWB = boot(root);
   const selected = process.argv.find(arg => arg.startsWith('--stage='));
+  const seedArg = process.argv.find(arg => arg.startsWith('--seeds='));
+  const seedCount = seedArg ? Number(seedArg.split('=')[1]) : 10;
+  if (!Number.isInteger(seedCount) || seedCount < 1 || seedCount > 1000) throw new Error('Use --seeds=1 through --seeds=1000');
   const stages = selected ? [Number(selected.split('=')[1]) - 1] : [0,1,2,3,4];
   if (stages.some(stage => !RWB.LEVELS[stage])) throw new Error('Use --stage=1 through --stage=5');
   const rows = [];
-  for (const stage of stages) for (let seed = 1; seed <= 10; seed++) rows.push({ seed, result: soak(RWB, seed, stage, { natural: process.argv.includes('--natural') }) });
+  for (const stage of stages) for (let seed = 1; seed <= seedCount; seed++) rows.push({ seed, result: soak(RWB, seed, stage, { natural: process.argv.includes('--natural') }) });
   console.log('STAGE | SEED | CLEAR | SECONDS | DAMAGE | HITS | DEATHS | WAVES | ATTACKS');
   for (const {seed, result:r} of rows) console.log([r.stage,seed,r.cleared?'YES':'NO',r.seconds,r.damage,r.hits,r.deaths,(r.waveDamage||[]).map(n=>Math.round(n)).join('/'),r.attacks.join(', ')].join(' | '));
   console.log('\nSTAGE | CLEARS | TIME RANGE | MEDIAN DAMAGE | ALL ATTACKS / SEED | MEDIAN WAVE DAMAGE');
   for (const stage of stages) {
     const set = rows.filter(row=>row.result.stage === stage+1).map(row=>row.result);
     const damages = set.map(r=>r.damage).sort((a,b)=>a-b);
+    const middle = values => { const n=values.length; return n%2 ? values[n>>1] : (values[n/2-1]+values[n/2])/2; };
     const waveMed = [0,1,2,3,4,5].map(w => {
       const vals = set.map(r => (r.waveDamage && r.waveDamage[w]) || 0).sort((a,b)=>a-b);
-      return Math.round((vals[4] + vals[5]) / 2);
+      return Math.round(middle(vals));
     }).join('/');
-    console.log([stage+1, set.filter(r=>r.cleared).length+'/10', Math.min(...set.map(r=>r.seconds))+'-'+Math.max(...set.map(r=>r.seconds)), (damages[4]+damages[5])/2, set.filter(r=>RWB.LEVELS[stage].attacks.every(a=>r.attacks.includes(a))).length+'/10', waveMed].join(' | '));
+    console.log([stage+1, set.filter(r=>r.cleared).length+'/'+seedCount, Math.min(...set.map(r=>r.seconds))+'-'+Math.max(...set.map(r=>r.seconds)), middle(damages), set.filter(r=>RWB.LEVELS[stage].attacks.every(a=>r.attacks.includes(a))).length+'/'+seedCount, waveMed].join(' | '));
   }
-  const failed = rows.some(({result:r}) => !r.cleared || r.damage <= 0 || !RWB.LEVELS[r.stage-1].attacks.every(a=>r.attacks.includes(a)) || (r.stage===5 && !r.jointHit) || (r.stage===3 && r.receivedMoves.some(m=>!['jump','fireball'].includes(m))));
+  const natural=process.argv.includes('--natural');
+  const bands=[[.90,1],[.72,.90],[.62,.82],[.50,.70],[.35,.60]];
+  const balanceFailed=natural&&stages.some(stage=>{const set=rows.filter(row=>row.result.stage===stage+1);const rate=set.filter(row=>row.result.cleared).length/set.length;return rate<bands[stage][0]||rate>bands[stage][1];});
+  const failed = natural ? balanceFailed : rows.some(({result:r}) => !r.cleared || r.damage <= 0 || !RWB.LEVELS[r.stage-1].attacks.every(a=>r.attacks.includes(a)) || (r.stage===5 && !r.jointHit) || (r.stage===3 && r.receivedMoves.some(m=>!['jump','fireball'].includes(m))));
   const identical = stages.some(stage=>new Set(rows.filter(row=>row.result.stage===stage+1).map(({result:r})=>[r.seconds,r.damage,r.hits].join('/'))).size===1);
   if (failed || identical) process.exitCode = 1;
 }

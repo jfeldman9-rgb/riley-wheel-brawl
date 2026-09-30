@@ -251,3 +251,9 @@ Natural soak: **7/8/8/8/8**, attacks 10/10. Medians 249.58, 251.87, 270.56, 214.
 - The sky plate still gets the soft-light wash, and the vignette is still drawn. The scrolling plates are not re-graded on each camera step: doing that on every layer was a several-hundred-millisecond hitch. Fighters are not re-tinted every frame.
 - Entering a stage bakes that stage's pose atlas on the CPU before the fade-in starts. On this software canvas the grok3d enter is 197–644 ms (Stage 5 pose bake 614 ms, Stage 1 564 ms). Mid-fight stays at 60 fps after the two-frame settle. The first presented frame is the start of the fade-in, not a frame that is already 40% dark.
 - Ten natural seeds are a small deterministic sample. No gamepad, phone, or child playtest is claimed.
+
+## sol61 — Callandor, animation, difficulty and combat rendering
+
+Runtime stamp: `20260929-sol61`. Callandor is now a cached, transparent faceted crystal sword with a complete per-frame hand-anchor table, physical guard/grip, pose rotation and a short attack arc. Riley's runtime atlas registers an eight-frame distance-driven walk cadence and retains the sleeveless black Asha'man costume, muscular adolescent proportions and blue glasses throughout the source set.
+
+The natural-soak harness accepts `--seeds=N`; stage damage pressure now rises from 1.15× through 1.52×, 0.78×, 1.97× and 1.02× (the Stage 3 hazard/boss mix requires the lower multiplier). Taim retains the same beam collision and timing, but Dark Balefire is rendered as a dark violet-core channel with white-hot edges, tendrils and an endpoint bloom. Background plates and audio were not changed.
