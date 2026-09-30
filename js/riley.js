@@ -4,10 +4,11 @@
   const RILEY16 = R.RILEY16 = {
     height: 96,
     frames: {
-      idle:[178,227,92,226], walk1:[173,229,95,229], walk2:[169,230,88,229],
-      walk3:[166,229,95,229], walk4:[167,226,89,226], walk5:[166,229,95,229],
-      walk6:[169,230,88,229], walk7:[173,229,95,229], walk8:[167,226,89,226], punch:[210,214,105,214],
-      kick:[227,215,101,215], fireball:[303,206,144,205], hurt:[166,215,62,214], jump:[178,172,82,171]
+      walk1:[136,231,72,230],walk2:[126,228,58,227],walk3:[100,231,48,230],walk4:[117,235,58,234],
+      walk5:[144,231,73,230],walk6:[115,226,56,225],walk7:[96,233,48,232],walk8:[129,235,62,234],
+      idle:[167,229,83,228],punch:[203,229,100,228],kick:[208,234,73,233],fireball:[257,201,135,200],
+      hurt:[165,219,51,218],jump:[143,170,84,169],roundhouse:[223,238,74,237],knee:[115,238,43,237],
+      channel:[146,238,71,237],lying:[227,83,116,82],getup:[136,141,87,140]
     }
   };
   const rims=new Map(),flashes=new Map();
@@ -17,7 +18,8 @@
   const HANDS=R.RILEY16.hands={
     idle:[-10,-43,-.34],walk1:[-9,-42,-.42],walk2:[-7,-44,-.28],walk3:[-11,-43,-.18],
     walk4:[-12,-41,-.38],walk5:[-11,-43,-.18],walk6:[-7,-44,-.28],walk7:[-9,-42,-.42],walk8:[-12,-41,-.38],
-    punch:[19,-49,.62],kick:[-4,-48,-.55],fireball:[24,-55,.42],hurt:[-18,-42,-.9],jump:[-4,-47,-.18]
+    punch:[30,-48,.62],kick:[-5,-48,-.55],fireball:[18,-49,.42],hurt:[-18,-41,-.9],jump:[-2,-44,-.18],
+    roundhouse:[24,-50,-.7],knee:[9,-48,.25],channel:[2,-52,0],lying:[-25,-18,-1.2],getup:[12,-37,.1]
   };
   let swordCanvas=null;
   function prepareSword(){
@@ -425,10 +427,15 @@
       const state = this.attackMove ? this.attackName : this.state;
       if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 8) % 8 + 1);
       if (!this.grounded || ['rise', 'fall', 'jump'].includes(state)) return this.attackMove ? 'kick' : 'jump';
-      if (['front', 'round', 'back', 'spin', 'knee', 'kick', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'kick';
+      if (['round', 'back', 'spin', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'roundhouse';
+      if (state === 'knee') return 'knee';
+      if (['front', 'kick'].includes(state)) return 'kick';
       if (['punch', 'jab', 'combo', 'combo1', 'combo2', 'combo3'].includes(state)) return 'punch';
-      if (['channel', 'fireball', 'throw', 'special', 'super', 'balefire'].includes(state)) return 'fireball';
-      if (['hurt', 'knockback', 'knockdown', 'lying', 'getup', 'death'].includes(state) || this.dead) return 'hurt';
+      if (['channel', 'super', 'balefire'].includes(state)) return 'channel';
+      if (['fireball', 'throw', 'special'].includes(state)) return 'fireball';
+      if (['knockdown', 'lying', 'death'].includes(state) || this.dead) return 'lying';
+      if (state === 'getup') return 'getup';
+      if (['hurt', 'knockback'].includes(state)) return 'hurt';
       return 'idle';
     }
     drawSprite(ctx, cameraX, forcedFrame) {
@@ -449,13 +456,12 @@
       this._spriteX = drawX;
       ctx.save();
       ctx.translate(drawX - cameraX, drawY - this.z);
-      if (lying) ctx.rotate(this.facing * 80 * Math.PI / 180);
       ctx.scale(this.facing, 1);
       const smoothing=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;
       if (this.invuln > 0 && Math.floor(this.invuln * 18) % 2 === 0) ctx.globalAlpha *= .55;
       if (this.dead) ctx.globalAlpha *= Math.max(.1, Math.min(1, 1 - this.deadTimer / .75));
       // Thin warm rim + contact shadow keep Riley readable against busy art.
-      const rim=!this.ghost&&rimFrame(frame,this.g.levelIndex||0);
+      const rim=!this.ghost&&rimFrame(frame,this.g ? (this.g.levelIndex||0) : 0);
       if(rim)ctx.drawImage(rim,(-ax-8)*scale,(-ay-8)*scale,(w+16)*scale,(h+16)*scale);
       else ctx.drawImage(img, -ax * scale, -ay * scale, w * scale, h * scale);
       if(this.hitFlash>0){const flash=flashFrame(frame);if(flash){ctx.globalAlpha*=Math.min(.75,this.hitFlash*6);ctx.drawImage(flash,-ax*scale,-ay*scale,w*scale,h*scale);}}
@@ -478,9 +484,11 @@
     drawCallandor(ctx,cameraX){
       const frame=this.spriteFrame(),h=HANDS[frame]||HANDS.idle,lying=this.dead||['knockdown','lying','death'].includes(this.state);
       const alpha=this.dead?Math.max(.1,Math.min(1,1-this.deadTimer/.75)):(this.invuln>0&&Math.floor(this.invuln*18)%2===0?.55:1);
-      ctx.save();ctx.globalAlpha*=alpha;ctx.translate(this.x-cameraX,this.y-this.z);if(lying)ctx.rotate(this.facing*80*Math.PI/180);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]);
+      const attack=this.attackMove,progress=attack?Math.min(1,this.stateT/Math.max(.01,attack.duration)):0;
+      const swing=attack?(-110+150*progress)*Math.PI/180:0;
+      ctx.save();ctx.globalAlpha*=alpha;ctx.translate(this.x-cameraX,this.y-this.z);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]+swing);
       ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-76);ctx.restore();
-      const cs=Math.cos(h[2]),sn=Math.sin(h[2]),tip={x:this.x+this.facing*(h[0]+sn*76),y:this.y-this.z+h[1]-cs*76};
+      const angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:this.x+this.facing*(h[0]+sn*76),y:this.y-this.z+h[1]-cs*76};
       if(this.attackMove){this.callandorTips=this.callandorTips||[];this.callandorTips.push(tip);if(this.callandorTips.length>6)this.callandorTips.shift();}
       else this.callandorTips=[];
       if(this.callandorTips.length>1){ctx.save();ctx.lineCap='round';for(let i=1;i<this.callandorTips.length;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i];ctx.globalAlpha=.1+i/this.callandorTips.length*.38;ctx.strokeStyle='#bdf8ff';ctx.lineWidth=1+i*.65;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}
@@ -488,5 +496,7 @@
   }
   R.Fireball = Fireball;
   R.Riley = Riley;
-  R.Riley.prepare=()=>{prepareSword();Object.keys(RILEY16.frames).forEach(frame=>{for(let stage=0;stage<5;stage++)rimFrame(frame,stage);flashFrame(frame);});};
+  // Sprite-derived canvases are intentionally lazy: only frames actually drawn
+  // in the current stage occupy memory, never five complete tinted atlases at boot.
+  R.Riley.prepare=()=>{prepareSword();};
 }());

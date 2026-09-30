@@ -53,8 +53,15 @@
       ctx.fillStyle = this.color;
       ctx.globalAlpha = this.age < this.tell ? 0.45 : 0.8;
       ctx.lineWidth = 2;
-      ctx.strokeRect(this.x - cam - this.w / 2, this.y - this.depth, this.w, this.depth * 2);
-      if (this.age < this.tell) {
+      if (this.age < this.tell && beam) {
+        const start=this.beamStartX==null?this.x-this.w/2:this.beamStartX,end=this.beamEndX==null?this.x+this.w/2:this.beamEndX;
+        const cy=this.beamY==null?this.y-55:this.beamY,pulse=.35+.25*Math.sin(this.age*18);
+        ctx.globalAlpha=pulse;ctx.strokeStyle='#c88cff';ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(start-cam,cy);ctx.lineTo(end-cam,cy);ctx.stroke();
+        ctx.globalAlpha=pulse*.35;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(start-cam,this.y);ctx.lineTo(end-cam,this.y);ctx.stroke();
+        ctx.globalAlpha=.65;ctx.fillStyle='#ead6ff';ctx.beginPath();ctx.arc(start-cam,cy,4+3*Math.sin(this.age*22),0,Math.PI*2);ctx.fill();
+      } else if (this.age < this.tell) {
+        ctx.strokeRect(this.x - cam - this.w / 2, this.y - this.depth, this.w, this.depth * 2);
         for (let x = -this.w / 2; x < this.w / 2; x += 14) {
           ctx.beginPath();
           ctx.moveTo(this.x - cam + x, this.y + this.depth);

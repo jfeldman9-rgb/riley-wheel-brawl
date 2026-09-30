@@ -617,10 +617,10 @@ check(moveDamages('spin'), '360 spinning kick creates a damaging hitbox');
 check(RWB.ART_MANIFEST.length >= 54 && RWB.ART_MANIFEST.every(src=>fs.existsSync(path.join(root,src))), 'Delivered art manifest lists existing bundled files');
 const artFiles=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).flatMap(e=>e.isDirectory()?artFiles(dir+'/'+e.name):[dir+'/'+e.name]);
 const retiredStreet=new Set(['assets/art/stage4-mid.png','assets/art/stage5-mid.png']);
-check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')&&!retiredStreet.has(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every active committed painted image has a registered manifest key');
+check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')&&!f.endsWith('/_contact-sheet.png')&&!retiredStreet.has(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every active committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260929-sol61';console.log('Cache stamp: '+STAMP);
+const STAMP='20260929-sol61r3';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -779,7 +779,10 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   check(/K_FAR=0\.08,K_MID=0\.40,K_NEAR=1\.15/.test(stageSource)&&/const farW=640\+K_FAR\*travel/.test(stageSource)&&/stage5-roof-far/.test(stageSource)&&!/sectionBlend|CAMERA_RANGE|paintLandmarks|sectionWash/.test(stageSource),'Far layer is one full-width plate at 0.08, the roof plate is locked on the arena, and nothing crossfades two versions');
   check(/plateW:720/.test(stageSource)&&/\{key:'stage2-mid',imgW:1774,plateW:700/.test(stageSource)&&/bakedNear/.test(stageSource),'Stage 1 mid plate is 720 units; later mids and the near strip are 700 and scroll on their own factors');
   const rileySource=fs.readFileSync(path.join(root,'js/riley.js'),'utf8');
-  check(rileyFrames.every(frame=>RWB.ART_MANIFEST.includes('assets/art/riley16/'+frame+'.png'))&&RWB.ART_MANIFEST.includes('assets/art/riley16/portrait.png')&&/drawImage\(img, -ax \* scale, -ay \* scale/.test(rileySource),'Riley draws from all fourteen anchored riley16 runtime frames and the portrait is manifested');
+  const paintedRiley=[...rileyFrames,'roundhouse','knee','channel','lying','getup'];
+  check(paintedRiley.every(frame=>RWB.ART_MANIFEST.includes('assets/art/riley16-v2/'+frame+'.png'))&&RWB.ART_MANIFEST.includes('assets/art/riley16/portrait.png')&&/drawImage\(img, -ax \* scale, -ay \* scale/.test(rileySource),'Riley draws from all nineteen anchored riley16-v2 runtime frames and the portrait is manifested');
+  let sceneLess=true;try{const r=new RWB.Riley(null,{});r.draw(ctx,0);}catch(e){sceneLess=false;}
+  check(sceneLess,'A scene-less Riley fallback draws without throwing');
   check(RWB.RILEY16.height>=90&&RWB.RILEY16.height<=100&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height>=.80&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height<=.90,'Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc');
   check(/Math\.floor\(this\.walkDistance \/ 8\) % 8/.test(rileySource),'Riley walk advances eight frames by movement distance and stops at rest');
   const belalFrames=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];

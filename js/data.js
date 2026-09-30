@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   const R = window.RWB;
-  R.ASSET_VER = '20260929-sol61';
+  R.ASSET_VER = '20260929-sol61r3';
   // One-way Streets of Rage layout. Six fight screens, a short walk between
   // them, camera only moves forward. Whale Lance (3991948) did the same with
   // camX = max(camX, target), a lock at each wave.x, and goArrowT.

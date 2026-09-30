@@ -90,3 +90,7 @@ The fault was the old whole-plate `saturate(0.80) brightness(1.90) contrast(1.14
 ## sol61 Riley/Callandor delivery
 
 The runtime Riley set now has eight registered walk cadence slots (`walk1`–`walk8`) and explicit hand anchors for every frame. The existing supplied muscular teen paintings already carry the sleeveless black high-collar Asha'man silhouette, black trousers/boots and glasses; no background plate was edited. Callandor is deliberately code-rendered into a cached 24×92 transparent canvas so its facets remain crisp and its orientation can follow each pose. A future bespoke painting pass could replace the four cadence-derived in-between PNGs with unique painted down/passing poses without changing the atlas contract.
+
+## sol61 r3 resolved
+
+The Riley redraw is no longer needed: all 19 supplied `assets/art/riley16-v2/` paintings are wired directly, including the genuine eight-pose contact/down/pass/up walk and five additional action/recovery poses. The prior stamped-coat generator and baked frame set were retired. Future art requests should preserve the current 96-unit scale, transparent pixels, pelvis anchors, and sole baseline; do not mirror, stamp, or composite over these paintings.

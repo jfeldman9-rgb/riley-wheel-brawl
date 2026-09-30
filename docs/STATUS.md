@@ -257,3 +257,11 @@ Natural soak: **7/8/8/8/8**, attacks 10/10. Medians 249.58, 251.87, 270.56, 214.
 Runtime stamp: `20260929-sol61`. Callandor is now a cached, transparent faceted crystal sword with a complete per-frame hand-anchor table, physical guard/grip, pose rotation and a short attack arc. Riley's runtime atlas registers an eight-frame distance-driven walk cadence and retains the sleeveless black Asha'man costume, muscular adolescent proportions and blue glasses throughout the source set.
 
 The natural-soak harness accepts `--seeds=N`; stage damage pressure now rises from 1.15× through 1.52×, 0.78×, 1.97× and 1.02× (the Stage 3 hazard/boss mix requires the lower multiplier). Taim retains the same beam collision and timing, but Dark Balefire is rendered as a dark violet-core channel with white-hot edges, tendrils and an endpoint bloom. Background plates and audio were not changed.
+
+## sol61 round 3 — painted Riley runtime (2026-09-30)
+
+Runtime stamp: `20260929-sol61r3`. All 19 delivered, transparent `riley16-v2` paintings are now the runtime atlas. The old stamped-coat frames and generator were retired. Riley is 96 world units tall (painted idle: 167×229 px), uses all eight distinct walk poses, dedicated roundhouse/knee/channel/lying/getup poses, and never rotates the painted lying pose. Atlas anchors were checked at the pelvis/foot baseline. Callandor uses pose-specific fists and a -110° to +40° attack sweep with an eight-sample pale-cyan trail. Sprite rim/flash canvases are lazy rather than building five tinted atlases at boot. A scene-less Reel Riley is explicitly regression-tested.
+
+Taim's Dark Balefire no longer exposes its collision rectangle: telegraph art is a pulsing violet hand-height aim line, floor-lane glow, and hand charge orb; the active dark-core beam retains hot edges, tendrils, hand flare, and endpoint bloom. Impact particles remain pooled, all actors retain grounded cached shadows, and screen shake is weight-tuned to 1.5/4/7 px with at most 0.20 s decay and the persisted reduced-motion setting.
+
+Browser measurements are intentionally not recorded here until Playwright is available in the test container; the package registry returned HTTP 403 during the required install attempt.
