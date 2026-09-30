@@ -42,7 +42,7 @@
   });
   // Reused soft textures replace radial-gradient allocation in particle hot paths.
   const stamps=new Map();
-  R.effects={stamp(key,paint,size=96){if(stamps.has(key))return stamps.get(key);const c=document.createElement('canvas');c.width=c.height=size;paint(c.getContext('2d'),size);stamps.set(key,c);return c;},
+  R.effects={stamp(key,paint,width=96,height=width){if(stamps.has(key))return stamps.get(key);const c=document.createElement('canvas');c.width=width;c.height=height;paint(c.getContext('2d'),width,height);stamps.set(key,c);return c;},
     glow(color){return this.stamp('glow:'+color,(g,s)=>{const r=s/2,v=g.createRadialGradient(r,r,0,r,r,r);v.addColorStop(0,color);v.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=v;g.fillRect(0,0,s,s);});}
   };
   R.perf.work=[];

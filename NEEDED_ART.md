@@ -98,3 +98,7 @@ The Riley redraw is no longer needed: all 19 supplied `assets/art/riley16-v2/` p
 ## sol61 r5 status
 
 No new Riley art is requested. Round 5 changes only the measured foot/hand anchor tables and runtime code; every painted `riley16-v2` PNG remains untouched. The stored foot table is walk1 `[15.1,0,front,4]`, walk2 `[8.8,0,front,4]`, walk3 `[1.7,0,front,4]`, walk4 `[-11.7,-1.3,rear,4]`, walk5 `[17.6,0,front,4]`, walk6 `[9.6,0,front,4]`, walk7 `[0,0,front,4]`, and walk8 `[-13.4,0,rear,4]`, in actor units relative to each frame anchor.
+
+## sol61 r6 status
+
+No additional Riley painting is requested. The unchanged `riley16-v2` walk paintings are contact-locked in runtime code with a hip-to-sole slice skin; the final measured contact table and simulated 2x tracker result are recorded in `docs/STATUS.md`. Dark Balefire is also a runtime cache/compositing correction and needs no new art.

@@ -2,11 +2,11 @@
 (function () {
   const R = window.RWB;
   function beamTexture(){
-    return R.effects.stamp('dark-balefire-r4',g=>{
-      const grad=g.createLinearGradient(0,10,0,54);
+    return R.effects.stamp('dark-balefire-r6',g=>{
+      const grad=g.createLinearGradient(0,0,0,64);
       grad.addColorStop(0,'rgba(114,42,190,0)');grad.addColorStop(.16,'rgba(151,82,230,.42)');
-      grad.addColorStop(.31,'rgba(247,226,255,.96)');grad.addColorStop(.4,'#1a071f');
-      grad.addColorStop(.6,'#08030d');grad.addColorStop(.7,'rgba(247,226,255,.96)');
+      grad.addColorStop(.2,'rgba(247,226,255,.96)');grad.addColorStop(.3125,'#1a071f');
+      grad.addColorStop(.6875,'#08030d');grad.addColorStop(.8,'rgba(247,226,255,.96)');
       grad.addColorStop(.84,'rgba(151,82,230,.42)');grad.addColorStop(1,'rgba(114,42,190,0)');
       g.fillStyle=grad;g.fillRect(0,0,136,64);
     },136,64);
@@ -84,7 +84,7 @@
         const left=start-cam,right=end-cam,cy=this.beamY==null?this.y-55:this.beamY;
         // Preserve the violet-black heart under normal compositing; only the
         // edge energy, tendrils and blooms are additive.
-        ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.96;ctx.drawImage(beamTexture(),Math.min(left,right),cy-32,Math.abs(right-left),64);
+        ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.96;ctx.drawImage(beamTexture(),Math.min(left,right),cy-16,Math.abs(right-left),32);
         ctx.globalCompositeOperation='lighter';
         ctx.strokeStyle='rgba(190,112,255,.75)';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();for(let n=0;n<=12;n++){const x=left+(right-left)*n/12,yy=cy+(i-1)*14+Math.sin(n*1.7+this.age*34+i)*6;n?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}ctx.stroke();}
         for(const p of [[left,10],[right,17]]){ctx.globalAlpha=.8;ctx.drawImage(R.effects.glow('#d9a6ff'),p[0]-p[1],cy-p[1],p[1]*2,p[1]*2);}

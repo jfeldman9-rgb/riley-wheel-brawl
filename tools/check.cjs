@@ -634,7 +634,7 @@ const retiredStreet=new Set(['assets/art/stage4-mid.png','assets/art/stage5-mid.
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')&&!f.endsWith('/_contact-sheet.png')&&!retiredStreet.has(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every active committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260929-sol61r5';console.log('Cache stamp: '+STAMP);
+const STAMP='20260929-sol61r6';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');
@@ -798,7 +798,7 @@ check(Object.keys(RWB.Puppet.defs).length===11&&!RWB.Puppet.defs.riley,'Enemy, a
   let sceneLess=true;try{const r=new RWB.Riley(null,{});r.draw(ctx,0);}catch(e){sceneLess=false;}
   check(sceneLess,'A scene-less Riley fallback draws without throwing');
   check(RWB.RILEY16.height>=90&&RWB.RILEY16.height<=100&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height>=.80&&RWB.RILEY16.height/RWB.Puppet.defs.trolloc.height<=.90,'Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc');
-  check(/Math\.floor\(this\.walkDistance \/ 4\) % 8/.test(rileySource),'Riley walk advances all eight frames over its sole-locked 32u cycle and stops at rest');
+  check(/walkContact\(this\.walkDistance\)\.frame/.test(rileySource)&&/\[\['walk1','walk2','walk3','walk4'\],\['walk5','walk6','walk7','walk8'\]\]/.test(rileySource),'Riley walk advances all eight frames over two sole-locked 32u stances and stops at rest');
   const belalFrames=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];
   check(belalFrames.every(f=>RWB.ART_MANIFEST.includes('assets/art/belal/'+f+'.png')&&RWB.BELAL.frames[f]&&RWB.BELAL.frames[f].length===4)&&RWB.ART_MANIFEST.includes('assets/art/belal/portrait.png'),"Be'lal draws from all ten anchored painted belal frames (sword painted in hand) plus portrait");
   check(/kind==='forsaken'&&R\.assets\.has\('belal-idle'\)/.test(puppetSource)&&/m==='combo'\?'windup'/.test(puppetSource)&&/t<\.55\?'slash':'lunge'/.test(puppetSource),"Be'lal SWORD FLURRY telegraph/attack use painted windup/slash/lunge frames (no composited sword, cannot detach)");

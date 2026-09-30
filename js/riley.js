@@ -22,12 +22,19 @@
     roundhouse:[20.5,-71,-1.22],knee:[18,-77,-.28],channel:[10,-57,-.08],lying:[-21,-5,-1.42],getup:[6,-4,.72]
   };
   // [sole x, sole y, planted side, distance span], in actor units relative to
-  // the atlas anchor.  Contact follows the front boot through 1-3, hands to
-  // the rear boot at 4, then repeats on the opposite stride in 5-8.
+  // the atlas anchor. Spans are the measured body travel to the next exposure;
+  // each four-frame stance totals 32u and begins on a check/contact boundary.
   R.RILEY16.feet={
-    walk1:[15.1,0,'front',4],walk2:[8.8,0,'front',4],walk3:[1.7,0,'front',4],walk4:[-11.7,-1.3,'rear',4],
-    walk5:[17.6,0,'front',4],walk6:[9.6,0,'front',4],walk7:[0,0,'front',4],walk8:[-13.4,0,'rear',4]
+    walk1:[11.5,0,'right',6.3],walk2:[13.2,0,'right',7.1],walk3:[-1.9,0,'right',13.4],walk4:[11.2,-1.3,'right',5.2],
+    walk5:[14.5,0,'left',8],walk6:[9.5,0,'left',9.6],walk7:[.4,0,'left',13.4],walk8:[-13,0,'left',1]
   };
+  const WALK_STANCES=[['walk1','walk2','walk3','walk4'],['walk5','walk6','walk7','walk8']];
+  function walkContact(distance){
+    const into=((distance%64)+64)%64,stance=into<32?0:1,phase=into-stance*32,frames=WALK_STANCES[stance];
+    let start=0,index=0;
+    while(index<frames.length-1&&phase>=start+RILEY16.feet[frames[index]][3])start+=RILEY16.feet[frames[index++]][3];
+    return {frame:frames[index],foot:RILEY16.feet[frames[index]],phase,start,first:RILEY16.feet[frames[0]][0]};
+  }
   let swordCanvas=null;
   function prepareSword(){
     if(swordCanvas)return swordCanvas;
@@ -433,8 +440,7 @@
     }
     spriteFrame() {
       const state = this.attackMove ? this.attackName : this.state;
-      // Four actor-units per exposure matches the measured stance-sole travel.
-      if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 4) % 8 + 1);
+      if (state === 'walk' && this.grounded) return walkContact(this.walkDistance).frame;
       if (!this.grounded || ['rise', 'fall', 'jump'].includes(state)) return this.attackMove ? 'kick' : 'jump';
       if (['round', 'back', 'spin', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'roundhouse';
       if (state === 'knee') return 'knee';
@@ -455,11 +461,15 @@
       const lying = !forcedFrame && (this.dead || ['knockdown', 'lying', 'death'].includes(this.state));
       // The per-frame sole table drives the distance cadence; a tiny correction
       // removes pixel-rounding error without detaching the body from its hitbox.
-      let drawX = this.x, drawY = this.y;
+      let drawX = this.x, drawY = this.y, legShift=0;
       if (!forcedFrame && !lying && this.grounded && frame && frame.indexOf('walk') === 0) {
-        const foot=RILEY16.feet[frame],into=this.walkDistance%4;
-        drawX+=Math.max(-2,Math.min(2,2-into));
-        drawY=this.y-(foot?foot[1]:0);
+        const contact=walkContact(this.walkDistance),foot=contact.foot;
+        // Lock the stance sole at touchdown. Only two units may move the body;
+        // the remaining correction is skinned progressively below the hip.
+        const correction=this.facing*(contact.first-contact.phase-foot[0]);
+        const bodyShift=Math.max(-2,Math.min(2,correction));
+        drawX+=bodyShift;legShift=(correction-bodyShift)*this.facing;
+        drawY=this.y-foot[1];
       }
       this._spriteX = drawX;
       ctx.save();
@@ -470,7 +480,16 @@
       if (this.dead) ctx.globalAlpha *= Math.max(.1, Math.min(1, 1 - this.deadTimer / .75));
       // Thin warm rim + contact shadow keep Riley readable against busy art.
       const rim=!this.ghost&&rimFrame(frame,this.g ? (this.g.levelIndex||0) : 0);
-      if(rim)ctx.drawImage(rim,(-ax-8)*scale,(-ay-8)*scale,(w+16)*scale,(h+16)*scale);
+      const drawSkinned=(source,pad)=>{
+        const sw=w+pad*2,sh=h+pad*2,hip=Math.floor((ay-88)+pad),bands=7;
+        ctx.drawImage(source,0,0,sw,hip,(-ax-pad)*scale,(-ay-pad)*scale,sw*scale,hip*scale);
+        for(let i=0;i<bands;i++){
+          const sy=Math.round(hip+(sh-hip)*i/bands),ey=Math.round(hip+(sh-hip)*(i+1)/bands),t=(i+1)/bands;
+          ctx.drawImage(source,0,sy,sw,ey-sy,(-ax-pad)*scale+legShift*t,(-ay-pad+sy)*scale,sw*scale,(ey-sy)*scale);
+        }
+      };
+      if(legShift&&rim)drawSkinned(rim,8);else if(legShift)drawSkinned(img,0);
+      else if(rim)ctx.drawImage(rim,(-ax-8)*scale,(-ay-8)*scale,(w+16)*scale,(h+16)*scale);
       else ctx.drawImage(img, -ax * scale, -ay * scale, w * scale, h * scale);
       if(this.hitFlash>0){const flash=flashFrame(frame);if(flash){ctx.globalAlpha*=Math.min(.75,this.hitFlash*6);ctx.drawImage(flash,-ax*scale,-ay*scale,w*scale,h*scale);}}
       ctx.imageSmoothingEnabled=smoothing;
