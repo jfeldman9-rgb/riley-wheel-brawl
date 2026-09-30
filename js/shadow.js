@@ -1,6 +1,16 @@
 'use strict';
 (function () {
   const R = window.RWB;
+  function beamTexture(){
+    return R.effects.stamp('dark-balefire-r6',g=>{
+      const grad=g.createLinearGradient(0,0,0,64);
+      grad.addColorStop(0,'rgba(114,42,190,0)');grad.addColorStop(.16,'rgba(151,82,230,.42)');
+      grad.addColorStop(.2,'rgba(247,226,255,.96)');grad.addColorStop(.3125,'#1a071f');
+      grad.addColorStop(.6875,'#08030d');grad.addColorStop(.8,'rgba(247,226,255,.96)');
+      grad.addColorStop(.84,'rgba(151,82,230,.42)');grad.addColorStop(1,'rgba(114,42,190,0)');
+      g.fillStyle=grad;g.fillRect(0,0,136,64);
+    },136,64);
+  }
   // Strikes snapshot their lane; tells and collision share the same dimensions.
   class ShadowStrike {
     constructor(g, x, y, opts) {
@@ -47,19 +57,37 @@
       }
     }
     draw(ctx, cam) {
+      const beam = this.source === 'BALEFIRE' || this.source === 'DARK BALEFIRE';
       ctx.save();
       ctx.strokeStyle = this.color;
       ctx.fillStyle = this.color;
       ctx.globalAlpha = this.age < this.tell ? 0.45 : 0.8;
       ctx.lineWidth = 2;
-      ctx.strokeRect(this.x - cam - this.w / 2, this.y - this.depth, this.w, this.depth * 2);
-      if (this.age < this.tell) {
+      if (this.age < this.tell && beam) {
+        const start=this.beamStartX==null?this.x-this.w/2:this.beamStartX,end=this.beamEndX==null?this.x+this.w/2:this.beamEndX;
+        const cy=this.beamY==null?this.y-55:this.beamY,pulse=.35+.25*Math.sin(this.age*18);
+        ctx.globalAlpha=pulse;ctx.strokeStyle='#c88cff';ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(start-cam,cy);ctx.lineTo(end-cam,cy);ctx.stroke();
+        ctx.globalAlpha=pulse*.35;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(start-cam,this.y);ctx.lineTo(end-cam,this.y);ctx.stroke();
+        ctx.globalAlpha=.65;ctx.fillStyle='#ead6ff';ctx.beginPath();ctx.arc(start-cam,cy,4+3*Math.sin(this.age*22),0,Math.PI*2);ctx.fill();
+      } else if (this.age < this.tell) {
+        ctx.strokeRect(this.x - cam - this.w / 2, this.y - this.depth, this.w, this.depth * 2);
         for (let x = -this.w / 2; x < this.w / 2; x += 14) {
           ctx.beginPath();
           ctx.moveTo(this.x - cam + x, this.y + this.depth);
           ctx.lineTo(this.x - cam + x + 10, this.y - this.depth);
           ctx.stroke();
         }
+      } else if (beam) {
+        // Cached gradient strip: only a stretch/blit occurs in the hot path.
+        const start=this.beamStartX==null?this.x-this.w/2:this.beamStartX,end=this.beamEndX==null?this.x+this.w/2:this.beamEndX;
+        const left=start-cam,right=end-cam,cy=this.beamY==null?this.y-55:this.beamY;
+        // Preserve the violet-black heart under normal compositing; only the
+        // edge energy, tendrils and blooms are additive.
+        ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.96;ctx.drawImage(beamTexture(),Math.min(left,right),cy-16,Math.abs(right-left),32);
+        ctx.globalCompositeOperation='lighter';
+        ctx.strokeStyle='rgba(190,112,255,.75)';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();for(let n=0;n<=12;n++){const x=left+(right-left)*n/12,yy=cy+(i-1)*14+Math.sin(n*1.7+this.age*34+i)*6;n?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}ctx.stroke();}
+        for(const p of [[left,10],[right,17]]){ctx.globalAlpha=.8;ctx.drawImage(R.effects.glow('#d9a6ff'),p[0]-p[1],cy-p[1],p[1]*2,p[1]*2);}
       } else ctx.fillRect(this.x - cam - this.w / 2, this.y - this.z - this.h, this.w, this.h);
       ctx.restore();
     }
@@ -321,7 +349,10 @@
       this.vx *= 0.15;
     }
     requestAttack() {
-      this.attack = MOVES[this.kind][this.attackIndex++ % 3];
+      const moves=MOVES[this.kind], previous=this.attack;
+      let pick=Math.floor(R.util.rand(0,moves.length));
+      if(moves[pick]===previous) pick=(pick+1)%moves.length;
+      this.attack = moves[pick]; this.attackIndex++;
       this.ai = 'telegraph';
       this.aiTimer = this.attack.tell;
       this.attackDidHit = false;
@@ -363,6 +394,9 @@
           damage: 23,
           duration: 0.36,
           color: '#fff5b1',
+          beamStartX: this.x + this.facing * 18,
+          beamEndX: this.facing > 0 ? this.g.arenaRight : this.g.arenaLeft,
+          beamY: this.y - this.z - 58,
         });
       if (m === 'snare')
         this.strike(this.target.x, this.target.y, {
@@ -481,7 +515,7 @@
         }
       } else if (this.ai === 'recover' && this.aiTimer <= 0) {
         this.ai = 'approach';
-        this.aiTimer = 0.65;
+        this.aiTimer = this.phaseTwo && this.kind==='taim' ? 0.18 : 0.65;
       }
       if (this.flying && this.ai !== 'attack') this.z = 47 + Math.sin(this.flightTime * 2.8) * 9;
       R.Entity.prototype.update.call(this, dt);
@@ -495,12 +529,11 @@
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 4]);
       if (m === 'beam')
-        ctx.strokeRect(
-          this.g.arenaLeft - cam,
-          this.target.y - 17,
-          this.g.arenaRight - this.g.arenaLeft,
-          34,
-        );
+        {
+          const hx=this.x+this.facing*18-cam,hy=this.y-this.z-58,pulse=9+Math.sin(this.flightTime*18)*3;
+          ctx.setLineDash([]);ctx.fillStyle='rgba(120,55,190,.55)';ctx.beginPath();ctx.arc(hx,hy,pulse,0,Math.PI*2);ctx.fill();
+          ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo((this.facing>0?this.g.arenaRight:this.g.arenaLeft)-cam,hy);ctx.stroke();
+        }
       else if (m === 'fear') {
         ctx.beginPath();
         ctx.ellipse(this.x - cam, this.y, 115, 33, 0, 0, Math.PI * 2);

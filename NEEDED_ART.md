@@ -86,3 +86,19 @@ The 1376×768 `stage5-far.jpeg` is the far asset drawn throughout the street; th
 The fault was the old whole-plate `saturate(0.80) brightness(1.90) contrast(1.14)` far grade. It was written for the earlier mid treatment and clipped the late-camera daylight sky to RGB 255/255/255. At camera 3430, all 121 transparent sample pixels read luminance 255 in the browser measurement (mid 39.9, ratio 6.391). Scroll11 replaces that filter with a whole-plate `saturate(0.20) brightness(0.03) contrast(0.70)` Black Tower dusk grade. Every pixel of the rendered far plate receives the same transform; there is no position, camera, sample-window, alpha, or strip special case, and no blur. Neither source art nor any Riley asset changed.
 
 `tools/check.cjs` now measures all four required street cameras (150, 1990, 3030, and 3430) rather than only camera 3430. The source images, dimensions, panorama clamp, camera factors, and sample rectangle are unchanged.
+
+## sol61 Riley/Callandor delivery
+
+The runtime Riley set now has eight registered walk cadence slots (`walk1`–`walk8`) and explicit hand anchors for every frame. The existing supplied muscular teen paintings already carry the sleeveless black high-collar Asha'man silhouette, black trousers/boots and glasses; no background plate was edited. Callandor is deliberately code-rendered into a cached 24×92 transparent canvas so its facets remain crisp and its orientation can follow each pose. A future bespoke painting pass could replace the four cadence-derived in-between PNGs with unique painted down/passing poses without changing the atlas contract.
+
+## sol61 r3 resolved
+
+The Riley redraw is no longer needed: all 19 supplied `assets/art/riley16-v2/` paintings are wired directly, including the genuine eight-pose contact/down/pass/up walk and five additional action/recovery poses. The prior stamped-coat generator and baked frame set were retired. Future art requests should preserve the current 96-unit scale, transparent pixels, pelvis anchors, and sole baseline; do not mirror, stamp, or composite over these paintings.
+
+## sol61 r5 status
+
+No new Riley art is requested. Round 5 changes only the measured foot/hand anchor tables and runtime code; every painted `riley16-v2` PNG remains untouched. The stored foot table is walk1 `[15.1,0,front,4]`, walk2 `[8.8,0,front,4]`, walk3 `[1.7,0,front,4]`, walk4 `[-11.7,-1.3,rear,4]`, walk5 `[17.6,0,front,4]`, walk6 `[9.6,0,front,4]`, walk7 `[0,0,front,4]`, and walk8 `[-13.4,0,rear,4]`, in actor units relative to each frame anchor.
+
+## sol61 r6 status
+
+No additional Riley painting is requested. The unchanged `riley16-v2` walk paintings are contact-locked in runtime code with a hip-to-sole slice skin; the final measured contact table and simulated 2x tracker result are recorded in `docs/STATUS.md`. Dark Balefire is also a runtime cache/compositing correction and needs no new art.

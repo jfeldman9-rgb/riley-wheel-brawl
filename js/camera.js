@@ -54,7 +54,7 @@ RWB.Camera = class Camera {
     if (this.shakeT > 0) {
       this.shakeT -= dt;
       const fade=Math.max(0,this.shakeT/(this.shakeDuration||1)),mix=1-Math.exp(-dt*30);
-      this.shakeX+=(RWB.util.rand(-1,1)*this.shakeAmt*fade-this.shakeX)*mix;this.shakeY+=(RWB.util.rand(-1,1)*this.shakeAmt*.6*fade-this.shakeY)*mix;
+      this.shakeX+=(RWB.util.fxRand(-1,1)*this.shakeAmt*fade-this.shakeX)*mix;this.shakeY+=(RWB.util.fxRand(-1,1)*this.shakeAmt*.6*fade-this.shakeY)*mix;
       if (this.shakeT <= 0) this.shakeAmt = 0;
     } else { this.shakeX = this.shakeY = 0; }
     this.punchX *= Math.exp(-dt*18); this.punchY *= Math.exp(-dt*18);
@@ -74,8 +74,8 @@ RWB.Camera = class Camera {
   }
 };
 RWB.Camera.IMPACTS = {
-  light: { stop: 0.025, punch: 12, y: -4, shake: 5.6, shakeT: 0.16 },
-  heavy: { stop: 0.09, punch: 18, y: 6, shake: 10, shakeT: 0.28, flash: 0.08, flashColor: '#fff6d0' },
-  boss: { stop: 0.11, punch: 20, y: 7, shake: 13, shakeT: 0.4, flash: 0.1, flashColor: '#ffe0a8' },
-  super: { stop: 0.14, punch: 4, y: -8, shake: 16, shakeT: 0.95, flash: 0.22 }
+  light: { stop: 0.025, punch: 5, y: -2, shake: 1.5, shakeT: 0.12 },
+  heavy: { stop: 0.09, punch: 10, y: 4, shake: 4, shakeT: 0.18, flash: 0.08, flashColor: '#fff6d0' },
+  boss: { stop: 0.11, punch: 12, y: 5, shake: 7, shakeT: 0.2, flash: 0.1, flashColor: '#ffe0a8' },
+  super: { stop: 0.14, punch: 4, y: -6, shake: 7, shakeT: 0.2, flash: 0.22 }
 };

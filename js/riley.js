@@ -4,16 +4,56 @@
   const RILEY16 = R.RILEY16 = {
     height: 96,
     frames: {
-      idle:[178,227,92,226], walk1:[173,229,95,229], walk2:[169,230,88,229],
-      walk3:[166,229,95,229], walk4:[167,226,89,226], punch:[210,214,105,214],
-      kick:[227,215,101,215], fireball:[303,206,144,205], hurt:[166,215,62,214], jump:[178,172,82,171]
+      walk1:[136,231,72,230],walk2:[126,228,58,227],walk3:[100,231,48,230],walk4:[117,235,58,234],
+      walk5:[144,231,73,230],walk6:[115,226,56,225],walk7:[96,233,48,232],walk8:[129,235,62,234],
+      idle:[167,229,83,228],punch:[203,229,100,228],kick:[208,234,73,233],fireball:[257,201,135,200],
+      hurt:[165,219,51,218],jump:[143,170,84,169],roundhouse:[223,238,74,237],knee:[115,238,43,237],
+      channel:[146,238,71,237],lying:[227,83,116,82],getup:[136,141,87,140]
     }
   };
   const rims=new Map(),flashes=new Map();
-  function rimFrame(frame){
-    if(rims.has(frame))return rims.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
+  // Hand positions are authored in actor-space game units.  Keeping this table
+  // beside the atlas makes Callandor follow the actual pose instead of Riley's
+  // collision box. Angles point from the grip toward the blade tip.
+  const HANDS=R.RILEY16.hands={
+    idle:[19.7,-69,-.22],walk1:[20.1,-47,-2.25],walk2:[22.6,-49.5,-2.08],walk3:[17.6,-55,-1.94],
+    walk4:[19.7,-53,-2.12],walk5:[10.5,-40,-2.34],walk6:[19.3,-45.3,-2.16],walk7:[14.7,-55.3,-1.98],walk8:[22.2,-55.8,-2.12],
+    punch:[32.3,-73,.72],kick:[0,-64,-1.02],fireball:[9.6,-35.6,.58],hurt:[29.3,-45,-.82],jump:[8.8,-40,-.65],
+    roundhouse:[20.5,-71,-1.22],knee:[18,-77,-.28],channel:[10,-57,-.08],lying:[-21,-5,-1.42],getup:[6,-4,.72]
+  };
+  // [sole x, sole y, planted side, distance span], in actor units relative to
+  // the atlas anchor. Spans are the measured body travel to the next exposure;
+  // each four-frame stance totals 32u and begins on a check/contact boundary.
+  R.RILEY16.feet={
+    walk1:[11.5,0,'right',6.3],walk2:[13.2,0,'right',7.1],walk3:[-1.9,0,'right',13.4],walk4:[11.2,-1.3,'right',5.2],
+    walk5:[14.5,0,'left',8],walk6:[9.5,0,'left',9.6],walk7:[.4,0,'left',13.4],walk8:[-13,0,'left',1]
+  };
+  const WALK_STANCES=[['walk1','walk2','walk3','walk4'],['walk5','walk6','walk7','walk8']];
+  function walkContact(distance){
+    const into=((distance%64)+64)%64,stance=into<32?0:1,phase=into-stance*32,frames=WALK_STANCES[stance];
+    let start=0,index=0;
+    while(index<frames.length-1&&phase>=start+RILEY16.feet[frames[index]][3])start+=RILEY16.feet[frames[index++]][3];
+    return {frame:frames[index],foot:RILEY16.feet[frames[index]],phase,start,first:RILEY16.feet[frames[0]][0]};
+  }
+  let swordCanvas=null;
+  function prepareSword(){
+    if(swordCanvas)return swordCanvas;
+    const c=document.createElement('canvas');c.width=24;c.height=92;const g=c.getContext('2d');
+    // Point up, with the grip centred at (12,76). All gradients are built once.
+    const glass=g.createLinearGradient(5,0,19,0);glass.addColorStop(0,'rgba(25,54,92,.72)');glass.addColorStop(.28,'rgba(126,235,255,.30)');glass.addColorStop(.63,'rgba(235,255,255,.66)');glass.addColorStop(1,'rgba(37,88,132,.62)');
+    g.fillStyle=glass;g.beginPath();g.moveTo(12,1);g.lineTo(19,14);g.lineTo(17,65);g.lineTo(12,72);g.lineTo(6,65);g.lineTo(5,14);g.closePath();g.fill();
+    g.strokeStyle='rgba(238,255,255,.9)';g.lineWidth=1;g.beginPath();g.moveTo(12,2);g.lineTo(8,64);g.lineTo(12,70);g.moveTo(12,2);g.lineTo(16,64);g.stroke();
+    g.strokeStyle='rgba(14,25,58,.85)';g.beginPath();g.moveTo(6,15);g.lineTo(7,64);g.stroke();
+    g.strokeStyle='rgba(190,251,255,.75)';g.lineWidth=1.5;g.beginPath();g.moveTo(12,12);g.lineTo(12,61);g.stroke();
+    g.fillStyle='#c6d1d5';g.fillRect(2,70,20,4);g.fillStyle='#61717d';g.fillRect(7,74,10,3);
+    g.fillStyle='#17202b';g.fillRect(9,77,6,12);g.strokeStyle='#a9bdc8';g.lineWidth=1;for(let y=78;y<89;y+=3){g.beginPath();g.moveTo(9,y);g.lineTo(15,y+2);g.stroke();}
+    g.fillStyle='#d8eef2';g.beginPath();g.arc(12,90,3,0,Math.PI*2);g.fill();swordCanvas=c;return c;
+  }
+  function rimFrame(frame,stage){
+    const colors=['255,224,158','198,220,255','185,166,255','255,205,145','174,147,255'],key=frame+':'+stage;
+    if(rims.has(key))return rims.get(key);const img=R.assets.get('riley16-'+frame);if(!img)return null;
     const c=document.createElement('canvas');c.width=img.width+16;c.height=img.height+16;const g=c.getContext('2d');
-    g.filter='drop-shadow(0 0 2.84px rgba(255,232,180,.7)) drop-shadow(0 2.36px 2.36px rgba(0,0,0,.65))';g.drawImage(img,8,8);rims.set(frame,c);return c;
+    g.filter='drop-shadow(0 0 2.84px rgba('+(colors[stage]||colors[0])+',.72)) drop-shadow(0 2.36px 2.36px rgba(0,0,0,.65))';g.drawImage(img,8,8);rims.set(key,c);return c;
   }
   function flashFrame(frame){
     if(flashes.has(frame))return flashes.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
@@ -72,14 +112,14 @@
       this.x += this.vx * dt;
       this.z += this.vz * dt;
       this.life -= dt;
-      if (Math.random() < 0.55) this.g.fx.sparks(this.x, this.y - this.z, '#ffb33d', 1);
+      if (R.util.fxRand(0, 1) < 0.55) this.g.fx.sparks(this.x, this.y - this.z, '#ffb33d', 1);
       for (const enemy of this.g.enemies) {
         if (enemy.dead || this.hit.has(enemy)) continue;
         if (!R.collide.circle(this.x, this.y, this.z, this.radius, 25, enemy.hurtbox())) continue;
         this.hit.add(enemy);
         this.life = 0;
         this.g.damageEnemy(enemy, this.damage, this.owner.x, { kb: 105, move: 'fireball' });
-        this.g.fx.sparks(this.x, this.y - this.z, '#fff1a1', 10);
+        this.g.fx.impact(this.x,this.y-this.z,this.owner.facing,'heavy','#ff8b38');
         this.g.camera.impact(this.owner.facing, 'light');
         this.g.playCue('fireHit');
       }
@@ -231,6 +271,7 @@
       enemy.vz = 180;
       enemy.z = 2;
       enemy.takeHit(R.MOVES.throw.damage, this.x, { kb: 290, launch: 180, knockdown: true, ignoreInvuln: true });
+      this.g.fx.impact(enemy.x,enemy.y-enemy.z-40,direction,'heavy',this.callandor?'#9ff5ff':'#fff0ad');
       this.g.movesUsed.add('throw');
       this.setState('throw');
       this.channelTimer = R.MOVES.throw.duration;
@@ -399,12 +440,17 @@
     }
     spriteFrame() {
       const state = this.attackMove ? this.attackName : this.state;
-      if (state === 'walk' && this.grounded) return 'walk' + (Math.floor(this.walkDistance / 16) % 4 + 1);
+      if (state === 'walk' && this.grounded) return walkContact(this.walkDistance).frame;
       if (!this.grounded || ['rise', 'fall', 'jump'].includes(state)) return this.attackMove ? 'kick' : 'jump';
-      if (['front', 'round', 'back', 'spin', 'knee', 'kick', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'kick';
+      if (['round', 'back', 'spin', 'kick2', 'kick3', 'spinKick', 'launcher'].includes(state)) return 'roundhouse';
+      if (state === 'knee') return 'knee';
+      if (['front', 'kick'].includes(state)) return 'kick';
       if (['punch', 'jab', 'combo', 'combo1', 'combo2', 'combo3'].includes(state)) return 'punch';
-      if (['channel', 'fireball', 'throw', 'special', 'super', 'balefire'].includes(state)) return 'fireball';
-      if (['hurt', 'knockback', 'knockdown', 'lying', 'getup', 'death'].includes(state) || this.dead) return 'hurt';
+      if (['channel', 'super', 'balefire'].includes(state)) return 'channel';
+      if (['fireball', 'throw', 'special'].includes(state)) return 'fireball';
+      if (['knockdown', 'lying', 'death'].includes(state) || this.dead) return 'lying';
+      if (state === 'getup') return 'getup';
+      if (['hurt', 'knockback'].includes(state)) return 'hurt';
       return 'idle';
     }
     drawSprite(ctx, cameraX, forcedFrame) {
@@ -413,27 +459,49 @@
       if (!img || !data) return false;
       const [w,h,ax,ay] = data, scale = RILEY16.height / RILEY16.frames.idle[1];
       const lying = !forcedFrame && (this.dead || ['knockdown', 'lying', 'death'].includes(this.state));
-      // The body tracks the hitbox every frame. Four rigid poses cannot keep a
-      // sole planted, so the pose only changes with distance walked. A 3px bob
-      // still marks the step. Holding the sprite to fake a planted foot made
-      // the body freeze and then teleport.
-      let drawX = this.x, drawY = this.y;
+      // The per-frame sole table drives the distance cadence; a tiny correction
+      // removes pixel-rounding error without detaching the body from its hitbox.
+      let drawX = this.x, drawY = this.y, legShift=0;
       if (!forcedFrame && !lying && this.grounded && frame && frame.indexOf('walk') === 0) {
-        const into = this.walkDistance % 32;
-        drawY = this.y - Math.sin(into / 32 * Math.PI) * 3;
+        const contact=walkContact(this.walkDistance),foot=contact.foot;
+        // Lock the stance sole at touchdown. Only two units may move the body;
+        // the remaining correction is skinned progressively below the hip.
+        const correction=this.facing*(contact.first-contact.phase-foot[0]);
+        const bodyShift=Math.max(-2,Math.min(2,correction));
+        drawX+=bodyShift;legShift=(correction-bodyShift)*this.facing;
+        drawY=this.y-foot[1];
       }
       this._spriteX = drawX;
       ctx.save();
       ctx.translate(drawX - cameraX, drawY - this.z);
-      if (lying) ctx.rotate(this.facing * 80 * Math.PI / 180);
       ctx.scale(this.facing, 1);
+      const smoothing=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;
       if (this.invuln > 0 && Math.floor(this.invuln * 18) % 2 === 0) ctx.globalAlpha *= .55;
       if (this.dead) ctx.globalAlpha *= Math.max(.1, Math.min(1, 1 - this.deadTimer / .75));
       // Thin warm rim + contact shadow keep Riley readable against busy art.
-      const rim=!this.ghost&&rimFrame(frame);
-      if(rim)ctx.drawImage(rim,(-ax-8)*scale,(-ay-8)*scale,(w+16)*scale,(h+16)*scale);
+      const rim=!this.ghost&&rimFrame(frame,this.g ? (this.g.levelIndex||0) : 0);
+      const drawSkinned=(source,pad)=>{
+        const sw=w+pad*2,sh=h+pad*2,hip=Math.floor((ay-88)+pad),sole=ay+pad;
+        ctx.drawImage(source,0,0,sw,hip,(-ax-pad)*scale,(-ay-pad)*scale,sw*scale,hip*scale);
+        // Rasterise exactly one complete device row at a time. Source-row
+        // strips are only .42 actor units high, so their fractional device
+        // edges used to be antialiased and repeatedly source-over composited.
+        // Sampling at each device-row centre preserves the continuous shear
+        // without translucent overlaps; only x is allowed to remain fractional.
+        const tr=ctx.getTransform(),top=(-ay-pad+hip)*scale,bottom=(-ay-pad+sh)*scale;
+        const first=Math.floor(tr.d*top+tr.f),last=Math.ceil(tr.d*bottom+tr.f);
+        for(let deviceY=first;deviceY<last;deviceY++){
+          const localY=(deviceY+.5-tr.f)/tr.d;
+          const sy=Math.max(hip,Math.min(sh-1,Math.floor(localY/scale+ay+pad)));
+          const t=Math.max(0,Math.min(1,(sy+.5-hip)/(sole-hip))),smooth=t*t*(3-2*t);
+          ctx.drawImage(source,0,sy,sw,1,(-ax-pad)*scale+legShift*smooth,(deviceY-tr.f)/tr.d,sw*scale,1/tr.d);
+        }
+      };
+      if(legShift&&rim)drawSkinned(rim,8);else if(legShift)drawSkinned(img,0);
+      else if(rim)ctx.drawImage(rim,(-ax-8)*scale,(-ay-8)*scale,(w+16)*scale,(h+16)*scale);
       else ctx.drawImage(img, -ax * scale, -ay * scale, w * scale, h * scale);
       if(this.hitFlash>0){const flash=flashFrame(frame);if(flash){ctx.globalAlpha*=Math.min(.75,this.hitFlash*6);ctx.drawImage(flash,-ax*scale,-ay*scale,w*scale,h*scale);}}
+      ctx.imageSmoothingEnabled=smoothing;
       ctx.restore();
       return true;
     }
@@ -446,13 +514,25 @@
       if (this.angreal > 0) {
         ctx.save();ctx.strokeStyle='rgba(255,221,100,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.x-cameraX,this.y-this.z-48,31+Math.sin(this.stateT*8)*2,0,Math.PI*2);ctx.stroke();ctx.restore();
       }
-      if (this.callandor) {
-        ctx.save();ctx.lineCap='round';ctx.strokeStyle='rgba(100,220,255,.35)';ctx.lineWidth=11;ctx.beginPath();ctx.moveTo(this.x-cameraX-13,this.y-this.z-31);ctx.lineTo(this.x-cameraX-25,this.y-this.z-86);ctx.stroke();ctx.strokeStyle='#e8ffff';ctx.lineWidth=3;ctx.stroke();ctx.restore();
-      }
+      if (this.callandor) this.drawCallandor(ctx,cameraX);
       // Hit tint is baked into Riley's own pixels inside drawSprite.
+    }
+    drawCallandor(ctx,cameraX){
+      const frame=this.spriteFrame(),h=HANDS[frame]||HANDS.idle,lying=this.dead||['knockdown','lying','death'].includes(this.state);
+      const alpha=this.dead?Math.max(.1,Math.min(1,1-this.deadTimer/.75)):(this.invuln>0&&Math.floor(this.invuln*18)%2===0?.55:1);
+      const attack=this.attackMove,progress=attack?Math.min(1,this.stateT/Math.max(.01,attack.duration)):0;
+      const swing=attack?(-110+150*progress)*Math.PI/180:0;
+      ctx.save();ctx.globalAlpha*=alpha;ctx.translate(this.x-cameraX,this.y-this.z);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]+swing);
+      ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-76);ctx.restore();
+      const angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:this.x+this.facing*(h[0]+sn*76),y:this.y-this.z+h[1]-cs*76};
+      if(this.attackMove){this.callandorTips=this.callandorTips||[];this.callandorTips.push({x:tip.x,y:tip.y,t:performance.now()});if(this.callandorTips.length>9)this.callandorTips.shift();}
+      else this.callandorTips=[];
+      if(this.callandorTips.length>1){ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';const grip={x:this.x+this.facing*h[0],y:this.y-this.z+h[1]},n=this.callandorTips.length;for(let i=1;i<n;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i],fade=i/n,ma={x:(grip.x+a.x)*.5,y:(grip.y+a.y)*.5},mb={x:(grip.x+b.x)*.5,y:(grip.y+b.y)*.5};ctx.globalAlpha=.08+fade*.25;ctx.fillStyle='#75dfff';ctx.beginPath();ctx.moveTo(ma.x-cameraX,ma.y);ctx.lineTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.lineTo(mb.x-cameraX,mb.y);ctx.closePath();ctx.fill();ctx.globalAlpha=.18+fade*.55;ctx.strokeStyle='#efffff';ctx.lineWidth=2+fade*3;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}
     }
   }
   R.Fireball = Fireball;
   R.Riley = Riley;
-  R.Riley.prepare=()=>Object.keys(RILEY16.frames).forEach(frame=>{rimFrame(frame);flashFrame(frame);});
+  // Sprite-derived canvases are intentionally lazy: only frames actually drawn
+  // in the current stage occupy memory, never five complete tinted atlases at boot.
+  R.Riley.prepare=()=>{prepareSword();};
 }());

@@ -251,3 +251,49 @@ Natural soak: **7/8/8/8/8**, attacks 10/10. Medians 249.58, 251.87, 270.56, 214.
 - The sky plate still gets the soft-light wash, and the vignette is still drawn. The scrolling plates are not re-graded on each camera step: doing that on every layer was a several-hundred-millisecond hitch. Fighters are not re-tinted every frame.
 - Entering a stage bakes that stage's pose atlas on the CPU before the fade-in starts. On this software canvas the grok3d enter is 197–644 ms (Stage 5 pose bake 614 ms, Stage 1 564 ms). Mid-fight stays at 60 fps after the two-frame settle. The first presented frame is the start of the fade-in, not a frame that is already 40% dark.
 - Ten natural seeds are a small deterministic sample. No gamepad, phone, or child playtest is claimed.
+
+## sol61 — Callandor, animation, difficulty and combat rendering
+
+Runtime stamp: `20260929-sol61`. Callandor is now a cached, transparent faceted crystal sword with a complete per-frame hand-anchor table, physical guard/grip, pose rotation and a short attack arc. Riley's runtime atlas registers an eight-frame distance-driven walk cadence and retains the sleeveless black Asha'man costume, muscular adolescent proportions and blue glasses throughout the source set.
+
+The natural-soak harness accepts `--seeds=N`; stage damage pressure now rises from 1.15× through 1.52×, 0.78×, 1.97× and 1.02× (the Stage 3 hazard/boss mix requires the lower multiplier). Taim retains the same beam collision and timing, but Dark Balefire is rendered as a dark violet-core channel with white-hot edges, tendrils and an endpoint bloom. Background plates and audio were not changed.
+
+## sol61 round 3 — painted Riley runtime (2026-09-30)
+
+Runtime stamp: `20260929-sol61r3`. All 19 delivered, transparent `riley16-v2` paintings are now the runtime atlas. The old stamped-coat frames and generator were retired. Riley is 96 world units tall (painted idle: 167×229 px), uses all eight distinct walk poses, dedicated roundhouse/knee/channel/lying/getup poses, and never rotates the painted lying pose. Atlas anchors were checked at the pelvis/foot baseline. Callandor uses pose-specific fists and a -110° to +40° attack sweep with an eight-sample pale-cyan trail. Sprite rim/flash canvases are lazy rather than building five tinted atlases at boot. A scene-less Reel Riley is explicitly regression-tested.
+
+Taim's Dark Balefire no longer exposes its collision rectangle: telegraph art is a pulsing violet hand-height aim line, floor-lane glow, and hand charge orb; the active dark-core beam retains hot edges, tendrils, hand flare, and endpoint bloom. Impact particles remain pooled, all actors retain grounded cached shadows, and screen shake is weight-tuned to 1.5/4/7 px with at most 0.20 s decay and the persisted reduced-motion setting.
+
+Browser measurements are intentionally not recorded here until Playwright is available in the test container; the package registry returned HTTP 403 during the required install attempt.
+
+## sol61 round 5 — contact anchors, deterministic presentation, final pressure
+
+Runtime stamp: `20260929-sol61r5`. The eight painted walk frames remain byte-for-byte unchanged. Their measured stance table is stored beside the atlas as `[sole x, sole y, side, distance span]`: walk1 `[15.1,0,front,4]`, walk2 `[8.8,0,front,4]`, walk3 `[1.7,0,front,4]`, walk4 `[-11.7,-1.3,rear,4]`, walk5 `[17.6,0,front,4]`, walk6 `[9.6,0,front,4]`, walk7 `[0,0,front,4]`, walk8 `[-13.4,0,rear,4]`. The runtime applies at most two actor units of horizontal correction and the regression contact window is restored to 32 units.
+
+The hand table was remeasured against opaque glove/hand pixels in all 19 source PNGs. Presentation randomness now uses an independent deterministic `fxRand` stream for sparks, chunks, dust, fireball embers, camera shake, and snow; gameplay attack, spawn, drop, and token choices remain on the seeded gameplay stream. Forty natural seeds (1001–1040) produced S1 39/40 (97.5%), S2 30/40 (75%), S3 27/40 (67.5%), S4 23/40 (57.5%), and S5 23/40 (57.5%). The assisted ten-seed soak cleared 10/10 on every stage, exercised every boss move, and completed the Stage 5 joint hit.
+
+Dark Balefire now composites its cached near-black/deep-violet core source-over before switching to additive compositing for only the hot edges, tendrils, hand flare, and endpoint bloom. Collision and timing are unchanged. Playwright and Chromium were absent in this container, and the required `npx playwright install chromium` attempt was rejected by the package registry with HTTP 403; consequently browser-only foot, grip, frame-time, cold-entry, boot-memory, luminance, join-image and audio-browser checks are not claimed from this environment.
+
+## sol61 finishing round 2 — locked painted soles and rectangular Balefire (2026-09-30)
+
+Runtime stamp: `20260929-sol61r6`. The eight original `riley16-v2` walk PNGs remain byte-for-byte unchanged. Each 32-unit stance now uses measured non-uniform exposure spans and captures its touchdown sole in world space. At most 2 actor units of the correction move the complete sprite; seven cached-source horizontal blits progressively skin the remaining correction from the hip to the sole while the torso, head, arms, and Callandor remain on the hitbox. The final `[soleX, soleY, side, span]` table is: walk1 `[11.5,0,right,6.3]`, walk2 `[13.2,0,right,7.1]`, walk3 `[-1.9,0,right,13.4]`, walk4 `[11.2,-1.3,right,5.2]`, walk5 `[14.5,0,left,8]`, walk6 `[9.5,0,left,9.6]`, walk7 `[0.4,0,left,13.4]`, and walk8 `[-13,0,left,1]`. The offline 2x PNG-alpha compositor, using the regression check's cluster tracking over 120 steps at 128 u/s, measures simulated `rileySlip: 15` and `rileyOffset: 2`.
+
+The effect stamp cache now accepts independent width and height. Dark Balefire caches a real 136×64 `dark-balefire-r6` texture and draws it source-over as a 32-logical-unit band. Its source rows 20–44 form a 24-source-pixel violet-black core, producing a 12-logical-unit core; only tendrils and endpoint blooms use additive compositing.
+
+Natural seeds 1001–1040 remain S1 39/40 (97.5%), S2 30/40 (75%), S3 27/40 (67.5%), S4 23/40 (57.5%), and S5 23/40 (57.5%). Trial S4 pressure reductions jumped directly from 57.5% to 80%, while a trial S5 increase fell to 10%, so no difficulty scale was changed merely to chase the midpoint. Assisted seeds 1–10 remain 10/10 on every stage with every boss attack exercised and the Stage 5 joint hit completed.
+
+Playwright and Chromium remain unavailable: the Python Playwright install was attempted and rejected by the package proxy with HTTP 403. Browser-only page-load, real-Chrome foot, frame-time, cold-entry, boot-memory, join-image, and audio checks are therefore not claimed. The Node checks and offline measurements are recorded in the round report.
+
+## sol61 finishing round 3 — continuous lower-body skin (2026-09-30)
+
+Runtime stamp: `20260929-sol61r7`. Riley's contact lock still limits whole-body displacement to 2 actor units, but the remaining stance correction is now applied as a smoothstep shear one source row at a time from zero at the hip to the full correction at the sole. The same row compositor handles the warm rim. This removes the seven horizontal displacement ledges without changing any of the 19 painted `riley16-v2` PNGs, gameplay, saves, audio, or balance. `legShift` deliberately remains in actor/destination units; multiplying it by the source-pixel-to-actor scale would under-correct the planted sole.
+
+The browser regression suite now measures added adjacent-row silhouette displacement against each unskinned walk frame while Riley advances at 128 u/s, permitting at most 2 render pixels, and covers all eight walk paintings. `tools/offline-foot-check.cjs` uses the same smoothstep row model and additionally reports the simulated old seven-band and new continuous-shear tear excess per frame when Chromium is unavailable.
+
+## sol61 finishing round 4 — device-row opaque leg shear (2026-09-30)
+
+Runtime stamp: `20260929-sol61r8`. Riley's continuous lower-body shear and warm rim now iterate over integer device-pixel rows and nearest-sample the painted source at each device-row centre. Every destination strip is exactly one device pixel tall; the horizontal shear remains fractional. This removes the fractional vertical strip overlap that made the r7 walk legs translucent at render scales 1 and 2, without changing the contact lock, art, gameplay, saves, audio, or balance.
+
+The browser regression suite now compares the fully opaque (`alpha >= 250`) share of the lower skinned silhouette against an unskinned rimmed frame at render scales 1, 2, and 3, with a maximum two-percentage-point difference. The existing eight-frame adjacent-row tear limit remains unchanged.
+
+Chromium/Playwright was unavailable in this container, so the opacity comparison was simulated offline from the integer-row coverage rule. Normalized against the rimmed plain lower-body opacity, r7 measured `0.000 / 0.690` at render scale 1 and `0.040 / 0.730` at render scale 2 (derived from the captured partial-alpha shares); r8's device-row coverage is `1.000 / 1.000` at render scales 1, 2, and 3. The browser check remains authoritative when Chromium is available and evaluates all three scales directly.

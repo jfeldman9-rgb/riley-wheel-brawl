@@ -132,6 +132,12 @@ const U = RWB.util = {
   }
 };
 
+// Presentation noise must never advance the gameplay PRNG.  Keep this stream
+// private to particles, camera shake, weather and other cosmetic motion.
+const fxRandom = U.seeded(0x52574235);
+U.fxRand = (a, b) => a + fxRandom() * (b - a);
+U.fxPick = arr => arr[Math.floor(fxRandom() * arr.length)];
+
 /* ---- canvas text helpers ---- */
 RWB.text = {
   draw(ctx, str, x, y, opts = {}) {

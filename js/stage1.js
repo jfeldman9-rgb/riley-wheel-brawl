@@ -188,7 +188,7 @@
   class SnowField {
     constructor() {
       this.flakes = [];
-      for (let i = 0; i < 75; i += 1) this.flakes.push({ x: Math.random() * 640, y: Math.random() * 360, speed: 15 + Math.random() * 30, drift: 5 + Math.random() * 12, size: 1 + Math.random() * 2 });
+      for (let i = 0; i < 75; i += 1) this.flakes.push({ x: R.util.fxRand(0, 640), y: R.util.fxRand(0, 360), speed: R.util.fxRand(15, 45), drift: R.util.fxRand(5, 17), size: R.util.fxRand(1, 3) });
     }
     update(dt) {
       for (const flake of this.flakes) {
@@ -196,7 +196,7 @@
         flake.x += Math.sin(flake.y * 0.025) * flake.drift * dt;
         if (flake.y > 360) {
           flake.y = -4;
-          flake.x = Math.random() * 640;
+          flake.x = R.util.fxRand(0, 640);
         }
       }
     }
