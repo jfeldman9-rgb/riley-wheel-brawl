@@ -11,7 +11,8 @@
       channel:[146,238,71,237],lying:[227,83,116,82],getup:[136,141,87,140]
     }
   };
-  const rims=new Map(),flashes=new Map();
+  const rims=new Map(),flashes=new Map(),walkBakes=new Map();
+  let walkBakeScale=0;
   // Hand positions are authored in actor-space game units.  Keeping this table
   // beside the atlas makes Callandor follow the actual pose instead of Riley's
   // collision box. Angles point from the grip toward the blade tip.
@@ -59,6 +60,23 @@
     if(flashes.has(frame))return flashes.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
     const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const g=c.getContext('2d');
     g.drawImage(img,0,0);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,c.width,c.height);flashes.set(frame,c);return c;
+  }
+  // The walk warp consumes an already rasterised, device-scale frame.  Letting
+  // Canvas perform this one whole-frame resize keeps its nearest-neighbour row
+  // choices identical to an ordinary sprite draw; the later shear only moves
+  // those pixels horizontally.  Scale changes discard the tiny LRU wholesale,
+  // and the hard cap covers eight plain plus eight rimmed walk frames.
+  function walkBake(frame,source,pad,deviceScale,level){
+    if(walkBakeScale!==deviceScale){walkBakes.clear();walkBakeScale=deviceScale;}
+    const key=frame+':'+(pad?'rim'+level:'plain');
+    if(walkBakes.has(key)){const hit=walkBakes.get(key);walkBakes.delete(key);walkBakes.set(key,hit);return hit;}
+    const data=RILEY16.frames[frame],scale=RILEY16.height/RILEY16.frames.idle[1];
+    const sw=data[0]+pad*2,sh=data[1]+pad*2,dw=sw*scale*deviceScale,dh=sh*scale*deviceScale;
+    const c=document.createElement('canvas');c.width=Math.ceil(dw);c.height=Math.ceil(dh);
+    const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(source,0,0,sw,sh,0,0,dw,dh);
+    const baked={canvas:c,width:dw,height:dh,scale:scale*deviceScale};
+    walkBakes.set(key,baked);if(walkBakes.size>16)walkBakes.delete(walkBakes.keys().next().value);
+    return baked;
   }
   function degrees(value) {
     return value * Math.PI / 180;
@@ -482,19 +500,17 @@
       const rim=!this.ghost&&rimFrame(frame,this.g ? (this.g.levelIndex||0) : 0);
       const drawSkinned=(source,pad)=>{
         const sw=w+pad*2,sh=h+pad*2,hip=Math.floor((ay-88)+pad),sole=ay+pad;
-        ctx.drawImage(source,0,0,sw,hip,(-ax-pad)*scale,(-ay-pad)*scale,sw*scale,hip*scale);
-        // Rasterise exactly one complete device row at a time. Source-row
-        // strips are only .42 actor units high, so their fractional device
-        // edges used to be antialiased and repeatedly source-over composited.
-        // Sampling at each device-row centre preserves the continuous shear
-        // without translucent overlaps; only x is allowed to remain fractional.
-        const tr=ctx.getTransform(),top=(-ay-pad+hip)*scale,bottom=(-ay-pad+sh)*scale;
-        const first=Math.floor(tr.d*top+tr.f),last=Math.ceil(tr.d*bottom+tr.f);
-        for(let deviceY=first;deviceY<last;deviceY++){
-          const localY=(deviceY+.5-tr.f)/tr.d;
-          const sy=Math.max(hip,Math.min(sh-1,Math.floor(localY/scale+ay+pad)));
-          const t=Math.max(0,Math.min(1,(sy+.5-hip)/(sole-hip))),smooth=t*t*(3-2*t);
-          ctx.drawImage(source,0,sy,sw,1,(-ax-pad)*scale+legShift*smooth,(deviceY-tr.f)/tr.d,sw*scale,1/tr.d);
+        const tr=ctx.getTransform(),deviceScale=Math.abs(tr.d),level=this.g?(this.g.levelIndex||0):0;
+        const baked=walkBake(frame,source,pad,deviceScale,level),top=(-ay-pad)*scale;
+        const first=Math.floor(tr.d*top+tr.f),hipRow=Math.floor(hip*baked.scale),last=Math.min(baked.canvas.height,Math.ceil(sh*baked.scale));
+        const localTop=(first-tr.f)/tr.d,x=(-ax-pad)*scale;
+        // Both halves are copied 1:1 from the same whole-frame raster.  Thus
+        // no source row is independently re-selected and no fractional-height
+        // strip can overlap; only the leg rows receive a fractional x shift.
+        if(hipRow>0)ctx.drawImage(baked.canvas,0,0,baked.canvas.width,hipRow,x,localTop,baked.canvas.width/deviceScale,hipRow/deviceScale);
+        for(let row=hipRow;row<last;row++){
+          const sy=(row+.5)/baked.scale,t=Math.max(0,Math.min(1,(sy-hip)/(sole-hip))),smooth=t*t*(3-2*t);
+          ctx.drawImage(baked.canvas,0,row,baked.canvas.width,1,x+legShift*smooth,localTop+row/deviceScale,baked.canvas.width/deviceScale,1/deviceScale);
         }
       };
       if(legShift&&rim)drawSkinned(rim,8);else if(legShift)drawSkinned(img,0);
