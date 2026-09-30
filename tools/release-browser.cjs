@@ -27,7 +27,10 @@ const check=(ok,name,details)=>{report.checks.push({ok:!!ok,name,details});conso
  }
  const {p,c}=await open(true);
  const campaignRun=require('./campaign-check.cjs').campaignRun;
- const campaign=await p.evaluate(source=>{const run=(0,eval)('('+source+')');return run(RWB);},campaignRun.toString());
+ const synchronous=await p.evaluate(source=>{const run=(0,eval)('('+source+')');return run(RWB);},campaignRun.toString());
+ console.log('RWB_CAMPAIGN_SYNC_CONTROL '+JSON.stringify(synchronous));
+ await p.reload();await p.waitForFunction(()=>window.RWB?.assets.done&&RWB.game?.scene,null,{timeout:120000});
+ const campaign=await p.evaluate(async source=>{const run=(0,eval)('('+source+')');return await run(RWB,1001,{cooperative:true,maxWallMs:180000});},campaignRun.toString());
  check(campaign.passed,'Scripted full campaign: title through all stages, Callandor, joint finish, escape and credits (continues counted)',campaign);
  await p.reload();await p.waitForFunction(()=>window.RWB?.assets.done&&RWB.game?.scene,null,{timeout:120000});
  const shot=async(name)=>{const file=path.join(out,name+'.jpeg');await p.screenshot({path:file,type:'jpeg',quality:85});if(process.env.RWB_SCREENSHOT_LOG==='1')for(const line of screenshotLog(name,fs.readFileSync(file)))console.log(line);};
