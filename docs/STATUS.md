@@ -1,3 +1,22 @@
+# Release 1.1 in development (2026-09-30)
+
+The verified live 1.0 is `rwb-w2` commit `816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc`. PR #9 merged at 2026-09-30 14:38:41 UTC; [Pages deployment 36730669876](https://github.com/jfeldman9-rgb/riley-wheel-brawl/actions/runs/36730669876) succeeded at 14:39:18 UTC. At 18:11 UTC, the public index was byte-identical to that commit (SHA-256 `6b88ae236e160e9b9a09bc3e6dc4aabe81e31f303d2e3d44752d87636060404f`). The prior 1.0 handoff below is historical, including its obsolete unmerged/undeployed statements.
+
+New branch: `rwb-1-1-polish`, created from that exact live commit. Draft development only; no release is authorized. `main` and `rwb-w2` must remain unchanged until Jason gives a fresh release GO after Jason and Grok review the candidate.
+
+See [1.1 scope and evidence plan](V11_PLAN.md). Inherited test rules are byte-locked in [the acceptance manifest](review/v11/inherited-tests.lock.json); 1.1 tests are additive.
+
+## Verification limits
+
+- Cloud baseline and candidate measurements can establish cloud regressions only. Required live-versus-candidate measurements on Jason's same computer, three runs each, are pending while his Mac is offline.
+- Real iPad, phone and Xbox/PlayStation controller tests remain pending. Emulation and synthetic gamepad tests will be labeled accordingly.
+- Existing code/evidence is inspected afresh; historical test passes are not copied forward as current 1.1 passes.
+- `/workspace/rwb-next/PASS2_PLAN.md` is not present in this executor. The 1.1 plan is reconstructed from Jason's supplied scope; the unavailable original can be reconciled when provided.
+
+---
+
+# Historical 1.0 development records
+
 # Release 1.0 Round 2 candidate (2026-09-30)
 
 Runtime stamp `20260930-release2`; local work branch `rwb-1-0-handoff`. Round 1 remains preserved at `c3b4a1a`. See [current Round 2 evidence](review/release2/HANDOFF.md), not the historical results below.
