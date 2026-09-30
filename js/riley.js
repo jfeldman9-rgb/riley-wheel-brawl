@@ -48,6 +48,20 @@
     while(index<frames.length-1&&phase>=start+RILEY16.feet[frames[index]][3])start+=RILEY16.feet[frames[index++]][3];
     return {frame:frames[index],foot:RILEY16.feet[frames[index]],phase,start,first:RILEY16.feet[frames[0]][0]};
   }
+  // Convex horizontal support of every nontransparent source pixel. Points
+  // are [atlas x edge, source row]; -1 is above the sheared hip. The additive
+  // decoded-pixel check verifies these against the untouched PNGs. Keeping
+  // geometry here also gives image-free simulations identical body bounds.
+  const BODY_SUPPORT = {
+    walk1:[[12,-1],[8,157],[2,200],[2,208],[3,210],[4,211],[5,212],[6,213],[7,214],[13,221],[14,222],[15,223],[16,224],[17,225],[18,226],[21,228],[114,228],[120,225],[122,224],[124,223],[126,222],[128,221],[130,220],[133,218],[134,217],[134,-1]],
+    walk2:[[18,-1],[14,145],[10,150],[8,153],[7,155],[6,158],[5,161],[2,188],[2,197],[3,199],[12,213],[13,214],[14,215],[15,216],[16,217],[17,218],[21,221],[24,222],[27,223],[70,225],[112,225],[114,223],[124,-1]],
+    walk3:[[6,-1],[2,152],[2,165],[17,227],[21,228],[64,228],[66,226],[98,-1]],
+    walk4:[[6,-1],[5,149],[3,152],[2,155],[2,206],[3,208],[10,220],[12,223],[13,224],[14,225],[15,226],[16,227],[17,228],[18,229],[20,230],[22,231],[24,232],[108,232],[111,231],[113,230],[115,229],[115,-1]],
+    walk5:[[16,-1],[14,146],[11,150],[10,151],[8,154],[7,156],[6,158],[2,201],[2,211],[3,212],[4,213],[5,214],[6,215],[7,216],[13,221],[14,222],[15,223],[16,224],[17,225],[18,226],[19,227],[21,228],[119,228],[128,225],[130,224],[132,223],[134,222],[136,221],[138,220],[141,218],[142,217],[142,211],[141,208],[113,-1]],
+    walk6:[[7,-1],[2,155],[2,190],[3,192],[4,194],[6,197],[16,209],[17,210],[18,211],[19,212],[20,213],[21,214],[25,217],[27,218],[29,219],[32,220],[35,221],[58,223],[101,223],[103,221],[113,-1]],
+    walk7:[[2,-1],[2,168],[24,229],[28,230],[71,230],[73,228],[94,147],[94,-1]],
+    walk8:[[8,-1],[7,147],[6,148],[4,151],[3,153],[2,157],[2,213],[3,214],[4,215],[5,216],[6,217],[7,218],[12,224],[13,225],[14,226],[15,227],[16,228],[17,229],[18,230],[21,232],[105,232],[113,228],[115,227],[117,226],[119,225],[121,224],[123,223],[127,220],[127,213],[125,-1]],
+  };
   let swordCanvas=null;
   function prepareSword(){
     if(swordCanvas)return swordCanvas;
@@ -384,9 +398,9 @@
         this.vx = this.vy = 0;
         if (this.grabDamageClock >= 0.4) { this.grabDamageClock = 0; this.g.hitPlayer(3, this.grabbedBy.x, { kb:0, knockdown:false, source:'HYPNOTIC KISS' }); }
         if (this.grabTimer <= 0 || this.grabbedBy.dead) { this.grabbedBy = null; this.invuln = 0.7; }
-        this.updateTaint(dt); super.update(dt); return;
+        this.updateTaint(dt); super.update(dt); this.containPaintedBody(); return;
       }
-      if (this.stunTimer > 0) { this.stunTimer -= dt; this.vx = this.vy = 0; this.updateTaint(dt); super.update(dt); return; }
+      if (this.stunTimer > 0) { this.stunTimer -= dt; this.vx = this.vy = 0; this.updateTaint(dt); super.update(dt); this.containPaintedBody(); return; }
       this.fireCooldown = Math.max(0, this.fireCooldown - dt);
       this.angreal = Math.max(0, this.angreal - dt);
       this.comboWindow = Math.max(0, this.comboWindow - dt);
@@ -395,6 +409,7 @@
       this.hitFlash = Math.max(0, this.hitFlash - dt);
       if (this.dead) {
         this.deadTimer += dt;
+        this.containPaintedBody();
         return;
       }
       if (this.state === 'knockdown' && this.stateT > 0.28) this.setState('lying');
@@ -446,10 +461,7 @@
       this.updateAttack(dt);
       this.updateTaint(dt);
       super.update(dt);
-      // The painted torso is wider than the 25-unit hurtbox. Keep its centre
-      // a full half-body inside the visible left wall, including during recoil.
-      const visibleLeft = Math.max(this.g.arenaLeft, this.g.camera ? this.g.camera.x : this.g.arenaLeft);
-      this.x = R.util.clamp(this.x, visibleLeft + 40, this.g.arenaRight - 40);
+      this.containPaintedBody();
       if (this.grabbed) {
         this.grabbed.x = this.x + this.facing * 22;
         this.grabbed.y = this.y;
@@ -501,6 +513,45 @@
       if (state === 'getup') return 'getup';
       if (['hurt', 'knockback'].includes(state)) return 'hurt';
       return 'idle';
+    }
+    paintedBodyBounds() {
+      const frame = this.spriteFrame(), data = RILEY16.frames[frame];
+      if (!data) return { minX: -40, maxX: 40 };
+      const [w,,ax,ay] = data, scale = RILEY16.height / RILEY16.frames.idle[1];
+      // Every source frame has exactly two transparent border columns.
+      const baseLeft = (2-ax)*scale, baseRight = (w-2-ax)*scale;
+      let left = baseLeft, right = baseRight, bodyShift = 0;
+      const lying = this.dead || this.state === 'knockdown' || this.state === 'lying' || this.state === 'death';
+      if (!lying && this.grounded && BODY_SUPPORT[frame]) {
+        const contact = walkContact(this.walkDistance);
+        const correction = this.facing*(contact.first-contact.phase-contact.foot[0]);
+        bodyShift = Math.max(-2,Math.min(2,correction));
+        const legShift = (correction-bodyShift)*this.facing, hip = ay-88;
+        if (legShift) {
+          left = Infinity; right = -Infinity;
+          for (const [x,row] of BODY_SUPPORT[frame]) {
+            const t = row < 0 ? 0 : Math.max(0,Math.min(1,(row+.5-hip)/88));
+            const edge = (x-ax)*scale + legShift*t*t*(3-2*t);
+            left = Math.min(left,edge); right = Math.max(right,edge);
+          }
+          // Hit tint is drawn unsheared on the same actor-space anchor.
+          if (this.hitFlash > 0) { left = Math.min(left,baseLeft); right = Math.max(right,baseRight); }
+        }
+      }
+      return this.facing < 0 ? { minX: bodyShift-right, maxX: bodyShift-left } :
+        { minX: bodyShift+left, maxX: bodyShift+right };
+    }
+    containPaintedBody(renderSnapshot = false) {
+      const camera = this.g.camera;
+      // Camera shake/punch may contain a saved render snapshot, but must never
+      // push authoritative world physics around or change combat spacing.
+      const snap = R.display.mode === 'classic' ? 1 : (R.display.renderScale || 1);
+      const shift = renderSnapshot && camera ? Math.round(((camera.shakeX||0)+(camera.punchX||0))*snap)/snap : 0;
+      const visibleLeft = Math.max(this.g.arenaLeft, camera ? camera.x-shift : this.g.arenaLeft);
+      const margin = Math.max(40, Math.ceil(-this.paintedBodyBounds().minX));
+      const before = this.x;
+      this.x = R.util.clamp(this.x, visibleLeft+margin, this.g.arenaRight-40);
+      if (this.grabbed) this.grabbed.x += this.x-before;
     }
     drawSprite(ctx, cameraX, forcedFrame) {
       const frame = forcedFrame || this.spriteFrame();

@@ -1,22 +1,43 @@
 {
-  "runtimeSha256": "5ea1241f4114830eb1619a3b3b7bff82a23db1b5ba25f44b58e8246815602c40",
+  "runtimeSha256": "4fc6ff472aebd51e947d233b7e8cb33d26b4631242eaf355863f604795e26d0e",
+  "localTestedCommit": "1f9e33db9ce29f43770024abab14c4990ca50308",
+  "workingTreeDirty": false,
   "normalRates": [
     100,
-    77.5,
-    65,
-    57.5,
+    80,
+    67.5,
+    60,
     57.5
   ],
   "hardRates": [
     100,
-    72.5,
-    52.5,
+    75,
+    50,
     30,
-    22.5
+    25
   ],
   "normalCount": 200,
   "hardCount": 200,
   "offscreenViolations": 0,
   "maxOffscreenSeconds": 0.683,
-  "method": "Unassisted automated playthroughs. No human/Mac claim. Separate inherited assisted Hard coverage: 50/50, all boss moves, zero overlapping active attackers."
+  "mode": "unassisted, no coefficient overrides; exact inherited controller and seeds1001\u20131040",
+  "nativeGates": {
+    "pass": 26,
+    "total": 28,
+    "fail": [
+      "callandor-inherited",
+      "hard-normal-exact-parity"
+    ]
+  },
+  "browserAcceptance": "pending for this runtime; prior9ad3 failed pacing",
+  "hardTargets": [
+    50,
+    35,
+    25
+  ],
+  "hardObservedLate": [
+    50,
+    30,
+    25
+  ]
 }

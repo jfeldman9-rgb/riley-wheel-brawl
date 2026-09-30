@@ -76,3 +76,12 @@ Strict candidate gates remain **every cold entry <400ms, >=59.5fps and zero inte
 The supplied painted-background review images are quality-90 JPEG display copies. The original lossless rendered PNGs and CPU profiles remain preserved in the review archive; numeric pixel comparisons were computed before JPEG encoding. Runtime backgrounds are untouched. See `review/v11/review-image-encoding.json` for sizes and source hashes.
 
 For fast CI feedback, `--cold-only` runs the same ten fresh cold music OFF/ON contexts and unchanged <400ms gate, skips every fight, and explicitly reports pacing as unrun/null. It is not full acceptance. It cannot be combined with `--profile-only`.
+
+
+## Immediate-start follow-up and isolated flush experiment
+
+The 9ad3 paired samples had a two-second settling period. They cannot certify immediate gameplay: the locked release/audio tools measure immediately, and long intervals concentrate while queued pose work is still active. Future paired acceptance invokes `--immediate`, using the same two-RAF boundary and unchanged numerical gates. Every report labels its settling time. Full frame timestamps, bounded pending-job names/counts, per-frame work and hashed raw arrays are retained in free workflow logs. Sampling-profiler setup is excluded from non-profile runs.
+
+A separately reproduced queued-pose correctness defect shared mutable transformed vertices across interrupted jobs. The focused fix gives each active pose a fixed-size snapshot and releases it at completion. 216 preemption cases and the 30/1,380/120 identity/pose/contact recheck pass; there is no raster redesign in that production change.
+
+`tools/experiments/pose-flush8.patch` is an **unapplied experiment**, not the shipped renderer. It explicitly flushes at most eight submitted faces at a time. 1,440 queued-pose/facing comparisons match the unflushed control exactly; 216 preemption cases also pass, with no extra pose canvases. The dedicated cloud workflow applies it only to a temporary worktree and runs three alternating immediate-window pairs against the unchanged control. The driver verifies every other runtime file is identical. Variant failures remain red, and an experimental pass never constitutes release approval. A successful experiment would still require explicit integration and the full acceptance suite before becoming the candidate renderer.

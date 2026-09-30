@@ -32,6 +32,9 @@ jobs:
         run: |
           git worktree add --detach "$RUNNER_TEMP/rwb-pre-identity" ecb36da649796bffaacc1d698b0c824b63ce6fd7
           NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-idle-v11.cjs . "$RUNNER_TEMP/rwb-pre-identity"
+      - name: Record full native seam diagnostics, manual art gate remains open
+        if: always()
+        run: NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/seams-visual-v11.cjs "$RUNNER_TEMP/rwb-live-visual"
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -125,10 +128,31 @@ jobs:
       - run: |
           npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
           npx playwright install --with-deps chromium
-      - name: Three matched serial live-versus-candidate runs
+      - name: Three matched serial immediate-gameplay runs
         run: |
           git worktree add --detach "$RUNNER_TEMP/rwb-live-1.0" 816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc
-          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-compare-v11.cjs "$RUNNER_TEMP/rwb-live-1.0"
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-compare-v11.cjs "$RUNNER_TEMP/rwb-live-1.0" --immediate
+  pose-flush-experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+          npx playwright install --with-deps chromium
+      - name: Isolated three-pair raster-flush experiment, not release approval
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/rwb-flush-control" "${{ github.event.pull_request.head.sha }}"
+          git worktree add --detach "$RUNNER_TEMP/rwb-flush-variant" "${{ github.event.pull_request.head.sha }}"
+          git -C "$RUNNER_TEMP/rwb-flush-variant" apply "$GITHUB_WORKSPACE/tools/experiments/pose-flush8.patch"
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-experiment-v11.cjs "$RUNNER_TEMP/rwb-flush-control" "$RUNNER_TEMP/rwb-flush-variant"
 # Public-repository standard runners only. No secrets, caches, uploaded artifacts,
 # paid services or deploy steps. Failures remain failures, including documented
 # inherited behavioral contracts awaiting Jason/Grok review.

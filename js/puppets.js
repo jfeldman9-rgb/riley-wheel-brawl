@@ -427,7 +427,11 @@
       st.scale=poseScaleFor(r);
       st.transforms=boneTransforms(r,st.bones);
       st.layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
-      r.buffers=r.buffers||st.layers.map(()=>r.vertices.map(()=>({})));
+      // A higher-priority pose can interrupt this job during skinning or raster.
+      // Its transformed vertices must not overwrite an unfinished pose's data.
+      // One fixed-size snapshot belongs to each deduplicated queued pose and is
+      // released as soon as that pose finishes; synchronous bakes keep r.buffers.
+      st.vertices=st.layers.map(()=>r.vertices.map(()=>({})));
       st.minX=Infinity;st.minY=Infinity;st.maxX=-Infinity;st.maxY=-Infinity;
       if(performance.now()>=end)return false;
     }
@@ -437,7 +441,7 @@
       while(st.vi<r.vertices.length&&performance.now()-t0<1.5&&performance.now()<end){
         const i=st.vi++;
         for(let n=0;n<st.layers.length;n++){
-          const v=skinPoint(r.vertices[i],r,st.bones,st.pose,st.layers[n][1],st.transforms,r.buffers[n][i]);
+          const v=skinPoint(r.vertices[i],r,st.bones,st.pose,st.layers[n][1],st.transforms,st.vertices[n][i]);
           st.minX=Math.min(st.minX,v.X);st.minY=Math.min(st.minY,v.Y);st.maxX=Math.max(st.maxX,v.X);st.maxY=Math.max(st.maxY,v.Y);
         }
       }
@@ -451,7 +455,7 @@
       st.surface=surface;st.ctx=surface.getContext('2d');st.bounds={left,top,width,height};st.padding=.8/scale;
       st.ctx.setTransform(scale,0,0,scale,-left,-top);
       st.phase='rast';st.ln=0;st.fi=0;st.gpu=true;
-      st.identity=identityPose(r,st.bones,st.pose,r.buffers[0]);
+      st.identity=identityPose(r,st.bones,st.pose,st.vertices[0]);
       if(st.identity){st.phase='flat';st.copyY=0;}
       // Raster starts on a later slice so one pose invocation stays near 1 ms.
       // The GPU whole-pose path measured 8–17 ms, over the pump cap, so the
@@ -468,12 +472,12 @@
         if(performance.now()-t0>1.2)break;
       }
       if(st.copyY<b.height)return false;
-      finishPose(r,job.key,{surface:st.surface,bounds:b,scale:st.scale,identity:true});return true;
+      finishPose(r,job.key,{surface:st.surface,bounds:b,scale:st.scale,identity:true});st.vertices=null;return true;
     }
     if(st.phase==='rast'){
       const r=job.rig;
       while(st.ln<st.layers.length){
-        const vertices=r.buffers[st.ln],tex=st.layers[st.ln][0];
+        const vertices=st.vertices[st.ln],tex=st.layers[st.ln][0];
         while(st.fi<r.faces.length){
           if(performance.now()>=end)return false;
           const t0=performance.now();
@@ -486,6 +490,7 @@
         st.ln++;st.fi=0;
       }
       finishPose(r,job.key,{surface:st.surface,bounds:st.bounds,scale:st.scale});
+      st.vertices=null;
       return true;
     }
     return true;

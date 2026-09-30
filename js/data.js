@@ -23,8 +23,8 @@
     // v1.1 visible-arena collision fixes change real encounter pressure. These
     // damage-only coefficients restore Normal’s verified live curve and shape
     // Hard’s late-stage ramp; enemy HP and move timing remain unchanged.
-    incomingDamageScale: { normal: [1, 1.25, 1.08, 0.97, 0.84], hard: [1, 1.2, 1.18, 1.7, 0.75] },
-    bossDamageScale: { normal: [1, 1, 1, 1, 1.12], hard: [1, 1, 1, 1.02, 1] },
+    incomingDamageScale: { normal: [1, 1.25, 1.08, 0.97, 0.84], hard: [1, 1.2, 1.16, 1.7, 0.94] },
+    bossDamageScale: { normal: [1, 1, 1, 1, 1.12], hard: [1, 1, 1, 1.02, 1.1] },
     stageLength: 4240,
     playerSpeed: 128,
     laneSpeed: 84,

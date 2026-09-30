@@ -4,6 +4,8 @@
 const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
 const root=path.resolve(__dirname,'..'),mode=process.argv[2]||'unit',baseline=process.argv[3],liveBaseline=process.argv[4];
 const out=path.join(root,'docs/review/v11/ci');fs.mkdirSync(out,{recursive:true});
+const baseCommit=cp.execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+const workingTreeDirty=!!cp.execFileSync('git',['status','--porcelain','--','index.html','js','tools','.github'],{cwd:root,encoding:'utf8'}).trim();
 const tests={
  unit:[
   ['test-lock','tools/locked-tests-v11.cjs'],['lazy-assets','tools/assets-check-v11.cjs'],
@@ -13,6 +15,7 @@ const tests={
   ['voice-assets','tools/voice-assets-check.cjs'],['utility-voices','tools/utility-voice-check.cjs'],
   ['normal-inherited','tools/normal-balance.cjs'],['assisted-soak','tools/soak.cjs'],
   ['combat-v11','tools/v11-combat-check.cjs'],['balance-evidence-v11','tools/v11-evidence-check.cjs'],['combat-render-v11','tools/v11-combat-render-check.cjs'],
+  ['left-body-v11','tools/left-body-check-v11.cjs'],['pose-preemption-v11','tools/pose-preemption-v11.cjs'],
   ['menus-v11','tools/v11-menu-check.cjs'],['performance-contracts-v11','tools/performance-check-v11.cjs'],
   ['background-visual-v11','tools/performance-visual-v11.cjs',liveBaseline],
   ['presentation-v11','tools/presentation-check-v11.cjs'],['voice-audit-v11','tools/audio/voice-audit-check.cjs'],
@@ -39,6 +42,6 @@ for(const [name,script,...args] of tests[mode]){
  const row={name,command:['node','--expose-gc',script,...args].join(' '),status:result.status===0&&!result.error?'pass':'fail',exitCode:result.status,signal:result.signal,seconds:(Date.now()-start)/1000,error:result.error?.message};results.push(row);
  console.log('::endgroup::');console.log('RWB_GATE '+JSON.stringify(row));
 }
-const report={commit:cp.execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),mode,environment:process.env.GITHUB_ACTIONS?'GitHub Actions Linux (not Jason Mac or a physical device)':'Current executor',results};
+const report={commit:workingTreeDirty?null:baseCommit,baseCommit,workingTreeDirty,revisionLabel:workingTreeDirty?'uncommitted source/test snapshot based on '+baseCommit:baseCommit,mode,environment:process.env.GITHUB_ACTIONS?'GitHub Actions Linux (not Jason Mac or a physical device)':'Current executor',results};
 fs.writeFileSync(path.join(out,mode+'.json'),JSON.stringify(report,null,2)+'\n');console.log('RWB_GATE_REPORT '+JSON.stringify(report));
 if(results.some(r=>r.status!=='pass'))process.exitCode=1;

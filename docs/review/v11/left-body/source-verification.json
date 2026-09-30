@@ -1,0 +1,22 @@
+{
+  "spriteFrame": {
+    "unchanged": true,
+    "sha256": "7ce844bb2fdca111cdf5c1397a0565c0d0072fb525e1c79ae5b736bef546fa1e",
+    "bytes": 989
+  },
+  "drawSprite": {
+    "unchanged": true,
+    "sha256": "90922f6b892d0b3d7dba553c2e08592201b007169f5665da3cd98aaab9748f89",
+    "bytes": 3425
+  },
+  "drawCallandor": {
+    "unchanged": true,
+    "sha256": "2a81c157ebc9446585cbdae85852329726dce3883d59f525084f19b28f82612c",
+    "bytes": 2243
+  },
+  "rileySourceSha256": "b71dd3d7fa034a9c68d9fea93a571cbf199158d6364d04998e38978e10aed48d",
+  "scenesSourceSha256": "e0cdafb62fea443b65730c0a0486797bc1146a108e1e6a83717abdfe7fa272dc",
+  "beforeRileySourceSha256": "66382b74f79a21ef0f0a61699b7ed6e0c1dc4559622058649a97da20c135ca36",
+  "beforeScenesSourceSha256": "3af161d9f766826d3d84f8a3b2b0eefe5c45954a12dab5874e6a71e0c7b0153d",
+  "additiveTestSha256": "45637f2427dec28fae6759dd2506c6bb25f5586023b297cd8b02ce1ca7f15162"
+}

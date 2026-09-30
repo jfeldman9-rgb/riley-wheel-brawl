@@ -836,6 +836,7 @@
       }
       const frozen = this.camera.update(dt);
       if (frozen) {
+        this.player.containPaintedBody();
         this.latchInput(input);
         this.currentInput = input;
         return;
@@ -860,6 +861,9 @@
       this.stepRoofFade(dt);
       this.updateMarch();
       this.camera.follow(this.player.x, dt);
+      // Enemies/hazards can change Riley's pose after his update, and camera
+      // follow can advance the visible wall. Resolve both before rendering.
+      this.player.containPaintedBody();
       if (this.boss && !this.boss.dead && this.time >= (this.nextBossSave || 0)) { this.nextBossSave = this.time + 1; this.saveCheckpoint(); }
     }
     drawWorld(ctx) {
@@ -917,7 +921,14 @@
     draw(ctx) {
       if (R.Bake) R.Bake.flushTouches(2);
       R.Motion.apply(this);ctx.save();
-      try {this.camera.apply(ctx);this.drawWorld(ctx);} finally {ctx.restore();R.Motion.restore(this);}
+      // A new pose can be wider than its interpolated old position. Save the
+      // whole actor offset explicitly: Motion does not save at alpha=1, while
+      // paused, or without a previous tick. Shake stays presentation-only.
+      const renderX = this.player.x, grabbed = this.player.grabbed, grabbedX = grabbed && grabbed.x;
+      try {this.player.containPaintedBody(true);this.camera.apply(ctx);this.drawWorld(ctx);} finally {
+        this.player.x = renderX; if (grabbed) grabbed.x = grabbedX;
+        ctx.restore();R.Motion.restore(this);
+      }
       R.drawHUD(ctx, this);
       if (this.phase === 'play' && !this.paused) {
         for (const button of R.input.touch.buttons) {
@@ -951,7 +962,7 @@
         R.drawText(ctx, this.subtitle.line.name + ': ' + this.subtitle.line.text, 320, y + 14, 6, '#e4f6ff', 'center');
       }
       this.drawBark(ctx);
-      if (this.twinkleFreed && !this.joint) R.drawText(ctx, R.input.fillKeys('FULL SAIDIN + {power}: TOGETHER!'), 320, 292, 7, '#a9edff', 'center');
+      if (this.phase === 'play' && this.twinkleFreed && !this.joint) R.drawText(ctx, R.input.fillKeys('FULL SAIDIN + {power}: TOGETHER!'), 320, 292, 7, '#a9edff', 'center');
       if (this.paused) this.pauseMenu.draw(ctx);
       this.camera.drawFlash(ctx);
       if (this.roofFade) {

@@ -8,13 +8,16 @@ See [1.1 scope and evidence plan](V11_PLAN.md). Inherited test rules are byte-lo
 
 ## Current 1.1 review checkpoint
 
-Draft [PR #11](https://github.com/jfeldman9-rgb/riley-wheel-brawl/pull/11) has a runnable candidate at `a557efd30db1008a6c89660f2c796a8625c0d2b4`. It is **not release-ready**. See [the exact browser results](review/v11/CI_A557.md).
+Draft [PR #11](https://github.com/jfeldman9-rgb/riley-wheel-brawl/pull/11) is **not release-ready**. The latest completed browser measurement is candidate `9ad3e66adca8e2bb097a723b423d19e1427725d7`; see [its exact results](review/v11/CI_9AD3.md). Earlier [a557](review/v11/CI_A557.md) and [ecb36da](review/v11/CI_ECB36DA.md) results remain historical evidence, not current passes.
 
-- Native acceptance: 24/26 independent gates pass, with only the deliberately retained old grip/RNG contracts failing. Final native runs: Normal 100/77.5/65/57.5/57.5%; Hard 100/72.5/52.5/30/22.5%. Every Normal rate is within 2.5 points of live; late Hard results are near, not identical to, the requested 50/35/25 aims
-- All 400 runs have zero >2-second offscreen enemy violations, maximum 0.683s
+- The 9ad3 runtime matches local 8adc8aa in all 315 runtime, asset, test and workflow Git blobs. Exact-code native and GitHub acceptance: 24/26 gates passed, with the deliberately retained old grip/RNG contracts failing. Normal 100/77.5/65/57.5/57.5%; Hard 100/72.5/52.5/30/22.5%. Every Normal rate is within 2.5 points of live; late Hard results are near, not identical to, the requested 50/35/25 aims
+- All 400 measured stage-seed runs have zero >2-second offscreen enemy violations, maximum 0.683s
+- Cloud candidate cold starts passed 30/30 matched entries and 10/10 in the separate smoke sample. One inherited audio sample still failed at 401.2ms. Warmed pacing passed 15/18 windows, and immediate-start pacing failed all three tested stages. No timing threshold was relaxed
+- Actual Chromium device emulation passed 71 checks; painted-presentation browser coverage passed 13. These do not certify physical devices
 - Ten genuine painted outcome poses are integrated. Runtime encodings retain full dimensions and exact alpha; original generated PNGs are preserved separately
 - All 80 original voice files remain unchanged. Objective clipping/loudness checks pass; pronunciation/naturalness listening remains unverified
-- Same-runner browser comparison found cold-start regressions in Stages2–5 and one failed matched pacing window. A measured cold-work correction is being prepared; no threshold has been relaxed
+- Independent review reproduced left-edge body clipping and queued-pose preemption corruption in 9ad3. Focused fixes and additive regressions are being integrated; their final balance and browser results remain pending
+- Stage 1–3 seam artifacts remain unresolved. Purpose-painted connector candidates failed boundary review and were not inserted. Stage 4/5 source art remains unchanged
 - The [500 additional proposals](FUTURE_500.md) are an optional ten-pass roadmap, not already-built features. Two optional post-finale levels have separate future targets
 
 ## Verification limits

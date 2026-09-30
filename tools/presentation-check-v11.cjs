@@ -32,6 +32,8 @@ const check = (value, label) => { assert.ok(value, label); checks++; console.log
   check(scene.enemyCards.length === 0, 'Boss entry dismisses ordinary intro cards without conflicting with the boss card');
   scene.wave=5;scene.boss.dead=true;scene.tutorial='BREAK SHIELD';scene.warningTimer=3;scene.finishWave(1/60);
   check(scene.phase==='clear'&&scene.tutorial===null&&scene.warningTimer===0&&scene.bossCard===0,'Boss victory clears obsolete combat instructions and intro overlays');
+  const oldDrawText=R.drawText,hints=[];R.drawText=(ctx,line,...args)=>{hints.push(line);return oldDrawText(ctx,line,...args);};scene.twinkleFreed=true;scene.joint=null;scene.draw(ctx);R.drawText=oldDrawText;
+  check(!hints.some(line=>String(line).includes('TOGETHER!')),'Cleared boss stage never shows an actionable joint-finisher hint');
   const images = {}, hashes = new Set();
   for (const key of P.kinds.flatMap((_, i) => P.keys(i))) {
     const filename = R.ART_FILES[key];

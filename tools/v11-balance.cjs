@@ -46,6 +46,9 @@ if (process.argv.includes('--stage-child')) {
   const clears = results.filter(r => r.cleared).length;
   process.stdout.write(JSON.stringify({ stage: stage + 1, clears, rate: clears * 2.5, sourceHash, incomingDamageScale: R.TUNE.incomingDamageScale ? R.TUNE.incomingDamageScale[mode][stage] : 1, bossDamageScale: R.TUNE.bossDamageScale ? R.TUNE.bossDamageScale[mode][stage] : 1, results }));
 } else {
+  const baseCommit=cp.execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+  const workingTreeDirty=!!cp.execFileSync('git',['status','--porcelain','--','index.html','js'],{cwd:root,encoding:'utf8'}).trim();
+  const provenance={baseCommit,workingTreeDirty,revision:workingTreeDirty?null:baseCommit,revisionLabel:workingTreeDirty?'uncommitted runtime snapshot based on '+baseCommit:baseCommit};
   const stages = process.env.RWB_BALANCE_STAGES ? process.env.RWB_BALANCE_STAGES.split(',').map(n => Number(n) - 1) : [0, 1, 2, 3, 4];
   if (stages.some(s => !Number.isInteger(s) || s < 0 || s > 4) || new Set(stages).size !== stages.length) throw new Error('Stages must be unique integers 1–5');
   if (!diagnostic && (stages.length !== 5 || new Set(stages).size !== 5)) throw new Error('Acceptance requires all five stages; subsets are diagnostic only');
@@ -71,7 +74,7 @@ if (process.argv.includes('--stage-child')) {
     rows.push(row);
     console.log(mode.toUpperCase() + ' stage ' + row.stage + ': ' + row.clears + '/40 (' + row.rate + '%), max offscreen ' + Math.max(...row.results.map(r => r.maxOffscreenSeconds)) + 's' + (row.delta == null ? '' : ', delta ' + row.delta + ' points') + ', offscreen ' + (row.offscreenPassed ? 'PASS' : 'FAIL'));
     fs.mkdirSync(path.dirname(output), { recursive: true });
-    fs.writeFileSync(output, JSON.stringify({ diagnostic, complete: rows.length === 5, method: 'Seeds 1001–1040; three lives; no HP refill, injected damage or extra lives; exact inherited tools/soak.cjs controller; automated simulation, not human play', mode, sourceRoot: root, revision: cp.execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(), rows }, null, 2) + '\n');
+    fs.writeFileSync(output, JSON.stringify({ diagnostic, complete: rows.length === 5, method: 'Seeds 1001–1040; three lives; no HP refill, injected damage or extra lives; exact inherited tools/soak.cjs controller; automated simulation, not human play', mode, sourceRoot: root, ...provenance, rows }, null, 2) + '\n');
   }
   if (!diagnostic && rows.some(row => !row.offscreenPassed || row.balancePassed === false)) process.exitCode = 1;
 }

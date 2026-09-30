@@ -1,5 +1,15 @@
 # v1.1 combat, bounds, and balance evidence
 
+## Latest integrated source
+
+Exact local tested commit: `1f9e33db9ce29f43770024abab14c4990ca50308`, clean source/test tree. Runtime SHA256: `4fc6ff472aebd51e947d233b7e8cb33d26b4631242eaf355863f604795e26d0e`. The complete aggregate passed 26/28 native gates; only the two retained legacy acceptance conflicts fail.
+
+All 400 no-override stage-seed runs are complete: **Normal 100/80/67.5/60/57.5%; Hard 100/75/50/30/25%**. Normal deltas from fresh live are +2.5/+5/0/+2.5/0 percentage points, within both the new live±5 gate and unchanged inherited bands. There are zero >2-second offscreen enemy violations, with maximum 0.683s. Raw final reports are `normal-40.json` and `hard-40.json`; `combat-final-summary.json` identifies the measured source. JSON reports use compact transport formatting; no measurements are removed.
+
+The painted-body fix passes 2,142 decoded cases and keeps transient camera shake out of permanent physics. The queued-pose fix passes 216 interruption cases. See [body containment](left-body/README.md) and [Hard-only recalibration](HARD_RECALIBRATION.md). Hard Stage 4 is 30% against a 35% aim and remains subject to gameplay review. Browser/performance acceptance for this integrated runtime is still pending; these simulation results are not a Mac or human-play pass.
+
+## Earlier calibration record (historical)
+
 ## Measurement contract
 
 Pristine live reference: `816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc`, separately checked out at `riley-live-1.0`. The fresh reference was measured before candidate tuning. Every accepted stage/mode result uses 40 automated playthroughs, seeds 1001–1040, exactly three lives, no HP refill, no injected enemy damage, and the exact inherited `tools/soak.cjs` input controller. These are deterministic bot simulations, not human playtests. No Mac playtest or native-Mac performance claim is made here.

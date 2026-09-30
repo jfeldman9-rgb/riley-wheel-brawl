@@ -20,11 +20,13 @@
 
 `docs/review/v11/menu-*.png` are offline Canvas renders using the bundled font, visually inspected for clipping and overlap. They are not browser screenshots or photographs of devices. The title render uses the existing missing-art fallback in this Node harness.
 
-## Browser and physical-device limits
+## Browser evidence and physical-device limits
 
-`CHROMIUM_PATH=/usr/bin/chromium node tools/v11-device-browser.cjs` could not start Chromium locally: its process singleton Unix socket returned `Operation not permitted`. `docs/review/v11/device-browser.json` records **blocked**, with zero completed browser assertions. This is not a browser pass.
+Exact candidate `9ad3e66adca8e2bb097a723b423d19e1427725d7` passed **71 actual Chromium emulation checks** in [acceptance run 36775624348](https://github.com/jfeldman9-rgb/riley-wheel-brawl/actions/runs/36775624348). The review archive includes its complete device report and nine desktop/iPad/phone panel screenshots, decoded and verified against workflow-log hashes.
 
-The new script is ready for an unrestricted browser/CI runner. It uses actual Chromium keyboard/touch event plumbing at desktop, 1024×768 iPad-like landscape and 844×390 phone-like landscape viewports, plus injected standard Gamepad objects. It also checks portrait guidance, repeated nested Back/resume and controller disconnect fallback. These are emulations even if they pass in CI.
+The script uses actual Chromium keyboard/touch event plumbing at desktop, 1024×768 iPad-like landscape and 844×390 phone-like landscape viewports, plus injected standard Gamepad objects. Portrait guidance, repeated nested Back/resume and controller disconnect fallback passed. These remain emulations.
+
+The earlier `docs/review/v11/device-browser.json` blocked record describes only this cloud executor's failed shell-Chromium launch (`Operation not permitted` on its singleton socket), not the later GitHub run. The restriction remains; no local browser pass is claimed.
 
 No physical iPad, phone, Xbox controller or PlayStation controller was available. Safari/WebKit, browser-specific controller mapping, Bluetooth reconnect behavior, notch/safe-area ergonomics, and real thumb reach remain manual checks. Landscape gameplay target diameters are at least 44 CSS pixels at the tested dimensions; portrait controls are smaller, hence the rotation suggestion. Nonstandard controller mappings may need Controls remapping.
 
