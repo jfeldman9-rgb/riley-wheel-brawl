@@ -38,5 +38,15 @@
     "coldStageEnterMsExclusive": 400,
     "normalMaxDeltaPercentagePoints": 5,
     "offscreenEnemySecondsMaximum": 2
+  },
+  "metadataExceptions": {
+    "tools/check.cjs": {
+      "kind": "version-metadata-only",
+      "from": "const STAMP='20260930-release2';",
+      "to": "const STAMP='20260930-v11-review';",
+      "expectedOccurrences": 1,
+      "reason": "Release 1.1 requires a fresh cache stamp; URL assertion logic and every threshold are unchanged.",
+      "originalCopy": "docs/review/v11/inherited/check-live1.0.cjs"
+    }
   }
 }

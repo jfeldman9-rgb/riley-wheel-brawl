@@ -25,14 +25,14 @@ python3 -m http.server 8000
 | Throw a grabbed target | Press away from the target | Press away from the target |
 | Call Loial (**LOIAL**, once per stage) | R / I / V / U | LB / RB |
 | Spend full meter (**SAIDIN**) | F / B | B |
-| Pause | Escape / P | Back |
+| Pause | Escape / P | Start / Options or Back / Share |
 | Music on/off | M | Options → MUSIC |
 | Mute all sound | N | Options → SOUND |
 
 The ground chain is front kick, roundhouse, then spinning back kick. FIRE has a
 cooldown and no health cost. A full SAIDIN meter enables Balefire; holding it
 past the grace period begins the warned, nonlethal taint effect. Menus support
-keyboard, gamepad, mouse, and touch, and bindings can be remapped.
+keyboard, gamepad, mouse, and touch, and bindings can be remapped. Standard-layout Xbox A / PlayStation Cross confirms menus; B / Circle goes back. **How to Play** is available from the title and pause menus. On phones, landscape gives the largest controls.
 
 ## Difficulty
 
@@ -47,6 +47,8 @@ free Twinkle Toes, then spend full saidin with POWER for the joint finish. Taim
 keeps fighting until both beams hit.
 
 ## Verification
+
+`node tools/v11-menu-check.cjs` covers all-stage saves, menu navigation and simulated device input. `node tools/v11-device-browser.cjs` runs the new browser/device-emulation flow. See `docs/V11_MENU_DEVICE.md` for evidence and physical-device limits.
 
 `node tools/check.cjs` covers Stage 1 combat plus all-stage progression, safe Reel
 skipping, boss rules, hazards, Callandor persistence, the joint finish, taint, and

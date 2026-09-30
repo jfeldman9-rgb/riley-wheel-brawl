@@ -1,3 +1,41 @@
+# Version 1.1 audio polish (2026-09-30)
+
+## Delivered changes
+
+- Independently decoded **all 80 shipped voice clips**, not only the 54 Kokoro clips. Every file is catalogued, mono 24 kHz MP3, longer than the 0.25-second placeholder cutoff, and contains signal. No clipped PCM samples were found. Total voice assets: **1,392,640 bytes**.
+- Measured source loudness spans **−17.69 to −16.40 LUFS**; maximum source true peak is **−1.11 dBTP**. Small per-line runtime gain trims in `js/voices.js` bring every clip to **−17 LUFS**, retaining at least **1.09 dB true-peak headroom**. The gain range is −0.60 to +0.69 dB. These are per-voice-bus input measurements, not a claim about peak levels of all mixed game sounds together.
+- **Every MP3 remains byte-identical to release 1.0.** No speech was synthesized, cloned, rerecorded, pitch-shifted, or re-encoded. Small runtime trims preserve the previously approved stock cast and delivery.
+- Speech has a dedicated music-duck stage. The former shared envelope allowed a short, deep impact to replace a longer voice's duck and restore music mid-sentence. Speech now holds music at 42% for its full decoded length plus a 0.45-second recovery; effects can add their own independent dip. Scene skips release the speech dip in 0.12 seconds.
+- New music fetch/decode/start work waits for the matching scene's first visible frame via `audio.markFirstVisibleFrame(scene.music)`. Stale scene markers do nothing. The already-playing shared theme remains seamless across scenes, and browser gesture unlocking still applies.
+- Recorded voices remain single-source: an allowed replacement stops its predecessor before starting, and protected speech preserves natural decoded endings and request order. Existing cue timing, gameplay, cast, text, and art are unchanged.
+
+## Full inventory and auditions
+
+- [All 80 audition players and listening notes](review/audio-v11/auditions.html)
+- [Independent per-file decoded measurements, hashes, gain trims and name-review terms](review/audio-v11/voice-audit.json)
+- [Validation evidence and remaining review gate](review/audio-v11/README.md)
+
+The audition page plays the original files at their original level, lists each game's gain adjustment, allows only one player at a time, and can export listening notes. There are no new or regenerated spoken lines. All 80 runtime-adjusted lines are present in the audition list.
+
+**Auditory review remains unperformed.** This execution environment explicitly cannot receive audio input; numeric waveform checks cannot certify naturalness, pronunciation, vocal age, or emotional delivery. No clip is labeled listened-to or performance-approved by this 1.1 pass. The existing 1.0 cast approval still stands. Fantasy names and potentially ambiguous words are flagged for listening in the inventory rather than asserted incorrect. Kokoro/its model weights are absent here; there is no verified performance defect that would justify blind regeneration or a new download.
+
+## Reproduce
+
+```sh
+python3 tools/audio/audit-voices.py
+node tools/audio/voice-audit-check.cjs
+node tools/audio/audio-clock-check.cjs
+CHROMIUM_PATH=/usr/bin/chromium node tools/audio/audio-mix-check.cjs
+node tools/voice-assets-check.cjs
+node tools/utility-voice-check.cjs
+CHROMIUM_PATH=/usr/bin/chromium node tools/voice-sequence-check.cjs
+CHROMIUM_PATH=/usr/bin/chromium node tools/audio-check.cjs
+```
+
+The fresh audit requires Python + NumPy + ffmpeg/ffprobe. The checked-in JSON can be validated without those packages. The modeled clock test explicitly does **not** substitute for the real Chromium tests. Existing tests/thresholds are unchanged. A replacement family recording should be re-audited and have its corresponding gain trim refreshed.
+
+---
+
 # Approved character cast (20260930-release1)
 
 Jason approved all five auditions on September 30, 2026. The release contains 54 new Kokoro clips: Riley 30, Twinkle Toes 8, Moiraine 10, Loial 2, and male Be'lal 4. This supersedes the older recording-only restriction below. These are original stock-voice character performances, not real-person clones.

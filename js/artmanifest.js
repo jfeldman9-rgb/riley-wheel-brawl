@@ -1,6 +1,16 @@
 'use strict';
 // Add delivered files to ART_MANIFEST; unlisted files use procedural fallbacks.
 RWB.ART_MANIFEST = [
+  "assets/art/outcomes-v11/boss-defeat-taim.webp",
+  "assets/art/outcomes-v11/boss-defeat-forsaken.webp",
+  "assets/art/outcomes-v11/boss-defeat-draghkar.webp",
+  "assets/art/outcomes-v11/boss-defeat-fade.webp",
+  "assets/art/outcomes-v11/boss-defeat-chieftain.webp",
+  "assets/art/outcomes-v11/riley-victory-taim.webp",
+  "assets/art/outcomes-v11/riley-victory-forsaken.webp",
+  "assets/art/outcomes-v11/riley-victory-draghkar.webp",
+  "assets/art/outcomes-v11/riley-victory-fade.webp",
+  "assets/art/outcomes-v11/riley-victory-chieftain.webp",
   "assets/art/rig-riley.png",
   "assets/art/rig-twinkle.png",
   "assets/art/riley16-v2/frames.json",
@@ -102,6 +112,16 @@ RWB.ART_MANIFEST = [
 ];
 // Logical keys are stable; all request versioning is owned by assets.js.
 RWB.ART_FILES = {
+  "boss-defeat-taim": "assets/art/outcomes-v11/boss-defeat-taim.webp",
+  "boss-defeat-forsaken": "assets/art/outcomes-v11/boss-defeat-forsaken.webp",
+  "boss-defeat-draghkar": "assets/art/outcomes-v11/boss-defeat-draghkar.webp",
+  "boss-defeat-fade": "assets/art/outcomes-v11/boss-defeat-fade.webp",
+  "boss-defeat-chieftain": "assets/art/outcomes-v11/boss-defeat-chieftain.webp",
+  "riley-victory-taim": "assets/art/outcomes-v11/riley-victory-taim.webp",
+  "riley-victory-forsaken": "assets/art/outcomes-v11/riley-victory-forsaken.webp",
+  "riley-victory-draghkar": "assets/art/outcomes-v11/riley-victory-draghkar.webp",
+  "riley-victory-fade": "assets/art/outcomes-v11/riley-victory-fade.webp",
+  "riley-victory-chieftain": "assets/art/outcomes-v11/riley-victory-chieftain.webp",
   "riley16-frames": "assets/art/riley16-v2/frames.json",
   "belal-idle": "assets/art/belal/idle.png",
   "belal-walk1": "assets/art/belal/walk1.png",
@@ -211,4 +231,99 @@ RWB.ART_FILES = {
   "stage5-roof-far": "assets/art/stage5-roof-far.jpeg",
   "floor-roof": "assets/art/floor-roof-loop.jpeg",
   "logo": "assets/art/logo.png"
+};
+
+// Painted 1.1 outcome sprites: visible alpha bounds measured at A >= 16.
+// This ignores negligible edge haze at draw time; WebP alpha matches the PNG masters exactly.
+RWB.OUTCOME_ART = {
+  "riley-victory-chieftain": {
+    "bounds": [
+      106,
+      38,
+      903,
+      1385
+    ],
+    "height": 100
+  },
+  "riley-victory-fade": {
+    "bounds": [
+      139,
+      24,
+      871,
+      1410
+    ],
+    "height": 100
+  },
+  "riley-victory-draghkar": {
+    "bounds": [
+      250,
+      27,
+      697,
+      1422
+    ],
+    "height": 113
+  },
+  "riley-victory-forsaken": {
+    "bounds": [
+      108,
+      33,
+      921,
+      1403
+    ],
+    "height": 100
+  },
+  "riley-victory-taim": {
+    "bounds": [
+      125,
+      12,
+      840,
+      1511
+    ],
+    "height": 141
+  },
+  "boss-defeat-chieftain": {
+    "bounds": [
+      31,
+      18,
+      1484,
+      985
+    ],
+    "height": 87
+  },
+  "boss-defeat-fade": {
+    "bounds": [
+      28,
+      205,
+      1733,
+      596
+    ],
+    "height": 45
+  },
+  "boss-defeat-draghkar": {
+    "bounds": [
+      68,
+      154,
+      1717,
+      633
+    ],
+    "height": 64
+  },
+  "boss-defeat-forsaken": {
+    "bounds": [
+      61,
+      36,
+      1416,
+      946
+    ],
+    "height": 70
+  },
+  "boss-defeat-taim": {
+    "bounds": [
+      82,
+      45,
+      1423,
+      918
+    ],
+    "height": 72
+  }
 };

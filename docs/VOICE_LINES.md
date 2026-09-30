@@ -2,6 +2,13 @@
 
 These are the complete short lines intended for spoken playback and matching subtitles. Keep recordings warm, clear, and kid-friendly. Do not improvise alternate takes in the released game. If a recording is missing, the subtitle and existing synthesized cue must still fire.
 
+
+## Version 1.1 review status
+
+All **80 existing lines** below have a matching player in the [complete audition inventory](review/audio-v11/auditions.html), including the retired launcher clip. No dialogue text, recording, or cast has changed. Each playback gain has a small decoded-loudness-based trim (−0.60 to +0.69 dB) to target −17 LUFS; the original MP3s remain unchanged.
+
+All clips passed independent decoding, signal, digital-clipping, and normalized true-peak checks. **Listening is still pending:** this environment cannot receive audio input. “Robot-like”, pronunciation, and character-performance quality are not claimed verified by automated measurements. Per-line name-review terms and measurable evidence are in [voice-audit.json](review/audio-v11/voice-audit.json). The audition page provides explicit pending/pass/revise choices; no listening verdict is fabricated.
+
 ## Story lines
 
 | ID | Character | Exact line | When it plays |

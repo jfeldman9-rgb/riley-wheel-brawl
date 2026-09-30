@@ -1,0 +1,70 @@
+name: 1.1 acceptance
+on:
+  pull_request:
+    branches: [rwb-w2]
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+concurrency:
+  group: v11-acceptance-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+      - name: All contracts, combat, saves, assets and balance
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/rwb-old-parity" 7f3f94b
+          git worktree add --detach "$RUNNER_TEMP/rwb-live-visual" 816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/ci-v11.cjs unit "$RUNNER_TEMP/rwb-old-parity" "$RUNNER_TEMP/rwb-live-visual"
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+          npx playwright install --with-deps chromium
+      - name: Every browser and emulated-device gate
+        run: node tools/ci-v11.cjs browser
+      - name: Review screenshots in logs
+        if: always()
+        run: node tools/evidence-log-v11.cjs
+  matched-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+          npx playwright install --with-deps chromium
+      - name: Three matched serial live-versus-candidate runs
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/rwb-live-1.0" 816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-compare-v11.cjs "$RUNNER_TEMP/rwb-live-1.0"
+# Public-repository standard runners only. No secrets, caches, uploaded artifacts,
+# paid services or deploy steps. Failures remain failures, including documented
+# inherited behavioral contracts awaiting Jason/Grok review.

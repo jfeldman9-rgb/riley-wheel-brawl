@@ -140,7 +140,7 @@
   R.prepareRendering=function(){
     if(preparation)return preparation;
     const jobs=[];
-    if(R.StageWorld)for(let n=0;n<5;n++)jobs.push(()=>R.StageWorld.prepare(n));
+    if(R.StageWorld)jobs.push(()=>R.StageWorld.prepare(0));
     if(R.Riley.prepare)jobs.push(()=>R.Riley.prepare());
     preparation=new Promise(resolve=>{const next=()=>{const until=performance.now()+4;do{const job=jobs.shift();if(job)job();}while(jobs.length&&performance.now()<until);if(jobs.length)setTimeout(next,0);else warmDisplay().then(resolve);};next();});return preparation;
   };
@@ -158,7 +158,7 @@
     const scene=R.game.scene,next=R.game.nextScene,fade=R.game.fade,fadeDir=R.game.fadeDir;
     try{
       ctx.setTransform(rs,0,0,rs,0,0);
-      for(const [level,wave] of [[0,3],[2,3],[4,3],[3,5]]){
+      for(const [level,wave] of [[0,3]]){
         const view={levelIndex:level,camera:{x:0},time:0,wave};
         R.StageWorld.draw(ctx,view);
         R.StageWorld.near(ctx,view);

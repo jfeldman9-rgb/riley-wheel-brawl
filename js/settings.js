@@ -18,9 +18,9 @@ RWB.settings = (function () {
   const DEFAULT_PAD = { attack: [2], jump: [0], special: [3], assist: [5, 4], power: [1], pause: [8] };
   // Enter confirms menus, M toggles music, N mutes everything, backslash / F11 go
   // fullscreen. Start and the d-pad always work so a bad remap can't lock anyone out.
-  const FIXED_KEYS = { Enter: 'start', m: 'music', n: 'mute', '\\': 'fullscreen', F11: 'fullscreen' };
+  const FIXED_KEYS = { Escape: 'pause', ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', Enter: 'start', m: 'music', n: 'mute', '\\': 'fullscreen', F11: 'fullscreen' };
   const FIXED_PAD = { 9: 'start', 12: 'up', 13: 'down', 14: 'left', 15: 'right' };
-  const RESERVED_KEYS = ['Enter', 'm', 'n', '\\', 'F11', 'Tab', 'Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'ContextMenu', 'OS', 'Dead', 'Unidentified'];
+  const RESERVED_KEYS = ['Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'm', 'n', '\\', 'F11', 'Tab', 'Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'ContextMenu', 'OS', 'Dead', 'Unidentified'];
   const RESERVED_PAD = [9, 12, 13, 14, 15];
 
   const ACTIONS = ['up', 'down', 'left', 'right', 'attack', 'jump', 'special', 'assist', 'power', 'pause'];
@@ -78,7 +78,10 @@ RWB.settings = (function () {
     if (p.fx === 'auto' || p.fx === 'full' || p.fx === 'lite') data.fx = p.fx;
     if (p.shake === 'full' || p.shake === 'reduced') data.shake = p.shake;
     if (p.keys && typeof p.keys === 'object') {
-      for (const a of ACTIONS) if (validList(p.keys[a], k => typeof k === 'string' && !RESERVED_KEYS.includes(k))) data.keys[a] = p.keys[a].map(norm);
+      for (const a of ACTIONS) if (validList(p.keys[a], k => typeof k === 'string') && p.keys[a].length) {
+        const keys = p.keys[a].map(norm).filter(k => !RESERVED_KEYS.includes(k) || FIXED_KEYS[k] === a);
+        if (keys.length) data.keys[a] = keys;
+      }
     }
     if (p.pad && typeof p.pad === 'object') {
       for (const a of PAD_ACTIONS) if (validList(p.pad[a], i => Number.isInteger(i) && i >= 0 && i < 20 && !RESERVED_PAD.includes(i))) data.pad[a] = p.pad[a].slice();
@@ -132,7 +135,7 @@ RWB.settings = (function () {
   }
   function setPad(action, index) {
     if (!PAD_ACTIONS.includes(action)) return { ok: false, reason: 'NOT REMAPPABLE' };
-    if (!Number.isInteger(index) || RESERVED_PAD.includes(index)) return { ok: false, reason: 'RESERVED BUTTON' };
+    if (!Number.isInteger(index) || index < 0 || index >= 20 || RESERVED_PAD.includes(index)) return { ok: false, reason: 'RESERVED BUTTON' };
     bindIn(data.pad, action, index, (a, b) => a === b);
     rebuild(); save();
     return { ok: true };
@@ -155,7 +158,11 @@ RWB.settings = (function () {
     if (k.length === 1) return k.toUpperCase();
     return k.toUpperCase().slice(0, 4);
   }
-  function padLabel(i) { return i == null ? '--' : (PAD_NAMES[i] || ('B' + i)); }
+  const PS_NAMES = ['CROSS', 'CIRCLE', 'SQUARE', 'TRIANGLE', 'L1', 'R1', 'L2', 'R2', 'SHARE', 'OPTIONS', 'L3', 'R3', 'UP', 'DN', 'LF', 'RT', 'PS'];
+  function padLabel(i) {
+    const names = RWB.input && RWB.input.gamepad.family === 'playstation' ? PS_NAMES : PAD_NAMES;
+    return i == null ? '--' : (names[i] || ('B' + i));
+  }
   function keysFor(action, n) { return (data.keys[action] || []).slice(0, n || 1).map(keyLabel); }
   function padFor(action) {
     if (action === 'up' || action === 'down' || action === 'left' || action === 'right') return 'D-PAD';
@@ -176,7 +183,7 @@ RWB.settings = (function () {
       const waves = RWB.LEVELS && RWB.LEVELS[r.level].waves ? RWB.LEVELS[r.level].waves.length : 1;
       r.wave = Math.max(0, Math.min(waves - 1, r.wave | 0));
       r.score = Math.max(0, r.score | 0);
-      r.extra = r.extra && typeof r.extra === 'object' ? r.extra : {};
+      r.extra = r.extra && typeof r.extra === 'object' && !Array.isArray(r.extra) ? r.extra : {};
       // Continue belongs to its original run, even when the next-run option changes.
       r.extra.difficulty = difficulty(r.extra.difficulty);
       return api.validateRun ? api.validateRun(r) : r;

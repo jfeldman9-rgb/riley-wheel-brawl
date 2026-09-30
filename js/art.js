@@ -143,7 +143,26 @@ RWB.art = (function () {
     }, blur);
   }
 
-  function clear() { cache.clear(); }
+  // Painted cutout enemies bypass the mesh atlas. Downsample their original
+  // image once at the display density, then reuse that same sprite every draw.
+  const bitmaps = new Map();
+  const bitmapStats = { builds: 0, hits: 0 };
+  function bitmap(key, w, h) {
+    const img=RWB.assets.get(key);if(!img)return null;
+    const scale=rs(),width=Math.min(img.width,Math.max(1,Math.ceil(w*scale))),height=Math.min(img.height,Math.max(1,Math.ceil(h*scale)));
+    const id=key+':'+width+'x'+height,old=bitmaps.get(id);
+    if(old&&old.source===img){bitmapStats.hits++;return old.canvas;}
+    if(width===img.width&&height===img.height)return img;
+    const t0=performance.now(),c=canvas(width,height),g=c.getContext('2d');
+    g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(img,0,0,width,height);
+    // A display resize replaces the old resolution instead of retaining every
+    // AUTO scale the player has visited.
+    for(const [other,entry] of bitmaps)if(entry.key===key){entry.canvas.width=entry.canvas.height=1;bitmaps.delete(other);}
+    bitmaps.set(id,{key,source:img,canvas:c});bitmapStats.builds++;
+    if(RWB.perf.noteBake)RWB.perf.noteBake('bitmap:'+key,performance.now()-t0);
+    return c;
+  }
+  function clear() { cache.clear(); bitmaps.clear(); }
 
-  return { DATA, has, frame, atlas, plate, draw, castShadow, reflect, plateLayer, clear };
+  return { DATA, has, frame, atlas, plate, draw, castShadow, reflect, plateLayer, bitmap, bitmapStats, clear };
 })();

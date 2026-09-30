@@ -1,0 +1,22 @@
+{
+  "runtimeSha256": "5ea1241f4114830eb1619a3b3b7bff82a23db1b5ba25f44b58e8246815602c40",
+  "normalRates": [
+    100,
+    77.5,
+    65,
+    57.5,
+    57.5
+  ],
+  "hardRates": [
+    100,
+    72.5,
+    52.5,
+    30,
+    22.5
+  ],
+  "normalCount": 200,
+  "hardCount": 200,
+  "offscreenViolations": 0,
+  "maxOffscreenSeconds": 0.683,
+  "method": "Unassisted automated playthroughs. No human/Mac claim. Separate inherited assisted Hard coverage: 50/50, all boss moves, zero overlapping active attackers."
+}

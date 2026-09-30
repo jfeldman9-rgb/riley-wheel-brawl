@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "Finished stage paintings retain independent parallax and are reused across camera travel",
+    "Stage 4/5 continuous panoramas and stage 5 roof keep original geometry",
+    "Stage preload finishes before a transition starts its fade",
+    "Original rounded-camera renderer remains a working low-memory fallback",
+    "Large enemy bitmap resizes once and replaces stale display-size entries",
+    "Spark and sword-streak bursts are capped and particle objects are reused",
+    "HUD redraws only displayed values, including denominator and GO visibility changes"
+  ],
+  "passed": 7,
+  "backgrounds": {
+    "builds": 5,
+    "composites": 2,
+    "hits": 1
+  },
+  "bitmaps": {
+    "builds": 2,
+    "hits": 1
+  }
+}

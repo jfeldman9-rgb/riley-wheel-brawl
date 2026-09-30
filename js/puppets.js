@@ -698,7 +698,7 @@
     if(!R.Bake)return;
     if(level===2){
       R.Bake.enqueue(1,'blit:cg-draghkar',(job,end)=>{
-        const img=R.assets.get('cg-draghkar');if(!img)return true;
+        const img=R.art.bitmap('cg-draghkar',128,95);if(!img)return true;
         const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
         if(!ctx)return true;
         const t0=performance.now();
@@ -710,7 +710,8 @@
     if(level===3){
       const names=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];
       names.forEach((name)=>R.Bake.enqueue(1,'belal:'+name,(job)=>{
-        const img=R.assets.get('belal-'+name);if(!img)return true;
+        const frame=BELAL.frames[name],scale=defs.forsaken.height/BELAL.frames.idle[1];
+        const img=R.art.bitmap('belal-'+name,frame[0]*scale,frame[1]*scale);if(!img)return true;
         const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
         if(!ctx)return true;
         const t0=performance.now();
@@ -789,8 +790,9 @@
   const belalFlashCache={};
   function belalFlash(name,img,w,h){let c=belalFlashCache[name];if(!c){const t0=performance.now();c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(w));c.height=Math.max(1,Math.ceil(h));const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,0,0,w,h);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,w,h);belalFlashCache[name]=c;if(R.perf.noteBake)R.perf.noteBake('belalFlash:'+name,performance.now()-t0);}return c;}
   R.drawBelal=function(ctx,a,cam,height){
-    const name=a.belalFrame||belalFrame(a),img=R.assets.get('belal-'+name);if(!img)return false;
+    const name=a.belalFrame||belalFrame(a);
     const [w,h,ax,ay]=BELAL.frames[name],s=(height||116)/BELAL.frames.idle[1];
+    const img=R.art.bitmap('belal-'+name,w*s,h*s);if(!img)return false;
     ctx.save();
     if(a.dead)ctx.globalAlpha*=Math.max(0,a.deathTimer/0.75);
     ctx.translate(a.x-cam,a.y-(a.z||0));
@@ -804,7 +806,7 @@
     return true;
   };
   for(const Type of [R.ShadowSoldier,R.ShadowBoss]){const draw=Type.prototype.draw;Type.prototype.draw=function(ctx,cam){
-    if(this.kind==='draghkar') {const img=R.assets.get('cg-draghkar');if(img){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,30);ctx.save();ctx.translate(this.x-cam,this.y-this.z-28);ctx.scale(-this.facing,1);const flap=Math.sin(this.flightTime*9)*.10;ctx.rotate(this.ai==='attack'?-.18:flap*.4);ctx.drawImage(img,-64,-45,128,86*(1+flap));ctx.restore();return;}}
+    if(this.kind==='draghkar') {const img=R.art.bitmap('cg-draghkar',128,95);if(img){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,30);ctx.save();ctx.translate(this.x-cam,this.y-this.z-28);ctx.scale(-this.facing,1);const flap=Math.sin(this.flightTime*9)*.10;ctx.rotate(this.ai==='attack'?-.18:flap*.4);ctx.drawImage(img,-64,-45,128,86*(1+flap));ctx.restore();return;}}
     const kind=this.kind;if(kind==='forsaken'&&R.assets.has('belal-idle')){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?25:19);R.drawBelal(ctx,this,cam,defs.forsaken.height);}else if(defs[kind]&&R.assets.has(defs[kind].key)){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?25:19);R.Puppet.draw(ctx,this,cam,kind);}else draw.call(this,ctx,cam);
   };}
   const loial=R.Loial.prototype.draw;R.Loial.prototype.draw=function(ctx,cam){if(R.assets.has('cg-loial')){R.draw.shadow(ctx,this.x-cam,this.y,28);R.Puppet.draw(ctx,this,cam,'loial');}else loial.call(this,ctx,cam);};

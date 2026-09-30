@@ -1,0 +1,8217 @@
+{
+  "diagnostic": false,
+  "complete": true,
+  "method": "Seeds 1001–1040; three lives; no HP refill, injected damage or extra lives; exact inherited tools/soak.cjs controller; automated simulation, not human play",
+  "mode": "hard",
+  "sourceRoot": "/workspace/scratch/699fc278689a/riley-v11",
+  "revision": "4187c04edd239710fc49b41526164f02073cd809",
+  "rows": [
+    {
+      "stage": 1,
+      "clears": 40,
+      "rate": 100,
+      "sourceHash": "5ea1241f4114830eb1619a3b3b7bff82a23db1b5ba25f44b58e8246815602c40",
+      "incomingDamageScale": 1,
+      "bossDamageScale": 1,
+      "results": [
+        {
+          "seed": 1001,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 109.7,
+          "damage": 120.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            120.7
+          ],
+          "hits": 6,
+          "deaths": 1,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1002,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 104.1,
+          "damage": 120.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            120.7
+          ],
+          "hits": 6,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1003,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 104.1,
+          "damage": 120.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            120.7
+          ],
+          "hits": 6,
+          "deaths": 1,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1004,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 104.3,
+          "damage": 94.30000000000001,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            94.30000000000001
+          ],
+          "hits": 5,
+          "deaths": 0,
+          "pickups": 2,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1005,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 111.9,
+          "damage": 220.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            220.7
+          ],
+          "hits": 11,
+          "deaths": 2,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1006,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 107.2,
+          "damage": 143.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            143.7
+          ],
+          "hits": 7,
+          "deaths": 1,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1007,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 108.2,
+          "damage": 164.39999999999998,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            19.549999999999997,
+            0,
+            144.85000000000002
+          ],
+          "hits": 8,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1008,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 111.8,
+          "damage": 243.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            23,
+            220.7
+          ],
+          "hits": 12,
+          "deaths": 2,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1009,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 102.4,
+          "damage": 123,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            23,
+            100
+          ],
+          "hits": 6,
+          "deaths": 1,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1010,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 105.7,
+          "damage": 123,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            123
+          ],
+          "hits": 6,
+          "deaths": 1,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1011,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 106.7,
+          "damage": 213.84999999999997,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            19.549999999999997,
+            0,
+            194.3
+          ],
+          "hits": 11,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1012,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 106.6,
+          "damage": 100,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            100
+          ],
+          "hits": 5,
+          "deaths": 1,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1013,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 100.4,
+          "damage": 64.4,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            64.4
+          ],
+          "hits": 3,
+          "deaths": 0,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1014,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 110.3,
+          "damage": 120.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            120.7
+          ],
+          "hits": 7,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1015,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 115.8,
+          "damage": 164.39999999999998,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            164.39999999999998
+          ],
+          "hits": 8,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1016,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 105.2,
+          "damage": 85.10000000000001,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            85.10000000000001
+          ],
+          "hits": 4,
+          "deaths": 0,
+          "pickups": 2,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1017,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 103.9,
+          "damage": 199.99999999999997,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            199.99999999999997
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1018,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 100.8,
+          "damage": 64.4,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            23,
+            41.400000000000006
+          ],
+          "hits": 3,
+          "deaths": 0,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1019,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 102.7,
+          "damage": 92.00000000000001,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            92.00000000000001
+          ],
+          "hits": 5,
+          "deaths": 0,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1020,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 109.9,
+          "damage": 164.39999999999998,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            19.549999999999997,
+            0,
+            144.85000000000002
+          ],
+          "hits": 8,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1021,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 110.7,
+          "damage": 87.4,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            87.4
+          ],
+          "hits": 4,
+          "deaths": 0,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1022,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 112.2,
+          "damage": 143.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            143.7
+          ],
+          "hits": 7,
+          "deaths": 1,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1023,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 105.7,
+          "damage": 141.4,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            141.4
+          ],
+          "hits": 7,
+          "deaths": 1,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1024,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 108.1,
+          "damage": 143.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            143.7
+          ],
+          "hits": 8,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1025,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 108.1,
+          "damage": 100,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            100
+          ],
+          "hits": 5,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1026,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 103.1,
+          "damage": 100,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            100
+          ],
+          "hits": 5,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1027,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 103,
+          "damage": 100,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            100
+          ],
+          "hits": 5,
+          "deaths": 1,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1028,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 109.1,
+          "damage": 100,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            100
+          ],
+          "hits": 6,
+          "deaths": 1,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1029,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 111.2,
+          "damage": 200,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            39.099999999999994,
+            0,
+            160.9
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1030,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 108.6,
+          "damage": 120.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            120.7
+          ],
+          "hits": 6,
+          "deaths": 1,
+          "pickups": 2,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1031,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 107,
+          "damage": 100,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            100
+          ],
+          "hits": 5,
+          "deaths": 1,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1032,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 102.9,
+          "damage": 82.80000000000001,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            82.80000000000001
+          ],
+          "hits": 4,
+          "deaths": 0,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1033,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 111.5,
+          "damage": 271.29999999999995,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            39.099999999999994,
+            0,
+            232.2
+          ],
+          "hits": 14,
+          "deaths": 2,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1034,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 105,
+          "damage": 143.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            143.7
+          ],
+          "hits": 7,
+          "deaths": 1,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1035,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 104.1,
+          "damage": 120.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            120.7
+          ],
+          "hits": 6,
+          "deaths": 1,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1036,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 105.5,
+          "damage": 82.80000000000001,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            82.80000000000001
+          ],
+          "hits": 4,
+          "deaths": 0,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1037,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 107.5,
+          "damage": 164.39999999999998,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            164.39999999999998
+          ],
+          "hits": 8,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1038,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 111.8,
+          "damage": 220.7,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            220.7
+          ],
+          "hits": 11,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1039,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 104,
+          "damage": 23,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            23
+          ],
+          "hits": 1,
+          "deaths": 0,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1040,
+          "stage": 1,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 105.8,
+          "damage": 100,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            100
+          ],
+          "hits": 6,
+          "deaths": 1,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "AXE CRASH",
+            "GROUND STOMP",
+            "HORN CHARGE"
+          ],
+          "maxOffscreenSeconds": 0.5,
+          "offscreenViolations": []
+        }
+      ],
+      "offscreenPassed": true
+    },
+    {
+      "stage": 2,
+      "clears": 29,
+      "rate": 72.5,
+      "sourceHash": "5ea1241f4114830eb1619a3b3b7bff82a23db1b5ba25f44b58e8246815602c40",
+      "incomingDamageScale": 1.2,
+      "bossDamageScale": 1,
+      "results": [
+        {
+          "seed": 1001,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "spin",
+            "super",
+            "front",
+            "round",
+            "back",
+            "jump"
+          ],
+          "seconds": 92,
+          "damage": 265.14199999999994,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            76.89999999999999,
+            123.562
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1002,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "back",
+            "super"
+          ],
+          "seconds": 87.1,
+          "damage": 234.8844,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            170.2044
+          ],
+          "hits": 9,
+          "deaths": 1,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1003,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "spin",
+            "super",
+            "back"
+          ],
+          "seconds": 94.9,
+          "damage": 234.7424,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            170.0624
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1004,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "back",
+            "super",
+            "spin"
+          ],
+          "seconds": 86.9,
+          "damage": 219.6846,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            155.00459999999998
+          ],
+          "hits": 8,
+          "deaths": 1,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1005,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "super",
+            "back"
+          ],
+          "seconds": 81.9,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            64.68,
+            0,
+            32.339999999999996,
+            2.979999999999997,
+            100,
+            100
+          ],
+          "hits": 11,
+          "deaths": 3,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1006,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "front",
+            "super",
+            "back",
+            "jump",
+            "spin"
+          ],
+          "seconds": 95,
+          "damage": 334.99999999999994,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            235.67
+          ],
+          "hits": 11,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1007,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 74.7,
+          "damage": 300,
+          "waveDamage": [
+            100,
+            0,
+            136.96,
+            0,
+            0,
+            63.04
+          ],
+          "hits": 9,
+          "deaths": 3,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1008,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 29.7,
+          "damage": 300,
+          "waveDamage": [
+            300,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "hits": 11,
+          "deaths": 3,
+          "pickups": 1,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [],
+          "maxOffscreenSeconds": 0.183,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1009,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 75.6,
+          "damage": 335,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            70.32,
+            199.99999999999997,
+            0
+          ],
+          "hits": 10,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [],
+          "maxOffscreenSeconds": 0.35,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1010,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 91.6,
+          "damage": 304.7424,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            205.41239999999996
+          ],
+          "hits": 12,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1011,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 101.9,
+          "damage": 300.14199999999994,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            235.462
+          ],
+          "hits": 12,
+          "deaths": 2,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1012,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "spin",
+            "super",
+            "front",
+            "back",
+            "jump"
+          ],
+          "seconds": 95.7,
+          "damage": 284.6846,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            185.35459999999998
+          ],
+          "hits": 11,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1013,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "spin",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 85.8,
+          "damage": 300,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            35.31999999999999,
+            0,
+            200
+          ],
+          "hits": 10,
+          "deaths": 3,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1014,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "round",
+            "back",
+            "front",
+            "super"
+          ],
+          "seconds": 93.2,
+          "damage": 284.6846,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            185.35459999999998
+          ],
+          "hits": 11,
+          "deaths": 2,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1015,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "back",
+            "front",
+            "round",
+            "spin"
+          ],
+          "seconds": 92,
+          "damage": 250.19979999999998,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            43.89,
+            0,
+            141.6298
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1016,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 90.6,
+          "damage": 269.7424,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            170.4124
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1017,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 91.5,
+          "damage": 264.68,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.650000000000006,
+            0,
+            165.35
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1018,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 93.9,
+          "damage": 304.7424,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            205.4124
+          ],
+          "hits": 12,
+          "deaths": 2,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1019,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "back",
+            "front",
+            "super",
+            "jump",
+            "spin"
+          ],
+          "seconds": 98.7,
+          "damage": 269.7424,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            205.0624
+          ],
+          "hits": 11,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1020,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "back",
+            "jump",
+            "super",
+            "front"
+          ],
+          "seconds": 78.8,
+          "damage": 300,
+          "waveDamage": [
+            64.68,
+            65.35,
+            69.97,
+            0,
+            0,
+            100
+          ],
+          "hits": 11,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1021,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "round",
+            "front",
+            "super",
+            "back",
+            "spin"
+          ],
+          "seconds": 93.6,
+          "damage": 200,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            135.32
+          ],
+          "hits": 8,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1022,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "jump",
+            "super",
+            "back",
+            "front"
+          ],
+          "seconds": 86.8,
+          "damage": 334.99999999999994,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            77.25,
+            158.42000000000002
+          ],
+          "hits": 12,
+          "deaths": 3,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1023,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 84.3,
+          "damage": 199.8844,
+          "waveDamage": [
+            36.96,
+            0,
+            0,
+            0,
+            0,
+            162.92440000000002
+          ],
+          "hits": 7,
+          "deaths": 1,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1024,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back",
+            "front",
+            "jump",
+            "spin"
+          ],
+          "seconds": 91,
+          "damage": 319.68459999999993,
+          "waveDamage": [
+            73.92,
+            0,
+            26.08,
+            43.89,
+            0,
+            175.7946
+          ],
+          "hits": 11,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1025,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "front",
+            "jump",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 86.3,
+          "damage": 284.94219999999996,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            220.26219999999998
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1026,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "front",
+            "round",
+            "spin",
+            "super",
+            "back",
+            "jump"
+          ],
+          "seconds": 94.1,
+          "damage": 264.68,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            200
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1027,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "round",
+            "spin",
+            "front",
+            "back"
+          ],
+          "seconds": 90.5,
+          "damage": 235,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            170.32
+          ],
+          "hits": 9,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1028,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "back",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "spin"
+          ],
+          "seconds": 91,
+          "damage": 264.68,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            200
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1029,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "back",
+            "front",
+            "super",
+            "round",
+            "spin"
+          ],
+          "seconds": 94.6,
+          "damage": 284.9422,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            185.6122
+          ],
+          "hits": 11,
+          "deaths": 2,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1030,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back",
+            "front",
+            "jump"
+          ],
+          "seconds": 92.6,
+          "damage": 200,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            135.32
+          ],
+          "hits": 9,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1031,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "back",
+            "super",
+            "spin"
+          ],
+          "seconds": 90.8,
+          "damage": 214.62220000000002,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            149.94219999999996
+          ],
+          "hits": 9,
+          "deaths": 1,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1032,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "front",
+            "super",
+            "round",
+            "back",
+            "jump"
+          ],
+          "seconds": 91,
+          "damage": 215.34179999999998,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            116.01179999999998
+          ],
+          "hits": 9,
+          "deaths": 1,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1033,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "back",
+            "jump",
+            "front",
+            "super",
+            "round"
+          ],
+          "seconds": 94.6,
+          "damage": 319.6846,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            255.0046
+          ],
+          "hits": 12,
+          "deaths": 2,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1034,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 90.5,
+          "damage": 334.99999999999994,
+          "waveDamage": [
+            100,
+            0,
+            36.96,
+            0,
+            0,
+            198.04000000000002
+          ],
+          "hits": 12,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1035,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 29.7,
+          "damage": 300,
+          "waveDamage": [
+            300,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "hits": 11,
+          "deaths": 3,
+          "pickups": 1,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [],
+          "maxOffscreenSeconds": 0.183,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1036,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "back",
+            "front",
+            "super",
+            "spin",
+            "jump"
+          ],
+          "seconds": 89.5,
+          "damage": 249.9422,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            150.61219999999997
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1037,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 85.3,
+          "damage": 219.68460000000002,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            120.35459999999998
+          ],
+          "hits": 8,
+          "deaths": 1,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1038,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "spin",
+            "front",
+            "round",
+            "super",
+            "back",
+            "jump"
+          ],
+          "seconds": 86.4,
+          "damage": 165.39959999999996,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            0,
+            0,
+            100.71959999999999
+          ],
+          "hits": 7,
+          "deaths": 1,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1039,
+          "stage": 2,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "spin",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 92.3,
+          "damage": 299.33000000000004,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            200
+          ],
+          "hits": 10,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1040,
+          "stage": 2,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "round",
+            "front",
+            "super",
+            "back"
+          ],
+          "seconds": 96,
+          "damage": 300.00000000000006,
+          "waveDamage": [
+            64.68,
+            0,
+            0,
+            34.65,
+            0,
+            200.66999999999996
+          ],
+          "hits": 13,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "FEAR STUN",
+            "SHADOW BLINK",
+            "SWORD COMBO"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        }
+      ],
+      "offscreenPassed": true
+    },
+    {
+      "stage": 3,
+      "clears": 21,
+      "rate": 52.5,
+      "sourceHash": "5ea1241f4114830eb1619a3b3b7bff82a23db1b5ba25f44b58e8246815602c40",
+      "incomingDamageScale": 1.18,
+      "bossDamageScale": 1,
+      "results": [
+        {
+          "seed": 1001,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 146,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            48.144,
+            251.8559999999999
+          ],
+          "hits": 50,
+          "deaths": 3,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1002,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "jump",
+            "fireball"
+          ],
+          "seconds": 156.3,
+          "damage": 345.2344,
+          "waveDamage": [
+            0,
+            0,
+            51.353600000000014,
+            12.036000000000001,
+            0,
+            281.8448
+          ],
+          "hits": 50,
+          "deaths": 2,
+          "pickups": 11,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1003,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 150.3,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 47,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1004,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 146.8,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            29.6888,
+            270.31120000000004
+          ],
+          "hits": 43,
+          "deaths": 3,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1005,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "jump",
+            "fireball"
+          ],
+          "seconds": 142.8,
+          "damage": 314.74320000000023,
+          "waveDamage": [
+            0,
+            0,
+            51.353600000000014,
+            12.036000000000001,
+            0,
+            251.35359999999997
+          ],
+          "hits": 48,
+          "deaths": 2,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1006,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 141.9,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            17.6528,
+            282.34720000000004
+          ],
+          "hits": 45,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1007,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 148.9,
+          "damage": 293.88079999999997,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            29.6888,
+            264.1919999999999
+          ],
+          "hits": 49,
+          "deaths": 2,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1008,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 152.4,
+          "damage": 286.65920000000006,
+          "waveDamage": [
+            0,
+            0,
+            3.2095999999999947,
+            0,
+            0,
+            283.4496000000001
+          ],
+          "hits": 50,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1009,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 140.2,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            45.73679999999998,
+            254.26319999999998
+          ],
+          "hits": 45,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1010,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 134.5,
+          "damage": 249.74879999999987,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            249.74879999999987
+          ],
+          "hits": 41,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1011,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 134.1,
+          "damage": 243.32959999999994,
+          "waveDamage": [
+            0,
+            0,
+            3.2095999999999947,
+            0,
+            0,
+            240.11999999999998
+          ],
+          "hits": 42,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1012,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 155.2,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            15.245599999999996,
+            284.7544
+          ],
+          "hits": 48,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1013,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 143.8,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            29.6888,
+            270.31119999999993
+          ],
+          "hits": 44,
+          "deaths": 3,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1014,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 146.5,
+          "damage": 299.9999999999999,
+          "waveDamage": [
+            0,
+            0,
+            51.353600000000014,
+            3.209600000000002,
+            29.6888,
+            215.74799999999993
+          ],
+          "hits": 47,
+          "deaths": 3,
+          "pickups": 11,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1015,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 139.4,
+          "damage": 266.5992,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            29.6888,
+            236.91039999999998
+          ],
+          "hits": 40,
+          "deaths": 2,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1016,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 151.1,
+          "damage": 293.0784,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            293.0784
+          ],
+          "hits": 48,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1017,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 144.3,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            3.2095999999999947,
+            0,
+            0,
+            296.7904
+          ],
+          "hits": 47,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1018,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 135,
+          "damage": 262.58719999999994,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            262.58719999999994
+          ],
+          "hits": 43,
+          "deaths": 2,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1019,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 149.1,
+          "damage": 297.8928,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            20.862399999999994,
+            277.03039999999993
+          ],
+          "hits": 48,
+          "deaths": 2,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1020,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 149.3,
+          "damage": 299.9999999999999,
+          "waveDamage": [
+            0,
+            0,
+            3.2095999999999947,
+            0,
+            0,
+            296.7903999999999
+          ],
+          "hits": 50,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1021,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 139.8,
+          "damage": 277.03040000000016,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            20.862399999999994,
+            256.168
+          ],
+          "hits": 45,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1022,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 150.1,
+          "damage": 300.00000000000006,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            15.245599999999996,
+            284.7544
+          ],
+          "hits": 50,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1023,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 154.4,
+          "damage": 328.0784,
+          "waveDamage": [
+            0,
+            0,
+            51.353600000000014,
+            0,
+            0,
+            276.72479999999985
+          ],
+          "hits": 48,
+          "deaths": 2,
+          "pickups": 11,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1024,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 153.2,
+          "damage": 335.00000000000006,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            44.934400000000004,
+            290.06559999999996
+          ],
+          "hits": 49,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1025,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 145.2,
+          "damage": 264.1919999999999,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            29.6888,
+            234.50319999999994
+          ],
+          "hits": 42,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1026,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 141.7,
+          "damage": 300.0000000000001,
+          "waveDamage": [
+            0,
+            0,
+            51.353600000000014,
+            0,
+            0,
+            248.6464
+          ],
+          "hits": 48,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1027,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "jump",
+            "fireball"
+          ],
+          "seconds": 145.5,
+          "damage": 300.0000000000001,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            15.245599999999996,
+            284.75440000000003
+          ],
+          "hits": 46,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1028,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 144.1,
+          "damage": 276.2279999999999,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            15.245599999999996,
+            260.98239999999987
+          ],
+          "hits": 44,
+          "deaths": 2,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1029,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 157.8,
+          "damage": 309.9288,
+          "waveDamage": [
+            0,
+            0,
+            3.2095999999999947,
+            0,
+            15.245599999999996,
+            291.47360000000003
+          ],
+          "hits": 58,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1030,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 149.7,
+          "damage": 299.9999999999999,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            299.9999999999999
+          ],
+          "hits": 51,
+          "deaths": 3,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1031,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 145.3,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 44,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1032,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 152.1,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            0,
+            0,
+            3.2095999999999947,
+            3.2095999999999947,
+            15.245599999999996,
+            278.33519999999993
+          ],
+          "hits": 48,
+          "deaths": 3,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1033,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 137.5,
+          "damage": 246.53919999999988,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            15.245599999999996,
+            231.2935999999999
+          ],
+          "hits": 40,
+          "deaths": 2,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1034,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 152.2,
+          "damage": 317.65280000000007,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            17.6528,
+            299.99999999999994
+          ],
+          "hits": 47,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1035,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 154.7,
+          "damage": 336.40799999999996,
+          "waveDamage": [
+            0,
+            0,
+            51.353600000000014,
+            0,
+            0,
+            285.0543999999999
+          ],
+          "hits": 48,
+          "deaths": 2,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1036,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 142.3,
+          "damage": 277.0303999999999,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            277.0303999999999
+          ],
+          "hits": 46,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1037,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 136.7,
+          "damage": 246.5392,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            246.5392
+          ],
+          "hits": 43,
+          "deaths": 2,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1038,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 148.7,
+          "damage": 316.8448000000001,
+          "waveDamage": [
+            0,
+            0,
+            51.353600000000014,
+            0,
+            0,
+            265.49119999999994
+          ],
+          "hits": 49,
+          "deaths": 2,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1039,
+          "stage": 3,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 133.8,
+          "damage": 252.95839999999987,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            252.95839999999987
+          ],
+          "hits": 42,
+          "deaths": 2,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1040,
+          "stage": 3,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump"
+          ],
+          "seconds": 140.5,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            36.108,
+            263.89199999999994
+          ],
+          "hits": 42,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "HYPNOTIC KISS",
+            "SWOOP",
+            "WING GUST"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        }
+      ],
+      "offscreenPassed": true,
+      "target": 50,
+      "delta": 2.5,
+      "balancePassed": true
+    },
+    {
+      "stage": 4,
+      "clears": 12,
+      "rate": 30,
+      "sourceHash": "5ea1241f4114830eb1619a3b3b7bff82a23db1b5ba25f44b58e8246815602c40",
+      "incomingDamageScale": 1.7,
+      "bossDamageScale": 1.02,
+      "results": [
+        {
+          "seed": 1001,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "back",
+            "front",
+            "super",
+            "spin",
+            "jump"
+          ],
+          "seconds": 89.7,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            47.6,
+            252.4
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1002,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 86,
+          "damage": 200,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            200
+          ],
+          "hits": 5,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1003,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "round",
+            "back",
+            "front",
+            "spin"
+          ],
+          "seconds": 84.6,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1004,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "spin",
+            "front",
+            "round",
+            "back",
+            "super"
+          ],
+          "seconds": 79.8,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            47.6,
+            252.39999999999998
+          ],
+          "hits": 8,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1005,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "back",
+            "round",
+            "front",
+            "jump"
+          ],
+          "seconds": 86.6,
+          "damage": 230.345,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            230.345
+          ],
+          "hits": 5,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1006,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "back",
+            "front",
+            "jump",
+            "round",
+            "spin"
+          ],
+          "seconds": 87.8,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1007,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "back",
+            "front",
+            "round",
+            "super",
+            "spin"
+          ],
+          "seconds": 87.6,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 8,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1008,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "back",
+            "round",
+            "front",
+            "jump"
+          ],
+          "seconds": 84.7,
+          "damage": 359.5,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            159.5,
+            0,
+            200
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1009,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 89.2,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            56.525,
+            43.475,
+            0,
+            200
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1010,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "back",
+            "round",
+            "front",
+            "jump",
+            "spin"
+          ],
+          "seconds": 88.9,
+          "damage": 269.7935,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            269.7935
+          ],
+          "hits": 5,
+          "deaths": 2,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1011,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back",
+            "front",
+            "jump",
+            "spin"
+          ],
+          "seconds": 90.2,
+          "damage": 269.7935,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            269.7935
+          ],
+          "hits": 6,
+          "deaths": 2,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1012,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back"
+          ],
+          "seconds": 74.3,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            159.5,
+            0,
+            140.5
+          ],
+          "hits": 6,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1013,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "spin",
+            "super",
+            "front",
+            "round",
+            "back"
+          ],
+          "seconds": 88.1,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1014,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "back",
+            "super"
+          ],
+          "seconds": 79,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            59.5,
+            0,
+            240.5
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1015,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "round",
+            "back",
+            "front"
+          ],
+          "seconds": 86.9,
+          "damage": 230.345,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            230.345
+          ],
+          "hits": 7,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1016,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back"
+          ],
+          "seconds": 77.3,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            159.5,
+            0,
+            140.5
+          ],
+          "hits": 6,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1017,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 74.4,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            159.5,
+            0,
+            140.5
+          ],
+          "hits": 6,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1018,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "spin",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 89.7,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 6,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1019,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 85.8,
+          "damage": 269.7935,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            269.7935
+          ],
+          "hits": 6,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1020,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "back",
+            "super"
+          ],
+          "seconds": 79.1,
+          "damage": 335.00000000000006,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            159.5,
+            0,
+            175.5
+          ],
+          "hits": 8,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1021,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "back",
+            "spin",
+            "super"
+          ],
+          "seconds": 87.6,
+          "damage": 230.345,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            230.345
+          ],
+          "hits": 5,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1022,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "back",
+            "front",
+            "round",
+            "super"
+          ],
+          "seconds": 90,
+          "damage": 230.345,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            230.345
+          ],
+          "hits": 7,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1023,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "back",
+            "front",
+            "round",
+            "super",
+            "spin"
+          ],
+          "seconds": 86.7,
+          "damage": 230.345,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            230.345
+          ],
+          "hits": 7,
+          "deaths": 2,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1024,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "back",
+            "round",
+            "jump",
+            "front"
+          ],
+          "seconds": 80.5,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            159.5,
+            0,
+            140.5
+          ],
+          "hits": 6,
+          "deaths": 3,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1025,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 85.8,
+          "damage": 200,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            200
+          ],
+          "hits": 5,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1026,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "front",
+            "round",
+            "super",
+            "back",
+            "jump",
+            "spin"
+          ],
+          "seconds": 90,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            59.5,
+            240.5
+          ],
+          "hits": 9,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1027,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "back",
+            "front",
+            "round",
+            "jump"
+          ],
+          "seconds": 77.4,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            159.5,
+            0,
+            140.5
+          ],
+          "hits": 6,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1028,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "front",
+            "super",
+            "back"
+          ],
+          "seconds": 80,
+          "damage": 335,
+          "waveDamage": [
+            0,
+            0,
+            56.525,
+            202.975,
+            0,
+            75.5
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1029,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "front",
+            "super",
+            "back",
+            "jump"
+          ],
+          "seconds": 82.5,
+          "damage": 335,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            159.5,
+            0,
+            175.5
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1030,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 88.6,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 2,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1031,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 88.1,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1032,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "front",
+            "super",
+            "round",
+            "back",
+            "jump"
+          ],
+          "seconds": 86.5,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            100,
+            200
+          ],
+          "hits": 8,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1033,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 91,
+          "damage": 230.345,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            230.345
+          ],
+          "hits": 7,
+          "deaths": 2,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1034,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 84.2,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            100,
+            0,
+            200
+          ],
+          "hits": 8,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1035,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "round",
+            "front",
+            "super",
+            "back",
+            "spin",
+            "jump"
+          ],
+          "seconds": 83.6,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            59.5,
+            0,
+            240.5
+          ],
+          "hits": 6,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1036,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 84.3,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            47.6,
+            252.39999999999998
+          ],
+          "hits": 8,
+          "deaths": 3,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1037,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back",
+            "front",
+            "jump",
+            "spin"
+          ],
+          "seconds": 81.7,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            159.5,
+            0,
+            140.5
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1038,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "back",
+            "front",
+            "round",
+            "spin"
+          ],
+          "seconds": 86.9,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 8,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1039,
+          "stage": 4,
+          "cleared": true,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 86.4,
+          "damage": 230.345,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            230.345
+          ],
+          "hits": 5,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1040,
+          "stage": 4,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 89.1,
+          "damage": 300,
+          "waveDamage": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            300
+          ],
+          "hits": 7,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "BALEFIRE",
+            "SWORD FLURRY",
+            "WEAVE SNARE"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        }
+      ],
+      "offscreenPassed": true,
+      "target": 35,
+      "delta": -5,
+      "balancePassed": true
+    },
+    {
+      "stage": 5,
+      "clears": 9,
+      "rate": 22.5,
+      "sourceHash": "5ea1241f4114830eb1619a3b3b7bff82a23db1b5ba25f44b58e8246815602c40",
+      "incomingDamageScale": 0.75,
+      "bossDamageScale": 1,
+      "results": [
+        {
+          "seed": 1001,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 110,
+          "damage": 346.8,
+          "waveDamage": [
+            30.599999999999994,
+            116.2,
+            68.39999999999999,
+            0,
+            0,
+            131.6
+          ],
+          "hits": 22,
+          "deaths": 3,
+          "pickups": 9,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1002,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "super",
+            "back",
+            "spin"
+          ],
+          "seconds": 115.6,
+          "damage": 362.9,
+          "waveDamage": [
+            30.599999999999994,
+            97.30000000000001,
+            63.89999999999999,
+            0,
+            0,
+            171.09999999999997
+          ],
+          "hits": 25,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1003,
+          "stage": 5,
+          "cleared": true,
+          "jointHit": true,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back",
+            "spin",
+            "joint"
+          ],
+          "seconds": 108.8,
+          "damage": 371.756,
+          "waveDamage": [
+            30.599999999999994,
+            153.1,
+            17.099999999999994,
+            0,
+            0,
+            170.956
+          ],
+          "hits": 24,
+          "deaths": 2,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "joint",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1004,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 119.4,
+          "damage": 363.9,
+          "waveDamage": [
+            30.599999999999994,
+            116.2,
+            17.099999999999994,
+            0,
+            0,
+            199.99999999999997
+          ],
+          "hits": 25,
+          "deaths": 3,
+          "pickups": 11,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1005,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 107.3,
+          "damage": 362.9,
+          "waveDamage": [
+            30.599999999999994,
+            97.30000000000001,
+            51.29999999999999,
+            17.1,
+            14.399999999999999,
+            152.2
+          ],
+          "hits": 23,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1006,
+          "stage": 5,
+          "cleared": true,
+          "jointHit": true,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "spin",
+            "front",
+            "super",
+            "round",
+            "back",
+            "joint"
+          ],
+          "seconds": 114,
+          "damage": 381.9079999999999,
+          "waveDamage": [
+            30.599999999999994,
+            132.4,
+            81,
+            0,
+            0,
+            137.908
+          ],
+          "hits": 24,
+          "deaths": 2,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "joint",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1007,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "spin",
+            "front",
+            "round",
+            "back"
+          ],
+          "seconds": 108,
+          "damage": 365.59999999999997,
+          "waveDamage": [
+            30.599999999999994,
+            132.4,
+            67.6,
+            35.099999999999994,
+            0,
+            99.89999999999999
+          ],
+          "hits": 23,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1008,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "back",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "spin"
+          ],
+          "seconds": 99.2,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            30.599999999999994,
+            153.1,
+            16.29999999999999,
+            0,
+            0,
+            99.99999999999999
+          ],
+          "hits": 20,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1009,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back"
+          ],
+          "seconds": 103.6,
+          "damage": 317.09999999999997,
+          "waveDamage": [
+            30.599999999999994,
+            169.29999999999998,
+            17.199999999999985,
+            0,
+            0,
+            99.99999999999999
+          ],
+          "hits": 22,
+          "deaths": 3,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1010,
+          "stage": 5,
+          "cleared": true,
+          "jointHit": true,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back",
+            "front",
+            "jump",
+            "joint"
+          ],
+          "seconds": 103.1,
+          "damage": 325.85599999999994,
+          "waveDamage": [
+            30.599999999999994,
+            132.4,
+            67.6,
+            0,
+            0,
+            95.256
+          ],
+          "hits": 20,
+          "deaths": 2,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "joint",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1011,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "back",
+            "front",
+            "super",
+            "round",
+            "jump",
+            "spin"
+          ],
+          "seconds": 114.2,
+          "damage": 370.00000000000006,
+          "waveDamage": [
+            30.599999999999994,
+            185.59999999999997,
+            63.90000000000001,
+            0,
+            0,
+            89.89999999999998
+          ],
+          "hits": 25,
+          "deaths": 3,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1012,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "back",
+            "super",
+            "spin"
+          ],
+          "seconds": 106.2,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            30.599999999999994,
+            153.1,
+            16.29999999999999,
+            0,
+            0,
+            100
+          ],
+          "hits": 20,
+          "deaths": 3,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1013,
+          "stage": 5,
+          "cleared": true,
+          "jointHit": true,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "jump",
+            "round",
+            "front",
+            "back",
+            "joint"
+          ],
+          "seconds": 114,
+          "damage": 357.21200000000005,
+          "waveDamage": [
+            30.599999999999994,
+            116.2,
+            17.10000000000001,
+            0,
+            0,
+            193.312
+          ],
+          "hits": 22,
+          "deaths": 2,
+          "pickups": 11,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "joint",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1014,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back"
+          ],
+          "seconds": 103.2,
+          "damage": 327.9,
+          "waveDamage": [
+            30.599999999999994,
+            97.30000000000001,
+            51.29999999999999,
+            17.1,
+            0,
+            131.60000000000002
+          ],
+          "hits": 21,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1015,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "back",
+            "jump",
+            "front",
+            "round",
+            "spin",
+            "super"
+          ],
+          "seconds": 105.7,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            30.599999999999994,
+            153.1,
+            16.29999999999999,
+            0,
+            0,
+            100.00000000000001
+          ],
+          "hits": 20,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1016,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 73,
+          "damage": 346.80000000000007,
+          "waveDamage": [
+            30.599999999999994,
+            116.2,
+            159.39999999999998,
+            40.60000000000001,
+            0,
+            0
+          ],
+          "hits": 24,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [],
+          "maxOffscreenSeconds": 0.3,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1017,
+          "stage": 5,
+          "cleared": true,
+          "jointHit": true,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "round",
+            "back",
+            "super",
+            "joint"
+          ],
+          "seconds": 108.3,
+          "damage": 303.5,
+          "waveDamage": [
+            30.599999999999994,
+            116.2,
+            17.10000000000001,
+            0,
+            0,
+            139.6
+          ],
+          "hits": 19,
+          "deaths": 2,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "joint",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1018,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "seconds": 95.8,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            30.599999999999994,
+            169.29999999999998,
+            17.199999999999985,
+            0,
+            14.400000000000006,
+            68.5
+          ],
+          "hits": 21,
+          "deaths": 3,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1019,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "front",
+            "round",
+            "spin",
+            "super",
+            "back",
+            "jump"
+          ],
+          "seconds": 108.5,
+          "damage": 363,
+          "waveDamage": [
+            30.599999999999994,
+            132.4,
+            81,
+            0,
+            14.399999999999999,
+            104.60000000000001
+          ],
+          "hits": 24,
+          "deaths": 3,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1020,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back"
+          ],
+          "seconds": 101.9,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            30.599999999999994,
+            153.1,
+            16.29999999999999,
+            0,
+            0,
+            99.99999999999999
+          ],
+          "hits": 20,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1021,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 48.4,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            30.599999999999994,
+            269.3999999999999,
+            0,
+            0,
+            0,
+            0
+          ],
+          "hits": 22,
+          "deaths": 3,
+          "pickups": 0,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [],
+          "maxOffscreenSeconds": 0.233,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1022,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back",
+            "front",
+            "jump"
+          ],
+          "seconds": 101,
+          "damage": 330.5999999999999,
+          "waveDamage": [
+            30.599999999999994,
+            132.4,
+            67.6,
+            35.099999999999994,
+            0,
+            64.9
+          ],
+          "hits": 21,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1023,
+          "stage": 5,
+          "cleared": true,
+          "jointHit": true,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "front",
+            "super",
+            "round",
+            "back",
+            "spin",
+            "joint"
+          ],
+          "seconds": 102.7,
+          "damage": 334.20799999999997,
+          "waveDamage": [
+            30.599999999999994,
+            97.30000000000001,
+            51.29999999999999,
+            17.099999999999994,
+            0,
+            137.908
+          ],
+          "hits": 21,
+          "deaths": 2,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "joint",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1024,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "back",
+            "jump",
+            "front",
+            "round",
+            "spin",
+            "super"
+          ],
+          "seconds": 105.6,
+          "damage": 300,
+          "waveDamage": [
+            30.599999999999994,
+            153.1,
+            16.29999999999999,
+            0,
+            0,
+            99.99999999999999
+          ],
+          "hits": 20,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1025,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "back",
+            "front",
+            "round"
+          ],
+          "seconds": 105,
+          "damage": 330.6,
+          "waveDamage": [
+            30.599999999999994,
+            116.2,
+            68.4,
+            0,
+            0,
+            115.39999999999998
+          ],
+          "hits": 21,
+          "deaths": 3,
+          "pickups": 3,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1026,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "round",
+            "back",
+            "front"
+          ],
+          "seconds": 119.4,
+          "damage": 369.9999999999999,
+          "waveDamage": [
+            30.599999999999994,
+            97.30000000000001,
+            51.300000000000004,
+            17.1,
+            0,
+            173.69999999999996
+          ],
+          "hits": 24,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1027,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back",
+            "spin"
+          ],
+          "seconds": 111.7,
+          "damage": 335,
+          "waveDamage": [
+            30.599999999999994,
+            153.1,
+            17.1,
+            0,
+            0,
+            134.2
+          ],
+          "hits": 22,
+          "deaths": 3,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1028,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "round",
+            "front",
+            "back"
+          ],
+          "seconds": 97.9,
+          "damage": 330.59999999999997,
+          "waveDamage": [
+            30.599999999999994,
+            132.4,
+            67.6,
+            0,
+            0,
+            99.99999999999999
+          ],
+          "hits": 21,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1029,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "round",
+            "back",
+            "front",
+            "super"
+          ],
+          "seconds": 104.9,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            30.599999999999994,
+            153.1,
+            16.29999999999999,
+            0,
+            0,
+            100.00000000000001
+          ],
+          "hits": 20,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1030,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back",
+            "front",
+            "jump",
+            "spin"
+          ],
+          "seconds": 107.4,
+          "damage": 317.09999999999997,
+          "waveDamage": [
+            30.599999999999994,
+            169.29999999999998,
+            17.199999999999985,
+            0,
+            0,
+            100
+          ],
+          "hits": 22,
+          "deaths": 3,
+          "pickups": 7,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1031,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "back",
+            "jump",
+            "front",
+            "round",
+            "super"
+          ],
+          "seconds": 102.9,
+          "damage": 330.59999999999997,
+          "waveDamage": [
+            30.599999999999994,
+            132.4,
+            67.6,
+            0,
+            0,
+            100
+          ],
+          "hits": 21,
+          "deaths": 3,
+          "pickups": 4,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1032,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "round",
+            "back",
+            "front",
+            "spin"
+          ],
+          "seconds": 99.2,
+          "damage": 299.99999999999994,
+          "waveDamage": [
+            30.599999999999994,
+            153.1,
+            16.29999999999999,
+            0,
+            0,
+            100.00000000000001
+          ],
+          "hits": 20,
+          "deaths": 3,
+          "pickups": 6,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1033,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "spin",
+            "front",
+            "round",
+            "back"
+          ],
+          "seconds": 96.5,
+          "damage": 300,
+          "waveDamage": [
+            30.599999999999994,
+            169.29999999999998,
+            17.199999999999985,
+            0,
+            0,
+            82.9
+          ],
+          "hits": 21,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1034,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "front",
+            "super",
+            "round",
+            "back",
+            "jump"
+          ],
+          "seconds": 110.1,
+          "damage": 363.90000000000003,
+          "waveDamage": [
+            30.599999999999994,
+            116.2,
+            17.10000000000001,
+            0,
+            14.400000000000006,
+            185.6
+          ],
+          "hits": 23,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1035,
+          "stage": 5,
+          "cleared": true,
+          "jointHit": true,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back",
+            "joint"
+          ],
+          "seconds": 98.5,
+          "damage": 305.65999999999997,
+          "waveDamage": [
+            30.599999999999994,
+            97.30000000000001,
+            51.29999999999999,
+            17.1,
+            0,
+            109.36
+          ],
+          "hits": 19,
+          "deaths": 2,
+          "pickups": 11,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "joint",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1036,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "back",
+            "front",
+            "round",
+            "jump",
+            "spin"
+          ],
+          "seconds": 102.1,
+          "damage": 351.2,
+          "waveDamage": [
+            30.599999999999994,
+            185.59999999999997,
+            51.29999999999999,
+            17.1,
+            14.399999999999999,
+            52.20000000000002
+          ],
+          "hits": 24,
+          "deaths": 3,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1037,
+          "stage": 5,
+          "cleared": true,
+          "jointHit": true,
+          "receivedMoves": [
+            "fireball",
+            "jump",
+            "super",
+            "front",
+            "round",
+            "back",
+            "spin",
+            "joint"
+          ],
+          "seconds": 119.7,
+          "damage": 393.912,
+          "waveDamage": [
+            30.599999999999994,
+            116.2,
+            68.4,
+            0,
+            0,
+            178.71199999999996
+          ],
+          "hits": 24,
+          "deaths": 2,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "joint",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1038,
+          "stage": 5,
+          "cleared": true,
+          "jointHit": true,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back",
+            "front",
+            "jump",
+            "spin",
+            "joint"
+          ],
+          "seconds": 107.8,
+          "damage": 357.70399999999995,
+          "waveDamage": [
+            30.599999999999994,
+            97.30000000000001,
+            51.29999999999999,
+            17.099999999999994,
+            14.400000000000006,
+            147.004
+          ],
+          "hits": 24,
+          "deaths": 2,
+          "pickups": 10,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "joint",
+            "jump",
+            "spin",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1039,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [],
+          "seconds": 70.4,
+          "damage": 330.6,
+          "waveDamage": [
+            30.599999999999994,
+            132.4,
+            97.29999999999998,
+            70.30000000000001,
+            0,
+            0
+          ],
+          "hits": 22,
+          "deaths": 3,
+          "pickups": 5,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [],
+          "maxOffscreenSeconds": 0.3,
+          "offscreenViolations": []
+        },
+        {
+          "seed": 1040,
+          "stage": 5,
+          "cleared": false,
+          "jointHit": false,
+          "receivedMoves": [
+            "fireball",
+            "super",
+            "round",
+            "back",
+            "front",
+            "jump"
+          ],
+          "seconds": 111.7,
+          "damage": 330.91200000000003,
+          "waveDamage": [
+            30.599999999999994,
+            132.4,
+            17.1,
+            0,
+            0,
+            150.81199999999998
+          ],
+          "hits": 23,
+          "deaths": 3,
+          "pickups": 8,
+          "moves": [
+            "combo1",
+            "combo2",
+            "combo3",
+            "fireball",
+            "jump",
+            "super"
+          ],
+          "attacks": [
+            "DARK BALEFIRE",
+            "SHADOW SURGE",
+            "STORM STRIKES"
+          ],
+          "maxOffscreenSeconds": 0.683,
+          "offscreenViolations": []
+        }
+      ],
+      "offscreenPassed": true,
+      "target": 25,
+      "delta": -2.5,
+      "balancePassed": true
+    }
+  ]
+}

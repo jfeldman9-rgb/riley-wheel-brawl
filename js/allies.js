@@ -15,6 +15,16 @@
       this.walkDistance = 0;
     }
     update(dt) {
+      if (this.g.difficulty === 'hard') {
+        // A once-per-stage assist should reach a useful lane even while the
+        // coordinated pack flanks. Steer visibly; never snap onto a target.
+        let target=null,distance=Infinity;
+        for(const enemy of this.g.enemies) {
+          const gap=Math.abs(enemy.x-this.x);
+          if(!enemy.dead&&!this.hit.has(enemy)&&enemy.x>=this.x-46&&gap<distance){target=enemy;distance=gap;}
+        }
+        if(target) this.y=R.collide.clampLane(this.y+R.util.clamp(target.y-this.y,-110*dt,110*dt));
+      }
       this.x += this.vx * dt;
       this.life -= dt;
       this.age += dt;
@@ -27,7 +37,7 @@
         if (enemy.dead || this.hit.has(enemy)) continue;
         if (Math.abs(enemy.x - this.x) > 46 || Math.abs(enemy.y - this.y) > 35) continue;
         this.hit.add(enemy);
-        this.g.damageEnemy(enemy, enemy.boss ? 18 : 44, this.x, { kb: 220, knockdown: true, stagger: true, move: 'loial' });
+        this.g.damageEnemy(enemy, this.g.difficulty === 'hard' ? (enemy.boss ? 65 : 60) : (enemy.boss ? 18 : 44), this.x, { kb: 220, knockdown: true, stagger: true, move: 'loial' });
       }
     }
     draw(ctx, cameraX) {

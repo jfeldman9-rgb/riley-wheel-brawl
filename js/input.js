@@ -17,6 +17,7 @@ RWB.input = (function () {
 
   const held = {};
   const keyDown = {};
+  const physicalKeys = new Set();
   const padDown = {};
   const pressed = {};
   const queue = [];
@@ -26,6 +27,8 @@ RWB.input = (function () {
 
   const gamepad = {
     connected: false,
+    family: 'xbox',
+    mapping: '',
     index: null,
     x: 0,
     y: 0,
@@ -44,12 +47,12 @@ RWB.input = (function () {
   function layoutButtons() {
     const W = RWB.W, H = RWB.H;
     touch.buttons = [
-      { id: 'attack', label: 'ATK', x: W - 118, y: H - 62, r: 30, color: '#e33' },
-      { id: 'jump', label: 'JMP', x: W - 48, y: H - 96, r: 24, color: '#39f' },
-      { id: 'special', label: 'SPCL', x: W - 178, y: H - 106, r: 22, color: '#3cf' },
-      { id: 'assist', label: 'ASST', x: W - 60, y: H - 34, r: 22, color: '#fc3' },
-      { id: 'power', label: 'POWR', x: W - 178, y: H - 50, r: 24, color: '#5d3' },
-      { id: 'pause', label: 'II', x: W / 2 + 96, y: 34, r: 12, color: '#aaa' }
+      { id: 'attack', label: 'ATK', x: W - 114, y: H - 70, r: 30, color: '#e33' },
+      { id: 'jump', label: 'JMP', x: W - 48, y: H - 96, r: 26, color: '#39f' },
+      { id: 'special', label: 'FIRE', x: W - 186, y: H - 108, r: 26, color: '#3cf' },
+      { id: 'assist', label: 'CALL', x: W - 50, y: H - 30, r: 24, color: '#fc3' },
+      { id: 'power', label: 'POWR', x: W - 186, y: H - 40, r: 26, color: '#5d3' },
+      { id: 'pause', label: 'II', x: W / 2 + 96, y: 34, r: 22, color: '#aaa' }
     ];
   }
   layoutButtons();
@@ -68,7 +71,7 @@ RWB.input = (function () {
   }
   function touchOwns(action) {
     if (touch.joy.active && (action === 'left' || action === 'right' || action === 'up' || action === 'down')) return false;
-    for (const info of touch.pointers.values()) if (info.button === action) return true;
+    for (const info of touch.pointers.values()) if (!info.cancelled && info.button === action) return true;
     return false;
   }
 
@@ -89,6 +92,7 @@ RWB.input = (function () {
       return;
     }
     const k = ST.norm(e.key);
+    if (!down) physicalKeys.delete(k);
     if (capture && capture.kind === 'key') {
       if (!down || e.repeat) return;
       e.preventDefault();
@@ -104,11 +108,12 @@ RWB.input = (function () {
     if (!act) return;
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', '/', "'"].includes(e.key) && !e.ctrlKey && !e.metaKey) e.preventDefault();
     if (down) {
-      if (e.repeat) { held[act] = true; return; }
+      if (e.repeat) return;
+      physicalKeys.add(k);
       keyDown[act] = true;
       syncHeld(act);
     } else {
-      keyDown[act] = false;
+      keyDown[act] = [...physicalKeys].some(key => KEYMAP[key] === act);
       syncHeld(act);
     }
   }
@@ -131,40 +136,23 @@ RWB.input = (function () {
   function pointerDown(e) {
     const p = toCanvas(e.clientX, e.clientY);
     pointer.x = p.x; pointer.y = p.y; pointer.type = e.pointerType || 'mouse';
-    if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
-      const scene = RWB.game && RWB.game.scene;
-      const b = scene && scene.isGameplay && !scene.paused && scene.phase === 'play' && buttonAt(p);
-      if (b) {
-        touch.pointers.set(e.pointerId, { x: p.x, y: p.y, button: b.id });
-        if (e.currentTarget && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId);
-        press(b.id);
-        return;
-      }
-      press('click');
-      press('start');
-      setTimeout(() => { release('start'); release('click'); }, 40);
-      return;
-    }
-    touch.enabled = true;
-    // Keep receiving release/cancel when a thumb leaves the canvas.
+    const isTouch = e.pointerType === 'touch';
+    if (isTouch) touch.enabled = true;
+    const scene = RWB.game && RWB.game.scene;
+    const gameplay = scene && scene.isGameplay && !scene.paused && scene.phase === 'play';
+    // Menus never own the invisible combat controls underneath them.
+    if (!gameplay) { queue.push('click'); anyKey = true; return; }
     if (e.currentTarget && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId);
-    anyKey = true;
-    queue.push('click');
     const b = buttonAt(p);
     if (b) {
       touch.pointers.set(e.pointerId, { x: p.x, y: p.y, button: b.id });
       press(b.id);
       return;
     }
-    if (p.x < RWB.W * 0.55 && !touch.joy.active) {
-      touch.joy.active = true;
-      touch.joy.id = e.pointerId;
-      touch.joy.ox = p.x; touch.joy.oy = p.y;
-      touch.joy.x = p.x; touch.joy.y = p.y;
+    if (isTouch && p.x < RWB.W * 0.55 && !touch.joy.active) {
+      Object.assign(touch.joy, { active: true, id: e.pointerId, ox: p.x, oy: p.y, x: p.x, y: p.y });
       touch.pointers.set(e.pointerId, { x: p.x, y: p.y, button: null });
-      return;
     }
-    touch.pointers.set(e.pointerId, { x: p.x, y: p.y, button: null });
   }
   function pointerMove(e) {
     if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
@@ -178,17 +166,17 @@ RWB.input = (function () {
     info.x = p.x; info.y = p.y;
     if (touch.joy.active && touch.joy.id === e.pointerId) {
       touch.joy.x = p.x; touch.joy.y = p.y;
-    } else if (info.button) {
-      const hit = buttonAt(p);
-      const over = hit && hit.id;
-      if (over && over !== info.button) {
-        const previous = info.button;
-        info.button = over;
-        syncHeld(previous);
-        press(over);
+    } else if (info.button && !info.cancelled) {
+      const original = touch.buttons.find(button => button.id === info.button);
+      // Lock a contact to its first button. Sliding must never spend LOIAL or
+      // SAIDIN, nor turn a jump into an attack. Lift and tap to change actions.
+      if (!original || Math.hypot(p.x - original.x, p.y - original.y) > original.r + 12) {
+        info.cancelled = true;
+        syncHeld(info.button);
       }
     }
   }
+
   function pointerUp(e) {
     const info = touch.pointers.get(e.pointerId);
     if (info) {
@@ -215,7 +203,7 @@ RWB.input = (function () {
   function pollGamepad() {
     let pads = [];
     try { pads = navigator.getGamepads ? navigator.getGamepads() : []; }
-    catch (e) { return; }
+    catch (e) { pads = []; }
     let pad = null;
     if (gamepad.index != null && pads[gamepad.index] && pads[gamepad.index].connected) pad = pads[gamepad.index];
     if (!pad) {
@@ -230,7 +218,9 @@ RWB.input = (function () {
       return;
     }
     gamepad.index = pad.index;
-    const b = pad.buttons;
+    gamepad.mapping = pad.mapping || '';
+    gamepad.family = /playstation|dualshock|dualsense|sony|054c|^wireless controller$/i.test(pad.id || '') ? 'playstation' : 'xbox';
+    const b = pad.buttons || [];
     if (capture && capture.kind === 'pad') {
       for (const k in padDown) if (padDown[k]) setPad(k, false);
       const down = [];
@@ -245,20 +235,18 @@ RWB.input = (function () {
       if (b.some(btn => btn && (btn.pressed || btn.value > 0.55))) return;
       padHold = false;
     }
+    const scene = RWB.game && RWB.game.scene;
+    const inFight = scene && scene.isGameplay && !scene.paused;
     const seen = {};
     for (const i in PAD_BUTTONS) {
+      // South/east face buttons own confirm/back in menus. A gameplay remap
+      // must not add a conflicting pause/attack edge to the same menu press.
+      if (!inFight && (Number(i) === 0 || Number(i) === 1)) continue;
       const action = PAD_BUTTONS[i];
       const on = !!(b[i] && (b[i].pressed || b[i].value > 0.55));
       if (on) seen[action] = true;
     }
-    for (const i in PAD_BUTTONS) {
-      const action = PAD_BUTTONS[i];
-      // assist is on both LB and RB; don't release if the other is held
-      if (seen[action]) setPad(action, true);
-    }
-    for (const k in padDown) if (padDown[k] && !seen[k]) setPad(k, false);
-
-    let ax = pad.axes[0] || 0, ay = pad.axes[1] || 0;
+    let ax = (pad.axes || [])[0] || 0, ay = (pad.axes || [])[1] || 0;
     const dead = 0.28;
     const len = Math.hypot(ax, ay);
     if (len < dead) { ax = 0; ay = 0; }
@@ -271,26 +259,34 @@ RWB.input = (function () {
     const sx = ax < -0.55 ? -1 : ax > 0.55 ? 1 : 0;
     const sy = ay < -0.55 ? -1 : ay > 0.55 ? 1 : 0;
     if (!seen.left && !seen.right) {
-      setPad('left', sx < 0);
-      setPad('right', sx > 0);
+      seen.left = sx < 0;
+      seen.right = sx > 0;
     }
     if (!seen.up && !seen.down) {
-      setPad('up', sy < 0);
-      setPad('down', sy > 0);
+      seen.up = sy < 0;
+      seen.down = sy > 0;
     }
+    const isPressed = index => !!(b[index] && (b[index].pressed || b[index].value > 0.55));
+    // Standard-layout Xbox A / PlayStation Cross confirms. B / Circle backs
+    // out in menus only; Start / Options pauses a live fight.
+    if (inFight && isPressed(9)) seen.pause = true;
+    if (!inFight && isPressed(0)) seen.start = true;
+    if (!inFight && isPressed(1)) seen.pause = true;
+    for (const action of new Set([...Object.keys(padDown), ...Object.keys(seen)])) setPad(action, !!seen[action]);
     gamepad.stickX = sx; gamepad.stickY = sy;
     if (b.some(btn => btn && (btn.pressed || btn.value > 0.5)) || ax || ay) anyKey = true;
   }
 
   function rumble(ms, strong, weak) {
-    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let pads;
+    try { pads = navigator.getGamepads ? navigator.getGamepads() : []; } catch (_) { return; }
     const pad = gamepad.index != null ? pads[gamepad.index] : null;
     const act = pad && (pad.vibrationActuator || pad.hapticActuators && pad.hapticActuators[0]);
     if (!act) return;
     const dur = ms || 70;
     try {
-      if (act.playEffect) act.playEffect('dual-rumble', { duration: dur, strongMagnitude: strong || 0.4, weakMagnitude: weak || 0.2 });
-      else if (act.pulse) act.pulse(strong || 0.4, dur);
+      const result = act.playEffect ? act.playEffect('dual-rumble', { duration: dur, strongMagnitude: strong || 0.4, weakMagnitude: weak || 0.2 }) : act.pulse ? act.pulse(strong || 0.4, dur) : null;
+      if (result && result.catch) result.catch(() => {});
     } catch (e) { /* desktop pads without haptics */ }
   }
 
@@ -298,19 +294,15 @@ RWB.input = (function () {
     toCanvas = mapFn;
     window.addEventListener('keydown', e => onKey(e, true));
     window.addEventListener('keyup', e => onKey(e, false));
-    function clearInput() {
-      for (const k in keyDown) keyDown[k] = false;
-      for (const k in held) held[k] = false;
-      for (const k in padDown) padDown[k] = false;
-      for (const k in pressed) pressed[k] = false;
-      queue.length = 0;
-      touch.pointers.clear();
-      touch.joy.active = false; touch.joy.id = null;
-    }
-    window.addEventListener('blur', clearInput);
-    document.addEventListener('visibilitychange', () => { if (document.hidden) clearInput(); });
+    window.addEventListener('blur', clear);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) clear(); });
     window.addEventListener('gamepadconnected', e => { gamepad.connected = true; gamepad.index = e.gamepad.index; anyKey = true; });
-    window.addEventListener('gamepaddisconnected', () => { gamepad.connected = false; gamepad.index = null; });
+    window.addEventListener('gamepaddisconnected', e => {
+      if (e.gamepad && gamepad.index != null && e.gamepad.index !== gamepad.index) return;
+      gamepad.connected = false; gamepad.index = null; clear();
+      const scene = RWB.game && RWB.game.scene;
+      if (scene && !scene.paused && scene.pause) scene.pause();
+    });
     canvas.addEventListener('pointerdown', pointerDown);
     canvas.addEventListener('pointermove', pointerMove);
     canvas.addEventListener('pointerup', pointerUp);
@@ -362,14 +354,14 @@ RWB.input = (function () {
   // picture; a connected pad swaps in the face buttons. Both follow remaps.
   // Touch targets stay where they are.
   function badgeFor(id) {
-    if (gamepad.connected) return id === 'pause' ? 'START' : ST.padFor(id);
+    if (gamepad.connected) return id === 'pause' ? ST.padLabel(9) : ST.padFor(id);
     return ST.keysFor(id, 1)[0] || '';
   }
-  const TOUCH_LABEL = { attack: 'ATK', jump: 'JMP', special: 'SPCL', assist: 'ASST', power: 'POWR', pause: 'II' };
+  const TOUCH_LABEL = { attack: 'ATK', jump: 'JMP', special: 'FIRE', assist: 'CALL', power: 'POWR', pause: 'II' };
   /** Short control name for prompts: "E/J" on keyboard, "X" on a pad, "ATK" on touch. */
   function hint(id, n) {
-    if (touch.enabled && !(RWB.display && RWB.display.pc) && !gamepad.connected) return TOUCH_LABEL[id] || id.toUpperCase();
-    if (gamepad.connected) return id === 'pause' ? 'START' : ST.padFor(id);
+    if (touch.enabled && (!(RWB.display && RWB.display.pc) || pointer.type === 'touch') && !gamepad.connected) return TOUCH_LABEL[id] || id.toUpperCase();
+    if (gamepad.connected) return id === 'pause' ? ST.padLabel(9) : ST.padFor(id);
     return ST.keysFor(id, n || 2).join('/') || '--';
   }
   /** Replace {attack}, {jump}, ... in tutorial copy with the live bindings. */
@@ -392,13 +384,14 @@ RWB.input = (function () {
   function legend() {
     if (gamepad.connected) {
       const p = id => ST.padFor(id);
-      return `PAD: STICK MOVE   ${p('attack')} ATK   ${p('jump')} JUMP   ${p('special')} SPECIAL   ${p('assist')} ASSIST   ${p('power')} POWER   START PAUSE`;
+      return `STICK MOVE   ${p('attack')} KICK   ${p('jump')} JUMP   ${p('special')} FIRE   ${p('assist')} LOIAL   ${p('power')} SAIDIN`;
     }
     const k = (id, n) => ST.keysFor(id, n || 2).join('/') || '--';
     return `${moveHint()} MOVE   ${k('attack')} ATK   ${k('jump')} JUMP   ${k('special')} SPECIAL   ${k('assist')} ASSIST   ${k('power', 1)} POWER`;
   }
   function beginCapture(kind, cb) {
     capture = { kind, cb, armed: false };
+    physicalKeys.clear();
     for (const k in keyDown) keyDown[k] = false;
     for (const k in held) held[k] = false;
     queue.length = 0;
@@ -463,7 +456,7 @@ RWB.input = (function () {
       const pad = !!gamepad.connected;
       const base = Math.max(0.2, Math.min(0.85, opts.opacity != null ? opts.opacity : ST.data.overlay));
       const heldKey = touch.buttons.map(b => (held[b.id] ? '1' : '0') + b.label).join(',');
-      const key = [bw, base, pad ? 1 : 0, opts.powerReady ? 1 : 0, opts.assistReady === false ? 0 : 1, opts.buttons === false ? 0 : 1, held.up ? 1 : 0, held.down ? 1 : 0, held.left ? 1 : 0, held.right ? 1 : 0, heldKey].join('|');
+      const key = [bw, base, pad ? gamepad.family : 'keys', opts.powerReady ? 1 : 0, opts.assistReady === false ? 0 : 1, opts.buttons === false ? 0 : 1, held.up ? 1 : 0, held.down ? 1 : 0, held.left ? 1 : 0, held.right ? 1 : 0, heldKey].join('|');
       const slot = drawControlChrome.layer || (drawControlChrome.layer = { key: '', canvas: document.createElement('canvas') });
       const sizeChanged = slot.canvas.width !== bw || slot.canvas.height !== bh;
       if (sizeChanged) {
@@ -639,13 +632,13 @@ RWB.input = (function () {
     ctx.restore();
   }
 
-  function clear(){anyKey=false;for(const o of [held,pressed,keyDown,padDown])for(const k in o)delete o[k];queue.length=0;touch.pointers.clear();touch.joy.active=false;touch.joy.id=null;gamepad.x=gamepad.y=gamepad.stickX=gamepad.stickY=0;}
+  function clear(){anyKey=false;physicalKeys.clear();cancelCapture();padHold=true;for(const o of [held,pressed,keyDown,padDown])for(const k in o)delete o[k];queue.length=0;touch.pointers.clear();touch.joy.active=false;touch.joy.id=null;gamepad.x=gamepad.y=gamepad.stickX=gamepad.stickY=0;}
   return {
     clear, attach, beginFrame, axis, drawTouch, consumeAny, layoutButtons, rumble,
     held, pressed, touch, pointer, gamepad,
     badgeFor, hint, fillKeys, legend, moveHint, beginCapture, cancelCapture,
     get capturing() { return capture ? capture.kind : null; },
-    get touchEnabled() { return touch.enabled && !(RWB.display && RWB.display.pc); },
+    get touchEnabled() { return touch.enabled && (!(RWB.display && RWB.display.pc) || pointer.type === 'touch'); },
     set touchEnabled(v) { touch.enabled = v; }
   };
 })();

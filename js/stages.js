@@ -12,6 +12,10 @@
   const sized = new Map();
   const overlays = new Map();
   const sliceCache = new Map();
+  // Finished paintings retain their independent parallax. Camera motion only
+  // selects a source rectangle; it never repaints or regrades a stage.
+  const backgrounds = new Map();
+  const backgroundStats = { builds: 0, composites: 0, hits: 0 };
   // One quilted floor loop spans ~1.7 screens, so no floor landmark repeats inside a view.
   const FLOOR_LOOP=1100;
   const K_FAR=0.08,K_MID=0.40,K_NEAR=1.15;
@@ -656,7 +660,7 @@
     if(R.perf&&R.perf.noteBake)R.perf.noteBake('gradedFar:'+key,performance.now()-tBake);
     return c;
   }
-  function haze(ctx,y,color='#c9d7df') {ctx.drawImage(overlay('haze:'+y+color,g=>{const f=g.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');g.fillStyle=f;g.fillRect(0,y-9,640,21);}),0,0,640,360);}
+  function haze(ctx,y,color='#c9d7df') {ctx.drawImage(overlay('haze:'+y+color,g=>{const f=g.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');g.fillStyle=f;g.fillRect(0,y-9,640,21);}),0,0,R.StageWorld._paintWidth||640,360);}
   function architecture(ctx, level, cam, time) {
     const pal = PALETTES[level],
       offset = cam * 0.55;
@@ -777,12 +781,22 @@
   }
   R.StageWorld = {
     lowAlphaDraws:0,
+    // Older diagnostics inspect rounded per-layer views. Materialize these
+    // only when inspected; gameplay consumes the finished paintings instead.
+    get _views(){
+      if(this._viewScene&&!this._readingViews){
+        const scene=this._viewScene;this._viewScene=null;this._readingViews=true;
+        try{const c=document.createElement('canvas');c.width=640;c.height=360;this.drawCachedView(c.getContext('2d'),scene);}finally{this._readingViews=false;}
+      }
+      return this._legacyViews;
+    },
+    set _views(value){this._legacyViews=value;},
     K_FAR,K_MID,K_NEAR,PPU,MID_POOL,FAR_GRADE,evictStreet,detailEnergy,
     farGraded:{},
     travelOf,midLayout,midStrips,sliceLayout,bakedPlate,
     farRight(scene,cam){return farGeom(scene,cam==null?(scene.camera&&scene.camera.x)||0:cam).right;},
     queueRoof(){
-      if(this._roofQueued||!R.Bake)return;
+      if(this._roofQueued||!R.Bake||backgrounds.has([5,rsNow(),3600,1].join(':')))return;
       this._roofQueued=true;
       const touch=img=>{
         const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
@@ -863,21 +877,11 @@
         touch(plate);if(R.perf.markStep)R.perf.markStep('roof-floor',performance.now()-t0);return true;
       });
     },
-    prepare(level){
-      if(!R.assets.has('stage'+(level+1)+'-far'))return;
-      const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);
-      const scene={levelIndex:level,camera:{x:0},time:0,wave:0,level:{length:(R.SCROLL&&R.SCROLL.length)||4240}};
-      try{this.draw(g,scene);this.near(g,scene);this.grade(g,scene);if(level===4){scene.wave=5;scene.roofOn=true;this.draw(g,scene);this.near(g,scene);}}
-      finally{
-        for(const c of sized.values())releaseCanvas(c);
-        for(const c of sliceCache.values())releaseCanvas(c);
-        sized.clear();sliceCache.clear();evictStage(9);
-      }
-    },
-    draw(ctx, scene) {
-      const n = scene.levelIndex + 1;
-      // One view per parallax group, painted at the rounded camera. The blit
-      // shifts by the factor this layer actually used, times (round - camera).
+    // Kept as the lower-memory fallback if a finished panoramic allocation
+    // cannot be made. Its camera rounding and capped parallax are unchanged.
+    drawCachedView(ctx,scene){
+      this._viewScene=null;
+      const n=scene.levelIndex+1;
       if(!this._painting && R.assets.has('stage'+n+'-far')){
         const rs=R.display.renderScale||1,camExact=scene.camera.x||0,bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs)),roundCam=Math.round(camExact);
         if(this._stageKept!==n){evictStage(n);this._stageKept=n;this._platesBaked=0;}
@@ -923,6 +927,96 @@
           ctx.imageSmoothingQuality=quality;
           ctx.imageSmoothingEnabled=smooth;
         }
+        if(n===5&&Math.sin((scene.time||0)*0.8)>0.995)strokeLightning(ctx);
+        return;
+      }
+    },
+    backgroundStats,
+    preload(scene){
+      const n=scene.levelIndex+1,rs=rsNow(),roof=roofing(scene),travel=travelOf(scene);
+      const key=[n,rs,travel,roof?1:0].join(':');
+      if(backgrounds.has(key)){const cached=backgrounds.get(key);backgrounds.delete(key);backgrounds.set(key,cached);return cached;}
+      if(!R.assets.has('stage'+n+'-far'))return null;
+      // Keep one render resolution resident. Resizes invalidate pixel caches,
+      // but visiting another stage does not discard completed paintings.
+      for(const [id,old] of backgrounds)if(old.rs!==rs){
+        for(const layer of old.layers)releaseCanvas(layer.canvas);
+        releaseCanvas(old.composite);releaseCanvas(old.near);backgrounds.delete(id);
+      }
+      const layout=midLayout(n,travel);
+      const midWidth=roof?640:layout.clamp?Math.max(640,layout.available):640+K_MID*travel;
+      const specs=[
+        {id:'base',k:0,w:640,y:0,h:360},
+        {id:'back',k:roof?0:K_FAR,w:roof?640:640+K_FAR*travel,y:0,h:360},
+        {id:'mid',k:roof?0:K_MID,w:midWidth,y:0,h:280,clamp:layout.clamp},
+        {id:'floor',k:1,w:FLOOR_LOOP,y:222,h:138,loop:true},
+        {id:'screen',k:0,w:640,y:0,h:360}
+      ];
+      const result={key,rs,layers:[],composite:null,camera:NaN};
+      const ghost={levelIndex:scene.levelIndex,camera:{x:0},time:0,wave:roof?5:scene.wave,roofOn:roof,level:scene.level};
+      const before={painting:this._painting,layer:this._layer,width:this._paintWidth};
+      try{
+        this._painting=true;
+        for(const spec of specs){
+          const c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(spec.w*rs));c.height=Math.max(1,Math.ceil(spec.h*rs));
+          const g=c.getContext('2d',{alpha:spec.id!=='base'});
+          g.setTransform(rs,0,0,rs,0,-spec.y*rs);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+          this._layer=spec.id;this._paintWidth=spec.w;
+          this.draw(g,ghost);
+          if(spec.id==='base')bakeGrade(g,ghost);
+          if(spec.id==='screen')blitVignette(g);
+          result.layers.push(Object.assign({canvas:c},spec));
+        }
+        const near=bakedNear('stage'+n+'-near');
+        if(near){
+          result.near=document.createElement('canvas');result.near.width=Math.ceil(700*rs);result.near.height=Math.ceil(26*rs);
+          result.near.getContext('2d').drawImage(near,0,Math.max(0,near.height-26*rs),near.width,26*rs,0,0,result.near.width,result.near.height);
+        }
+      }catch(error){
+        for(const layer of result.layers)releaseCanvas(layer.canvas);
+        releaseCanvas(result.near);
+        return null;
+      }finally{this._painting=before.painting;this._layer=before.layer;this._paintWidth=before.width;}
+      backgrounds.set(key,result);backgroundStats.builds++;
+      // Two completed stage/roof variants cover the current and upcoming view.
+      // Retaining every full-size source plus every finished layer broke the
+      // existing 90MB boot budget. Intermediates are disposable once copied.
+      while(backgrounds.size>2){const id=backgrounds.keys().next().value,old=backgrounds.get(id);for(const layer of old.layers)releaseCanvas(layer.canvas);releaseCanvas(old.composite);releaseCanvas(old.near);backgrounds.delete(id);}
+      for(const map of [sized,sliceCache,seamless,overlays]){for(const c of map.values())releaseCanvas(c);map.clear();}
+      // Stage 5's roof is its second finished variant. Prepare it at entry,
+      // never in the live wave-four camera march.
+      if(n===5&&!roof)this.preload(Object.assign({},scene,{wave:5,roofOn:true}));
+      return result;
+    },
+    prepare(level){
+      const scene={levelIndex:level,camera:{x:0},time:0,wave:0,level:{length:(R.SCROLL&&R.SCROLL.length)||4240}};
+      this.preload(scene);
+      if(level===4){scene.wave=5;scene.roofOn=true;this.preload(scene);}
+    },
+    draw(ctx, scene) {
+      const n = scene.levelIndex + 1;
+      if(!this._painting && R.assets.has('stage'+n+'-far')){
+        let entry;
+        try{entry=this.preload(scene);}catch(e){entry=null;}
+        if(!entry)return this.drawCachedView(ctx,scene);
+        this._viewScene=scene;
+        const rs=entry.rs,cam=scene.camera.x||0;
+        if(!entry.composite){entry.composite=document.createElement('canvas');entry.composite.width=Math.ceil(640*rs);entry.composite.height=Math.ceil(360*rs);entry.ctx=entry.composite.getContext('2d',{alpha:false});}
+        if(entry.camera!==cam){
+          const g=entry.ctx;g.setTransform(rs,0,0,rs,0,0);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='low';
+          for(const layer of entry.layers){
+            const c=layer.canvas;
+            let left=cam*layer.k;
+            if(layer.loop)left=((left%layer.w)+layer.w)%layer.w;
+            else left=Math.max(0,Math.min(left,layer.w-640));
+            const first=Math.min(640,layer.w-left);
+            g.drawImage(c,left*rs,0,first*rs,c.height,0,layer.y,first,layer.h);
+            if(first<640)g.drawImage(c,0,0,(640-first)*rs,c.height,first,layer.y,640-first,layer.h);
+          }
+          entry.camera=cam;backgroundStats.composites++;
+        }else backgroundStats.hits++;
+        const smooth=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;
+        ctx.drawImage(entry.composite,0,0,640,360);ctx.imageSmoothingEnabled=smooth;
         if(n===5&&Math.sin((scene.time||0)*0.8)>0.995)strokeLightning(ctx);
         return;
       }
@@ -981,7 +1075,7 @@
         }else if(usePlates){
           const travel=travelOf(scene),layout=midLayout(n,travel);
           const midX=layout.clamp?Math.min(cam*K_MID,Math.max(0,layout.available-640)):cam*K_MID;
-          const viewL=midX-80,viewR=midX+720;
+          const viewL=midX-80,viewR=midX+(this._paintWidth||640)+80;
           for(const piece of layout.pieces){
             if(piece.x+piece.w<viewL||piece.x>viewR)continue;
             const img=R.assets.get(piece.key);if(!img)continue;
@@ -1001,7 +1095,7 @@
           if(img){
             const travel=travelOf(scene),layout=sliceLayout(n,travel);
             const drawH=spec.plateW*img.height/img.width,drawY=10+MID_HEIGHTS[n-1]-drawH;
-            const viewL=cam*K_MID-80,viewR=cam*K_MID+720;
+            const viewL=cam*K_MID-80,viewR=cam*K_MID+(this._paintWidth||640)+80;
             const plate=displayPlate(spec.key,spec.plateW,drawH);
             if(plate&&layout.plateW>viewL&&0<viewR){noteScrollAlpha(ctx);ctx.globalAlpha=1;ctx.drawImage(plate,-cam*K_MID,drawY,spec.plateW,drawH);}
             for(const piece of layout.pieces){
@@ -1043,7 +1137,7 @@
       }
       // Wide floor plates are compressed in depth, not tiled into tiny squares.
       const floor = sizedPlate(floorKey,seamlessPlate(floorKey,true),FLOOR_LOOP,138);
-      if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off;x<640;x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
+      if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off;x<(this._paintWidth||640);x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
       else if(n===1)R.Stage1.layers.floor(ctx,cam);
       let factor=1;
       R.StageWorld._layerFactor=factor;
@@ -1064,6 +1158,17 @@
     },
     near(ctx, scene) {
       const n = scene.levelIndex + 1;
+      if(!this._painting&&R.assets.has('stage'+n+'-far')){
+        let entry;try{entry=this.preload(scene);}catch(e){entry=null;}
+        if(entry&&entry.near){
+          const cam=scene.camera.x||0,step=684,shift=((cam*K_NEAR)%step+step)%step;
+          // Same right-to-left overlap as the original strip, but only the
+          // visible bottom 26 pixels are ever submitted to the renderer.
+          const last=Math.floor((640+shift-1e-7)/step)*step-shift;
+          for(let x=last;x>=-shift-1e-7;x-=step)ctx.drawImage(entry.near,x,334,700,26);
+          return;
+        }
+      }
       // Confine dense delivered foreground props to the bottom 26px; every lane
       // and attack tell remains visible, even on the lowest playable lane.
       ctx.save();ctx.beginPath();ctx.rect(0,334,640,26);ctx.clip();

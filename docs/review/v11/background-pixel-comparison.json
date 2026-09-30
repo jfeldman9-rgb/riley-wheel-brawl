@@ -1,0 +1,113 @@
+{
+  "method": "Real decoded Skia Canvas2D, 1280x720, pristine live baseline versus 1.1; start/fractional-middle/end camera samples. Additional pixel checks supplement, never replace, inherited seam/detail thresholds. No postprocessing.",
+  "rows": [
+    {
+      "stage": 1,
+      "cam": 0,
+      "meanChannelDelta": 0.5344292534722223,
+      "maxChannelDelta": 13,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.0760217135404754
+    },
+    {
+      "stage": 1,
+      "cam": 1524.125,
+      "meanChannelDelta": 0.49681278935185186,
+      "maxChannelDelta": 33,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.03833329188651988
+    },
+    {
+      "stage": 1,
+      "cam": 3600,
+      "meanChannelDelta": 0.4967816840277778,
+      "maxChannelDelta": 13,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.03575109504276447
+    },
+    {
+      "stage": 3,
+      "cam": 0,
+      "meanChannelDelta": 0.6358619068287037,
+      "maxChannelDelta": 19,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.09394654036489859
+    },
+    {
+      "stage": 3,
+      "cam": 1524.125,
+      "meanChannelDelta": 0.5908611834490741,
+      "maxChannelDelta": 28,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.08875600477224604
+    },
+    {
+      "stage": 3,
+      "cam": 3600,
+      "meanChannelDelta": 0.6537102141203703,
+      "maxChannelDelta": 15,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.08255634136297481
+    },
+    {
+      "stage": 4,
+      "cam": 0,
+      "meanChannelDelta": 0.8008687789351852,
+      "maxChannelDelta": 16,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.07622793359942281
+    },
+    {
+      "stage": 4,
+      "cam": 1524.125,
+      "meanChannelDelta": 1.8913288483796296,
+      "maxChannelDelta": 48,
+      "pixelsOver40": 4,
+      "pixelsOver40Fraction": 0.000004340277777777778,
+      "luminanceDelta": -0.06816844336810593
+    },
+    {
+      "stage": 4,
+      "cam": 3600,
+      "meanChannelDelta": 1.8703830295138888,
+      "maxChannelDelta": 48,
+      "pixelsOver40": 5,
+      "pixelsOver40Fraction": 0.0000054253472222222224,
+      "luminanceDelta": -0.07327088151810232
+    },
+    {
+      "stage": 5,
+      "cam": 0,
+      "meanChannelDelta": 0.3246701388888889,
+      "maxChannelDelta": 13,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.09439426627641498
+    },
+    {
+      "stage": 5,
+      "cam": 1524.125,
+      "meanChannelDelta": 0.6309602864583334,
+      "maxChannelDelta": 22,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.09553121419178852
+    },
+    {
+      "stage": 5,
+      "cam": 3600,
+      "meanChannelDelta": 0.7388802083333333,
+      "maxChannelDelta": 37,
+      "pixelsOver40": 0,
+      "pixelsOver40Fraction": 0,
+      "luminanceDelta": -0.09395020637779251
+    }
+  ]
+}

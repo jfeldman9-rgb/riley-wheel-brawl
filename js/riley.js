@@ -21,6 +21,19 @@
     punch:[32.3,-73,.72],kick:[0,-64,-1.02],fireball:[9.6,-35.6,.58],hurt:[29.3,-45,-.82],jump:[8.8,-40,-.65],
     roundhouse:[20.5,-71,-1.22],knee:[18,-77,-.28],channel:[10,-57,-.08],lying:[-21,-5,-1.42],getup:[6,-4,.72]
   };
+  // Measured glove centres in each original painted frame. Earlier action
+  // anchors landed on the belt/raised leg in several poses; use the actual
+  // fist pixels, then transform with the same atlas anchor as Riley's body.
+  RILEY16.handPixels = {
+    walk1:[119,113],walk2:[113,106],walk3:[88,95],walk4:[105,103],
+    walk5:[100,106],walk6:[102,110],walk7:[82,95],walk8:[115,99],
+    punch:[177,48],kick:[43,56],fireball:[174,76],hurt:[141,68],jump:[114,58],
+    roundhouse:[123,49],knee:[81,45],channel:[88,66],lying:[66,70],getup:[101,132]
+  };
+  for (const [frame, hand] of Object.entries(RILEY16.handPixels)) {
+    const data=RILEY16.frames[frame],scale=RILEY16.height/RILEY16.frames.idle[1];
+    HANDS[frame][0]=(hand[0]-data[2])*scale;HANDS[frame][1]=(hand[1]-data[3])*scale;
+  }
   // [sole x, sole y, planted side, distance span], in actor units relative to
   // the atlas anchor. Spans are the measured body travel to the next exposure;
   // each four-frame stance totals 32u and begins on a check/contact boundary.
@@ -389,7 +402,12 @@
         this.setState('getup');
         this.invuln = 1;
       }
-      if (this.state === 'getup' && this.stateT > 0.42) this.setState('idle');
+      if (this.state === 'getup' && this.stateT > 0.42) {
+        // Protect the first controllable recovery frames, including an externally
+        // entered get-up pose. Existing respawn/knockdown grace stays intact.
+        this.invuln = Math.max(this.invuln, 0.24);
+        this.setState('idle');
+      }
       const locked = ['hurt', 'knockdown', 'lying', 'getup', 'super'].includes(this.state);
       if (locked && R.keyPressed(input, 'attack')) this.queuedAttack = true;
       if (this.state === 'hurt' && this.stateT > 0.22) {
@@ -428,7 +446,10 @@
       this.updateAttack(dt);
       this.updateTaint(dt);
       super.update(dt);
-      this.x = R.util.clamp(this.x, this.g.arenaLeft + 18, this.g.arenaRight - 18);
+      // The painted torso is wider than the 25-unit hurtbox. Keep its centre
+      // a full half-body inside the visible left wall, including during recoil.
+      const visibleLeft = Math.max(this.g.arenaLeft, this.g.camera ? this.g.camera.x : this.g.arenaLeft);
+      this.x = R.util.clamp(this.x, visibleLeft + 40, this.g.arenaRight - 40);
       if (this.grabbed) {
         this.grabbed.x = this.x + this.facing * 22;
         this.grabbed.y = this.y;
@@ -554,13 +575,19 @@
       const alpha=this.dead?Math.max(.1,Math.min(1,1-this.deadTimer/.75)):(this.invuln>0&&Math.floor(this.invuln*18)%2===0?.55:1);
       const attack=this.attackMove,progress=attack?Math.min(1,this.stateT/Math.max(.01,attack.duration)):0;
       const swing=attack?(-110+150*progress)*Math.PI/180:0;
-      const gripY=frame==='idle'?83:76;
-      ctx.save();ctx.globalAlpha*=alpha;ctx.translate(this.x-cameraX,this.y-this.z);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]+swing);
+      // Every pose anchors the wrapped grip centre, never the collar above it.
+      const gripY=83;
+      let bodyX=this.x,bodyY=this.y;
+      if (!lying && this.grounded && frame.indexOf('walk')===0) {
+        const contact=walkContact(this.walkDistance),correction=this.facing*(contact.first-contact.phase-contact.foot[0]);
+        bodyX+=Math.max(-2,Math.min(2,correction));bodyY-=contact.foot[1];
+      }
+      ctx.save();ctx.globalAlpha*=alpha;ctx.translate(bodyX-cameraX,bodyY-this.z);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]+swing);
       ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-gripY);ctx.restore();
-      const angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:this.x+this.facing*(h[0]+sn*gripY),y:this.y-this.z+h[1]-cs*gripY};
+      const angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:bodyX+this.facing*(h[0]+sn*gripY),y:bodyY-this.z+h[1]-cs*gripY};
       if(this.attackMove){this.callandorTips=this.callandorTips||[];this.callandorTips.push({x:tip.x,y:tip.y,t:performance.now()});if(this.callandorTips.length>9)this.callandorTips.shift();}
       else this.callandorTips=[];
-      if(this.callandorTips.length>1){ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';const grip={x:this.x+this.facing*h[0],y:this.y-this.z+h[1]},n=this.callandorTips.length;for(let i=1;i<n;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i],fade=i/n,ma={x:(grip.x+a.x)*.5,y:(grip.y+a.y)*.5},mb={x:(grip.x+b.x)*.5,y:(grip.y+b.y)*.5};ctx.globalAlpha=.08+fade*.25;ctx.fillStyle='#75dfff';ctx.beginPath();ctx.moveTo(ma.x-cameraX,ma.y);ctx.lineTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.lineTo(mb.x-cameraX,mb.y);ctx.closePath();ctx.fill();ctx.globalAlpha=.18+fade*.55;ctx.strokeStyle='#efffff';ctx.lineWidth=2+fade*3;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}
+      if(this.callandorTips.length>1){ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';const grip={x:bodyX+this.facing*h[0],y:bodyY-this.z+h[1]},n=this.callandorTips.length;for(let i=1;i<n;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i],fade=i/n,ma={x:(grip.x+a.x)*.5,y:(grip.y+a.y)*.5},mb={x:(grip.x+b.x)*.5,y:(grip.y+b.y)*.5};ctx.globalAlpha=.08+fade*.25;ctx.fillStyle='#75dfff';ctx.beginPath();ctx.moveTo(ma.x-cameraX,ma.y);ctx.lineTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.lineTo(mb.x-cameraX,mb.y);ctx.closePath();ctx.fill();ctx.globalAlpha=.18+fade*.55;ctx.strokeStyle='#efffff';ctx.lineWidth=2+fade*3;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}
     }
   }
   R.Fireball = Fireball;

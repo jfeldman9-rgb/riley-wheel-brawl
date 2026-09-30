@@ -44,13 +44,17 @@
   const game = RWB.game = {
     scene: null, nextScene: null, fade: 0, fadeDir: 0, sceneAt: 0,
     /** Fade out, swap, fade in. */
-    setScene(s) { this.nextScene = s; this.fadeDir = 1; },
+    setScene(s) {
+      if(s&&s.isGameplay&&RWB.StageWorld&&RWB.StageWorld.preload)RWB.StageWorld.preload(s);
+      this.nextScene = s; this.fadeDir = 1;
+    },
     /** Swap with no fade (tests / soak). */
     setSceneNow(s) { this.nextScene = s; this._swap(); this.fadeDir = 0; this.fade = 0; },
     _swap() {
       if (this.scene && this.scene.exit) this.scene.exit();
       this.scene = this.nextScene; this.nextScene = null;
       this.sceneAt = performance.now();
+      if (this.scene) this.scene._musicFrameQueued = false;
       if (this.scene && this.scene.enter) this.scene.enter();
     },
     /** First scene after loading. Content overrides this (e.g. to show its Title). */
@@ -185,11 +189,11 @@
     clock.reset();RWB.input.clear();last=performance.now();
     if (!document.hidden) return;
     const s = game.scene;
-    if (s && s.isGameplay && s.phase === 'play' && !s.paused) {
+    if (s && ((s.isGameplay && s.phase === 'play') || s.pauseOnBlur) && !s.paused) {
       if (s.pause) s.pause(); else s.paused = true;
     }
   });
-  window.addEventListener('blur',()=>{clock.reset();RWB.input.clear();last=performance.now();const s=game.scene;if(s?.isGameplay&&!s.paused&&s.phase==='play')s.pause?s.pause():s.paused=true;});
+  window.addEventListener('blur',()=>{clock.reset();RWB.input.clear();last=performance.now();const s=game.scene;if(s&&!s.paused&&((s.isGameplay&&s.phase==='play')||s.pauseOnBlur))s.pause?s.pause():s.paused=true;});
   resize();
   function toCanvas(cx, cy) {
     const r = canvas.getBoundingClientRect();
@@ -273,6 +277,12 @@
       const pumpMs=performance.now()-pumpAt;
       const drawAt=performance.now();
       scene.draw(ctx);
+      // A task queued after this RAF runs after its rendering opportunity. Do
+      // not start a new music decode in the first visible stage-frame work.
+      if(game.fade<1&&!scene._musicFrameQueued&&RWB.audio.markFirstVisibleFrame){
+        scene._musicFrameQueued=true;
+        setTimeout(()=>{if(game.scene===scene)RWB.audio.markFirstVisibleFrame(scene.music);},0);
+      }
       const drawMs=performance.now()-drawAt;
       RWB.perf.lastUpdateDraw=updateMs+drawMs;
       const jobs=(RWB.perf.frameJobs||[]).slice();

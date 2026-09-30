@@ -15,13 +15,15 @@
    from an older deploy can't pin the fallback. */
 'use strict';
 
-RWB.ASSET_VER = '20260930-release2';
+RWB.ASSET_VER = '20260930-v11-review';
 RWB.assets = (function () {
   const images = {};
   const cs = typeof document !== 'undefined' && document.currentScript;
   const VER = RWB.ASSET_VER = (cs && (cs.src.match(/[?&]v=([^&#]+)/) || [])[1]) || RWB.ASSET_VER;
   const manifest = {};   // key -> src, fetched during load()
   const lazy = {};       // key -> src, fetched in the background after load()
+  const demand = new Set(); // requested stage-only art, never boot-prefetched
+  const generation = {};  // release invalidates an in-flight master safely
 
   const art = RWB.ARTDATA || {};
   for (const k of Object.keys(art)) if (k !== 'plates' && art[k] && art[k].src) manifest['art:' + k] = art[k].src;
@@ -38,7 +40,8 @@ RWB.assets = (function () {
   const pending = {};
 
   function register(key, src, opts) {
-    if (opts && opts.lazy) lazy[key] = src; else manifest[key] = src;
+    if (opts && (opts.lazy || opts.demand)) lazy[key] = src; else manifest[key] = src;
+    if (opts && opts.demand) demand.add(key);
   }
   function fetchImage(url, deferDecode) {
     return new Promise(resolve => {
@@ -60,9 +63,10 @@ RWB.assets = (function () {
   async function fetchKey(k, src) {
     if (!listed(src)) { images[k] = null; skipped.push(k); return null; }
     const url = src + (src.includes('?') ? '&' : '?') + 'v=' + VER;
-    const deferDecode = k in lazy;
+    const deferDecode = k in lazy, token = generation[k] || 0;
     let img = await fetchResource(url, deferDecode);
     if (!img) img = await fetchResource(url + '&r=' + Date.now(), deferDecode);
+    if ((generation[k] || 0) !== token) return null;
     images[k] = img;
     if (!img) { failed.push(k); if (k in lazy && typeof console !== 'undefined') console.info('[RWB] story art unavailable; using drawn art:', k); }
     return img;
@@ -81,25 +85,51 @@ RWB.assets = (function () {
       loadLazy();
     });
   }
-  /* Two at a time, in registration order. */
-  function loadLazy() {
-    const keys = Object.keys(lazy).filter(k => !(k in pending));
-    let i = 0;
-    const next = () => {
-      if (i >= keys.length) return Promise.resolve();
-      const k = keys[i++];
-      pending[k] = fetchKey(k, lazy[k]);
-      return pending[k].then(next);
-    };
-    return Promise.all([next(), next()]);
+  /* Two fetches at a time. Every queued key gets its promise immediately,
+     so ready() can wait for a late-registered story/outcome rather than falsely
+     resolving null just because the first two downloads are still in flight. */
+  const lazyQueue = [];
+  let lazyActive = 0;
+  function pumpLazy() {
+    while (lazyActive < 2 && lazyQueue.length) {
+      const job = lazyQueue.shift();
+      lazyActive++;
+      fetchKey(job.key, lazy[job.key]).then(job.resolve, () => job.resolve(null)).finally(() => {
+        lazyActive--;
+        pumpLazy();
+      });
+    }
+  }
+  function loadLazy(requested) {
+    const wanted = new Set((requested || []).filter(key => key in lazy));
+    const keys = [...wanted, ...Object.keys(lazy).filter(key => !demand.has(key) && !wanted.has(key))];
+    for (const key of keys) {
+      if (key in pending) continue;
+      pending[key] = new Promise(resolve => lazyQueue.push({ key, resolve }));
+    }
+    // A requested reel or current-stage outcome goes before unused ambient art.
+    // Downloads already in flight finish normally; the two-fetch limit remains.
+    lazyQueue.sort((a, b) => Number(wanted.has(b.key)) - Number(wanted.has(a.key)));
+    pumpLazy();
+    return Promise.all(keys.map(key => pending[key]));
+  }
+  function releaseDemand(keys) {
+    for (const key of keys || []) {
+      if (!demand.has(key)) continue;
+      generation[key] = (generation[key] || 0) + 1;
+      delete images[key]; delete pending[key];
+      for (let i = lazyQueue.length - 1; i >= 0; i--) if (lazyQueue[i].key === key) {
+        lazyQueue[i].resolve(null); lazyQueue.splice(i, 1);
+      }
+    }
   }
   /** Resolves when the given keys have settled (loaded, failed or skipped). */
   function ready(keys) {
     const want = keys || [];
-    if (want.some(k => k in lazy && !(k in pending))) loadLazy();
+    if (want.some(k => k in lazy)) loadLazy(want);
     // A reel asks for its stills when it is built; start their off-thread
     // decode then, so the first painted frame does not decode synchronously.
-    const warm = (k, img) => { if (img && k in lazy && img.decode) img.decode().catch(() => {}); return img; };
+    const warm = async (k, img) => { if (img && k in lazy && img.decode) { try { await img.decode(); } catch (_) {} } return img; };
     return Promise.all(want.map(k => (pending[k] || Promise.resolve(images[k] || null)).then(img => warm(k, img))));
   }
 
@@ -107,7 +137,7 @@ RWB.assets = (function () {
   function has(key) { return !!images[key]; }
   function settled(key) { return key in images; }
   return {
-    register, load, ready, get, has, settled, VER, listed,
+    register, load, ready, releaseDemand, get, has, settled, VER, listed,
     failed: () => failed.slice(), skipped: () => skipped.slice(),
     get progress() { return total ? loaded / total : 1; }, get done() { return done; }
   };

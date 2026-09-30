@@ -6,7 +6,7 @@
 'use strict';
 
 RWB.audio = (function () {
-  let ctx = null, master = null, musicGain = null, duckGain = null, sfxGain = null, comp = null, voiceGain = null, trackGain = null;
+  let ctx = null, master = null, musicGain = null, duckGain = null, sfxGain = null, comp = null, voiceGain = null, trackGain = null, speechDuckGain = null;
   let muted = false;
   let unlocked = false;
   let volume = 1; // 0..1, multiplied into the master gain
@@ -22,7 +22,8 @@ RWB.audio = (function () {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
       master = ctx.createGain(); master.gain.value = muted ? 0 : 0.8 * volume; master.connect(ctx.destination);
       // Music: level -> duck -> master. The duck stage dips under big hits and barks.
-      duckGain = ctx.createGain(); duckGain.gain.value = 1; duckGain.connect(master);
+      speechDuckGain = ctx.createGain(); speechDuckGain.gain.value = 1; speechDuckGain.connect(master);
+      duckGain = ctx.createGain(); duckGain.gain.value = 1; duckGain.connect(speechDuckGain);
       musicGain = ctx.createGain(); musicGain.gain.value = MUSIC_BASE * musicLevel; musicGain.connect(duckGain);
       // Recorded music track: its own level (TRACK_BASE, about 0.35) into the same duck stage.
       trackGain = ctx.createGain(); trackGain.gain.value = TRACK_BASE * musicLevel; trackGain.connect(duckGain);
@@ -55,6 +56,24 @@ RWB.audio = (function () {
     g.setValueAtTime(depth, now + 0.025 + hold);
     g.linearRampToValueAtTime(1, now + 0.025 + hold + release);
     duckUntil = now + 0.025 + hold; duckDepth = depth;
+  }
+  // Speech has its own duck stage. A short impact/stinger must never replace the
+  // long speech envelope and bring music back up in the middle of a sentence.
+  function duckSpeech(duration) {
+    if (!ctx || !speechDuckGain) return;
+    const now = ctx.currentTime, g = speechDuckGain.gain;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(0.42, now + 0.025);
+    g.setValueAtTime(0.42, now + Math.max(0.025, duration));
+    g.linearRampToValueAtTime(1, now + Math.max(0.025, duration) + 0.45);
+  }
+  function releaseSpeechDuck() {
+    if (!ctx || !speechDuckGain) return;
+    const now = ctx.currentTime, g = speechDuckGain.gain;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(1, now + 0.12);
   }
   function setMusicLevel(v) {
     const was = musicLevel;
@@ -269,7 +288,13 @@ RWB.audio = (function () {
 
   /* Optional recorded clips (e.g. voice lines). Only URLs the caller knows exist
      should be passed; a failed fetch resolves to null and is remembered. */
-  const clips = {}, pending = {};
+  const clips = {}, pending = {}, clipGains = {};
+  // Per-asset loudness trims are derived from decoded delivered bytes. This
+  // preserves the approved recording rather than adding another lossy encode.
+  function defineClipGain(key, gain) {
+    if (Number.isFinite(gain) && gain > 0 && gain <= 2) clipGains[key] = gain;
+  }
+  function clipGain(key) { return clipGains[key] || 1; }
   function decode(b) {
     return new Promise(res => {
       try { const p = ctx.decodeAudioData(b, res, () => res(null)); if (p && p.catch) p.catch(() => res(null)); }
@@ -298,6 +323,7 @@ RWB.audio = (function () {
     try { src.stop(); } catch (e) { /* already ended */ }
     src.disconnect();
     if (voiceOut) { voiceOut.disconnect(); voiceOut = null; }
+    releaseSpeechDuck();
     trace.push({ name: 'clip-stop:' + key, t: ctx.currentTime, elapsed: ctx.currentTime - voiceStartedAt });
   }
   /** Explicit story skip / scene change: also discard clips still being fetched. */
@@ -313,7 +339,7 @@ RWB.audio = (function () {
     const voice = !!(opts && opts.voice);
     if (voice) stopVoice();
     const src = ctx.createBufferSource(); src.buffer = buf;
-    const g = ctx.createGain(); g.gain.value = (opts && opts.vol) || 1;
+    const g = ctx.createGain(); g.gain.value = (opts && opts.vol != null ? opts.vol : 1) * (voice ? clipGain(key) : 1);
     src.connect(g); g.connect(voice && voiceGain ? voiceGain : sfxGain); src.start();
     if (voice) {
       voiceSrc = src; voiceOut = g; voiceKey = key; voiceProtected = !!opts.protected; voiceStartedAt = ctx.currentTime;
@@ -325,7 +351,10 @@ RWB.audio = (function () {
         pumpVoiceQueue();
       };
     }
-    if (!opts || opts.duck !== false) duck(voice ? 0.42 : 0.5, buf.duration, 0.45);
+    if (!opts || opts.duck !== false) {
+      if (voice) duckSpeech(buf.duration);
+      else duck(0.5, buf.duration, 0.45);
+    }
     trace.push({ name: 'clip:' + key, t: ctx.currentTime, duration: buf.duration });
     if (opts && opts.onStart) opts.onStart();
     return true;
@@ -385,6 +414,7 @@ RWB.audio = (function () {
   function defineSong(name, def) { SONGS[name] = def; }
 
   let song = null, songName = null, step = 0, nextTime = 0, timer = null, requested = null;
+  let musicFrameReady = false;
   const midi = m => 440 * Math.pow(2, (m - 69) / 12);
 
   function scheduleStep(t) {
@@ -430,6 +460,7 @@ RWB.audio = (function () {
     return urls[urls.length - 1];
   }
   function loadTrack(name) {
+    if (!musicFrameReady) return Promise.resolve(null);
     init();
     const t = TRACKS[name];
     if (!t || !ctx || typeof fetch !== 'function') return Promise.resolve(null);
@@ -449,6 +480,7 @@ RWB.audio = (function () {
     return p;
   }
   function startTrack(name) {
+    if (!musicFrameReady) return;
     const t = TRACKS[name];
     trackWant = name;
     if (trackName === name && trackSrc) return;
@@ -487,8 +519,21 @@ RWB.audio = (function () {
   }
   function stopTrack() { pauseTrack(); trackName = null; trackWant = null; trackOffset = 0; }
 
+  // Called by main only after the matching scene has painted. Ignore callbacks
+  // from a scene that was replaced before its post-paint work could run.
+  function markFirstVisibleFrame(name) {
+    if (name !== requested || musicFrameReady) return false;
+    musicFrameReady = true;
+    trace.push({ name: 'music-frame-ready:' + name, t: ctx ? ctx.currentTime : 0 });
+    playMusic(name);
+    return true;
+  }
   function playMusic(name) {
+    if (requested !== name) musicFrameReady = false;
     requested = name;
+    // An already-playing shared track is intentionally continuous across scenes;
+    // all new music work waits for this scene's first visible frame.
+    if (!musicFrameReady) return;
     init();
     if (!ctx) return;
     const tname = ALIAS[name] || (TRACKS[name] ? name : null);
@@ -500,7 +545,7 @@ RWB.audio = (function () {
     if (trackName) stopTrack();
     if (songName === name && timer) return;
     stopMusic();
-    requested = name;
+    requested = name; musicFrameReady = true;
     if (!SONGS[name]) return;
     song = SONGS[name]; songName = name; step = 0;
     nextTime = ctx.currentTime + 0.05;
@@ -508,14 +553,14 @@ RWB.audio = (function () {
   }
   function stopMusic() {
     if (timer) clearInterval(timer);
-    timer = null; song = null; songName = null; requested = null;
+    timer = null; song = null; songName = null; requested = null; musicFrameReady = false;
     if (trackName) stopTrack();
   }
 
   return {
-    init, unlock, sfx, playMusic, stopMusic, toggleMute, setMuted, setVolume, cycleVolume, volumeLabel,
+    init, unlock, sfx, playMusic, stopMusic, markFirstVisibleFrame, toggleMute, setMuted, setVolume, cycleVolume, volumeLabel,
     duck, setMusicLevel, cycleMusic, toggleMusic, musicLabel, level, trace,
-    tone, noise, formant, brass, defineSfx, defineSong, defineStinger, defineVoice, loadClip, playClip, hasClip, queueVoice, clearVoices,
+    tone, noise, formant, brass, defineSfx, defineSong, defineStinger, defineVoice, defineClipGain, clipGain, loadClip, playClip, hasClip, queueVoice, clearVoices,
     defineTrack, aliasTrack, loadTrack,
     /** Audio clock in seconds (0 without WebAudio). */
     now() { return ctx ? ctx.currentTime : 0; },
@@ -531,6 +576,9 @@ RWB.audio = (function () {
     get voiceBusy() { return !!(ctx && ctx.state === 'running' && !muted && volume > 0 && (voiceProtected || voiceQueue.length > 0)); },
     get muted() { return muted; }, get unlocked() { return unlocked; }, get volume() { return volume; },
     get musicLevel() { return musicLevel; },
+    /** Read-only mix state for real-clock regressions; gains multiply. */
+    get mix() { return { musicFrameReady, speechDuck: speechDuckGain ? speechDuckGain.gain.value : 1,
+      effectsDuck: duckGain ? duckGain.gain.value : 1 }; },
     /** The song the game asked for (set even when WebAudio is unavailable). */
     get song() { return requested; },
     get playing() { return (!!timer && !!song) || !!trackSrc; }

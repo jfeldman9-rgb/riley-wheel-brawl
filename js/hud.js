@@ -5,7 +5,8 @@
     ctx.fillStyle = back || '#252d38';
     ctx.fillRect(x, y, w, h);
     ctx.fillStyle = color;
-    ctx.fillRect(x, y, Math.max(0, w * ratio), h);
+    const rs=(R.display&&R.display.renderScale)||1;
+    ctx.fillRect(x, y, Math.max(0, Math.round(w * ratio * rs) / rs), h);
     ctx.strokeStyle = '#dce5e9';
     ctx.lineWidth = 1;
     ctx.strokeRect(x, y, w, h);
@@ -20,6 +21,7 @@
     R.drawText(ctx,'R',x,y+5,15,'#61c6ff','center');
   }
   const hudLayer = { key: '', canvas: null };
+  R.HUDStats = { paints: 0, hits: 0 };
   function paintHud(ctx, scene) {
     const player = scene.player;
     const big = !!R.settings.data.bigHud;
@@ -73,15 +75,17 @@
   }
   R.drawHUD = function (ctx, scene) {
     const player = scene.player;
-    const bossHp = scene.boss && !scene.boss.dead ? Math.ceil(scene.boss.hp) : -1;
     const rs = (R.display && R.display.renderScale) || 1;
     const bw = Math.max(1, Math.ceil(640 * rs)), bh = Math.max(1, Math.ceil(360 * rs));
+    const barWidth=R.settings.data.bigHud?150:128;
+    const hpPixels=Math.round(barWidth*player.hp/player.hpMax*rs),powerPixels=Math.round(barWidth*player.power/player.powerMax*rs);
+    const bossPixels=scene.boss&&!scene.boss.dead?Math.round(320*scene.boss.hp/scene.boss.hpMax*rs):-1;
+    const goVisible=scene.goTimer>0&&(!scene.marching||Math.floor((scene.time||0)*8)%2===0);
     const key = [
-      bw, Math.ceil(player.hp), Math.ceil(player.power), player.lives, player.score, player.loialReady ? 1 : 0,
-      scene.wave, scene.levelIndex, bossHp, player.angreal > 0 ? player.angreal.toFixed(1) : '',
-      player.healPortrait > 0 ? 1 : 0, scene.warningTimer > 0 ? scene.warning : '', scene.goTimer > 0 ? 1 : 0,
-      scene.marching ? Math.floor((scene.time || 0) * 8) % 2 : 0,
-      scene.tutorial || '', R.settings.data.bigHud ? 1 : 0, R.settings.data.colorblind ? 1 : 0,
+      bw, Math.ceil(player.hp), hpPixels, powerPixels, player.lives, player.score, player.loialReady ? 1 : 0,
+      Math.min(6,scene.wave+1), scene.levelIndex, (scene.level&&(scene.level.banner||scene.level.name))||'', scene.level&&scene.level.boss, bossPixels, player.angreal > 0 ? player.angreal.toFixed(1) : '',
+      player.healPortrait > 0 ? 1 : 0, scene.warningTimer > 0 ? scene.warning : '', goVisible ? 1 : 0,
+      scene.tutorial ? R.input.fillKeys(scene.tutorial) : '', R.settings.data.bigHud ? 1 : 0, R.settings.data.colorblind ? 1 : 0,
       player.taintAge > R.TUNE.taintGrace ? 1 : 0,
       scene.fog && scene.levelIndex === 2 ? ((scene.fog.age % 8) < 6.4 ? (scene.fog.active ? 'move' : 'gather') + (scene.warningTimer > 0 ? '@134' : '@122') : '') : ''
     ].join('|');
@@ -98,7 +102,8 @@
       g.setTransform(rs, 0, 0, rs, 0, 0);
       paintHud(g, scene);
       hudLayer.key = key;
-    }
+      R.HUDStats.paints++;
+    } else R.HUDStats.hits++;
     const smooth = ctx.imageSmoothingEnabled;
     ctx.imageSmoothingEnabled = false;
     const top = scene.tutorial ? 340 : (scene.goTimer > 0 ? 200 : 150);

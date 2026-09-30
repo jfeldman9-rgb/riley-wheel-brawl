@@ -1,0 +1,130 @@
+PASS Title starts the opening reel
+PASS Riley walk uses eight registered sprite frames
+PASS Front kick creates a damaging hitbox
+PASS Roundhouse creates a damaging hitbox
+PASS Spinning back kick creates a damaging hitbox
+PASS Jump kick creates a damaging hitbox
+PASS 360 spinning kick creates a damaging hitbox
+PASS Fireball projectile hitbox damages a Trolloc
+PASS Grab throw damages and launches a Trolloc
+PASS Taint never reduces HP below one
+PASS Loial cannot be used twice after use, restart, or Continue
+PASS Game Over Continue preserves level, wave, score policy, and Loial state
+PASS Player takes zero damage in 30 seconds with no attackers
+PASS Reduced Shake lowers super shake and flash
+PASS Delivered art manifest lists existing bundled files
+FAIL Every active committed painted image has a registered manifest key
+Cache stamp: 20260930-v11-review
+PASS Every script, stylesheet, and font URL has the 20260930-v11-review cache stamp
+PASS Browser gameplay uses bounded fixed 60 Hz simulation ticks
+PASS Pressed input edges are buffered and consumed by one simulation tick
+PASS Riley, enemy hit flashes, Callandor, dust and debris avoid per-frame Canvas filters
+PASS Every reel skips past its last caption safely and transitions exactly once
+PASS Every campaign subtitle is exact text from VOICE_LINES.md
+PASS Twinkle Toes uses speaker id kenzie
+PASS Stage 1 -> 2 -> 3 -> 4 -> 5 -> ending uses the existing Reel flow and preserves run stats
+PASS Flying Draghkar rejects grounded kicks, throws, Loial and super
+PASS Jump-kick and aimed fireball collision can damage flying Draghkar
+PASS Hypnotic kiss really grabs Riley and repeated kicks break free
+PASS Mashadar drains HP in its lane and leaves the opposite lane safe
+PASS Pause freezes Mashadar
+PASS Myrddraal blink actually relocates the boss
+PASS Fear hit applies a finite input stun
+PASS Callandor doubles boss super damage
+PASS Callandor survives save, Continue and stage restart
+PASS Taim survives otherwise lethal damage and frees Twinkle Toes
+PASS Taim keeps attacking at 1 HP while joint finish is pending
+PASS Shield hits can refill saidin after an interrupted joint attempt
+PASS Taim dies only after both visible joint beam tips collide
+PASS Stage 1 full saidin taint hurts and spending clears it
+PASS Stage 2 full saidin taint hurts and spending clears it
+PASS Stage 3 full saidin taint hurts and spending clears it
+PASS Stage 4 full saidin taint hurts and spending clears it
+PASS Stage 5 full saidin taint hurts and spending clears it
+PASS Art hooks use relative image/JSON paths
+PASS Every stage has four optional art layers
+FAIL Runtime assets share the 20260930-v11-review script cache stamp
+PASS A listed broken image retries once and settles to fallback
+PASS Stage 1 boss Continue preserves HP and attack progress
+PASS Stage 2 boss Continue preserves HP and attack progress
+PASS Stage 3 boss Continue preserves HP and attack progress
+PASS Stage 4 boss Continue preserves HP and attack progress
+PASS Stage 5 boss Continue preserves HP and attack progress
+PASS Continue replays an interrupted rescue readiness caption
+PASS Taim last-HP Continue preserves rescue and joint-finish readiness
+PASS Reload after Stage 4 clear must show Callandor reveal
+PASS Partial reveal is still pending on reload
+PASS Only acknowledging the final reveal caption clears the pending flag
+PASS World-space planted feet stay fixed; arms counter-swing throughout the gait
+PASS Enemy, ally and boss characters retain articulated painted rigs; Riley is sprite-only
+PASS Stage banners: 4 = Tear - Callandor, 5 = The Black Tower (Callandor no longer titles Stage 5)
+PASS Stage plate and floor tiling never mirrors a repeat
+PASS Plate interiors are not blurred, feathered, or smeared to pass a seam metric
+PASS Floors use offline-quilted seamless loops (min-error cut, no hard join) spanning 1100 units, >1.7 screens
+PASS Far layer is one full-width plate at 0.08, the roof plate is locked on the arena, and nothing crossfades two versions
+PASS Stage 1 mid plate is 720 units; later mids and the near strip are 700 and scroll on their own factors
+PASS Riley draws from all nineteen anchored riley16-v2 runtime frames and the portrait is manifested
+PASS A scene-less Riley fallback draws without throwing
+PASS Riley idle draw height is 90-100 units and 80-90% of a regular Trolloc
+PASS Riley walk advances all eight frames over two sole-locked 32u stances and stops at rest
+PASS Be'lal draws from all ten anchored painted belal frames (sword painted in hand) plus portrait
+PASS Be'lal SWORD FLURRY telegraph/attack use painted windup/slash/lunge frames (no composited sword, cannot detach)
+PASS Idle uses the same processed connected rig as action states
+PASS Display warmup restores the Continue save and does not enter a fight
+PASS Dust and debris draw a cached radial sprite
+PASS Cached backgrounds blit each parallax layer at the capped factor tiled() used
+PASS Fight frames clear the border a camera punch can expose
+PASS The fade-in clock starts after the scene enter bake, not before it
+PASS The cached control layer includes the pause button, not only the bottom cluster
+PASS HUD and touch caches clear and reuse their buffer instead of reallocating it
+PASS Pose atlases bake at the capped on-screen size, per stage, and flash copies are lazy
+PASS Crate debris accepts a single colour string
+PASS The pause press that opens the menu is not fed to the menu on that update
+PASS ESC opens the pause menu, it stays open, and pressing pause again resumes
+PASS Tapping II opens the pause menu, it stays open, and choosing RESUME closes it
+PASS Clicking II opens the pause menu, it stays open, and confirming RESUME closes it
+PASS Every stage is 4240 units, six fight zones, boss arena at the end
+PASS Clearing a wave unlocks the camera and shows the GO arrow
+PASS Walking into the next zone locks the camera there and the camera never goes back
+PASS The next wave spawns from off-screen, not on top of the player
+PASS The boss is the last zone
+PASS Continue resumes at the saved zone
+PASS A mid-walk save records the next zone and resume lands there
+PASS A mid-march reload after zone 3 resumes at wave 4 (cam 2880)
+PASS Stage 1 far plate still covers the right edge at the end of the road
+PASS Stage 1 mid strip never repeats a slice in one screen and only leaves planned gaps
+PASS Stage 1 mid plates cover the road and leave gaps of at most 80 units
+PASS Stage 1 never shows the same mid plate twice inside 640 units
+PASS Stage 1 overlaps at least 32 units at every plate join, with either a ramp or a recorded min-error seam
+PASS Stage 2 far plate still covers the right edge at the end of the road
+PASS Stage 2 mid strip never repeats a slice in one screen and only leaves planned gaps
+PASS Stage 2 mid plates cover the road and leave gaps of at most 80 units
+PASS Stage 2 never shows the same mid plate twice inside 640 units
+PASS Stage 2 overlaps at least 32 units at every plate join, with either a ramp or a recorded min-error seam
+PASS Stage 3 far plate still covers the right edge at the end of the road
+PASS Stage 3 mid strip never repeats a slice in one screen and only leaves planned gaps
+PASS Stage 3 mid plates cover the road and leave gaps of at most 80 units
+PASS Stage 3 never shows the same mid plate twice inside 640 units
+PASS Stage 3 overlaps at least 32 units at every plate join, with either a ramp or a recorded min-error seam
+PASS Stage 4 far plate still covers the right edge at the end of the road
+PASS Stage 4 uses one seam-free continuous panorama and clamps at its measured end (required 2080.00u, available 1181.81u, shortfall 898.19u)
+PASS Stage 4 never shows the same mid plate twice inside 640 units
+PASS Stage 5 far plate still covers the right edge at the end of the road
+PASS Stage 5 uses one seam-free continuous panorama and clamps at its measured end (required 2080.00u, available 1343.60u, shortfall 736.40u)
+PASS Stage 5 never shows the same mid plate twice inside 640 units
+PASS Far plates are night-graded on stages 1 and 5
+PASS All active additional mid plates resolve with the cache stamp
+browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     npx playwright install                                 ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+    at pageLoadChecks (/workspace/scratch/699fc278689a/riley-v11/tools/check.cjs:23:30)
+    at async main (/workspace/scratch/699fc278689a/riley-v11/tools/check.cjs:1020:1) {
+  log: [],
+  name: 'Error'
+}
