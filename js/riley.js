@@ -481,11 +481,14 @@
       // Thin warm rim + contact shadow keep Riley readable against busy art.
       const rim=!this.ghost&&rimFrame(frame,this.g ? (this.g.levelIndex||0) : 0);
       const drawSkinned=(source,pad)=>{
-        const sw=w+pad*2,sh=h+pad*2,hip=Math.floor((ay-88)+pad),bands=7;
+        const sw=w+pad*2,sh=h+pad*2,hip=Math.floor((ay-88)+pad),sole=ay+pad;
         ctx.drawImage(source,0,0,sw,hip,(-ax-pad)*scale,(-ay-pad)*scale,sw*scale,hip*scale);
-        for(let i=0;i<bands;i++){
-          const sy=Math.round(hip+(sh-hip)*i/bands),ey=Math.round(hip+(sh-hip)*(i+1)/bands),t=(i+1)/bands;
-          ctx.drawImage(source,0,sy,sw,ey-sy,(-ax-pad)*scale+legShift*t,(-ay-pad+sy)*scale,sw*scale,(ey-sy)*scale);
+        // One source-row strip avoids the visible ledges produced by the old
+        // seven-band warp. legShift is already in actor/destination units (as
+        // is drawX), while scale converts only source pixels to actor units.
+        for(let sy=hip;sy<sh;sy++){
+          const t=Math.max(0,Math.min(1,(sy+.5-hip)/(sole-hip))),smooth=t*t*(3-2*t);
+          ctx.drawImage(source,0,sy,sw,1,(-ax-pad)*scale+legShift*smooth,(-ay-pad+sy)*scale,sw*scale,scale);
         }
       };
       if(legShift&&rim)drawSkinned(rim,8);else if(legShift)drawSkinned(img,0);

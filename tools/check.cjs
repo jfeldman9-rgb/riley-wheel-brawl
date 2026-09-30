@@ -417,6 +417,32 @@ async function pageLoadChecks(check, rootDir) {
     check(footDrift.trolloc <= 20 && footDrift.chieftain <= 20, 'Enemy planted feet drift at or under 20 u/s ' + JSON.stringify(footDrift));
     check(footDrift.rileySlip <= 30, 'Riley planted foot slips at or under 30 u/s ' + JSON.stringify(footDrift));
     console.log('Foot drift ' + JSON.stringify(footDrift));
+    const legTear = await seeded.page.evaluate(() => {
+      const rs=RWB.display.renderScale||2,scale=RWB.RILEY16.height/RWB.RILEY16.frames.idle[1];
+      const made=()=>{const c=document.createElement('canvas');c.width=1280;c.height=720;return c};
+      const skin=made(),plain=made(),sg=skin.getContext('2d',{willReadFrequently:true}),pg=plain.getContext('2d',{willReadFrequently:true});
+      const scene=new RWB.scenes.Play(RWB.game,0,{wave:0,lives:99}),p=scene.player,out={};
+      p.state='walk';p.grounded=true;p.facing=1;p.x=180;p.y=250;p.ghost=true;
+      function edges(g,y0,y1){
+        const d=g.getImageData(0,0,1280,720).data,rows=[];
+        for(let y=y0;y<=y1;y++){let lo=1280,hi=-1;for(let x=0;x<1280;x++)if(d[(y*1280+x)*4+3]>48){lo=x;break}if(lo<1280)for(let x=1279;x>=lo;x--)if(d[(y*1280+x)*4+3]>48){hi=x;break}rows.push(hi<0?null:[lo,hi])}
+        return rows;
+      }
+      for(let i=0;i<120;i++){
+        p.walkDistance+=128/60;p.x+=128/60;
+        const frame=p.spriteFrame(),fd=RWB.RILEY16.frames[frame],foot=RWB.RILEY16.feet[frame],img=RWB.assets.get('riley16-'+frame);
+        sg.setTransform(1,0,0,1,0,0);sg.clearRect(0,0,1280,720);sg.setTransform(rs,0,0,rs,0,0);p.drawSprite(sg,0);
+        pg.setTransform(1,0,0,1,0,0);pg.clearRect(0,0,1280,720);pg.imageSmoothingEnabled=false;
+        const sole=(p.y-foot[1])*rs,x=360-fd[2]*scale*rs,y=sole-fd[3]*scale*rs;
+        pg.drawImage(img,x,y,fd[0]*scale*rs,fd[1]*scale*rs);
+        const y0=Math.ceil(sole-88*scale*rs),y1=Math.floor(sole),a=edges(sg,y0,y1),b=edges(pg,y0,y1);let excess=out[frame]||0;
+        for(let r=1;r<a.length;r++)if(a[r]&&a[r-1]&&b[r]&&b[r-1])for(let side=0;side<2;side++)excess=Math.max(excess,Math.abs(a[r][side]-a[r-1][side])-Math.abs(b[r][side]-b[r-1][side]));
+        out[frame]=excess;
+      }
+      return out;
+    });
+    check(Object.keys(legTear).length===8&&Object.values(legTear).every(n=>n<=2),'Riley per-row leg shear adds at most 2 render px to adjacent-row silhouette jumps '+JSON.stringify(legTear));
+    console.log('Riley leg tear excess '+JSON.stringify(legTear));
     const gripPixels=await seeded.page.evaluate(()=>{
       const scale=RWB.RILEY16.height/RWB.RILEY16.frames.idle[1],bad=[];
       for(const [frame,h] of Object.entries(RWB.RILEY16.hands)){
@@ -634,7 +660,7 @@ const retiredStreet=new Set(['assets/art/stage4-mid.png','assets/art/stage5-mid.
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')&&!f.endsWith('/_contact-sheet.png')&&!retiredStreet.has(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every active committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260929-sol61r6';console.log('Cache stamp: '+STAMP);
+const STAMP='20260929-sol61r7';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');

@@ -283,3 +283,9 @@ The effect stamp cache now accepts independent width and height. Dark Balefire c
 Natural seeds 1001–1040 remain S1 39/40 (97.5%), S2 30/40 (75%), S3 27/40 (67.5%), S4 23/40 (57.5%), and S5 23/40 (57.5%). Trial S4 pressure reductions jumped directly from 57.5% to 80%, while a trial S5 increase fell to 10%, so no difficulty scale was changed merely to chase the midpoint. Assisted seeds 1–10 remain 10/10 on every stage with every boss attack exercised and the Stage 5 joint hit completed.
 
 Playwright and Chromium remain unavailable: the Python Playwright install was attempted and rejected by the package proxy with HTTP 403. Browser-only page-load, real-Chrome foot, frame-time, cold-entry, boot-memory, join-image, and audio checks are therefore not claimed. The Node checks and offline measurements are recorded in the round report.
+
+## sol61 finishing round 3 — continuous lower-body skin (2026-09-30)
+
+Runtime stamp: `20260929-sol61r7`. Riley's contact lock still limits whole-body displacement to 2 actor units, but the remaining stance correction is now applied as a smoothstep shear one source row at a time from zero at the hip to the full correction at the sole. The same row compositor handles the warm rim. This removes the seven horizontal displacement ledges without changing any of the 19 painted `riley16-v2` PNGs, gameplay, saves, audio, or balance. `legShift` deliberately remains in actor/destination units; multiplying it by the source-pixel-to-actor scale would under-correct the planted sole.
+
+The browser regression suite now measures added adjacent-row silhouette displacement against each unskinned walk frame while Riley advances at 128 u/s, permitting at most 2 render pixels, and covers all eight walk paintings. `tools/offline-foot-check.cjs` uses the same smoothstep row model and additionally reports the simulated old seven-band and new continuous-shear tear excess per frame when Chromium is unavailable.
