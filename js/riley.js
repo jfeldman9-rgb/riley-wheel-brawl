@@ -33,10 +33,11 @@
     g.fillStyle='#17202b';g.fillRect(9,77,6,12);g.strokeStyle='#a9bdc8';g.lineWidth=1;for(let y=78;y<89;y+=3){g.beginPath();g.moveTo(9,y);g.lineTo(15,y+2);g.stroke();}
     g.fillStyle='#d8eef2';g.beginPath();g.arc(12,90,3,0,Math.PI*2);g.fill();swordCanvas=c;return c;
   }
-  function rimFrame(frame){
-    if(rims.has(frame))return rims.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
+  function rimFrame(frame,stage){
+    const colors=['255,224,158','198,220,255','185,166,255','255,205,145','174,147,255'],key=frame+':'+stage;
+    if(rims.has(key))return rims.get(key);const img=R.assets.get('riley16-'+frame);if(!img)return null;
     const c=document.createElement('canvas');c.width=img.width+16;c.height=img.height+16;const g=c.getContext('2d');
-    g.filter='drop-shadow(0 0 2.84px rgba(255,232,180,.7)) drop-shadow(0 2.36px 2.36px rgba(0,0,0,.65))';g.drawImage(img,8,8);rims.set(frame,c);return c;
+    g.filter='drop-shadow(0 0 2.84px rgba('+(colors[stage]||colors[0])+',.72)) drop-shadow(0 2.36px 2.36px rgba(0,0,0,.65))';g.drawImage(img,8,8);rims.set(key,c);return c;
   }
   function flashFrame(frame){
     if(flashes.has(frame))return flashes.get(frame);const img=R.assets.get('riley16-'+frame);if(!img)return null;
@@ -450,13 +451,15 @@
       ctx.translate(drawX - cameraX, drawY - this.z);
       if (lying) ctx.rotate(this.facing * 80 * Math.PI / 180);
       ctx.scale(this.facing, 1);
+      const smoothing=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;
       if (this.invuln > 0 && Math.floor(this.invuln * 18) % 2 === 0) ctx.globalAlpha *= .55;
       if (this.dead) ctx.globalAlpha *= Math.max(.1, Math.min(1, 1 - this.deadTimer / .75));
       // Thin warm rim + contact shadow keep Riley readable against busy art.
-      const rim=!this.ghost&&rimFrame(frame);
+      const rim=!this.ghost&&rimFrame(frame,this.g.levelIndex||0);
       if(rim)ctx.drawImage(rim,(-ax-8)*scale,(-ay-8)*scale,(w+16)*scale,(h+16)*scale);
       else ctx.drawImage(img, -ax * scale, -ay * scale, w * scale, h * scale);
       if(this.hitFlash>0){const flash=flashFrame(frame);if(flash){ctx.globalAlpha*=Math.min(.75,this.hitFlash*6);ctx.drawImage(flash,-ax*scale,-ay*scale,w*scale,h*scale);}}
+      ctx.imageSmoothingEnabled=smoothing;
       ctx.restore();
       return true;
     }
@@ -477,10 +480,13 @@
       const alpha=this.dead?Math.max(.1,Math.min(1,1-this.deadTimer/.75)):(this.invuln>0&&Math.floor(this.invuln*18)%2===0?.55:1);
       ctx.save();ctx.globalAlpha*=alpha;ctx.translate(this.x-cameraX,this.y-this.z);if(lying)ctx.rotate(this.facing*80*Math.PI/180);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]);
       ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-76);ctx.restore();
-      if(this.attackMove&&this.stateT>.06&&this.stateT<Math.min(.34,this.attackMove.duration)){const k=this.stateT/.34;ctx.save();ctx.globalAlpha*=.42*(1-k);ctx.strokeStyle='#bdf8ff';ctx.lineWidth=5*(1-k)+1;ctx.beginPath();ctx.arc(this.x-cameraX,this.y-this.z-45,43,-1.9*this.facing,.55*this.facing,this.facing<0);ctx.stroke();ctx.restore();}
+      const cs=Math.cos(h[2]),sn=Math.sin(h[2]),tip={x:this.x+this.facing*(h[0]+sn*76),y:this.y-this.z+h[1]-cs*76};
+      if(this.attackMove){this.callandorTips=this.callandorTips||[];this.callandorTips.push(tip);if(this.callandorTips.length>6)this.callandorTips.shift();}
+      else this.callandorTips=[];
+      if(this.callandorTips.length>1){ctx.save();ctx.lineCap='round';for(let i=1;i<this.callandorTips.length;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i];ctx.globalAlpha=.1+i/this.callandorTips.length*.38;ctx.strokeStyle='#bdf8ff';ctx.lineWidth=1+i*.65;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}
     }
   }
   R.Fireball = Fireball;
   R.Riley = Riley;
-  R.Riley.prepare=()=>{prepareSword();Object.keys(RILEY16.frames).forEach(frame=>{rimFrame(frame);flashFrame(frame);});};
+  R.Riley.prepare=()=>{prepareSword();Object.keys(RILEY16.frames).forEach(frame=>{for(let stage=0;stage<5;stage++)rimFrame(frame,stage);flashFrame(frame);});};
 }());

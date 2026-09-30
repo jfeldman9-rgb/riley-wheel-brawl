@@ -478,11 +478,16 @@
 
     directorCanAttack(enemy) {
       const cap = this.level.maxAttackers || 2;
-      return this.attackers.has(enemy) || this.attackers.size < cap;
+      return (this.attackers.has(enemy) || this.attackers.size < cap) && this.time >= (this.nextEnemyAttackAt || 0);
     }
     registerAttacker(enemy) {
       const cap = this.level.maxAttackers || 2;
-      if (this.attackers.size < cap) this.attackers.add(enemy);
+      if (this.attackers.size < cap) {
+        this.attackers.add(enemy);
+        // A short randomized token hand-off prevents two valid attackers from
+        // resolving their strikes on the same simulation frame.
+        this.nextEnemyAttackAt = this.time + R.util.rand(0.16, 0.32);
+      }
     }
     releaseAttacker(enemy) {
       this.attackers.delete(enemy);
@@ -525,6 +530,9 @@
     hitPlayer(damage, fromX, opts) {
       if (this.phase !== 'play' || this.player.invuln > 0 || this.player.dead) return false;
       damage *= this.level.damageScale || 1;
+      // Stage 2's Fade is the endurance gate; keep its multi-hit strings from
+      // crossing a whole-heart breakpoint while ordinary soldiers stay sharp.
+      if(this.levelIndex===1 && opts && ['SWORD COMBO','SHADOW BLINK','FEAR STUN'].includes(opts.source)) damage*=.94;
       const kb = opts.kb == null ? 110 : opts.kb * (opts.knockdown ? 1.2 : 1.28);
       const landed = this.player.takeHit(damage, fromX, { kb, launch: opts.knockdown ? 320 : 150 });
       if (!landed) return false;

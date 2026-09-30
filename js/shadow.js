@@ -65,11 +65,12 @@
         // The collision rectangle remains untouched; the visible weave is a
         // narrow hand-height channel with a dark core, hot glassy edges and
         // deterministic tendrils (no gradients/canvases allocated here).
-        const left=this.x-cam-this.w/2,right=left+this.w,cy=this.y-this.depth*.15;
-        ctx.globalAlpha=.94;ctx.fillStyle='#130b24';ctx.fillRect(left,cy-8,this.w,16);
-        ctx.strokeStyle='#f5edff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(left,cy-10);ctx.lineTo(right,cy-10);ctx.moveTo(left,cy+10);ctx.lineTo(right,cy+10);ctx.stroke();
-        ctx.strokeStyle='rgba(151,96,214,.78)';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();for(let x=left;x<=right;x+=18){const yy=cy+(i-1)*13+Math.sin(x*.075+this.age*34+i)*5;x===left?ctx.moveTo(x,yy):ctx.lineTo(x,yy);}ctx.stroke();}
-        ctx.globalAlpha=.78;ctx.fillStyle='#fff5ff';ctx.beginPath();ctx.arc(right,cy,15+Math.sin(this.age*40)*2,0,Math.PI*2);ctx.fill();
+        const start=this.beamStartX==null?this.x-this.w/2:this.beamStartX,end=this.beamEndX==null?this.x+this.w/2:this.beamEndX;
+        const left=start-cam,right=end-cam,cy=this.beamY==null?this.y-55:this.beamY;
+        ctx.globalAlpha=.94;ctx.fillStyle='#130619';ctx.fillRect(Math.min(left,right),cy-8,Math.abs(right-left),16);
+        ctx.strokeStyle='#fff8ff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(left,cy-10);ctx.lineTo(right,cy-10);ctx.moveTo(left,cy+10);ctx.lineTo(right,cy+10);ctx.stroke();
+        ctx.strokeStyle='rgba(151,96,214,.88)';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();for(let n=0;n<=12;n++){const x=left+(right-left)*n/12,yy=cy+(i-1)*13+Math.sin(n*1.7+this.age*34+i)*5;n?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}ctx.stroke();}
+        ctx.globalAlpha=.82;ctx.fillStyle='#fff5ff';ctx.beginPath();ctx.arc(right,cy,15+Math.sin(this.age*40)*2,0,Math.PI*2);ctx.fill();
       } else ctx.fillRect(this.x - cam - this.w / 2, this.y - this.z - this.h, this.w, this.h);
       ctx.restore();
     }
@@ -331,7 +332,10 @@
       this.vx *= 0.15;
     }
     requestAttack() {
-      this.attack = MOVES[this.kind][this.attackIndex++ % 3];
+      const moves=MOVES[this.kind], previous=this.attack;
+      let pick=Math.floor(R.util.rand(0,moves.length));
+      if(moves[pick]===previous) pick=(pick+1)%moves.length;
+      this.attack = moves[pick]; this.attackIndex++;
       this.ai = 'telegraph';
       this.aiTimer = this.attack.tell;
       this.attackDidHit = false;
@@ -373,6 +377,9 @@
           damage: 23,
           duration: 0.36,
           color: '#fff5b1',
+          beamStartX: this.x + this.facing * 18,
+          beamEndX: this.facing > 0 ? this.g.arenaRight : this.g.arenaLeft,
+          beamY: this.y - this.z - 58,
         });
       if (m === 'snare')
         this.strike(this.target.x, this.target.y, {
@@ -491,7 +498,7 @@
         }
       } else if (this.ai === 'recover' && this.aiTimer <= 0) {
         this.ai = 'approach';
-        this.aiTimer = 0.65;
+        this.aiTimer = this.phaseTwo && this.kind==='taim' ? 0.18 : 0.65;
       }
       if (this.flying && this.ai !== 'attack') this.z = 47 + Math.sin(this.flightTime * 2.8) * 9;
       R.Entity.prototype.update.call(this, dt);
@@ -505,12 +512,11 @@
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 4]);
       if (m === 'beam')
-        ctx.strokeRect(
-          this.g.arenaLeft - cam,
-          this.target.y - 17,
-          this.g.arenaRight - this.g.arenaLeft,
-          34,
-        );
+        {
+          const hx=this.x+this.facing*18-cam,hy=this.y-this.z-58,pulse=9+Math.sin(this.flightTime*18)*3;
+          ctx.setLineDash([]);ctx.fillStyle='rgba(120,55,190,.55)';ctx.beginPath();ctx.arc(hx,hy,pulse,0,Math.PI*2);ctx.fill();
+          ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo((this.facing>0?this.g.arenaRight:this.g.arenaLeft)-cam,hy);ctx.stroke();
+        }
       else if (m === 'fear') {
         ctx.beginPath();
         ctx.ellipse(this.x - cam, this.y, 115, 33, 0, 0, Math.PI * 2);

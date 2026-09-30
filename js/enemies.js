@@ -107,9 +107,12 @@
       if (!committed) this.facing = dx >= 0 ? 1 : -1;
       this.aiTimer -= dt;
       if (this.ai === 'approach') {
-        const goalY = player.y + (this.laneBias || 0);
+        const live=this.g.enemies.filter(e=>!e.dead),slot=live.indexOf(this),side=slot%2?1:-1;
+        const goalY = player.y + side*(14+Math.min(24,slot*5)) + (this.laneBias || 0);
         this.vx = Math.sign(dx || 1) * this.speed;
         this.vy = Math.sign(goalY - this.y) * this.speed * 0.7;
+        // Sidestep an incoming lane attack instead of waiting in its path.
+        if(this.g.projectiles&&this.g.projectiles.some(p=>Math.abs(p.x-this.x)<90&&Math.abs(p.y-this.y)<20)) this.vy=side*this.speed;
         this.walkDistance += Math.abs(this.vx) * dt;
         this.setState('walk');
         const range = this.variant === 'spear' ? 76 : this.variant === 'hound' ? 40 : 46;
