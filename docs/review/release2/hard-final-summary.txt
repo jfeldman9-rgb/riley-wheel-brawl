@@ -1,0 +1,6 @@
+Summary derived from hard-40.json; original unchanged controller,40 seeds per stage
+Stage 1: 40/40 (100%)
+Stage 2: 29/40 (72.5%)
+Stage 3: 16/40 (40%)
+Stage 4: 4/40 (10%)
+Stage 5: 0/40 (0%)

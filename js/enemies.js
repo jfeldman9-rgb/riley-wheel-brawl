@@ -9,6 +9,84 @@
     charge: { name: 'HORN CHARGE', tell: 0.9, active: 0.7, recover: 0.58, reach: 50, height: 30, depth: 14, damage: 18, knockdown: true },
     stomp: { name: 'GROUND STOMP', tell: 0.74, active: 0.22, recover: 0.56, reach: 100, height: 16, depth: 70, damage: 18, knockdown: true }
   };
+  // Hard is run-scoped. These gates consume no random values, and Normal never
+  // enters the tactical path, preserving its established simulation and seed curve.
+  const HardAI = R.HardAI = {
+    enabled(scene) { return scene.difficulty === 'hard'; },
+    canCommit(enemy) {
+      const scene = enemy.g;
+      if (!this.enabled(scene)) return true;
+      const player = scene.player;
+      if (player.dead || player.grabbedBy || player.invuln > 0.65 ||
+          player.state === 'knockdown' || player.state === 'getup') return false;
+      const cameraX = scene.camera ? scene.camera.x : scene.arenaLeft;
+      if (enemy.x < cameraX + 16 || enemy.x > cameraX + R.W - 16) return false;
+      const move = enemy.config ? enemy.config.move : ATTACKS[enemy.variant === 'hound' ? 'bite' : enemy.variant];
+      const tell = enemy.boss ? 0.65 : move.tell;
+      if (scene.time + tell < (scene.hardNextStrikeAt || 0)) return false;
+      // Tells may overlap, strikes may not. Leave an extra reaction gap after
+      // the previous active window, including any travelling boss strike.
+      if (scene.enemies.some(other => {
+        if (other === enemy || other.dead || other.grabbedBy || other.thrown > 0) return false;
+        const remaining = other.state === 'telegraph' ? other.aiTimer + other.attack.active : other.state === 'attack' ? other.aiTimer : 0;
+        return remaining > 0 && tell < remaining + 0.18;
+      })) return false;
+      return !scene.hazards.some(hazard => Number.isFinite(hazard.life) && hazard.life > 0 && !hazard.hit && tell < hazard.life + 0.18);
+    },
+    committed(enemy) {
+      if (!this.enabled(enemy.g)) return;
+      enemy.g.hardNextStrikeAt = enemy.g.time + enemy.attack.tell + enemy.attack.active + 0.18;
+    },
+    approach(enemy, dt) {
+      const scene = enemy.g, player = scene.player;
+      if (enemy.hardSlot == null) {
+        enemy.hardSlot = scene.hardSlotCount || 0;
+        scene.hardSlotCount = enemy.hardSlot + 1;
+      }
+      const ranged = enemy.kind === 'ashaman';
+      const move = enemy.config ? enemy.config.move : ATTACKS[enemy.variant === 'hound' ? 'bite' : enemy.variant];
+      const range = ranged ? 205 : Math.min(move.reach - 8, 72);
+      const standOff = ranged ? 164 : range - 8;
+      const left = scene.arenaLeft + 26, right = scene.arenaRight - 26;
+      let side = enemy.hardSlot % 2 ? -1 : 1;
+      // Near a wall, use the open side rather than pinning an actor off-screen.
+      if (player.x + side * standOff < left || player.x + side * standOff > right) side *= -1;
+      const goalX = R.util.clamp(player.x + side * standOff, left, right);
+      const dx = player.x - enemy.x, dy = player.y - enemy.y;
+      const crossing = (enemy.x - player.x) * side < 0;
+      const canPress = this.canCommit(enemy) && scene.directorCanAttack(enemy);
+      let goalY = player.y + (canPress ? 0 : enemy.hardSlot % 2 ? -10 : 10);
+      enemy.hardIntent = canPress ? 'press' : 'hold';
+      if (crossing) {
+        // Cross around Riley on a separate floor lane, never through his body.
+        const preferred = enemy.hardSlot % 2 ? -1 : 1;
+        let laneSide = preferred;
+        if (player.y + laneSide * 48 < R.FLOOR_TOP + 6 || player.y + laneSide * 48 > R.FLOOR_BOTTOM - 6) laneSide *= -1;
+        goalY = R.collide.clampLane(player.y + laneSide * 48);
+        enemy.hardIntent = 'flank';
+      }
+      // React only to visible nearby projectiles, with ordinary walking speed.
+      if (scene.projectiles.some(projectile => Math.abs(projectile.x - enemy.x) < 110 && Math.abs(projectile.y - enemy.y) < 20)) {
+        goalY = R.collide.clampLane(enemy.y + (enemy.y < (R.FLOOR_TOP + R.FLOOR_BOTTOM) / 2 ? -42 : 42));
+        enemy.hardIntent = 'sidestep';
+      }
+      const velocity = (delta, speed) => Math.abs(delta) < 2 ? 0 : Math.sign(delta) * Math.min(speed, Math.abs(delta) / Math.max(dt, 0.001));
+      enemy.vx = velocity(goalX - enemy.x, enemy.speed);
+      enemy.vy = velocity(goalY - enemy.y, enemy.speed * 0.82);
+      const cameraX = scene.camera ? scene.camera.x : scene.arenaLeft;
+      const visible = enemy.x >= cameraX + 16 && enemy.x <= cameraX + R.W - 16;
+      // Finish entering the visible fight before holding a crossing lane. A
+      // knockback near a screen edge must not leave a pursued flanker stuck
+      // outside the view, where the attack safety gate cannot let it respond.
+      if (visible && crossing && Math.abs(dy) < 34 && Math.abs(dx) < 70) enemy.vx = 0;
+      enemy.walkDistance += Math.hypot(enemy.vx, enemy.vy) * dt;
+      enemy.setState(enemy.vx || enemy.vy ? 'walk' : 'idle');
+      // A flank is a movement goal, not a requirement for attacking. If Riley
+      // pursues a flanker, take the visible opening on its current side instead
+      // of endlessly trying to cross his body or passing up a clear ranged shot.
+      if (canPress && enemy.aiTimer <= 0 && Math.abs(dx) < range && Math.abs(dy) < (ranged ? 16 : 19)) enemy.requestAttack();
+    }
+  };
   class Shockwave {
     constructor(scene, x, y, facing) {
       this.g = scene;
@@ -58,6 +136,7 @@
       this.drawScale = 1;
     }
     requestAttack() {
+      if (!HardAI.canCommit(this)) return;
       if (!this.g.directorCanAttack(this)) {
         this.ai = 'circle';
         this.aiTimer = 0.35 + Math.random() * 0.45;
@@ -69,6 +148,7 @@
       this.attackDidHit = false;
       this.activeCounted = false;
       this.g.registerAttacker(this);
+      HardAI.committed(this);
       this.setState('telegraph');
     }
     activeAttack() {
@@ -106,7 +186,10 @@
       const committed = this.ai === 'telegraph' || this.ai === 'attack' || this.ai === 'recover';
       if (!committed) this.facing = dx >= 0 ? 1 : -1;
       this.aiTimer -= dt;
-      if (this.ai === 'approach') {
+      if (HardAI.enabled(this.g) && !this.boss && (this.ai === 'approach' || this.ai === 'circle')) {
+        this.ai = 'approach';
+        HardAI.approach(this, dt);
+      } else if (this.ai === 'approach') {
         const live=this.g.enemies.filter(e=>!e.dead),slot=live.indexOf(this),side=slot%2?1:-1;
         const goalY = player.y + side*(14+Math.min(24,slot*5)) + (this.laneBias || 0);
         this.vx = Math.sign(dx || 1) * this.speed;
@@ -386,12 +469,14 @@
       this.attackDidHit = false;
       this.activeCounted = false;
       this.g.registerAttacker(this);
+      HardAI.committed(this);
       this.setState('telegraph');
       this.g.warning = this.attack.name;
       this.g.warningTimer = this.attack.tell;
       this.g.playCue('roar');
     }
     requestAttack() {
+      if (!HardAI.canCommit(this)) return;
       if (!this.g.directorCanAttack(this)) return;
       this.chooseBossAttack();
     }

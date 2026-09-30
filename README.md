@@ -34,6 +34,10 @@ cooldown and no health cost. A full SAIDIN meter enables Balefire; holding it
 past the grace period begins the warned, nonlethal taint effect. Menus support
 keyboard, gamepad, mouse, and touch, and bindings can be remapped.
 
+## Difficulty
+
+Choose NORMAL or HARD in Options before starting a new run. HARD coordinates enemy flanks and attack timing with identical HP. Continue and Restart keep the difficulty saved with that run; old saves use Normal.
+
 ## Campaign
 
 Five stages with distinct enemy waves and bosses. Change lanes to avoid Mashadar;
@@ -55,7 +59,7 @@ completion/attack-coverage test. `--natural` disables those assists and reports
 
 ## Audio
 
-Jason's theme loops on the title, story cards and stages (starts on the first key, click or tap); M toggles it. Villains and the narrator speak with generated voices; Riley and Twinkle Toes are recorded by Jason: drop the files listed in `assets/audio/voice/RECORDING_LIST.md` into that folder and they play. See `docs/AUDIO.md`. `node tools/audio-check.cjs` checks it in a browser.
+Jason's theme loops on the title, story cards and stages (starts on the first key, click or tap); M toggles it. Riley, Twinkle Toes, Moiraine, Loial, Be'lal, the other villains and the narrator speak. The new cast uses user-approved original stock voices generated locally with free Kokoro; no real-person voice cloning. Family recordings can still replace the stable filenames listed in `assets/audio/voice/RECORDING_LIST.md`. See `docs/AUDIO.md`. `node tools/audio-check.cjs` checks it in a browser.
 
 All supplied painted assets are wired through `js/artmanifest.js`.
 `CHROMIUM_PATH=/path/to/chromium node tools/review.cjs` regenerates the headless

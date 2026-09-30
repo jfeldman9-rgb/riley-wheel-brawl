@@ -287,19 +287,84 @@ RWB.audio = (function () {
       .then(b => (b ? decode(b) : null))
       .catch(() => null).then(buf => { delete pending[key]; return (clips[key] = buf && buf.duration >= min ? buf : null); }));
   }
-  let voiceSrc = null, voiceKey = null;
-  /** Play a loaded clip. opts.voice: one voice at a time (a new line cuts the old), voice bus, music ducks. */
-  function playClip(key, opts) {
+  let voiceSrc = null, voiceOut = null, voiceKey = null, voiceProtected = false, voiceStartedAt = 0;
+  const voiceQueue = [];
+  let voiceGeneration = 0;
+  function stopVoice() {
+    if (!voiceSrc) return;
+    const src = voiceSrc, key = voiceKey;
+    voiceSrc = null; voiceKey = null; voiceProtected = false;
+    src.onended = null;
+    try { src.stop(); } catch (e) { /* already ended */ }
+    src.disconnect();
+    if (voiceOut) { voiceOut.disconnect(); voiceOut = null; }
+    trace.push({ name: 'clip-stop:' + key, t: ctx.currentTime, elapsed: ctx.currentTime - voiceStartedAt });
+  }
+  /** Explicit story skip / scene change: also discard clips still being fetched. */
+  function clearVoices() {
+    voiceGeneration++;
+    for (const entry of voiceQueue) if (entry.timer != null) clearTimeout(entry.timer);
+    voiceQueue.length = 0;
+    stopVoice();
+  }
+  function startClip(key, opts) {
     const buf = clips[key];
     if (!ctx || muted || !buf) return false;
     const voice = !!(opts && opts.voice);
-    if (voice && voiceSrc) { try { voiceSrc.stop(); } catch (e) { /* already ended */ } voiceSrc = null; }
+    if (voice) stopVoice();
     const src = ctx.createBufferSource(); src.buffer = buf;
     const g = ctx.createGain(); g.gain.value = (opts && opts.vol) || 1;
     src.connect(g); g.connect(voice && voiceGain ? voiceGain : sfxGain); src.start();
-    if (voice) { voiceSrc = src; voiceKey = key; src.onended = () => { if (voiceSrc === src) { voiceSrc = null; voiceKey = null; } }; }
+    if (voice) {
+      voiceSrc = src; voiceOut = g; voiceKey = key; voiceProtected = !!opts.protected; voiceStartedAt = ctx.currentTime;
+      src.onended = () => {
+        if (voiceSrc !== src) return;
+        voiceSrc = null; voiceOut = null; voiceKey = null; voiceProtected = false;
+        src.disconnect(); g.disconnect();
+        trace.push({ name: 'clip-end:' + key, t: ctx.currentTime });
+        pumpVoiceQueue();
+      };
+    }
     if (!opts || opts.duck !== false) duck(voice ? 0.42 : 0.5, buf.duration, 0.45);
-    trace.push({ name: 'clip:' + key, t: ctx.currentTime });
+    trace.push({ name: 'clip:' + key, t: ctx.currentTime, duration: buf.duration });
+    if (opts && opts.onStart) opts.onStart();
+    return true;
+  }
+  /** Ordinary barks can replace other barks, but cannot interrupt story speech. */
+  function playClip(key, opts) {
+    if (opts && opts.voice && (voiceProtected || voiceQueue.length)) return false;
+    return startClip(key, opts);
+  }
+  function pumpVoiceQueue() {
+    if (voiceSrc) return;
+    while (voiceQueue.length && voiceQueue[0].ready) {
+      const entry = voiceQueue.shift();
+      if (entry.available && startClip(entry.key, Object.assign({}, entry.opts, { voice: true, protected: true }))) return;
+      if (!muted && entry.opts.onMissing) entry.opts.onMissing();
+    }
+  }
+  /** Reserve the line's position before loading. Natural AudioBufferSource endings,
+      not guessed caption durations, advance important dialogue in request order. */
+  function queueVoice(key, url, opts) {
+    init();
+    if (!ctx || muted || volume <= 0) return false;
+    opts = opts || {};
+    const generation = voiceGeneration;
+    const entry = { key, opts, ready: key in clips, available: !!clips[key], timer: null };
+    voiceQueue.push(entry);
+    if (!voiceProtected) stopVoice(); // important dialogue may replace an incidental bark
+    if (!entry.ready) {
+      const ready = buf => {
+        if (entry.ready || generation !== voiceGeneration) return;
+        entry.ready = true; entry.available = !!buf;
+        if (entry.timer != null) clearTimeout(entry.timer);
+        pumpVoiceQueue();
+      };
+      // A failed or stalled download must never trap the victory screen.
+      entry.timer = setTimeout(() => ready(null), 8000);
+      loadClip(key, url, opts).then(ready);
+    }
+    pumpVoiceQueue();
     return true;
   }
   const hasClip = key => !!clips[key];
@@ -450,7 +515,7 @@ RWB.audio = (function () {
   return {
     init, unlock, sfx, playMusic, stopMusic, toggleMute, setMuted, setVolume, cycleVolume, volumeLabel,
     duck, setMusicLevel, cycleMusic, toggleMusic, musicLabel, level, trace,
-    tone, noise, formant, brass, defineSfx, defineSong, defineStinger, defineVoice, loadClip, playClip, hasClip,
+    tone, noise, formant, brass, defineSfx, defineSong, defineStinger, defineVoice, loadClip, playClip, hasClip, queueVoice, clearVoices,
     defineTrack, aliasTrack, loadTrack,
     /** Audio clock in seconds (0 without WebAudio). */
     now() { return ctx ? ctx.currentTime : 0; },
@@ -460,6 +525,10 @@ RWB.audio = (function () {
       return t ? { name: trackName || trackWant, loaded: !!t.buffer, playing: !!trackSrc, position: ctx ? trackPosition() : 0, loopStart: t.loopStart, loopEnd: t.loopEnd, duration: t.buffer ? t.buffer.duration : 0, url: t.url || null } : null;
     },
     get voicePlaying() { return voiceKey; },
+    /** Pending speech still blocks incidental barks while audio is suspended. */
+    get voicePending() { return voiceProtected || voiceQueue.length > 0; },
+    /** Silent/unavailable audio must never trap a post-combat visual transition. */
+    get voiceBusy() { return !!(ctx && ctx.state === 'running' && !muted && volume > 0 && (voiceProtected || voiceQueue.length > 0)); },
     get muted() { return muted; }, get unlocked() { return unlocked; }, get volume() { return volume; },
     get musicLevel() { return musicLevel; },
     /** The song the game asked for (set even when WebAudio is unavailable). */

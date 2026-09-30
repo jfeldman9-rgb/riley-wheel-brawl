@@ -105,6 +105,9 @@
       name: 'MOIRAINE',
       text: 'The Wheel turned in our favor.',
     },
+    escape_moiraine_01: { id: 'escape_moiraine_01', who: 'moiraine', name: 'MOIRAINE', text: 'The tower is falling. Stay together!' },
+    escape_riley_01: { id: 'escape_riley_01', who: 'riley', name: 'RILEY', text: "I've got you. Let's go!" },
+    escape_kenzie_01: { id: 'escape_kenzie_01', who: 'kenzie', name: 'TWINKLE TOES', text: 'Right behind you!' },
     end_riley_01: { id: 'end_riley_01', who: 'riley', name: 'RILEY', text: "Let's go home." },
     end_kenzie_01: {
       id: 'end_kenzie_01',
@@ -322,6 +325,7 @@
       { id: 'st5_riley_02', who: 'riley', name: 'RILEY', text: 'Together!' },
       { id: 'st5_kenzie_02', who: 'kenzie', name: 'TWINKLE TOES', text: 'Twinkle Toes thunder!' },
     ],
+    escape: ['escape_moiraine_01', 'escape_riley_01', 'escape_kenzie_01'].map(id => R.VOICE_LINES[id]),
     ending: [
       {
         id: 'end_moiraine_01',
@@ -439,7 +443,10 @@
           : id.includes('riley')
             ? 'cut-opening-04'
             : 'cut-opening-01';
+    if (id.startsWith('escape_')) return 'cut-escape';
     if (id.startsWith('end_')) return 'cut-homecoming';
+    if (['st4_kenzie_01', 'st4_moiraine_01', 'st4_kenzie_02'].includes(id)) return 'cut-callandor';
+    if (['st5_narrator_01', 'st5_taim_01', 'st5_riley_01'].includes(id)) return 'cut-stage5-arrival';
     if (id.startsWith('st5_') || id === 'taim_phase_03') return 'cut-stage5-finale';
     const stage = (id.match(/^st(\d)_/) || [])[1];
     return stage ? 'cut-stage' + stage : null;

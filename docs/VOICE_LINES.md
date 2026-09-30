@@ -39,17 +39,17 @@ These are the complete short lines intended for spoken playback and matching sub
 | `riley_super_01` | Riley | “Balefire!” | Every super activation, once as the beam begins. |
 | `moiraine_heal_01` | Moiraine | “Rise, Riley, Rise!” | Every successful healing pickup, once after HP is restored. |
 | `riley_fire_01` | Riley | “Fire!” | First fireball used in a stage; once per stage. |
-| `riley_combo_01` | Riley | “Front kick!” | First completed first-hit tutorial prompt in Stage 1 only. |
-| `riley_combo_02` | Riley | “Roundhouse!” | First completed second-hit tutorial prompt in Stage 1 only. |
-| `riley_combo_03` | Riley | “Spin!” | First completed three-hit combo in Stage 1 only. |
-| `riley_juggle_01` | Riley | “Up you go!” | First successful launcher in a stage; once per stage. |
+| `riley_combo_01` | Riley | “Front kick!” | First successful front-kick hit in Stage 1; at most once in that stage. |
+| `riley_combo_02` | Riley | “Roundhouse!” | First successful roundhouse hit in Stage 1; at most once in that stage. |
+| `riley_combo_03` | Riley | “Spin!” | First successful spinning-back-kick hit in Stage 1; at most once in that stage. |
+| `riley_juggle_01` | Riley | “Up you go!” | Retired trigger: no distinct launcher action exists in this build. Approved clip retained for compatibility; ordinary kicks and throws do not trigger it. |
 | `riley_grab_01` | Riley | “Not so fast!” | First successful grab in a stage; once per stage. |
 | `riley_throw_01` | Riley | “Over there!” | First enemy throw in a stage; once per stage. |
-| `riley_low_01` | Riley | “I need a moment.” | On crossing into low health; gated until Riley recovers above the reset threshold. |
+| `riley_low_01` | Riley | “I need a moment.” | On a surviving hit crossing to 25 HP or below; rearms only after recovery above 40 HP. |
 | `riley_respawn_01` | Riley | “Back on my feet.” | On using a life and returning to play. |
-| `riley_saidin_full_01` | Riley | “Saidin is full!” | When the meter first reaches full. |
+| `riley_saidin_full_01` | Riley | “Saidin is full!” | First crossing to a full meter in each stage; not every frame or refill. |
 | `moiraine_taint_01` | Moiraine | “Spend the power, Riley!” | When the full-meter taint leaves its grace period; once per full-meter cycle. |
-| `riley_angreal_01` | Riley | “The fire burns brighter!” | On collecting an angreal. |
+| `riley_angreal_01` | Riley | “The fire burns brighter!” | First angreal collected in each stage. |
 | `riley_call_01` | Riley | “Loial, now!” | When the once-per-stage ally call is accepted. |
 | `loial_charge_01` | Loial | “For my friends!” | As Loial begins his axe charge. |
 | `loial_done_01` | Loial | “That should help!” | As Loial exits after his charge. |
@@ -76,10 +76,19 @@ Use each line once, the first time that enemy archetype appears. These introduct
 | `taim_phase_02` | Mazrim Taim | “I command the storm!” | Taim enters phase 2. |
 | `taim_phase_03` | Mazrim Taim | “This is not over!” | Taim reaches the joint-finish threshold. |
 
+## Escape from the Black Tower
+
+| ID | Character | Exact line | When it plays |
+| --- | --- | --- | --- |
+| `escape_moiraine_01` | Moiraine | “The tower is falling. Stay together!” | After Taim falls, before homecoming. |
+| `escape_riley_01` | Riley | “I've got you. Let's go!” | Riley leads Twinkle Toes to safety. |
+| `escape_kenzie_01` | Twinkle Toes | “Right behind you!” | Twinkle Toes follows Riley out. |
+
 ## Playback rules
 
 - Story lines are heard only in their named sequence and remain subtitle-visible when audio is unavailable.
-- Combat barks use the one-shot gates above; do not add random chatter that could talk over required lines.
+- Utility/tutorial barks use the context gates above and a shared six-second spacing gate. They require a current successful event, never interrupt another clip, and never queue behind active/queued story text or speech. A suppressed event is dropped rather than replayed later. Successful combo hits can try again on a later fresh hit; stale meter/health crossings cannot.
+- The obsolete launcher trigger is explicitly listed in `VOICE_RETIRED`; its approved asset and catalog text remain intact.
 - The required super and heal lines always take priority, duck music, and interrupt non-story flavor barks if necessary.
 - Taint warnings may repeat only after the player spends and refills saidin.
 - All boss entrance lines play before control resumes or before an attack can begin.
@@ -92,9 +101,9 @@ Use each line once, the first time that enemy archetype appears. These introduct
 | `st1_clear_moiraine_01` | Moiraine | “The road is open. The Shadow fled east.” | Stage 1 clear reel. |
 | `st1_clear_riley_01` | Riley | “Twinkle Toes, I am coming.” | Stage 1 clear reel. |
 
-## Audio pass (20260927-audio1)
+## Historical audio pass (20260927-audio1; superseded by release1)
 
-Villain and narrator lines below (and the existing villain lines above) play generated voice clips from `assets/audio/voice/<id>.mp3`. Riley and Twinkle Toes are never generated; Jason records them (see `assets/audio/voice/RECORDING_LIST.md`). Moiraine and Loial stay subtitle + chirp for now.
+The earlier audio pass voiced villains/narrator and left Riley, Twinkle Toes, Moiraine and Loial as placeholders. Release1 supersedes that restriction with the user-approved original Kokoro character cast; all exact text below remains unchanged. See `docs/AUDIO.md`.
 
 ### Narrator (stage intro cards)
 
@@ -122,7 +131,7 @@ Villain and narrator lines below (and the existing villain lines above) play gen
 
 Boss entrances: the chieftain now says `trolloc_heavy_intro_01` on his card, and the first Stage 1 Trolloc pack says `trolloc_intro_01`. Taim's mid-fight line is `taim_phase_02`.
 
-### Riley and Twinkle Toes (recorded by Jason)
+### Riley and Twinkle Toes (approved original generated character cast in release1)
 
 | ID | Character | Exact line | When it plays |
 | --- | --- | --- | --- |

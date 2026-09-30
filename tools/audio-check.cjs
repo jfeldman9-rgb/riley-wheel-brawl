@@ -37,8 +37,12 @@ const results = []; const check = (ok, name, info) => { results.push({ ok: !!ok,
     page.on('pageerror', e => pageErrors.push(e.message));
     page.on('response', r => { if (r.status() >= 400) missing.push(r.status() + ' ' + r.url()); });
     // Stand-in for a dropped-in recording (a shipped villain clip served under Riley's
-    // file name), to prove the drop-in path. Riley's real voice is never generated.
+    // file name), to prove the drop-in path independently of the approved cast.
     const standIn = fs.readFileSync(path.join(root, 'assets/audio/voice/taim_phase_01.mp3'));
+    // The release ships a real Balefire clip. Preserve the missing-clip regression
+    // with an explicit silent fixture instead of assuming shipped audio is silent.
+    const silent = Buffer.from(fs.readFileSync(path.join(__dirname, 'voice-placeholder.b64'), 'utf8').trim(), 'base64');
+    await page.route(/\/assets\/audio\/voice\/riley_super_01\.mp3/, r => r.fulfill({ status: 200, contentType: 'audio/mpeg', body: silent }));
     await page.route(/\/assets\/audio\/voice\/riley_fire_01\.mp3/, r => r.fulfill({ status: 200, contentType: 'audio/mpeg', body: standIn }));
     await openGame(page, url);
     await page.waitForFunction(() => window.RWB && RWB.assets && RWB.assets.done && RWB.game && RWB.game.scene, null, { timeout: 120000 });

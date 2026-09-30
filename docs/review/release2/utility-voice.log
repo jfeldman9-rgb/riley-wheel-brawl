@@ -1,0 +1,35 @@
+PASS front whiff/rejected damage does not announce a tutorial success
+PASS front successful tutorial hit speaks once per Stage 1 context
+PASS front tutorial stays out of later stages
+PASS round whiff/rejected damage does not announce a tutorial success
+PASS round successful tutorial hit speaks once per Stage 1 context
+PASS round tutorial stays out of later stages
+PASS back whiff/rejected damage does not announce a tutorial success
+PASS back successful tutorial hit speaks once per Stage 1 context
+PASS back tutorial stays out of later stages
+PASS Utility events share a six-second drop-only spacing gate
+PASS A later fresh eligible event can speak after the spacing gate
+PASS Queued story subtitles suppress utility chatter
+PASS Visible story subtitles suppress utility chatter
+PASS Pause cannot emit a utility line
+PASS Death cannot emit a utility line
+PASS Low-health warning does not fire above 25 HP
+PASS Low-health crossing warns once without nagging on subsequent hits
+PASS Healing only to 40 HP does not rearm the warning
+PASS Recovery above 40 HP rearms a later low-health crossing
+PASS Fatal damage does not play a living low-health line
+PASS Saidin callout waits for an actually full meter
+PASS First full meter speaks once per stage, not every full-meter frame/cycle
+PASS Suppressed full-meter event is dropped rather than replayed late
+PASS Actual angreal collection announces once without changing its effect
+PASS Invalid non-combat ally input stays silent
+PASS Ready Loial call still succeeds
+PASS Spent Loial call still rejects without spawning another ally
+PASS First spent Loial attempt explains the limit only once
+PASS New contextual voice selection consumes no gameplay or global RNG draws
+PASS Nonexistent launcher callout is explicitly retired, not attached to an unrelated move
+PASS Retired launcher clip is not preloaded for combat
+PASS Flavor cannot interrupt an ordinary recorded voice
+PASS Late flavor download cannot cut a voice that began while it loaded
+PASS A delayed utility clip is discarded if its gameplay context ends
+34 utility-voice checks passed.

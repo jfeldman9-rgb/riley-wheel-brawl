@@ -15,7 +15,7 @@ The finished game must contain **no magic, vessel, or journey references anywher
 
 ## Hero
 
-Riley is a roughly ten-year-old Asha'man kid with an athletic Tae Kwon Do build. He has short dark hair, thin blue-framed glasses, and a black Asha'man coat bearing sword-and-dragon pins. His silhouette, glasses, and pins must remain readable at gameplay size.
+Riley is a muscular sixteen-year-old Asha'man with an athletic Tae Kwon Do build. He has short dark hair, thin blue-framed glasses, and a sleeveless black Asha'man coat bearing sword-and-dragon pins. His silhouette, glasses, and pins must remain readable at gameplay size.
 
 Riley fights with Tae Kwon Do. His grounded three-hit combo is:
 

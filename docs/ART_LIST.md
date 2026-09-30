@@ -1,3 +1,32 @@
+# Transport-only JPEG exports (2026-09-30)
+
+Eight new story paintings over 500 KB were re-exported from their preserved PNG masters as full-resolution optimized progressive JPEG, quality 90, standard 4:2:0 sampling. The escape uses the already-reviewed full-resolution quality-85 progressive export. All nine changed JPEGs are under 500,000 bytes; dimensions and compositions are unchanged. This is ordinary lossy encoding, not a claim of identical pixels. No resizing, creative edit, recolor, blur, gameplay panorama, sprite, runtime-code, voice or test-threshold change occurred. The initial Round 2 exports remain recoverable at `6bf142e`; current source/runtime hashes and encoding settings are in `docs/review/release2/story-art-runtime.json`.
+
+The entries below describe the initial art deliveries before this encoding pass.
+
+---
+
+# Round 2 story continuity (2026-09-30)
+
+Seven inherited story paintings were regenerated with ChatGPT image generation to match the muscular Riley16-v2 model, short dark hair, blue glasses and sleeveless black Asha’man coat: opening-04, stages 1–4, stage5-finale and homecoming. Twinkle Toes remains the younger eight-year-old companion; Moiraine is clearly adult. These are full-resolution JPEG q92 runtime exports of the new PNG paintings, with no post-generation recoloring, blur or cropping. The originals were inspected before integration.
+
+Two separate new paintings repair acquisition/rescue timing:
+- `cut-stage4` shows the approach to the floating sword before Be’lal is defeated; `cut-callandor` shows the post-victory acquisition
+- `cut-stage5-arrival` shows Riley with Callandor facing Taim while Twinkle Toes is still absent; `cut-stage5-finale` is reserved for freed/joint-finish cues
+
+All nine source/runtime hashes and dimensions are in `docs/review/release2/story-art-runtime.json`. No gameplay stage plate, sprite frame, walking tolerance or brightness threshold changed. Offscreen runtime previews loaded every real registered image with zero failures; browser visual/performance checks remain outstanding.
+
+---
+
+# Release 1 painted additions (2026-09-30)
+
+- `assets/cutscenes/cut-escape.jpeg`: newly painted Black Tower escape, generated with ChatGPT image generation using the current muscular Riley16-v2, Twinkle Toes and tower references. Full 1672×941 composition retained; JPEG export only, no recoloring or blur.
+- `assets/art/portrait-fade.png`, `portrait-draghkar.png`, and `belal/portrait.png`: new transparent painted busts, generated with ChatGPT image generation against each active character source, resized to at most 512×640 for runtime. Be'lal is the existing male swordsman, not the historical red-robed `cg-forsaken` asset.
+- Fade and Draghkar now have delivered dedicated portraits; all five boss cards show a portrait plus a short combat hint during their original intro window.
+- `assets/art/title-key.jpeg`: new text-free painted title composition, so the existing logo appears once and Riley matches his sixteen-year-old sleeveless gameplay model. No stage background plate, Riley walk frame, or enemy body frame changed.
+
+The historical art delivery notes below predate these additions.
+
 # Riley Wheel Brawl - Painted Image Contract (w2)
 
 These are the runtime filenames. They supersede the earlier descriptive WebP names. All delivered images are registered; procedural artwork is retained for missing files.

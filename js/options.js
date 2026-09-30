@@ -1,6 +1,6 @@
 /* Settings panels shared by the title screen and the pause menu.
    'options': audio (title only), display (title only), control overlay
-   opacity, HUD size, health colors, effects budget, screen shake.
+   opacity, HUD size, health colors, effects budget, screen shake, new-run difficulty.
    'controls': keyboard + gamepad remapping with live capture. */
 'use strict';
 
@@ -19,6 +19,7 @@
       rows.push({ id: 'display', label: () => 'DISPLAY: ' + RWB.display.modeLabel(), adj: dir => RWB.display.cycleMode(dir), desc: 'AUTO = device pixels. SHARP = 2x+. CLASSIC = 640x360 pixels + scanlines.' });
     }
     rows.push(
+      { id: 'difficulty', label: () => 'DIFFICULTY (NEW RUN): ' + s.difficulty.toUpperCase(), adj: () => ST.set({ difficulty: s.difficulty === 'hard' ? 'normal' : 'hard' }), desc: 'HARD: enemies flank and time attacks. Same HP. Continue keeps its difficulty.' },
       { id: 'overlay', label: () => 'CONTROL OVERLAY: ' + Math.round(s.overlay * 100) + '%', adj: dir => ST.cycle('overlay', ST.OVERLAY_STEPS, dir), desc: 'How strong the on-screen control picture is. It always stays up.' },
       { id: 'hud', label: () => 'HUD SIZE: ' + (s.bigHud ? 'LARGE' : 'NORMAL'), adj: () => ST.set({ bigHud: !s.bigHud }), desc: 'Larger health, meter, score and callout text.' },
       { id: 'colors', label: () => 'HEALTH COLORS: ' + (s.colorblind ? 'COLORBLIND-SAFE' : 'CLASSIC'), adj: () => ST.set({ colorblind: !s.colorblind }), desc: 'Blue / yellow / vermilion health, HP number, and pattern-marked tells.' },

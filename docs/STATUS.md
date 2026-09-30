@@ -1,3 +1,46 @@
+# Release 1.0 Round 2 candidate (2026-09-30)
+
+Runtime stamp `20260930-release2`; local work branch `rwb-1-0-handoff`. Round 1 remains preserved at `c3b4a1a`. See [current Round 2 evidence](review/release2/HANDOFF.md), not the historical results below.
+
+This round repairs the older story-art continuity with nine painted images and separate pre/post acquisition and rescue routes; adds seven context-gated Riley utility triggers while explicitly retiring the nonexistent launcher trigger; and corrects two Hard-only approach deadlocks. No stage panorama, walking tolerance, HP/damage/tell or Normal path changes. Publication/CI evidence is separate from local checks. No merge or deployment has occurred.
+
+---
+
+# Prior Round 1 record (superseded by Round 2 above)
+
+# Release 1 handoff in progress (2026-09-30)
+
+Branch `rwb-1-0-handoff`, based on live `rwb-w2` at merge `7f3f94b`. Runtime stamp `20260930-release1`. Draft review only: no merge, deployment, Pages setting change, or live-branch write.
+
+## This round
+
+- New painted Black Tower escape, then homecoming and a persistent family-credits screen. All story cards remain skippable; repeated advances are guarded.
+- Dedicated Fade, Draghkar and male Be'lal portraits, with boss introduction cards and short tactics hints. Original intro timers remain unchanged.
+- Optional saved Hard mode for new runs, with coordinated flanks and timed attack reservations. Continue/restart/progression retain the run's mode; old saves default to Normal. No HP padding. Normal code paths retain their original random calls and results.
+- Idle Callandor now rests inside the original painted glove: corrected hilt pivot and behind-body layer, with unchanged walk/action rendering.
+- All five voice auditions approved. Integrated 54 verified stock-voice Kokoro clips for Riley, Twinkle Toes, Moiraine, Loial and male Be'lal, including the new escape. Music and all other speakers are unchanged.
+- Important story/finale voices now finish in order; incidental combat chatter is dropped instead of cutting them off. Explicit skips cancel speech. Muted, zero-volume, suspended or unavailable audio cannot block a cleared-stage transition. The legacy Edge generator now leaves the approved Kokoro cast untouched.
+- New text-free title painting fixes the inherited double-logo and matches the current Riley model. Inherited older story paintings still show younger, long-sleeved Riley; they were not represented as corrected in this round.
+- Fixed the inherited Options BACK button, which previously ignored the panel's return value for pointer/gamepad activation.
+
+## Verified local evidence
+
+- Clean baseline at `7f3f94b`: 40 seeds (1001–1040), three lives, no assists, stage clears **97.5 / 75 / 67.5 / 57.5 / 57.5%**. All within ±7.5 points of 100 / 72.5 / 70 / 65 / 50. S4/S5 remain at the accepted band edges.
+- Baseline `check.cjs`: 115 non-browser assertions passed, then Chromium launch was blocked by the workspace's socket policy. The remaining browser assertions are **unrun**, not passed.
+- Local smoothness unit checks: 9/9. New release contracts: 15/15. Hard checks: 41/41, plus 15 baseline result/RNG-parity cases and 50/50 assisted Hard stages, all boss moves and zero overlapping active attackers. Protected voice/recovery: 14 assertions passed in the explicitly labeled duration-based WebAudio clock harness; real browser decode remains unrun. Callandor: all 19 pose pivot/layer assertions pass, and original glove pixels stay unchanged at scales 1/2/3 in both facings.
+- The approved r8 leg-tear limits are unchanged: walk3 ≤8 px, walk4 ≤4 px, walk8 ≤9 px, all other walk frames ≤2 px. No test threshold was relaxed.
+- Final protected-voice/recovery code retains byte-identical results on all 200 Normal stage-seed runs against the pre-fix implementation. Scripted full-campaign logic reached all five stages, Callandor, the joint finish, escape and credits in 612.2 simulated seconds with two explicit Continues and no injected HP/damage. This is not human-play certification. Chrome cold enters, pacing, audio, final browser regression suite and screenshots remain unrun: local Chromium cannot open its required sockets, and connected publishing did not return. No draft PR or CI run was created. Do not read historical passes below as current release evidence.
+
+## Reproduce
+
+Run `node tools/check.cjs`, `node tools/smoothness-check.cjs`, `node tools/release-check.cjs`, `node tools/hard-check.cjs`, `node tools/callandor-check.cjs`, `node tools/normal-balance.cjs`, `node tools/soak.cjs`, `node tools/release-browser.cjs`, `node tools/audio-check.cjs`, and `node tools/joinscan.cjs`. Browser tools require Playwright/Chromium; `CHROMIUM_PATH` may point to an existing executable.
+
+The prepared public-repository PR workflow is configured to run on a standard GitHub runner with read-only repository permission. It never deploys and would upload no dependency caches or billed artifacts; numeric evidence and review images would be emitted in job logs.
+
+---
+
+# Historical status (superseded by the release section above)
+
 # Riley Wheel Brawl — current status
 
 Runtime stamp on this branch: `?v=20260927-audio1`. Branch `rwb-audio`, cut from `rwb-w2` at `8937b6b` (scroll11). Not merged. GitHub Pages still serves `rwb-w2`. `main` is untouched. This branch does not change Pages.
