@@ -99,28 +99,34 @@
       }
       if(st.copyY<st.th){
         const tc=st.tc;
-        if(sync||!(st.bmp&&st.bmp!==false)){
+        if(sync){
           if(st.bmp&&st.bmp!==false){tc.drawImage(st.bmp,0,0,tw,th);if(st.bmp.close)st.bmp.close();st.bmp=null;}
           else tc.drawImage(st.image,0,0,tw,th);
           st.copyY=st.th;
         }else{
-          // The bitmap is already the texture size, so each strip is a 1:1 copy.
-          while(st.copyY<st.th&&performance.now()-t0<1.2&&(sync||performance.now()<end)){
-            const rows=Math.min(32,st.th-st.copyY);
-            tc.drawImage(st.bmp,0,st.copyY,tw,rows,0,st.copyY,tw,rows);
-            st.copyY+=rows;
+          while(st.copyY<st.th&&performance.now()-t0<1.2&&performance.now()<end){
+            const rows=Math.min(16,st.th-st.copyY);
+            if(st.bmp&&st.bmp!==false)tc.drawImage(st.bmp,0,st.copyY,tw,rows,0,st.copyY,tw,rows);
+            else{tc.save();tc.beginPath();tc.rect(0,st.copyY,tw,rows);tc.clip();tc.drawImage(st.image,0,0,tw,th);tc.restore();}
+            tc.getImageData(0,st.copyY,1,rows);st.copyY+=rows;
           }
           if(st.copyY<st.th)return false;
-          if(st.bmp.close)st.bmp.close();st.bmp=null;
+          if(st.bmp&&st.bmp.close)st.bmp.close();st.bmp=null;
         }
-        tc.globalCompositeOperation='source-atop';const shade=tc.createLinearGradient(0,0,tw,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');tc.fillStyle=shade;tc.fillRect(0,0,tw,th);tc.globalCompositeOperation='source-over';
-        const shadeMs=performance.now()-t0;
-        if(shadeMs>4&&R.perf.markStep)R.perf.markStep('rig-shade:'+st.cacheKey,shadeMs);
-        if(!sync&&performance.now()>=end)return false;
       }
+      if(!st.shade){st.shade=st.tc.createLinearGradient(0,0,tw,0);st.shade.addColorStop(0,'rgba(12,18,30,.13)');st.shade.addColorStop(.55,'rgba(255,241,210,.04)');st.shade.addColorStop(1,'rgba(8,13,25,.16)');st.shadeY=0;}
+      while(st.shadeY<th&&(sync||performance.now()<end)){
+        const rows=sync?th:Math.min(16,th-st.shadeY);
+        st.tc.globalCompositeOperation='source-atop';st.tc.fillStyle=st.shade;st.tc.fillRect(0,st.shadeY,tw,rows);st.tc.globalCompositeOperation='source-over';
+        if(!sync)st.tc.getImageData(0,st.shadeY,1,rows);st.shadeY+=rows;
+        if(!sync&&performance.now()-t0>1.2)break;
+      }
+      const shadeMs=performance.now()-t0;
+      if(shadeMs>4&&R.perf.markStep)R.perf.markStep('rig-shade:'+st.cacheKey,shadeMs);
+      if(st.shadeY<th||(!sync&&performance.now()>=end))return false;
       do{
         const y=st.ry||0;if(y>=th)break;
-        const rows=Math.min(64,th-y),slice=st.tc.getImageData(0,y,tw,rows);
+        const rows=Math.min(sync?64:16,th-y),slice=st.tc.getImageData(0,y,tw,rows);
         st.pixels.set(slice.data,y*tw*4);st.ry=y+rows;
         if(!sync&&(performance.now()>=end||performance.now()-t0>1.2))break;
       }while(sync||performance.now()-t0<1.2);
@@ -642,7 +648,7 @@
     R.Bake.pump(limit||4);
     const after=(R.perf.poseQueue&&R.perf.poseQueue.length)||0;
     return Math.max(0,before-after);
-  },prepareStage(level){
+  },prepareStage(level,scene){
     // Stage entry needs only the idle surfaces that the first frame displays.
     // Every other pose is a resumable Bake job; this reverses scroll8's full
     // synchronous atlas build without restoring its gameplay-sized work steps.
@@ -650,11 +656,22 @@
     R.perf.allowSync=true;R.perf.poseFallbacks=0;R.perf.poseMiss=[];
     R.perf.queueEmptyAt=0;R.perf.stageEnteredAt=bakeAt;R.perf.stageLevel=level;
     const kinds=STAGE_RIGS[level]||STAGE_RIGS[0],keep=new Set(kinds);
+    const visible=scene?new Set(['loial']):new Set(kinds);
+    if(scene){
+      for(const actor of [...(scene.enemies||[]),...(scene.allies||[])]){
+        if(defs[actor.kind])visible.add(actor.kind);
+        else if(actor instanceof R.Trolloc)visible.add(actor.boss?'chieftain':'trolloc');
+        else if(actor instanceof R.Loial)visible.add('loial');
+      }
+      if(scene.twinkle)visible.add('twinkle');
+    }
+    R.perf.stageVisibleKinds=Array.from(visible);
     for(const kind of Object.keys(defs))if(!keep.has(kind))dropRig(kind);
     if(R.Bake)R.Bake.drop(j=>j.kind&&!keep.has(j.kind));
     const pending=[],boss={0:['chieftain'],1:['fade'],4:['taim','twinkle']}[level]||[];
     for(const kind of kinds){
       const d=defs[kind];if(!d)continue;
+      if(!visible.has(kind)){for(const key of POSE_KEYS){pending.push({kind,key,pri:key==='idle'?1:4});this.wantPose(kind,key,key==='idle'?1:4);}continue;}
       const r=getRig(d);if(!r)continue;
       if(!(r.library&&r.library.has('idle'))){
         const prev=R.perf.poseWarm;R.perf.poseWarm=true;

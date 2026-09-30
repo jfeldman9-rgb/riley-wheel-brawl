@@ -33,5 +33,7 @@ const tick=async()=>{for(let i=0;i<10;i++)await Promise.resolve();};
  assert((await reloaded)[0]);assert.equal(R.assets.has('outcome1'),true);R.assets.releaseDemand(['outcome1']);
  assert.equal(R.assets.has('outcome1'),false,'previous stage master is released');assert(!requests.includes('outcome2.png'),'unvisited stage still has no download');
  const missing=await R.assets.ready(['not-registered']);assert.equal(missing[0],null);
+ const game=require('./soak.cjs').boot(path.resolve(__dirname,'..'));assert.equal(game.ASSET_VER,'20260930-v11-review');assert.equal(game.assets.VER,game.ASSET_VER,'content and loader resource stamps must match after all scripts load');
  console.log('PASS lazy assets wait for queued fetch/decode, never duplicate, and preserve two-fetch concurrency');
+ console.log('PASS content cannot override the loader cache stamp with a stale release');
 })().catch(error=>{console.error(error);process.exitCode=1;});

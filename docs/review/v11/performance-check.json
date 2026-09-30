@@ -1,6 +1,9 @@
 {
   "checks": [
+    "Cold entry paints a complete visible window without offscreen B/C or roof work",
+    "Every first-frame enemy and boss kind remains synchronously prepared",
     "Finished stage paintings retain independent parallax and are reused across camera travel",
+    "A queued neighboring window is reused on the first moving frame",
     "Stage 4/5 continuous panoramas and stage 5 roof keep original geometry",
     "Stage preload finishes before a transition starts its fade",
     "Original rounded-camera renderer remains a working low-memory fallback",
@@ -8,14 +11,15 @@
     "Spark and sword-streak bursts are capped and particle objects are reused",
     "HUD redraws only displayed values, including denominator and GO visibility changes"
   ],
-  "passed": 7,
+  "passed": 10,
   "backgrounds": {
-    "builds": 5,
-    "composites": 2,
-    "hits": 1
+    "builds": 7,
+    "composites": 4,
+    "hits": 1,
+    "windows": 10
   },
   "bitmaps": {
     "builds": 2,
-    "hits": 1
+    "hits": 2
   }
 }

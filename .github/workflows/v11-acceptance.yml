@@ -41,11 +41,77 @@ jobs:
       - run: |
           npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
           npx playwright install --with-deps chromium
-      - name: Every browser and emulated-device gate
-        run: node tools/ci-v11.cjs browser
+      - name: Inherited regression and browser contracts
+        id: regression
+        if: always()
+        continue-on-error: true
+        run: node --expose-gc tools/check.cjs
+      - name: Inherited release, cold entry and pacing
+        id: release
+        if: always()
+        continue-on-error: true
+        run: node --expose-gc tools/release-browser.cjs
+      - name: Protected voice sequencing
+        id: voice
+        if: always()
+        continue-on-error: true
+        run: node --expose-gc tools/voice-sequence-check.cjs
+      - name: Inherited audio browser checks
+        id: audio
+        if: always()
+        continue-on-error: true
+        run: node --expose-gc tools/audio-check.cjs
+      - name: Inherited background seam scan
+        id: seams
+        if: always()
+        continue-on-error: true
+        run: node --expose-gc tools/joinscan.cjs
+      - name: Independent audio mix checks
+        id: mix
+        if: always()
+        continue-on-error: true
+        run: node --expose-gc tools/audio/audio-mix-check.cjs
+      - name: Phone, iPad and controller emulation
+        id: devices
+        if: always()
+        continue-on-error: true
+        run: node --expose-gc tools/v11-device-browser.cjs
+      - name: Painted outcomes and enemy cards
+        id: presentation
+        if: always()
+        continue-on-error: true
+        run: node --expose-gc tools/presentation-browser-v11.cjs
+      - name: Report each browser gate honestly
+        if: always()
+        env:
+          RESULTS: ${{ toJSON(steps) }}
+        run: |
+          node - <<'NODE'
+          const steps=JSON.parse(process.env.RESULTS);
+          const ids=['regression','release','voice','audio','seams','mix','devices','presentation'];
+          let failed=false;
+          for(const id of ids){const result=steps[id]?.outcome||'not run';console.log('RWB_BROWSER_GATE '+id+': '+result);if(result!=='success')failed=true;}
+          process.exitCode=failed?1:0;
+          NODE
       - name: Review screenshots in logs
         if: always()
         run: node tools/evidence-log-v11.cjs
+  cold-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+          npx playwright install --with-deps chromium
+      - name: Ten strict cold entries, music off and on
+        run: node tools/performance-v11.cjs . docs/review/v11/ci-cold-smoke.json --cold-only
   matched-performance:
     runs-on: ubuntu-latest
     timeout-minutes: 60

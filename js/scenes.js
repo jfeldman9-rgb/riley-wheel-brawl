@@ -337,10 +337,13 @@
     }
     enter() {
       if (R.voiceReset) R.voiceReset();
-      if (R.Puppet && R.Puppet.prepareStage) R.Puppet.prepareStage(this.levelIndex);
+      const entryAt=performance.now();
+      if (R.Puppet && R.Puppet.prepareStage) R.Puppet.prepareStage(this.levelIndex,this);
+      const rigReadyAt=performance.now();
       // Paintings are already finished before a fade starts. Direct/debug entry
       // still prepares the same cache, without five redundant camera renders.
       if (R.StageWorld && R.StageWorld.preload) R.StageWorld.preload(this);
+      R.perf.entryTiming={rigMs:rigReadyAt-entryAt,backgroundMs:performance.now()-rigReadyAt};
       R.audio.playMusic(this.music);
       // Voice clips for this stage load after the cold enter has settled.
       if (R.voicePreloadStage) { const level = this.levelIndex; setTimeout(() => R.voicePreloadStage(level), 1200); }

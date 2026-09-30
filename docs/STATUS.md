@@ -6,6 +6,17 @@ New branch: `rwb-1-1-polish`, created from that exact live commit. Draft develop
 
 See [1.1 scope and evidence plan](V11_PLAN.md). Inherited test rules are byte-locked in [the acceptance manifest](review/v11/inherited-tests.lock.json); 1.1 tests are additive.
 
+## Current 1.1 review checkpoint
+
+Draft [PR #11](https://github.com/jfeldman9-rgb/riley-wheel-brawl/pull/11) has a runnable candidate at `a557efd30db1008a6c89660f2c796a8625c0d2b4`. It is **not release-ready**. See [the exact browser results](review/v11/CI_A557.md).
+
+- Native acceptance: 24/26 independent gates pass, with only the deliberately retained old grip/RNG contracts failing. Final native runs: Normal 100/77.5/65/57.5/57.5%; Hard 100/72.5/52.5/30/22.5%. Every Normal rate is within 2.5 points of live; late Hard results are near, not identical to, the requested 50/35/25 aims
+- All 400 runs have zero >2-second offscreen enemy violations, maximum 0.683s
+- Ten genuine painted outcome poses are integrated. Runtime encodings retain full dimensions and exact alpha; original generated PNGs are preserved separately
+- All 80 original voice files remain unchanged. Objective clipping/loudness checks pass; pronunciation/naturalness listening remains unverified
+- Same-runner browser comparison found cold-start regressions in Stages2–5 and one failed matched pacing window. A measured cold-work correction is being prepared; no threshold has been relaxed
+- The [500 additional proposals](FUTURE_500.md) are an optional ten-pass roadmap, not already-built features. Two optional post-finale levels have separate future targets
+
 ## Verification limits
 
 - Cloud baseline and candidate measurements can establish cloud regressions only. Required live-versus-candidate measurements on Jason's same computer, three runs each, are pending while his Mac is offline.
