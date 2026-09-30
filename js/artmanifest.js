@@ -57,6 +57,8 @@ RWB.ART_MANIFEST = [
   "assets/art/portrait-moiraine.png",
   "assets/art/portrait-riley.png",
   "assets/art/portrait-taim.png",
+  "assets/art/portrait-fade.png",
+  "assets/art/portrait-draghkar.png",
   "assets/art/portrait-twinkle.png",
   "assets/art/riley-sheet.jpeg",
   "assets/art/stage1-far.jpeg",
@@ -85,6 +87,7 @@ RWB.ART_MANIFEST = [
   "assets/art/title-key.jpeg",
   "assets/art/twinkle-sheet.jpeg",
   "assets/cutscenes/cut-homecoming.jpeg",
+  "assets/cutscenes/cut-escape.jpeg",
   "assets/cutscenes/cut-opening-01.jpeg",
   "assets/cutscenes/cut-opening-02-v2.jpeg",
   "assets/cutscenes/cut-opening-03-v2.jpeg",
@@ -93,7 +96,9 @@ RWB.ART_MANIFEST = [
   "assets/cutscenes/cut-stage2.jpeg",
   "assets/cutscenes/cut-stage3.jpeg",
   "assets/cutscenes/cut-stage4.jpeg",
-  "assets/cutscenes/cut-stage5-finale.jpeg"
+  "assets/cutscenes/cut-stage5-finale.jpeg",
+  "assets/cutscenes/cut-stage5-arrival.jpeg",
+  "assets/cutscenes/cut-callandor.jpeg"
 ];
 // Logical keys are stable; all request versioning is owned by assets.js.
 RWB.ART_FILES = {
@@ -196,7 +201,10 @@ RWB.ART_FILES = {
   "cut-stage3": "assets/cutscenes/cut-stage3.jpeg",
   "cut-stage4": "assets/cutscenes/cut-stage4.jpeg",
   "cut-stage5-finale": "assets/cutscenes/cut-stage5-finale.jpeg",
+  "cut-stage5-arrival": "assets/cutscenes/cut-stage5-arrival.jpeg",
+  "cut-callandor": "assets/cutscenes/cut-callandor.jpeg",
   "cut-homecoming": "assets/cutscenes/cut-homecoming.jpeg",
+  "cut-escape": "assets/cutscenes/cut-escape.jpeg",
   "title-key": "assets/art/title-key.jpeg",
   "riley-sheet": "assets/art/riley-sheet.jpeg",
   "twinkle-sheet": "assets/art/twinkle-sheet.jpeg",

@@ -2,13 +2,19 @@
 (function () {
   const R = window.RWB;
   function beamTexture(){
-    return R.effects.stamp('dark-balefire-r6',g=>{
+    return R.effects.stamp('dark-balefire-tapered-v1',g=>{
       const grad=g.createLinearGradient(0,0,0,64);
       grad.addColorStop(0,'rgba(114,42,190,0)');grad.addColorStop(.16,'rgba(151,82,230,.42)');
       grad.addColorStop(.2,'rgba(247,226,255,.96)');grad.addColorStop(.3125,'#1a071f');
       grad.addColorStop(.6875,'#08030d');grad.addColorStop(.8,'rgba(247,226,255,.96)');
       grad.addColorStop(.84,'rgba(151,82,230,.42)');grad.addColorStop(1,'rgba(114,42,190,0)');
       g.fillStyle=grad;g.fillRect(0,0,136,64);
+      // Fade only the two ends; the original violet-black core stays opaque.
+      const ends=g.createLinearGradient(0,0,136,0);
+      ends.addColorStop(0,'rgba(0,0,0,0)');ends.addColorStop(.06,'#000');
+      ends.addColorStop(.94,'#000');ends.addColorStop(1,'rgba(0,0,0,0)');
+      g.globalCompositeOperation='destination-in';g.fillStyle=ends;g.fillRect(0,0,136,64);
+      g.globalCompositeOperation='source-over';
     },136,64);
   }
   // Strikes snapshot their lane; tells and collision share the same dimensions.
@@ -86,7 +92,17 @@
         // edge energy, tendrils and blooms are additive.
         ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.96;ctx.drawImage(beamTexture(),Math.min(left,right),cy-16,Math.abs(right-left),32);
         ctx.globalCompositeOperation='lighter';
-        ctx.strokeStyle='rgba(190,112,255,.75)';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();for(let n=0;n<=12;n++){const x=left+(right-left)*n/12,yy=cy+(i-1)*14+Math.sin(n*1.7+this.age*34+i)*6;n?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}ctx.stroke();}
+        ctx.strokeStyle='rgba(190,112,255,.75)';ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
+        const steps=Math.max(8,Math.ceil(Math.abs(right-left)/12));
+        for(let i=0;i<2;i++){
+          ctx.beginPath();
+          for(let n=0;n<=steps;n++){
+            const t=n/steps,envelope=Math.min(1,t*12,(1-t)*12);
+            const x=left+(right-left)*t,yy=cy+((i?1:-1)*10+Math.sin(t*22+this.age*34+i*1.7)*2.5)*envelope;
+            n?ctx.lineTo(x,yy):ctx.moveTo(x,yy);
+          }
+          ctx.stroke();
+        }
         for(const p of [[left,10],[right,17]]){ctx.globalAlpha=.8;ctx.drawImage(R.effects.glow('#d9a6ff'),p[0]-p[1],cy-p[1],p[1]*2,p[1]*2);}
       } else ctx.fillRect(this.x - cam - this.w / 2, this.y - this.z - this.h, this.w, this.h);
       ctx.restore();
@@ -168,18 +184,20 @@
       this.laneBias = 0;
     }
     requestAttack() {
+      if (!R.HardAI.canCommit(this)) return;
       if (!this.g.directorCanAttack(this)) return;
       this.attack = this.config.move;
       this.ai = 'telegraph';
       this.aiTimer = this.attack.tell;
       this.attackDidHit = false;
       this.g.registerAttacker(this);
+      R.HardAI.committed(this);
       this.setState('telegraph');
     }
     updateAI(dt) {
       if (this.advanceEntry(dt)) return;
       if (
-        this.kind === 'ashaman' &&
+        !R.HardAI.enabled(this.g) && this.kind === 'ashaman' &&
         this.ai === 'approach' &&
         Math.abs(this.x - this.g.player.x) < 220 &&
         Math.abs(this.y - this.g.player.y) < 17
@@ -349,9 +367,25 @@
       this.vx *= 0.15;
     }
     requestAttack() {
+      if (R.HardAI.enabled(this.g) && (!R.HardAI.canCommit(this) || !this.g.directorCanAttack(this))) return;
       const moves=MOVES[this.kind], previous=this.attack;
       let pick=Math.floor(R.util.rand(0,moves.length));
+      if (R.HardAI.enabled(this.g) && this.attackIndex % 2 === 0) {
+        // Every other choice reads Riley's spacing; alternate choices retain
+        // the full move set. Tells and locked target positions stay unchanged.
+        const distance = Math.abs(this.g.player.x - this.x);
+        const mode = this.kind === 'fade' ? (distance > 125 ? 'blink' : 'combo') :
+          this.kind === 'draghkar' ? (distance > 150 ? 'swoop' : 'gust') :
+          this.kind === 'forsaken' ? (distance > 145 ? 'beam' : 'combo') :
+          (Math.abs(this.g.player.y - this.y) > 28 ? 'storm' : 'surge');
+        pick = moves.findIndex(move => move.mode === mode);
+      }
       if(moves[pick]===previous) pick=(pick+1)%moves.length;
+      if (R.HardAI.enabled(this.g)) {
+        // Tactical preferences reorder the repertoire; they never starve a move.
+        if (!this.hardMoveCycle || this.hardMoveCycle.size === moves.length) this.hardMoveCycle = new Set();
+        if (this.hardMoveCycle.has(moves[pick].name)) pick = moves.findIndex(move => !this.hardMoveCycle.has(move.name));
+      }
       this.attack = moves[pick]; this.attackIndex++;
       this.ai = 'telegraph';
       this.aiTimer = this.attack.tell;
@@ -360,6 +394,10 @@
       this.target = { x: this.g.player.x, y: this.g.player.y };
       this.facing = this.target.x >= this.x ? 1 : -1;
       this.setState('telegraph');
+      if (R.HardAI.enabled(this.g)) {
+        this.g.registerAttacker(this);
+        R.HardAI.committed(this);
+      }
       this.g.warning = this.attack.name;
       this.g.warningTimer = this.attack.tell;
       if (this.attack.mode === 'blink')
@@ -376,6 +414,7 @@
     }
     beginActive() {
       this.usedAttacks.add(this.attack.name);
+      if (R.HardAI.enabled(this.g) && this.hardMoveCycle) this.hardMoveCycle.add(this.attack.name);
       this.setState('attack');
       this.g.playCue(this.kind === 'draghkar' ? 'whoosh' : 'balefire');
       const m = this.attack.mode;
@@ -510,12 +549,13 @@
         this.activeAttack();
         if (this.aiTimer <= 0) {
           this.ai = 'recover';
+          if (R.HardAI.enabled(this.g)) this.g.releaseAttacker(this);
           this.aiTimer = this.attack.recover * (this.phaseTwo ? 0.75 : 1);
           this.setState('recover');
         }
       } else if (this.ai === 'recover' && this.aiTimer <= 0) {
         this.ai = 'approach';
-        this.aiTimer = this.phaseTwo && this.kind==='taim' ? 0.18 : 0.65;
+        this.aiTimer = this.phaseTwo && this.kind==='taim' ? 0.18 : R.HardAI.enabled(this.g) ? 0.32 : 0.65;
       }
       if (this.flying && this.ai !== 'attack') this.z = 47 + Math.sin(this.flightTime * 2.8) * 9;
       R.Entity.prototype.update.call(this, dt);

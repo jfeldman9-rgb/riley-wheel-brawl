@@ -1,3 +1,19 @@
+# Approved character cast (20260930-release1)
+
+Jason approved all five auditions on September 30, 2026. The release contains 54 new Kokoro clips: Riley 30, Twinkle Toes 8, Moiraine 10, Loial 2, and male Be'lal 4. This supersedes the older recording-only restriction below. These are original stock-voice character performances, not real-person clones.
+
+The three escape lines are included. Loial answers one second after Riley calls and speaks once again near the end of his charge. Moiraine's story/heal/taint clips use the existing triggers. The Riley/Twinkle stable filename scheme and optional family-recording support remain intact. Round 2 wires seven formerly missing utility/tutorial triggers with once-per-context guards, six-second spacing and no delayed chatter queue. The eighth, “Up you go!”, is explicitly retired because this build has no separate launcher; its approved clip is retained. See the recording list and `docs/VOICE_LINES.md`.
+
+Assets are mono 24 kHz MP3 at 96 kbps, 943,848 bytes total. Each file exceeds the 0.25-second placeholder cutoff, decodes, has audible signal and true-peak headroom. Exact hashes, text, loudness, pronunciation and casting: [voice manifest](../assets/audio/voice-manifest.json). Sources/license: [provenance](../assets/audio/VOICE_PROVENANCE.md) and [Apache-2.0](../assets/audio/LICENSE-KOKORO.txt). Existing music, narrator, Taim, Fade, Draghkar and mook clips are unchanged.
+
+Story, super, joint-finale and boss-defeat/win speech use an ordered protected queue with actual decoded clip endings. Incidental barks are dropped during important speech; they do not form a backlog. Scene skips/reset cancel queued speech. The post-combat transition waits only while audio can actually play; suspended, muted, unavailable and zero-volume audio cannot trap it. `tools/voice-sequence-check.cjs` verifies actual browser playback. `tools/voice-clock-adapter.cjs` is a separately labeled local duration-based fallback, not a browser substitute.
+
+`tools/voice-assets-check.cjs` verifies the delivered bytes against the independently decoded masters, covers the full approved cast, and verifies Loial one-shot triggers. `audio-check.cjs` continues to test placeholder rejection using an explicit silent route fixture now that the shipped Balefire line is voiced; no threshold or assertion was weakened.
+
+---
+
+# Historical audio implementation
+
 # Audio: music and voices (20260927-audio1)
 
 ## Music

@@ -21,14 +21,15 @@
       if (R.Puppet && R.Puppet.prefetch && this.prefetchLevel != null) R.Puppet.prefetch(this.prefetchLevel);
       this.timer += dt;
       if (!this.spoken) {
-        R.voice(this.lines[this.i].id, { quiet: true });
+        R.voice(this.lines[this.i].id, { quiet: true, sequence: true });
         this.spoken = true;
       }
       if (R.keyPressed(input, 'start') || R.keyPressed(input, 'attack') || R.keyPressed(input, 'jump') || R.keyPressed(input, 'click')) this.advance();
     }
-    enter() { R.audio.playMusic(this.music); }
+    enter() { if (R.voiceReset) R.voiceReset(); R.audio.playMusic(this.music); }
     advance() {
       if (this.done) return;
+      if (R.voiceReset) R.voiceReset();
       this.i += 1;
       if (this.i >= this.lines.length) { this.done = true; this.game.setScene(this.next()); }
       else {
@@ -52,10 +53,10 @@
       }
       const key = R.storyArt(line.id);
       if (!R.paint(ctx, key, 0, 0, 640, 360)) {
-        const n = Number((line.id.match(/^st(\d)_/) || [])[1]) || 1;
+        const n = line.id.startsWith('escape_') ? 5 : Number((line.id.match(/^st(\d)_/) || [])[1]) || 1;
         R.StageWorld.draw(ctx, { levelIndex: n - 1, camera: { x: 300 + Math.min(this.timer, 8) * 4 }, time: this.timer });
-        const hero = new R.Riley(null, {}); hero.x = 230; hero.y = 214; hero.facing = 1; hero.callandor = this.label.includes('CALLANDOR'); hero.draw(ctx, 0);
-        if (line.who === 'kenzie' || line.id.startsWith('end_')) R.drawTwinkle(ctx, 382, 214, !line.id.startsWith('end_'), this.timer);
+        const hero = new R.Riley(null, {}); hero.x = 230; hero.y = 214; hero.facing = 1; hero.callandor = this.label.includes('CALLANDOR') || line.id.startsWith('escape_'); hero.draw(ctx, 0);
+        if (line.who === 'kenzie' || line.id.startsWith('end_') || line.id.startsWith('escape_')) R.drawTwinkle(ctx, 382, 214, !line.id.startsWith('end_') && !line.id.startsWith('escape_'), this.timer);
         if (['taim','forsaken','fade','draghkar'].includes(line.who)) {
           const standin = { player: hero, wave: 5, arenaLeft: 0, arenaRight: 640 };
           const actor = new R.ShadowBoss(standin, 425, 218, line.who); actor.draw(ctx, 0);
@@ -91,8 +92,8 @@
       this.panel = new R.OptionsPanel(mode, { full: true });
     }
     update(dt, input) {
-      this.panel.update(input, dt);
-      if (R.keyPressed(input, 'pause')) this.game.setScene(new Title(this.game));
+      const action = this.panel.update(input, dt);
+      if (action === 'back' || R.keyPressed(input, 'pause')) this.game.setScene(new Title(this.game));
     }
     draw(ctx) {
       ctx.fillStyle = '#071323';
@@ -107,7 +108,7 @@
       this.selection = 0;
       this.music = 'title';
     }
-    enter() { R.audio.playMusic(this.music); }
+    enter() { if (R.voiceReset) R.voiceReset(); R.audio.playMusic(this.music); }
     items() {
       return R.settings.loadRun() ? ['START', 'CONTINUE', 'OPTIONS', 'CONTROLS'] : ['START', 'OPTIONS', 'CONTROLS'];
     }
@@ -158,12 +159,13 @@
       ctx.lineTo(293, 185);
       ctx.stroke();
       if (R.paint(ctx, 'title-key', 0, 0, 640, 360)) { const shade=ctx.createLinearGradient(0,120,0,360);shade.addColorStop(0,'#07132110');shade.addColorStop(1,'#030916ee');ctx.fillStyle=shade;ctx.fillRect(0,0,640,360); }
-      if (!R.paint(ctx, 'logo', 120, 35, 400, 140)) {
+      if (!R.paint(ctx, 'logo', 35, 15, 335, 188)) {
         R.drawText(ctx, 'RILEY', 320, 72, 21, '#ffffff', 'center');
         R.drawText(ctx, 'WHEEL BRAWL', 320, 146, 17, '#e5c65f', 'center');
       }
       R.drawArtFailure(ctx);
       this.items().forEach((item, index) => R.drawText(ctx, (index === this.selection ? '◆ ' : '  ') + item, 320, 218 + index * 29, 9, index === this.selection ? '#70caff' : '#ffffff', 'center'));
+      R.drawText(ctx, 'NEW RUN: ' + (R.settings.data.difficulty === 'hard' ? 'HARD' : 'NORMAL'), 20, 344, 6, '#e8cd74');
     }
   }
   // Keep story acknowledgement separate from the gameplay checkpoint.
@@ -209,16 +211,33 @@
     constructor(game) {
       this.game = game;
       this.time = 0;
+      this.done = false;
+      this.music = 'story';
+      R.assets.ready(['cut-homecoming']);
     }
+    enter() { if (R.voiceReset) R.voiceReset(); R.audio.playMusic(this.music); }
     update(dt, input) {
+      if (this.done) return;
       this.time += dt;
-      if (this.time > 4 || R.keyPressed(input, 'start') || R.keyPressed(input, 'attack')) this.game.setScene(new Title(this.game));
+      if (this.time > 1 && (R.keyPressed(input, 'start') || R.keyPressed(input, 'attack') || R.keyPressed(input, 'jump') || R.keyPressed(input, 'click'))) {
+        this.done = true;
+        this.game.setScene(new Title(this.game));
+      }
     }
     draw(ctx) {
       ctx.fillStyle = '#081122';
       ctx.fillRect(0, 0, 640, 360);
-      R.drawText(ctx, 'TWINKLE TOES IS HOME!', 320, 143, 18, '#f0d36e', 'center');
-      R.drawText(ctx, 'THE WHEEL TURNS. YOU WON.', 320, 202, 10, '#91d3ff', 'center');
+      R.paint(ctx, 'cut-homecoming', 0, 0, 640, 360);
+      R.drawPanel(ctx, 116, 28, 408, 292);
+      R.drawText(ctx, 'TWINKLE TOES IS HOME!', 320, 63, 13, '#f0d36e', 'center');
+      R.drawText(ctx, 'RILEY WHEEL BRAWL', 320, 91, 10, '#ffffff', 'center');
+      R.drawText(ctx, 'FAMILY CREDITS', 320, 126, 7, '#91d3ff', 'center');
+      R.drawText(ctx, 'JASON', 320, 157, 10, '#ffffff', 'center');
+      R.drawText(ctx, 'RILEY', 320, 184, 10, '#ffffff', 'center');
+      R.drawText(ctx, 'TWINKLE TOES', 320, 211, 10, '#ffffff', 'center');
+      R.drawText(ctx, 'THE WHEEL TURNS. YOU WON.', 320, 249, 8, '#f0d36e', 'center');
+      R.drawText(ctx, 'THANK YOU FOR PLAYING', 320, 277, 7, '#b9d4e7', 'center');
+      R.drawText(ctx, 'START / KICK / TAP: TITLE', 320, 341, 6, '#ffffff', 'center');
     }
   }
   class Play {
@@ -227,6 +246,7 @@
       this.levelIndex = R.util.clamp(levelIndex | 0, 0, 4);
       this.level = R.LEVELS[this.levelIndex];
       this.carry = carry || {};
+      this.difficulty = (this.carry.difficulty || R.settings.data.difficulty) === 'hard' ? 'hard' : 'normal';
       this.wave = R.util.clamp(this.carry.wave | 0, 0, 5);
       this.arenaLeft = this.level.wavePoints[this.wave];
       this.arenaRight = Math.min(this.level.length, this.arenaLeft + R.SCROLL.fight);
@@ -273,6 +293,7 @@
       this.spawnWave(this.wave);
     }
     enter() {
+      if (R.voiceReset) R.voiceReset();
       if (R.Puppet && R.Puppet.prepareStage) R.Puppet.prepareStage(this.levelIndex);
       const canvas = document.getElementById('game'), ctx = canvas && canvas.getContext('2d');
       if (ctx) {
@@ -300,19 +321,22 @@
       if (R.voicePreloadStage) { const level = this.levelIndex; setTimeout(() => R.voicePreloadStage(level), 1200); }
       this.saveCheckpoint();
     }
+    exit() { if (R.voiceReset) R.voiceReset(); }
     /** Speech bubble for a line spoken outside the subtitle queue (barks). Visual only. */
     showBark(line) {
       this.bark = { line, remaining: Math.max(1.6, 0.8 + line.text.length * 0.055) };
     }
     updateBark(dt) {
       if (this.bark) { this.bark.remaining -= dt; if (this.bark.remaining <= 0) this.bark = null; }
-      if (this.winLineIn > 0) { this.winLineIn -= dt; if (this.winLineIn <= 0 && R.VOICE_TRIGGERS) R.voice(R.VOICE_TRIGGERS.bossWin[this.levelIndex]); }
     }
     drawBark(ctx) {
       const bark = this.bark;
       if (!bark) return;
       const who = bark.line.who;
-      const actor = who === 'riley' ? this.player : (this.boss && who !== 'kenzie' ? this.boss : who === 'kenzie' && this.twinkle ? this.twinkle : this.player);
+      const bossWho = this.levelIndex === 0 ? 'trolloc-chieftain' : this.level.kind;
+      const actor = who === 'kenzie' && this.twinkle ? this.twinkle :
+        who === 'loial' ? (this.allies.find(ally => ally.life > 0) || this.player) :
+        this.boss && who === bossWho ? this.boss : this.player;
       const text = bark.line.text, name = bark.line.name;
       const w = Math.max(text.length, name.length) * 6 + 16, h = 30;
       const ax = actor.x - this.camera.x, ay = actor.y - (actor.z || 0) - (actor === this.boss ? 128 : 104);
@@ -329,7 +353,7 @@
       ctx.restore();
     }
     checkpointExtra() {
-      const extra = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, callandor: this.player.callandor };
+      const extra = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, callandor: this.player.callandor, difficulty: this.difficulty };
       if (this.wave === 5 && this.boss && !this.boss.dead) extra.boss = {
         kind: this.level.kind, hp: this.boss.hp, attackIndex: this.boss.attackIndex || 0,
         usedAttacks: [...this.boss.usedAttacks], phaseTwo: !!this.boss.phaseTwo,
@@ -346,7 +370,7 @@
       R.settings.saveRun({ level: this.levelIndex, wave, score: this.player.score, extra });
     }
     restartStage() {
-      const carry = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, score: this.player.score, callandor: this.player.callandor, wave: 0 };
+      const carry = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, score: this.player.score, callandor: this.player.callandor, difficulty: this.difficulty, wave: 0 };
       this.game.setScene(new Play(this.game, this.levelIndex, carry));
     }
     leash() {
@@ -423,20 +447,20 @@
       if (!this.subtitle && this.subtitleQueue.length) {
         this.subtitle = this.subtitleQueue.shift();
         const id = this.subtitle.line.id;
-        R.voice(id, { quiet: true });
+        R.voice(id, { quiet: true, sequence: true });
         // The thank-you line now opens the rescue; the joint finish unlocks at the same moment as before.
         if (id === 'st5_kenzie_01' || id === 'st5_kenzie_03') this.rescueReady = true;
       }
       if (this.subtitle) { this.subtitle.remaining -= dt; if (this.subtitle.remaining <= 0) this.subtitle = null; }
     }
     carryToNext() {
-      return { score: this.player.score, saidin: this.player.power, lives: this.player.lives, callandor: this.player.callandor, loial: true };
+      return { score: this.player.score, saidin: this.player.power, lives: this.player.lives, callandor: this.player.callandor, difficulty: this.difficulty, loial: true };
     }
     nextStage() {
       const next = this.levelIndex + 1;
       const carry = this.carryToNext();
       const start = () => new Reel(this.game, R.CAPTIONS['stage' + (next + 1)], () => new Play(this.game, next, carry), R.LEVELS[next].name, next);
-      if (this.levelIndex === 4) return new Reel(this.game, R.CAPTIONS.ending, () => new Victory(this.game), 'HOMECOMING');
+      if (this.levelIndex === 4) return new Reel(this.game, R.CAPTIONS.escape, () => new Reel(this.game, R.CAPTIONS.ending, () => new Victory(this.game), 'HOMECOMING'), 'ESCAPE FROM THE BLACK TOWER');
       if (this.levelIndex === 0) return new Reel(this.game, R.CAPTIONS.clear, start, 'STAGE 1 CLEAR', next);
       if (this.levelIndex === 3) return resumeRun(this.game, { level: 4, wave: 0, score: this.player.score, extra: Object.assign(carry, { pendingReveal: 'callandor' }) });
       return start();
@@ -454,6 +478,7 @@
       this.player.power = 0; this.player.taintAge = 0; this.player.taintClock = 0; this.player.taintTell = 0;
       this.player.invuln = 0.35; this.joint = { age: 0, hit: false };
       this.subtitle = null; this.subtitleQueue.length = 0;
+      if (R.voiceReset) R.voiceReset(); // the player's joint command supersedes rescue chatter
       this.say('st5_riley_02', 0.8); this.say('st5_kenzie_02', 1.5);
       this.movesUsed.add('joint'); return true;
     }
@@ -587,8 +612,8 @@
       this.kills += 1;
       if (enemy.boss && enemy === this.boss && R.VOICE_TRIGGERS && !this.bossDefeatSaid) {
         this.bossDefeatSaid = true;
-        R.voice(R.VOICE_TRIGGERS.bossDefeat[this.levelIndex]);
-        this.winLineIn = 2.2; // Riley answers once the villain's last word lands
+        R.voice(R.VOICE_TRIGGERS.bossDefeat[this.levelIndex], { sequence: true });
+        R.voice(R.VOICE_TRIGGERS.bossWin[this.levelIndex], { sequence: true });
       }
       this.player.score += enemy.scoreValue;
       if (!enemy.boss) {
@@ -604,7 +629,8 @@
       }
     }
     callLoial() {
-      if (!this.player.loialReady || this.phase !== 'play') return false;
+      if (this.phase !== 'play') return false;
+      if (!this.player.loialReady) { this.player.utilityVoice('riley_call_spent_01'); return false; }
       this.player.loialReady = false;
       this.allies.push(new R.Loial(this));
       this.playCue('loialHorn');
@@ -626,7 +652,7 @@
       this.camera.impact(this.player.facing, 'super');
       if (R.audio.duck) R.audio.duck(0.3, 1.2);
       if (this.player.callandor && !this.player.spokenCallandor) { this.say('riley_callandor_01'); this.player.spokenCallandor = true; }
-      R.voice('riley_super_01');
+      R.voice('riley_super_01', { sequence: true });
       this.playCue('balefire');
       this.movesUsed.add('super');
       return true;
@@ -763,7 +789,7 @@
       if (this.phase === 'clear') {
         this.clearTimer -= dt;
         if (this.levelIndex < 4 && R.Puppet && R.Puppet.prefetch) R.Puppet.prefetch(this.levelIndex + 1);
-        if (this.clearTimer <= 0 && !this.clearQueued) { this.clearQueued = true; this.game.setScene(this.nextStage()); }
+        if (this.clearTimer <= 0 && !R.audio.voiceBusy && !this.clearQueued) { this.clearQueued = true; this.game.setScene(this.nextStage()); }
         return;
       }
       const frozen = this.camera.update(dt);
@@ -860,9 +886,13 @@
       }
       R.drawArtFailure(ctx);
       if (this.bossCard > 0) {
-        R.drawPanel(ctx, 148, 131, 344, 74);
-        R.drawText(ctx, 'BOSS', 320, 151, 8, '#e7ca6b', 'center');
-        R.drawText(ctx, this.level.boss, 320, 181, 12, '#ffffff', 'center');
+        R.drawPanel(ctx, 112, 107, 416, 113);
+        const portrait = 'portrait-' + (this.levelIndex === 0 ? 'trolloc-chieftain' : this.level.kind);
+        if (!R.paint(ctx, portrait, 124, 117, 72, 93)) R.drawText(ctx, this.level.boss[0], 160, 171, 26, '#91d3ff', 'center');
+        R.drawText(ctx, 'BOSS ENCOUNTER', 350, 132, 7, '#e7ca6b', 'center');
+        R.drawText(ctx, this.level.boss, 350, 162, 11, '#ffffff', 'center');
+        const tips = ['DODGE THE SLAM. STRIKE BACK.', 'WATCH THE BLINK. CHANGE LANES.', 'JUMP KICK OR FIREBALL.', 'EVADE THE WEAVES. CLAIM CALLANDOR.', 'FREE TWINKLE TOES. FINISH TOGETHER.'];
+        R.drawText(ctx, tips[this.levelIndex], 350, 192, 6, '#b9d4e7', 'center');
       }
       if (this.player.taintAge > R.TUNE.taintGrace) {
         const amount = Math.min(0.55, 0.15 + (this.player.taintAge - R.TUNE.taintGrace) * 0.035);
@@ -899,6 +929,7 @@
     run.level = R.util.clamp(run.level | 0, 0, 4);
     run.extra = run.extra || {};
     run.extra.callandor = !!run.extra.callandor;
+    run.extra.difficulty = run.extra.difficulty === 'hard' ? 'hard' : 'normal';
     run.wave = R.util.clamp(run.wave | 0, 0, 5);
     run.score = Math.max(0, run.score | 0);
     run.extra.saidin = R.util.clamp(Number(run.extra.saidin) || 0, 0, 100);

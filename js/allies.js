@@ -8,12 +8,20 @@
       this.y = scene.player.y;
       this.vx = 300;
       this.life = 3;
+      this.age = 0;
+      this.chargeSpoken = false;
+      this.doneSpoken = false;
       this.hit = new Set();
       this.walkDistance = 0;
     }
     update(dt) {
       this.x += this.vx * dt;
       this.life -= dt;
+      this.age += dt;
+      // Let Riley's call land before Loial answers; these barks never touch
+      // combat, movement, or the subtitle queue.
+      if (!this.chargeSpoken && this.age >= 1) { this.chargeSpoken = true; R.voice('loial_charge_01'); }
+      if (!this.doneSpoken && this.life <= 0.2) { this.doneSpoken = true; R.voice('loial_done_01'); }
       this.walkDistance += this.vx * dt;
       for (const enemy of this.g.enemies) {
         if (enemy.dead || this.hit.has(enemy)) continue;

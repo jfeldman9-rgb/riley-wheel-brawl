@@ -39,7 +39,7 @@
   function prepareSword(){
     if(swordCanvas)return swordCanvas;
     const c=document.createElement('canvas');c.width=24;c.height=92;const g=c.getContext('2d');
-    // Point up, with the grip centred at (12,76). All gradients are built once.
+    // Point up, with the wrapped grip centred at (12,83). All gradients are built once.
     const glass=g.createLinearGradient(5,0,19,0);glass.addColorStop(0,'rgba(25,54,92,.72)');glass.addColorStop(.28,'rgba(126,235,255,.30)');glass.addColorStop(.63,'rgba(235,255,255,.66)');glass.addColorStop(1,'rgba(37,88,132,.62)');
     g.fillStyle=glass;g.beginPath();g.moveTo(12,1);g.lineTo(19,14);g.lineTo(17,65);g.lineTo(12,72);g.lineTo(6,65);g.lineTo(5,14);g.closePath();g.fill();
     g.strokeStyle='rgba(238,255,255,.9)';g.lineWidth=1;g.beginPath();g.moveTo(12,2);g.lineTo(8,64);g.lineTo(12,70);g.moveTo(12,2);g.lineTo(16,64);g.stroke();
@@ -167,11 +167,27 @@
       this.knees = 0;
       this.healPortrait = 0;
       this.spokenFire = false;
+      this.utilitySpoken = new Set();
+      this.nextUtilityAt = 0;
+      this.lowVoiceArmed = true;
+      this.powerWasFull = this.power >= this.powerMax;
       this.deadTimer = 0;
       this.getupTimer = 0;
     }
     get busy() {
       return !!this.attackMove || ['hurt', 'knockdown', 'lying', 'getup', 'death', 'super'].includes(this.state);
+    }
+    /** Context-only flavor: never queue it behind dialogue or interrupt speech.
+        An obscured event is dropped, not replayed later after it loses meaning. */
+    utilityVoice(id, once = true) {
+      const g = this.g, A = R.audio;
+      if (once && this.utilitySpoken.has(id)) return false;
+      if (this.dead || g.phase !== 'play' || g.paused || g.subtitle || g.subtitleQueue.length ||
+          g.time < this.nextUtilityAt || A.voicePlaying || A.voicePending) return false;
+      if (once) this.utilitySpoken.add(id);
+      this.nextUtilityAt = g.time + 6;
+      R.voice(id, { flavor: true });
+      return true;
     }
     beginMove(name) {
       const move = R.MOVES[name];
@@ -252,7 +268,7 @@
         enemy.vx = 0;
         enemy.vy = 0;
         this.knees = 0;
-        R.voice('riley_grab_01');
+        this.utilityVoice('riley_grab_01');
         break;
       }
     }
@@ -275,7 +291,7 @@
       this.g.movesUsed.add('throw');
       this.setState('throw');
       this.channelTimer = R.MOVES.throw.duration;
-      R.voice('riley_throw_01');
+      this.utilityVoice('riley_throw_01');
       this.g.playCue('throw');
     }
     updateAttack(dt) {
@@ -294,7 +310,11 @@
           if (enemy.dead || this.attackHits.has(enemy)) continue;
           if (!R.collide.overlap(box, enemy.hurtbox())) continue;
           this.attackHits.add(enemy);
-          this.g.damageEnemy(enemy, move.damage, this.x, { kb: move.knockback, knockdown: move.knockdown, move: this.attackName });
+          const landed = this.g.damageEnemy(enemy, move.damage, this.x, { kb: move.knockback, knockdown: move.knockdown, move: this.attackName });
+          if (landed && this.g.levelIndex === 0) {
+            const line = { front: 'riley_combo_01', round: 'riley_combo_02', back: 'riley_combo_03' }[this.attackName];
+            if (line) this.utilityVoice(line);
+          }
         }
       }
       if (this.stateT < move.duration) return;
@@ -313,6 +333,10 @@
     }
     updateTaint(dt) {
       if (this.g.paused || this.dead) return;
+      if (this.hp > 40) this.lowVoiceArmed = true;
+      const full = this.power >= this.powerMax;
+      if (full && !this.powerWasFull) this.utilityVoice('riley_saidin_full_01');
+      this.powerWasFull = full;
       if (this.power < this.powerMax || this.g.phase !== 'play') {
         this.taintWarned = false;
         this.taintAge = 0;
@@ -426,6 +450,10 @@
       }
       this.setState('hurt');
       this.power = Math.min(this.powerMax, this.power + 4);
+      if (this.hp <= 25 && this.lowVoiceArmed) {
+        this.lowVoiceArmed = false;
+        this.utilityVoice('riley_low_01', false);
+      }
     }
     pose() {
       let key = this.state;
@@ -507,6 +535,10 @@
     }
     draw(ctx, cameraX) {
       this.drawShadow(ctx, cameraX, 18);
+      // In the resting stance the original painted glove must close around
+      // the hilt. Drawing the sword first preserves those fingers unmodified.
+      const idleCallandor=this.callandor&&this.spriteFrame()==='idle';
+      if(idleCallandor)this.drawCallandor(ctx,cameraX);
       if (!this.drawSprite(ctx, cameraX)) {
         // The compact procedural actor is retained only as a load-failure fallback.
         if (R.paint && R.paint(ctx, 'cg-riley', this.x-cameraX-40, this.y-this.z-96, 80, 96)) return;
@@ -514,7 +546,7 @@
       if (this.angreal > 0) {
         ctx.save();ctx.strokeStyle='rgba(255,221,100,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.x-cameraX,this.y-this.z-48,31+Math.sin(this.stateT*8)*2,0,Math.PI*2);ctx.stroke();ctx.restore();
       }
-      if (this.callandor) this.drawCallandor(ctx,cameraX);
+      if (this.callandor&&!idleCallandor) this.drawCallandor(ctx,cameraX);
       // Hit tint is baked into Riley's own pixels inside drawSprite.
     }
     drawCallandor(ctx,cameraX){
@@ -522,9 +554,10 @@
       const alpha=this.dead?Math.max(.1,Math.min(1,1-this.deadTimer/.75)):(this.invuln>0&&Math.floor(this.invuln*18)%2===0?.55:1);
       const attack=this.attackMove,progress=attack?Math.min(1,this.stateT/Math.max(.01,attack.duration)):0;
       const swing=attack?(-110+150*progress)*Math.PI/180:0;
+      const gripY=frame==='idle'?83:76;
       ctx.save();ctx.globalAlpha*=alpha;ctx.translate(this.x-cameraX,this.y-this.z);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]+swing);
-      ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-76);ctx.restore();
-      const angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:this.x+this.facing*(h[0]+sn*76),y:this.y-this.z+h[1]-cs*76};
+      ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-gripY);ctx.restore();
+      const angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:this.x+this.facing*(h[0]+sn*gripY),y:this.y-this.z+h[1]-cs*gripY};
       if(this.attackMove){this.callandorTips=this.callandorTips||[];this.callandorTips.push({x:tip.x,y:tip.y,t:performance.now()});if(this.callandorTips.length>9)this.callandorTips.shift();}
       else this.callandorTips=[];
       if(this.callandorTips.length>1){ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';const grip={x:this.x+this.facing*h[0],y:this.y-this.z+h[1]},n=this.callandorTips.length;for(let i=1;i<n;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i],fade=i/n,ma={x:(grip.x+a.x)*.5,y:(grip.y+a.y)*.5},mb={x:(grip.x+b.x)*.5,y:(grip.y+b.y)*.5};ctx.globalAlpha=.08+fade*.25;ctx.fillStyle='#75dfff';ctx.beginPath();ctx.moveTo(ma.x-cameraX,ma.y);ctx.lineTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.lineTo(mb.x-cameraX,mb.y);ctx.closePath();ctx.fill();ctx.globalAlpha=.18+fade*.55;ctx.strokeStyle='#efffff';ctx.lineWidth=2+fade*3;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}

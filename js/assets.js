@@ -15,7 +15,7 @@
    from an older deploy can't pin the fallback. */
 'use strict';
 
-RWB.ASSET_VER = '20260930-sol61r8live';
+RWB.ASSET_VER = '20260930-release2';
 RWB.assets = (function () {
   const images = {};
   const cs = typeof document !== 'undefined' && document.currentScript;
@@ -40,24 +40,29 @@ RWB.assets = (function () {
   function register(key, src, opts) {
     if (opts && opts.lazy) lazy[key] = src; else manifest[key] = src;
   }
-  function fetchImage(url) {
+  function fetchImage(url, deferDecode) {
     return new Promise(resolve => {
       const img = new Image();
-      img.onload = async () => { try { if (img.decode) await img.decode(); resolve(img); } catch (_) { resolve(null); } };
+      // Story art is fetched in the background but decoded only when its reel
+      // is about to show it (see ready()). Force-decoding every story still
+      // at boot kept ~13 full-size bitmaps resident and evicted the stage
+      // plates' decodes, which then re-decoded inside the cold stage enter.
+      img.onload = async () => { try { if (deferDecode) { resolve((img.naturalWidth || img.width) > 0 ? img : null); return; } if (img.decode) await img.decode(); resolve(img); } catch (_) { resolve(null); } };
       img.onerror = () => resolve(null);
       img.crossOrigin = 'anonymous';
       img.src = url;
     });
   }
-  function fetchResource(url) {
-    if (!/\.json(?:[?&]|$)/.test(url)) return fetchImage(url);
+  function fetchResource(url, deferDecode) {
+    if (!/\.json(?:[?&]|$)/.test(url)) return fetchImage(url, deferDecode);
     return fetch(url).then(response => response.ok ? response.json() : null).catch(() => null);
   }
   async function fetchKey(k, src) {
     if (!listed(src)) { images[k] = null; skipped.push(k); return null; }
     const url = src + (src.includes('?') ? '&' : '?') + 'v=' + VER;
-    let img = await fetchResource(url);
-    if (!img) img = await fetchResource(url + '&r=' + Date.now());
+    const deferDecode = k in lazy;
+    let img = await fetchResource(url, deferDecode);
+    if (!img) img = await fetchResource(url + '&r=' + Date.now(), deferDecode);
     images[k] = img;
     if (!img) { failed.push(k); if (k in lazy && typeof console !== 'undefined') console.info('[RWB] story art unavailable; using drawn art:', k); }
     return img;
@@ -92,7 +97,10 @@ RWB.assets = (function () {
   function ready(keys) {
     const want = keys || [];
     if (want.some(k => k in lazy && !(k in pending))) loadLazy();
-    return Promise.all(want.map(k => pending[k] || Promise.resolve(images[k] || null)));
+    // A reel asks for its stills when it is built; start their off-thread
+    // decode then, so the first painted frame does not decode synchronously.
+    const warm = (k, img) => { if (img && k in lazy && img.decode) img.decode().catch(() => {}); return img; };
+    return Promise.all(want.map(k => (pending[k] || Promise.resolve(images[k] || null)).then(img => warm(k, img))));
   }
 
   function get(key) { return images[key] || null; }

@@ -35,7 +35,7 @@ RWB.settings = (function () {
 
   const clone = o => JSON.parse(JSON.stringify(o));
   const defaults = () => ({
-    mode: 'auto', volume: 1, muted: false, music: 1,
+    mode: 'auto', volume: 1, muted: false, music: 1, difficulty: 'normal',
     overlay: 0.3, bigHud: false, colorblind: false, fx: 'auto', shake: 'full',
     keys: clone(DEFAULT_KEYS), pad: clone(DEFAULT_PAD)
   });
@@ -44,6 +44,7 @@ RWB.settings = (function () {
   const padMap = {};
 
   function norm(k) { return typeof k === 'string' && k.length === 1 ? k.toLowerCase() : k; }
+  function difficulty(value) { return value === 'hard' ? 'hard' : 'normal'; }
 
   function rebuild() {
     for (const k in keyMap) delete keyMap[k];
@@ -66,6 +67,7 @@ RWB.settings = (function () {
   function load() {
     let p = {};
     try { p = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { p = {}; }
+    data.difficulty = difficulty(p.difficulty);
     if (p.mode === 'auto' || p.mode === 'sharp' || p.mode === 'classic') data.mode = p.mode;
     if (typeof p.volume === 'number') data.volume = Math.max(0, Math.min(1, p.volume));
     if (typeof p.muted === 'boolean') data.muted = p.muted;
@@ -91,6 +93,7 @@ RWB.settings = (function () {
 
   function set(patch) {
     Object.assign(data, patch);
+    data.difficulty = difficulty(data.difficulty);
     save();
     return data;
   }
@@ -174,6 +177,8 @@ RWB.settings = (function () {
       r.wave = Math.max(0, Math.min(waves - 1, r.wave | 0));
       r.score = Math.max(0, r.score | 0);
       r.extra = r.extra && typeof r.extra === 'object' ? r.extra : {};
+      // Continue belongs to its original run, even when the next-run option changes.
+      r.extra.difficulty = difficulty(r.extra.difficulty);
       return api.validateRun ? api.validateRun(r) : r;
     } catch (e) { return null; }
   }

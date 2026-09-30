@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Generate villain + narrator voice clips with free Microsoft neural voices (edge-tts).
 
-Riley and Twinkle Toes are NEVER generated: they are real kids and Jason records them
-(see assets/audio/voice/RECORDING_LIST.md).
+Only speakers explicitly configured in the Edge TTS table are regenerated here.
+The approved local Kokoro cast (including Riley and Twinkle Toes) is never touched.
 
   python3 -m venv .venv && .venv/bin/pip install edge-tts
   node tools/voices-dump.cjs > /tmp/voices.json
@@ -44,7 +44,9 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     tmp = tempfile.mkdtemp()
     for line in table['lines']:
-        if not line['generated'] or (only and line['id'] not in only):
+        if (not line['generated'] or line['who'] not in table['tts']
+                or line['who'] in table.get('localCast', {})
+                or (only and line['id'] not in only)):
             continue
         cfg = table['tts'][line['who']]
         raw = os.path.join(tmp, line['id'] + '.mp3')

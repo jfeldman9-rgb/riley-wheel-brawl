@@ -1,0 +1,51 @@
+{
+  "commit": "7f3f94bd5aef9cc650aab74219f67b476014b5d5",
+  "method": "Original tools/soak.cjs, seeds1001\u20131040, three lives, no HP top-up",
+  "stages": [
+    {
+      "stage": 1,
+      "seeds": [
+        1001,
+        1040
+      ],
+      "clears": 39,
+      "rate": 97.5
+    },
+    {
+      "stage": 2,
+      "seeds": [
+        1001,
+        1040
+      ],
+      "clears": 30,
+      "rate": 75
+    },
+    {
+      "stage": 3,
+      "seeds": [
+        1001,
+        1040
+      ],
+      "clears": 27,
+      "rate": 67.5
+    },
+    {
+      "stage": 4,
+      "seeds": [
+        1001,
+        1040
+      ],
+      "clears": 23,
+      "rate": 57.5
+    },
+    {
+      "stage": 5,
+      "seeds": [
+        1001,
+        1040
+      ],
+      "clears": 23,
+      "rate": 57.5
+    }
+  ]
+}

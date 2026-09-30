@@ -33,6 +33,7 @@
       } else if (this.kind === 'angreal') {
         player.angreal = R.TUNE.angrealSeconds;
         this.g.angrealDropped = true;
+        player.utilityVoice('riley_angreal_01');
       }
     }
     draw(ctx, cameraX) {
