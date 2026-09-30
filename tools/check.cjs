@@ -443,6 +443,30 @@ async function pageLoadChecks(check, rootDir) {
     });
     check(Object.keys(legTear).length===8&&Object.values(legTear).every(n=>n<=2),'Riley per-row leg shear adds at most 2 render px to adjacent-row silhouette jumps '+JSON.stringify(legTear));
     console.log('Riley leg tear excess '+JSON.stringify(legTear));
+    const legOpacity = await seeded.page.evaluate(() => {
+      const saved=RWB.display.renderScale,out={};
+      for(const rs of [1,2,3]){
+        RWB.display.renderScale=rs;
+        const made=()=>{const c=document.createElement('canvas');c.width=640*rs;c.height=360*rs;return c};
+        const skin=made(),plain=made(),sg=skin.getContext('2d',{willReadFrequently:true}),pg=plain.getContext('2d',{willReadFrequently:true});
+        const scene=new RWB.scenes.Play(RWB.game,0,{wave:0,lives:99}),p=scene.player;
+        p.state='walk';p.grounded=true;p.facing=1;p.x=180;p.y=250;p.ghost=false;
+        let opaqueSkin=0,pixelsSkin=0,opaquePlain=0,pixelsPlain=0;
+        const count=(g,acc,sole)=>{const y0=Math.floor((sole-40)*rs),y1=Math.ceil((sole+3)*rs),x0=100*rs,x1=260*rs,d=g.getImageData(x0,y0,x1-x0,y1-y0).data;for(let i=3;i<d.length;i+=4)if(d[i]){acc[1]++;if(d[i]>=250)acc[0]++}};
+        for(let i=0;i<120;i++){
+          p.walkDistance+=128/60;
+          const frame=p.spriteFrame(),foot=RWB.RILEY16.feet[frame];
+          sg.setTransform(1,0,0,1,0,0);sg.clearRect(0,0,skin.width,skin.height);sg.setTransform(rs,0,0,rs,0,0);p.drawSprite(sg,0);
+          pg.setTransform(1,0,0,1,0,0);pg.clearRect(0,0,plain.width,plain.height);pg.setTransform(rs,0,0,rs,0,0);p.drawSprite(pg,0,frame);
+          const a=[0,0],b=[0,0],sole=p.y-foot[1];count(sg,a,sole);count(pg,b,sole);opaqueSkin+=a[0];pixelsSkin+=a[1];opaquePlain+=b[0];pixelsPlain+=b[1];
+        }
+        const skinned=opaqueSkin/pixelsSkin,unskinned=opaquePlain/pixelsPlain;
+        out[rs]={skinned:+skinned.toFixed(4),unskinned:+unskinned.toFixed(4),delta:+Math.abs(skinned-unskinned).toFixed(4)};
+      }
+      RWB.display.renderScale=saved;return out;
+    });
+    check([1,2,3].every(rs=>legOpacity[rs].delta<=.02),'Riley device-row leg opacity stays within 2% of unskinned with rim on '+JSON.stringify(legOpacity));
+    console.log('Riley leg opacity '+JSON.stringify(legOpacity));
     const gripPixels=await seeded.page.evaluate(()=>{
       const scale=RWB.RILEY16.height/RWB.RILEY16.frames.idle[1],bad=[];
       for(const [frame,h] of Object.entries(RWB.RILEY16.hands)){
@@ -660,7 +684,7 @@ const retiredStreet=new Set(['assets/art/stage4-mid.png','assets/art/stage5-mid.
 check([...artFiles('assets/art'),...artFiles('assets/cutscenes')].filter(f=>/\.(png|jpeg)$/.test(f)&&!f.startsWith('assets/art/newplates/')&&!f.endsWith('/_contact-sheet.png')&&!retiredStreet.has(f)).every(f=>RWB.ART_MANIFEST.includes(f) && Object.values(RWB.ART_FILES).includes(f)), 'Every active committed painted image has a registered manifest key');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const urls = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf)[^"]*)"/g)].map(match => match[1]);
-const STAMP='20260929-sol61r7';console.log('Cache stamp: '+STAMP);
+const STAMP='20260929-sol61r8';console.log('Cache stamp: '+STAMP);
 check(urls.every(url => url.includes('?v='+STAMP)), 'Every script, stylesheet, and font URL has the '+STAMP+' cache stamp');
 const mainSource=fs.readFileSync(path.join(root,'js/main.js'),'utf8'),perfSource=fs.readFileSync(path.join(root,'js/performance.js'),'utf8');
 check(mainSource.includes('new RWB.FrameClock') && perfSource.includes('STEP=1/60') && perfSource.includes('count<5'), 'Browser gameplay uses bounded fixed 60 Hz simulation ticks');

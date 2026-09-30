@@ -483,12 +483,18 @@
       const drawSkinned=(source,pad)=>{
         const sw=w+pad*2,sh=h+pad*2,hip=Math.floor((ay-88)+pad),sole=ay+pad;
         ctx.drawImage(source,0,0,sw,hip,(-ax-pad)*scale,(-ay-pad)*scale,sw*scale,hip*scale);
-        // One source-row strip avoids the visible ledges produced by the old
-        // seven-band warp. legShift is already in actor/destination units (as
-        // is drawX), while scale converts only source pixels to actor units.
-        for(let sy=hip;sy<sh;sy++){
+        // Rasterise exactly one complete device row at a time. Source-row
+        // strips are only .42 actor units high, so their fractional device
+        // edges used to be antialiased and repeatedly source-over composited.
+        // Sampling at each device-row centre preserves the continuous shear
+        // without translucent overlaps; only x is allowed to remain fractional.
+        const tr=ctx.getTransform(),top=(-ay-pad+hip)*scale,bottom=(-ay-pad+sh)*scale;
+        const first=Math.floor(tr.d*top+tr.f),last=Math.ceil(tr.d*bottom+tr.f);
+        for(let deviceY=first;deviceY<last;deviceY++){
+          const localY=(deviceY+.5-tr.f)/tr.d;
+          const sy=Math.max(hip,Math.min(sh-1,Math.floor(localY/scale+ay+pad)));
           const t=Math.max(0,Math.min(1,(sy+.5-hip)/(sole-hip))),smooth=t*t*(3-2*t);
-          ctx.drawImage(source,0,sy,sw,1,(-ax-pad)*scale+legShift*smooth,(-ay-pad+sy)*scale,sw*scale,scale);
+          ctx.drawImage(source,0,sy,sw,1,(-ax-pad)*scale+legShift*smooth,(deviceY-tr.f)/tr.d,sw*scale,1/tr.d);
         }
       };
       if(legShift&&rim)drawSkinned(rim,8);else if(legShift)drawSkinned(img,0);
