@@ -35,9 +35,11 @@ The trims are scalar per-clip gains; the approved files are never re-encoded. Th
 
 ## Listening gate and auditions
 
+**USER APPROVED (2026-10-01):** Jason approved the current voice set as a whole after the original-voice review materials were supplied. All current clips are retained; no regeneration is needed. This does not claim that the agent listened or that any particular individual clip was auditioned. The exact approved clip hashes are recorded in [user-acceptance.json](user-acceptance.json).
+
 [Open the full audition list](auditions.html) while serving the repository root. Every shipped line has its own play control and pending/pass/revise field. Only one audition player can run at once. It plays the original source level and displays the small game gain trim. Notes are local to the browser and can be exported.
 
-**No auditory review was performed.** Feeding an actual MP3 to the available tool returned “audio content omitted because you do not support audio input”. No numeric analysis is described as listening. Performance naturalness, name pronunciation, consonant endings, and character intent still need an actual listening review. Previously approved 1.0 casting is preserved.
+**No auditory review was performed.** Feeding an actual MP3 to the available tool returned “audio content omitted because you do not support audio input”. No numeric analysis is described as listening. The automated audit does not certify performance naturalness, name pronunciation, consonant endings, or character intent. Overall acceptance is now supplied by the user approval above. Previously approved 1.0 casting is preserved.
 
 Name/word checks are based on catalogue text, not asserted audible errors: Riley, Twinkle Toes, Winternight, Emond's Field, Caemlyn, Andor, Shadar Logoth, Mashadar, Tear, Callandor, Loial, Saidin, Asha'man, M'Hael and Balefire. See each matching row in the audition inventory. No “robotic” or incorrect-name verdict has been fabricated.
 

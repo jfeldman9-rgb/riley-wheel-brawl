@@ -27,4 +27,4 @@ for(const l of report.lines){
 assert.deepEqual([...files].sort(),fs.readdirSync(path.join(root,'assets/audio/voice')).filter(f=>f.endsWith('.mp3')).sort());
 assert.equal(total,report.total_bytes);
 console.log('PASS every shipped voice: all 80 catalogue IDs, filenames, hashes, decoding metadata, levels and clipping; '+total+' bytes');
-console.log('Auditory performance/pronunciation review remains pending. Open docs/review/audio-v11/auditions.html.');
+console.log('No agent auditory review is claimed. See docs/review/audio-v11/user-acceptance.json for the separate human approval record.');

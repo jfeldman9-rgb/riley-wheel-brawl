@@ -4,21 +4,24 @@ The verified live 1.0 is `rwb-w2` commit `816eb1e9dc209b00a6da4f8eeb58ea2ead69bd
 
 New branch: `rwb-1-1-polish`, created from that exact live commit. Draft development only; no release is authorized. `main` and `rwb-w2` must remain unchanged until Jason gives a fresh release GO after Jason and Grok review the candidate.
 
-See [1.1 scope and evidence plan](V11_PLAN.md). Inherited test rules are byte-locked in [the acceptance manifest](review/v11/inherited-tests.lock.json); 1.1 tests are additive.
+See [1.1 scope and evidence plan](V11_PLAN.md). Inherited test rules are protected in [the acceptance manifest](review/v11/inherited-tests.lock.json), with explicit archived exceptions documented in [the contract review](review/v11/CONTRACT_CONFLICTS.md); other 1.1 checks are additive.
 
-## Current 1.1 review checkpoint
+## Current 1.1 review checkpoint (2026-10-01)
 
-Draft [PR #11](https://github.com/jfeldman9-rgb/riley-wheel-brawl/pull/11) is **not release-ready**. The latest completed browser measurement is candidate `9ad3e66adca8e2bb097a723b423d19e1427725d7`; see [its exact results](review/v11/CI_9AD3.md). Earlier [a557](review/v11/CI_A557.md) and [ecb36da](review/v11/CI_ECB36DA.md) results remain historical evidence, not current passes.
+This is a frozen pre-publication checkpoint. The PR description carries the latest exact-head CI outcome.
 
-- The 9ad3 runtime matches local 8adc8aa in all 315 runtime, asset, test and workflow Git blobs. Exact-code native and GitHub acceptance: 24/26 gates passed, with the deliberately retained old grip/RNG contracts failing. Normal 100/77.5/65/57.5/57.5%; Hard 100/72.5/52.5/30/22.5%. Every Normal rate is within 2.5 points of live; late Hard results are near, not identical to, the requested 50/35/25 aims
-- All 400 measured stage-seed runs have zero >2-second offscreen enemy violations, maximum 0.683s
-- Cloud candidate cold starts passed 30/30 matched entries and 10/10 in the separate smoke sample. One inherited audio sample still failed at 401.2ms. Warmed pacing passed 15/18 windows, and immediate-start pacing failed all three tested stages. No timing threshold was relaxed
-- Actual Chromium device emulation passed 71 checks; painted-presentation browser coverage passed 13. These do not certify physical devices
-- Ten genuine painted outcome poses are integrated. Runtime encodings retain full dimensions and exact alpha; original generated PNGs are preserved separately
-- All 80 original voice files remain unchanged. Objective clipping/loudness checks pass; pronunciation/naturalness listening remains unverified
-- Independent review reproduced left-edge body clipping and queued-pose preemption corruption in 9ad3. Focused fixes and additive regressions are being integrated; their final balance and browser results remain pending
-- Stage 1–3 seam artifacts remain unresolved. Purpose-painted connector candidates failed boundary review and were not inserted. Stage 4/5 source art remains unchanged
-- The [500 additional proposals](FUTURE_500.md) are an optional ten-pass roadmap, not already-built features. Two optional post-finale levels have separate future targets
+Draft [PR #11](https://github.com/jfeldman9-rgb/riley-wheel-brawl/pull/11) remains **not release-ready**. Verified live stays at `816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc`.
+
+- Last completed cloud candidate: `95d6d3fd83366e29509279fdc947faa0205a1cd5`, [run 36801122929](https://github.com/jfeldman9-rgb/riley-wheel-brawl/actions/runs/36801122929). All approved matched performance cells passed; main candidate/live long-frame totals 71/166, additional S4 audio 5/14. All 10 candidate cold medians passed, maximum 289.2 ms. Absolute timing remained 0/21 passing windows on both sources; this is not a physical-machine pass
+- That workflow's sole remaining failure was the Callandor pivot expectation. Jason subsequently approved the −83 wrapped-grip center and the 18% shorter/24% slimmer cosmetic version. All 38 views, 1,536 geometry cases and 306 unchanged unarmed-body comparisons pass locally. The single inherited assertion exception is pinned and archived; combat and all other thresholds are unchanged
+- The native roster passes 28/28 at local cosmetic commit `7c9c607cfefd0e7979921a338f677678c485123e`. Supplementary and exact-next-head GitHub reruns are pending; no newer cloud pass is claimed yet
+- All 400 stage/seed trials retain Normal 100/80/67.5/60/57.5% and Hard 100/75/50/30/25%, with zero enemies offscreen for more than 2 seconds. Normal exact parity passes 72 assertions against approved reference `4c9997521d62d91cb40abcd9623df334f1209618`; the real live baseline remains unchanged
+- **Voices: USER APPROVED.** Jason approved retaining the current 80 original clips. Objective decoding, clipping, loudness and runtime sequencing checks pass. No agent listening or individual-clip audition claim is made; no clips were regenerated. See [the exact approval record](review/audio-v11/user-acceptance.json)
+- Manual Stage 1–3 seams remain failed. Rejected generated repairs were preserved and not installed; a separate coherent Stage 2 painting may be offered for review. Original Stage 4/5 panorama/brightness assets stay unchanged
+- Same-Mac/real-Chrome absolute verification, physical iPad/phone/controller checks and final art/gameplay review remain open. Device automation is emulation
+- Jason's fresh release GO is still required. No merge, direct `rwb-w2` push or deployment is authorized
+
+Earlier checkpoints below remain historical evidence and are not current results.
 
 ## Verification limits
 

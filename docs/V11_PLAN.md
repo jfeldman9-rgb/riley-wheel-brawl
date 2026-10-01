@@ -10,7 +10,7 @@
 
 ## Evidence rules
 
-All inherited acceptance tools remain byte-identical to verified live 1.0. `tools/locked-tests-v11.cjs` enforces this. New behavior is covered by additive tests. No failed gate is relabeled as a pass; no machine result is represented as a physical-device result. Runtime clocks and assistance are disclosed.
+All inherited acceptance tools remain protected by exact locks. The only specific source exceptions are the reviewed version-stamp literal and approved Callandor pivot expectation; their original sources remain archived. `tools/locked-tests-v11.cjs` enforces the unchanged remainder. The exact Normal reference and CI timing policy have separate explicit approvals documented in the review notes. New behavior is covered by additive tests. No failed gate is relabeled as a pass; no machine result is represented as a physical-device result. Runtime clocks and assistance are disclosed.
 
 Performance comparisons run baseline and candidate on the same executor with identical browser, viewport, settings, inputs and instrumentation, three runs each. Cloud measurements are development evidence only. The required comparison on Jason's Mac remains a separate gate until that computer is available. Cold entries include all five stages, with music both on and off. Loading/preparation before entry is separately reported, not hidden.
 
@@ -23,7 +23,7 @@ Performance comparisons run baseline and candidate on the same executor with ide
 | 03 | Correct current handoff documentation | Live 1.0 fact supersedes historical unmerged statements |
 | 04 | Measure Jason's live baseline | Same Mac, three runs; blocked while offline |
 | 05 | Resolve workflow-edit permissions safely | Parent/user handles any required permission expansion; do not change settings silently |
-| 06 | Lock inherited acceptance rules | 23 inherited test/tool SHA-256 hashes unchanged; no relaxed thresholds |
+| 06 | Lock inherited acceptance rules | 23 protected tools; exact archived exceptions only, no other relaxed assertions or thresholds |
 | 07 | Profile Stage 3 before optimization | Raw baseline draw-cost breakdown with environment clearly labeled |
 | 08 | Cache completed background layers | Equivalent painted content and parallax; bounded cache memory |
 | 09 | Remove redundant entry camera setup | One meaningful preparation path; save and camera state preserved |
@@ -32,8 +32,8 @@ Performance comparisons run baseline and candidate on the same executor with ide
 | 12 | Invalidate HUD only on visible changes | No redraw for invisible timers or unchanged displayed values |
 | 13 | Prepare stage backgrounds before fades | No uncovered/blank first frame; loading time disclosed |
 | 14 | Start music after first visible frame | Frame-order regression; audio still unlocks on user gesture |
-| 15 | Verify strict fight pacing | Stages 1/3/5 at least 59.5 fps, zero gaps >33 ms; no clock manipulation |
-| 16 | Verify strict cold starts | Every stage <400 ms, music on and off, three runs each |
+| 15 | Verify strict fight pacing | Absolute Stages 1/3/5: at least 59.5 fps and zero gaps >33 ms, still reported and required on real Chrome. Approved CI: three-run candidate median FPS >= live minus 0.3 and long-frame totals <= live, per stage/music cell; no clock manipulation |
+| 16 | Verify strict cold starts | Every stage/music condition, three runs each; approved CI blocking median <400 ms, individual samples still reported |
 | 17 | Fix Stage 5 enemy left-edge deadlock | Reproducing case progresses without teleporting a visible actor |
 | 18 | Catch every offscreen enemy stall | Regression fails for any alive enemy offscreen >2 seconds |
 | 19 | Keep Riley inside the left edge | Painted body remains visible in supported poses and facings |
@@ -50,8 +50,8 @@ Performance comparisons run baseline and candidate on the same executor with ide
 | 30 | Make Loial/saidin useful in Hard | Bounded, tested assistance without HP padding or trivial bosses |
 | 31 | Run forty playthroughs per mode | Fixed existing seeds/controller, all five per-stage rates reported |
 | 32 | Inventory every voice | Full line, speaker, path and objective signal audit |
-| 33 | Audit pronunciation and robotic delivery | Genuine listening required; unsupported audio input stays blocked |
-| 34 | Regenerate only flagged stock-synth lines | Original voices, no cloning, no paid service; preserve provenance |
+| 33 | Audit pronunciation and robotic delivery | USER APPROVED current voices; no claim of agent listening or of which individual clips were auditioned |
+| 34 | Regenerate only flagged stock-synth lines | Current voices USER APPROVED; no replacement needed. Future changes retain original stock voices/provenance, no cloning or paid service |
 | 35 | Normalize dialogue consistently | Measured loudness/peak results; no clipping introduced |
 | 36 | Verify ducking and voice exclusivity | Music ducks under speech; no overlapping voice sources |
 | 37 | Deliver all changed-line auditions | Every new/changed line individually playable and identified |
@@ -74,7 +74,7 @@ Performance comparisons run baseline and candidate on the same executor with ide
 1. Jason's Mac is offline, so same-Mac live/candidate measurements are unrun.
 2. Physical iPad/phone and Xbox/PlayStation hardware are unavailable; automation will be labeled emulation.
 3. Shell Chromium cannot create sockets in this executor (`EPERM`). Real-browser automated tests will run in GitHub Actions on standard free public-repository runners. Supported cloud-browser screenshots are visual checks only.
-4. Audio input is unsupported in this model session. Objective decoding/peaks/loudness can be audited; pronunciation/naturalness cannot honestly be marked listened-to without a listener.
+4. Agent audio input remains unsupported, but Jason has approved the current voices overall. Preserve this as USER APPROVED, not an agent-listening or per-clip-audition claim; no regeneration is needed.
 5. Any GitHub login/permission expansion for Grok needs the appropriate account owner action. Existing repository code and workflow changes do not authorize expanding persistent access.
 
 ## Delivery checklist
@@ -83,5 +83,5 @@ Performance comparisons run baseline and candidate on the same executor with ide
 - Source and test commands, raw evidence and all exceptions
 - Same-runner baseline/candidate comparison, plus the still-separate Mac gate
 - Screenshots of gameplay, outcomes, menus, touch layouts and seam review
-- Voice inventory/auditions and clearly identified listening needs
+- Voice inventory/auditions, exact approved clip hashes, and separate user approval / agent-listening status
 - Every acceptance item marked passed, failed, blocked, pending review or not run

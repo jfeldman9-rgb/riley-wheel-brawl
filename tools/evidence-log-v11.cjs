@@ -5,7 +5,10 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const {createCanvas,loadImage}=require('@napi-rs/canvas');
 const root=path.resolve(__dirname,'..'),base=path.join(root,'docs/review/v11');
 const walk=dir=>fs.existsSync(dir)?fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]):[];
-const files=walk(base).filter(f=>/browser-presentation\/.+\.(png|json)$/.test(f)||/(desktop|ipad-landscape|phone-landscape)-.+\.png$/.test(f)||/device-browser\.json$/.test(f));
+const callandorOnly=process.argv.includes('--callandor-only');
+const callandorNames=['walk1-before-after-native-and-closeup.png','all-38-before-after-native-1.png','all-38-before-after-native-2.png','action-swing-before-after-2x-1.png','action-swing-before-after-2x-2.png','action-grip-closeups.png','callandor-size-report.json'];
+const files=callandorOnly?callandorNames.map(name=>path.join(base,'callandor-size',name)):walk(base).filter(f=>/browser-presentation\/.+\.(png|json)$/.test(f)||/(desktop|ipad-landscape|phone-landscape)-.+\.png$/.test(f)||/device-browser\.json$/.test(f));
+if(callandorOnly)for(const file of files)if(!fs.existsSync(file))throw Error('Missing Callandor evidence: '+path.relative(root,file));
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 (async()=>{for(const file of files){const original=fs.readFileSync(file);let bytes=original,name=path.relative(root,file),codec='original';
  if(file.endsWith('.png')){const image=await loadImage(file),canvas=createCanvas(image.width,image.height);canvas.getContext('2d').drawImage(image,0,0);bytes=canvas.toBuffer('image/jpeg',85);name=name.replace(/\.png$/,'.jpeg');codec='JPEG quality 85, original capture retained in runner';}

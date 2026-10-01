@@ -46,6 +46,12 @@ jobs:
       - name: Speculative kick jobs defer without losing requested poses
         if: always()
         run: NODE_PATH="$GITHUB_WORKSPACE/node_modules" node --expose-gc tools/speculative-pose-check-v11.cjs --control="$RUNNER_TEMP/rwb-normal-reference"
+      - name: Approved grip exception and all 38 smaller-sword views
+        if: always()
+        run: |
+          node tools/approved-callandor-pivot-v11.test.cjs
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node --expose-gc tools/callandor-size-check-v11.cjs --baseline-root="$RUNNER_TEMP/rwb-normal-reference" --out=docs/review/v11/callandor-size
+          node tools/evidence-log-v11.cjs --callandor-only
       - name: Readiness observer contracts and lossless log transport
         if: always()
         run: |
@@ -185,4 +191,5 @@ jobs:
           CI=true NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --run-browser "$RUNNER_TEMP/readiness-manifest.json" "$RUNNER_TEMP/rwb-readiness-results" --advisory-timing
 # Public-repository standard runners only. No secrets, caches, uploaded artifacts,
 # paid services or deploy steps. Failures remain failures. The approved Normal
-# reference is fixed above; the Callandor expected pivot remains unchanged.
+# reference is fixed above; only the specifically approved Callandor pivot
+# assertion changes, with original source and the full prior lock archived.

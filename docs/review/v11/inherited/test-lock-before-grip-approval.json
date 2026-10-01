@@ -4,7 +4,7 @@
   "sha256": {
     "tools/audio-check.cjs": "a63c17aaf7d4dbdb3e47d315f7979d5d69cb2a07f62aeba2bb6efe6a1e5faea7",
     "tools/balefire-check.cjs": "2e558783dc1aaedd385d4007b730e0b157b70d3f7c35bc0a3e0a7a12ae022a97",
-    "tools/callandor-check.cjs": "56b6dc6161e452d859cb1dedf2110771e696110dd3e9a8c71aa025f176507102",
+    "tools/callandor-check.cjs": "ac7bf6f217d6648f447a6e848b79333d8ec575559f841cabcac8cf75eaafae55",
     "tools/campaign-check.cjs": "44ebecee4a265916e97fc7e3caa18a81657da711096b09e54ce9ab2ae4c34eb5",
     "tools/campaign-cooperative-check.cjs": "c132a246f80f5533827f054ed70b5b3a9bc435c720020c67eda240ac6032cf9e",
     "tools/check.cjs": "28b822a3c7bfb774e17c92169a73f1dfd75c150bcc46d9d60ad79da6bb56db0a",
@@ -47,19 +47,6 @@
       "expectedOccurrences": 1,
       "reason": "Release 1.1 requires a fresh cache stamp; URL assertion logic and every threshold are unchanged.",
       "originalCopy": "docs/review/v11/inherited/check-live1.0.cjs"
-    }
-  },
-  "approvedExceptions": {
-    "tools/callandor-check.cjs": {
-      "kind": "approved-grip-pivot-only",
-      "from": "assert.strictEqual(calls[0][2], frame === 'idle' ? -83 : -76, frame + ' sword grip pivot');",
-      "to": "assert.strictEqual(calls[0][2], -83, frame + ' sword grip pivot');",
-      "expectedOccurrences": 1,
-      "originalSha256": "ac7bf6f217d6648f447a6e848b79333d8ec575559f841cabcac8cf75eaafae55",
-      "approvedSha256": "56b6dc6161e452d859cb1dedf2110771e696110dd3e9a8c71aa025f176507102",
-      "originalCopy": "docs/review/v11/inherited/callandor-live1.0.cjs",
-      "reason": "Reviewed wrapped-grip center at stamp y=83 is approved for all poses; the old non-idle y=76 collar expectation is replaced. Every other assertion, loop, source pixel check and layer order is unchanged.",
-      "approvedDate": "2026-10-01"
     }
   }
 }

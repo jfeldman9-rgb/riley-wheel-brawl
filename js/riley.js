@@ -62,6 +62,8 @@
     walk7:[[2,-1],[2,168],[24,229],[28,230],[71,230],[73,228],[94,147],[94,-1]],
     walk8:[[8,-1],[7,147],[6,148],[4,151],[3,153],[2,157],[2,213],[3,214],[4,215],[5,216],[6,217],[7,218],[12,224],[13,225],[14,226],[15,227],[16,228],[17,229],[18,230],[21,232],[105,232],[113,228],[115,227],[117,226],[119,225],[121,224],[123,223],[127,220],[127,213],[125,-1]],
   };
+  // Cosmetic dimensions only; keep the cached crystal stamp and its grip intact.
+  const SWORD_SCALE_X=.76,SWORD_SCALE_Y=.82;
   let swordCanvas=null;
   function prepareSword(){
     if(swordCanvas)return swordCanvas;
@@ -634,8 +636,9 @@
         bodyX+=Math.max(-2,Math.min(2,correction));bodyY-=contact.foot[1];
       }
       ctx.save();ctx.globalAlpha*=alpha;ctx.translate(bodyX-cameraX,bodyY-this.z);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]+swing);
-      ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-gripY);ctx.restore();
-      const angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:bodyX+this.facing*(h[0]+sn*gripY),y:bodyY-this.z+h[1]-cs*gripY};
+      ctx.scale(SWORD_SCALE_X,SWORD_SCALE_Y);ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-gripY);ctx.restore();
+      // Follow the resized painted apex (stamp y=1), never the combat hitbox.
+      const tipLength=(gripY-1)*SWORD_SCALE_Y,angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:bodyX+this.facing*(h[0]+sn*tipLength),y:bodyY-this.z+h[1]-cs*tipLength};
       if(this.attackMove){this.callandorTips=this.callandorTips||[];this.callandorTips.push({x:tip.x,y:tip.y,t:performance.now()});if(this.callandorTips.length>9)this.callandorTips.shift();}
       else this.callandorTips=[];
       if(this.callandorTips.length>1){ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';const grip={x:bodyX+this.facing*h[0],y:bodyY-this.z+h[1]},n=this.callandorTips.length;for(let i=1;i<n;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i],fade=i/n,ma={x:(grip.x+a.x)*.5,y:(grip.y+a.y)*.5},mb={x:(grip.x+b.x)*.5,y:(grip.y+b.y)*.5};ctx.globalAlpha=.08+fade*.25;ctx.fillStyle='#75dfff';ctx.beginPath();ctx.moveTo(ma.x-cameraX,ma.y);ctx.lineTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.lineTo(mb.x-cameraX,mb.y);ctx.closePath();ctx.fill();ctx.globalAlpha=.18+fade*.55;ctx.strokeStyle='#efffff';ctx.lineWidth=2+fade*3;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}

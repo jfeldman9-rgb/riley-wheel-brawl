@@ -29,7 +29,7 @@ const root = path.resolve(__dirname, '..');
     player.spriteFrame = () => frame;
     player.drawCallandor(ctx, 0);
     assert.strictEqual(calls.length, 1, frame + ' has one cached sword blit');
-    assert.strictEqual(calls[0][2], -83, frame + ' sword grip pivot');
+    assert.strictEqual(calls[0][2], frame === 'idle' ? -83 : -76, frame + ' sword grip pivot');
   }
   delete player.spriteFrame;
 
