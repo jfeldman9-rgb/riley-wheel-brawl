@@ -93,7 +93,8 @@
         return false;
       });
     },
-    pump(ms){
+    // Optional eligible(job) is a pure per-pump policy; omitting it admits all jobs.
+    pump(ms,eligible){
       const end=performance.now()+Math.max(0,ms);
       const started=performance.now();
       R.perf.inBake=true;
@@ -101,7 +102,8 @@
       while(this.q.length&&performance.now()<end&&guard<64){
         let best=-1;
         for(let i=0;i<this.q.length;i++){
-          const a=this.q[i];if(a.ready&&!a.ready())continue;
+          const a=this.q[i];if(eligible&&!eligible(a))continue;
+          if(a.ready&&!a.ready())continue;
           const b=this.q[best];
           if(best<0||a.pri<b.pri||(a.pri===b.pri&&a.seq<b.seq))best=i;
         }
@@ -121,6 +123,12 @@
           if(job.name)this.names.delete(job.name);
         }else if(!waiting&&(performance.now()>=end||dt<0.05))break;
       }
+      // Pending policy counts, not dependency-runnable counts. Keep deferred
+      // jobs visible in the real queue and include this accounting in pump cost.
+      let deferred=0;
+      if(eligible)for(const job of this.q)if(!eligible(job))deferred++;
+      R.perf.bakePolicyDeferred=deferred;
+      R.perf.bakePolicyEligible=this.q.length-deferred;
       R.perf.inBake=false;
       R.perf.lastPumpMs=performance.now()-started;
       return R.perf.lastPumpMs;

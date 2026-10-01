@@ -43,6 +43,9 @@ jobs:
       - name: Demanded poses bypass bounded speculative uploads
         if: always()
         run: NODE_PATH="$GITHUB_WORKSPACE/node_modules" node --expose-gc tools/warm-touch-check-v11.cjs . --out=docs/review/v11/warm-touch-check.json
+      - name: Speculative kick jobs defer without losing requested poses
+        if: always()
+        run: NODE_PATH="$GITHUB_WORKSPACE/node_modules" node --expose-gc tools/speculative-pose-check-v11.cjs --control="$RUNNER_TEMP/rwb-normal-reference"
       - name: Readiness observer contracts and lossless log transport
         if: always()
         run: |
@@ -181,5 +184,5 @@ jobs:
           NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --validate-only "$RUNNER_TEMP/readiness-manifest.json"
           CI=true NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --run-browser "$RUNNER_TEMP/readiness-manifest.json" "$RUNNER_TEMP/rwb-readiness-results" --advisory-timing
 # Public-repository standard runners only. No secrets, caches, uploaded artifacts,
-# paid services or deploy steps. Failures remain failures, including documented
-# grip/parity assertions, which remain unresolved pending explicit decisions.
+# paid services or deploy steps. Failures remain failures. The approved Normal
+# reference is fixed above; the Callandor expected pivot remains unchanged.

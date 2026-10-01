@@ -225,6 +225,13 @@
   });
 
   /* ---- loop ---- */
+  const speculativeKickKey=/^k[0-5]$/;
+  function combatBakeEligible(job){
+    // Mesh actors currently do not use attackMove. Keep these speculative
+    // frames queued; any actual draw promotes its existing job to priority 0.
+    return !(job.pri>0&&job.name==='pose:'+job.kind+':'+job.key&&speculativeKickKey.test(job.key)&&
+      RWB.Puppet&&RWB.Puppet.defs&&Object.prototype.hasOwnProperty.call(RWB.Puppet.defs,job.kind));
+  }
   const clock=new RWB.FrameClock();let clockScene=null;
   let last = performance.now();
   let musicToast = 0;
@@ -272,7 +279,8 @@
       const budget=gameplay?Math.min(4,Math.max(1,14-(RWB.perf.lastUpdateDraw||8))):8;
       RWB.perf.frameJobs=[];
       const pumpAt=performance.now();
-      if(RWB.Bake)RWB.Bake.pump(budget);
+      const activeCombat=scene.isGameplay&&scene.phase==='play'&&!scene.paused&&game.fadeDir===0;
+      if(RWB.Bake)RWB.Bake.pump(budget,activeCombat?combatBakeEligible:undefined);
       else if(RWB.Puppet&&RWB.Puppet.drainPoses)RWB.Puppet.drainPoses(budget);
       const pumpMs=performance.now()-pumpAt;
       const drawAt=performance.now();
@@ -287,7 +295,7 @@
       RWB.perf.lastUpdateDraw=updateMs+drawMs;
       const jobs=(RWB.perf.frameJobs||[]).slice();
       const frameMs=performance.now()-started;
-      const row={t:now,scene:(scene.constructor&&scene.constructor.name)||'',wave:scene.wave||0,cam:scene.camera?+scene.camera.x.toFixed(1):0,updateMs:+updateMs.toFixed(2),drawMs:+drawMs.toFixed(2),pumpMs:+pumpMs.toFixed(2),frameMs:+frameMs.toFixed(2),jobs};
+      const row={t:now,scene:(scene.constructor&&scene.constructor.name)||'',wave:scene.wave||0,cam:scene.camera?+scene.camera.x.toFixed(1):0,updateMs:+updateMs.toFixed(2),drawMs:+drawMs.toFixed(2),pumpMs:+pumpMs.toFixed(2),frameMs:+frameMs.toFixed(2),jobs,bakePolicyEligible:RWB.perf.bakePolicyEligible||0,bakePolicyDeferred:RWB.perf.bakePolicyDeferred||0};
       const ring=RWB.perf.work||(RWB.perf.work=[]);
       ring.push(row);if(ring.length>360)ring.shift();
       if(updateMs+drawMs+pumpMs>20){const hitches=RWB.perf.hitches||(RWB.perf.hitches=[]);hitches.push(row);if(hitches.length>500)hitches.shift();}
