@@ -103,6 +103,36 @@
     const g = c.getContext('2d');
     if (g) { g.drawImage(proxy, 0, 0, 1, 1, 0, 0, 1, 1); flushInto(c); }
   }
+  // Queued puppet poses record their mesh faces in short bake slices, but
+  // Canvas defers the raster until the surface is first drawn. That arrives as
+  // one 5-15 ms flush on the pose's first blit, outside the bake budget, and
+  // in a fresh fight dozens of them land in the first second. Give each queued
+  // pose slice at most 1 ms of face recording and raster those faces in the
+  // same slice, so the cost is paid inside the frame's bake budget. Pixels,
+  // pose order, priorities and synchronous bakes are unchanged.
+  const POSE_SLICE_MS = 1;
+  function pacePose(job) {
+    if (!job || job.rasterPaced || typeof job.run !== 'function') return;
+    job.rasterPaced = true;
+    const run = job.run;
+    job.run = function (item, end) {
+      if (!(end < 1e12)) return run.call(this, item, end);
+      const before = item.state && item.state.surface ? item.state.ln + ':' + item.state.fi : null;
+      const result = run.call(this, item, Math.min(end, performance.now() + POSE_SLICE_MS));
+      const st = item.state, at = st && st.surface ? st.ln + ':' + st.fi : null;
+      if (at && !st.identity && at !== before && at !== '0:0') flushInto(st.surface);
+      return result;
+    };
+  }
+  if (R.Puppet && typeof R.Puppet.wantPose === 'function') {
+    const wantPose = R.Puppet.wantPose;
+    R.Puppet.wantPose = function (kind, key) {
+      const result = wantPose.apply(this, arguments);
+      const name = 'pose:' + kind + ':' + key;
+      if (R.Bake && R.Bake.names && R.Bake.names.has(name)) pacePose(R.Bake.q.find(job => job.name === name));
+      return result;
+    };
+  }
   function preparePoses(pair, level) {
     const steps = [];
     for (const key of pair) {
