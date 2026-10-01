@@ -1,0 +1,193 @@
+{
+ "method": "see header of tools/seam-placement-search-v11.cjs",
+ "joins": [
+  {
+   "label": "S1 join 1 stage1-mid -> stage1-mid-b",
+   "shipped": {
+    "overlapUnits": 40,
+    "error": 96.15,
+    "overSelf": 4.77
+   },
+   "best": {
+    "scale": 1.225,
+    "overlapUnits": 279,
+    "nLeftAtPsrcPx": 1024,
+    "dySrcPx": -76,
+    "error": 70.08
+   },
+   "self2u": 20.14,
+   "random": 80.62,
+   "bestOverSelf": 3.48,
+   "bestOverRandom": 0.87,
+   "candidates": 15938
+  },
+  {
+   "label": "S1 join 2 stage1-mid-b -> stage1-mid-c",
+   "shipped": {
+    "overlapUnits": 265.65,
+    "error": 83.09,
+    "overSelf": 3.92
+   },
+   "best": {
+    "scale": 0.85,
+    "overlapUnits": 571.9,
+    "nLeftAtPsrcPx": 868,
+    "dySrcPx": 60,
+    "error": 73.41
+   },
+   "self2u": 21.17,
+   "random": 82.73,
+   "bestOverSelf": 3.47,
+   "bestOverRandom": 0.89,
+   "candidates": 21629
+  },
+  {
+   "label": "S2 join 1 stage2-mid -> stage2-mid-b",
+   "shipped": {
+    "overlapUnits": 40,
+    "error": 94.57,
+    "overSelf": 4.53
+   },
+   "best": {
+    "scale": 0.9,
+    "overlapUnits": 120,
+    "nLeftAtPsrcPx": 1472,
+    "dySrcPx": -40,
+    "error": 60.76
+   },
+   "self2u": 20.89,
+   "random": 75.27,
+   "bestOverSelf": 2.91,
+   "bestOverRandom": 0.81,
+   "candidates": 18506
+  },
+  {
+   "label": "S2 join 2 stage2-mid-b -> stage2-mid-c",
+   "shipped": {
+    "overlapUnits": 96.8,
+    "error": 79.73,
+    "overSelf": 4.06
+   },
+   "best": {
+    "scale": 0.975,
+    "overlapUnits": 132.6,
+    "nLeftAtPsrcPx": 1736,
+    "dySrcPx": 76,
+    "error": 65.53
+   },
+   "self2u": 19.64,
+   "random": 82.56,
+   "bestOverSelf": 3.34,
+   "bestOverRandom": 0.79,
+   "candidates": 21874
+  },
+  {
+   "label": "S3 join 1 stage3-mid -> stage3-mid-b",
+   "shipped": {
+    "overlapUnits": 40,
+    "error": 45.12,
+    "overSelf": 3.06
+   },
+   "best": {
+    "scale": 1.175,
+    "overlapUnits": 37.9,
+    "nLeftAtPsrcPx": 1680,
+    "dySrcPx": -4,
+    "error": 36.65
+   },
+   "self2u": 14.73,
+   "random": 60.75,
+   "bestOverSelf": 2.49,
+   "bestOverRandom": 0.6,
+   "candidates": 18488
+  },
+  {
+   "label": "S3 join 2 stage3-mid-b -> stage3-mid-c",
+   "shipped": {
+    "overlapUnits": 96.8,
+    "error": 76.64,
+    "overSelf": 5.02
+   },
+   "best": {
+    "scale": 1.225,
+    "overlapUnits": 66.3,
+    "nLeftAtPsrcPx": 1904,
+    "dySrcPx": 76,
+    "error": 64.44
+   },
+   "self2u": 15.28,
+   "random": 79.88,
+   "bestOverSelf": 4.22,
+   "bestOverRandom": 0.81,
+   "candidates": 21443
+  }
+ ],
+ "controls": [
+  {
+   "label": "CONTROL S1 stage1-mid-b split (true N left at P px 878, overlap 142.1u)",
+   "shipped": null,
+   "best": {
+    "scale": 1,
+    "overlapUnits": 143,
+    "nLeftAtPsrcPx": 876,
+    "dySrcPx": 0,
+    "error": 11.58
+   },
+   "self2u": 23,
+   "random": 72.96,
+   "bestOverSelf": 0.5,
+   "bestOverRandom": 0.16,
+   "candidates": 12129,
+   "truth": {
+    "nLeftAtPsrcPx": 878,
+    "dySrcPx": 0,
+    "scale": 1
+   },
+   "recovered": true
+  },
+  {
+   "label": "CONTROL S2 stage2-mid-b split (true N left at P px 828, overlap 122.7u)",
+   "shipped": null,
+   "best": {
+    "scale": 1,
+    "overlapUnits": 123.1,
+    "nLeftAtPsrcPx": 828,
+    "dySrcPx": 0,
+    "error": 4.57
+   },
+   "self2u": 19.28,
+   "random": 70.13,
+   "bestOverSelf": 0.24,
+   "bestOverRandom": 0.07,
+   "candidates": 11169,
+   "truth": {
+    "nLeftAtPsrcPx": 828,
+    "dySrcPx": 0,
+    "scale": 1
+   },
+   "recovered": true
+  },
+  {
+   "label": "CONTROL S3 stage3-mid-b split (true N left at P px 828, overlap 122.7u)",
+   "shipped": null,
+   "best": {
+    "scale": 1,
+    "overlapUnits": 123.1,
+    "nLeftAtPsrcPx": 828,
+    "dySrcPx": 0,
+    "error": 3.65
+   },
+   "self2u": 15.99,
+   "random": 64.79,
+   "bestOverSelf": 0.23,
+   "bestOverRandom": 0.06,
+   "candidates": 10692,
+   "truth": {
+    "nLeftAtPsrcPx": 828,
+    "dySrcPx": 0,
+    "scale": 1
+   },
+   "recovered": true
+  }
+ ]
+}

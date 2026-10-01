@@ -1,0 +1,781 @@
+{
+ "method": "Offline @napi-rs/canvas native Skia, real decoded art, RWB.StageWorld draw (game path for crops, painting path for the per-plate decomposition), 1280x720, renderScale 2, rows 0..440 (background above the floor). ghost = worst 8-unit window of mean min(|shown-P|,|shown-N|) after a 8-px box blur; cut = 2-px-averaged step at an unramped plate edge over the rows where that plate is seen. Both divided by the frame's own 2-unit self-misregistration texture.",
+ "thresholds": {
+  "GHOST_MAX": 3,
+  "CUT_MAX": 2,
+  "DELTA_U": 2,
+  "WIN_U": 8,
+  "BLUR_PX": 8
+ },
+ "stages": [
+  {
+   "stage": 1,
+   "mode": "plates",
+   "pieces": [
+    {
+     "key": "stage1-mid",
+     "x": 0,
+     "w": 720,
+     "ramp": 0,
+     "rampOut": 0,
+     "fade": 0,
+     "sx0": 0,
+     "sx1": null
+    },
+    {
+     "key": "stage1-mid-b",
+     "x": 680,
+     "w": 945.646,
+     "ramp": 40,
+     "rampOut": 0,
+     "fade": 40,
+     "sx0": 0,
+     "sx1": null
+    },
+    {
+     "key": "stage1-mid-c",
+     "x": 1360,
+     "w": 720,
+     "ramp": 48,
+     "rampOut": 0,
+     "fade": 48,
+     "sx0": 0,
+     "sx1": null
+    }
+   ],
+   "joins": [
+    {
+     "join": 1,
+     "from": "stage1-mid",
+     "to": "stage1-mid-b",
+     "zone": [
+      680,
+      720
+     ],
+     "fadeIn": 40,
+     "fadeOut": 0,
+     "pass": false,
+     "events": [
+      {
+       "cam": 950,
+       "band": [
+        600,
+        680
+       ],
+       "bandUnits": 40,
+       "ghost": 6.771,
+       "ghostAt": 640,
+       "texture": 3.852,
+       "ghostRef": 1.926,
+       "cuts": [
+        {
+         "xc": 680,
+         "side": -1,
+         "rows": 114,
+         "step": 7.013,
+         "ref": 2.927,
+         "stepPerRow": 27.067
+        }
+       ],
+       "ghostRatio": 3.515,
+       "cutRatio": 2.396,
+       "worstCut": {
+        "xc": 680,
+        "side": -1,
+        "rows": 114,
+        "step": 7.013,
+        "ref": 2.927,
+        "stepPerRow": 27.067
+       },
+       "pass": false,
+       "reasons": [
+        "ghost 3.52 > 3",
+        "cut 2.40 > 2"
+       ],
+       "join": 1
+      }
+     ]
+    },
+    {
+     "join": 2,
+     "from": "stage1-mid-b",
+     "to": "stage1-mid-c",
+     "zone": [
+      1360,
+      1625.646
+     ],
+     "fadeIn": 48,
+     "fadeOut": 0,
+     "pass": false,
+     "events": [
+      {
+       "cam": 2660,
+       "band": [
+        592,
+        1123
+       ],
+       "bandUnits": 265.5,
+       "ghost": 12.214,
+       "ghostAt": 630,
+       "texture": 4.776,
+       "ghostRef": 2.388,
+       "cuts": [
+        {
+         "xc": 1123,
+         "side": -1,
+         "rows": 21,
+         "step": 0.737,
+         "ref": 0.46,
+         "stepPerRow": 15.444
+        }
+       ],
+       "ghostRatio": 5.115,
+       "cutRatio": 1.603,
+       "worstCut": {
+        "xc": 1123,
+        "side": -1,
+        "rows": 21,
+        "step": 0.737,
+        "ref": 0.46,
+        "stepPerRow": 15.444
+       },
+       "pass": false,
+       "reasons": [
+        "ghost 5.11 > 3"
+       ],
+       "join": 2
+      },
+      {
+       "cam": 3264.115,
+       "band": [
+        109,
+        640
+       ],
+       "bandUnits": 265.5,
+       "ghost": 13.648,
+       "ghostAt": 148,
+       "texture": 3.368,
+       "ghostRef": 1.684,
+       "cuts": [
+        {
+         "xc": 640,
+         "side": -1,
+         "rows": 20,
+         "step": 1.107,
+         "ref": 0.434,
+         "stepPerRow": 24.358
+        }
+       ],
+       "ghostRatio": 8.104,
+       "cutRatio": 2.55,
+       "worstCut": {
+        "xc": 640,
+        "side": -1,
+        "rows": 20,
+        "step": 1.107,
+        "ref": 0.434,
+        "stepPerRow": 24.358
+       },
+       "pass": false,
+       "reasons": [
+        "ghost 8.10 > 3",
+        "cut 2.55 > 2"
+       ],
+       "join": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "stage": 2,
+   "mode": "plates",
+   "pieces": [
+    {
+     "key": "stage2-mid",
+     "x": 0,
+     "w": 700,
+     "ramp": 0,
+     "rampOut": 40,
+     "fade": 0,
+     "sx0": 0,
+     "sx1": null
+    },
+    {
+     "key": "stage2-mid-b",
+     "x": 660,
+     "w": 816.798,
+     "ramp": 40,
+     "rampOut": 48,
+     "fade": 40,
+     "sx0": 0,
+     "sx1": null
+    },
+    {
+     "key": "stage2-mid-c",
+     "x": 1380,
+     "w": 700,
+     "ramp": 48,
+     "rampOut": 0,
+     "fade": 48,
+     "sx0": 0,
+     "sx1": null
+    }
+   ],
+   "joins": [
+    {
+     "join": 1,
+     "from": "stage2-mid",
+     "to": "stage2-mid-b",
+     "zone": [
+      660,
+      700
+     ],
+     "fadeIn": 40,
+     "fadeOut": 40,
+     "pass": false,
+     "events": [
+      {
+       "cam": 900,
+       "band": [
+        600,
+        680
+       ],
+       "bandUnits": 40,
+       "ghost": 17.163,
+       "ghostAt": 631,
+       "texture": 5.798,
+       "ghostRef": 2.899,
+       "cuts": [],
+       "ghostRatio": 5.921,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": false,
+       "reasons": [
+        "ghost 5.92 > 3"
+       ],
+       "join": 1
+      }
+     ]
+    },
+    {
+     "join": 2,
+     "from": "stage2-mid-b",
+     "to": "stage2-mid-c",
+     "zone": [
+      1380,
+      1476.798
+     ],
+     "fadeIn": 48,
+     "fadeOut": 48,
+     "pass": false,
+     "events": [
+      {
+       "cam": 2710,
+       "band": [
+        592,
+        786
+       ],
+       "bandUnits": 97,
+       "ghost": 26.979,
+       "ghostAt": 632,
+       "texture": 6.959,
+       "ghostRef": 3.479,
+       "cuts": [],
+       "ghostRatio": 7.754,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": false,
+       "reasons": [
+        "ghost 7.75 > 3"
+       ],
+       "join": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "stage": 3,
+   "mode": "plates",
+   "pieces": [
+    {
+     "key": "stage3-mid",
+     "x": 0,
+     "w": 700,
+     "ramp": 0,
+     "rampOut": 40,
+     "fade": 0,
+     "sx0": 0,
+     "sx1": null
+    },
+    {
+     "key": "stage3-mid-b",
+     "x": 660,
+     "w": 816.798,
+     "ramp": 40,
+     "rampOut": 48,
+     "fade": 40,
+     "sx0": 0,
+     "sx1": null
+    },
+    {
+     "key": "stage3-mid-c",
+     "x": 1380,
+     "w": 700,
+     "ramp": 48,
+     "rampOut": 0,
+     "fade": 48,
+     "sx0": 0,
+     "sx1": null
+    }
+   ],
+   "joins": [
+    {
+     "join": 1,
+     "from": "stage3-mid",
+     "to": "stage3-mid-b",
+     "zone": [
+      660,
+      700
+     ],
+     "fadeIn": 40,
+     "fadeOut": 40,
+     "pass": false,
+     "events": [
+      {
+       "cam": 900,
+       "band": [
+        600,
+        680
+       ],
+       "bandUnits": 40,
+       "ghost": 12.017,
+       "ghostAt": 630,
+       "texture": 3.78,
+       "ghostRef": 1.89,
+       "cuts": [],
+       "ghostRatio": 6.358,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": false,
+       "reasons": [
+        "ghost 6.36 > 3"
+       ],
+       "join": 1
+      }
+     ]
+    },
+    {
+     "join": 2,
+     "from": "stage3-mid-b",
+     "to": "stage3-mid-c",
+     "zone": [
+      1380,
+      1476.798
+     ],
+     "fadeIn": 48,
+     "fadeOut": 48,
+     "pass": false,
+     "events": [
+      {
+       "cam": 2710,
+       "band": [
+        592,
+        786
+       ],
+       "bandUnits": 97,
+       "ghost": 17.921,
+       "ghostAt": 633,
+       "texture": 3.531,
+       "ghostRef": 1.765,
+       "cuts": [],
+       "ghostRatio": 10.151,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": false,
+       "reasons": [
+        "ghost 10.15 > 3"
+       ],
+       "join": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "stage": 4,
+   "mode": "continuous",
+   "pieces": [
+    {
+     "key": "stage4-mid-cont",
+     "x": 0,
+     "w": 1181.814,
+     "ramp": 0,
+     "rampOut": 0,
+     "fade": 0,
+     "sx0": 0,
+     "sx1": null
+    }
+   ],
+   "joins": []
+  },
+  {
+   "stage": 5,
+   "mode": "continuous",
+   "pieces": [
+    {
+     "key": "stage5-mid-cont",
+     "x": 0,
+     "w": 1343.6,
+     "ramp": 0,
+     "rampOut": 0,
+     "fade": 0,
+     "sx0": 0,
+     "sx1": null
+    }
+   ],
+   "joins": []
+  }
+ ],
+ "controls": [
+  {
+   "stage": 1,
+   "plate": "stage1-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 0,
+   "ghost": 0.451,
+   "ghostRef": 1.915,
+   "ghostRatio": 0.236,
+   "cutRatio": 0.666,
+   "pass": true
+  },
+  {
+   "stage": 1,
+   "plate": "stage1-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 1,
+   "ghost": 1.083,
+   "ghostRef": 1.917,
+   "ghostRatio": 0.565,
+   "cutRatio": 0.126,
+   "pass": true
+  },
+  {
+   "stage": 1,
+   "plate": "stage1-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 2,
+   "ghost": 2.141,
+   "ghostRef": 1.919,
+   "ghostRatio": 1.116,
+   "cutRatio": 0.244,
+   "pass": true
+  },
+  {
+   "stage": 1,
+   "plate": "stage1-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 4,
+   "ghost": 4.054,
+   "ghostRef": 1.927,
+   "ghostRatio": 2.104,
+   "cutRatio": 1.379,
+   "pass": true
+  },
+  {
+   "stage": 1,
+   "plate": "stage1-mid-b",
+   "style": "dual-ramp",
+   "shiftUnits": 0,
+   "ghost": 9.757,
+   "ghostRef": 1.915,
+   "ghostRatio": 5.094,
+   "cutRatio": 0,
+   "pass": false
+  },
+  {
+   "stage": 1,
+   "plate": "stage1-mid-b",
+   "style": "dual-ramp-dissolve",
+   "shiftUnits": 0,
+   "ghost": 9.757,
+   "ghostRef": 1.915,
+   "ghostRatio": 5.094,
+   "cutRatio": 0,
+   "pass": false
+  },
+  {
+   "stage": 2,
+   "plate": "stage2-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 0,
+   "ghost": 0.542,
+   "ghostRef": 3.412,
+   "ghostRatio": 0.159,
+   "cutRatio": 0,
+   "pass": true
+  },
+  {
+   "stage": 2,
+   "plate": "stage2-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 1,
+   "ghost": 2.238,
+   "ghostRef": 3.417,
+   "ghostRatio": 0.655,
+   "cutRatio": 0.701,
+   "pass": true
+  },
+  {
+   "stage": 2,
+   "plate": "stage2-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 2,
+   "ghost": 4.465,
+   "ghostRef": 3.419,
+   "ghostRatio": 1.306,
+   "cutRatio": 0,
+   "pass": true
+  },
+  {
+   "stage": 2,
+   "plate": "stage2-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 4,
+   "ghost": 8.483,
+   "ghostRef": 3.424,
+   "ghostRatio": 2.478,
+   "cutRatio": 0,
+   "pass": true
+  },
+  {
+   "stage": 2,
+   "plate": "stage2-mid-b",
+   "style": "dual-ramp",
+   "shiftUnits": 0,
+   "ghost": 8.965,
+   "ghostRef": 3.412,
+   "ghostRatio": 2.627,
+   "cutRatio": 0,
+   "pass": true
+  },
+  {
+   "stage": 2,
+   "plate": "stage2-mid-b",
+   "style": "dual-ramp-dissolve",
+   "shiftUnits": 0,
+   "ghost": 8.965,
+   "ghostRef": 3.412,
+   "ghostRatio": 2.627,
+   "cutRatio": 0,
+   "pass": true
+  },
+  {
+   "stage": 3,
+   "plate": "stage3-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 0,
+   "ghost": 0.333,
+   "ghostRef": 1.954,
+   "ghostRatio": 0.17,
+   "cutRatio": 0,
+   "pass": true
+  },
+  {
+   "stage": 3,
+   "plate": "stage3-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 1,
+   "ghost": 0.397,
+   "ghostRef": 1.951,
+   "ghostRatio": 0.204,
+   "cutRatio": 0.322,
+   "pass": true
+  },
+  {
+   "stage": 3,
+   "plate": "stage3-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 2,
+   "ghost": 0.814,
+   "ghostRef": 1.946,
+   "ghostRatio": 0.419,
+   "cutRatio": 0.614,
+   "pass": true
+  },
+  {
+   "stage": 3,
+   "plate": "stage3-mid-b",
+   "style": "opaque-bottom",
+   "shiftUnits": 4,
+   "ghost": 1.638,
+   "ghostRef": 1.932,
+   "ghostRatio": 0.848,
+   "cutRatio": 0.941,
+   "pass": true
+  },
+  {
+   "stage": 3,
+   "plate": "stage3-mid-b",
+   "style": "dual-ramp",
+   "shiftUnits": 0,
+   "ghost": 6.747,
+   "ghostRef": 1.954,
+   "ghostRatio": 3.453,
+   "cutRatio": 0,
+   "pass": false
+  },
+  {
+   "stage": 3,
+   "plate": "stage3-mid-b",
+   "style": "dual-ramp-dissolve",
+   "shiftUnits": 0,
+   "ghost": 6.747,
+   "ghostRef": 1.954,
+   "ghostRatio": 3.453,
+   "cutRatio": 0,
+   "pass": false
+  },
+  {
+   "stage": 4,
+   "plate": "stage4-mid-cont",
+   "style": "opaque-bottom",
+   "shiftUnits": 0,
+   "ghost": 0.023,
+   "ghostRef": 2.333,
+   "ghostRatio": 0.01,
+   "cutRatio": 0.607,
+   "pass": true
+  },
+  {
+   "stage": 4,
+   "plate": "stage4-mid-cont",
+   "style": "opaque-bottom",
+   "shiftUnits": 1,
+   "ghost": 0.919,
+   "ghostRef": 2.331,
+   "ghostRatio": 0.394,
+   "cutRatio": 0.44,
+   "pass": true
+  },
+  {
+   "stage": 4,
+   "plate": "stage4-mid-cont",
+   "style": "opaque-bottom",
+   "shiftUnits": 2,
+   "ghost": 1.716,
+   "ghostRef": 2.33,
+   "ghostRatio": 0.737,
+   "cutRatio": 0,
+   "pass": true
+  },
+  {
+   "stage": 4,
+   "plate": "stage4-mid-cont",
+   "style": "opaque-bottom",
+   "shiftUnits": 4,
+   "ghost": 2.849,
+   "ghostRef": 2.331,
+   "ghostRatio": 1.222,
+   "cutRatio": 0,
+   "pass": true
+  },
+  {
+   "stage": 4,
+   "plate": "stage4-mid-cont",
+   "style": "dual-ramp",
+   "shiftUnits": 0,
+   "ghost": 8.627,
+   "ghostRef": 2.333,
+   "ghostRatio": 3.699,
+   "cutRatio": 0,
+   "pass": false
+  },
+  {
+   "stage": 4,
+   "plate": "stage4-mid-cont",
+   "style": "dual-ramp-dissolve",
+   "shiftUnits": 0,
+   "ghost": 8.627,
+   "ghostRef": 2.333,
+   "ghostRatio": 3.699,
+   "cutRatio": 0,
+   "pass": false
+  },
+  {
+   "stage": 5,
+   "plate": "stage5-mid-cont",
+   "style": "opaque-bottom",
+   "shiftUnits": 0,
+   "ghost": 0.271,
+   "ghostRef": 1.281,
+   "ghostRatio": 0.212,
+   "cutRatio": 0.723,
+   "pass": true
+  },
+  {
+   "stage": 5,
+   "plate": "stage5-mid-cont",
+   "style": "opaque-bottom",
+   "shiftUnits": 1,
+   "ghost": 0.542,
+   "ghostRef": 1.282,
+   "ghostRatio": 0.422,
+   "cutRatio": 0.233,
+   "pass": true
+  },
+  {
+   "stage": 5,
+   "plate": "stage5-mid-cont",
+   "style": "opaque-bottom",
+   "shiftUnits": 2,
+   "ghost": 1.063,
+   "ghostRef": 1.282,
+   "ghostRatio": 0.829,
+   "cutRatio": 0.521,
+   "pass": true
+  },
+  {
+   "stage": 5,
+   "plate": "stage5-mid-cont",
+   "style": "opaque-bottom",
+   "shiftUnits": 4,
+   "ghost": 2.106,
+   "ghostRef": 1.283,
+   "ghostRatio": 1.641,
+   "cutRatio": 0.432,
+   "pass": true
+  },
+  {
+   "stage": 5,
+   "plate": "stage5-mid-cont",
+   "style": "dual-ramp",
+   "shiftUnits": 0,
+   "ghost": 2.358,
+   "ghostRef": 1.281,
+   "ghostRatio": 1.841,
+   "cutRatio": 0,
+   "pass": true
+  },
+  {
+   "stage": 5,
+   "plate": "stage5-mid-cont",
+   "style": "dual-ramp-dissolve",
+   "shiftUnits": 0,
+   "ghost": 2.358,
+   "ghostRef": 1.281,
+   "ghostRatio": 1.841,
+   "cutRatio": 0,
+   "pass": true
+  }
+ ],
+ "failures": [
+  "S1 join 1: ghost 3.52 > 3, cut 2.40 > 2",
+  "S1 join 2: ghost 5.11 > 3; ghost 8.10 > 3, cut 2.55 > 2",
+  "S2 join 1: ghost 5.92 > 3",
+  "S2 join 2: ghost 7.75 > 3",
+  "S3 join 1: ghost 6.36 > 3",
+  "S3 join 2: ghost 10.15 > 3"
+ ]
+}
