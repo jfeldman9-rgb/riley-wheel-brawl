@@ -103,23 +103,36 @@ Measured in Chrome 151 (Playwright 1.62.1 headless shell, the CI build): the
 `SkPixmap::scalePixels` uses nearest-mip sampling. No public canvas call reproduces
 that exactly, so the pose cache now takes the browser's own encoded-image path:
 
-- After the owned master ImageBitmap is created, a copy is transferred to a small
-  inline worker, painted unscaled to an OffscreenCanvas, read back and written as
-  an uncompressed 32-bit BMP (BI_BITFIELDS with alpha). Its decode is a
-  near-memcpy; the premultiply round trip is lossless (full-resolution proxy vs
-  master: 0 changed channels for all ten images).
+- After the owned master ImageBitmap is created, the same fetched bytes are sent
+  to a small inline worker, which decodes its own copy, paints it unscaled to an
+  OffscreenCanvas, reads it back and returns an uncompressed (stored-deflate)
+  RGBA PNG Blob. Its decode is a near-memcpy; the premultiply round trip is
+  lossless (full-resolution proxy vs master: 0 changed channels for all ten
+  images). The main thread neither serializes a bitmap nor copies the buffer.
 - `pose()` draws that proxy exactly like the reference draws the HTML image
   (`drawImage(img, ...bounds, 0, 0, w, h)`, High). Chromium therefore applies its
   own crop, ceil mip, nearest-mip Medium resize and Low final filter.
 - The master ImageBitmap remains the full-resolution resource and is still closed
   on release; the proxy URL is revoked with it. No Worker/OffscreenCanvas, a
-  failed one-time 2x2 BMP-alpha probe, worker error or 5 s stall keeps the
+  failed one-time 2x2 PNG-alpha probe, worker error or 5 s stall keeps the
   previous ImageBitmap path. The ten masters, their bytes and all test files are
   unchanged.
-- Canvas draws are deferred, so each boss-wave pose is now rasterized in its own
-  task right after a frame (about 11-15 ms each on the review box) instead of
-  both landing in one task or on the first clear frame. The repeated WebP decode
-  (57-59 ms) is not reintroduced.
+- Scheduling (revised after CI run 36818612137, where the first version's
+  post-frame BMP decode + pose task, 11-15 ms, stacked with a boss-entry frame
+  once: S4 wave 5 music-on 0/0/1 frames over 33 ms vs live 0/0/0):
+  - the outcome request is the lowest visible-priority bake job (3.5, after the
+    current fight's own poses), queued from wave 4, so in normal play the fetch,
+    worker encode and decode finish before the boss; a direct boss-wave entry
+    runs it once the boss-entry bakes have drained (about 0.5 s on the box). A
+    clear that comes first requests it directly;
+  - each pose is prepared as two bake jobs, proxy decode (about 6 ms; stored PNG
+    decodes faster than BMP at about 10 ms) then pose raster (about 2-3 ms), at
+    most one outcome step per frame, never stacked with another bake.
+  The repeated WebP decode (57-59 ms) is not reintroduced.
+- Box probe of the S4 wave-5 music-on cell (same controller, 8 runs each,
+  frames over 33 ms per 10 s): first proxy version 3.5 average, this version
+  1.9, the same build with outcome loading disabled 1.6 (box headless Chrome is
+  noisier than CI; live 816eb1e scored about 10 here).
 
 Box result: `tools/outcome-bitmap-browser-v11.cjs` passes all 31 checks (ten full
 images and thirty pose scales, each 0 changed channels; masters released).

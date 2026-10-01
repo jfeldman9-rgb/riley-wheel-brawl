@@ -83,26 +83,63 @@
     return entry;
   }
   // Canvas draws are deferred: a pose's decode/resize runs when its surface is
-  // first used. Rasterize each pose in its own task right after a frame, so the
-  // cost neither stacks into one long task nor lands on the first clear frame.
-  let warm = null;
+  // first used. Prepare each pose as two small jobs on the game's bake queue:
+  // force the lossless proxy decode, then rasterize the pose. The queue runs at
+  // most one such job per frame, inside its frame budget and never stacked with
+  // another bake, so neither cost lands as a long task or on the first clear frame.
+  let warm = null, lastOutcomeStep = -Infinity;
+  function flushInto(source) {
+    if (typeof document === 'undefined') return;
+    if (!warm) { warm = document.createElement('canvas'); warm.width = warm.height = 1; }
+    const g = warm.getContext('2d');
+    if (g) { g.drawImage(source, 0, 0, 1, 1); warm.width = 1; }
+  }
+  function decodeProxy(key) {
+    const proxy = R.assets.proxy ? R.assets.proxy(key) : null;
+    if (!proxy || typeof document === 'undefined') return;
+    // A 1:1 one-pixel copy decodes the whole image into the decode cache; drawing
+    // that copy elsewhere forces its deferred raster now.
+    const c = document.createElement('canvas'); c.width = c.height = 1;
+    const g = c.getContext('2d');
+    if (g) { g.drawImage(proxy, 0, 0, 1, 1, 0, 0, 1, 1); flushInto(c); }
+  }
   function preparePoses(pair, level) {
-    const next = index => {
-      if (index >= pair.length || outcomeLevel !== level) return;
-      const run = () => {
-        if (outcomeLevel !== level) return;
-        const entry = pose(pair[index], heightFor(pair[index]));
-        if (entry && typeof document !== 'undefined') {
-          if (!warm) { warm = document.createElement('canvas'); warm.width = warm.height = 1; }
-          const g = warm.getContext('2d');
-          if (g) { g.drawImage(entry.canvas, 0, 0, 1, 1); warm.width = 1; }
-        }
-        next(index + 1);
-      };
-      if (typeof requestAnimationFrame === 'function' && typeof setTimeout === 'function') requestAnimationFrame(() => setTimeout(run, 0));
-      else run();
-    };
-    next(0);
+    const steps = [];
+    for (const key of pair) {
+      steps.push(['decode', key, () => decodeProxy(key)]);
+      steps.push(['pose', key, () => { const entry = pose(key, heightFor(key)); if (entry) flushInto(entry.canvas); }]);
+    }
+    if (R.Bake && typeof R.Bake.enqueue === 'function' && typeof document !== 'undefined') {
+      for (const [kind, key, run] of steps) {
+        R.Bake.enqueue(3.5, 'outcome-' + kind + ':' + key + ':' + level, () => {
+          // At most one outcome step per frame: yield the rest of this pump.
+          const now = performance.now();
+          if (now - lastOutcomeStep < 8) return false;
+          if (outcomeLevel === level) run();
+          lastOutcomeStep = performance.now();
+          return true;
+        });
+      }
+      return;
+    }
+    for (const step of steps) if (outcomeLevel === level) step[2]();
+  }
+  // Outcome art is requested as the lowest visible-priority bake job (after the
+  // current fight's own poses), from the wave before the boss, so its fetch,
+  // worker encode and decode stay off the boss-entry frames. A clear that comes
+  // first requests it directly.
+  const requested = new Set();
+  function requestOutcomes(level) {
+    if (requested.has(level) || outcomeLevel !== level) return;
+    requested.add(level);
+    const pair = keys(level);
+    R.assets.ready(pair).then(() => preparePoses(pair, level));
+  }
+  function scheduleOutcomes(level) {
+    if (requested.has(level)) return;
+    if (R.Bake && typeof R.Bake.enqueue === 'function' && typeof document !== 'undefined') {
+      R.Bake.enqueue(3.5, 'outcome-load:' + level, () => { requestOutcomes(level); return true; });
+    } else requestOutcomes(level);
   }
   function heightFor(key) {
     const meta = R.OUTCOME_ART && R.OUTCOME_ART[key];
@@ -118,7 +155,11 @@
     ctx.drawImage(p.canvas, -half, -p.height, p.width, p.height); ctx.restore();
     return true;
   }
-  function heroKey(actor) { return actor.g && actor.g.phase === 'clear' ? keys(actor.g.levelIndex)[0] : null; }
+  function heroKey(actor) {
+    if (!actor.g || actor.g.phase !== 'clear') return null;
+    requestOutcomes(actor.g.levelIndex);
+    return keys(actor.g.levelIndex)[0];
+  }
   const heroDraw = R.Riley.prototype.draw;
   R.Riley.prototype.draw = function (ctx, cam) {
     const key = heroKey(this);
@@ -156,14 +197,12 @@
     if (outcomeLevel !== this.levelIndex) {
       const keep = new Set(keys(this.levelIndex));
       if (R.assets.releaseDemand) R.assets.releaseDemand(kinds.flatMap((_, i) => keys(i)).filter(key => !keep.has(key)));
-      cache.clear(); outcomeLevel = this.levelIndex;
+      cache.clear(); requested.clear(); outcomeLevel = this.levelIndex;
     }
     this.enemyCards = this.enemyCards || [];
     this.seenEnemyCards = this.seenEnemyCards || new Set();
+    if (index >= 4) scheduleOutcomes(this.levelIndex);
     if (index === 5) {
-      const pair = keys(this.levelIndex);
-      const level = this.levelIndex;
-      R.assets.ready(pair).then(() => preparePoses(pair, level));
       this.enemyCards.length = 0;
     } else {
       for (const type of this.level.mix[index]) {

@@ -66,24 +66,57 @@ RWB.assets = (function () {
   }
   /* Lossless lazy-image proxy for a retained outcome master. Chromium resizes an
      encoded <img> through its decode cache (crop, Medium mip, Low final), which
-     ImageBitmap draws never use. A worker copies the master's decoded pixels into
-     an uncompressed 32-bit BMP, so the pose cache can take the exact HTML-image
-     path while the per-draw decode is a near-memcpy instead of a 57 ms WebP decode.
+     ImageBitmap draws never use. A worker decodes its own copy of the same fetched
+     bytes and stores the pixels as an uncompressed (stored-deflate) RGBA PNG, so
+     the pose cache can take the exact HTML-image path while the per-draw decode
+     is a near-memcpy (about 6 ms here, versus about 10 ms for a 32-bit BMP and
+     57 ms for the WebP).
      The master ImageBitmap stays the owned resource; any failure keeps the
      existing ImageBitmap pose path. */
   const proxyOf = new WeakMap();
   let proxyWorker = null, proxyJob = 0, proxyAlpha = null;
   const proxyWaits = new Map();
-  const PROXY_WORKER = 'self.onmessage=function(e){var d=e.data,b=d.bitmap,buf=null;try{' +
-    'var w=b.width,h=b.height,c=new OffscreenCanvas(w,h),g=c.getContext("2d",{willReadFrequently:true});' +
-    'g.globalCompositeOperation="copy";g.drawImage(b,0,0);var px=g.getImageData(0,0,w,h).data;' +
-    'buf=new ArrayBuffer(124+w*h*4);var v=new DataView(buf);v.setUint16(0,0x4d42,true);v.setUint32(2,buf.byteLength,true);' +
-    'v.setUint32(10,124,true);v.setUint32(14,108,true);v.setInt32(18,w,true);v.setInt32(22,-h,true);v.setUint16(26,1,true);' +
-    'v.setUint16(28,32,true);v.setUint32(30,3,true);v.setUint32(34,w*h*4,true);v.setUint32(54,0xff0000,true);' +
-    'v.setUint32(58,0xff00,true);v.setUint32(62,0xff,true);v.setUint32(66,0xff000000,true);v.setUint32(70,0x73524742,true);' +
-    'var s=new Uint32Array(px.buffer,px.byteOffset,w*h),o=new Uint32Array(buf,124,w*h);' +
-    'for(var i=0;i<s.length;i++){var p=s[i];o[i]=(p&0xff00ff00)|((p&0xff)<<16)|((p>>>16)&0xff);}' +
-    '}catch(_){buf=null;}try{b.close();}catch(_){}self.postMessage({id:d.id,buf:buf},buf?[buf]:[]);};';
+  // Self-contained (serialized into the worker). px: unpremultiplied RGBA bytes.
+  function encodeStoredPng(px, w, h) {
+    var row = w * 4 + 1, raw = row * h, blocks = Math.max(1, Math.ceil(raw / 65535));
+    var zlen = 2 + raw + blocks * 5 + 4, u = new Uint8Array(8 + 25 + 12 + zlen + 12), v = new DataView(u.buffer);
+    var table = new Int32Array(256), n, k, c;
+    for (n = 0; n < 256; n++) { c = n; for (k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; table[n] = c; }
+    function crc(from, to) { var x = -1; for (var i = from; i < to; i++) x = table[(x ^ u[i]) & 255] ^ (x >>> 8); return (x ^ -1) >>> 0; }
+    u.set([137, 80, 78, 71, 13, 10, 26, 10], 0);
+    var o = 8;
+    v.setUint32(o, 13); u.set([73, 72, 68, 82], o + 4); v.setUint32(o + 8, w); v.setUint32(o + 12, h);
+    u[o + 16] = 8; u[o + 17] = 6; v.setUint32(o + 21, crc(o + 4, o + 21)); o += 25;
+    v.setUint32(o, zlen); u.set([73, 68, 65, 84], o + 4);
+    var idat = o + 4; o += 8; u[o++] = 0x78; u[o++] = 1;
+    var left = raw, y = 0, col = 0, a = 1, b = 0;
+    while (left > 0) {
+      var len = Math.min(65535, left), end;
+      u[o++] = len === left ? 1 : 0; u[o++] = len & 255; u[o++] = len >>> 8; u[o++] = ~len & 255; u[o++] = (~len >>> 8) & 255;
+      left -= len; end = o + len;
+      while (o < end) {
+        if (col === 0) { u[o++] = 0; col = 1; continue; }
+        var take = Math.min(row - col, end - o), src = y * w * 4 + col - 1;
+        u.set(px.subarray(src, src + take), o); o += take; col += take;
+        if (col === row) { col = 0; y++; }
+      }
+      // Adler-32 over this block's raw bytes, reduced well before overflow.
+      for (var i = end - len; i < end;) { var stop = Math.min(end, i + 3800); for (; i < stop; i++) { a += u[i]; b += a; } a %= 65521; b %= 65521; }
+    }
+    v.setUint32(o, ((b << 16) | a) >>> 0); o += 4;
+    v.setUint32(o, crc(idat, o)); o += 4;
+    v.setUint32(o, 0); u.set([73, 69, 78, 68], o + 4); v.setUint32(o + 8, crc(o + 4, o + 8));
+    return u.buffer;
+  }
+  // The worker decodes its own copy from the fetched bytes and returns a Blob, so
+  // the main thread neither serializes a bitmap nor copies the encoded buffer.
+  const PROXY_WORKER = 'var encodeStoredPng=' + encodeStoredPng.toString() + ';' +
+    'self.onmessage=function(e){var d=e.data;createImageBitmap(d.blob).then(function(b){var out=null,w=b.width,h=b.height;try{' +
+    'var c=new OffscreenCanvas(w,h),g=c.getContext("2d",{willReadFrequently:true});' +
+    'g.globalCompositeOperation="copy";g.drawImage(b,0,0);' +
+    'out=new Blob([encodeStoredPng(g.getImageData(0,0,w,h).data,w,h)],{type:"image/png"});' +
+    '}catch(_){out=null;}try{b.close();}catch(_){}self.postMessage({id:d.id,blob:out,width:w,height:h});})' +
+    '.catch(function(){self.postMessage({id:d.id,blob:null});});};';
   function proxySupported() {
     return typeof Worker === 'function' && typeof OffscreenCanvas === 'function' && typeof Blob === 'function' &&
       typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function' && typeof Image === 'function';
@@ -96,47 +129,44 @@ RWB.assets = (function () {
       img.src = url;
     });
   }
-  // One-time 2x2 check that this browser decodes 32-bit BMP alpha (premultiplied
-  // exactly as the master was); otherwise proxies are never used.
+  // One-time 2x2 check that this browser decodes the stored PNG with alpha
+  // (premultiplied as expected); otherwise proxies are never used.
   function proxyAlphaOk() {
     if (proxyAlpha) return proxyAlpha;
     return proxyAlpha = (async () => {
-      const buf = new ArrayBuffer(124 + 16), v = new DataView(buf);
-      v.setUint16(0, 0x4d42, true); v.setUint32(2, buf.byteLength, true); v.setUint32(10, 124, true); v.setUint32(14, 108, true);
-      v.setInt32(18, 2, true); v.setInt32(22, -2, true); v.setUint16(26, 1, true); v.setUint16(28, 32, true); v.setUint32(30, 3, true);
-      v.setUint32(34, 16, true); v.setUint32(54, 0xff0000, true); v.setUint32(58, 0xff00, true); v.setUint32(62, 0xff, true);
-      v.setUint32(66, 0xff000000, true); v.setUint32(70, 0x73524742, true);
-      v.setUint32(132, 0x80ff4020, true); v.setUint32(136, 0xff102030, true);
-      const loaded = await loadProxyImage(new Blob([buf], { type: 'image/bmp' }));
+      const px = new Uint8Array([32, 64, 255, 0, 255, 64, 32, 128, 16, 32, 48, 255, 200, 100, 50, 255]);
+      const loaded = await loadProxyImage(new Blob([encodeStoredPng(px, 2, 2)], { type: 'image/png' }));
       if (!loaded) return false;
       try {
         const c = document.createElement('canvas'); c.width = 2; c.height = 2;
         const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(loaded.img, 0, 0);
         const d = g.getImageData(0, 0, 2, 2).data;
-        return d[3] === 0 && d[7] === 0 && d[11] === 128 && d[8] === 255 && d[9] === 64 && d[10] === 32 &&
-          d[12] === 16 && d[13] === 32 && d[14] === 48 && d[15] === 255;
+        return d[3] === 0 && d[7] === 128 && d[4] === 255 && d[5] === 64 && d[6] === 32 &&
+          d[8] === 16 && d[9] === 32 && d[10] === 48 && d[11] === 255 && d[12] === 200 && d[13] === 100 && d[14] === 50;
       } catch (_) { return false; } finally { URL.revokeObjectURL(loaded.url); }
     })();
   }
-  async function buildProxy(master) {
-    if (!proxySupported()) return null;
+  async function buildProxy(master, blob) {
+    if (!proxySupported() || !blob) return null;
     try {
       if (!(await proxyAlphaOk())) return null;
       if (!proxyWorker) {
         const url = URL.createObjectURL(new Blob([PROXY_WORKER], { type: 'text/javascript' }));
         proxyWorker = new Worker(url); URL.revokeObjectURL(url);
-        proxyWorker.onmessage = e => { const done = proxyWaits.get(e.data.id); if (done) { proxyWaits.delete(e.data.id); done(e.data.buf); } };
+        proxyWorker.onmessage = e => { const done = proxyWaits.get(e.data.id); if (done) { proxyWaits.delete(e.data.id); done(e.data); } };
         proxyWorker.onerror = () => { for (const done of proxyWaits.values()) done(null); proxyWaits.clear(); };
       }
-      const copy = await createImageBitmap(master), id = ++proxyJob;
-      const buf = await new Promise(resolve => {
+      const id = ++proxyJob;
+      const result = await new Promise(resolve => {
         // A stalled worker must never hold back the outcome master itself.
         const timer = typeof setTimeout === 'function' ? setTimeout(() => { if (proxyWaits.delete(id)) resolve(null); }, 5000) : 0;
         proxyWaits.set(id, value => { if (timer) clearTimeout(timer); resolve(value); });
-        proxyWorker.postMessage({ id, bitmap: copy }, [copy]);
+        proxyWorker.postMessage({ id, blob });
       });
-      if (!buf || !master.width) return null;
-      const loaded = await loadProxyImage(new Blob([buf], { type: 'image/bmp' }));
+      // The proxy must be the same decoded image as the master, pixel for pixel
+      // (verified by the browser pixel gate); a size mismatch rejects it.
+      if (!result || !result.blob || !master.width || result.width !== master.width || result.height !== master.height) return null;
+      const loaded = await loadProxyImage(result.blob);
       if (loaded && (loaded.img.naturalWidth !== master.width || loaded.img.naturalHeight !== master.height)) { URL.revokeObjectURL(loaded.url); return null; }
       return loaded;
     } catch (_) { return null; }
@@ -175,7 +205,7 @@ RWB.assets = (function () {
       }
       return fetchImage(url, deferDecode);
     }
-    const proxy = await buildProxy(img);
+    const proxy = await buildProxy(img, blob);
     // Released (closed) while the proxy was built: never attach to a detached master.
     if (proxy && ownedBitmaps.has(img) && img.width) proxyOf.set(img, proxy);
     else if (proxy) URL.revokeObjectURL(proxy.url);
