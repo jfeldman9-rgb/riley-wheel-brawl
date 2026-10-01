@@ -1,3 +1,7 @@
+## Approved CI timing policy update
+
+The absolute measurements below still execute unchanged. CI may now pass `--advisory-timing` to `--run-browser` with `CI=true`: a complete measured result keeps its absolute failures visible but does not block on those timing flags. Identity changes, missing data, browser/measurement errors and incomplete runs still fail. The separate matched live comparison enforces the approved three-run relative FPS/frame-count rule and cold medians. Direct execution without this explicit flag retains the original absolute blocking behavior. This changes reporting policy only, not rendering or timing measurement.
+
 # Optional pose-readiness browser diagnostic
 
 Status: prepared and pure-controlled-tested only. **No Chromium, browser, HTTP/socket, remote call or CI run was executed for this deliverable. Native/device verification is unrun.** This directory is additive; the runtime, `tools/performance-v11.cjs`, locked tests and old diagnostic results are unchanged.

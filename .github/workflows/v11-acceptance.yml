@@ -3,10 +3,11 @@ on:
   pull_request:
     branches: [rwb-w2]
     types: [opened, synchronize, reopened]
+  workflow_call:
 permissions:
   contents: read
 concurrency:
-  group: v11-acceptance-${{ github.event.pull_request.number }}
+  group: v11-acceptance-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
   contracts:
@@ -15,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-node@v4
@@ -24,9 +25,9 @@ jobs:
       - run: npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
       - name: All contracts, combat, saves, assets and balance
         run: |
-          git worktree add --detach "$RUNNER_TEMP/rwb-old-parity" 7f3f94b
+          git worktree add --detach "$RUNNER_TEMP/rwb-normal-reference" 4c9997521d62d91cb40abcd9623df334f1209618
           git worktree add --detach "$RUNNER_TEMP/rwb-live-visual" 816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc
-          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/ci-v11.cjs unit "$RUNNER_TEMP/rwb-old-parity" "$RUNNER_TEMP/rwb-live-visual"
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/ci-v11.cjs unit "$RUNNER_TEMP/rwb-normal-reference" "$RUNNER_TEMP/rwb-live-visual"
       - name: Exact identity-pose and transformed-mesh comparisons
         if: always()
         run: |
@@ -47,13 +48,20 @@ jobs:
         run: |
           node tools/diagnostics/readiness/readiness-probe.test.cjs
           node tools/diagnostics/readiness/compare-readiness.test.cjs
+      - name: Approved CI policy rejects incomplete data and non-timing failures
+        if: always()
+        run: |
+          node tools/ci-relative-policy-v11.test.cjs
+          node tools/ci-browser-gates-v11.test.cjs
+          node tools/ci-cold-diagnostic-v11.test.cjs
+          node tools/ci-policy-integration-v11.test.cjs
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
@@ -68,7 +76,7 @@ jobs:
       - name: Inherited release, cold entry and pacing
         id: release
         if: always()
-        run: node --expose-gc tools/release-browser.cjs
+        run: CI=true node --expose-gc tools/ci-browser-gates-v11.cjs release-browser --ci-timing-policy
       - name: Protected voice sequencing
         id: voice
         if: always()
@@ -76,7 +84,7 @@ jobs:
       - name: Inherited audio browser checks
         id: audio
         if: always()
-        run: node --expose-gc tools/audio-check.cjs
+        run: CI=true node --expose-gc tools/ci-browser-gates-v11.cjs audio-check --ci-timing-policy
       - name: Inherited background seam scan
         id: seams
         if: always()
@@ -115,7 +123,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
@@ -123,15 +131,17 @@ jobs:
       - run: |
           npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
           npx playwright install --with-deps chromium
-      - name: Ten strict cold entries, music off and on
-        run: node tools/performance-v11.cjs . docs/review/v11/ci-cold-smoke.json --cold-only
+      - name: Ten cold samples, blocking medians are in matched-performance
+        run: |
+          node tools/performance-v11.cjs . docs/review/v11/ci-cold-smoke.json --cold-only --report-only
+          CI=true node tools/ci-cold-diagnostic-v11.cjs docs/review/v11/ci-cold-smoke.json
   matched-performance:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-node@v4
@@ -140,17 +150,17 @@ jobs:
       - run: |
           npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
           npx playwright install --with-deps chromium
-      - name: Three matched serial immediate-gameplay runs
+      - name: Blocking three-pair live comparison and cold medians
         run: |
           git worktree add --detach "$RUNNER_TEMP/rwb-live-1.0" 816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc
-          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-compare-v11.cjs "$RUNNER_TEMP/rwb-live-1.0" --immediate
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-compare-v11.cjs "$RUNNER_TEMP/rwb-live-1.0" --immediate --ci-relative
   pose-readiness-experiment:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-node@v4
@@ -161,14 +171,15 @@ jobs:
           npx playwright install --with-deps chromium
       # The completed flush8 experiment and its failed results are retained.
       # This new question compares the reviewed fbcf build with this candidate.
-      # Every acceptance job and numerical threshold above remains unchanged.
+      # Absolute timing still executes and is printed; only the approved matched
+      # live comparison blocks CI timing. All validity errors still fail.
       - name: Three frozen-control readiness pairs, diagnostic only
         run: |
           git worktree add --detach "$RUNNER_TEMP/rwb-readiness-control" fbcf1fe2b76dd63f26c4b7a00b4ff7ccbf676814
           D="$GITHUB_WORKSPACE/tools/diagnostics/readiness"
           NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --prepare "$RUNNER_TEMP/rwb-readiness-control" "$GITHUB_WORKSPACE" "$RUNNER_TEMP/readiness-manifest.json"
           NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --validate-only "$RUNNER_TEMP/readiness-manifest.json"
-          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --run-browser "$RUNNER_TEMP/readiness-manifest.json" "$RUNNER_TEMP/rwb-readiness-results"
+          CI=true NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --run-browser "$RUNNER_TEMP/readiness-manifest.json" "$RUNNER_TEMP/rwb-readiness-results" --advisory-timing
 # Public-repository standard runners only. No secrets, caches, uploaded artifacts,
 # paid services or deploy steps. Failures remain failures, including documented
-# inherited behavioral contracts awaiting Jason/Grok review.
+# grip/parity assertions, which remain unresolved pending explicit decisions.

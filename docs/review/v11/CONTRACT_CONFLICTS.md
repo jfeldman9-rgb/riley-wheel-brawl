@@ -8,13 +8,15 @@ No quality threshold is weakened in this pass. The original test rules remain au
 
 ## Behavioral contracts still requiring review
 
-### Exact Normal outcome / RNG parity
+### Approved exact Normal reference update
 
-`tools/hard-check.cjs`, optional `--baseline=` block: `assert.deepEqual(newResult, oldResult)` plus exact RNG-call counts for seeds 1–3 and all five stages. The inherited workflow uses reference `7f3f94b`, predating verified live 1.0.
+Jason approved retaining the both-mode player/enemy boundary repairs and documented Normal damage factors, then freezing the reviewed 1.1 behavior. The exact comparison reference changes from `7f3f94bd5aef9cc650aab74219f67b476014b5d5` to `4c9997521d62d91cb40abcd9623df334f1209618`. The `hard-check.cjs` result and RNG equality assertions are unmodified.
 
-1.1 explicitly fixes offscreen enemy stalls and introduces recovery protection. The old live observer finds alive enemies hidden up to approximately 12 simulated seconds. Fixing that changes when attacks and RNG calls occur. Therefore exact old results can no longer honestly be promised. The 1.1 requirement instead measures 40 unchanged seeds/controller per stage and requires Normal rates within five percentage points of the verified live 1.0 rates (97.5 / 75 / 67.5 / 57.5 / 57.5%).
+Stage 1, seed 1 whole-stage damage is 205.8 in both historical and actual live 1.0, versus 164.4 in the approved candidate. Current Normal clear rates are 100 / 80 / 67.5 / 60 / 57.5%. The live performance and 40-seed Normal-rate reference remains `816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc`. No offscreen, walk, save, audio, or other functional limit changes.
 
-The inherited test is not edited or silently removed. Its result remains separately visible. Any decision to retire or replace the old exact-parity contract belongs to Jason/Grok after reviewing the evidence.
+Controlled ablations found no Hard-only leak. Reverting the boundary repairs and Normal factors restores exact old parity but also restores 72 enemy offscreen violations in the 15-case sample, so that diagnostic revert stays unapplied. Get-up protection had no effect in those cases: its one observed exit already had 1.10 seconds of invulnerability. That is a tested-sample result, not a global claim.
+
+The public PR description contains the approved per-change inventory and separate tuning effects. This reference is an approved 1.1 regression reference, not a relabeling of live 1.0.
 
 ### Callandor wrapped-handle contact
 

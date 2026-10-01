@@ -72,11 +72,86 @@ function retainRaw(name,bytes,emit=console.log){
   emit('RWB_PERF_END '+name);
   return meta;
 }
-function run(m,out){
+// Validate the unchanged profiler's requested-condition schema before any
+// timing-only advisory decision. No playback wait or new music assertion is added.
+function validateReport(data,expectedCommit){
+  const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+  const requireThat=(ok,message)=>{if(!ok)fail('Invalid readiness report: '+message);};
+  const finite=(value,label,positive=false)=>requireThat(typeof value==='number'&&Number.isFinite(value)&&(positive?value>0:value>=0),label+' must be finite and '+(positive?'positive':'nonnegative'));
+  const integer=(value,label)=>requireThat(Number.isSafeInteger(value)&&value>=0,label+' must be a nonnegative safe integer');
+  requireThat(object(data),'object required');
+  function finiteTree(value,ancestors=new Set(),depth=0){
+    requireThat(depth<=128,'report nesting exceeds supported depth');
+    if(typeof value==='number'){requireThat(Number.isFinite(value),'nonfinite numeric report value');return;}
+    if(value===null||typeof value==='string'||typeof value==='boolean')return;
+    requireThat((Array.isArray(value)||object(value))&&!ancestors.has(value),'non-JSON or cyclic report value');
+    ancestors.add(value);for(const child of Object.values(value))finiteTree(child,ancestors,depth+1);ancestors.delete(value);
+  }
+  finiteTree(data);
+  requireThat(typeof expectedCommit==='string'&&/^[a-f0-9]{40}$/.test(expectedCommit)&&data.commit===expectedCommit&&data.baseCommit===expectedCommit,'full frozen commit mismatch');
+  requireThat(data.workingTreeDirty===false&&data.settleMs===0,'clean source and immediate sampling required');
+  requireThat(data.reportOnly===true&&data.profileOnly===false&&data.coldOnly===false&&data.pacingStatus==='measured','complete report-only matrix required');
+  requireThat(typeof data.browser==='string'&&data.browser.trim().length>0,'browser version required');
+  requireThat(data.readinessInstrumentation?.enabled===true&&data.readinessInstrumentation?.nativeVerification?.cloudChromium==='completed','completed instrumented measurement required');
+  requireThat(Array.isArray(data.errors)&&data.errors.length===0,'error array must be present and empty');
+  requireThat(object(data.gates)&&same(Object.keys(data.gates).sort(),['cold','errors','fights']),'only cold, fights and errors gates are supported');
+  for(const name of ['cold','fights','errors'])requireThat(typeof data.gates[name]==='boolean','gate '+name+' must be boolean');
+  requireThat(data.gates.errors===true,'errors gate must pass');
+  function readiness(value,label){
+    requireThat(object(value)&&Array.isArray(value.demands)&&Array.isArray(value.samples)&&value.samples.length>0,label+' readiness demands/samples required');
+    for(const name of ['drawCalls','renderedDrawCalls','fallbackDrawCalls','fallbackMissDrawCalls','unavailableRigDrawCalls','uniqueDemandedKeys','demandAttempts','touchEntryCalls','successfulTouchCalls','acceptedTouchEnqueues'])integer(value[name],label+' readiness '+name);
+    requireThat(object(value.queue)&&object(value.observerTiming),label+' readiness queue/timing required');
+    for(const sample of value.samples){
+      requireThat(object(sample)&&typeof sample.phase==='string'&&object(sample.counts),label+' malformed readiness sample');
+      for(const name of ['atMs','sinceInstallMs','observerCostMs'])finite(sample[name],label+' readiness sample '+name);
+      if(sample.rafTime!==null)finite(sample.rafTime,label+' readiness RAF time');
+    }
+    requireThat(value.demandAttempts===value.demands.length,label+' demand count mismatch');
+    for(const demand of value.demands){requireThat(object(demand),label+' malformed demand');for(const name of ['readyMs','latencyMs'])if(demand[name]!==null)finite(demand[name],label+' demand '+name);}
+    requireThat(value.fallbackDrawCalls<=value.renderedDrawCalls&&value.renderedDrawCalls<=value.drawCalls,label+' invalid fallback counts');
+    requireThat(value.fallbackDrawFraction===(value.renderedDrawCalls?value.fallbackDrawCalls/value.renderedDrawCalls:null),label+' fallback fraction mismatch');
+  }
+  function cells(rows,stages,label){
+    requireThat(Array.isArray(rows)&&rows.length===stages.length*2,label+' matrix length mismatch');
+    const seen=new Set();
+    for(const row of rows){
+      requireThat(object(row)&&Number.isInteger(row.stage)&&stages.includes(row.stage)&&typeof row.music==='boolean',label+' invalid requested stage/music cell');
+      const key=row.stage+':'+row.music;requireThat(!seen.has(key),label+' duplicate stage/music cell '+key);seen.add(key);
+    }
+    for(const stage of stages)for(const music of [false,true])requireThat(seen.has(stage+':'+music),label+' missing stage/music cell');
+  }
+  cells(data.cold,[1,2,3,4,5],'cold');cells(data.fights,[1,3,5],'fights');
+  for(const row of data.cold){finite(row.enterMs,'cold enterMs');finite(row.initMs,'cold initMs');readiness(row.readiness,'cold');}
+  for(const row of data.fights){
+    integer(row.frames,'fight frames');requireThat(row.frames>0,'fight frames must be positive');finite(row.fps,'fight FPS',true);integer(row.over33,'fight over33');
+    const raw=row.raw;requireThat(object(raw),'fight raw data required');
+    requireThat(Array.isArray(raw.gaps)&&raw.gaps.length>0&&Array.isArray(raw.rafTimes)&&Array.isArray(raw.frameWork),'nonempty raw gap/RAF/work arrays required');
+    requireThat(raw.gaps.length===row.frames&&raw.rafTimes.length===raw.gaps.length+1&&raw.frameWork.length===raw.rafTimes.length,'raw frame/gap/RAF/work count mismatch');
+    raw.gaps.forEach(g=>finite(g,'raw gap',true));raw.rafTimes.forEach(t=>finite(t,'RAF timestamp'));
+    raw.frameWork.forEach((work,i)=>{
+      requireThat(object(work)&&work.t===raw.rafTimes[i],'frame-work timestamp mismatch');
+      for(const name of ['frameMs','updateMs','drawMs','pumpMs'])finite(work[name],'frame work '+name);
+    });
+    raw.gaps.forEach((gap,i)=>requireThat(Math.abs((raw.rafTimes[i+1]-raw.rafTimes[i])-gap)<1e-6,'raw gap/RAF interval mismatch'));
+    const elapsed=raw.gaps.reduce((total,gap)=>total+gap,0),fps=raw.gaps.length*1000/elapsed,over33=raw.gaps.filter(gap=>gap>33).length;
+    requireThat(Number.isFinite(elapsed)&&raw.rafTimes.at(-1)-raw.rafTimes[0]>=10000,'full ten-second sampling window required');
+    // Same operations as the profiler: no epsilon is applied to FPS or gates.
+    requireThat(row.fps===fps&&row.over33===over33,'FPS/over33 disagree with raw gaps');
+    const sorted=[...raw.gaps].sort((a,b)=>a-b);
+    requireThat(object(row.gapsMs),'gap statistics required');
+    for(const [name,expected] of [['p50',sorted[Math.floor(sorted.length*.5)]],['p95',sorted[Math.floor(sorted.length*.95)]],['max',sorted.at(-1)]])requireThat(row.gapsMs[name]===expected,'gap '+name+' statistic mismatch');
+    readiness(raw.readiness,'fight');
+  }
+  const cold=data.cold.every(row=>row.enterMs<400),fights=data.fights.every(row=>row.fps>=59.5&&row.over33===0);
+  requireThat(data.gates.cold===cold&&data.gates.fights===fights,'timing gates disagree with validated measurements');
+  return true;
+}
+function run(m,out,advisoryTiming=false){
+  if(advisoryTiming&&process.env.CI!=='true')fail('Advisory timing is limited to explicit CI=true policy');
   validateManifest(m);
   if(fs.existsSync(out))fail('Use a new output directory; never overwrite measured evidence');
   fs.mkdirSync(out,{recursive:true});
-  const report={status:'running',method:'Three alternating serial pairs on the same host and browser with instrumented two-RAF immediate sampling. Strict values are retained with observer overhead; this is diagnostic evidence, not native-device acceptance.',
+  const report={status:'running',advisoryTiming,method:'Three alternating serial pairs on the same host and browser with instrumented two-RAF immediate sampling. Strict values are retained with observer overhead; this is diagnostic evidence, not native-device acceptance.',
     nativeVerification:{cloudChromium:'unrun',sameMac:'unrun',physicalDevice:'unrun'},manifest:m,machine:{platform:os.platform(),arch:os.arch(),cpu:os.cpus()[0]?.model,cpuCount:os.cpus().length},runs:[]};
   let failure=null;
   try{
@@ -101,8 +176,7 @@ function run(m,out){
       validateManifest(m);
       if(child.error||child.signal||child.status!==0)fail('Profiler execution failed: '+kind+' '+pair+' '+(child.error?.message||child.signal||child.status));
       if(parseError)throw parseError;
-      if(!data||data.commit!==m[kind].commit||data.workingTreeDirty||data.cold?.length!==10||data.fights?.length!==6||data.gates?.errors!==true||data.settleMs!==0||data.readinessInstrumentation?.enabled!==true||data.errors?.length)fail('Incomplete or mismatched profiler report');
-      if(!data.cold.every(r=>r.readiness)||!data.fights.every(r=>r.raw?.readiness&&Array.isArray(r.raw.gaps)&&Array.isArray(r.raw.frameWork)))fail('Required raw readiness/timing evidence absent');
+      validateReport(data,m[kind].commit);
       const expectedJs=Object.fromEntries(Object.entries(m[kind].files).filter(([p])=>/^js\/[^/]+\.js$/.test(p)).map(([p,hash])=>[p.slice(3),hash]));
       if(!same(Object.entries(data.sourceHashes).sort(),Object.entries(expectedJs).sort()))fail('Profiler JavaScript hashes differ from manifest');
       Object.assign(row,{status:'measured',
@@ -112,13 +186,13 @@ function run(m,out){
     }
     if(new Set(report.runs.map(r=>r.browser)).size!==1)fail('Browser versions differ');
     report.status='measured';report.nativeVerification.cloudChromium='completed';report.candidateStrictGatesPassed=report.runs.filter(r=>r.kind==='candidate').every(r=>Object.values(r.gates).every(v=>v===true));
-    if(!report.candidateStrictGatesPassed)process.exitCode=1;
+    if(!report.candidateStrictGatesPassed&&!advisoryTiming)process.exitCode=1;
   }catch(error){failure=error;report.status='invalid-or-incomplete';report.nativeVerification.cloudChromium=report.runs.some(r=>['running','completed','partial'].includes(r.nativeVerification?.cloudChromium))?'partial':report.runs.length?'attempted-no-confirmed-browser':'unrun';report.error=String(error.stack||error);process.exitCode=1;}
   finally{
     const bytes=Buffer.from(JSON.stringify(report,null,2)+'\n');
     fs.writeFileSync(path.join(out,'comparison.json'),bytes);
     retainRaw('comparison.json',bytes);
-    console.log('RWB_READINESS_REPORT '+JSON.stringify({status:report.status,nativeVerification:report.nativeVerification,
+    console.log('RWB_READINESS_REPORT '+JSON.stringify({status:report.status,advisoryTiming:report.advisoryTiming,nativeVerification:report.nativeVerification,
       control:{commit:m.control.commit,tree:m.control.tree},candidate:{commit:m.candidate.commit,tree:m.candidate.tree},
       candidateStrictGatesPassed:report.candidateStrictGatesPassed,error:report.error,
       runs:report.runs.map(({cold,fights,...row})=>row)}));
@@ -133,7 +207,7 @@ if(require.main===module){
   const [mode,...args]=process.argv.slice(2);
   if(mode==='--prepare'&&args.length===3)prepare(...args);
   else if(mode==='--validate-only'&&args.length===1){validateManifest(readManifest(args[0]));console.log('PASS frozen source manifest; no browser run');}
-  else if(mode==='--run-browser'&&args.length===2)run(readManifest(args[0]),path.resolve(args[1]));
-  else fail('Usage: --prepare CONTROL_ROOT CANDIDATE_ROOT MANIFEST.json | --validate-only MANIFEST.json | --run-browser MANIFEST.json NEW_OUTPUT_DIR');
+  else if(mode==='--run-browser'&&(args.length===2||(args.length===3&&args[2]==='--advisory-timing')))run(readManifest(args[0]),path.resolve(args[1]),args[2]==='--advisory-timing');
+  else fail('Usage: --prepare CONTROL_ROOT CANDIDATE_ROOT MANIFEST.json | --validate-only MANIFEST.json | --run-browser MANIFEST.json NEW_OUTPUT_DIR [--advisory-timing]');
 }
-module.exports={validateShape,summary,retainRaw,CONTROL_COMMIT,CONTROL_TREE,SCOPE,DIAGNOSTICS};
+module.exports={validateShape,validateReport,summary,retainRaw,CONTROL_COMMIT,CONTROL_TREE,SCOPE,DIAGNOSTICS};

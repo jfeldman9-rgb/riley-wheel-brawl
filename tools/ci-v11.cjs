@@ -1,6 +1,6 @@
 'use strict';
 // Run all named gates even when another fails. This never turns a failed test
-// into a pass; unresolved legacy-contract conflicts keep the job red.
+// into a pass; every unresolved assertion remains red. Reference updates require approval.
 const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
 const root=path.resolve(__dirname,'..'),mode=process.argv[2]||'unit',baseline=process.argv[3],liveBaseline=process.argv[4];
 const out=path.join(root,'docs/review/v11/ci');fs.mkdirSync(out,{recursive:true});
@@ -31,7 +31,7 @@ const tests={
  ]
 };
 if(!tests[mode])throw new Error('Expected unit or browser');
-if(mode==='unit'&&(!baseline||!liveBaseline))throw new Error('Unit mode requires the unchanged historical parity reference checkout');
+if(mode==='unit'&&(!baseline||!liveBaseline))throw new Error('Unit mode requires the approved Normal reference and unchanged live visual checkout');
 const results=[];
 for(const [name,script,...args] of tests[mode]){
  console.log('\n::group::'+name);const start=Date.now();

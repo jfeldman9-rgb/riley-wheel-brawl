@@ -1,5 +1,7 @@
 # v1.1 combat, bounds, and balance evidence
 
+The exact Normal comparison reference is now approved to move from `7f3f94bd5aef9cc650aab74219f67b476014b5d5` to reviewed `4c9997521d62d91cb40abcd9623df334f1209618`; assertions and the actual-live `816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc` performance/40-seed references stay unchanged. See [reference decision](CONTRACT_CONFLICTS.md) and [approved CI timing policy](CI_TIMING_POLICY.md). The historical measurements below retain their original source identities.
+
 The rendering-only follow-up is documented in [Rendering readiness](RENDERING_READINESS.md). The combat measurements below identify their exact reviewed source and are not relabeled as a newer commit.
 
 ## Reviewed source and status
