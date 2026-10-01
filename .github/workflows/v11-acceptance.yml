@@ -189,6 +189,29 @@ jobs:
           NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --prepare "$RUNNER_TEMP/rwb-readiness-control" "$GITHUB_WORKSPACE" "$RUNNER_TEMP/readiness-manifest.json"
           NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --validate-only "$RUNNER_TEMP/readiness-manifest.json"
           CI=true NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --run-browser "$RUNNER_TEMP/readiness-manifest.json" "$RUNNER_TEMP/rwb-readiness-results" --advisory-timing
+  s4-startup-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Validate observational probe and immutable S4 fixture
+        run: |
+          node tools/diagnostics/s4-startup/startup-probe.test.cjs
+          node tools/diagnostics/s4-startup/run-startup.test.cjs
+      - name: Six bounded Stage 4 startup traces, diagnostic only
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/rwb-s4-reviewed" 1a930986076c20cdf6d1a8df0bfaadee7181e680
+          CI=true NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/diagnostics/s4-startup/run-startup.cjs "$RUNNER_TEMP/rwb-s4-reviewed" "$RUNNER_TEMP/rwb-s4-traces" --run-browser
 # Public-repository standard runners only. No secrets, caches, uploaded artifacts,
 # paid services or deploy steps. Failures remain failures. The approved Normal
 # reference is fixed above; only the specifically approved Callandor pivot
