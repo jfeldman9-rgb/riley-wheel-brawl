@@ -80,10 +80,14 @@
     if(st.phase==='texture'){
       const w=st.w,h=st.h,tw=st.tw||Math.round(w*384/h),th=st.th||384;
       const sync=end>1e12;
-      if(!sync&&!st.pending&&!st.texture){
+      if(!sync&&!st.pending&&!st.texture&&st.bmp==null){
         try{
           st.pending=createImageBitmap(st.image,{resizeWidth:tw,resizeHeight:th,resizeQuality:'high'});
-          st.pending.then(bmp=>{st.bmp=bmp;}).catch(()=>{st.bmp=false;});
+          st.pending.then(bmp=>{
+            // A removed/replaced rig cannot consume a late decoded bitmap.
+            if(building.get(st.cacheKey)!==st){if(bmp.close)bmp.close();return;}
+            st.bmp=bmp;
+          }).catch(()=>{st.bmp=false;});
         }catch(e){st.bmp=false;}
         st.tw=tw;st.th=th;
         return false;
@@ -99,28 +103,34 @@
       }
       if(st.copyY<st.th){
         const tc=st.tc;
-        if(sync||!(st.bmp&&st.bmp!==false)){
+        if(sync){
           if(st.bmp&&st.bmp!==false){tc.drawImage(st.bmp,0,0,tw,th);if(st.bmp.close)st.bmp.close();st.bmp=null;}
           else tc.drawImage(st.image,0,0,tw,th);
           st.copyY=st.th;
         }else{
-          // The bitmap is already the texture size, so each strip is a 1:1 copy.
-          while(st.copyY<st.th&&performance.now()-t0<1.2&&(sync||performance.now()<end)){
-            const rows=Math.min(32,st.th-st.copyY);
-            tc.drawImage(st.bmp,0,st.copyY,tw,rows,0,st.copyY,tw,rows);
-            st.copyY+=rows;
+          while(st.copyY<st.th&&performance.now()-t0<1.2&&performance.now()<end){
+            const rows=Math.min(16,st.th-st.copyY);
+            if(st.bmp&&st.bmp!==false)tc.drawImage(st.bmp,0,st.copyY,tw,rows,0,st.copyY,tw,rows);
+            else{tc.save();tc.beginPath();tc.rect(0,st.copyY,tw,rows);tc.clip();tc.drawImage(st.image,0,0,tw,th);tc.restore();}
+            tc.getImageData(0,st.copyY,1,rows);st.copyY+=rows;
           }
           if(st.copyY<st.th)return false;
-          if(st.bmp.close)st.bmp.close();st.bmp=null;
+          if(st.bmp&&st.bmp.close)st.bmp.close();st.bmp=null;
         }
-        tc.globalCompositeOperation='source-atop';const shade=tc.createLinearGradient(0,0,tw,0);shade.addColorStop(0,'rgba(12,18,30,.13)');shade.addColorStop(.55,'rgba(255,241,210,.04)');shade.addColorStop(1,'rgba(8,13,25,.16)');tc.fillStyle=shade;tc.fillRect(0,0,tw,th);tc.globalCompositeOperation='source-over';
-        const shadeMs=performance.now()-t0;
-        if(shadeMs>4&&R.perf.markStep)R.perf.markStep('rig-shade:'+st.cacheKey,shadeMs);
-        if(!sync&&performance.now()>=end)return false;
       }
+      if(!st.shade){st.shade=st.tc.createLinearGradient(0,0,tw,0);st.shade.addColorStop(0,'rgba(12,18,30,.13)');st.shade.addColorStop(.55,'rgba(255,241,210,.04)');st.shade.addColorStop(1,'rgba(8,13,25,.16)');st.shadeY=0;}
+      while(st.shadeY<th&&(sync||performance.now()<end)){
+        const rows=sync?th:Math.min(16,th-st.shadeY);
+        st.tc.globalCompositeOperation='source-atop';st.tc.fillStyle=st.shade;st.tc.fillRect(0,st.shadeY,tw,rows);st.tc.globalCompositeOperation='source-over';
+        if(!sync)st.tc.getImageData(0,st.shadeY,1,rows);st.shadeY+=rows;
+        if(!sync&&performance.now()-t0>1.2)break;
+      }
+      const shadeMs=performance.now()-t0;
+      if(shadeMs>4&&R.perf.markStep)R.perf.markStep('rig-shade:'+st.cacheKey,shadeMs);
+      if(st.shadeY<th||(!sync&&performance.now()>=end))return false;
       do{
         const y=st.ry||0;if(y>=th)break;
-        const rows=Math.min(64,th-y),slice=st.tc.getImageData(0,y,tw,rows);
+        const rows=Math.min(sync?64:16,th-y),slice=st.tc.getImageData(0,y,tw,rows);
         st.pixels.set(slice.data,y*tw*4);st.ry=y+rows;
         if(!sync&&(performance.now()>=end||performance.now()-t0>1.2))break;
       }while(sync||performance.now()-t0<1.2);
@@ -214,6 +224,10 @@
     let guard=0;
     while(st.phase!=='done'&&guard++<(sync?20000:8)){
       advanceRig(d,st,end);
+      // Promise callbacks cannot run inside this synchronous pump. Readiness
+      // also wakes a queued job if its source or shared rig state is removed.
+      if(!sync&&st.phase==='texture'&&!st.texture&&st.bmp==null)return {done:false,rig:null,
+        ready:()=>st.bmp!=null||!!st.texture||building.get(cacheKey)!==st||!(R.assets.get(d.key)||R.assets.get(d.fallback))};
       if(st.phase==='done')break;
       if(!sync&&(performance.now()>=end||performance.now()-t0>1.2))break;
     }
@@ -340,6 +354,13 @@
     }
     ctx.restore();
   }
+  function identityPose(r,bones,pose,vertices){
+    // Exact pose/bone comparisons reject even a tiny intentional deformation.
+    // The vertex epsilon only permits floating-point roundoff in identity math.
+    return !r.split&&pose.lean===0&&pose.bob===0&&bones.length===r.bones.length&&
+      bones.every((bone,i)=>bone.every((p,j)=>p.x===r.bones[i][j].x&&p.y===r.bones[i][j].y))&&
+      vertices.every(v=>Math.abs(v.X-v.x)<1e-8&&Math.abs(v.Y-v.y)<1e-8);
+  }
   function bakePose(r,bones,pose){
     const scale=poseScaleFor(r),transforms=boneTransforms(r,bones),layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
     r.buffers=r.buffers||layers.map(()=>r.vertices.map(()=>({})));
@@ -352,11 +373,18 @@
     const ctx=surface.getContext('2d'),bounds={left,top,width,height},padding=.8/scale;
     const bakeAt=performance.now();
     ctx.setTransform(scale,0,0,scale,-left,-top);
-    if(!gpuSkin(r,r.buffers[0],bounds,scale,ctx))for(let n=0;n<layers.length;n++){const vertices=r.buffers[n],tex=layers[n][0];
+    // A neutral cached stance is the processed texture without any deformation.
+    // Rasterizing hundreds of overlapping triangles here resampled that same
+    // texture hundreds of times and increased alpha along their shared edges.
+    // Prove identity from the final skin coordinates, not the requested key:
+    // cast/channel and special rigs can move joints even with zero lean/bob.
+    const identity=identityPose(r,bones,pose,r.buffers[0]);
+    if(identity)ctx.drawImage(r.texture,0,0,r.w,r.h);
+    else if(!gpuSkin(r,r.buffers[0],bounds,scale,ctx))for(let n=0;n<layers.length;n++){const vertices=r.buffers[n],tex=layers[n][0];
       for(const f of r.faces)drawFace(ctx,r,f,vertices,tex,padding);
     }
     if(R.perf.noteBake)R.perf.noteBake('bakePose:'+(r.kind||''),performance.now()-bakeAt);
-    return {surface,bounds,scale};
+    return {surface,bounds,scale,identity};
   }
   // The warm-white hit copy is built in short strips. One full-surface copy
   // measured 6–12 ms, which is over the gameplay pump cap.
@@ -389,11 +417,23 @@
     if(R.Bake&&(key==='idle'||(key&&key[0]==='w')))R.Bake.queueTouch(entry);
     return entry;
   }
+  const poseVertexPools=new WeakMap(),POSE_VERTEX_POOL_LIMIT=3;
+  function acquirePoseVertices(r,layers){
+    let pool=poseVertexPools.get(r);
+    if(!pool){pool=[];poseVertexPools.set(r,pool);}
+    return pool.pop()||layers.map(()=>r.vertices.map(()=>({})));
+  }
+  function releasePoseVertices(job){
+    const vertices=job.state.vertices;job.state.vertices=null;
+    const pool=poseVertexPools.get(job.rig);
+    if(vertices&&pool&&pool.length<POSE_VERTEX_POOL_LIMIT)pool.push(vertices);
+  }
   function stepPose(job,end){
     const d=defs[job.kind];if(!d)return true;
     const st=job.state||(job.state={phase:'rig'});
     if(st.phase==='rig'){
       const got=ensureRig(d,end);
+      job.ready=got.ready;
       if(!got.done)return false;
       if(!got.rig)return true;
       job.rig=got.rig;
@@ -407,7 +447,11 @@
       st.scale=poseScaleFor(r);
       st.transforms=boneTransforms(r,st.bones);
       st.layers=r.split?[[r.split.kick,1],[r.split.body,0]]:[[r.texture,undefined]];
-      r.buffers=r.buffers||st.layers.map(()=>r.vertices.map(()=>({})));
+      // A higher-priority pose can interrupt this job during skinning or raster.
+      // Its transformed vertices must not overwrite an unfinished pose's data.
+      // Only completed snapshots enter the bounded per-rig free pool. Active or
+      // canceled jobs keep exclusive ownership; synchronous bakes keep r.buffers.
+      st.vertices=acquirePoseVertices(r,st.layers);
       st.minX=Infinity;st.minY=Infinity;st.maxX=-Infinity;st.maxY=-Infinity;
       if(performance.now()>=end)return false;
     }
@@ -417,7 +461,7 @@
       while(st.vi<r.vertices.length&&performance.now()-t0<1.5&&performance.now()<end){
         const i=st.vi++;
         for(let n=0;n<st.layers.length;n++){
-          const v=skinPoint(r.vertices[i],r,st.bones,st.pose,st.layers[n][1],st.transforms,r.buffers[n][i]);
+          const v=skinPoint(r.vertices[i],r,st.bones,st.pose,st.layers[n][1],st.transforms,st.vertices[n][i]);
           st.minX=Math.min(st.minX,v.X);st.minY=Math.min(st.minY,v.Y);st.maxX=Math.max(st.maxX,v.X);st.maxY=Math.max(st.maxY,v.Y);
         }
       }
@@ -431,15 +475,29 @@
       st.surface=surface;st.ctx=surface.getContext('2d');st.bounds={left,top,width,height};st.padding=.8/scale;
       st.ctx.setTransform(scale,0,0,scale,-left,-top);
       st.phase='rast';st.ln=0;st.fi=0;st.gpu=true;
+      st.identity=identityPose(r,st.bones,st.pose,st.vertices[0]);
+      if(st.identity){st.phase='flat';st.copyY=0;}
       // Raster starts on a later slice so one pose invocation stays near 1 ms.
       // The GPU whole-pose path measured 8–17 ms, over the pump cap, so the
       // scheduler stays on this chunked canvas path.
       if(! (end>1e12) && (performance.now()>=end || skinMs>0.4))return false;
     }
+    if(st.phase==='flat'){
+      const r=job.rig,g=st.ctx,b=st.bounds,t0=performance.now();
+      while(st.copyY<b.height&&performance.now()<end){
+        const rows=Math.min(16,b.height-st.copyY);
+        g.save();g.setTransform(1,0,0,1,0,0);g.beginPath();g.rect(0,st.copyY,b.width,rows);g.clip();
+        g.setTransform(st.scale,0,0,st.scale,-b.left,-b.top);g.drawImage(r.texture,0,0,r.w,r.h);g.restore();
+        g.getImageData(0,st.copyY,1,rows);st.copyY+=rows;
+        if(performance.now()-t0>1.2)break;
+      }
+      if(st.copyY<b.height)return false;
+      finishPose(r,job.key,{surface:st.surface,bounds:b,scale:st.scale,identity:true});releasePoseVertices(job);return true;
+    }
     if(st.phase==='rast'){
       const r=job.rig;
       while(st.ln<st.layers.length){
-        const vertices=r.buffers[st.ln],tex=st.layers[st.ln][0];
+        const vertices=st.vertices[st.ln],tex=st.layers[st.ln][0];
         while(st.fi<r.faces.length){
           if(performance.now()>=end)return false;
           const t0=performance.now();
@@ -452,6 +510,7 @@
         st.ln++;st.fi=0;
       }
       finishPose(r,job.key,{surface:st.surface,bounds:st.bounds,scale:st.scale});
+      releasePoseVertices(job);
       return true;
     }
     return true;
@@ -594,12 +653,22 @@
   function dropRig(kind){
     for(const [key,rig] of [...rigs]){
       if(rig.kind!==kind)continue;
-      if(rig.library){rig.library.clear();rig.library=null;}
+      poseVertexPools.delete(rig);
+      if(rig.library){
+        // A dropped rig must not leave speculative uploads retaining its poses.
+        if(R.Bake){const entries=new Set(rig.library.values());R.Bake.touches=R.Bake.touches.filter(entry=>{
+          if(!entries.has(entry))return true;
+          entry._touchQueued=false;return false;
+        });}
+        rig.library.clear();rig.library=null;
+      }
       if(meshGPU&&meshGPU.rigs){const data=meshGPU.rigs.get(rig);if(data){meshGPU.gl.deleteTexture(data.texture);meshGPU.gl.deleteBuffer(data.vertex);meshGPU.gl.deleteBuffer(data.indices);meshGPU.rigs.delete(rig);}}
       rigs.delete(key);
     }
     const d=defs[kind];
-    if(d)for(const key of [...building.keys()])if(key.startsWith(d.key+':')||(d.fallback&&key.startsWith(d.fallback+':')))building.delete(key);
+    if(d)for(const key of [...building.keys()])if(key.startsWith(d.key+':')||(d.fallback&&key.startsWith(d.fallback+':'))){
+      const st=building.get(key);if(st.bmp&&st.bmp.close)st.bmp.close();st.bmp=null;building.delete(key);
+    }
   }
   R.Puppet={defs,updateGait,knee,prepare(kind){
     const d=defs[kind],r=d&&getRig(d);if(!r)return null;
@@ -643,6 +712,9 @@
     const after=(R.perf.poseQueue&&R.perf.poseQueue.length)||0;
     return Math.max(0,before-after);
   },prepareStage(level){
+    // Preserve the original public API for callers that require every stage rig.
+    return this.prepareScene(level,null);
+  },prepareScene(level,scene){
     // Stage entry needs only the idle surfaces that the first frame displays.
     // Every other pose is a resumable Bake job; this reverses scroll8's full
     // synchronous atlas build without restoring its gameplay-sized work steps.
@@ -650,19 +722,33 @@
     R.perf.allowSync=true;R.perf.poseFallbacks=0;R.perf.poseMiss=[];
     R.perf.queueEmptyAt=0;R.perf.stageEnteredAt=bakeAt;R.perf.stageLevel=level;
     const kinds=STAGE_RIGS[level]||STAGE_RIGS[0],keep=new Set(kinds);
+    const visible=scene?new Set(['loial']):new Set(kinds);
+    if(scene){
+      for(const actor of [...(scene.enemies||[]),...(scene.allies||[])]){
+        if(defs[actor.kind])visible.add(actor.kind);
+        else if(actor instanceof R.Trolloc)visible.add(actor.boss?'chieftain':'trolloc');
+        else if(actor instanceof R.Loial)visible.add('loial');
+      }
+      if(scene.twinkle)visible.add('twinkle');
+    }
+    R.perf.stageVisibleKinds=Array.from(visible);
+    R.perf.stageRigTimings=[];
     for(const kind of Object.keys(defs))if(!keep.has(kind))dropRig(kind);
     if(R.Bake)R.Bake.drop(j=>j.kind&&!keep.has(j.kind));
     const pending=[],boss={0:['chieftain'],1:['fade'],4:['taim','twinkle']}[level]||[];
     for(const kind of kinds){
       const d=defs[kind];if(!d)continue;
-      const r=getRig(d);if(!r)continue;
+      if(!visible.has(kind)){for(const key of POSE_KEYS){pending.push({kind,key,pri:key==='idle'?1:4});this.wantPose(kind,key,key==='idle'?1:4);}continue;}
+      const rigAt=performance.now(),r=getRig(d),rigMs=performance.now()-rigAt;if(!r)continue;
+      const poseAt=performance.now(),cached=!!(r.library&&r.library.has('idle'));
       if(!(r.library&&r.library.has('idle'))){
         const prev=R.perf.poseWarm;R.perf.poseWarm=true;
         const a=actorFor(d,'idle'),pose=this.pose(a,d.height);
         paintedBody(null,r,targets(a,d,r,pose),pose,a,'idle');
         R.perf.poseWarm=prev;
       }
-      const idle=r.library&&r.library.get('idle');if(idle)this.touchEntry(idle);
+      const poseMs=performance.now()-poseAt,idle=r.library&&r.library.get('idle'),touchAt=performance.now();if(idle)this.touchEntry(idle);
+      R.perf.stageRigTimings.push({kind,rigMs,poseMs,touchMs:performance.now()-touchAt,cached,identity:!!idle?.identity});
       for(const key of POSE_KEYS){
         if(key==='idle'||(r.library&&r.library.has(key)))continue;
         const pri=boss.includes(kind)?1:key[0]==='w'?2:3;
@@ -698,7 +784,7 @@
     if(!R.Bake)return;
     if(level===2){
       R.Bake.enqueue(1,'blit:cg-draghkar',(job,end)=>{
-        const img=R.assets.get('cg-draghkar');if(!img)return true;
+        const img=R.art.bitmap('cg-draghkar',128,95);if(!img)return true;
         const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
         if(!ctx)return true;
         const t0=performance.now();
@@ -710,7 +796,8 @@
     if(level===3){
       const names=['idle','walk1','walk2','walk3','walk4','windup','slash','lunge','hurt','cast'];
       names.forEach((name)=>R.Bake.enqueue(1,'belal:'+name,(job)=>{
-        const img=R.assets.get('belal-'+name);if(!img)return true;
+        const frame=BELAL.frames[name],scale=defs.forsaken.height/BELAL.frames.idle[1];
+        const img=R.art.bitmap('belal-'+name,frame[0]*scale,frame[1]*scale);if(!img)return true;
         const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
         if(!ctx)return true;
         const t0=performance.now();
@@ -789,8 +876,9 @@
   const belalFlashCache={};
   function belalFlash(name,img,w,h){let c=belalFlashCache[name];if(!c){const t0=performance.now();c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(w));c.height=Math.max(1,Math.ceil(h));const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,0,0,w,h);g.globalCompositeOperation='source-atop';g.fillStyle='#fff4c8';g.fillRect(0,0,w,h);belalFlashCache[name]=c;if(R.perf.noteBake)R.perf.noteBake('belalFlash:'+name,performance.now()-t0);}return c;}
   R.drawBelal=function(ctx,a,cam,height){
-    const name=a.belalFrame||belalFrame(a),img=R.assets.get('belal-'+name);if(!img)return false;
+    const name=a.belalFrame||belalFrame(a);
     const [w,h,ax,ay]=BELAL.frames[name],s=(height||116)/BELAL.frames.idle[1];
+    const img=R.art.bitmap('belal-'+name,w*s,h*s);if(!img)return false;
     ctx.save();
     if(a.dead)ctx.globalAlpha*=Math.max(0,a.deathTimer/0.75);
     ctx.translate(a.x-cam,a.y-(a.z||0));
@@ -804,7 +892,7 @@
     return true;
   };
   for(const Type of [R.ShadowSoldier,R.ShadowBoss]){const draw=Type.prototype.draw;Type.prototype.draw=function(ctx,cam){
-    if(this.kind==='draghkar') {const img=R.assets.get('cg-draghkar');if(img){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,30);ctx.save();ctx.translate(this.x-cam,this.y-this.z-28);ctx.scale(-this.facing,1);const flap=Math.sin(this.flightTime*9)*.10;ctx.rotate(this.ai==='attack'?-.18:flap*.4);ctx.drawImage(img,-64,-45,128,86*(1+flap));ctx.restore();return;}}
+    if(this.kind==='draghkar') {const img=R.art.bitmap('cg-draghkar',128,95);if(img){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,30);ctx.save();ctx.translate(this.x-cam,this.y-this.z-28);ctx.scale(-this.facing,1);const flap=Math.sin(this.flightTime*9)*.10;ctx.rotate(this.ai==='attack'?-.18:flap*.4);ctx.drawImage(img,-64,-45,128,86*(1+flap));ctx.restore();return;}}
     const kind=this.kind;if(kind==='forsaken'&&R.assets.has('belal-idle')){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?25:19);R.drawBelal(ctx,this,cam,defs.forsaken.height);}else if(defs[kind]&&R.assets.has(defs[kind].key)){this.drawTell(ctx,cam);this.drawShadow(ctx,cam,this.boss?25:19);R.Puppet.draw(ctx,this,cam,kind);}else draw.call(this,ctx,cam);
   };}
   const loial=R.Loial.prototype.draw;R.Loial.prototype.draw=function(ctx,cam){if(R.assets.has('cg-loial')){R.draw.shadow(ctx,this.x-cam,this.y,28);R.Puppet.draw(ctx,this,cam,'loial');}else loial.call(this,ctx,cam);};

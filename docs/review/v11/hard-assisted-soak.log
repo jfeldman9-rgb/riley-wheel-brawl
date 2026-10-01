@@ -1,0 +1,65 @@
+PASS Fresh settings default to Normal
+PASS Hard selection persists
+PASS Invalid difficulty normalizes to Normal
+PASS Legacy Continue stays Normal when next-run setting is Hard
+PASS Legacy Continue applies Normal to its scene
+PASS Title difficulty row remains clickable
+PASS Title difficulty works with directional menu input
+PASS All title options fit above help text
+PASS Pause difficulty row remains clickable
+PASS Pause difficulty works with directional menu input
+PASS All pause options fit above help text
+PASS New run uses saved Hard selection
+PASS Changing the option never changes the current run
+PASS Checkpoint preserves Hard
+PASS Continue preserves Hard against a Normal menu setting
+PASS Restart preserves Hard
+PASS Stage progression preserves Hard
+PASS Every enemy and boss in all 30 waves has identical Normal/Hard HP
+PASS Enemies starting on one side visibly route to opposite flanks
+PASS Hard enemies sustain pressure rather than waiting forever
+PASS Attack handoffs never overlap active windows and retain a reaction gap
+PASS Pursued axe takes a valid opening before finishing its flank, with the full tell
+PASS Pursued axe telegraphs toward Riley from its actual side
+PASS Pursued hound takes a valid opening before finishing its flank, with the full tell
+PASS Pursued hound telegraphs toward Riley from its actual side
+PASS Pursued spear takes a valid opening before finishing its flank, with the full tell
+PASS Pursued spear telegraphs toward Riley from its actual side
+PASS Pursued darkfriend takes a valid opening before finishing its flank, with the full tell
+PASS Pursued darkfriend telegraphs toward Riley from its actual side
+PASS Pursued cultist takes a valid opening before finishing its flank, with the full tell
+PASS Pursued cultist telegraphs toward Riley from its actual side
+PASS Pursued guard takes a valid opening before finishing its flank, with the full tell
+PASS Pursued guard telegraphs toward Riley from its actual side
+PASS Pursued ashaman takes a valid opening before finishing its flank, with the full tell
+PASS Pursued ashaman telegraphs toward Riley from its actual side
+PASS Pursued guard re-enters from the left edge before telegraphing
+PASS Pursued guard re-enters from the right edge before telegraphing
+PASS Mixed short/long melee and ranged tells never produce simultaneous active attackers
+PASS Fastest Hard melee attack retains the entire original tell
+PASS Committed Hard attacks do not track Riley through their tell
+PASS Hard starts a valid close attack
+PASS Interrupting Hard releases the director token
+PASS Interrupted Hard enemies recover without a stale attack token
+PASS Live travelling boss attack prevents an overlapping strike
+PASS Spent travelling strike does not stall combat
+PASS Persistent stage fog never deadlocks the attack schedule
+PASS Hard respects the respawn grace window
+PASS Hard cannot attack from off-screen
+PASS Turned Asha’man keep useful casting range in Hard
+PASS Flanking stays reachable at floor edge 205
+PASS Flanking stays reachable at floor edge 345
+PASS Hard fade preserves its full boss repertoire
+PASS Hard draghkar preserves its full boss repertoire
+PASS Hard forsaken preserves its full boss repertoire
+PASS Hard taim preserves its full boss repertoire
+PASS Hard Fade chooses a fully telegraphed gap-closing move at range
+PASS Pause freezes Hard attack scheduling
+PASS Hard assisted stage 1: 10/10 clears and complete boss repertoire
+PASS Hard assisted stage 2: 10/10 clears and complete boss repertoire
+PASS Hard assisted stage 3: 10/10 clears and complete boss repertoire
+PASS Hard assisted stage 4: 10/10 clears and complete boss repertoire
+PASS Hard assisted stage 5: 10/10 clears and complete boss repertoire
+PASS All 50 Hard assisted runs have zero simultaneous active attackers
+
+Hard checks passed: 63

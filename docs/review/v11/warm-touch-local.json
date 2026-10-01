@@ -1,0 +1,52 @@
+{
+  "method": "Decoded PNG/WebP images, actual Node Skia Canvas2D renderer and Bake queue. Deterministic clock is only a yielding/operation-count device, never elapsed performance evidence.",
+  "expectations": "bounded warm-touch regression",
+  "sourceHashes": {
+    "performance": "36bc74a6cafa53029a7c4c4b61ae59f348e08c286b08db582b7fa9c35992d490",
+    "puppets": "fb5fd985aaf3f495f236144f18f0bf32bdd6f4cc911630b0664fe2fb4f96f4c6"
+  },
+  "cases": 3,
+  "rows": [
+    {
+      "test": "cached-prefetch-batch",
+      "variant": "bounded",
+      "queued": 8,
+      "successfulWarmBlits": 1,
+      "remaining": 7,
+      "clock": "fixed; operation-count proof only"
+    },
+    {
+      "test": "absent-kinds-and-stage-drop",
+      "variant": "bounded",
+      "queuedAfterStage1": 8,
+      "completedKeys": [
+        "idle",
+        "w0",
+        "w1"
+      ],
+      "otherPoseJobsCanceledForMemory": true,
+      "absentKindEntries": 6,
+      "staleRetainedAfterStage5": 0,
+      "staleSurfacePixels": 86678,
+      "staleSurfaceLogicalRgbaBytes": 346712,
+      "staleWarmBlits": 0,
+      "liveRetained": 2,
+      "successfulWarmBlitsByFlush": [
+        1,
+        1
+      ]
+    },
+    {
+      "test": "demand-bypasses-backlog",
+      "variant": "bounded",
+      "backlog": 3,
+      "immediateRequestedPose": true,
+      "additionalRasterJobs": 0,
+      "additionalFallbacks": 0,
+      "exactPixels": true,
+      "demandPixelHash": "a8f1c62d94db49d745a10cb0977839863fd389691b5eb4ad0dd0dc8ec99f651a",
+      "skipsAlreadyDrawn": true,
+      "restoresInBake": true
+    }
+  ]
+}

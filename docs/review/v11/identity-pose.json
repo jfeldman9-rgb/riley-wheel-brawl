@@ -1,0 +1,918 @@
+{
+  "acceptanceScope": "full mesh-rig pose and contact comparison",
+  "baseCommit": "39782c8d294819aa0a078a8f5715cd1661901274",
+  "workingTreeDirty": true,
+  "revisionLabel": "uncommitted working-tree snapshot based on 39782c8d294819aa0a078a8f5715cd1661901274",
+  "method": "Decoded Node Skia Canvas2D. All runtime mesh rigs, scales 1/2/3, both facings. Identity pixels exactly equal processed/shaded texture; transformed poses and contact coordinates exactly equal previous mesh. Edge-alpha deltas against the old overlapping triangles are reported, not treated as unchanged pixels. No browser/device timing claim.",
+  "sourceHash": "45f55827b5358934e0e031f41bc6e750c35ead7d088dcfd55932b1681f360d08",
+  "referenceHash": "e2a49d45559a04e14e40bce60916b92d7c6aec79925ca93c3ebcac20caacabd8",
+  "identityChecks": 30,
+  "exactTransformed": 1380,
+  "contactChecks": 120,
+  "negativeControl": true,
+  "queuedIdentity": true,
+  "rows": [
+    {
+      "kind": "twinkle",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 0.9425115207373271,
+      "max": 109,
+      "over40": 36,
+      "pixels": 2170,
+      "meanAlpha": 2.3405529953917052
+    },
+    {
+      "kind": "twinkle",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 0.9425115207373271,
+      "max": 109,
+      "over40": 36,
+      "pixels": 2170,
+      "meanAlpha": 2.3405529953917052
+    },
+    {
+      "kind": "trolloc",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 0.6515998757378068,
+      "max": 255,
+      "over40": 76,
+      "pixels": 12876,
+      "meanAlpha": 1.3275085430257845
+    },
+    {
+      "kind": "trolloc",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 0.6515998757378068,
+      "max": 255,
+      "over40": 76,
+      "pixels": 12876,
+      "meanAlpha": 1.3275085430257845
+    },
+    {
+      "kind": "chieftain",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 0.7291549691184728,
+      "max": 255,
+      "over40": 96,
+      "pixels": 14248,
+      "meanAlpha": 1.3700168444693992
+    },
+    {
+      "kind": "chieftain",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 0.7291549691184728,
+      "max": 255,
+      "over40": 96,
+      "pixels": 14248,
+      "meanAlpha": 1.3700168444693992
+    },
+    {
+      "kind": "darkfriend",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 0.5935450687925935,
+      "max": 255,
+      "over40": 30,
+      "pixels": 7777,
+      "meanAlpha": 1.2212935579272213
+    },
+    {
+      "kind": "darkfriend",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 0.5935450687925935,
+      "max": 255,
+      "over40": 30,
+      "pixels": 7777,
+      "meanAlpha": 1.2212935579272213
+    },
+    {
+      "kind": "cultist",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 0.9428138830654554,
+      "max": 125,
+      "over40": 113,
+      "pixels": 8586,
+      "meanAlpha": 2.0043093407873283
+    },
+    {
+      "kind": "cultist",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 0.9428138830654554,
+      "max": 125,
+      "over40": 113,
+      "pixels": 8586,
+      "meanAlpha": 2.0043093407873283
+    },
+    {
+      "kind": "guard",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 0.3685335497835498,
+      "max": 98,
+      "over40": 33,
+      "pixels": 9240,
+      "meanAlpha": 0.8053030303030303
+    },
+    {
+      "kind": "guard",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 0.3685335497835498,
+      "max": 98,
+      "over40": 33,
+      "pixels": 9240,
+      "meanAlpha": 0.8053030303030303
+    },
+    {
+      "kind": "ashaman",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 0.6104235423542355,
+      "max": 255,
+      "over40": 92,
+      "pixels": 10908,
+      "meanAlpha": 1.137972130546388
+    },
+    {
+      "kind": "ashaman",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 0.6104235423542355,
+      "max": 255,
+      "over40": 92,
+      "pixels": 10908,
+      "meanAlpha": 1.137972130546388
+    },
+    {
+      "kind": "fade",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 0.3945443328045126,
+      "max": 104,
+      "over40": 39,
+      "pixels": 11346,
+      "meanAlpha": 0.8636523885069628
+    },
+    {
+      "kind": "fade",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 0.3945443328045126,
+      "max": 104,
+      "over40": 39,
+      "pixels": 11346,
+      "meanAlpha": 0.8636523885069628
+    },
+    {
+      "kind": "taim",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 1.0595529411764706,
+      "max": 255,
+      "over40": 159,
+      "pixels": 10625,
+      "meanAlpha": 2.306635294117647
+    },
+    {
+      "kind": "taim",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 1.0595529411764706,
+      "max": 255,
+      "over40": 159,
+      "pixels": 10625,
+      "meanAlpha": 2.306635294117647
+    },
+    {
+      "kind": "loial",
+      "key": "idle",
+      "scale": 1,
+      "facing": -1,
+      "mean": 0.43931105115907276,
+      "max": 255,
+      "over40": 64,
+      "pixels": 20016,
+      "meanAlpha": 0.923960831334932
+    },
+    {
+      "kind": "loial",
+      "key": "idle",
+      "scale": 1,
+      "facing": 1,
+      "mean": 0.43931105115907276,
+      "max": 255,
+      "over40": 64,
+      "pixels": 20016,
+      "meanAlpha": 0.923960831334932
+    },
+    {
+      "kind": "twinkle",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.584171826625387,
+      "max": 113,
+      "over40": 27,
+      "pixels": 7752,
+      "meanAlpha": 1.604876160990712
+    },
+    {
+      "kind": "twinkle",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.584171826625387,
+      "max": 113,
+      "over40": 27,
+      "pixels": 7752,
+      "meanAlpha": 1.604876160990712
+    },
+    {
+      "kind": "trolloc",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.3759908659262836,
+      "max": 255,
+      "over40": 138,
+      "pixels": 49704,
+      "meanAlpha": 0.748128923225495
+    },
+    {
+      "kind": "trolloc",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.3759908659262836,
+      "max": 255,
+      "over40": 138,
+      "pixels": 49704,
+      "meanAlpha": 0.748128923225495
+    },
+    {
+      "kind": "chieftain",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.4581971677559913,
+      "max": 255,
+      "over40": 203,
+      "pixels": 55080,
+      "meanAlpha": 0.8181917211328976
+    },
+    {
+      "kind": "chieftain",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.4581971677559913,
+      "max": 255,
+      "over40": 203,
+      "pixels": 55080,
+      "meanAlpha": 0.8181917211328976
+    },
+    {
+      "kind": "darkfriend",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.3649915824915825,
+      "max": 255,
+      "over40": 99,
+      "pixels": 29700,
+      "meanAlpha": 0.7767676767676768
+    },
+    {
+      "kind": "darkfriend",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.3649915824915825,
+      "max": 255,
+      "over40": 99,
+      "pixels": 29700,
+      "meanAlpha": 0.7767676767676768
+    },
+    {
+      "kind": "cultist",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.6011912052915238,
+      "max": 255,
+      "over40": 217,
+      "pixels": 32656,
+      "meanAlpha": 1.0992160705536502
+    },
+    {
+      "kind": "cultist",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.6011912052915238,
+      "max": 255,
+      "over40": 217,
+      "pixels": 32656,
+      "meanAlpha": 1.0992160705536502
+    },
+    {
+      "kind": "guard",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.24088275391956374,
+      "max": 255,
+      "over40": 93,
+      "pixels": 35208,
+      "meanAlpha": 0.4697511929107021
+    },
+    {
+      "kind": "guard",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.24088275391956374,
+      "max": 255,
+      "over40": 93,
+      "pixels": 35208,
+      "meanAlpha": 0.4697511929107021
+    },
+    {
+      "kind": "ashaman",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.4163688774537831,
+      "max": 255,
+      "over40": 153,
+      "pixels": 41976,
+      "meanAlpha": 0.6053935582237469
+    },
+    {
+      "kind": "ashaman",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.4163688774537831,
+      "max": 255,
+      "over40": 153,
+      "pixels": 41976,
+      "meanAlpha": 0.6053935582237469
+    },
+    {
+      "kind": "fade",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.2325621546961326,
+      "max": 255,
+      "over40": 72,
+      "pixels": 43440,
+      "meanAlpha": 0.4934162062615101
+    },
+    {
+      "kind": "fade",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.2325621546961326,
+      "max": 255,
+      "over40": 72,
+      "pixels": 43440,
+      "meanAlpha": 0.4934162062615101
+    },
+    {
+      "kind": "taim",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.5879003820158684,
+      "max": 255,
+      "over40": 345,
+      "pixels": 40836,
+      "meanAlpha": 1.2275198354393182
+    },
+    {
+      "kind": "taim",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.5879003820158684,
+      "max": 255,
+      "over40": 345,
+      "pixels": 40836,
+      "meanAlpha": 1.2275198354393182
+    },
+    {
+      "kind": "loial",
+      "key": "idle",
+      "scale": 2,
+      "facing": -1,
+      "mean": 0.22773272848771461,
+      "max": 255,
+      "over40": 97,
+      "pixels": 77816,
+      "meanAlpha": 0.4918397244782564
+    },
+    {
+      "kind": "loial",
+      "key": "idle",
+      "scale": 2,
+      "facing": 1,
+      "mean": 0.22773272848771461,
+      "max": 255,
+      "over40": 97,
+      "pixels": 77816,
+      "meanAlpha": 0.4918397244782564
+    },
+    {
+      "kind": "twinkle",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.46734462602886795,
+      "max": 87,
+      "over40": 44,
+      "pixels": 16766,
+      "meanAlpha": 1.3130740784921866
+    },
+    {
+      "kind": "twinkle",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.46734462602886795,
+      "max": 87,
+      "over40": 44,
+      "pixels": 16766,
+      "meanAlpha": 1.3130740784921866
+    },
+    {
+      "kind": "trolloc",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.29961085972850676,
+      "max": 255,
+      "over40": 278,
+      "pixels": 110500,
+      "meanAlpha": 0.4736923076923077
+    },
+    {
+      "kind": "trolloc",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.29961085972850676,
+      "max": 255,
+      "over40": 278,
+      "pixels": 110500,
+      "meanAlpha": 0.4736923076923077
+    },
+    {
+      "kind": "chieftain",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.34485397348831137,
+      "max": 255,
+      "over40": 348,
+      "pixels": 122512,
+      "meanAlpha": 0.5407388663967612
+    },
+    {
+      "kind": "chieftain",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.34485397348831137,
+      "max": 255,
+      "over40": 348,
+      "pixels": 122512,
+      "meanAlpha": 0.5407388663967612
+    },
+    {
+      "kind": "darkfriend",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.26732537812571255,
+      "max": 255,
+      "over40": 138,
+      "pixels": 65785,
+      "meanAlpha": 0.5105115147830053
+    },
+    {
+      "kind": "darkfriend",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.26732537812571255,
+      "max": 255,
+      "over40": 138,
+      "pixels": 65785,
+      "meanAlpha": 0.5105115147830053
+    },
+    {
+      "kind": "cultist",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.43554935208161016,
+      "max": 255,
+      "over40": 317,
+      "pixels": 72540,
+      "meanAlpha": 0.7454507857733664
+    },
+    {
+      "kind": "cultist",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.43554935208161016,
+      "max": 255,
+      "over40": 317,
+      "pixels": 72540,
+      "meanAlpha": 0.7454507857733664
+    },
+    {
+      "kind": "guard",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.17658410653579737,
+      "max": 255,
+      "over40": 147,
+      "pixels": 78246,
+      "meanAlpha": 0.28349052986734147
+    },
+    {
+      "kind": "guard",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.17658410653579737,
+      "max": 255,
+      "over40": 147,
+      "pixels": 78246,
+      "meanAlpha": 0.28349052986734147
+    },
+    {
+      "kind": "ashaman",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.3074957090753057,
+      "max": 255,
+      "over40": 267,
+      "pixels": 93220,
+      "meanAlpha": 0.39076378459558037
+    },
+    {
+      "kind": "ashaman",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.3074957090753057,
+      "max": 255,
+      "over40": 267,
+      "pixels": 93220,
+      "meanAlpha": 0.39076378459558037
+    },
+    {
+      "kind": "fade",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.14864990689013036,
+      "max": 255,
+      "over40": 115,
+      "pixels": 96660,
+      "meanAlpha": 0.27572936064556175
+    },
+    {
+      "kind": "fade",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.14864990689013036,
+      "max": 255,
+      "over40": 115,
+      "pixels": 96660,
+      "meanAlpha": 0.27572936064556175
+    },
+    {
+      "kind": "taim",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.4089068825910931,
+      "max": 255,
+      "over40": 454,
+      "pixels": 90649,
+      "meanAlpha": 0.836898366225772
+    },
+    {
+      "kind": "taim",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.4089068825910931,
+      "max": 255,
+      "over40": 454,
+      "pixels": 90649,
+      "meanAlpha": 0.836898366225772
+    },
+    {
+      "kind": "loial",
+      "key": "idle",
+      "scale": 3,
+      "facing": -1,
+      "mean": 0.16775268717996034,
+      "max": 255,
+      "over40": 227,
+      "pixels": 173416,
+      "meanAlpha": 0.3032419153941966
+    },
+    {
+      "kind": "loial",
+      "key": "idle",
+      "scale": 3,
+      "facing": 1,
+      "mean": 0.16775268717996034,
+      "max": 255,
+      "over40": 227,
+      "pixels": 173416,
+      "meanAlpha": 0.3032419153941966
+    }
+  ],
+  "timings": [
+    {
+      "scale": 1,
+      "kind": "twinkle",
+      "beforeRigMs": 43.71919600000001,
+      "afterRigMs": 42.13467999999989,
+      "beforeIdleMs": 87.14059799999995,
+      "afterIdleMs": 3.483165999999983
+    },
+    {
+      "scale": 1,
+      "kind": "trolloc",
+      "beforeRigMs": 101.5106679999999,
+      "afterRigMs": 78.18303500000002,
+      "beforeIdleMs": 42.59649300000001,
+      "afterIdleMs": 3.3225430000002234
+    },
+    {
+      "scale": 1,
+      "kind": "chieftain",
+      "beforeRigMs": 60.7490600000001,
+      "afterRigMs": 63.78878599999916,
+      "beforeIdleMs": 30.608485999999175,
+      "afterIdleMs": 2.014760000000024
+    },
+    {
+      "scale": 1,
+      "kind": "darkfriend",
+      "beforeRigMs": 54.9366859999991,
+      "afterRigMs": 67.25191900000027,
+      "beforeIdleMs": 38.86479099999997,
+      "afterIdleMs": 2.1212030000006052
+    },
+    {
+      "scale": 1,
+      "kind": "cultist",
+      "beforeRigMs": 56.098941999996896,
+      "afterRigMs": 58.29287200000181,
+      "beforeIdleMs": 28.41293299999961,
+      "afterIdleMs": 2.012384000001475
+    },
+    {
+      "scale": 1,
+      "kind": "guard",
+      "beforeRigMs": 39.54904700000043,
+      "afterRigMs": 50.762157999997726,
+      "beforeIdleMs": 24.43564999999944,
+      "afterIdleMs": 1.5516130000032717
+    },
+    {
+      "scale": 1,
+      "kind": "ashaman",
+      "beforeRigMs": 59.42618500000026,
+      "afterRigMs": 76.75284499999907,
+      "beforeIdleMs": 48.34483000000182,
+      "afterIdleMs": 1.516963999998552
+    },
+    {
+      "scale": 1,
+      "kind": "fade",
+      "beforeRigMs": 52.588911999999254,
+      "afterRigMs": 45.63334300000133,
+      "beforeIdleMs": 21.252737999999226,
+      "afterIdleMs": 1.7930930000002263
+    },
+    {
+      "scale": 1,
+      "kind": "taim",
+      "beforeRigMs": 50.75923999999941,
+      "afterRigMs": 50.78683699999965,
+      "beforeIdleMs": 26.691576000001078,
+      "afterIdleMs": 1.6823609999992186
+    },
+    {
+      "scale": 1,
+      "kind": "loial",
+      "beforeRigMs": 72.5479720000003,
+      "afterRigMs": 66.45292499999778,
+      "beforeIdleMs": 34.04611799999839,
+      "afterIdleMs": 1.3893430000025546
+    },
+    {
+      "scale": 2,
+      "kind": "twinkle",
+      "beforeRigMs": 39.32265700000062,
+      "afterRigMs": 40.90587999999843,
+      "beforeIdleMs": 22.706435000000056,
+      "afterIdleMs": 2.2880570000015723
+    },
+    {
+      "scale": 2,
+      "kind": "trolloc",
+      "beforeRigMs": 70.64987700000347,
+      "afterRigMs": 74.38366499999393,
+      "beforeIdleMs": 36.35512999999628,
+      "afterIdleMs": 2.3275870000070427
+    },
+    {
+      "scale": 2,
+      "kind": "chieftain",
+      "beforeRigMs": 61.47823100000096,
+      "afterRigMs": 53.56013699999312,
+      "beforeIdleMs": 29.02435500000138,
+      "afterIdleMs": 5.312480000000505
+    },
+    {
+      "scale": 2,
+      "kind": "darkfriend",
+      "beforeRigMs": 59.023355999997875,
+      "afterRigMs": 67.96941900000093,
+      "beforeIdleMs": 53.49820599999657,
+      "afterIdleMs": 2.9720890000025975
+    },
+    {
+      "scale": 2,
+      "kind": "cultist",
+      "beforeRigMs": 64.24735299999884,
+      "afterRigMs": 59.18076600000495,
+      "beforeIdleMs": 31.965524999999616,
+      "afterIdleMs": 2.2135310000012396
+    },
+    {
+      "scale": 2,
+      "kind": "guard",
+      "beforeRigMs": 54.71880599999713,
+      "afterRigMs": 42.47815399999672,
+      "beforeIdleMs": 19.528473999998823,
+      "afterIdleMs": 2.10214100000303
+    },
+    {
+      "scale": 2,
+      "kind": "ashaman",
+      "beforeRigMs": 70.13839699999517,
+      "afterRigMs": 64.30772000000434,
+      "beforeIdleMs": 31.165988000000652,
+      "afterIdleMs": 1.5429969999968307
+    },
+    {
+      "scale": 2,
+      "kind": "fade",
+      "beforeRigMs": 65.68260300000111,
+      "afterRigMs": 101.22462699999596,
+      "beforeIdleMs": 41.29056099999434,
+      "afterIdleMs": 2.728279000002658
+    },
+    {
+      "scale": 2,
+      "kind": "taim",
+      "beforeRigMs": 118.30243500000506,
+      "afterRigMs": 117.31790699999692,
+      "beforeIdleMs": 30.294428000001062,
+      "afterIdleMs": 2.576584999995248
+    },
+    {
+      "scale": 2,
+      "kind": "loial",
+      "beforeRigMs": 70.55205800000113,
+      "afterRigMs": 70.63260699999955,
+      "beforeIdleMs": 33.51185099999566,
+      "afterIdleMs": 1.4219620000003488
+    },
+    {
+      "scale": 3,
+      "kind": "twinkle",
+      "beforeRigMs": 37.5112239999944,
+      "afterRigMs": 48.08574600000429,
+      "beforeIdleMs": 30.099802999997337,
+      "afterIdleMs": 3.148246000004292
+    },
+    {
+      "scale": 3,
+      "kind": "trolloc",
+      "beforeRigMs": 64.22682299999724,
+      "afterRigMs": 71.35379699999612,
+      "beforeIdleMs": 46.76532800000132,
+      "afterIdleMs": 2.714670000001206
+    },
+    {
+      "scale": 3,
+      "kind": "chieftain",
+      "beforeRigMs": 77.56733599999279,
+      "afterRigMs": 74.85925199999474,
+      "beforeIdleMs": 34.6079630000022,
+      "afterIdleMs": 2.0602449999860255
+    },
+    {
+      "scale": 3,
+      "kind": "darkfriend",
+      "beforeRigMs": 71.10731700000179,
+      "afterRigMs": 52.20009100000607,
+      "beforeIdleMs": 28.713959000000614,
+      "afterIdleMs": 1.4069820000004256
+    },
+    {
+      "scale": 3,
+      "kind": "cultist",
+      "beforeRigMs": 63.99141600000439,
+      "afterRigMs": 58.96620399999665,
+      "beforeIdleMs": 38.296280000009574,
+      "afterIdleMs": 3.066882999992231
+    },
+    {
+      "scale": 3,
+      "kind": "guard",
+      "beforeRigMs": 45.840844000005745,
+      "afterRigMs": 46.54183400000329,
+      "beforeIdleMs": 18.736797000005026,
+      "afterIdleMs": 2.8162069999962114
+    },
+    {
+      "scale": 3,
+      "kind": "ashaman",
+      "beforeRigMs": 59.519169000006514,
+      "afterRigMs": 56.80291800000123,
+      "beforeIdleMs": 30.275433999995585,
+      "afterIdleMs": 1.998741000003065
+    },
+    {
+      "scale": 3,
+      "kind": "fade",
+      "beforeRigMs": 51.84892499999842,
+      "afterRigMs": 51.98313800001051,
+      "beforeIdleMs": 21.846037999988766,
+      "afterIdleMs": 2.438909999997122
+    },
+    {
+      "scale": 3,
+      "kind": "taim",
+      "beforeRigMs": 67.54233699999168,
+      "afterRigMs": 61.26507500000298,
+      "beforeIdleMs": 53.464882000000216,
+      "afterIdleMs": 1.5435359999974025
+    },
+    {
+      "scale": 3,
+      "kind": "loial",
+      "beforeRigMs": 76.58138899999904,
+      "afterRigMs": 89.5223960000003,
+      "beforeIdleMs": 39.128887999992,
+      "afterIdleMs": 2.3089510000136215
+    }
+  ]
+}

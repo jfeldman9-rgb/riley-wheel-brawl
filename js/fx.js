@@ -6,14 +6,19 @@
 'use strict';
 
 RWB.FX = class FX {
-  constructor() { this.list = []; this.pool = []; }
+  constructor() { this.list = []; this.pool = []; this.counts = Object.create(null); this._drawSparks = []; this._drawGlows = []; this._drawRest = []; }
   _p(kind, x, y, life, force) {
     if (!force && this.list.length >= RWB.perf.fxCap) return null;
+    // Repeated multi-target hits cannot turn sparks or sword streaks into an
+    // unbounded draw batch. Readable text keeps its existing force guarantee.
+    const kindCap = kind === 'spark' ? Math.min(96, RWB.perf.fxCap) : kind === 'slash' ? 12 : Infinity;
+    if (!force && (this.counts[kind] || 0) >= kindCap) return null;
     const f = this.pool.pop() || {};
     f.kind = kind; f.x = x; f.y = y; f.t = 0; f.life = life;
     f.vx = 0; f.vy = 0; f.r = 2; f.color = '#fff'; f.str = ''; f.big = false;
     f.floor = 0; f.rest = false; f.rot = 0; f.vr = 0; f.data = null;
     this.list.push(f);
+    this.counts[kind] = (this.counts[kind] || 0) + 1;
     return f;
   }
   n(count) { return Math.max(1, Math.round(count * RWB.perf.fxScale)); }
@@ -21,7 +26,9 @@ RWB.FX = class FX {
   sparks(x, y, color, count, speed) {
     for (let i = 0, n = this.n(count || 8); i < n; i++) {
       const a = RWB.util.fxRand(0, Math.PI * 2), v = RWB.util.fxRand(0.4, 1) * (speed || 300);
-      if (!this.spawn('spark', x, y, RWB.util.fxRand(0.2, 0.4), { vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, color: color || '#fff6c8' })) return;
+      const f = this._p('spark', x, y, RWB.util.fxRand(0.2, 0.4));
+      if (!f) return;
+      f.vx = Math.cos(a) * v; f.vy = Math.sin(a) * v - 60; f.color = color || '#fff6c8';
     }
   }
   impact(x, y, dir, weight, color) {
@@ -44,7 +51,11 @@ RWB.FX = class FX {
   ring(x, y, big, color) { this.spawn('ring', x, y, 0.26, { big: !!big, color: color || '#fff' }); }
   glow(x, y, r, color, life) { this.spawn('glow', x, y, life || 0.4, { r: r || 20, color: color || '#9eeaff' }); }
   text(x, y, str, color, life) { const f = this._p('text', x, y, life || 1.1, true); f.str = str; f.color = color || '#fff'; f.vy = -30; return f; }
-  clear() { while (this.list.length) this.pool.push(this.list.pop()); }
+  _recycle(f) {
+    this.counts[f.kind] = Math.max(0, (this.counts[f.kind] || 1) - 1);
+    if (this.pool.length < 384) this.pool.push(f);
+  }
+  clear() { while (this.list.length) this._recycle(this.list.pop()); }
   update(dt) {
     const list = this.list, K = FX.KINDS;
     let j = 0;
@@ -53,12 +64,13 @@ RWB.FX = class FX {
       f.t += dt;
       const k = K[f.kind];
       if (k && k.update) k.update(f, dt);
-      if (f.t < f.life) list[j++] = f; else this.pool.push(f);
+      if (f.t < f.life) list[j++] = f; else this._recycle(f);
     }
     list.length = j;
   }
   draw(ctx, camX) {
-    const K = FX.KINDS, sparks = [], glows = [], rest = [];
+    const K = FX.KINDS, sparks = this._drawSparks, glows = this._drawGlows, rest = this._drawRest;
+    sparks.length = glows.length = rest.length = 0;
     for (const f of this.list) {
       if (f.t < 0 || Math.abs(f.x - (camX || 0) - 320) > 440 + f.r || f.y < -100 - f.r || f.y > 460 + f.r) continue;
       if (f.kind === 'spark') sparks.push(f);
@@ -148,8 +160,13 @@ RWB.FX.KINDS = {
   slash: {
     draw(ctx, f, sx) {
       const k = f.t / f.life, dir = f.vx || 1;
-      ctx.save(); ctx.globalAlpha = Math.max(0, 1 - k); ctx.strokeStyle = f.color || '#fff6d0'; ctx.lineWidth = 3; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(sx - dir * 16, f.y - 12); ctx.lineTo(sx + dir * 24, f.y + 8); ctx.moveTo(sx - dir * 6, f.y - 20); ctx.lineTo(sx + dir * 16, f.y - 2); ctx.stroke(); ctx.restore();
+      const color=f.color||'#fff6d0';
+      const stamp=RWB.effects.stamp('slash:'+color,g=>{
+        g.setTransform(2,0,0,2,40,48);g.strokeStyle=color;g.lineWidth=3;g.lineCap='round';
+        g.beginPath();g.moveTo(-16,-12);g.lineTo(24,8);g.moveTo(-6,-20);g.lineTo(16,-2);g.stroke();
+      },96,72);
+      ctx.save();ctx.globalAlpha=Math.max(0,1-k);ctx.translate(sx,f.y);ctx.scale(dir<0?-1:1,1);
+      ctx.drawImage(stamp,-20,-24,48,36);ctx.restore();
     }
   },
   text: {

@@ -1,0 +1,72 @@
+{
+  "scope": "Reporting-only follow-up after successful full portable matrix. Product/runtime, test-bearing harnesses, runtime loader and verifier remain unchanged. No full heavy rerun is claimed for this reporting wrapper revision.",
+  "completedHeavyRunWrapperSha256": "038036c27a4855663a62bc8f44e072c0485a06ca580404ddf01573cdfe29b58a",
+  "finalReportingWrapperSha256": "cea1be8066c34f850f8779f4faebd18ab7ec3aff24dfc02177a999a1c89e3e79",
+  "reportHelperSha256": "b453b51d661179f205c91d4a731366c232f3e75e507bba0d81480396c9b5f153",
+  "changes": [
+    "Print candidate/control hashes before suites for free workflow logs.",
+    "Print assertion context plus bounded log tail and exit/signal when a child fails.",
+    "Set SUMMARY allPassed=false while running or after failure so an older passing summary cannot survive a new started run.",
+    "Reject an existing output path before writing and atomically create a fresh output directory; never overwrite prior evidence."
+  ],
+  "validation": [
+    "node --check run.cjs",
+    "node report.cjs",
+    "all test-bearing files remain byte-identical to completed portable run",
+    "Actual runner invocation against existing successful output rejects it before writing; before/after byte hashes match."
+  ],
+  "testBearingFiles": [
+    {
+      "file": "pool/check-lifecycle.cjs",
+      "sha256": "47857f160d62d8fe2f47815cdd50db21c7e9c87ecb83a658b5cee2b9df0ddb0d",
+      "identicalToCompletedPortableRun": true
+    },
+    {
+      "file": "pool/check-pixels.cjs",
+      "sha256": "2bde84765807cc63110404f467d0138cf5b1c0e100b92c1511d357793c96cde9",
+      "identicalToCompletedPortableRun": true
+    },
+    {
+      "file": "pool/harness.cjs",
+      "sha256": "ceca3e967c08c1f71d378cacc3bd676e92b3675edf8d57070bd937448787ce1a",
+      "identicalToCompletedPortableRun": true
+    },
+    {
+      "file": "queue/check-lifecycle.cjs",
+      "sha256": "05d6d2715f83bc46460b34b4a4f17e206de60c88c057f687c427d06a9ae009e2",
+      "identicalToCompletedPortableRun": true
+    },
+    {
+      "file": "queue/check-pixels.cjs",
+      "sha256": "35b930445e3999de99d55f1cb10fa511988643740aca80e19d8ac00645241782",
+      "identicalToCompletedPortableRun": true
+    },
+    {
+      "file": "queue/check-queue.cjs",
+      "sha256": "4c28715198053928ba014cf92193b4927122a9905d167564a940deb206bddf65",
+      "identicalToCompletedPortableRun": true
+    },
+    {
+      "file": "background/check-control-flow.cjs",
+      "sha256": "de9cd755f31635b4d6b082990ed9f6610328e5ea76db2d5c397b76f4db020e2b",
+      "identicalToCompletedPortableRun": true
+    },
+    {
+      "file": "background/check-decoded-pixels.cjs",
+      "sha256": "4611deab5a06a3fb9566e2db19c581b6f3f73c26ee12f07f403ef86f9fff2a13",
+      "identicalToCompletedPortableRun": true
+    }
+  ],
+  "outputGuardSelfTest": {
+    "command": [
+      "node",
+      "riley-v11-candidate-readiness/tools/readiness-v11/run.cjs",
+      "--candidate-root=riley-v11-candidate-readiness",
+      "--control-ref=f7e4af53c1647f10ebbc14dd2d502193ffe06a35"
+    ],
+    "exitCode": 1,
+    "expectedError": "Readiness output already exists",
+    "preservedEvidenceFileCount": 36,
+    "allExistingOutputBytesUnchanged": true
+  }
+}

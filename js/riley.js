@@ -21,6 +21,19 @@
     punch:[32.3,-73,.72],kick:[0,-64,-1.02],fireball:[9.6,-35.6,.58],hurt:[29.3,-45,-.82],jump:[8.8,-40,-.65],
     roundhouse:[20.5,-71,-1.22],knee:[18,-77,-.28],channel:[10,-57,-.08],lying:[-21,-5,-1.42],getup:[6,-4,.72]
   };
+  // Measured glove centres in each original painted frame. Earlier action
+  // anchors landed on the belt/raised leg in several poses; use the actual
+  // fist pixels, then transform with the same atlas anchor as Riley's body.
+  RILEY16.handPixels = {
+    walk1:[119,113],walk2:[113,106],walk3:[88,95],walk4:[105,103],
+    walk5:[100,106],walk6:[102,110],walk7:[82,95],walk8:[115,99],
+    punch:[177,48],kick:[43,56],fireball:[174,76],hurt:[141,68],jump:[114,58],
+    roundhouse:[123,49],knee:[81,45],channel:[88,66],lying:[66,70],getup:[101,132]
+  };
+  for (const [frame, hand] of Object.entries(RILEY16.handPixels)) {
+    const data=RILEY16.frames[frame],scale=RILEY16.height/RILEY16.frames.idle[1];
+    HANDS[frame][0]=(hand[0]-data[2])*scale;HANDS[frame][1]=(hand[1]-data[3])*scale;
+  }
   // [sole x, sole y, planted side, distance span], in actor units relative to
   // the atlas anchor. Spans are the measured body travel to the next exposure;
   // each four-frame stance totals 32u and begins on a check/contact boundary.
@@ -35,6 +48,22 @@
     while(index<frames.length-1&&phase>=start+RILEY16.feet[frames[index]][3])start+=RILEY16.feet[frames[index++]][3];
     return {frame:frames[index],foot:RILEY16.feet[frames[index]],phase,start,first:RILEY16.feet[frames[0]][0]};
   }
+  // Convex horizontal support of every nontransparent source pixel. Points
+  // are [atlas x edge, source row]; -1 is above the sheared hip. The additive
+  // decoded-pixel check verifies these against the untouched PNGs. Keeping
+  // geometry here also gives image-free simulations identical body bounds.
+  const BODY_SUPPORT = {
+    walk1:[[12,-1],[8,157],[2,200],[2,208],[3,210],[4,211],[5,212],[6,213],[7,214],[13,221],[14,222],[15,223],[16,224],[17,225],[18,226],[21,228],[114,228],[120,225],[122,224],[124,223],[126,222],[128,221],[130,220],[133,218],[134,217],[134,-1]],
+    walk2:[[18,-1],[14,145],[10,150],[8,153],[7,155],[6,158],[5,161],[2,188],[2,197],[3,199],[12,213],[13,214],[14,215],[15,216],[16,217],[17,218],[21,221],[24,222],[27,223],[70,225],[112,225],[114,223],[124,-1]],
+    walk3:[[6,-1],[2,152],[2,165],[17,227],[21,228],[64,228],[66,226],[98,-1]],
+    walk4:[[6,-1],[5,149],[3,152],[2,155],[2,206],[3,208],[10,220],[12,223],[13,224],[14,225],[15,226],[16,227],[17,228],[18,229],[20,230],[22,231],[24,232],[108,232],[111,231],[113,230],[115,229],[115,-1]],
+    walk5:[[16,-1],[14,146],[11,150],[10,151],[8,154],[7,156],[6,158],[2,201],[2,211],[3,212],[4,213],[5,214],[6,215],[7,216],[13,221],[14,222],[15,223],[16,224],[17,225],[18,226],[19,227],[21,228],[119,228],[128,225],[130,224],[132,223],[134,222],[136,221],[138,220],[141,218],[142,217],[142,211],[141,208],[113,-1]],
+    walk6:[[7,-1],[2,155],[2,190],[3,192],[4,194],[6,197],[16,209],[17,210],[18,211],[19,212],[20,213],[21,214],[25,217],[27,218],[29,219],[32,220],[35,221],[58,223],[101,223],[103,221],[113,-1]],
+    walk7:[[2,-1],[2,168],[24,229],[28,230],[71,230],[73,228],[94,147],[94,-1]],
+    walk8:[[8,-1],[7,147],[6,148],[4,151],[3,153],[2,157],[2,213],[3,214],[4,215],[5,216],[6,217],[7,218],[12,224],[13,225],[14,226],[15,227],[16,228],[17,229],[18,230],[21,232],[105,232],[113,228],[115,227],[117,226],[119,225],[121,224],[123,223],[127,220],[127,213],[125,-1]],
+  };
+  // Cosmetic dimensions only; keep the cached crystal stamp and its grip intact.
+  const SWORD_SCALE_X=.76,SWORD_SCALE_Y=.82;
   let swordCanvas=null;
   function prepareSword(){
     if(swordCanvas)return swordCanvas;
@@ -371,9 +400,9 @@
         this.vx = this.vy = 0;
         if (this.grabDamageClock >= 0.4) { this.grabDamageClock = 0; this.g.hitPlayer(3, this.grabbedBy.x, { kb:0, knockdown:false, source:'HYPNOTIC KISS' }); }
         if (this.grabTimer <= 0 || this.grabbedBy.dead) { this.grabbedBy = null; this.invuln = 0.7; }
-        this.updateTaint(dt); super.update(dt); return;
+        this.updateTaint(dt); super.update(dt); this.containPaintedBody(); return;
       }
-      if (this.stunTimer > 0) { this.stunTimer -= dt; this.vx = this.vy = 0; this.updateTaint(dt); super.update(dt); return; }
+      if (this.stunTimer > 0) { this.stunTimer -= dt; this.vx = this.vy = 0; this.updateTaint(dt); super.update(dt); this.containPaintedBody(); return; }
       this.fireCooldown = Math.max(0, this.fireCooldown - dt);
       this.angreal = Math.max(0, this.angreal - dt);
       this.comboWindow = Math.max(0, this.comboWindow - dt);
@@ -382,6 +411,7 @@
       this.hitFlash = Math.max(0, this.hitFlash - dt);
       if (this.dead) {
         this.deadTimer += dt;
+        this.containPaintedBody();
         return;
       }
       if (this.state === 'knockdown' && this.stateT > 0.28) this.setState('lying');
@@ -389,7 +419,12 @@
         this.setState('getup');
         this.invuln = 1;
       }
-      if (this.state === 'getup' && this.stateT > 0.42) this.setState('idle');
+      if (this.state === 'getup' && this.stateT > 0.42) {
+        // Protect the first controllable recovery frames, including an externally
+        // entered get-up pose. Existing respawn/knockdown grace stays intact.
+        this.invuln = Math.max(this.invuln, 0.24);
+        this.setState('idle');
+      }
       const locked = ['hurt', 'knockdown', 'lying', 'getup', 'super'].includes(this.state);
       if (locked && R.keyPressed(input, 'attack')) this.queuedAttack = true;
       if (this.state === 'hurt' && this.stateT > 0.22) {
@@ -428,7 +463,7 @@
       this.updateAttack(dt);
       this.updateTaint(dt);
       super.update(dt);
-      this.x = R.util.clamp(this.x, this.g.arenaLeft + 18, this.g.arenaRight - 18);
+      this.containPaintedBody();
       if (this.grabbed) {
         this.grabbed.x = this.x + this.facing * 22;
         this.grabbed.y = this.y;
@@ -480,6 +515,45 @@
       if (state === 'getup') return 'getup';
       if (['hurt', 'knockback'].includes(state)) return 'hurt';
       return 'idle';
+    }
+    paintedBodyBounds() {
+      const frame = this.spriteFrame(), data = RILEY16.frames[frame];
+      if (!data) return { minX: -40, maxX: 40 };
+      const [w,,ax,ay] = data, scale = RILEY16.height / RILEY16.frames.idle[1];
+      // Every source frame has exactly two transparent border columns.
+      const baseLeft = (2-ax)*scale, baseRight = (w-2-ax)*scale;
+      let left = baseLeft, right = baseRight, bodyShift = 0;
+      const lying = this.dead || this.state === 'knockdown' || this.state === 'lying' || this.state === 'death';
+      if (!lying && this.grounded && BODY_SUPPORT[frame]) {
+        const contact = walkContact(this.walkDistance);
+        const correction = this.facing*(contact.first-contact.phase-contact.foot[0]);
+        bodyShift = Math.max(-2,Math.min(2,correction));
+        const legShift = (correction-bodyShift)*this.facing, hip = ay-88;
+        if (legShift) {
+          left = Infinity; right = -Infinity;
+          for (const [x,row] of BODY_SUPPORT[frame]) {
+            const t = row < 0 ? 0 : Math.max(0,Math.min(1,(row+.5-hip)/88));
+            const edge = (x-ax)*scale + legShift*t*t*(3-2*t);
+            left = Math.min(left,edge); right = Math.max(right,edge);
+          }
+          // Hit tint is drawn unsheared on the same actor-space anchor.
+          if (this.hitFlash > 0) { left = Math.min(left,baseLeft); right = Math.max(right,baseRight); }
+        }
+      }
+      return this.facing < 0 ? { minX: bodyShift-right, maxX: bodyShift-left } :
+        { minX: bodyShift+left, maxX: bodyShift+right };
+    }
+    containPaintedBody(renderSnapshot = false) {
+      const camera = this.g.camera;
+      // Camera shake/punch may contain a saved render snapshot, but must never
+      // push authoritative world physics around or change combat spacing.
+      const snap = R.display.mode === 'classic' ? 1 : (R.display.renderScale || 1);
+      const shift = renderSnapshot && camera ? Math.round(((camera.shakeX||0)+(camera.punchX||0))*snap)/snap : 0;
+      const visibleLeft = Math.max(this.g.arenaLeft, camera ? camera.x-shift : this.g.arenaLeft);
+      const margin = Math.max(40, Math.ceil(-this.paintedBodyBounds().minX));
+      const before = this.x;
+      this.x = R.util.clamp(this.x, visibleLeft+margin, this.g.arenaRight-40);
+      if (this.grabbed) this.grabbed.x += this.x-before;
     }
     drawSprite(ctx, cameraX, forcedFrame) {
       const frame = forcedFrame || this.spriteFrame();
@@ -554,13 +628,20 @@
       const alpha=this.dead?Math.max(.1,Math.min(1,1-this.deadTimer/.75)):(this.invuln>0&&Math.floor(this.invuln*18)%2===0?.55:1);
       const attack=this.attackMove,progress=attack?Math.min(1,this.stateT/Math.max(.01,attack.duration)):0;
       const swing=attack?(-110+150*progress)*Math.PI/180:0;
-      const gripY=frame==='idle'?83:76;
-      ctx.save();ctx.globalAlpha*=alpha;ctx.translate(this.x-cameraX,this.y-this.z);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]+swing);
-      ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-gripY);ctx.restore();
-      const angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:this.x+this.facing*(h[0]+sn*gripY),y:this.y-this.z+h[1]-cs*gripY};
+      // Every pose anchors the wrapped grip centre, never the collar above it.
+      const gripY=83;
+      let bodyX=this.x,bodyY=this.y;
+      if (!lying && this.grounded && frame.indexOf('walk')===0) {
+        const contact=walkContact(this.walkDistance),correction=this.facing*(contact.first-contact.phase-contact.foot[0]);
+        bodyX+=Math.max(-2,Math.min(2,correction));bodyY-=contact.foot[1];
+      }
+      ctx.save();ctx.globalAlpha*=alpha;ctx.translate(bodyX-cameraX,bodyY-this.z);ctx.scale(this.facing,1);ctx.translate(h[0],h[1]);ctx.rotate(h[2]+swing);
+      ctx.scale(SWORD_SCALE_X,SWORD_SCALE_Y);ctx.globalAlpha*=.96;ctx.drawImage(prepareSword(),-12,-gripY);ctx.restore();
+      // Follow the resized painted apex (stamp y=1), never the combat hitbox.
+      const tipLength=(gripY-1)*SWORD_SCALE_Y,angle=h[2]+swing,cs=Math.cos(angle),sn=Math.sin(angle),tip={x:bodyX+this.facing*(h[0]+sn*tipLength),y:bodyY-this.z+h[1]-cs*tipLength};
       if(this.attackMove){this.callandorTips=this.callandorTips||[];this.callandorTips.push({x:tip.x,y:tip.y,t:performance.now()});if(this.callandorTips.length>9)this.callandorTips.shift();}
       else this.callandorTips=[];
-      if(this.callandorTips.length>1){ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';const grip={x:this.x+this.facing*h[0],y:this.y-this.z+h[1]},n=this.callandorTips.length;for(let i=1;i<n;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i],fade=i/n,ma={x:(grip.x+a.x)*.5,y:(grip.y+a.y)*.5},mb={x:(grip.x+b.x)*.5,y:(grip.y+b.y)*.5};ctx.globalAlpha=.08+fade*.25;ctx.fillStyle='#75dfff';ctx.beginPath();ctx.moveTo(ma.x-cameraX,ma.y);ctx.lineTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.lineTo(mb.x-cameraX,mb.y);ctx.closePath();ctx.fill();ctx.globalAlpha=.18+fade*.55;ctx.strokeStyle='#efffff';ctx.lineWidth=2+fade*3;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}
+      if(this.callandorTips.length>1){ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';const grip={x:bodyX+this.facing*h[0],y:bodyY-this.z+h[1]},n=this.callandorTips.length;for(let i=1;i<n;i++){const a=this.callandorTips[i-1],b=this.callandorTips[i],fade=i/n,ma={x:(grip.x+a.x)*.5,y:(grip.y+a.y)*.5},mb={x:(grip.x+b.x)*.5,y:(grip.y+b.y)*.5};ctx.globalAlpha=.08+fade*.25;ctx.fillStyle='#75dfff';ctx.beginPath();ctx.moveTo(ma.x-cameraX,ma.y);ctx.lineTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.lineTo(mb.x-cameraX,mb.y);ctx.closePath();ctx.fill();ctx.globalAlpha=.18+fade*.55;ctx.strokeStyle='#efffff';ctx.lineWidth=2+fade*3;ctx.beginPath();ctx.moveTo(a.x-cameraX,a.y);ctx.lineTo(b.x-cameraX,b.y);ctx.stroke();}ctx.restore();}
     }
   }
   R.Fireball = Fireball;

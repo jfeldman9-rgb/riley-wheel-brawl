@@ -13,11 +13,27 @@
       this.spoken = false;
       this.music = 'story';
       this.done = false;
+      this.paused = false;
+      this.pauseOnBlur = true;
+      this.pauseMenu = new R.PauseMenu({ onQuit: () => this.game.setScene(new Title(this.game)) });
       R.assets.ready(lines.map(line => R.storyArt(line.id)).filter(Boolean));
       if (R.voicePreload) R.voicePreload(lines.map(line => line.id));
     }
+    pause() {
+      if (this.paused || this.done) return;
+      this.paused = true; this.pauseMenu.open(); R.input.clear();
+      if (R.voiceReset) R.voiceReset();
+      this.spoken = false;
+    }
+    exit() { this.pauseMenu.close(); }
     update(dt, input) {
       if (this.done) return;
+      if (this.paused) {
+        if (this.pauseMenu.update(input, dt) === 'resume') { this.paused = false; this.pauseMenu.close(); R.input.clear(); }
+        return;
+      }
+      const p = input.pointer || R.input.pointer;
+      if (R.keyPressed(input, 'pause') || (R.keyPressed(input, 'click') && p.x >= 576 && p.x <= 632 && p.y >= 0 && p.y <= 44)) { this.pause(); return; }
       if (R.Puppet && R.Puppet.prefetch && this.prefetchLevel != null) R.Puppet.prefetch(this.prefetchLevel);
       this.timer += dt;
       if (!this.spoken) {
@@ -64,6 +80,9 @@
       }
       ctx.fillStyle = 'rgba(3,9,22,0.7)'; ctx.fillRect(0,0,640,41);
       R.drawText(ctx, this.label, 20, 22, 9, '#e8cd74');
+      ctx.lineWidth = 1;
+      R.draw.fillRRect(ctx, 576, 0, 56, 44, 4, '#152d43', '#7dcaf1');
+      R.drawText(ctx, 'II', 604, 26, 12, '#ffffff', 'center');
       const portrait = 'portrait-' + (line.who === 'kenzie' ? 'twinkle' : line.who);
       if (line.who !== 'narrator' && !R.paint(ctx, portrait, 15, 231, 46, 58)) { ctx.fillStyle='#18314e'; ctx.beginPath(); ctx.arc(36,260,23,0,Math.PI*2); ctx.fill(); R.drawText(ctx,line.name[0],36,262,17,'#9bddff','center'); }
       R.drawPanel(ctx, 65, 225, 510, 82);
@@ -73,7 +92,8 @@
       let budget = Math.floor(this.timer * 38);
       const top = rows.length > 1 ? 276 - (rows.length - 1) * 8 : 276;
       rows.forEach((row, n) => { if (budget > 0) R.drawText(ctx, row.slice(0, budget), 86, top + n * 16, 8, '#ffffff'); budget -= row.length + 1; });
-      R.drawText(ctx, 'START / KICK / JUMP: NEXT', 620, 339, 6, '#aebdca', 'right');
+      R.drawText(ctx, R.input.touchEnabled ? 'TAP: NEXT     II: PAUSE' : 'START / KICK / JUMP: NEXT    ESC: PAUSE', 620, 339, 6, '#aebdca', 'right');
+      if (this.paused) this.pauseMenu.draw(ctx);
     }
   }
   function wrapText(text, max) {
@@ -89,12 +109,14 @@
   class OptionsScene {
     constructor(game, mode) {
       this.game = game;
-      this.panel = new R.OptionsPanel(mode, { full: true });
+      this.panel = mode === 'howto' ? new R.HowToPlay() : new R.OptionsPanel(mode, { full: true });
     }
     update(dt, input) {
+      if (this.game.scene === this && this.game.nextScene) return;
       const action = this.panel.update(input, dt);
-      if (action === 'back' || R.keyPressed(input, 'pause')) this.game.setScene(new Title(this.game));
+      if (action === 'back') this.game.setScene(new Title(this.game));
     }
+    exit() { if (this.panel.close) this.panel.close(); }
     draw(ctx) {
       ctx.fillStyle = '#071323';
       ctx.fillRect(0, 0, 640, 360);
@@ -110,14 +132,18 @@
     }
     enter() { if (R.voiceReset) R.voiceReset(); R.audio.playMusic(this.music); }
     items() {
-      return R.settings.loadRun() ? ['START', 'CONTINUE', 'OPTIONS', 'CONTROLS'] : ['START', 'OPTIONS', 'CONTROLS'];
+      return R.settings.loadRun() ? ['START', 'CONTINUE', 'OPTIONS', 'CONTROLS', 'HOW TO PLAY'] : ['START', 'OPTIONS', 'CONTROLS', 'HOW TO PLAY'];
     }
+    menuLayout() { return R.input.touchEnabled ? { y: 124, step: 44 } : { y: 210, step: 26 }; }
     update(dt, input) {
+      if (this.game.scene === this && this.game.nextScene) return;
       const items = this.items();
+      this.selection = Math.min(this.selection, items.length - 1);
+      const layout = this.menuLayout();
       if (R.keyPressed(input, 'click')) {
         const pointer = input.pointer || R.input.pointer;
-        const row = Math.round((pointer.y - 218) / 29);
-        if (pointer.x >= 190 && pointer.x <= 450 && row >= 0 && row < items.length && Math.abs(pointer.y - (218 + row * 29)) <= 13) this.selection = row;
+        const row = Math.floor((pointer.y - layout.y + 12) / layout.step);
+        if (pointer.x >= 190 && pointer.x <= 450 && row >= 0 && row < items.length && pointer.y >= layout.y + row * layout.step - 12) this.selection = row;
         else return;
       }
       if (R.keyPressed(input, 'down')) this.selection = (this.selection + 1) % items.length;
@@ -125,12 +151,13 @@
       if (!R.keyPressed(input, 'start') && !R.keyPressed(input, 'attack') && !R.keyPressed(input, 'click')) return;
       const chosen = items[this.selection];
       if (chosen === 'START') {
+        const difficulty = R.settings.data.difficulty;
         R.settings.clearRun();
-        this.game.setScene(new Reel(this.game, R.CAPTIONS.opening, () => new Reel(this.game, R.CAPTIONS.intro, () => new Play(this.game, 0, {}), "EMOND'S FIELD", 0), 'THE WHEEL TURNS', 0));
+        this.game.setScene(new Reel(this.game, R.CAPTIONS.opening, () => new Reel(this.game, R.CAPTIONS.intro, () => new Play(this.game, 0, { difficulty }), "EMOND'S FIELD", 0), 'THE WHEEL TURNS', 0));
       } else if (chosen === 'CONTINUE') {
         const run = R.settings.loadRun();
         this.game.setScene(resumeRun(this.game, run));
-      } else this.game.setScene(new OptionsScene(this.game, chosen.toLowerCase()));
+      } else this.game.setScene(new OptionsScene(this.game, chosen === 'HOW TO PLAY' ? 'howto' : chosen.toLowerCase()));
     }
     draw(ctx) {
       const bg = ctx.createLinearGradient(0, 0, 0, 360);
@@ -159,12 +186,18 @@
       ctx.lineTo(293, 185);
       ctx.stroke();
       if (R.paint(ctx, 'title-key', 0, 0, 640, 360)) { const shade=ctx.createLinearGradient(0,120,0,360);shade.addColorStop(0,'#07132110');shade.addColorStop(1,'#030916ee');ctx.fillStyle=shade;ctx.fillRect(0,0,640,360); }
-      if (!R.paint(ctx, 'logo', 35, 15, 335, 188)) {
-        R.drawText(ctx, 'RILEY', 320, 72, 21, '#ffffff', 'center');
-        R.drawText(ctx, 'WHEEL BRAWL', 320, 146, 17, '#e5c65f', 'center');
+      if (!R.paint(ctx, 'logo', R.input.touchEnabled ? 218 : 35, 10, R.input.touchEnabled ? 205 : 335, R.input.touchEnabled ? 115 : 188)) {
+        R.drawText(ctx, 'RILEY', 320, R.input.touchEnabled ? 48 : 72, R.input.touchEnabled ? 18 : 21, '#ffffff', 'center');
+        R.drawText(ctx, 'WHEEL BRAWL', 320, R.input.touchEnabled ? 87 : 146, R.input.touchEnabled ? 13 : 17, '#e5c65f', 'center');
       }
       R.drawArtFailure(ctx);
-      this.items().forEach((item, index) => R.drawText(ctx, (index === this.selection ? '◆ ' : '  ') + item, 320, 218 + index * 29, 9, index === this.selection ? '#70caff' : '#ffffff', 'center'));
+      const layout = this.menuLayout();
+      ctx.lineWidth = 1;
+      this.items().forEach((item, index) => {
+        const y = layout.y + index * layout.step;
+        if (R.input.touchEnabled) R.draw.fillRRect(ctx, 190, y - 12, 260, 42, 4, 'rgba(4,10,24,.92)', index === this.selection ? '#70caff' : '#426482');
+        R.drawText(ctx, (index === this.selection ? '> ' : '  ') + item, 320, y, 9, index === this.selection ? '#70caff' : '#ffffff', 'center');
+      });
       R.drawText(ctx, 'NEW RUN: ' + (R.settings.data.difficulty === 'hard' ? 'HARD' : 'NORMAL'), 20, 344, 6, '#e8cd74');
     }
   }
@@ -187,16 +220,22 @@
       this.game = game;
       this.checkpoint = checkpoint;
       this.time = 9;
+      this.done = false;
       this.music = 'gameover';
     }
     continueRun() {
+      if (this.done) return;
+      this.done = true;
       const saved = Object.assign({}, this.checkpoint.extra, { wave: this.checkpoint.wave, score: Math.max(0, this.checkpoint.score - 500), lives: 3 });
       this.game.setScene(resumeRun(this.game, Object.assign({}, this.checkpoint, { score: saved.score, extra: saved })));
     }
     update(dt, input) {
+      if (this.done) return;
       this.time -= dt;
-      if (R.keyPressed(input, 'start') || R.keyPressed(input, 'attack')) this.continueRun();
-      if (R.keyPressed(input, 'pause') || this.time <= 0) this.game.setScene(new Title(this.game));
+      const p = input.pointer || R.input.pointer;
+      const click = R.keyPressed(input, 'click');
+      if (R.keyPressed(input, 'start') || R.keyPressed(input, 'attack') || (click && p.x >= 90 && p.x <= 310 && p.y >= 266 && p.y <= 318)) { this.continueRun(); return; }
+      if (R.keyPressed(input, 'pause') || this.time <= 0 || (click && p.x >= 330 && p.x <= 550 && p.y >= 266 && p.y <= 318)) { this.done = true; this.game.setScene(new Title(this.game)); }
     }
     draw(ctx) {
       ctx.fillStyle = '#090b13';
@@ -204,7 +243,11 @@
       R.drawText(ctx, 'GAME OVER', 320, 120, 23, '#e25454', 'center');
       R.drawText(ctx, 'CONTINUE?', 320, 188, 11, '#ffffff', 'center');
       R.drawText(ctx, String(Math.max(0, Math.ceil(this.time))), 320, 229, 20, '#f2d66f', 'center');
-      R.drawText(ctx, 'START: YES    ESC: NO', 320, 284, 7, '#aebdca', 'center');
+      R.draw.fillRRect(ctx, 90, 266, 220, 52, 5, '#18354a', '#70caff');
+      R.draw.fillRRect(ctx, 330, 266, 220, 52, 5, '#18354a', '#70caff');
+      R.drawText(ctx, 'CONTINUE', 200, 296, 9, '#ffffff', 'center');
+      R.drawText(ctx, 'TITLE', 440, 296, 9, '#ffffff', 'center');
+      R.drawText(ctx, 'ENTER / A / CROSS: YES    ESC / B / CIRCLE: TITLE', 320, 341, 6, '#aebdca', 'center');
     }
   }
   class Victory {
@@ -219,7 +262,7 @@
     update(dt, input) {
       if (this.done) return;
       this.time += dt;
-      if (this.time > 1 && (R.keyPressed(input, 'start') || R.keyPressed(input, 'attack') || R.keyPressed(input, 'jump') || R.keyPressed(input, 'click'))) {
+      if (this.time > 1 && (R.keyPressed(input, 'start') || R.keyPressed(input, 'attack') || R.keyPressed(input, 'jump') || R.keyPressed(input, 'click') || R.keyPressed(input, 'pause'))) {
         this.done = true;
         this.game.setScene(new Title(this.game));
       }
@@ -294,34 +337,20 @@
     }
     enter() {
       if (R.voiceReset) R.voiceReset();
-      if (R.Puppet && R.Puppet.prepareStage) R.Puppet.prepareStage(this.levelIndex);
-      const canvas = document.getElementById('game'), ctx = canvas && canvas.getContext('2d');
-      if (ctx) {
-        try {
-          const rs = (R.display && R.display.renderScale) || 1;
-          ctx.save();
-          ctx.setTransform(rs, 0, 0, rs, 0, 0);
-          // Bake every plate the march will cross, so the first time the
-          // camera reaches it is not a stall in the middle of the walk.
-          if (R.StageWorld) {
-            for (const cam of [800, 1600, 2400, 3200, 3600]) {
-              const ghost = { levelIndex: this.levelIndex, camera: { x: cam }, time: 0, wave: this.wave, roofOn: false, level: this.level };
-              R.StageWorld.draw(ctx, ghost);
-              R.StageWorld.near(ctx, ghost);
-            }
-          }
-          this.draw(ctx);
-          ctx.getImageData(0, 0, 1, 1);
-          ctx.restore();
-          if (R.perf) { R.perf.poseFallbacks = 0; R.perf.poseMiss = []; }
-        } catch (e) { /* warmup is best-effort */ }
-      }
+      const entryAt=performance.now();
+      if (R.Puppet && R.Puppet.prepareScene) R.Puppet.prepareScene(this.levelIndex,this);
+      const rigReadyAt=performance.now();
+      // Paintings are already finished before a fade starts. Direct/debug entry
+      // still prepares the same cache, without five redundant camera renders.
+      if (R.StageWorld && R.StageWorld.activateStage) R.StageWorld.activateStage(this);
+      if (R.StageWorld && R.StageWorld.preload) R.StageWorld.preload(this);
+      R.perf.entryTiming={rigMs:rigReadyAt-entryAt,backgroundMs:performance.now()-rigReadyAt};
       R.audio.playMusic(this.music);
       // Voice clips for this stage load after the cold enter has settled.
       if (R.voicePreloadStage) { const level = this.levelIndex; setTimeout(() => R.voicePreloadStage(level), 1200); }
       this.saveCheckpoint();
     }
-    exit() { if (R.voiceReset) R.voiceReset(); }
+    exit() { this.pauseMenu.close(); if (R.voiceReset) R.voiceReset(); }
     /** Speech bubble for a line spoken outside the subtitle queue (barks). Visual only. */
     showBark(line) {
       this.bark = { line, remaining: Math.max(1.6, 0.8 + line.text.length * 0.055) };
@@ -368,6 +397,15 @@
       const extra = this.checkpointExtra();
       this.wave = prev;
       R.settings.saveRun({ level: this.levelIndex, wave, score: this.player.score, extra });
+    }
+    pause() {
+      if (this.paused) return;
+      this.paused = true;
+      this.pauseMenu.open();
+      this.latchedPress = {};
+      this.latchedHeld = {};
+      if (this.phase === 'play') this.saveCheckpoint();
+      R.input.clear();
     }
     restartStage() {
       const carry = { saidin: this.player.power, loial: this.player.loialReady, lives: this.player.lives, score: this.player.score, callandor: this.player.callandor, difficulty: this.difficulty, wave: 0 };
@@ -556,6 +594,10 @@
     hitPlayer(damage, fromX, opts) {
       if (this.phase !== 'play' || this.player.invuln > 0 || this.player.dead) return false;
       damage *= this.level.damageScale || 1;
+      // Separate documented mode/stage tuning preserves the verified Normal curve
+      // after fixing hidden-enemy stalls; it never changes HP or test rules.
+      damage *= R.TUNE.incomingDamageScale[this.difficulty][this.levelIndex];
+      if (opts && this.level.attacks.includes(opts.source)) damage *= R.TUNE.bossDamageScale[this.difficulty][this.levelIndex];
       // Stage 2's Fade is the endurance gate; keep its multi-hit strings from
       // crossing a whole-heart breakpoint while ordinary soldiers stay sharp.
       if(this.levelIndex===1 && opts && ['SWORD COMBO','SHADOW BLINK','FEAR STUN'].includes(opts.source)) damage*=.94;
@@ -699,6 +741,7 @@
       if (!this.enemies.length && this.waveClearTimer <= 0) return;
       if (this.wave === 5) {
         this.phase = 'clear';
+        this.tutorial = null; this.warningTimer = 0; this.bossCard = 0;
         if (this.levelIndex === 3) this.player.callandor = true;
         if (this.levelIndex === 4) R.settings.clearRun();
         else R.settings.saveRun({ level: this.levelIndex + 1, wave: 0, score: this.player.score, extra: Object.assign(this.carryToNext(), this.levelIndex === 3 ? { pendingReveal: 'callandor' } : {}) });
@@ -766,9 +809,9 @@
     update(dt, input) {
       input = input || { pressed: {}, held: {}, axis: () => ({ x: 0, y: 0 }) };
       let openedPause = false;
-      if (R.keyPressed(input, 'pause')) {
-        this.paused = !this.paused;
-        if (this.paused) { this.pauseMenu.open(); openedPause = true; }
+      if (!this.paused && (R.keyPressed(input, 'pause') || R.keyPressed(input, 'start'))) {
+        this.pause();
+        openedPause = true;
       }
       if (!this.paused) this.updateBark(dt);
       if (this.paused) {
@@ -777,7 +820,7 @@
         // to the menu selects RESUME and closes the pause on the same frame.
         if (!openedPause) {
           const result = this.pauseMenu.update(input, dt);
-          if (result === 'resume') this.paused = false;
+          if (result === 'resume') { this.paused = false; this.pauseMenu.close(); R.input.clear(); }
         }
         return;
       }
@@ -794,6 +837,7 @@
       }
       const frozen = this.camera.update(dt);
       if (frozen) {
+        this.player.containPaintedBody();
         this.latchInput(input);
         this.currentInput = input;
         return;
@@ -818,6 +862,9 @@
       this.stepRoofFade(dt);
       this.updateMarch();
       this.camera.follow(this.player.x, dt);
+      // Enemies/hazards can change Riley's pose after his update, and camera
+      // follow can advance the visible wall. Resolve both before rendering.
+      this.player.containPaintedBody();
       if (this.boss && !this.boss.dead && this.time >= (this.nextBossSave || 0)) { this.nextBossSave = this.time + 1; this.saveCheckpoint(); }
     }
     drawWorld(ctx) {
@@ -875,7 +922,14 @@
     draw(ctx) {
       if (R.Bake) R.Bake.flushTouches(2);
       R.Motion.apply(this);ctx.save();
-      try {this.camera.apply(ctx);this.drawWorld(ctx);} finally {ctx.restore();R.Motion.restore(this);}
+      // A new pose can be wider than its interpolated old position. Save the
+      // whole actor offset explicitly: Motion does not save at alpha=1, while
+      // paused, or without a previous tick. Shake stays presentation-only.
+      const renderX = this.player.x, grabbed = this.player.grabbed, grabbedX = grabbed && grabbed.x;
+      try {this.player.containPaintedBody(true);this.camera.apply(ctx);this.drawWorld(ctx);} finally {
+        this.player.x = renderX; if (grabbed) grabbed.x = grabbedX;
+        ctx.restore();R.Motion.restore(this);
+      }
       R.drawHUD(ctx, this);
       if (this.phase === 'play' && !this.paused) {
         for (const button of R.input.touch.buttons) {
@@ -909,7 +963,7 @@
         R.drawText(ctx, this.subtitle.line.name + ': ' + this.subtitle.line.text, 320, y + 14, 6, '#e4f6ff', 'center');
       }
       this.drawBark(ctx);
-      if (this.twinkleFreed && !this.joint) R.drawText(ctx, R.input.fillKeys('FULL SAIDIN + {power}: TOGETHER!'), 320, 292, 7, '#a9edff', 'center');
+      if (this.phase === 'play' && this.twinkleFreed && !this.joint) R.drawText(ctx, R.input.fillKeys('FULL SAIDIN + {power}: TOGETHER!'), 320, 292, 7, '#a9edff', 'center');
       if (this.paused) this.pauseMenu.draw(ctx);
       this.camera.drawFlash(ctx);
       if (this.roofFade) {
@@ -927,7 +981,7 @@
   Object.assign(R.scenes, { Title, Reel, Play, GameOver, Victory });
   R.settings.validateRun = function (run) {
     run.level = R.util.clamp(run.level | 0, 0, 4);
-    run.extra = run.extra || {};
+    run.extra = run.extra && typeof run.extra === 'object' && !Array.isArray(run.extra) ? run.extra : {};
     run.extra.callandor = !!run.extra.callandor;
     run.extra.difficulty = run.extra.difficulty === 'hard' ? 'hard' : 'normal';
     run.wave = R.util.clamp(run.wave | 0, 0, 5);
@@ -935,6 +989,7 @@
     run.extra.saidin = R.util.clamp(Number(run.extra.saidin) || 0, 0, 100);
     run.extra.loial = run.extra.loial !== false;
     run.extra.lives = R.util.clamp(run.extra.lives == null ? 3 : run.extra.lives | 0, 0, 3);
+    if (run.extra.pendingReveal !== 'callandor' || run.level !== 4) delete run.extra.pendingReveal;
     return run;
   };
 }());

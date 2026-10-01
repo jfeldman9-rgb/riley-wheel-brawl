@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: walk1 sword grip pivot
+
+-83 !== -76
+
+    at /workspace/scratch/699fc278689a/riley-v11/tools/callandor-check.cjs:32:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: -83,
+  expected: -76,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

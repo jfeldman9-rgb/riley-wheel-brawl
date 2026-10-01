@@ -470,5 +470,5 @@
     return true;
   };
   for (const [key, src] of Object.entries(R.ART_FILES))
-    R.assets.register(key, src, { lazy: key.startsWith('cut-') || key.includes('transition-') });
+    R.assets.register(key, src, { lazy: key.startsWith('cut-') || key.includes('transition-'), demand: key.startsWith('riley-victory-') || key.startsWith('boss-defeat-'), bitmap: key.startsWith('riley-victory-') || key.startsWith('boss-defeat-') });
 })();

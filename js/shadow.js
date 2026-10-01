@@ -362,9 +362,18 @@
       }
       return landed;
     }
-    onHurt() {
+    onHurt(damage, opts = {}) {
       this.hitFlash = 0.13;
       this.vx *= 0.15;
+      if (R.HardAI.enabled(this.g) && (opts.move === 'super' || opts.move === 'loial')) {
+        // Spending a scarce resource creates a real counterattack opening,
+        // without weakening HP or bypassing the Draghkar/joint-finish rules.
+        this.g.releaseAttacker(this);
+        this.ai = 'recover';
+        this.aiTimer = opts.move === 'super' ? 1 : 0.7;
+        this.vx = this.vy = 0;
+        this.setState('recover');
+      }
     }
     requestAttack() {
       if (R.HardAI.enabled(this.g) && (!R.HardAI.canCommit(this) || !this.g.directorCanAttack(this))) return;
@@ -561,43 +570,38 @@
       R.Entity.prototype.update.call(this, dt);
       this.x = R.util.clamp(this.x, this.g.arenaLeft + 25, this.g.arenaRight - 25);
     }
+    tellRegions() {
+      if (!this.attack || !this.target) return [];
+      const m = this.attack.mode;
+      if (m === 'beam') return [{ x: (this.g.arenaLeft + this.g.arenaRight) / 2, y: this.target.y, w: this.g.arenaRight - this.g.arenaLeft, d: 17 }];
+      if (m === 'fear') return [{ x: this.x, y: this.y, w: 230, d: 33, ellipse: true }];
+      if (m === 'storm') return [-1, 0, 1].map(i => ({ x: this.target.x + i * 95, y: this.target.y + i * 24, w: 42, d: 21 }));
+      if (m === 'snare' || m === 'gust') return [{ x: this.target.x, y: this.target.y, w: m === 'snare' ? 86 : 150, d: m === 'snare' ? 27 : 24 }];
+      const x = m === 'blink' ? this.blinkTo : this.x, y = m === 'blink' ? this.target.y : this.y;
+      const facing = m === 'blink' ? (this.target.x >= x ? 1 : -1) : this.facing;
+      const reach = m === 'combo' ? 100 : 64 + (['swoop', 'surge', 'kiss'].includes(m) ? (m === 'kiss' ? 180 : 330) * this.attack.active : 0);
+      const box = R.collide.front({ x, y, facing }, reach, 15, 75, 0, 23);
+      return [{ x: box.x, y, w: box.w, d: 23 }];
+    }
     drawTell(ctx, cam) {
       if (this.ai !== 'telegraph' || !this.target) return;
-      const m = this.attack.mode;
       ctx.save();
-      ctx.strokeStyle = '#ffe17e';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([5, 4]);
-      if (m === 'beam')
-        {
-          const hx=this.x+this.facing*18-cam,hy=this.y-this.z-58,pulse=9+Math.sin(this.flightTime*18)*3;
-          ctx.setLineDash([]);ctx.fillStyle='rgba(120,55,190,.55)';ctx.beginPath();ctx.arc(hx,hy,pulse,0,Math.PI*2);ctx.fill();
-          ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo((this.facing>0?this.g.arenaRight:this.g.arenaLeft)-cam,hy);ctx.stroke();
-        }
-      else if (m === 'fear') {
+      // Filled lanes and a dark-backed gold outline survive both the bright
+      // snow and busy dark roof. Geometry comes from the actual locked strike.
+      for (const region of this.tellRegions()) {
         ctx.beginPath();
-        ctx.ellipse(this.x - cam, this.y, 115, 33, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      } else if (m === 'storm')
-        for (let i = -1; i <= 1; i++)
-          ctx.strokeRect(this.target.x + i * 95 - cam - 21, this.target.y + i * 24 - 21, 42, 42);
-      else if (m === 'snare' || m === 'gust') {
-        const w = m === 'snare' ? 86 : 150,
-          d = m === 'snare' ? 27 : 24;
-        ctx.strokeRect(this.target.x - cam - w / 2, this.target.y - d, w, d * 2);
-      } else {
-        const x = m === 'blink' ? this.blinkTo : this.x,
-          y = m === 'blink' ? this.target.y : this.y;
-        const facing = m === 'blink' ? (this.target.x >= x ? 1 : -1) : this.facing;
-        const reach =
-          m === 'combo'
-            ? 100
-            : 64 +
-              (['swoop', 'surge', 'kiss'].includes(m)
-                ? (m === 'kiss' ? 180 : 330) * this.attack.active
-                : 0);
-        const box = R.collide.front({ x, y, facing }, reach, 15, 75, 0, 23);
-        ctx.strokeRect(box.x - cam - box.w / 2, y - 23, box.w, 46);
+        if (region.ellipse) ctx.ellipse(region.x - cam, region.y, region.w / 2, region.d, 0, 0, Math.PI * 2);
+        else ctx.rect(region.x - cam - region.w / 2, region.y - region.d, region.w, region.d * 2);
+        ctx.globalAlpha = 0.16 + Math.abs(Math.sin(this.stateT * 9)) * 0.12;
+        ctx.fillStyle = '#ffe17e'; ctx.fill();
+        ctx.globalAlpha = 0.92; ctx.strokeStyle = '#140d20'; ctx.lineWidth = 5; ctx.stroke();
+        ctx.strokeStyle = '#ffe17e'; ctx.lineWidth = 2; ctx.stroke();
+      }
+      if (this.attack.mode === 'beam') {
+        const hx = this.x + this.facing * 18 - cam, hy = this.y - this.z - 58;
+        ctx.globalAlpha = 0.85; ctx.fillStyle = '#c69aff';
+        ctx.beginPath(); ctx.arc(hx, hy, 9 + Math.sin(this.flightTime * 18) * 3, 0, Math.PI * 2); ctx.fill();
+        ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo((this.facing > 0 ? this.g.arenaRight : this.g.arenaLeft) - cam, hy); ctx.stroke();
       }
       ctx.restore();
     }

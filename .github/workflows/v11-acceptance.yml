@@ -1,0 +1,226 @@
+name: 1.1 acceptance
+on:
+  pull_request:
+    branches: [rwb-w2]
+    types: [opened, synchronize, reopened]
+  workflow_call:
+permissions:
+  contents: read
+concurrency:
+  group: v11-acceptance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+      - name: All contracts, combat, saves, assets and balance
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/rwb-normal-reference" 4c9997521d62d91cb40abcd9623df334f1209618
+          git worktree add --detach "$RUNNER_TEMP/rwb-live-visual" 816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/ci-v11.cjs unit "$RUNNER_TEMP/rwb-normal-reference" "$RUNNER_TEMP/rwb-live-visual"
+      - name: Exact identity-pose and transformed-mesh comparisons
+        if: always()
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/rwb-pre-identity" ecb36da649796bffaacc1d698b0c824b63ce6fd7
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-idle-v11.cjs . "$RUNNER_TEMP/rwb-pre-identity"
+      - name: Record full native seam diagnostics, manual art gate remains open
+        if: always()
+        run: NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/seams-visual-v11.cjs "$RUNNER_TEMP/rwb-live-visual"
+      - name: Exact readiness, pool, background lifecycle and warm-touch regressions
+        if: always()
+        run: |
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/readiness-v11/run.cjs --candidate-root=. --control-ref=fbcf1fe2b76dd63f26c4b7a00b4ff7ccbf676814
+      - name: Demanded poses bypass bounded speculative uploads
+        if: always()
+        run: NODE_PATH="$GITHUB_WORKSPACE/node_modules" node --expose-gc tools/warm-touch-check-v11.cjs . --out=docs/review/v11/warm-touch-check.json
+      - name: Speculative kick jobs defer without losing requested poses
+        if: always()
+        run: NODE_PATH="$GITHUB_WORKSPACE/node_modules" node --expose-gc tools/speculative-pose-check-v11.cjs --control="$RUNNER_TEMP/rwb-normal-reference"
+      - name: Approved grip exception and all 38 smaller-sword views
+        if: always()
+        run: |
+          node tools/approved-callandor-pivot-v11.test.cjs
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node --expose-gc tools/callandor-size-check-v11.cjs --baseline-root="$RUNNER_TEMP/rwb-normal-reference" --out=docs/review/v11/callandor-size
+          node tools/evidence-log-v11.cjs --callandor-only
+      - name: Outcome bitmap ownership and cancellation
+        if: always()
+        run: |
+          node tools/outcome-bitmap-check-v11.cjs
+          node tools/outcome-sampling-check-v11.cjs
+      - name: Readiness observer contracts and lossless log transport
+        if: always()
+        run: |
+          node tools/diagnostics/readiness/readiness-probe.test.cjs
+          node tools/diagnostics/readiness/compare-readiness.test.cjs
+      - name: Approved CI policy rejects incomplete data and non-timing failures
+        if: always()
+        run: |
+          node tools/ci-relative-policy-v11.test.cjs
+          node tools/ci-browser-gates-v11.test.cjs
+          node tools/ci-cold-diagnostic-v11.test.cjs
+          node tools/ci-policy-integration-v11.test.cjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+          npx playwright install --with-deps chromium
+      - name: Inherited regression and browser contracts
+        id: regression
+        if: always()
+        run: node --expose-gc tools/check.cjs
+      - name: Inherited release, cold entry and pacing
+        id: release
+        if: always()
+        run: CI=true node --expose-gc tools/ci-browser-gates-v11.cjs release-browser --ci-timing-policy
+      - name: Protected voice sequencing
+        id: voice
+        if: always()
+        run: node --expose-gc tools/voice-sequence-check.cjs
+      - name: Inherited audio browser checks
+        id: audio
+        if: always()
+        run: CI=true node --expose-gc tools/ci-browser-gates-v11.cjs audio-check --ci-timing-policy
+      - name: Inherited background seam scan
+        id: seams
+        if: always()
+        run: node --expose-gc tools/joinscan.cjs
+      - name: Independent audio mix checks
+        id: mix
+        if: always()
+        run: node --expose-gc tools/audio/audio-mix-check.cjs
+      - name: Phone, iPad and controller emulation
+        id: devices
+        if: always()
+        run: node --expose-gc tools/v11-device-browser.cjs
+      - name: Painted outcomes and enemy cards
+        id: presentation
+        if: always()
+        run: node --expose-gc tools/presentation-browser-v11.cjs
+      - name: Exact outcome bitmap pixels and master disposal
+        id: bitmap
+        if: always()
+        run: CI=true node tools/outcome-bitmap-browser-v11.cjs
+      # Every test uses always(), so failures remain visible and later gates still run.
+      - name: Report each browser gate honestly
+        if: always()
+        env:
+          RESULTS: ${{ toJSON(steps) }}
+        run: |
+          node - <<'NODE'
+          const steps=JSON.parse(process.env.RESULTS);
+          const ids=['regression','release','voice','audio','seams','mix','devices','presentation','bitmap'];
+          let failed=false;
+          for(const id of ids){const result=steps[id]?.outcome||'not run';console.log('RWB_BROWSER_GATE '+id+': '+result);if(result!=='success')failed=true;}
+          process.exitCode=failed?1:0;
+          NODE
+      - name: Review screenshots in logs
+        if: always()
+        run: node tools/evidence-log-v11.cjs
+  cold-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+          npx playwright install --with-deps chromium
+      - name: Ten cold samples, blocking medians are in matched-performance
+        run: |
+          node tools/performance-v11.cjs . docs/review/v11/ci-cold-smoke.json --cold-only --report-only
+          CI=true node tools/ci-cold-diagnostic-v11.cjs docs/review/v11/ci-cold-smoke.json
+  matched-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+          npx playwright install --with-deps chromium
+      - name: Blocking three-pair live comparison and cold medians
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/rwb-live-1.0" 816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/performance-compare-v11.cjs "$RUNNER_TEMP/rwb-live-1.0" --immediate --ci-relative
+  pose-readiness-experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1 @napi-rs/canvas@0.1.100
+          npx playwright install --with-deps chromium
+      # The completed flush8 experiment and its failed results are retained.
+      # This new question compares the reviewed fbcf build with this candidate.
+      # Absolute timing still executes and is printed; only the approved matched
+      # live comparison blocks CI timing. All validity errors still fail.
+      - name: Three frozen-control readiness pairs, diagnostic only
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/rwb-readiness-control" fbcf1fe2b76dd63f26c4b7a00b4ff7ccbf676814
+          D="$GITHUB_WORKSPACE/tools/diagnostics/readiness"
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --prepare "$RUNNER_TEMP/rwb-readiness-control" "$GITHUB_WORKSPACE" "$RUNNER_TEMP/readiness-manifest.json"
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --validate-only "$RUNNER_TEMP/readiness-manifest.json"
+          CI=true NODE_PATH="$GITHUB_WORKSPACE/node_modules" node "$D/compare-readiness.cjs" --run-browser "$RUNNER_TEMP/readiness-manifest.json" "$RUNNER_TEMP/rwb-readiness-results" --advisory-timing
+  s4-startup-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Validate observational probe and immutable S4 fixture
+        run: |
+          node tools/diagnostics/s4-startup/startup-probe.test.cjs
+          node tools/diagnostics/s4-startup/run-startup.test.cjs
+      - name: Six bounded Stage 4 startup traces, diagnostic only
+        run: |
+          CI=true NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/diagnostics/s4-startup/run-startup.cjs "$GITHUB_WORKSPACE" "$RUNNER_TEMP/rwb-s4-traces" --run-browser --candidate
+# Public-repository standard runners only. No secrets, caches, uploaded artifacts,
+# paid services or deploy steps. Failures remain failures. The approved Normal
+# reference is fixed above; only the specifically approved Callandor pivot
+# assertion changes, with original source and the full prior lock archived.

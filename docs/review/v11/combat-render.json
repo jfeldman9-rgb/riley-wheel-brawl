@@ -1,0 +1,103 @@
+{
+  "checks": 333,
+  "shadowRows": [
+    [
+      49903,
+      8864
+    ],
+    [
+      48993,
+      8782
+    ],
+    [
+      48082,
+      7779
+    ],
+    [
+      49891,
+      9140
+    ],
+    [
+      47323,
+      8340
+    ]
+  ],
+  "tellRows": [
+    {
+      "kind": "fade",
+      "move": "SHADOW BLINK",
+      "pixels": 4420
+    },
+    {
+      "kind": "fade",
+      "move": "SWORD COMBO",
+      "pixels": 6292
+    },
+    {
+      "kind": "fade",
+      "move": "FEAR STUN",
+      "pixels": 13432
+    },
+    {
+      "kind": "draghkar",
+      "move": "SWOOP",
+      "pixels": 17264
+    },
+    {
+      "kind": "draghkar",
+      "move": "HYPNOTIC KISS",
+      "pixels": 10504
+    },
+    {
+      "kind": "draghkar",
+      "move": "WING GUST",
+      "pixels": 8424
+    },
+    {
+      "kind": "forsaken",
+      "move": "SWORD FLURRY",
+      "pixels": 6292
+    },
+    {
+      "kind": "forsaken",
+      "move": "BALEFIRE",
+      "pixels": 26350
+    },
+    {
+      "kind": "forsaken",
+      "move": "WEAVE SNARE",
+      "pixels": 5520
+    },
+    {
+      "kind": "taim",
+      "move": "DARK BALEFIRE",
+      "pixels": 26350
+    },
+    {
+      "kind": "taim",
+      "move": "STORM STRIKES",
+      "pixels": 6912
+    },
+    {
+      "kind": "taim",
+      "move": "SHADOW SURGE",
+      "pixels": 15548
+    },
+    {
+      "kind": "chieftain",
+      "move": "AXE CRASH",
+      "pixels": 4158
+    },
+    {
+      "kind": "chieftain",
+      "move": "HORN CHARGE",
+      "pixels": 8568
+    },
+    {
+      "kind": "chieftain",
+      "move": "GROUND STOMP",
+      "pixels": 29100
+    }
+  ],
+  "method": "Offline native Canvas render, not browser or human-play certification"
+}

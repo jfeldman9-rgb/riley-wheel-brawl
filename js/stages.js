@@ -12,6 +12,10 @@
   const sized = new Map();
   const overlays = new Map();
   const sliceCache = new Map();
+  // Finished paintings retain their independent parallax. Camera motion only
+  // selects a source rectangle; it never repaints or regrades a stage.
+  const backgrounds = new Map();
+  const backgroundStats = { builds: 0, composites: 0, hits: 0 };
   // One quilted floor loop spans ~1.7 screens, so no floor landmark repeats inside a view.
   const FLOOR_LOOP=1100;
   const K_FAR=0.08,K_MID=0.40,K_NEAR=1.15;
@@ -168,6 +172,17 @@
   function releaseCanvas(c){
     if(c&&c.width>1){c.width=1;c.height=1;}
   }
+  // Only unfinished middle jobs own these canvases. Published surfaces are
+  // detached from the job before completion and keep their cache lifetime.
+  function releaseMidJob(job){
+    if(job.backgroundLayer)job.backgroundLayer.pending=false;
+    releaseCanvas(job.plate&&job.plate.c);releaseCanvas(job.window&&job.window.canvas);
+    job.plate=null;job.window=null;job.backgroundLayer=null;
+  }
+  function cancelBackgroundJobs(pred){
+    if(!R.Bake)return;
+    R.Bake.drop(job=>{if(!job.background||!pred(job))return false;releaseMidJob(job);return true;});
+  }
   function dropKey(map,id){
     releaseCanvas(map.get(id));
     map.delete(id);
@@ -322,34 +337,26 @@
   // right side of the screen or the cut of a join. Copy the stable inner
   // column over only that fringe. The rest of the plate is untouched.
   function trimFringe(canvas,side){
-    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
-    const span=Math.max(1,Math.min(3,Math.round(w*2/700)));
+    const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height,span=Math.max(1,Math.min(3,Math.round(w*2/700)));
+    const src=side==='left'?span:w-1-span;if(src<1||src>=w-1)return;
+    const left=side==='left'?0:src,readW=span+1,img=g.getImageData(left,0,readW,h),d=img.data;
     for(let y=0;y<h;y++){
-      const src=side==='left'?span:w-1-span;
-      if(src<1||src>=w-1)continue;
-      const s=(y*w+src)*4,Ls=0.2126*d[s]+0.7152*d[s+1]+0.0722*d[s+2],as=d[s+3];
-      const x0=side==='left'?0:src+1,x1=side==='left'?src:w;
-      for(let x=x0;x<x1;x++){
-        const i=(y*w+x)*4,L=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];
-        const hole=d[i+3]<16&&as>=200;
-        const hot=d[i+3]>=16&&Math.abs(L-Ls)>26;
-        if(hole||hot){d[i]=d[s];d[i+1]=d[s+1];d[i+2]=d[s+2];d[i+3]=Math.max(d[i+3],as);}
+      const sourceX=src-left,si=(y*readW+sourceX)*4,Ls=.2126*d[si]+.7152*d[si+1]+.0722*d[si+2],as=d[si+3];
+      const x0=side==='left'?0:1,x1=side==='left'?sourceX:readW;
+      for(let x=x0;x<x1;x++){const i=(y*readW+x)*4,L=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];
+        if((d[i+3]<16&&as>=200)||(d[i+3]>=16&&Math.abs(L-Ls)>26)){d[i]=d[si];d[i+1]=d[si+1];d[i+2]=d[si+2];d[i+3]=Math.max(d[i+3],as);}
       }
     }
-    g.putImageData(img,0,0);
+    g.putImageData(img,left,0);
   }
   function columnMeans(canvas,x0,x1){
-    const w=canvas.width,h=canvas.height,d=canvas.getContext('2d').getImageData(0,0,w,h).data;
-    const y0=h*0.2|0,y1=h*0.8|0,out=[];
+    const w=canvas.width,h=canvas.height,y0=h*0.2|0,y1=h*0.8|0,out=[];
     x0=Math.max(0,x0|0);x1=Math.min(w,Math.max(x0,x1|0));
-    for(let x=x0;x<x1;x++){
+    const width=x1-x0;if(!width||y1<=y0)return out;
+    const d=canvas.getContext('2d').getImageData(x0,y0,width,y1-y0).data;
+    for(let x=0;x<width;x++){
       let r=0,gc=0,b=0,n=0;
-      for(let y=y0;y<y1;y+=2){
-        const i=(y*w+x)*4;
-        if(d[i+3]<32)continue;
-        if(d[i]+d[i+1]+d[i+2]<12)continue;
-        r+=d[i];gc+=d[i+1];b+=d[i+2];n++;
-      }
+      for(let y=0;y<y1-y0;y+=2){const i=(y*width+x)*4;if(d[i+3]<32||d[i]+d[i+1]+d[i+2]<12)continue;r+=d[i];gc+=d[i+1];b+=d[i+2];n++;}
       out.push(n?[r/n,gc/n,b/n]:null);
     }
     return out;
@@ -389,14 +396,14 @@
       const local=n?[r/n,gc/n,b/n]:mean;
       smooth.push([(local[0]+mean[0])/2,(local[1]+mean[1])/2,(local[2]+mean[2])/2]);
     }
-    const g=canvas.getContext('2d'),h=canvas.height,img=g.getImageData(0,0,w,h),d=img.data;
+    const g=canvas.getContext('2d'),h=canvas.height,readW=Math.min(w,fadePx),img=g.getImageData(0,0,readW,h),d=img.data;
     for(let x=0;x<fadePx&&x<w;x++){
       const delta=smooth[x];
       if(!delta)continue;
       let t=1-x/fadePx;t=t*t*(3-2*t);
       const dr=Math.max(-40,Math.min(40,delta[0]))*t,dg=Math.max(-40,Math.min(40,delta[1]))*t,db=Math.max(-40,Math.min(40,delta[2]))*t;
       for(let y=0;y<h;y++){
-        const i=(y*w+x)*4;
+        const i=(y*readW+x)*4;
         if(d[i+3]<32)continue;
         d[i]=clampByte(d[i]+dr);
         d[i+1]=clampByte(d[i+1]+dg);
@@ -656,7 +663,7 @@
     if(R.perf&&R.perf.noteBake)R.perf.noteBake('gradedFar:'+key,performance.now()-tBake);
     return c;
   }
-  function haze(ctx,y,color='#c9d7df') {ctx.drawImage(overlay('haze:'+y+color,g=>{const f=g.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');g.fillStyle=f;g.fillRect(0,y-9,640,21);}),0,0,640,360);}
+  function haze(ctx,y,color='#c9d7df') {ctx.drawImage(overlay('haze:'+y+color,g=>{const f=g.createLinearGradient(0,y-9,0,y+12);f.addColorStop(0,color+'00');f.addColorStop(.5,color+'24');f.addColorStop(1,color+'00');g.fillStyle=f;g.fillRect(0,y-9,640,21);}),0,0,R.StageWorld._paintWidth||640,360);}
   function architecture(ctx, level, cam, time) {
     const pal = PALETTES[level],
       offset = cam * 0.55;
@@ -777,12 +784,22 @@
   }
   R.StageWorld = {
     lowAlphaDraws:0,
+    // Older diagnostics inspect rounded per-layer views. Materialize these
+    // only when inspected; gameplay consumes the finished paintings instead.
+    get _views(){
+      if(this._viewScene&&!this._readingViews){
+        const scene=this._viewScene;this._viewScene=null;this._readingViews=true;
+        try{const c=document.createElement('canvas');c.width=640;c.height=360;this.drawCachedView(c.getContext('2d'),scene);}finally{this._readingViews=false;}
+      }
+      return this._legacyViews;
+    },
+    set _views(value){this._legacyViews=value;},
     K_FAR,K_MID,K_NEAR,PPU,MID_POOL,FAR_GRADE,evictStreet,detailEnergy,
     farGraded:{},
     travelOf,midLayout,midStrips,sliceLayout,bakedPlate,
     farRight(scene,cam){return farGeom(scene,cam==null?(scene.camera&&scene.camera.x)||0:cam).right;},
     queueRoof(){
-      if(this._roofQueued||!R.Bake)return;
+      if(this._roofQueued||!R.Bake||backgrounds.has([5,rsNow(),3600,1].join(':')))return;
       this._roofQueued=true;
       const touch=img=>{
         const canvas=document.getElementById('game'),ctx=canvas&&canvas.getContext('2d');
@@ -863,21 +880,11 @@
         touch(plate);if(R.perf.markStep)R.perf.markStep('roof-floor',performance.now()-t0);return true;
       });
     },
-    prepare(level){
-      if(!R.assets.has('stage'+(level+1)+'-far'))return;
-      const c=document.createElement('canvas');c.width=1280;c.height=720;const g=c.getContext('2d');g.scale(2,2);
-      const scene={levelIndex:level,camera:{x:0},time:0,wave:0,level:{length:(R.SCROLL&&R.SCROLL.length)||4240}};
-      try{this.draw(g,scene);this.near(g,scene);this.grade(g,scene);if(level===4){scene.wave=5;scene.roofOn=true;this.draw(g,scene);this.near(g,scene);}}
-      finally{
-        for(const c of sized.values())releaseCanvas(c);
-        for(const c of sliceCache.values())releaseCanvas(c);
-        sized.clear();sliceCache.clear();evictStage(9);
-      }
-    },
-    draw(ctx, scene) {
-      const n = scene.levelIndex + 1;
-      // One view per parallax group, painted at the rounded camera. The blit
-      // shifts by the factor this layer actually used, times (round - camera).
+    // Kept as the lower-memory fallback if a finished panoramic allocation
+    // cannot be made. Its camera rounding and capped parallax are unchanged.
+    drawCachedView(ctx,scene){
+      this._viewScene=null;
+      const n=scene.levelIndex+1;
       if(!this._painting && R.assets.has('stage'+n+'-far')){
         const rs=R.display.renderScale||1,camExact=scene.camera.x||0,bw=Math.max(1,Math.ceil(640*rs)),bh=Math.max(1,Math.ceil(360*rs)),roundCam=Math.round(camExact);
         if(this._stageKept!==n){evictStage(n);this._stageKept=n;this._platesBaked=0;}
@@ -923,6 +930,230 @@
           ctx.imageSmoothingQuality=quality;
           ctx.imageSmoothingEnabled=smooth;
         }
+        if(n===5&&Math.sin((scene.time||0)*0.8)>0.995)strokeLightning(ctx);
+        return;
+      }
+    },
+    backgroundStats,
+    primeMidWindow(entry,origin,width,one){
+      if(roofing(entry.scene))return true;
+      const n=entry.scene.levelIndex+1,layout=midLayout(n,travelOf(entry.scene));
+      for(const piece of layout.pieces){
+        if(piece.x>origin+width+2)break;
+        const img=R.assets.get(piece.key);if(!img)continue;
+        const fullH=piece.w*img.height/img.width,dh=n===4?MID_HEIGHTS[3]:fullH;
+        if(sliceCache.has(plateId(piece,dh)))continue;
+        bakedPlate(piece,dh,n===4?0:10+MID_HEIGHTS[n-1]-fullH);
+        if(one)return false;
+      }
+      return true;
+    },
+    stepMidPrime(entry,origin,width,job,end){
+      if(roofing(entry.scene))return true;
+      const n=entry.scene.levelIndex+1,layout=midLayout(n,travelOf(entry.scene));
+      let piece,img,dh,id;
+      for(const candidate of layout.pieces){
+        if(candidate.x>origin+width+2)break;
+        const source=R.assets.get(candidate.key);if(!source)continue;
+        const height=n===4?MID_HEIGHTS[3]:candidate.w*source.height/source.width,key=plateId(candidate,height);
+        if(!sliceCache.has(key)){piece=candidate;img=source;dh=height;id=key;break;}
+      }
+      if(!piece)return true;
+      let st=job.plate;
+      if(!st||st.id!==id){
+        const c=document.createElement('canvas');c.width=Math.ceil(piece.w*entry.rs);c.height=Math.ceil(dh*entry.rs);
+        const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+        st=job.plate={id,c,g,y:0,phase:'copy',ramp:piece.fade!=null?piece.fade:(piece.ramp||0),out:piece.rampOut||0};
+      }
+      const {c,g}=st;
+      if(st.phase==='copy'){
+        while(st.y<c.height&&performance.now()<end){
+          const rows=Math.min(16,c.height-st.y),at=performance.now();
+          g.save();g.beginPath();g.rect(0,st.y,c.width,rows);g.clip();paintPiece(g,img,piece,c);g.restore();
+          // Complete only this clipped strip now: no hidden whole-canvas flush
+          // can move the queued resize into a later visible frame.
+          g.getImageData(0,st.y,1,rows);st.y+=rows;
+          if(performance.now()-at>1.2)return false;
+        }
+        if(st.y<c.height)return false;st.phase='edge';
+      }
+      if(performance.now()>=end)return false;
+      if(st.phase==='edge'){
+        // These supplied future plates need only their small border/overlap.
+        // The full-frame stage4/5 grades belong to already-visible sources.
+        if(piece.key==='stage2-mid-c')trimFringe(c,'right');
+        if(piece.under&&st.ramp>0){
+          const under=sliceCache.get(plateId(piece.under,pieceDrawH(piece.under)));c.underHit=!!under;
+          const fadePx=Math.max(1,Math.round(st.ramp/piece.w*c.width)),ovWorld=piece.under.ov||piece.under.rampOut||st.ramp;
+          if(under){matchEdge(c,under,fadePx,Math.max(fadePx,Math.round(ovWorld/piece.under.w*under.width)));c.matched=true;}
+        }
+        st.phase='ramp';st.y=0;return false;
+      }
+      if(st.phase==='ramp'&&(st.ramp>0||st.out>0)){
+        const left=st.ramp>0?Math.max(1,Math.round(st.ramp/piece.w*c.width)):0,right=st.out>0?Math.max(1,Math.round(st.out/piece.w*c.width)):0;
+        while(st.y<c.height&&performance.now()<end){
+          const rows=Math.min(16,c.height-st.y),at=performance.now();
+          g.save();g.beginPath();g.rect(0,st.y,c.width,rows);g.clip();bakeRamp(g,c.width,c.height,left,right);g.restore();
+          g.getImageData(0,st.y,1,rows);st.y+=rows;if(performance.now()-at>1.2)return false;
+        }
+        if(st.y<c.height)return false;
+      }
+      c.rampU=st.ramp;c.rampOutU=st.out;sliceCache.set(id,c);job.plate=null;return false;
+    },
+    stepMidWindow(entry,layer,origin,width,job,end){
+      let st=job.window;
+      if(!st){const c=document.createElement('canvas');c.width=Math.ceil(width*entry.rs);c.height=Math.ceil(layer.h*entry.rs);st=job.window={canvas:c,g:c.getContext('2d'),y:0};}
+      const c=st.canvas,g=st.g,rs=entry.rs,ghost=Object.assign({},entry.scene,{camera:{x:layer.k?origin/layer.k:0}});
+      const before={painting:this._painting,layer:this._layer,width:this._paintWidth};
+      try{
+        this._painting=true;this._layer='mid';this._paintWidth=width;
+        while(st.y<c.height&&performance.now()<end){
+          const rows=Math.min(16,c.height-st.y),at=performance.now();
+          g.save();g.setTransform(1,0,0,1,0,0);g.beginPath();g.rect(0,st.y,c.width,rows);g.clip();g.setTransform(rs,0,0,rs,0,-layer.y*rs);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';this.draw(g,ghost);g.restore();
+          g.getImageData(0,st.y,1,rows);st.y+=rows;if(performance.now()-at>1.2)break;
+        }
+      }finally{this._painting=before.painting;this._layer=before.layer;this._paintWidth=before.width;}
+      if(st.y<c.height)return null;
+      backgroundStats.windows=(backgroundStats.windows||0)+1;return {canvas:c,origin,viewW:width};
+    },
+    paintMidWindow(entry,layer,origin,width){
+      this.primeMidWindow(entry,origin,width,false);
+      const c=document.createElement('canvas'),rs=entry.rs;c.width=Math.ceil(width*rs);c.height=Math.ceil(layer.h*rs);
+      const g=c.getContext('2d');g.setTransform(rs,0,0,rs,0,-layer.y*rs);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+      const before={painting:this._painting,layer:this._layer,width:this._paintWidth};
+      const ghost=Object.assign({},entry.scene,{camera:{x:layer.k?origin/layer.k:0}});
+      try{this._painting=true;this._layer='mid';this._paintWidth=width;this.draw(g,ghost);}
+      finally{this._painting=before.painting;this._layer=before.layer;this._paintWidth=before.width;}
+      backgroundStats.windows=(backgroundStats.windows||0)+1;
+      return {canvas:c,origin,viewW:width};
+    },
+    activateStage(scene){
+      // Preloading the next view happens while the old stage is still visible.
+      // Only gameplay entry changes which stage may keep unfinished mid work.
+      const n=scene.levelIndex+1;
+      cancelBackgroundJobs(job=>job.backgroundStage!==n);
+    },
+    queueMidWindow(entry,layer,left){
+      if(!R.Bake||!layer.k||layer.w<=640||layer.pending||layer.next)return;
+      if(left<layer.origin+Math.max(0,(layer.viewW-640)/2))return;
+      const origin=layer.viewW<=640?layer.origin:Math.min(layer.origin+128,Math.max(0,layer.w-768));
+      const width=Math.min(768,layer.w-origin);
+      if(origin===layer.origin&&width<=layer.viewW)return;
+      layer.pending=true;
+      R.Bake.enqueue(1.5,'background-mid:'+entry.key+':'+origin,(job,end)=>{
+        if(backgrounds.get(entry.key)!==entry){releaseMidJob(job);return true;}
+        // Source-plate preparation is one job slice per image; completed
+        // windows never redo a source grade, overlap or downsample.
+        if(!this.stepMidPrime(entry,origin,width,job,end))return false;
+        const next=this.stepMidWindow(entry,layer,origin,width,job,end);if(!next)return false;
+        layer.next=next;job.window=null;layer.pending=false;return true;
+      },{background:entry.key,backgroundStage:entry.scene.levelIndex+1,backgroundLayer:layer});
+    },
+    preload(scene){
+      const n=scene.levelIndex+1,rs=rsNow(),roof=roofing(scene),travel=travelOf(scene);
+      const key=[n,rs,travel,roof?1:0].join(':');
+      if(backgrounds.has(key)){const cached=backgrounds.get(key);backgrounds.delete(key);backgrounds.set(key,cached);return cached;}
+      if(!R.assets.has('stage'+n+'-far'))return null;
+      // Keep one render resolution resident. Resizes invalidate pixel caches,
+      // but visiting another stage does not discard completed paintings.
+      for(const [id,old] of backgrounds)if(old.rs!==rs){
+        for(const layer of old.layers){releaseCanvas(layer.canvas);if(layer.next)releaseCanvas(layer.next.canvas);}
+        releaseCanvas(old.composite);releaseCanvas(old.near);backgrounds.delete(id);cancelBackgroundJobs(j=>j.background===id);
+      }
+      const layout=midLayout(n,travel);
+      const midWidth=roof?640:layout.clamp?Math.max(640,layout.available):640+K_MID*travel;
+      const specs=[
+        {id:'base',k:0,w:640,y:0,h:360},
+        {id:'back',k:roof?0:K_FAR,w:roof?640:640+K_FAR*travel,y:0,h:360},
+        {id:'mid',k:roof?0:K_MID,w:midWidth,y:0,h:280,clamp:layout.clamp,windowed:true},
+        {id:'floor',k:1,w:FLOOR_LOOP,y:222,h:138,loop:true},
+        {id:'screen',k:0,w:640,y:0,h:360}
+      ];
+      const result={key,rs,layers:[],composite:null,camera:NaN};
+      evictStage(n);
+      const ghost={levelIndex:scene.levelIndex,camera:{x:0},time:0,wave:roof?5:scene.wave,roofOn:roof,level:scene.level};
+      const before={painting:this._painting,layer:this._layer,width:this._paintWidth};
+      result.scene=ghost;
+      try{
+        this._painting=true;
+        for(const spec of specs){
+          if(spec.windowed){const origin=Math.max(0,Math.min((scene.camera.x||0)*spec.k,spec.w-640));result.layers.push(Object.assign({},spec,this.paintMidWindow(result,spec,origin,640)));continue;}
+          const c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(spec.w*rs));c.height=Math.max(1,Math.ceil(spec.h*rs));
+          const g=c.getContext('2d',{alpha:spec.id!=='base'});
+          g.setTransform(rs,0,0,rs,0,-spec.y*rs);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+          this._layer=spec.id;this._paintWidth=spec.w;
+          this.draw(g,ghost);
+          if(spec.id==='base')bakeGrade(g,ghost);
+          if(spec.id==='screen')blitVignette(g);
+          result.layers.push(Object.assign({canvas:c},spec));
+        }
+        const near=bakedNear('stage'+n+'-near');
+        if(near){
+          result.near=document.createElement('canvas');result.near.width=Math.ceil(700*rs);result.near.height=Math.ceil(26*rs);
+          result.near.getContext('2d').drawImage(near,0,Math.max(0,near.height-26*rs),near.width,26*rs,0,0,result.near.width,result.near.height);
+        }
+      }catch(error){
+        for(const layer of result.layers)releaseCanvas(layer.canvas);
+        releaseCanvas(result.near);
+        return null;
+      }finally{this._painting=before.painting;this._layer=before.layer;this._paintWidth=before.width;}
+      backgrounds.set(key,result);backgroundStats.builds++;
+      // Two completed stage/roof variants cover the current and upcoming view.
+      // Only visible source plates and two small mid windows are resident;
+      // a full 2080-unit middle painting is never allocated at cold entry.
+      while(backgrounds.size>2){const id=backgrounds.keys().next().value,old=backgrounds.get(id);for(const layer of old.layers){releaseCanvas(layer.canvas);if(layer.next)releaseCanvas(layer.next.canvas);}releaseCanvas(old.composite);releaseCanvas(old.near);backgrounds.delete(id);cancelBackgroundJobs(j=>j.background===id);}
+      // Visible source plates stay resident for the queued neighboring window.
+      // Unseen B/C paintings and Stage 5's roof are not part of cold entry.
+      // queueRoof still prepares the roof in wave four, before the switch.
+      return result;
+    },
+    prepare(level){
+      const scene={levelIndex:level,camera:{x:0},time:0,wave:0,level:{length:(R.SCROLL&&R.SCROLL.length)||4240}};
+      this.preload(scene);
+      if(level===4){scene.wave=5;scene.roofOn=true;this.preload(scene);}
+    },
+    draw(ctx, scene) {
+      const n = scene.levelIndex + 1;
+      if(!this._painting && R.assets.has('stage'+n+'-far')){
+        let entry;
+        try{entry=this.preload(scene);}catch(e){entry=null;}
+        if(!entry)return this.drawCachedView(ctx,scene);
+        this._viewScene=scene;
+        const rs=entry.rs,cam=scene.camera.x||0;
+        if(!entry.composite){entry.composite=document.createElement('canvas');entry.composite.width=Math.ceil(640*rs);entry.composite.height=Math.ceil(360*rs);entry.ctx=entry.composite.getContext('2d',{alpha:false});}
+        if(entry.camera!==cam){
+          const g=entry.ctx;g.setTransform(rs,0,0,rs,0,0);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='low';
+          for(const layer of entry.layers){
+            let c=layer.canvas;
+            let left=cam*layer.k;
+            if(layer.loop)left=((left%layer.w)+layer.w)%layer.w;
+            else left=Math.max(0,Math.min(left,layer.w-640));
+            if(layer.windowed){
+              if(left<layer.origin||left+640>layer.origin+layer.viewW+1e-7){
+                let next=layer.next;
+                if(!next||left<next.origin||left+640>next.origin+next.viewW+1e-7){
+                  cancelBackgroundJobs(j=>j.background===entry.key);layer.pending=false;
+                  next=this.paintMidWindow(entry,layer,left,640);
+                }
+                releaseCanvas(layer.canvas);if(layer.next&&layer.next!==next)releaseCanvas(layer.next.canvas);
+                Object.assign(layer,next);layer.next=null;c=layer.canvas;
+              }
+              g.drawImage(c,(left-layer.origin)*rs,0,640*rs,c.height,0,layer.y,640,layer.h);
+              this.queueMidWindow(entry,layer,left);continue;
+            }
+            const first=Math.min(640,layer.w-left);
+            g.drawImage(c,left*rs,0,first*rs,c.height,0,layer.y,first,layer.h);
+            if(first<640)g.drawImage(c,0,0,(640-first)*rs,c.height,first,layer.y,640-first,layer.h);
+          }
+          entry.camera=cam;backgroundStats.composites++;
+        }else{
+          backgroundStats.hits++;
+          // A retained composite can return at the identical camera after its
+          // unfinished neighbor was canceled; retry without repainting it.
+          for(const layer of entry.layers)if(layer.windowed)this.queueMidWindow(entry,layer,Math.max(0,Math.min(cam*layer.k,layer.w-640)));
+        }
+        const smooth=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;
+        ctx.drawImage(entry.composite,0,0,640,360);ctx.imageSmoothingEnabled=smooth;
         if(n===5&&Math.sin((scene.time||0)*0.8)>0.995)strokeLightning(ctx);
         return;
       }
@@ -981,7 +1212,7 @@
         }else if(usePlates){
           const travel=travelOf(scene),layout=midLayout(n,travel);
           const midX=layout.clamp?Math.min(cam*K_MID,Math.max(0,layout.available-640)):cam*K_MID;
-          const viewL=midX-80,viewR=midX+720;
+          const viewL=midX-2,viewR=midX+(this._paintWidth||640)+2;
           for(const piece of layout.pieces){
             if(piece.x+piece.w<viewL||piece.x>viewR)continue;
             const img=R.assets.get(piece.key);if(!img)continue;
@@ -1001,7 +1232,7 @@
           if(img){
             const travel=travelOf(scene),layout=sliceLayout(n,travel);
             const drawH=spec.plateW*img.height/img.width,drawY=10+MID_HEIGHTS[n-1]-drawH;
-            const viewL=cam*K_MID-80,viewR=cam*K_MID+720;
+            const viewL=cam*K_MID-2,viewR=cam*K_MID+(this._paintWidth||640)+2;
             const plate=displayPlate(spec.key,spec.plateW,drawH);
             if(plate&&layout.plateW>viewL&&0<viewR){noteScrollAlpha(ctx);ctx.globalAlpha=1;ctx.drawImage(plate,-cam*K_MID,drawY,spec.plateW,drawH);}
             for(const piece of layout.pieces){
@@ -1043,7 +1274,7 @@
       }
       // Wide floor plates are compressed in depth, not tiled into tiny squares.
       const floor = sizedPlate(floorKey,seamlessPlate(floorKey,true),FLOOR_LOOP,138);
-      if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off;x<640;x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
+      if (floor){const fw=FLOOR_LOOP;const off=((cam%fw)+fw)%fw;for(let x=-off;x<(this._paintWidth||640);x+=fw)ctx.drawImage(floor,x,222,fw,138);haze(ctx,224,roof?'#aebbd0':'#b8c1c6');}
       else if(n===1)R.Stage1.layers.floor(ctx,cam);
       let factor=1;
       R.StageWorld._layerFactor=factor;
@@ -1064,6 +1295,17 @@
     },
     near(ctx, scene) {
       const n = scene.levelIndex + 1;
+      if(!this._painting&&R.assets.has('stage'+n+'-far')){
+        let entry;try{entry=this.preload(scene);}catch(e){entry=null;}
+        if(entry&&entry.near){
+          const cam=scene.camera.x||0,step=684,shift=((cam*K_NEAR)%step+step)%step;
+          // Same right-to-left overlap as the original strip, but only the
+          // visible bottom 26 pixels are ever submitted to the renderer.
+          const last=Math.floor((640+shift-1e-7)/step)*step-shift;
+          for(let x=last;x>=-shift-1e-7;x-=step)ctx.drawImage(entry.near,x,334,700,26);
+          return;
+        }
+      }
       // Confine dense delivered foreground props to the bottom 26px; every lane
       // and attack tell remains visible, even on the lowest playable lane.
       ctx.save();ctx.beginPath();ctx.rect(0,334,640,26);ctx.clip();

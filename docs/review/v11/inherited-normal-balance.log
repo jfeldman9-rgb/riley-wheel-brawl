@@ -1,0 +1,5 @@
+PASS Normal stage 1: 40/40 (100%), target 100%, delta 0 points
+PASS Normal stage 2: 31/40 (77.5%), target 72.5%, delta 5 points
+PASS Normal stage 3: 26/40 (65%), target 70%, delta -5 points
+PASS Normal stage 4: 23/40 (57.5%), target 65%, delta -7.5 points
+PASS Normal stage 5: 23/40 (57.5%), target 50%, delta 7.5 points

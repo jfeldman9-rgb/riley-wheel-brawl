@@ -164,9 +164,9 @@
       if (this.entryX == null || this.boss) return false;
       const cam = this.g.camera ? this.g.camera.x : 0;
       const onScreen = this.x >= cam + 24 && this.x <= cam + 616;
-      const nearPlayer = this.g.player && Math.abs(this.x - this.g.player.x) <= 90;
       const dx = this.entryX - this.x;
-      if (Math.abs(dx) <= 6 || onScreen || nearPlayer) {
+      if (onScreen) {
+        this.enteredFight = true;
         this.entryX = null;
         this.vx = 0;
         return false;
@@ -177,6 +177,19 @@
       this.walkDistance += Math.abs(this.vx) * dt;
       this.setState('walk');
       return true;
+    }
+    constrainToFight() {
+      if (!this.g.camera) return;
+      const left = Math.max(this.g.arenaLeft, this.g.camera.x) + 24;
+      const right = Math.min(this.g.arenaRight, this.g.camera.x + R.W) - 24;
+      // Entry is a brief, deliberate walk-in. Once an enemy is in the fight,
+      // knockback, recovery and pack separation cannot hide it beyond a wall.
+      if (this.x >= left && this.x <= right) this.enteredFight = true;
+      if (this.enteredFight || this.entryX == null || ['hurt', 'knockback', 'knockdown', 'getup'].includes(this.state) || this.thrown > 0) {
+        this.x = R.util.clamp(this.x, left, right);
+        this.enteredFight = true;
+        if (this.entryX != null) this.entryX = null;
+      }
     }
     updateAI(dt) {
       if (this.advanceEntry(dt)) return;
@@ -263,6 +276,7 @@
         this.deathTimer -= dt;
         if (this.deathTimer <= 0) this.remove = true;
         super.update(dt);
+        this.constrainToFight();
         return;
       }
       if (this.grabbedBy) return;
@@ -293,6 +307,7 @@
       const leash = this.boss || !this.g.leash ? [this.g.arenaLeft, this.g.arenaRight] : this.g.leash();
       this.x = R.util.clamp(this.x, leash[0] + 12, leash[1] - 12);
       if (!this.dead && !this.grabbedBy) this.separate();
+      this.constrainToFight();
     }
     onHurt(damage, opts) {
       this.g.releaseAttacker(this);
@@ -377,6 +392,14 @@
     }
     drawTell(ctx, cameraX) {
       if (!this.attack || (this.ai !== 'telegraph' && this.ai !== 'attack')) return;
+      if (this.boss && this.ai === 'telegraph') {
+        const box = this.attack === ATTACKS.stomp ? { x: this.x, w: 188, d: 72 } :
+          this.attack === ATTACKS.charge ? { x: this.x + this.facing * 123, w: 246, d: 14 } :
+          { x: this.x + this.facing * (this.attack.reach - 9) / 2, w: this.attack.reach + 9, d: this.attack.depth };
+        ctx.save();ctx.beginPath();ctx.rect(box.x-cameraX-box.w/2,this.y-box.d,box.w,box.d*2);
+        ctx.globalAlpha=.2+Math.abs(Math.sin(this.stateT*9))*.1;ctx.fillStyle='#ffd15a';ctx.fill();
+        ctx.globalAlpha=.94;ctx.strokeStyle='#160d15';ctx.lineWidth=5;ctx.stroke();ctx.strokeStyle='#ffe17e';ctx.lineWidth=2;ctx.stroke();ctx.restore();
+      }
       const pulse = 0.28 + Math.abs(Math.sin(this.stateT * 16)) * 0.35;
       ctx.save();
       ctx.globalAlpha = this.ai === 'telegraph' ? pulse : 0.22;

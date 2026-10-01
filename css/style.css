@@ -3,7 +3,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('../assets/fonts/press-start-2p.ttf?v=20260927-audio1') format('truetype');
+  src: url('../assets/fonts/press-start-2p.ttf?v=20260930-v11-review') format('truetype');
 }
 
 html, body {
@@ -43,4 +43,15 @@ canvas#game.pc {
   box-shadow:
     0 0 0 2px #1a1a2e,
     0 18px 50px rgba(0, 0, 0, 0.55);
+}
+
+/* A non-blocking nudge: portrait still works, but this landscape arcade game
+   gives thumbs much larger controls after rotating the phone. */
+#orientation-hint { display: none; }
+@media (pointer: coarse) and (orientation: portrait) and (max-width: 600px) {
+  #orientation-hint {
+    display: block; position: fixed; bottom: max(16px, env(safe-area-inset-bottom));
+    left: 20px; right: 20px; margin: 0; text-align: center;
+    color: #d7e7f6; font: 15px/1.5 system-ui, sans-serif; pointer-events: none;
+  }
 }

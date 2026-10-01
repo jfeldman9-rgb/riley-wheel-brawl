@@ -1,3 +1,39 @@
+# Release 1.1 in development (2026-09-30)
+
+The verified live 1.0 is `rwb-w2` commit `816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc`. PR #9 merged at 2026-09-30 14:38:41 UTC; [Pages deployment 36730669876](https://github.com/jfeldman9-rgb/riley-wheel-brawl/actions/runs/36730669876) succeeded at 14:39:18 UTC. At 18:11 UTC, the public index was byte-identical to that commit (SHA-256 `6b88ae236e160e9b9a09bc3e6dc4aabe81e31f303d2e3d44752d87636060404f`). The prior 1.0 handoff below is historical, including its obsolete unmerged/undeployed statements.
+
+New branch: `rwb-1-1-polish`, created from that exact live commit. Draft development only; no release is authorized. `main` and `rwb-w2` must remain unchanged until Jason gives a fresh release GO after Jason and Grok review the candidate.
+
+See [1.1 scope and evidence plan](V11_PLAN.md). Inherited test rules are protected in [the acceptance manifest](review/v11/inherited-tests.lock.json), with explicit archived exceptions documented in [the contract review](review/v11/CONTRACT_CONFLICTS.md); other 1.1 checks are additive.
+
+## Current 1.1 review checkpoint (2026-10-01)
+
+This is a frozen pre-publication checkpoint. The PR description carries the latest exact-head CI outcome.
+
+Draft [PR #11](https://github.com/jfeldman9-rgb/riley-wheel-brawl/pull/11) remains **not release-ready**. Verified live stays at `816eb1e9dc209b00a6da4f8eeb58ea2ead69bdbc`.
+
+- Last completed cloud candidate: `95d6d3fd83366e29509279fdc947faa0205a1cd5`, [run 36801122929](https://github.com/jfeldman9-rgb/riley-wheel-brawl/actions/runs/36801122929). All approved matched performance cells passed; main candidate/live long-frame totals 71/166, additional S4 audio 5/14. All 10 candidate cold medians passed, maximum 289.2 ms. Absolute timing remained 0/21 passing windows on both sources; this is not a physical-machine pass
+- That workflow's sole remaining failure was the Callandor pivot expectation. Jason subsequently approved the −83 wrapped-grip center and the 18% shorter/24% slimmer cosmetic version. All 38 views, 1,536 geometry cases and 306 unchanged unarmed-body comparisons pass locally. The single inherited assertion exception is pinned and archived; combat and all other thresholds are unchanged
+- The native roster passes 28/28 at local cosmetic commit `7c9c607cfefd0e7979921a338f677678c485123e`. Supplementary and exact-next-head GitHub reruns are pending; no newer cloud pass is claimed yet
+- All 400 stage/seed trials retain Normal 100/80/67.5/60/57.5% and Hard 100/75/50/30/25%, with zero enemies offscreen for more than 2 seconds. Normal exact parity passes 72 assertions against approved reference `4c9997521d62d91cb40abcd9623df334f1209618`; the real live baseline remains unchanged
+- **Voices: USER APPROVED.** Jason approved retaining the current 80 original clips. Objective decoding, clipping, loudness and runtime sequencing checks pass. No agent listening or individual-clip audition claim is made; no clips were regenerated. See [the exact approval record](review/audio-v11/user-acceptance.json)
+- Manual Stage 1–3 seams remain failed. Rejected generated repairs were preserved and not installed; a separate coherent Stage 2 painting may be offered for review. Original Stage 4/5 panorama/brightness assets stay unchanged
+- Same-Mac/real-Chrome absolute verification, physical iPad/phone/controller checks and final art/gameplay review remain open. Device automation is emulation
+- Jason's fresh release GO is still required. No merge, direct `rwb-w2` push or deployment is authorized
+
+Earlier checkpoints below remain historical evidence and are not current results.
+
+## Verification limits
+
+- Cloud baseline and candidate measurements can establish cloud regressions only. Required live-versus-candidate measurements on Jason's same computer, three runs each, are pending while his Mac is offline.
+- Real iPad, phone and Xbox/PlayStation controller tests remain pending. Emulation and synthetic gamepad tests will be labeled accordingly.
+- Existing code/evidence is inspected afresh; historical test passes are not copied forward as current 1.1 passes.
+- `/workspace/rwb-next/PASS2_PLAN.md` is not present in this executor. The 1.1 plan is reconstructed from Jason's supplied scope; the unavailable original can be reconciled when provided.
+
+---
+
+# Historical 1.0 development records
+
 # Release 1.0 Round 2 candidate (2026-09-30)
 
 Runtime stamp `20260930-release2`; local work branch `rwb-1-0-handoff`. Round 1 remains preserved at `c3b4a1a`. See [current Round 2 evidence](review/release2/HANDOFF.md), not the historical results below.

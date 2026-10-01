@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   const R = window.RWB;
-  R.ASSET_VER = '20260930-release2';
+  R.ASSET_VER = R.ASSET_VER || '20260930-v11-review';
   // One-way Streets of Rage layout. Six fight screens, a short walk between
   // them, camera only moves forward. Whale Lance (3991948) did the same with
   // camX = max(camX, target), a lock at each wave.x, and goArrowT.
@@ -20,6 +20,11 @@
     ]
   };
   R.TUNE = {
+    // v1.1 visible-arena collision fixes change real encounter pressure. These
+    // damage-only coefficients restore Normal’s verified live curve and shape
+    // Hard’s late-stage ramp; enemy HP and move timing remain unchanged.
+    incomingDamageScale: { normal: [1, 1.25, 1.08, 0.97, 0.84], hard: [1, 1.2, 1.16, 1.7, 0.94] },
+    bossDamageScale: { normal: [1, 1, 1, 1, 1.12], hard: [1, 1, 1, 1.02, 1.1] },
     stageLength: 4240,
     playerSpeed: 128,
     laneSpeed: 84,

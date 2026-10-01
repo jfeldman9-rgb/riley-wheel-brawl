@@ -71,6 +71,8 @@
   };
   // One priority queue for every canvas bake. A job's run(job, end) returns
   // false when the frame budget is spent and the job must resume next frame.
+  // An optional ready() dependency predicate skips waiting jobs until their
+  // data is available, without changing runnable priority or FIFO order.
   R.Bake={
     q:[],seq:0,touches:[],names:new Set(),
     enqueue(pri,name,run,data){
@@ -91,28 +93,42 @@
         return false;
       });
     },
-    pump(ms){
+    // Optional eligible(job) is a pure per-pump policy; omitting it admits all jobs.
+    pump(ms,eligible){
       const end=performance.now()+Math.max(0,ms);
       const started=performance.now();
       R.perf.inBake=true;
       let guard=0;
-      while(this.q.length&&performance.now()<end&&guard++<64){
-        let best=0;
-        for(let i=1;i<this.q.length;i++){
-          const a=this.q[i],b=this.q[best];
-          if(a.pri<b.pri||(a.pri===b.pri&&a.seq<b.seq))best=i;
+      while(this.q.length&&performance.now()<end&&guard<64){
+        let best=-1;
+        for(let i=0;i<this.q.length;i++){
+          const a=this.q[i];if(eligible&&!eligible(a))continue;
+          if(a.ready&&!a.ready())continue;
+          const b=this.q[best];
+          if(best<0||a.pri<b.pri||(a.pri===b.pri&&a.seq<b.seq))best=i;
         }
+        if(best<0||performance.now()>=end)break;
         const job=this.q[best];
         const t0=performance.now();
         let done=false;
         try{done=job.run(job,end)!==false;}catch(e){done=true;}
         const dt=performance.now()-t0;
+        const waiting=!done&&job.ready&&!job.ready();
+        // Newly discovered dependencies do not spend the runnable guard.
+        // On subsequent passes their predicate avoids another work attempt.
+        if(!waiting)guard++;
         if(dt>4)R.perf.markStep(job.name||'bake',dt);
         if(done){
           this.q.splice(best,1);
           if(job.name)this.names.delete(job.name);
-        }else if(performance.now()>=end||dt<0.05)break;
+        }else if(!waiting&&(performance.now()>=end||dt<0.05))break;
       }
+      // Pending policy counts, not dependency-runnable counts. Keep deferred
+      // jobs visible in the real queue and include this accounting in pump cost.
+      let deferred=0;
+      if(eligible)for(const job of this.q)if(!eligible(job))deferred++;
+      R.perf.bakePolicyDeferred=deferred;
+      R.perf.bakePolicyEligible=this.q.length-deferred;
       R.perf.inBake=false;
       R.perf.lastPumpMs=performance.now()-started;
       return R.perf.lastPumpMs;
@@ -127,7 +143,9 @@
       const end=performance.now()+(limitMs==null?2:limitMs);
       const prev=R.perf.inBake;R.perf.inBake=true;
       let n=0;
-      while(this.touches.length&&performance.now()<end){
+      // Count submitted warm blits too: Canvas may defer their expensive work.
+      // Demanded actor draws bypass this speculative queue.
+      while(this.touches.length&&n<1&&performance.now()<end){
         const entry=this.touches.shift();
         entry._touchQueued=false;
         if(R.Puppet.touchEntry(entry))n++;
@@ -140,7 +158,7 @@
   R.prepareRendering=function(){
     if(preparation)return preparation;
     const jobs=[];
-    if(R.StageWorld)for(let n=0;n<5;n++)jobs.push(()=>R.StageWorld.prepare(n));
+    if(R.StageWorld)jobs.push(()=>R.StageWorld.prepare(0));
     if(R.Riley.prepare)jobs.push(()=>R.Riley.prepare());
     preparation=new Promise(resolve=>{const next=()=>{const until=performance.now()+4;do{const job=jobs.shift();if(job)job();}while(jobs.length&&performance.now()<until);if(jobs.length)setTimeout(next,0);else warmDisplay().then(resolve);};next();});return preparation;
   };
@@ -158,7 +176,7 @@
     const scene=R.game.scene,next=R.game.nextScene,fade=R.game.fade,fadeDir=R.game.fadeDir;
     try{
       ctx.setTransform(rs,0,0,rs,0,0);
-      for(const [level,wave] of [[0,3],[2,3],[4,3],[3,5]]){
+      for(const [level,wave] of [[0,3]]){
         const view={levelIndex:level,camera:{x:0},time:0,wave};
         R.StageWorld.draw(ctx,view);
         R.StageWorld.near(ctx,view);

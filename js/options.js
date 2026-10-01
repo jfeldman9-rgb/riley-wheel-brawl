@@ -48,11 +48,28 @@
       this.rows = kind === 'controls' ? controlRows() : optionRows(this.full);
       this.y0 = kind === 'controls' ? 64 : 66;
       this.step = kind === 'controls' ? 15 : 19;
+      this.touch = RWB.input.touchEnabled;
+      this.page = 0;
+      this.pageSize = 4;
+      if (this.touch) { this.y0 = 76; this.step = 46; }
+    }
+    close() {
+      if (this.listening) RWB.input.cancelCapture();
+      this.listening = null;
+    }
+    rowY(i) { return this.y0 + (this.touch ? i - this.page * this.pageSize : i) * this.step; }
+    visible(i) { return !this.touch || (i < this.rows.length - 1 && i >= this.page * this.pageSize && i < (this.page + 1) * this.pageSize); }
+    pages() { return Math.ceil((this.rows.length - 1) / this.pageSize); }
+    changePage(dir) {
+      this.page = (this.page + dir + this.pages()) % this.pages();
+      this.sel = this.page * this.pageSize;
+      A.sfx.blip();
     }
     rowAt(p) {
       if (!p) return -1;
       for (let i = 0; i < this.rows.length; i++) {
-        const y = this.y0 + i * this.step;
+        if (!this.visible(i)) continue;
+        const y = this.rowY(i);
         if (p.y >= y - 4 && p.y < y + this.step - 4 && p.x > 36 && p.x < W - 36) return i;
       }
       return -1;
@@ -65,10 +82,11 @@
         else if (inp.pressed.click) { RWB.input.cancelCapture(); this.listening = null; this.flash('CANCELLED'); }
         return null;
       }
-      if (inp.pressed.pause) { A.sfx.blip(); return 'back'; }
+      if (inp.pressed.pause) { this.close(); A.sfx.blip(); return 'back'; }
       const n = this.rows.length;
       if (inp.pressed.down) { this.sel = (this.sel + 1) % n; A.sfx.blip(); }
       if (inp.pressed.up) { this.sel = (this.sel + n - 1) % n; A.sfx.blip(); }
+      if (this.touch && (inp.pressed.up || inp.pressed.down) && this.sel < n - 1) this.page = Math.floor(this.sel / this.pageSize);
       const dir = inp.pressed.right ? 1 : inp.pressed.left ? -1 : 0;
       const row = this.rows[this.sel];
       if (dir) {
@@ -76,6 +94,12 @@
         else if (row.adj) { row.adj(dir); A.sfx.blip(); }
       }
       if (inp.pressed.click && inp.pointer) {
+        if (this.touch && inp.pointer.y >= 268 && inp.pointer.y <= 314) {
+          if (inp.pointer.x >= 240 && inp.pointer.x <= 400) { this.close(); return 'back'; }
+          if (inp.pointer.x >= 44 && inp.pointer.x <= 214) this.changePage(-1);
+          if (inp.pointer.x >= 426 && inp.pointer.x <= 596) this.changePage(1);
+          return null;
+        }
         const i = this.rowAt(inp.pointer);
         if (i < 0) return null;
         this.sel = i;
@@ -88,7 +112,7 @@
     activate() {
       const row = this.rows[this.sel];
       A.sfx.select();
-      if (row.back) return 'back';
+      if (row.back) { this.close(); return 'back'; }
       if (row.id === 'reset') { ST.resetControls(); this.flash('CONTROLS RESET'); return null; }
       if (row.bind) {
         const action = row.id;
@@ -118,19 +142,30 @@
       else this.drawOptions(ctx);
       const row = this.rows[this.sel];
       const foot = this.msgT > 0 ? this.msg : (row && row.desc) || '';
-      if (foot) T.draw(ctx, foot, W / 2, H - 50, { size: 6, align: 'center', color: this.msgT > 0 ? '#9f3' : '#bcd' });
+      if (foot && !this.touch) T.draw(ctx, foot, W / 2, H - 50, { size: 6, align: 'center', color: this.msgT > 0 ? '#9f3' : '#bcd' });
+      if (this.touch) {
+        for (const [label, x, w] of [['PREV', 44, 170], ['BACK', 240, 160], ['NEXT', 426, 170]]) {
+          D.fillRRect(ctx, x, 268, w, 46, 5, '#172840', '#6389a9');
+          T.draw(ctx, label, x + w / 2, 284, { size: 10, align: 'center', color: '#ffe14a' });
+        }
+        T.draw(ctx, `${this.page + 1} / ${this.pages()}   TAP A ROW TO CHANGE`, W / 2, 323, { size: 6, align: 'center', color: '#bcd' });
+        return;
+      }
       const back = RWB.input.touchEnabled ? 'TAP A ROW. TAP BACK TO RETURN.' : `UP/DOWN PICK   LEFT/RIGHT CHANGE   ${RWB.input.hint('pause', 1)} BACK`;
       T.draw(ctx, back, W / 2, H - 36, { size: 6, align: 'center', color: '#89a' });
     }
     drawOptions(ctx) {
       this.rows.forEach((r, i) => {
-        const y = this.y0 + i * this.step;
+        if (!this.visible(i)) return;
+        const y = this.rowY(i);
         const sel = i === this.sel;
+        if (this.touch) D.fillRRect(ctx, 44, y - 8, W - 88, 42, 4, sel ? '#203852' : '#102036', sel ? '#ffe14a' : '#405976');
         const label = r.label() + (r.adj && sel ? '   < >' : '');
         T.draw(ctx, (sel ? '> ' : '  ') + label, 60, y, { size: 8, color: sel ? '#ffe14a' : '#ddd' });
       });
       const s = ST.data;
       const row = this.rows[this.sel];
+      if (this.touch) return;
       // Live previews so a setting shows what it does before you leave.
       if (row.id === 'overlay') {
         ctx.save(); ctx.globalAlpha = s.overlay;
@@ -154,8 +189,10 @@
       T.draw(ctx, 'KEYBOARD', kx, 50, { size: 7, align: 'center', color: this.col === 0 ? '#ffe14a' : '#9ab' });
       T.draw(ctx, RWB.input.gamepad.connected ? 'GAMEPAD' : 'GAMEPAD (NONE)', px, 50, { size: 7, align: 'center', color: this.col === 1 ? '#ffe14a' : '#9ab' });
       this.rows.forEach((r, i) => {
-        const y = this.y0 + i * this.step;
+        if (!this.visible(i)) return;
+        const y = this.rowY(i);
         const sel = i === this.sel;
+        if (this.touch) D.fillRRect(ctx, 44, y - 8, W - 88, 42, 4, sel ? '#203852' : '#102036', sel ? '#ffe14a' : '#405976');
         if (!r.bind) {
           T.draw(ctx, (sel ? '> ' : '  ') + r.label(), 60, y, { size: 7, color: sel ? '#ffe14a' : '#ddd' });
           return;
@@ -171,11 +208,15 @@
         T.draw(ctx, listenK ? (blink ? 'PRESS A KEY' : '') : keyText, kx, y, { size: 7, align: 'center', color: listenK ? '#9f3' : '#fff' });
         T.draw(ctx, listenP ? (blink ? 'PRESS BUTTON' : '') : ST.padFor(r.id), px, y, { size: 7, align: 'center', color: listenP ? '#9f3' : (ST.PAD_ACTIONS.includes(r.id) ? '#fff' : '#789') });
       });
+      if (this.touch) {
+        if (this.listening) T.draw(ctx, 'PRESS A KEY / PAD BUTTON. TAP TO CANCEL.', W / 2, 247, { size: 6, align: 'center', color: '#9f3' });
+        return;
+      }
       if (this.listening) {
         const how = this.listening.pad ? 'START OR A TAP CANCELS' : 'ESC OR A CLICK CANCELS';
         T.draw(ctx, `REMAPPING ${ST.ACTION_NAMES[this.listening.action]}.  ${how}.`, W / 2, H - 64, { size: 6, align: 'center', color: '#9f3' });
       } else {
-        T.draw(ctx, 'ENTER / START / MENU KEYS AND M, \\ STAY FIXED SO YOU CAN ALWAYS GET BACK.', W / 2, H - 64, { size: 5, align: 'center', color: '#789' });
+        T.draw(ctx, 'ENTER / ESC / ARROWS / START STAY FIXED SO YOU CAN ALWAYS GET BACK.', W / 2, H - 64, { size: 5, align: 'center', color: '#789' });
       }
     }
   }

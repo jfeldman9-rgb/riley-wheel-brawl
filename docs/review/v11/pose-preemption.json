@@ -1,0 +1,2904 @@
+{
+  "method": "Decoded Node Skia, deterministic yield clock, actual Bake priority scheduler. Exact interrupted/uninterrupted RGBA, bounds and scale equality. Skin/raster interruption, higher/lower/nested priorities. No native timing or memory-budget pass claimed.",
+  "baseCommit": "8adc8aa568c42e00f8bc2e74eab281c06dcdff30",
+  "workingTreeDirty": true,
+  "sourceFile": "/workspace/scratch/699fc278689a/riley-v11/js/puppets.js",
+  "sourceHash": "74937ae3c686e66c91be5bfde7110fb172c819facd0617281e2348baf05f9989",
+  "cases": 216,
+  "scales": [
+    1,
+    2,
+    3
+  ],
+  "kinds": [
+    "ashaman",
+    "loial",
+    "cultist",
+    "guard"
+  ],
+  "maxLiveVertices": 1275,
+  "verticesPerMesh": 425,
+  "completedSnapshotsReleased": true,
+  "rows": [
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "ashaman",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "loial",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "cultist",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 1,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 2,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w0",
+        "w6"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w0",
+      "bKey": "w6",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "w6",
+        "w0"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "w3",
+        "hurt"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "w3",
+      "bKey": "hurt",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "hurt",
+        "w3"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "skin",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "higher",
+      "completion": [
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "lower",
+      "completion": [
+        "k2",
+        "cast"
+      ],
+      "exact": true
+    },
+    {
+      "kind": "guard",
+      "scale": 3,
+      "aKey": "k2",
+      "bKey": "cast",
+      "phase": "rast",
+      "order": "nested",
+      "completion": [
+        "attack",
+        "cast",
+        "k2"
+      ],
+      "exact": true
+    }
+  ]
+}
