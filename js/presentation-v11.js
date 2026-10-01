@@ -70,13 +70,39 @@
     g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
     const outcomeBitmap = (key.startsWith('riley-victory-') || key.startsWith('boss-defeat-')) &&
       typeof ImageBitmap === 'function' && img instanceof ImageBitmap;
-    if (outcomeBitmap && box.every(Number.isInteger)) drawOutcomeBitmap(g, img, box, c.width, c.height);
+    // The lossless proxy is drawn exactly like the original encoded <img>, so
+    // Chromium's decode-cache crop/mip/filter stages are the browser's own.
+    const proxy = outcomeBitmap && R.assets.proxy ? R.assets.proxy(key) : null;
+    if (proxy) g.drawImage(proxy, box[0], box[1], box[2], box[3], 0, 0, c.width, c.height);
+    else if (outcomeBitmap && box.every(Number.isInteger)) drawOutcomeBitmap(g, img, box, c.width, c.height);
     else g.drawImage(img, box[0], box[1], box[2], box[3], 0, 0, c.width, c.height);
     const entry = { canvas: c, width, height };
     cache.set(id, entry);
     // Keep only current-stage pairs at current render scale, never all masters.
     while (cache.size > 4) cache.delete(cache.keys().next().value);
     return entry;
+  }
+  // Canvas draws are deferred: a pose's decode/resize runs when its surface is
+  // first used. Rasterize each pose in its own task right after a frame, so the
+  // cost neither stacks into one long task nor lands on the first clear frame.
+  let warm = null;
+  function preparePoses(pair, level) {
+    const next = index => {
+      if (index >= pair.length || outcomeLevel !== level) return;
+      const run = () => {
+        if (outcomeLevel !== level) return;
+        const entry = pose(pair[index], heightFor(pair[index]));
+        if (entry && typeof document !== 'undefined') {
+          if (!warm) { warm = document.createElement('canvas'); warm.width = warm.height = 1; }
+          const g = warm.getContext('2d');
+          if (g) { g.drawImage(entry.canvas, 0, 0, 1, 1); warm.width = 1; }
+        }
+        next(index + 1);
+      };
+      if (typeof requestAnimationFrame === 'function' && typeof setTimeout === 'function') requestAnimationFrame(() => setTimeout(run, 0));
+      else run();
+    };
+    next(0);
   }
   function heightFor(key) {
     const meta = R.OUTCOME_ART && R.OUTCOME_ART[key];
@@ -136,7 +162,8 @@
     this.seenEnemyCards = this.seenEnemyCards || new Set();
     if (index === 5) {
       const pair = keys(this.levelIndex);
-      R.assets.ready(pair).then(() => { if (outcomeLevel === this.levelIndex) for (const key of pair) pose(key, heightFor(key)); });
+      const level = this.levelIndex;
+      R.assets.ready(pair).then(() => preparePoses(pair, level));
       this.enemyCards.length = 0;
     } else {
       for (const type of this.level.mix[index]) {

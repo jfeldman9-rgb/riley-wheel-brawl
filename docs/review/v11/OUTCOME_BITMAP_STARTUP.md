@@ -94,3 +94,32 @@ assertions and zero-difference tolerance.
 
 Sources: [Chromium decode-cache sampling](https://raw.githubusercontent.com/chromium/chromium/main/cc/tiles/software_image_decode_cache_utils.cc)
 and [mip sizing](https://raw.githubusercontent.com/chromium/chromium/main/cc/tiles/mipmap_util.cc).
+
+## Exact pose pixels via a lossless lazy-image proxy (Grok takeover)
+
+Measured in Chrome 151 (Playwright 1.62.1 headless shell, the CI build): the
+2513 crop/Medium/Low emulation differs from the reference because canvas
+`imageSmoothingQuality='medium'` blends two mip levels, while the decode cache's
+`SkPixmap::scalePixels` uses nearest-mip sampling. No public canvas call reproduces
+that exactly, so the pose cache now takes the browser's own encoded-image path:
+
+- After the owned master ImageBitmap is created, a copy is transferred to a small
+  inline worker, painted unscaled to an OffscreenCanvas, read back and written as
+  an uncompressed 32-bit BMP (BI_BITFIELDS with alpha). Its decode is a
+  near-memcpy; the premultiply round trip is lossless (full-resolution proxy vs
+  master: 0 changed channels for all ten images).
+- `pose()` draws that proxy exactly like the reference draws the HTML image
+  (`drawImage(img, ...bounds, 0, 0, w, h)`, High). Chromium therefore applies its
+  own crop, ceil mip, nearest-mip Medium resize and Low final filter.
+- The master ImageBitmap remains the full-resolution resource and is still closed
+  on release; the proxy URL is revoked with it. No Worker/OffscreenCanvas, a
+  failed one-time 2x2 BMP-alpha probe, worker error or 5 s stall keeps the
+  previous ImageBitmap path. The ten masters, their bytes and all test files are
+  unchanged.
+- Canvas draws are deferred, so each boss-wave pose is now rasterized in its own
+  task right after a frame (about 11-15 ms each on the review box) instead of
+  both landing in one task or on the first clear frame. The repeated WebP decode
+  (57-59 ms) is not reintroduced.
+
+Box result: `tools/outcome-bitmap-browser-v11.cjs` passes all 31 checks (ten full
+images and thirty pose scales, each 0 changed channels; masters released).
