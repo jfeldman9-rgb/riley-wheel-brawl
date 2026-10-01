@@ -54,7 +54,9 @@ jobs:
           node tools/evidence-log-v11.cjs --callandor-only
       - name: Outcome bitmap ownership and cancellation
         if: always()
-        run: node tools/outcome-bitmap-check-v11.cjs
+        run: |
+          node tools/outcome-bitmap-check-v11.cjs
+          node tools/outcome-sampling-check-v11.cjs
       - name: Readiness observer contracts and lossless log transport
         if: always()
         run: |

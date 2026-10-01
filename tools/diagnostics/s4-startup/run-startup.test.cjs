@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'../../..');
 const f=fixture(root);assert.equal(f.sha256,FIXTURE_SHA);assert.ok(f.body.includes('callandor:level===4'));assert.ok(f.body.includes('wave,lives:99'));
 const runtimeDiff=cp.execFileSync('git',['diff','--name-only',SOURCE,'HEAD','--','js','assets','index.html','css'],{cwd:root,encoding:'utf8'}).trim();
 const runtimeDirty=cp.execFileSync('git',['status','--porcelain','--','js','assets','index.html','css'],{cwd:root,encoding:'utf8'}).trim();
-if(runtimeDirty)assert.throws(()=>source(root),/must be clean/);else if(runtimeDiff){assert.throws(()=>source(root),/specified outcome-loader change/);if(runtimeDiff.split('\n').every(f=>['js/assets.js','js/campaign.js'].includes(f)))assert.equal(source(root,true).runtimeMode,'outcome-bitmap-candidate');}else assert.equal(source(root).reviewedRuntime,SOURCE);
+if(runtimeDirty)assert.throws(()=>source(root),/must be clean/);else if(runtimeDiff){assert.throws(()=>source(root),/specified outcome-loader change/);if(runtimeDiff.split('\n').every(f=>['js/assets.js','js/campaign.js','js/presentation-v11.js'].includes(f)))assert.equal(source(root,true).runtimeMode,'outcome-bitmap-candidate');}else assert.equal(source(root).reviewedRuntime,SOURCE);
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'rwb-s4-fixture-'));
 try{
  fs.mkdirSync(path.join(temp,'tools'));

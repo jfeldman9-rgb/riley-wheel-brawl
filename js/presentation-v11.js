@@ -17,6 +17,44 @@
   const cache = new Map();
   let outcomeLevel = -1;
   function keys(level) { const kind = kinds[level]; return ['riley-victory-' + kind, 'boss-defeat-' + kind]; }
+  // Mirror Chromium's software decode-cache mip sizing: use the last ceil-sized
+  // mip that is no smaller than the requested destination on either axis.
+  // cc/tiles/mipmap_util.cc and software_image_decode_cache_utils.cc.
+  function outcomeMipSize(width, height, targetWidth, targetHeight) {
+    let level = 0, w = width, h = height;
+    while (w > 1 || h > 1) {
+      const divisor = Math.pow(2, level + 1);
+      const nextW = Math.max(1, Math.ceil(width / divisor));
+      const nextH = Math.max(1, Math.ceil(height / divisor));
+      if (nextW < targetWidth || nextH < targetHeight) break;
+      level++; w = nextW; h = nextH;
+    }
+    return { level, width: w, height: h };
+  }
+  function drawOutcomeBitmap(g, img, box, width, height) {
+    const mip = outcomeMipSize(box[2], box[3], width, height);
+    g.imageSmoothingQuality = 'low';
+    if (!mip.level) {
+      g.drawImage(img, box[0], box[1], box[2], box[3], 0, 0, width, height);
+      return;
+    }
+    // Extract the authored integer subrect before mip filtering, so pixels
+    // outside its edges cannot enter the intermediate's sampling footprint.
+    const crop = document.createElement('canvas');
+    crop.width = box[2]; crop.height = box[3];
+    const cg = crop.getContext('2d');
+    cg.imageSmoothingEnabled = false; cg.globalCompositeOperation = 'copy';
+    cg.drawImage(img, box[0], box[1], box[2], box[3], 0, 0, crop.width, crop.height);
+    const scaled = document.createElement('canvas');
+    scaled.width = mip.width; scaled.height = mip.height;
+    const mg = scaled.getContext('2d');
+    mg.imageSmoothingEnabled = true; mg.imageSmoothingQuality = 'medium';
+    mg.globalCompositeOperation = 'copy';
+    // Chromium's cache uses Medium scalePixels on a cropped pixmap. Canvas
+    // Medium is the public sampling request; exact equivalence is browser-tested.
+    mg.drawImage(crop, 0, 0, crop.width, crop.height, 0, 0, scaled.width, scaled.height);
+    g.drawImage(scaled, 0, 0, scaled.width, scaled.height, 0, 0, width, height);
+  }
   function pose(key, height) {
     const img = R.assets.get(key);
     if (!img) return null;
@@ -30,7 +68,10 @@
     c.width = Math.ceil(width * scale); c.height = Math.ceil(height * scale);
     const g = c.getContext('2d');
     g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
-    g.drawImage(img, box[0], box[1], box[2], box[3], 0, 0, c.width, c.height);
+    const outcomeBitmap = (key.startsWith('riley-victory-') || key.startsWith('boss-defeat-')) &&
+      typeof ImageBitmap === 'function' && img instanceof ImageBitmap;
+    if (outcomeBitmap && box.every(Number.isInteger)) drawOutcomeBitmap(g, img, box, c.width, c.height);
+    else g.drawImage(img, box[0], box[1], box[2], box[3], 0, 0, c.width, c.height);
     const entry = { canvas: c, width, height };
     cache.set(id, entry);
     // Keep only current-stage pairs at current render scale, never all masters.

@@ -68,3 +68,29 @@ three ON and three OFF fresh contexts and records its own overhead. The ordinary
 three-pair live comparison remains the blocking timing decision. Pixel checks,
 complete traces and exact-head CI results are required before claiming this
 candidate resolves the startup hitch.
+
+## Decoded-master result and sampling correction
+
+Candidate `aa9c4d0d13eeb1a17a93810c5d49bafa4b5a483c` passed the complete
+matched timing policy, including S4 (three candidate long frames versus five
+live), with a386.9ms worst cold median. Six complete startup diagnostics had
+zero gaps over33ms; their traces show the repeated outcome WebP decoding was
+removed from the main thread, not moved before sampling. The existing Stage4
+background decode remains inside the measured scene entry.
+
+The newly added pixel check still failed: the first full-resolution master
+matched exactly, but its three resized cache images differed. The original
+HTML reference and zero-difference requirement were retained. Chromium's
+software decode cache crops and scales encoded images to a ceil-sized mip,
+then uses bilinear filtering for the final adjustment. Direct ImageBitmap
+drawing takes a different sampling path despite identical decoded pixels.
+
+The focused follow-up reproduces the crop/medium-mip/low-final stages only for
+outcome ImageBitmaps. HTML fallback, source bytes, pose sizes and cache keys
+stay unchanged. This is source-informed implementation, not a claim that Canvas
+Medium is guaranteed identical to native SkPixmap.scalePixels. The real-browser
+zero-RGBA check must prove equivalence. The original check file is unchanged, including its exact HTML reference,
+assertions and zero-difference tolerance.
+
+Sources: [Chromium decode-cache sampling](https://raw.githubusercontent.com/chromium/chromium/main/cc/tiles/software_image_decode_cache_utils.cc)
+and [mip sizing](https://raw.githubusercontent.com/chromium/chromium/main/cc/tiles/mipmap_util.cc).
