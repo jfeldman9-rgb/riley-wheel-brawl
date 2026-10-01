@@ -136,3 +136,14 @@ that exactly, so the pose cache now takes the browser's own encoded-image path:
 
 Box result: `tools/outcome-bitmap-browser-v11.cjs` passes all 31 checks (ten full
 images and thirty pose scales, each 0 changed channels; masters released).
+
+## Pose raster pacing (1.2 follow-up)
+
+Queued puppet poses now raster inside their own bake slices; see
+`STARTUP_FIRST_SECOND.md`. Outcome jobs still run after the fight's poses at
+priority 3.5. On the box, after a direct Stage 4 wave-5 entry, `outcome-load`
+now starts about 0.74 s into sampling instead of about 0.55 s. The decode and
+pose steps finish by about 1.0 s, still as one 6 ms or 2-3 ms step per frame.
+The S4 wave-5 music-on cell improved from 16 to 4 frames over 33 ms
+(5 runs, before → after). The outcome pixel gate still passes all checks with
+0 changed channels.
