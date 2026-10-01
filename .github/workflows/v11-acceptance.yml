@@ -52,6 +52,9 @@ jobs:
           node tools/approved-callandor-pivot-v11.test.cjs
           NODE_PATH="$GITHUB_WORKSPACE/node_modules" node --expose-gc tools/callandor-size-check-v11.cjs --baseline-root="$RUNNER_TEMP/rwb-normal-reference" --out=docs/review/v11/callandor-size
           node tools/evidence-log-v11.cjs --callandor-only
+      - name: Outcome bitmap ownership and cancellation
+        if: always()
+        run: node tools/outcome-bitmap-check-v11.cjs
       - name: Readiness observer contracts and lossless log transport
         if: always()
         run: |
@@ -110,6 +113,10 @@ jobs:
         id: presentation
         if: always()
         run: node --expose-gc tools/presentation-browser-v11.cjs
+      - name: Exact outcome bitmap pixels and master disposal
+        id: bitmap
+        if: always()
+        run: CI=true node tools/outcome-bitmap-browser-v11.cjs
       # Every test uses always(), so failures remain visible and later gates still run.
       - name: Report each browser gate honestly
         if: always()
@@ -118,7 +125,7 @@ jobs:
         run: |
           node - <<'NODE'
           const steps=JSON.parse(process.env.RESULTS);
-          const ids=['regression','release','voice','audio','seams','mix','devices','presentation'];
+          const ids=['regression','release','voice','audio','seams','mix','devices','presentation','bitmap'];
           let failed=false;
           for(const id of ids){const result=steps[id]?.outcome||'not run';console.log('RWB_BROWSER_GATE '+id+': '+result);if(result!=='success')failed=true;}
           process.exitCode=failed?1:0;
@@ -210,8 +217,7 @@ jobs:
           node tools/diagnostics/s4-startup/run-startup.test.cjs
       - name: Six bounded Stage 4 startup traces, diagnostic only
         run: |
-          git worktree add --detach "$RUNNER_TEMP/rwb-s4-reviewed" 1a930986076c20cdf6d1a8df0bfaadee7181e680
-          CI=true NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/diagnostics/s4-startup/run-startup.cjs "$RUNNER_TEMP/rwb-s4-reviewed" "$RUNNER_TEMP/rwb-s4-traces" --run-browser
+          CI=true NODE_PATH="$GITHUB_WORKSPACE/node_modules" node tools/diagnostics/s4-startup/run-startup.cjs "$GITHUB_WORKSPACE" "$RUNNER_TEMP/rwb-s4-traces" --run-browser --candidate
 # Public-repository standard runners only. No secrets, caches, uploaded artifacts,
 # paid services or deploy steps. Failures remain failures. The approved Normal
 # reference is fixed above; only the specifically approved Callandor pivot

@@ -193,3 +193,13 @@ another workflow trigger, deployment, permission, secret, cache or paid artifact
 
 Protocol references: [Chrome Tracing](https://chromedevtools.github.io/devtools-protocol/tot/Tracing/)
 and [Chrome IO](https://chromedevtools.github.io/devtools-protocol/tot/IO/).
+
+## Outcome-loader candidate follow-up
+
+The first instrumentation-only run retained one OFF/ON pair, then stopped on
+an incorrect scheduled-RAF versus callback-arrival comparison. It remains
+incomplete. The corrected driver records both clocks without trimming any
+frames or changing the1.5-second diagnostic window. With --candidate it permits
+only js/assets.js and js/campaign.js to differ from reviewed1a930; all source
+and diagnostic hashes remain recorded. The full ordinary acceptance matrix is
+unchanged. See [the decode evidence and focused repair](../../../../docs/review/v11/OUTCOME_BITMAP_STARTUP.md).

@@ -24,6 +24,7 @@ RWB.assets = (function () {
   const lazy = {};       // key -> src, fetched in the background after load()
   const demand = new Set(); // requested stage-only art, never boot-prefetched
   const generation = {};  // release invalidates an in-flight master safely
+  const bitmapKeys = new Set(), ownedBitmaps = new WeakSet();
 
   const art = RWB.ARTDATA || {};
   for (const k of Object.keys(art)) if (k !== 'plates' && art[k] && art[k].src) manifest['art:' + k] = art[k].src;
@@ -42,6 +43,7 @@ RWB.assets = (function () {
   function register(key, src, opts) {
     if (opts && (opts.lazy || opts.demand)) lazy[key] = src; else manifest[key] = src;
     if (opts && opts.demand) demand.add(key);
+    if (opts && opts.bitmap) bitmapKeys.add(key);
   }
   function fetchImage(url, deferDecode) {
     return new Promise(resolve => {
@@ -56,17 +58,51 @@ RWB.assets = (function () {
       img.src = url;
     });
   }
-  function fetchResource(url, deferDecode) {
-    if (!/\.json(?:[?&]|$)/.test(url)) return fetchImage(url, deferDecode);
+  function closeBitmap(img) {
+    if (!img || !ownedBitmaps.has(img)) return;
+    ownedBitmaps.delete(img);
+    try { img.close(); } catch (_) { /* already detached */ }
+  }
+  async function fetchBitmap(url, deferDecode) {
+    if (typeof createImageBitmap !== 'function' || typeof fetch !== 'function') return fetchImage(url, deferDecode);
+    let blob;
+    try {
+      const response = await fetch(url);
+      if (!response || !response.ok || typeof response.blob !== 'function') return null;
+      blob = await response.blob();
+    } catch (_) { return null; }
+    let img;
+    try {
+      // Outcome masters must retain decoded pixels. HTMLImageElement.decode()
+      // can succeed, then its evicted decode is repeated during the pose blit.
+      img = await createImageBitmap(blob);
+      if (!img || !img.width || !img.height) throw Error('Empty outcome bitmap');
+      ownedBitmaps.add(img);
+      Object.defineProperties(img, {
+        naturalWidth: { configurable: true, get() { return this.width; } },
+        naturalHeight: { configurable: true, get() { return this.height; } }
+      });
+      return img;
+    } catch (_) {
+      if (img) {
+        // A rejected compatibility wrapper must not leak its decoded master.
+        if (!ownedBitmaps.has(img)) ownedBitmaps.add(img);
+        closeBitmap(img);
+      }
+      return fetchImage(url, deferDecode);
+    }
+  }
+  function fetchResource(url, deferDecode, bitmap) {
+    if (!/\.json(?:[?&]|$)/.test(url)) return bitmap ? fetchBitmap(url, deferDecode) : fetchImage(url, deferDecode);
     return fetch(url).then(response => response.ok ? response.json() : null).catch(() => null);
   }
   async function fetchKey(k, src) {
     if (!listed(src)) { images[k] = null; skipped.push(k); return null; }
     const url = src + (src.includes('?') ? '&' : '?') + 'v=' + VER;
     const deferDecode = k in lazy, token = generation[k] || 0;
-    let img = await fetchResource(url, deferDecode);
-    if (!img) img = await fetchResource(url + '&r=' + Date.now(), deferDecode);
-    if ((generation[k] || 0) !== token) return null;
+    let img = await fetchResource(url, deferDecode, bitmapKeys.has(k));
+    if (!img && (generation[k] || 0) === token) img = await fetchResource(url + '&r=' + Date.now(), deferDecode, bitmapKeys.has(k));
+    if ((generation[k] || 0) !== token) { closeBitmap(img); return null; }
     images[k] = img;
     if (!img) { failed.push(k); if (k in lazy && typeof console !== 'undefined') console.info('[RWB] story art unavailable; using drawn art:', k); }
     return img;
@@ -117,6 +153,7 @@ RWB.assets = (function () {
     for (const key of keys || []) {
       if (!demand.has(key)) continue;
       generation[key] = (generation[key] || 0) + 1;
+      closeBitmap(images[key]);
       delete images[key]; delete pending[key];
       for (let i = lazyQueue.length - 1; i >= 0; i--) if (lazyQueue[i].key === key) {
         lazyQueue[i].resolve(null); lazyQueue.splice(i, 1);
@@ -129,8 +166,14 @@ RWB.assets = (function () {
     if (want.some(k => k in lazy)) loadLazy(want);
     // A reel asks for its stills when it is built; start their off-thread
     // decode then, so the first painted frame does not decode synchronously.
-    const warm = async (k, img) => { if (img && k in lazy && img.decode) { try { await img.decode(); } catch (_) {} } return img; };
-    return Promise.all(want.map(k => (pending[k] || Promise.resolve(images[k] || null)).then(img => warm(k, img))));
+    const warm = async (k, img, token) => {
+      if (img && k in lazy && img.decode) { try { await img.decode(); } catch (_) {} }
+      return demand.has(k) && ((generation[k] || 0) !== token || images[k] !== img) ? null : img;
+    };
+    return Promise.all(want.map(k => {
+      const token = generation[k] || 0;
+      return (pending[k] || Promise.resolve(images[k] || null)).then(img => warm(k, img, token));
+    }));
   }
 
   function get(key) { return images[key] || null; }
