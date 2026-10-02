@@ -288,30 +288,6 @@
     }
     c.logicalW=plateW;c.logicalH=drawH;sliceCache.set(id,c);if(R.perf&&R.perf.noteBake)R.perf.noteBake('bakedNear:'+key,performance.now()-tBake);return c;
   }
-  // A painted stage only ever shows the near plate's bottom 26 units. Stage
-  // entry paints just that band (and two whole rows above it) with the same
-  // transform and feather as bakedNear, instead of resampling the full
-  // ~260-unit plate and then copying 10% of it. Same pixels, less raster.
-  function nearBand(key){
-    const img=R.assets.get(key);if(!img)return null;
-    const plateW=700,drawH=plateW*img.height/img.width,rs=rsNow();
-    const w=Math.max(1,Math.ceil(plateW*rs)),h=Math.max(1,Math.ceil(drawH*rs));
-    const y0=Math.max(0,Math.floor(h-26*rs)-2),tBake=performance.now();
-    const c=document.createElement('canvas');c.width=w;c.height=h-y0;
-    const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
-    g.drawImage(img,0,-y0,w,h);
-    const feather=16*rs;
-    if(feather>0&&c.width>feather*2){
-      g.globalCompositeOperation='destination-in';
-      const fade=g.createLinearGradient(0,0,c.width,0);
-      const b=1-feather/c.width;
-      fade.addColorStop(0,'#000');fade.addColorStop(b,'#000');fade.addColorStop(1,'rgba(0,0,0,0)');
-      g.fillStyle=fade;g.fillRect(0,0,c.width,c.height);
-      g.globalCompositeOperation='source-over';
-    }
-    if(R.perf&&R.perf.noteBake)R.perf.noteBake('nearBand:'+key,performance.now()-tBake);
-    return {canvas:c,top:h-26*rs-y0};
-  }
   function clampByte(v){return v<0?0:v>255?255:v|0;}
   // The right half of stage4-mid-c is a cool white hall. A light warm shift
   // pulls it toward the torchlit left. The shift is additive and small on
@@ -1124,10 +1100,10 @@
           if(spec.id==='screen')blitVignette(g);
           result.layers.push(Object.assign({canvas:c},spec));
         }
-        const near=nearBand('stage'+n+'-near');
+        const near=bakedNear('stage'+n+'-near');
         if(near){
           result.near=document.createElement('canvas');result.near.width=Math.ceil(700*rs);result.near.height=Math.ceil(26*rs);
-          result.near.getContext('2d').drawImage(near.canvas,0,Math.max(0,near.top),near.canvas.width,26*rs,0,0,result.near.width,result.near.height);
+          result.near.getContext('2d').drawImage(near,0,Math.max(0,near.height-26*rs),near.width,26*rs,0,0,result.near.width,result.near.height);
         }
       }catch(error){
         for(const layer of result.layers)releaseCanvas(layer.canvas);
