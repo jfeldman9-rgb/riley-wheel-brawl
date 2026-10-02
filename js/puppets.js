@@ -428,6 +428,25 @@
     const pool=poseVertexPools.get(job.rig);
     if(vertices&&pool&&pool.length<POSE_VERTEX_POOL_LIMIT)pool.push(vertices);
   }
+  // Queued pose slices record mesh faces, but Canvas defers their raster until
+  // the surface is first drawn. That lands as one 5-15 ms flush on the pose's
+  // first blit, outside the bake budget, and a fresh fight queues dozens. A
+  // queued slice records at most 1 ms of faces, then a 1x1 draw rasters those
+  // faces inside the same slice. Pixels, order and synchronous bakes are unchanged.
+  const POSE_SLICE_MS=1;let rasterProbe=null;
+  function rasterPoseSlice(surface){
+    if(!rasterProbe){rasterProbe=document.createElement('canvas');rasterProbe.width=rasterProbe.height=1;}
+    const g=rasterProbe.getContext('2d');
+    if(g){g.drawImage(surface,0,0,1,1);rasterProbe.width=1;}
+  }
+  function stepQueuedPose(job,end){
+    if(!(end<1e12))return stepPose(job,end);
+    const was=job.state,before=was&&was.surface?was.ln+':'+was.fi:null;
+    const done=stepPose(job,Math.min(end,performance.now()+POSE_SLICE_MS));
+    const st=job.state,at=st&&st.surface?st.ln+':'+st.fi:null;
+    if(at&&!st.identity&&at!==before&&at!=='0:0')rasterPoseSlice(st.surface);
+    return done;
+  }
   function stepPose(job,end){
     const d=defs[job.kind];if(!d)return true;
     const st=job.state||(job.state={phase:'rig'});
@@ -774,8 +793,8 @@
     const stage=R.perf.stageLevel;
     const name='pose:'+kind+':'+key;
     if(!R.Bake)return;
-    const job=R.Bake.enqueue(pri==null?3:pri,name,(item,end)=>stepPose(item,end),{kind,key,level:pri>=4?null:stage});
-    if(job)job.kind=kind,job.key=key;
+    const job=R.Bake.enqueue(pri==null?3:pri,name,(item,end)=>stepQueuedPose(item,end),{kind,key,level:pri>=4?null:stage});
+    if(job)job.kind=kind,job.key=key,job.rasterPaced=true;
     if(pri<4){
       const q=R.perf.poseQueue||(R.perf.poseQueue=[]);
       if(!q.some(it=>it.kind===kind&&it.key===key))q.push({kind,key,pri});
