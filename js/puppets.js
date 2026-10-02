@@ -440,11 +440,13 @@
   // first blit, outside the bake budget, and a fresh fight queues dozens. A
   // queued slice records at most 1 ms of faces, then a 1x1 draw rasters those
   // faces inside the same slice. Pixels, order and synchronous bakes are unchanged.
-  const POSE_SLICE_MS=1;let rasterProbe=null;
+  // The 1x1 draw goes to the game canvas, as warmBitmaps' blits do: no
+  // extra canvas is allocated, and the frame's own draw covers that pixel.
+  const POSE_SLICE_MS=1;
   function rasterPoseSlice(surface){
-    if(!rasterProbe){rasterProbe=document.createElement('canvas');rasterProbe.width=rasterProbe.height=1;}
-    const g=rasterProbe.getContext('2d');
-    if(g){g.drawImage(surface,0,0,1,1);rasterProbe.width=1;}
+    const canvas=document.getElementById('game'),g=canvas&&canvas.getContext('2d');
+    if(!g)return;
+    g.save();g.setTransform(1,0,0,1,0,0);g.drawImage(surface,0,0,1,1);g.restore();
   }
   function stepQueuedPose(job,end){
     if(!(end<1e12))return stepPose(job,end);
