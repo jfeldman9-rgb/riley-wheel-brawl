@@ -750,12 +750,13 @@
     R.perf.allowSync=true;R.perf.poseFallbacks=0;R.perf.poseMiss=[];
     R.perf.queueEmptyAt=0;R.perf.stageEnteredAt=bakeAt;R.perf.stageLevel=level;
     const kinds=STAGE_RIGS[level]||STAGE_RIGS[0],keep=new Set(kinds);
-    const visible=scene?new Set(['loial']):new Set(kinds);
+    const visible=scene?new Set(['loial']):new Set(kinds),foes=scene?new Set():visible;
     if(scene){
       for(const actor of [...(scene.enemies||[]),...(scene.allies||[])]){
-        if(defs[actor.kind])visible.add(actor.kind);
-        else if(actor instanceof R.Trolloc)visible.add(actor.boss?'chieftain':'trolloc');
-        else if(actor instanceof R.Loial)visible.add('loial');
+        const kind=defs[actor.kind]?actor.kind:actor instanceof R.Trolloc?(actor.boss?'chieftain':'trolloc'):actor instanceof R.Loial?'loial':null;
+        if(!kind)continue;
+        visible.add(kind);
+        if((scene.enemies||[]).includes(actor))foes.add(kind);
       }
       if(scene.twinkle)visible.add('twinkle');
     }
@@ -766,7 +767,7 @@
     const pending=[],boss={0:['chieftain'],1:['fade'],4:['taim','twinkle']}[level]||[];
     for(const kind of kinds){
       const d=defs[kind];if(!d)continue;
-      if(!visible.has(kind)){for(const key of POSE_KEYS){pending.push({kind,key,pri:key==='idle'?1:4});this.wantPose(kind,key,key==='idle'?1:4);}continue;}
+      if(!visible.has(kind)){for(const key of POSE_KEYS){const pri=key==='idle'?2:4;pending.push({kind,key,pri});this.wantPose(kind,key,pri);}continue;}
       const rigAt=performance.now(),r=getRig(d),rigMs=performance.now()-rigAt;if(!r)continue;
       const poseAt=performance.now(),cached=!!(r.library&&r.library.has('idle'));
       if(!(r.library&&r.library.has('idle'))){
@@ -779,7 +780,11 @@
       R.perf.stageRigTimings.push({kind,rigMs,poseMs,touchMs:performance.now()-touchAt,cached,identity:!!idle?.identity});
       for(const key of POSE_KEYS){
         if(key==='idle'||(r.library&&r.library.has(key)))continue;
-        const pri=boss.includes(kind)?1:key[0]==='w'?2:3;
+        // Fight start: enemies walk in at once, then act (hurt/cast/attack).
+        // Their walk cycles go first, then those reactions and boss poses,
+        // then ally walk cycles, then the rest.
+        const walk=key[0]==='w',react=key==='hurt'||key==='cast'||key==='attack';
+        const pri=walk&&foes.has(kind)?1:(boss.includes(kind)||(react&&foes.has(kind)))?2:walk?2.5:3;
         pending.push({kind,key,pri});this.wantPose(kind,key,pri);
       }
       r.warmed=true;

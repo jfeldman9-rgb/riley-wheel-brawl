@@ -232,6 +232,18 @@
     return !(job.pri>0&&job.name==='pose:'+job.kind+':'+job.key&&speculativeKickKey.test(job.key)&&
       RWB.Puppet&&RWB.Puppet.defs&&Object.prototype.hasOwnProperty.call(RWB.Puppet.defs,job.kind));
   }
+  const POSE_PUMP_CAP_MS=10,POSE_PUMP_FRAME_MS=15,POSE_PUMP_STEP_MS=1.5;
+  // The job Bake.pump would pick next (same order: priority, then FIFO), if it
+  // is a paced pose. Waiting dependencies are skipped exactly as pump does.
+  function pacedPoseNext(eligible){
+    let best=null;
+    for(const job of RWB.Bake.q){
+      if(eligible&&!eligible(job))continue;
+      if(job.ready&&!job.ready())continue;
+      if(!best||job.pri<best.pri||(job.pri===best.pri&&job.seq<best.seq))best=job;
+    }
+    return !!(best&&best.rasterPaced);
+  }
   const clock=new RWB.FrameClock();let clockScene=null;
   let last = performance.now();
   let musicToast = 0;
@@ -280,7 +292,19 @@
       RWB.perf.frameJobs=[];
       const pumpAt=performance.now();
       const activeCombat=scene.isGameplay&&scene.phase==='play'&&!scene.paused&&game.fadeDir===0;
-      if(RWB.Bake)RWB.Bake.pump(budget,activeCombat?combatBakeEligible:undefined);
+      const eligible=activeCombat?combatBakeEligible:undefined;
+      if(RWB.Bake){
+        RWB.Bake.pump(budget,eligible);
+        // Fight start queues dozens of walk frames. Paced pose slices raster
+        // inside their own ~1 ms step, so while one is next in line and the
+        // frame has headroom they get more time in short pumps. Any other job
+        // keeps the base budget above: an atomic bake never starts with more
+        // than one paced-slice window left.
+        if(gameplay){
+          const until=pumpAt+Math.min(POSE_PUMP_CAP_MS,Math.max(1,POSE_PUMP_FRAME_MS-(RWB.perf.lastUpdateDraw||8)));
+          for(let n=0;n<16&&performance.now()<until-.5&&pacedPoseNext(eligible);n++)RWB.Bake.pump(Math.min(POSE_PUMP_STEP_MS,until-performance.now()),eligible);
+        }
+      }
       else if(RWB.Puppet&&RWB.Puppet.drainPoses)RWB.Puppet.drainPoses(budget);
       const pumpMs=performance.now()-pumpAt;
       const drawAt=performance.now();
