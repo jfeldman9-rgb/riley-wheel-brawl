@@ -13,14 +13,14 @@ No frame was faked: nothing blurred, mirrored, recolored, interpolated or invent
 
 | Sheet | Frames used | Tries (kept) | Notes |
 |---|---|---|---|
-| Riley run | 8 | 3 (3rd) | Row 2 is close to row 1, so the cycle reads as 4 poses drawn twice with small differences. Acceptable at run speed, but a re-roll would help. |
+| Riley run | 8 | 3 (3rd) + re-roll 3 (2nd) | Frames 1–4 come from this sheet; frames 5–8 were re-rolled on Oct 2 (see Re-rolls). |
 | Riley jump + air kick | crouch, rise, apex, fall, land + kick 3 | 3 (2nd) | |
 | Riley back kick + cast | 4 + 4 | 2 (2nd) | Cast now has dedicated frames; the spike reused the jab. |
 | Riley grab set | grab, hold, knee ×2, throw ×2, return to guard ×2 | not logged | Return to guard is the tail of `throw`. |
 | Trolloc grunt chop (re-roll) | 6 + get-up 2 | 3 (2nd) | **The blade is rigid in every frame.** It no longer stretches like the spike's smear. |
 | Spear Trolloc master + sheets | walk 4, thrust 4, hurt 2, knockdown 3, get-up 3 | master 2, sheets 3 + 3 | Goat-horned, long spear. |
 | Hound Trolloc master + sheets | run 4, leap slash 4, reactions 8 | master 2, sheets not logged | Wolf-headed, hooked knives, fast flanker. |
-| Trolloc Chieftain master + sheets | walk 4, overhead chop 4, sweep 2, horn charge 2, roar 1, lift 1, hurl 1, stunned 1, reactions | master 2, sheets not logged | **The roar frame faces right** (the rest of his frames face left). In game it is displayed with the opposite flip, so he roars at Riley. |
+| Trolloc Chieftain master + sheets | walk 4, overhead chop 4, sweep 2, horn charge 2, roar 1, lift 1, hurl 1, stunned 1, reactions | master 2, sheets not logged | Roar frame re-rolled on Oct 2 (see Re-rolls). |
 | Backdrop batch 2 | village-green mid plate (oak, Winespring, burning wagon), second floor, cart, barrel, broken barrel (8 staves) | 1 job | The mid plate joins seamlessly with the spike plate. |
 
 - Total generations: 23 logged for 9 of the sheets above, plus at least 1 per remaining job and 5 backdrop images. Roughly 35–40 in all; the exact count wasn't logged for every job.
@@ -83,6 +83,18 @@ No frame was faked: nothing blurred, mirrored, recolored, interpolated or invent
 - boss state timers that never advanced, which froze the roar;
 - a HUD race on the first load from the live preview (a caption fired before the HUD existed).
 
+## Re-rolls (Oct 2, about 03:00–03:45 MST)
+
+All three images came from ChatGPT image generation through Codex, with no frames faked. Prompts are in `stage1/build_prompts.py` (jobs `riley-run2`, `chief-roar2`, `chief-portrait`), and each job folder has a `prompts-*.json` with the try count.
+
+| Item | Tries (kept) | Result |
+|---|---|---|
+| Riley run, second half | 3 (2nd) | A new 4-frame sheet of the **opposite-leg phases**: left-foot contact, down on the left leg, right leg passing, flight. The near arm now swings forward where the first half had it back. The run is now the old sheet's top row (frames 1–4) plus the new sheet (frames 5–8). The new sheet came back larger, so it was scaled ×0.725 against the old row, matched on head width and body height (`frames/riley.json`). Honest note: the arm swap reads clearly in frames 5–7, but the flight frame (8) has its arms much like frame 4. The legs are different in all four. See `docs/stage1/run-before-after.jpg` and `contact-riley-run-v2.jpg`. |
+| Chieftain roar | 2 (2nd) | A single new frame facing LEFT, head thrown back, axe raised (rigid, same size as the master). Registered to the walk scale by horn-to-feet height (`frames/chief.json`, ref_height 979). His build reads slightly leaner than in the walk frames, which is acceptable for one 1.1 s pose. The special-case flip was removed from `src/enemies.js`. See `docs/stage1/roar-before-after.jpg` and `roar-new.jpg`. |
+| Chieftain HUD portrait | 3 (3rd) | A dedicated head-and-shoulders bust: snarling, three-quarter view toward the left, iron-banded horns and nose ring, war paint, skull pauldrons, on a night-blue background. It is cropped to a circle at 256 px like Riley's portrait and shown at 68 px with a ring in the boss bar. See `docs/stage1/portraits.jpg`. |
+
+Riley's and the Chieftain's atlases were rebuilt and repacked (Riley 72 frames, Chieftain 24; same page sizes, give or take a few pixels).
+
 ## Performance
 
 - **`window.__perf.summary`** gives:
@@ -126,11 +138,11 @@ Keys: 1 lights, 2 bloom, 3 slow motion, M music, N mute, H perf readout.
 
 ## Decisions and honest notes
 
-1. **Facing uses runtime flipX.** Every frame is drawn facing one way; the other way is the same frame flipped at display time. That is standard for the genre, but technically it is mirroring, so it is flagged here. Lighting stays correct because flipped sprites switch to a flipped normal map (`_nl`, red channel inverted). If you want hand-drawn opposite-facing frames, that roughly doubles the art count.
+1. **Facing uses runtime flipX (approved by Jason, Oct 2).** Every frame is drawn facing one way; the other way is the same frame flipped at display time. Lighting stays correct because flipped sprites switch to a flipped normal map (`_nl`, red channel inverted).
 2. **Boss armor flash** is a 70 ms warm tint on the Chieftain's sprite. It is a display effect, not a new frame.
-3. **Chieftain roar faces right** (generation error, see the art table). It is handled with the same runtime flip as decision 1, applied the other way. A re-roll of that one frame would remove the special case.
-4. **The run cycle repeats** (see the art table).
-5. **The Chieftain HUD portrait** is a circular crop of his master; it reads small. A dedicated portrait would be better.
+3. **Chieftain roar: correction.** The original roar frame actually faced LEFT like his other frames. My "faces right" flag from the art review was wrong. The special-case flip I added because of it made him roar facing *away* from Riley in the previous preview (`861b6c3`). The roar is now a re-rolled frame facing left, and the special case is removed.
+4. **Run cycle: fixed.** The second half was re-rolled (see Re-rolls).
+5. **Chieftain HUD portrait: fixed.** It is now a dedicated painted bust (see Re-rolls).
 6. **The bot picks its own fights.** It rarely backs off far enough for the Chieftain's cart hurl. The cart, charge and stun were checked with forced triggers (`docs/stage1/boss-charge.jpg`).
 7. **Gemini was not used.** Only ChatGPT image generation through Codex was available on this box.
 8. **No audio was regenerated.** It is 1.2's audio carried over, as asked.
