@@ -103,7 +103,9 @@
     layoutCache.set(id,layout);return layout;
   }
   function midLayout(n,travel){
-    const joins=n<=3&&R.assets.has('stage'+n+'-join-ab')&&R.assets.has('stage'+n+'-join-bc');
+    // Painted joins are wired for stages 2 and 3. Stage 1 keeps its reference
+    // plate layout (its decoded pixels stay exact); its join art ships unused.
+    const joins=(n===2||n===3)&&R.assets.has('stage'+n+'-join-ab')&&R.assets.has('stage'+n+'-join-bc');
     const id='plates:'+n+':'+travel+(joins?':joins':''),cached=layoutCache.get(id);if(cached)return cached;
     const M=640+K_MID*travel,ppu=PPU[n];
     if(n===4||n===5){
@@ -168,7 +170,7 @@
       pieceB.under=specOf(pieceA,fadeL);pieceC.under=specOf(pieceB,fadeR);
     }else if(n!==1){pieceB.under=specOf(pieceA,ovL);pieceC.under=specOf(pieceB,ovR);}
     let pieces=[pieceA,pieceB,pieceC];
-    // Stages 1-3: plates a, b and c are three separate paintings. Each join is
+    // Stages 2 and 3: plates a, b and c are three separate paintings. Each join is
     // a painted join image (assets/art/stage{n}-join-ab|bc) whose outer 24
     // units repaint the neighbouring plate's edge columns. P is cropped to end
     // 24 units into the join image and N to start 24 units before its end, and
