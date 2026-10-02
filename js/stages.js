@@ -968,7 +968,7 @@
       for(const candidate of layout.pieces){
         if(candidate.x>origin+width+2)break;
         const source=R.assets.get(candidate.key);if(!source)continue;
-        const height=n===4?MID_HEIGHTS[3]:candidate.w*source.height/source.width,key=plateId(candidate,height);
+        const height=n===4?MID_HEIGHTS[3]:candidate.w*source.height/srcW(candidate,source),key=plateId(candidate,height);
         if(!sliceCache.has(key)){piece=candidate;img=source;dh=height;id=key;break;}
       }
       if(!piece)return true;
