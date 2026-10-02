@@ -146,7 +146,7 @@ export class Chieftain extends Enemy {
     else { this.atk = this.T.atk; this.setState('attack', 'chop'); }
     this.scene.onEnemyAttack(this);
   }
-  startRoar() { this.setState('roar', 'roar'); this.nextRoar = 16; sfx.roar(); this.scene.fx.trauma = Math.min(1, this.scene.fx.trauma + 0.4); this.scene.time.delayedCall(450, () => this.alive && this.scene.summonHounds(this)); }
+  startRoar() { this.face(Math.sign(this.target.x - this.x)); this.setState('roar', 'roar'); this.sprite.flipX = !this.sprite.flipX; /* the roar frame was generated facing right (all other boss frames face left), so display it with the opposite flip */ this.nextRoar = 16; sfx.roar(); this.scene.fx.trauma = Math.min(1, this.scene.fx.trauma + 0.4); this.scene.time.delayedCall(450, () => this.alive && this.scene.summonHounds(this)); }
   startLift() { this.setState('lift', 'lift'); this.nextCart = rand(4.5, 6.5); this.face(Math.sign(this.target.x - this.x)); }
   startCharge() { this.face(Math.sign(this.target.x - this.x)); this.setState('charge', 'charge'); this.chargeDir = this.facing; this.hitIds.clear(); sfx.roar(); this.cool = rand(1.5, 2.5); }
   charging(dt) {
