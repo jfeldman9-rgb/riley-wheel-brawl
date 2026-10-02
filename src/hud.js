@@ -89,8 +89,8 @@ export class HUD extends Phaser.Scene {
       const b = this.boss; this.bossShown = Math.min(1, this.bossShown + dt * 1.5); const W = 500, w = W * this.bossShown, x0 = 560, y0 = 44;
       if (!this.bossName) {
         this.bossName = this.add.text(x0, y0 - 20, 'TROLLOC CHIEFTAIN', { fontFamily: PX, fontSize: '12px', color: '#ffd0b0', stroke: '#000', strokeThickness: 4 }).setOrigin(0, 0.5);
-        this.bossPic = this.add.image(x0 - 40, y0 + 4, 'bossPortrait').setDisplaySize(56, 56);
-        this.bossRing = this.add.graphics(); this.bossRing.lineStyle(3, 0xb0503a, 1); this.bossRing.strokeCircle(x0 - 40, y0 + 4, 29);
+        this.bossPic = this.add.image(x0 - 44, y0 + 2, 'bossPortrait').setDisplaySize(68, 68);
+        this.bossRing = this.add.graphics(); this.bossRing.lineStyle(3, 0xb0503a, 1); this.bossRing.strokeCircle(x0 - 44, y0 + 2, 35); this.bossRing.lineStyle(1, 0x000000, 0.8); this.bossRing.strokeCircle(x0 - 44, y0 + 2, 37);
       }
       const fade = !b.alive && b.state === 'dead';
       const a = fade ? Math.max(0, this.bossName.alpha - dt * 0.8) : 1;
