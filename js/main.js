@@ -285,11 +285,14 @@
       const pumpMs=performance.now()-pumpAt;
       const drawAt=performance.now();
       scene.draw(ctx);
-      // A task queued after this RAF runs after its rendering opportunity. Do
-      // not start a new music decode in the first visible stage-frame work.
-      if(game.fade<1&&!scene._musicFrameQueued&&RWB.audio.markFirstVisibleFrame){
+      // Music fetch/decode work (and the decoded buffer's main-thread delivery)
+      // stays off the stage-enter path: it is queued only after the scene's
+      // second visible frame, in idle time (bounded so music still starts
+      // within a quarter second), never inside the first frames' work.
+      if(game.fade<1&&!scene._musicFrameQueued&&RWB.audio.markFirstVisibleFrame&&(scene._musicFrames=(scene._musicFrames||0)+1)>=2){
         scene._musicFrameQueued=true;
-        setTimeout(()=>{if(game.scene===scene)RWB.audio.markFirstVisibleFrame(scene.music);},0);
+        const mark=()=>{if(game.scene===scene)RWB.audio.markFirstVisibleFrame(scene.music);};
+        if(typeof requestIdleCallback==='function')requestIdleCallback(mark,{timeout:250});else setTimeout(mark,0);
       }
       const drawMs=performance.now()-drawAt;
       RWB.perf.lastUpdateDraw=updateMs+drawMs;
