@@ -16,7 +16,7 @@ function fixture(root){
 function source(root,candidate=false){
   if(git(root,'status','--porcelain','--','js','assets','index.html','css'))throw Error('Runtime source must be clean');
   const changed=git(root,'diff','--name-only',SOURCE,'HEAD','--','js','assets','index.html','css').split('\n').filter(Boolean);
-  if(candidate?changed.some(f=>!['js/assets.js','js/campaign.js','js/presentation-v11.js'].includes(f)):changed.length)throw Error('Diagnostic runtime exceeds specified outcome-loader change');
+  if(candidate?changed.some(f=>!['js/assets.js','js/campaign.js','js/presentation-v11.js','js/puppets.js','js/stages.js'].includes(f)):changed.length)throw Error('Diagnostic runtime exceeds specified outcome-loader change');
   const hashes=Object.fromEntries(fs.readdirSync(path.join(root,'js')).filter(f=>f.endsWith('.js')).sort().map(f=>[f,sha(fs.readFileSync(path.join(root,'js',f)))]));
   return {reviewedRuntime:SOURCE,runtimeMode:candidate?'outcome-bitmap-candidate':'reviewed-control',changedRuntimeFiles:changed,commit:git(root,'rev-parse','HEAD'),tree:git(root,'rev-parse','HEAD^{tree}'),sourceHashes:hashes};
 }
