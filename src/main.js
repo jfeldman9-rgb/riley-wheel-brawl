@@ -7,7 +7,7 @@ import { Stage1 } from './stage1.js';
 import { HUD } from './hud.js';
 class Boot extends Phaser.Scene {
   constructor() { super('boot'); }
-  preload() { this.load.setCORS('anonymous'); queueCharJson(this); }
+  preload() { this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); }
   create() { this.scene.start('stage1'); }
 }
 const game = window.__game = new Phaser.Game({

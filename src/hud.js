@@ -4,7 +4,6 @@ import { perf } from './perf.js';
 const F = 'system-ui,-apple-system,Segoe UI,sans-serif', PX = 'PressStart, monospace';
 export class HUD extends Phaser.Scene {
   constructor() { super('hud'); }
-  preload() { this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); }
   create() {
     const cam = this.cameras.main; cam.setOrigin(0, 0); cam.setZoom(this.game.rs);
     const g = this.g = this.add.graphics();
@@ -25,7 +24,8 @@ export class HUD extends Phaser.Scene {
     this.showPerf = new URLSearchParams(location.search).get('hud') !== '0';
     this.card = this.add.container(VW / 2, VH / 2).setDepth(100);
     this.titleCard();
-    this.enemyRef = null; this.enemyT = 0; this.capT = 0; this.boss = null;
+    this.enemyRef = null; this.enemyT = 0; this.capT = 0; this.boss = this.boss || null;
+    if (this.pendingCap) { this.caption(...this.pendingCap); this.pendingCap = null; }
   }
   titleCard() {
     const c = this.card; c.removeAll(true);
@@ -43,14 +43,15 @@ export class HUD extends Phaser.Scene {
   }
   hideTitle() { this.tweens.add({ targets: this.card, alpha: 0, duration: 400, onComplete: () => { this.card.removeAll(true); this.card.setAlpha(1); } }); }
   caption(who, text) {
+    if (!this.capWho) { this.pendingCap = [who, text]; return; }   // HUD not created yet (slow network on first load)
     this.capWho.setText(who); this.capText.setText(text); this.capT = Math.max(2.2, text.length * 0.065);
     const w = Math.min(960, this.capText.width + 60), h = this.capText.height + 50;
     this.capBg.clear(); this.capBg.fillStyle(0x000000, 0.5); this.capBg.fillRoundedRect(VW / 2 - w / 2, VH - 106, w, h, 10);
   }
   target(e) { this.enemyRef = e; this.enemyT = 2.5; }
-  combo(n) { if (n < 2) return; this.comboT.setText(`${n} HITS`).setAlpha(1).setScale(1.25); this.tweens.add({ targets: this.comboT, scale: 1, duration: 120 }); this.comboHold = 1.4; }
-  go() { this.goT.setAlpha(1); this.tweens.add({ targets: this.goT, x: VW - 40, yoyo: true, repeat: 5, duration: 300, onComplete: () => this.goT.setAlpha(0).setX(VW - 60) }); }
-  flashText(t) { this.flash.setText(t).setAlpha(1); this.tweens.add({ targets: this.flash, alpha: 0, delay: 1400, duration: 600 }); }
+  combo(n) { if (n < 2 || !this.comboT) return; this.comboT.setText(`${n} HITS`).setAlpha(1).setScale(1.25); this.tweens.add({ targets: this.comboT, scale: 1, duration: 120 }); this.comboHold = 1.4; }
+  go() { if (!this.goT) return; this.goT.setAlpha(1); this.tweens.add({ targets: this.goT, x: VW - 40, yoyo: true, repeat: 5, duration: 300, onComplete: () => this.goT.setAlpha(0).setX(VW - 60) }); }
+  flashText(t) { if (!this.flash) return; this.flash.setText(t).setAlpha(1); this.tweens.add({ targets: this.flash, alpha: 0, delay: 1400, duration: 600 }); }
   bossBar(c) { this.boss = c; this.bossShown = 0; }
   togglePerf() { this.showPerf = !this.showPerf; }
   gameOver() {
