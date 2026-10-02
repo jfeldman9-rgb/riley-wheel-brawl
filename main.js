@@ -12,6 +12,7 @@
   class Spike extends Phaser.Scene {
     constructor() { super('spike'); }
     preload() {
+      this.load.setCORS("anonymous");
       this.load.image('far', 'assets/bg-far.jpg');
       this.load.image('mid', ['assets/bg-mid.webp', 'assets/bg-mid_n.webp']);
       this.load.image('floor', ['assets/bg-floor.jpg', 'assets/bg-floor_n.webp']);
