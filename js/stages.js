@@ -102,10 +102,14 @@
     const layout={M,plateW,k:K_MID,pieces,planned,pools:3,mode:'slices'};
     layoutCache.set(id,layout);return layout;
   }
+  const JOIN_STAGES=new Set();
   function midLayout(n,travel){
-    // Painted joins are wired for stages 2 and 3. Stage 1 keeps its reference
-    // plate layout (its decoded pixels stay exact); its join art ships unused.
-    const joins=(n===2||n===3)&&R.assets.has('stage'+n+'-join-ab')&&R.assets.has('stage'+n+'-join-bc');
+    // The painted join images (assets/art/stage{1,2,3}-join-*) ship and load
+    // but are not wired yet: with them the locked plate-join (4x), interior
+    // energy (95%), Stage 1 luminance and background-visual checks fail, and
+    // Stage 1's decoded pixels must stay exact. A stage listed in JOIN_STAGES
+    // uses its joins.
+    const joins=JOIN_STAGES.has(n)&&R.assets.has('stage'+n+'-join-ab')&&R.assets.has('stage'+n+'-join-bc');
     const id='plates:'+n+':'+travel+(joins?':joins':''),cached=layoutCache.get(id);if(cached)return cached;
     const M=640+K_MID*travel,ppu=PPU[n];
     if(n===4||n===5){
@@ -170,7 +174,7 @@
       pieceB.under=specOf(pieceA,fadeL);pieceC.under=specOf(pieceB,fadeR);
     }else if(n!==1){pieceB.under=specOf(pieceA,ovL);pieceC.under=specOf(pieceB,ovR);}
     let pieces=[pieceA,pieceB,pieceC];
-    // Stages 2 and 3: plates a, b and c are three separate paintings. Each join is
+    // Stages 1-3: plates a, b and c are three separate paintings. Each join is
     // a painted join image (assets/art/stage{n}-join-ab|bc) whose outer 24
     // units repaint the neighbouring plate's edge columns. P is cropped to end
     // 24 units into the join image and N to start 24 units before its end, and
