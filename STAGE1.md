@@ -1,6 +1,9 @@
 # Riley Wheel Brawl 2.0: Stage 1 (Emond's Field) vertical slice
 
 Branch: `rwb-2` (started from `rwb-2-spike`). `main` and `rwb-w2` were not touched; 1.2 is still live.
+**Preview (code commit 861b6c32bfd7c72fe4dfacef57a5ddfe3b8cbfd3):** https://raw.githack.com/jfeldman9-rgb/riley-wheel-brawl/861b6c32bfd7c72fe4dfacef57a5ddfe3b8cbfd3/index.html
+Add `?demo=1` to watch the autopilot, or `?skip=boss` to start at the Chieftain.
+
 Engine: Phaser 4.2.1 (WebGL2), ES modules, no build step. Code is in `src/`, art in `assets/`, docs and screenshots in `docs/stage1/`.
 
 ## Milestone 1: art batch (done)
