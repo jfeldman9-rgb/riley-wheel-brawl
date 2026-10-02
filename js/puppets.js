@@ -153,6 +153,10 @@
     }
     if(st.phase==='soles'){
       const texture=st.texture,w=st.w,h=st.h,pixels=st.pixels,legs=st.legs,soles=st.soles;
+      // A sole only ever moves down (py>=soles[i].y, which starts at the ankle),
+      // so rows above the higher ankle can never change it: start the scan there.
+      // Rigs with authored soles overwrite the scan result below, so skip it.
+      if(!st.yy)st.yy=d.soles&&d.soles.length>=2?texture.height:Math.max(0,Math.floor(Math.min(soles[0].y,soles[1].y)*texture.height/h)-2);
       const yEnd=Math.min(texture.height,st.yy+32);
       for(let yy=st.yy;yy<yEnd;yy++)for(let xx=0;xx<texture.width;xx++){
         if(pixels[(yy*texture.width+xx)*4+3]<96)continue;
