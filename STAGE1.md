@@ -84,7 +84,7 @@ No frame was faked: nothing blurred, mirrored, recolored, interpolated or invent
 - boss state timers that never advanced, which froze the roar;
 - a HUD race on the first load from the live preview (a caption fired before the HUD existed).
 
-## Re-rolls (Oct 2, about 03:00–03:45 MST)
+## Re-rolls (Oct 2, about 03:00–03:25 MST)
 
 All three images came from ChatGPT image generation through Codex, with no frames faked. Prompts are in `stage1/build_prompts.py` (jobs `riley-run2`, `chief-roar2`, `chief-portrait`), and each job folder has a `prompts-*.json` with the try count.
 
