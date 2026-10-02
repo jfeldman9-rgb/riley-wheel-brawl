@@ -232,7 +232,8 @@
     return !(job.pri>0&&job.name==='pose:'+job.kind+':'+job.key&&speculativeKickKey.test(job.key)&&
       RWB.Puppet&&RWB.Puppet.defs&&Object.prototype.hasOwnProperty.call(RWB.Puppet.defs,job.kind));
   }
-  const POSE_PUMP_CAP_MS=10,POSE_PUMP_FRAME_MS=15,POSE_PUMP_STEP_MS=1.5;
+  const POSE_PUMP_CAP_MS=8,POSE_PUMP_FRAME_MS=15,POSE_PUMP_STEP_MS=1.5,POSE_PUMP_GROW_MS=.25;
+  let poseExtraMs=POSE_PUMP_CAP_MS;
   // The job Bake.pump would pick next (same order: priority, then FIFO), if it
   // is a paced pose. Waiting dependencies are skipped exactly as pump does.
   function pacedPoseNext(eligible){
@@ -242,7 +243,8 @@
       if(job.ready&&!job.ready())continue;
       if(!best||job.pri<best.pri||(job.pri===best.pri&&job.seq<best.seq))best=job;
     }
-    return !!(best&&best.rasterPaced);
+    // Only demanded frames and enemy walk cycles (priority 0-1) get extra time.
+    return !!(best&&best.rasterPaced&&best.pri<=1);
   }
   const clock=new RWB.FrameClock();let clockScene=null;
   let last = performance.now();
@@ -250,7 +252,8 @@
   let fpsT = 0, frames = 0, fps = 0;
   function frame(now) {
     const started=performance.now();
-    let dt = (now - last) / 1000; last = now;
+    const frameMs0 = now - last;
+    let dt = frameMs0 / 1000; last = now;
     if (dt > 0.1) dt = 0.1; // tab switch protection
     frames++; fpsT += dt;
     if (fpsT >= 1) {
@@ -300,8 +303,11 @@
         // frame has headroom they get more time in short pumps. Any other job
         // keeps the base budget above: an atomic bake never starts with more
         // than one paced-slice window left.
+        // The extra time adapts: a frame that missed its vsync (interval over
+        // 20 ms) halves it, each on-time frame grows it back slowly.
         if(gameplay){
-          const until=pumpAt+Math.min(POSE_PUMP_CAP_MS,Math.max(1,POSE_PUMP_FRAME_MS-(RWB.perf.lastUpdateDraw||8)));
+          poseExtraMs=frameMs0>20?Math.max(0,poseExtraMs/2-1):Math.min(POSE_PUMP_CAP_MS,poseExtraMs+POSE_PUMP_GROW_MS);
+          const until=pumpAt+Math.min(budget+poseExtraMs,Math.max(1,POSE_PUMP_FRAME_MS-(RWB.perf.lastUpdateDraw||8)));
           for(let n=0;n<16&&performance.now()<until-.5&&pacedPoseNext(eligible);n++)RWB.Bake.pump(Math.min(POSE_PUMP_STEP_MS,until-performance.now()),eligible);
         }
       }
