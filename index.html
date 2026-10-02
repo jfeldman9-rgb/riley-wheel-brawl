@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Riley Wheel Brawl 2.0 - lit spike</title>
+<style>
+html,body{margin:0;height:100%;background:#05070d;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+#game{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#help{position:fixed;left:8px;bottom:6px;color:#9fb0d0;font:12px/1.4 system-ui,sans-serif;opacity:.75;pointer-events:none}
+.tb{position:fixed;bottom:18px;width:84px;height:84px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(20,30,50,.35);color:#fff;font:bold 15px system-ui;display:none;align-items:center;justify-content:center;touch-action:none}
+body.touch .tb{display:flex}
+</style></head><body>
+<div id="game"></div>
+<div id="help">Move: arrows/WASD &nbsp; Attack: J or Z (tap 3x for the combo) &nbsp; Fireball: K or X &nbsp; Bloom: B &nbsp; Lights: L &nbsp; Slow-mo view: M</div>
+<div class="tb" id="tL" style="left:18px">◀</div><div class="tb" id="tR" style="left:112px">▶</div>
+<div class="tb" id="tU" style="left:65px;bottom:110px">▲</div><div class="tb" id="tD" style="left:65px;bottom:-60px;display:none">▼</div>
+<div class="tb" id="tA" style="right:112px">KICK</div><div class="tb" id="tF" style="right:18px;bottom:100px">FIRE</div>
+<script src="lib/phaser.min.js"></script>
+<script src="main.js"></script>
+</body></html>
