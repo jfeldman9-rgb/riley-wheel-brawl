@@ -154,8 +154,18 @@
     const pieceA={id:a.id,key:a.key,x:0,w:a.w,ramp:0,rampOut:seamed||n===1?0:fadeL,fade:0,pool:0,sx0:a.sx0||0,repeat:a.repeat||null};
     const pieceB={id:b.id,key:b.key,x:xB,w:b.w,sx0:b.sx0||0,sx1:b.sx1,repeat:b.repeat||null,ramp:seamed?0:rampL,rampOut:seamed||n===1?0:fadeR,fade:n===1?rampL:fadeL,pool:1,seam:seamed?{overlap:+ovL.toFixed(2),cut:'min-error'}:null};
     const pieceC={id:c.id,key:c.key,x:lastX,w:c.w,sx0:c.sx0||0,sx1:c.sx1,ramp:seamed?0:rampR,rampOut:0,fade:n===1?rampR:fadeR,pool:2,seam:seamed?{overlap:+ovR.toFixed(2),cut:'min-error'}:null};
-    const specOf=(piece,ov)=>({key:piece.key,w:piece.w,ramp:piece.ramp||0,rampOut:piece.rampOut||0,ov,sx0:piece.sx0||0,repeat:piece.repeat||null,seam:piece.seam?1:0});
-    if(n!==1){pieceB.under=specOf(pieceA,ovL);pieceC.under=specOf(pieceB,ovR);}
+    const specOf=(piece,ov)=>({key:piece.key,w:piece.w,ramp:piece.ramp||0,rampOut:piece.rampOut||0,ov,sx0:piece.sx0||0,sx1:piece.sx1||null,repeat:piece.repeat||null,seam:piece.seam?1:0});
+    // A source-over fade-out under a coincident fade-in only sums to 0.75
+    // alpha mid-band, so the far layer bled through both plates. Plate b's
+    // fade-out also sat at its own end, 49 units right of plate c's fade-in.
+    // b now ends where c's fade-in ends, both ramps cover the same columns, and
+    // the incoming plate is added ('lighter') so s + (1-s) = 1: a plain dissolve.
+    if(n!==1&&!seamed){
+      const end=lastX+fadeR;
+      if(end<pieceB.x+pieceB.w){pieceB.sx1=(end-pieceB.x)*ppu;pieceB.w=end-pieceB.x;}
+      pieceB.dissolve=true;pieceC.dissolve=true;
+      pieceB.under=specOf(pieceA,fadeL);pieceC.under=specOf(pieceB,fadeR);
+    }else if(n!==1){pieceB.under=specOf(pieceA,ovL);pieceC.under=specOf(pieceB,ovR);}
     const pieces=[pieceA,pieceB,pieceC];
     const planned=[];
     const sorted=pieces.slice().sort((p,q)=>p.x-q.x);
@@ -417,9 +427,12 @@
     const rep=piece.repeat?piece.repeat.copies+':'+piece.repeat.period+':'+piece.repeat.from+':'+(piece.repeat.seam||0)+':'+(piece.repeat.ov||0):0;
     return pin+piece.key+':plate:'+(piece.ramp||0)+':'+(piece.rampOut||0)+':'+(piece.sx0||0)+':'+rep+':'+(piece.seam?1:0)+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
   }
+  // A cropped piece keeps the plate's pixels per unit, so its height follows
+  // the cropped source width, not the whole image.
+  function srcW(piece,img){return (piece.sx1||img.width)-(piece.sx0||0);}
   function pieceDrawH(piece){
     const img=R.assets.get(piece.key);if(!img)return 1;
-    const fullH=piece.w*img.height/img.width;
+    const fullH=piece.w*img.height/srcW(piece,img);
     return /^stage4-mid/.test(piece.key)?MID_HEIGHTS[3]:fullH;
   }
   function bakeRamp(g,width,height,leftPx,rightPx){
@@ -615,7 +628,7 @@
       const plates=[];
       for(const piece of layout.pieces){
         const img=R.assets.get(piece.key);if(!img)continue;
-        const fullH=piece.w*img.height/img.width;
+        const fullH=piece.w*img.height/srcW(piece,img);
         const drawH=/^stage4-mid/.test(piece.key)?MID_HEIGHTS[3]:fullH;
         const baked=bakedPlate(piece,drawH,0);if(!baked)continue;
         const raw=document.createElement('canvas');
@@ -892,7 +905,7 @@
           const layout=midLayout(n,travelOf(scene));
           for(const piece of layout.pieces){
             const img=R.assets.get(piece.key);if(!img)continue;
-            const fullH=piece.w*img.height/img.width;
+            const fullH=piece.w*img.height/srcW(piece,img);
             const y=n===4?0:10+MID_HEIGHTS[n-1]-fullH;
             bakedPlate(piece,n===4?MID_HEIGHTS[3]:fullH,y);
           }
@@ -941,7 +954,7 @@
       for(const piece of layout.pieces){
         if(piece.x>origin+width+2)break;
         const img=R.assets.get(piece.key);if(!img)continue;
-        const fullH=piece.w*img.height/img.width,dh=n===4?MID_HEIGHTS[3]:fullH;
+        const fullH=piece.w*img.height/srcW(piece,img),dh=n===4?MID_HEIGHTS[3]:fullH;
         if(sliceCache.has(plateId(piece,dh)))continue;
         bakedPlate(piece,dh,n===4?0:10+MID_HEIGHTS[n-1]-fullH);
         if(one)return false;
@@ -1216,14 +1229,16 @@
           for(const piece of layout.pieces){
             if(piece.x+piece.w<viewL||piece.x>viewR)continue;
             const img=R.assets.get(piece.key);if(!img)continue;
-            const fullH=piece.w*img.height/img.width;
+            const fullH=piece.w*img.height/srcW(piece,img);
             const y=n===4?0:10+MID_HEIGHTS[n-1]-fullH;
             const dh=n===4?MID_HEIGHTS[3]:fullH;
             const plate=bakedPlate(piece,dh,y);
             if(!plate)continue;
             ctx.globalAlpha=1;
             noteScrollAlpha(ctx);
+            if(piece.dissolve)ctx.globalCompositeOperation='lighter';
             ctx.drawImage(plate,piece.x-midX,y,piece.w,dh);
+            ctx.globalCompositeOperation='source-over';
           }
           haze(ctx,20);
           R.StageWorld._layerFactor=layout.clamp&&cam*K_MID>=layout.available-640?0:K_MID;
