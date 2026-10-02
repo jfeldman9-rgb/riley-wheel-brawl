@@ -82,11 +82,21 @@ export class HUD extends Phaser.Scene {
     if (this.enemyRef && this.enemyT > 0 && !this.enemyRef.T.boss) { this.enemyT -= dt; const e = this.enemyRef; this.enemyName.setText(e.name).setAlpha(1); this.bar(112, 122, 200, 8, Math.max(0, e.hp) / e.maxHp, 0xe07a3c); }
     else this.enemyName.setAlpha(0);
     if (this.boss) {
-      const b = this.boss; this.bossShown = Math.min(1, this.bossShown + dt * 1.5); const w = 640 * this.bossShown;
-      this.bar(VW / 2 - w / 2, VH - 150, w, 16, Math.max(0, b.hp) / b.maxHp, b.phase >= 3 ? 0xff4a2a : b.phase === 2 ? 0xff8a2a : 0xd8452f);
-      for (const f of [1 / 3, 2 / 3]) { g.fillStyle(0x000000, 0.8); g.fillRect(VW / 2 - w / 2 + w * f - 1, VH - 150, 3, 16); }
-      if (!this.bossName) this.bossName = this.add.text(VW / 2, VH - 170, 'TROLLOC CHIEFTAIN', { fontFamily: PX, fontSize: '12px', color: '#ffd0b0', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5);
-      if (!b.alive && b.state === 'dead') { this.bossName.setAlpha(Math.max(0, this.bossName.alpha - dt)); }
+      // boss bar sits top-centre-right so it never covers the fighters' feet or the caption box
+      const b = this.boss; this.bossShown = Math.min(1, this.bossShown + dt * 1.5); const W = 500, w = W * this.bossShown, x0 = 560, y0 = 44;
+      if (!this.bossName) {
+        this.bossName = this.add.text(x0, y0 - 20, 'TROLLOC CHIEFTAIN', { fontFamily: PX, fontSize: '12px', color: '#ffd0b0', stroke: '#000', strokeThickness: 4 }).setOrigin(0, 0.5);
+        this.bossPic = this.add.image(x0 - 40, y0 + 4, 'bossPortrait').setDisplaySize(56, 56);
+        this.bossRing = this.add.graphics(); this.bossRing.lineStyle(3, 0xb0503a, 1); this.bossRing.strokeCircle(x0 - 40, y0 + 4, 29);
+      }
+      const fade = !b.alive && b.state === 'dead';
+      const a = fade ? Math.max(0, this.bossName.alpha - dt * 0.8) : 1;
+      this.bossName.setAlpha(a); this.bossPic.setAlpha(a); this.bossRing.setAlpha(a);
+      if (a > 0) {
+        g.setAlpha(1);
+        this.bar(x0, y0, w, 16, Math.max(0, b.hp) / b.maxHp, b.phase >= 3 ? 0xff4a2a : b.phase === 2 ? 0xff8a2a : 0xd8452f);
+        for (const f of [1 / 3, 2 / 3]) { g.fillStyle(0x000000, 0.8); g.fillRect(x0 + w * f - 1, y0, 3, 16); }
+      } else this.boss = null;
     }
     if (this.comboHold > 0) { this.comboHold -= dt; if (this.comboHold <= 0) this.tweens.add({ targets: this.comboT, alpha: 0, duration: 300 }); }
     if (this.capT > 0) { this.capT -= dt; const a = Math.min(1, this.capT * 3); this.capWho.setAlpha(a); this.capText.setAlpha(a); this.capBg.setAlpha(a); }
