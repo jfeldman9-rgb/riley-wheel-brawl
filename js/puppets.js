@@ -128,6 +128,9 @@
       const shadeMs=performance.now()-t0;
       if(shadeMs>4&&R.perf.markStep)R.perf.markStep('rig-shade:'+st.cacheKey,shadeMs);
       if(st.shadeY<th||(!sync&&performance.now()>=end))return false;
+      // Only the sole scan reads these pixels, and it never looks above the
+      // higher ankle (or at all when the rig has authored soles).
+      if(st.scanY0==null){st.scanY0=d.soles&&d.soles.length>=2?th:Math.max(0,Math.floor(Math.min(st.legs[0][2].y,st.legs[1][2].y)*th/st.h)-2);st.ry=Math.max(st.ry||0,st.scanY0);}
       do{
         const y=st.ry||0;if(y>=th)break;
         const rows=Math.min(sync?64:16,th-y),slice=st.tc.getImageData(0,y,tw,rows);
@@ -154,9 +157,9 @@
     if(st.phase==='soles'){
       const texture=st.texture,w=st.w,h=st.h,pixels=st.pixels,legs=st.legs,soles=st.soles;
       // A sole only ever moves down (py>=soles[i].y, which starts at the ankle),
-      // so rows above the higher ankle can never change it: start the scan there.
-      // Rigs with authored soles overwrite the scan result below, so skip it.
-      if(!st.yy)st.yy=d.soles&&d.soles.length>=2?texture.height:Math.max(0,Math.floor(Math.min(soles[0].y,soles[1].y)*texture.height/h)-2);
+      // so rows above the higher ankle can never change it: the scan starts at
+      // scanY0. Rigs with authored soles overwrite the result, so they skip it.
+      if(!st.yy)st.yy=st.scanY0;
       const yEnd=Math.min(texture.height,st.yy+32);
       for(let yy=st.yy;yy<yEnd;yy++)for(let xx=0;xx<texture.width;xx++){
         if(pixels[(yy*texture.width+xx)*4+3]<96)continue;
