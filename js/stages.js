@@ -103,7 +103,8 @@
     layoutCache.set(id,layout);return layout;
   }
   function midLayout(n,travel){
-    const id='plates:'+n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
+    const joins=n<=3&&R.assets.has('stage'+n+'-join-ab')&&R.assets.has('stage'+n+'-join-bc');
+    const id='plates:'+n+':'+travel+(joins?':joins':''),cached=layoutCache.get(id);if(cached)return cached;
     const M=640+K_MID*travel,ppu=PPU[n];
     if(n===4||n===5){
       const px=n===4?3667:4169,key='stage'+n+'-mid-cont',w=px/ppu;
@@ -166,7 +167,26 @@
       pieceB.dissolve=true;pieceC.dissolve=true;
       pieceB.under=specOf(pieceA,fadeL);pieceC.under=specOf(pieceB,fadeR);
     }else if(n!==1){pieceB.under=specOf(pieceA,ovL);pieceC.under=specOf(pieceB,ovR);}
-    const pieces=[pieceA,pieceB,pieceC];
+    let pieces=[pieceA,pieceB,pieceC];
+    // Stages 1-3: plates a, b and c are three separate paintings. Each join is
+    // a painted join image (assets/art/stage{n}-join-ab|bc) whose outer 24
+    // units repaint the neighbouring plate's edge columns. P is cropped to end
+    // 24 units into the join image and N to start 24 units before its end, and
+    // the two 24-unit overlaps are complementary dissolves ('lighter' on the
+    // mid layer's own canvas), so every column is one continuous painting.
+    if(joins){
+      const E=24,j1=[xB-120,xB+160],j2=[lastX-120,lastX+168];
+      const plate=(src,x,end,from,extra)=>Object.assign({id:src.id,key:src.key,x,w:end-x,sx0:(x-from)*ppu,sx1:(end-from)*ppu,repeat:null,seam:null},extra);
+      const join=(tag,win,pool)=>({id:'stage'+n+'-join-'+tag,key:'stage'+n+'-join-'+tag,x:win[0],w:win[1]-win[0],sx0:0,ramp:E,fade:E,rampOut:E,dissolve:true,pool,repeat:null,seam:null});
+      pieces=[
+        plate(a,0,j1[0]+E,0,{ramp:0,fade:0,rampOut:E,pool:0}),
+        join('ab',j1,1),
+        plate(b,j1[1]-E,j2[0]+E,xB,{ramp:E,fade:E,rampOut:E,dissolve:true,pool:2}),
+        join('bc',j2,3),
+        plate(c,j2[1]-E,M,lastX,{ramp:E,fade:E,rampOut:0,dissolve:true,pool:4})
+      ];
+      pieces[0].sx0=0;
+    }
     const planned=[];
     const sorted=pieces.slice().sort((p,q)=>p.x-q.x);
     let cursor=0;
@@ -174,7 +194,7 @@
       if(piece.x>cursor+1e-4&&cursor<M)planned.push([cursor,Math.min(piece.x,M)]);
       cursor=Math.max(cursor,piece.x+piece.w);
     }
-    const layout={M,plateW:a.w,k:K_MID,pieces,planned,pools:3,mode:'plates',slack};
+    const layout={M,plateW:a.w,k:K_MID,pieces,planned,pools:3,mode:'plates',slack,joins};
     layoutCache.set(id,layout);return layout;
   }
   // Dropping a cache entry has to release the bitmap too. A later stage

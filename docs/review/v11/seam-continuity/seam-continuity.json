@@ -15,173 +15,184 @@
     {
      "key": "stage1-mid",
      "x": 0,
-     "w": 720,
+     "w": 584,
      "ramp": 0,
-     "rampOut": 0,
+     "rampOut": 24,
      "fade": 0,
+     "sx0": 0,
+     "sx1": 1356.178
+    },
+    {
+     "key": "stage1-join-ab",
+     "x": 560,
+     "w": 280,
+     "ramp": 24,
+     "rampOut": 24,
+     "fade": 24,
      "sx0": 0,
      "sx1": null
     },
     {
      "key": "stage1-mid-b",
-     "x": 680,
-     "w": 945.646,
-     "ramp": 40,
-     "rampOut": 0,
-     "fade": 40,
+     "x": 816,
+     "w": 448,
+     "ramp": 24,
+     "rampOut": 24,
+     "fade": 24,
+     "sx0": 315.822,
+     "sx1": 1356.178
+    },
+    {
+     "key": "stage1-join-bc",
+     "x": 1240,
+     "w": 288,
+     "ramp": 24,
+     "rampOut": 24,
+     "fade": 24,
      "sx0": 0,
      "sx1": null
     },
     {
      "key": "stage1-mid-c",
-     "x": 1360,
-     "w": 720,
-     "ramp": 48,
+     "x": 1504,
+     "w": 576,
+     "ramp": 24,
      "rampOut": 0,
-     "fade": 48,
-     "sx0": 0,
-     "sx1": null
+     "fade": 24,
+     "sx0": 334.4,
+     "sx1": 1672
     }
    ],
    "joins": [
     {
      "join": 1,
      "from": "stage1-mid",
-     "to": "stage1-mid-b",
+     "to": "stage1-join-ab",
      "zone": [
-      680,
-      720
+      560,
+      584
      ],
-     "fadeIn": 40,
-     "fadeOut": 0,
-     "pass": false,
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
      "events": [
       {
-       "cam": 950,
+       "cam": 630,
        "band": [
-        600,
-        680
+        616,
+        664
        ],
-       "bandUnits": 40,
-       "ghost": 6.771,
-       "ghostAt": 640,
-       "texture": 3.852,
-       "ghostRef": 1.926,
-       "cuts": [
-        {
-         "xc": 680,
-         "side": -1,
-         "rows": 114,
-         "step": 7.013,
-         "ref": 2.927,
-         "stepPerRow": 27.067
-        }
-       ],
-       "ghostRatio": 3.515,
-       "cutRatio": 2.396,
-       "worstCut": {
-        "xc": 680,
-        "side": -1,
-        "rows": 114,
-        "step": 7.013,
-        "ref": 2.927,
-        "stepPerRow": 27.067
-       },
-       "pass": false,
-       "reasons": [
-        "ghost 3.52 > 3",
-        "cut 2.40 > 2"
-       ],
+       "bandUnits": 24,
+       "ghost": 0.718,
+       "ghostAt": 633,
+       "texture": 3.52,
+       "ghostRef": 1.76,
+       "cuts": [],
+       "ghostRatio": 0.408,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": true,
+       "reasons": [],
        "join": 1
       }
      ]
     },
     {
      "join": 2,
-     "from": "stage1-mid-b",
-     "to": "stage1-mid-c",
+     "from": "stage1-join-ab",
+     "to": "stage1-mid-b",
      "zone": [
-      1360,
-      1625.646
+      816,
+      840
      ],
-     "fadeIn": 48,
-     "fadeOut": 0,
-     "pass": false,
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
      "events": [
       {
-       "cam": 2660,
+       "cam": 1270,
        "band": [
-        592,
-        1123
+        616,
+        664
        ],
-       "bandUnits": 265.5,
-       "ghost": 12.214,
-       "ghostAt": 630,
-       "texture": 4.776,
-       "ghostRef": 2.388,
-       "cuts": [
-        {
-         "xc": 1123,
-         "side": -1,
-         "rows": 21,
-         "step": 0.737,
-         "ref": 0.46,
-         "stepPerRow": 15.444
-        }
-       ],
-       "ghostRatio": 5.115,
-       "cutRatio": 1.603,
-       "worstCut": {
-        "xc": 1123,
-        "side": -1,
-        "rows": 21,
-        "step": 0.737,
-        "ref": 0.46,
-        "stepPerRow": 15.444
-       },
-       "pass": false,
-       "reasons": [
-        "ghost 5.11 > 3"
-       ],
+       "bandUnits": 24,
+       "ghost": 0.769,
+       "ghostAt": 632,
+       "texture": 3.66,
+       "ghostRef": 1.83,
+       "cuts": [],
+       "ghostRatio": 0.42,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": true,
+       "reasons": [],
        "join": 2
-      },
+      }
+     ]
+    },
+    {
+     "join": 3,
+     "from": "stage1-mid-b",
+     "to": "stage1-join-bc",
+     "zone": [
+      1240,
+      1264
+     ],
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
+     "events": [
       {
-       "cam": 3264.115,
+       "cam": 2330,
        "band": [
-        109,
-        640
+        616,
+        664
        ],
-       "bandUnits": 265.5,
-       "ghost": 13.648,
-       "ghostAt": 148,
-       "texture": 3.368,
-       "ghostRef": 1.684,
-       "cuts": [
-        {
-         "xc": 640,
-         "side": -1,
-         "rows": 20,
-         "step": 1.107,
-         "ref": 0.434,
-         "stepPerRow": 24.358
-        }
+       "bandUnits": 24,
+       "ghost": 0.688,
+       "ghostAt": 633,
+       "texture": 4.03,
+       "ghostRef": 2.015,
+       "cuts": [],
+       "ghostRatio": 0.341,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": true,
+       "reasons": [],
+       "join": 3
+      }
+     ]
+    },
+    {
+     "join": 4,
+     "from": "stage1-join-bc",
+     "to": "stage1-mid-c",
+     "zone": [
+      1504,
+      1528
+     ],
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
+     "events": [
+      {
+       "cam": 2990,
+       "band": [
+        616,
+        664
        ],
-       "ghostRatio": 8.104,
-       "cutRatio": 2.55,
-       "worstCut": {
-        "xc": 640,
-        "side": -1,
-        "rows": 20,
-        "step": 1.107,
-        "ref": 0.434,
-        "stepPerRow": 24.358
-       },
-       "pass": false,
-       "reasons": [
-        "ghost 8.10 > 3",
-        "cut 2.55 > 2"
-       ],
-       "join": 2
+       "bandUnits": 24,
+       "ghost": 0.833,
+       "ghostAt": 633,
+       "texture": 3.897,
+       "ghostRef": 1.948,
+       "cuts": [],
+       "ghostRatio": 0.428,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": true,
+       "reasons": [],
+       "join": 4
       }
      ]
     }
@@ -194,102 +205,184 @@
     {
      "key": "stage2-mid",
      "x": 0,
-     "w": 700,
+     "w": 564,
      "ramp": 0,
-     "rampOut": 40,
+     "rampOut": 24,
      "fade": 0,
+     "sx0": 0,
+     "sx1": 1429.337
+    },
+    {
+     "key": "stage2-join-ab",
+     "x": 540,
+     "w": 280,
+     "ramp": 24,
+     "rampOut": 24,
+     "fade": 24,
      "sx0": 0,
      "sx1": null
     },
     {
      "key": "stage2-mid-b",
-     "x": 660,
-     "w": 816.798,
-     "ramp": 40,
-     "rampOut": 48,
-     "fade": 40,
+     "x": 796,
+     "w": 488,
+     "ramp": 24,
+     "rampOut": 24,
+     "fade": 24,
+     "sx0": 344.663,
+     "sx1": 1581.394
+    },
+    {
+     "key": "stage2-join-bc",
+     "x": 1260,
+     "w": 288,
+     "ramp": 24,
+     "rampOut": 24,
+     "fade": 24,
      "sx0": 0,
      "sx1": null
     },
     {
      "key": "stage2-mid-c",
-     "x": 1380,
-     "w": 700,
-     "ramp": 48,
+     "x": 1524,
+     "w": 556,
+     "ramp": 24,
      "rampOut": 0,
-     "fade": 48,
-     "sx0": 0,
-     "sx1": null
+     "fade": 24,
+     "sx0": 364.937,
+     "sx1": 1774
     }
    ],
    "joins": [
     {
      "join": 1,
      "from": "stage2-mid",
-     "to": "stage2-mid-b",
+     "to": "stage2-join-ab",
      "zone": [
-      660,
-      700
+      540,
+      564
      ],
-     "fadeIn": 40,
-     "fadeOut": 40,
-     "pass": false,
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
      "events": [
       {
-       "cam": 900,
+       "cam": 580,
        "band": [
-        600,
-        680
+        616,
+        664
        ],
-       "bandUnits": 40,
-       "ghost": 17.163,
-       "ghostAt": 631,
-       "texture": 5.798,
-       "ghostRef": 2.899,
+       "bandUnits": 24,
+       "ghost": 1.912,
+       "ghostAt": 636,
+       "texture": 4.998,
+       "ghostRef": 2.499,
        "cuts": [],
-       "ghostRatio": 5.921,
+       "ghostRatio": 0.765,
        "cutRatio": 0,
        "worstCut": null,
-       "pass": false,
-       "reasons": [
-        "ghost 5.92 > 3"
-       ],
+       "pass": true,
+       "reasons": [],
        "join": 1
       }
      ]
     },
     {
      "join": 2,
-     "from": "stage2-mid-b",
-     "to": "stage2-mid-c",
+     "from": "stage2-join-ab",
+     "to": "stage2-mid-b",
      "zone": [
-      1380,
-      1476.798
+      796,
+      820
      ],
-     "fadeIn": 48,
-     "fadeOut": 48,
-     "pass": false,
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
      "events": [
       {
-       "cam": 2710,
+       "cam": 1220,
        "band": [
-        592,
-        786
+        616,
+        664
        ],
-       "bandUnits": 97,
-       "ghost": 26.979,
-       "ghostAt": 632,
-       "texture": 6.959,
-       "ghostRef": 3.479,
+       "bandUnits": 24,
+       "ghost": 1.038,
+       "ghostAt": 631,
+       "texture": 5.713,
+       "ghostRef": 2.856,
        "cuts": [],
-       "ghostRatio": 7.754,
+       "ghostRatio": 0.363,
        "cutRatio": 0,
        "worstCut": null,
-       "pass": false,
-       "reasons": [
-        "ghost 7.75 > 3"
-       ],
+       "pass": true,
+       "reasons": [],
        "join": 2
+      }
+     ]
+    },
+    {
+     "join": 3,
+     "from": "stage2-mid-b",
+     "to": "stage2-join-bc",
+     "zone": [
+      1260,
+      1284
+     ],
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
+     "events": [
+      {
+       "cam": 2380,
+       "band": [
+        616,
+        664
+       ],
+       "bandUnits": 24,
+       "ghost": 0.779,
+       "ghostAt": 632,
+       "texture": 6.349,
+       "ghostRef": 3.175,
+       "cuts": [],
+       "ghostRatio": 0.246,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": true,
+       "reasons": [],
+       "join": 3
+      }
+     ]
+    },
+    {
+     "join": 4,
+     "from": "stage2-join-bc",
+     "to": "stage2-mid-c",
+     "zone": [
+      1524,
+      1548
+     ],
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
+     "events": [
+      {
+       "cam": 3040,
+       "band": [
+        616,
+        664
+       ],
+       "bandUnits": 24,
+       "ghost": 1.138,
+       "ghostAt": 633,
+       "texture": 6.979,
+       "ghostRef": 3.49,
+       "cuts": [],
+       "ghostRatio": 0.326,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": true,
+       "reasons": [],
+       "join": 4
       }
      ]
     }
@@ -302,102 +395,184 @@
     {
      "key": "stage3-mid",
      "x": 0,
-     "w": 700,
+     "w": 564,
      "ramp": 0,
-     "rampOut": 40,
+     "rampOut": 24,
      "fade": 0,
+     "sx0": 0,
+     "sx1": 1429.337
+    },
+    {
+     "key": "stage3-join-ab",
+     "x": 540,
+     "w": 280,
+     "ramp": 24,
+     "rampOut": 24,
+     "fade": 24,
      "sx0": 0,
      "sx1": null
     },
     {
      "key": "stage3-mid-b",
-     "x": 660,
-     "w": 816.798,
-     "ramp": 40,
-     "rampOut": 48,
-     "fade": 40,
+     "x": 796,
+     "w": 488,
+     "ramp": 24,
+     "rampOut": 24,
+     "fade": 24,
+     "sx0": 344.663,
+     "sx1": 1581.394
+    },
+    {
+     "key": "stage3-join-bc",
+     "x": 1260,
+     "w": 288,
+     "ramp": 24,
+     "rampOut": 24,
+     "fade": 24,
      "sx0": 0,
      "sx1": null
     },
     {
      "key": "stage3-mid-c",
-     "x": 1380,
-     "w": 700,
-     "ramp": 48,
+     "x": 1524,
+     "w": 556,
+     "ramp": 24,
      "rampOut": 0,
-     "fade": 48,
-     "sx0": 0,
-     "sx1": null
+     "fade": 24,
+     "sx0": 364.937,
+     "sx1": 1774
     }
    ],
    "joins": [
     {
      "join": 1,
      "from": "stage3-mid",
-     "to": "stage3-mid-b",
+     "to": "stage3-join-ab",
      "zone": [
-      660,
-      700
+      540,
+      564
      ],
-     "fadeIn": 40,
-     "fadeOut": 40,
-     "pass": false,
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
      "events": [
       {
-       "cam": 900,
+       "cam": 580,
        "band": [
-        600,
-        680
+        616,
+        664
        ],
-       "bandUnits": 40,
-       "ghost": 12.017,
+       "bandUnits": 24,
+       "ghost": 1.002,
        "ghostAt": 630,
-       "texture": 3.78,
-       "ghostRef": 1.89,
+       "texture": 2.977,
+       "ghostRef": 1.488,
        "cuts": [],
-       "ghostRatio": 6.358,
+       "ghostRatio": 0.673,
        "cutRatio": 0,
        "worstCut": null,
-       "pass": false,
-       "reasons": [
-        "ghost 6.36 > 3"
-       ],
+       "pass": true,
+       "reasons": [],
        "join": 1
       }
      ]
     },
     {
      "join": 2,
-     "from": "stage3-mid-b",
-     "to": "stage3-mid-c",
+     "from": "stage3-join-ab",
+     "to": "stage3-mid-b",
      "zone": [
-      1380,
-      1476.798
+      796,
+      820
      ],
-     "fadeIn": 48,
-     "fadeOut": 48,
-     "pass": false,
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
      "events": [
       {
-       "cam": 2710,
+       "cam": 1220,
        "band": [
-        592,
-        786
+        616,
+        664
        ],
-       "bandUnits": 97,
-       "ghost": 17.921,
+       "bandUnits": 24,
+       "ghost": 1.593,
        "ghostAt": 633,
-       "texture": 3.531,
-       "ghostRef": 1.765,
+       "texture": 3.613,
+       "ghostRef": 1.807,
        "cuts": [],
-       "ghostRatio": 10.151,
+       "ghostRatio": 0.882,
        "cutRatio": 0,
        "worstCut": null,
-       "pass": false,
-       "reasons": [
-        "ghost 10.15 > 3"
-       ],
+       "pass": true,
+       "reasons": [],
        "join": 2
+      }
+     ]
+    },
+    {
+     "join": 3,
+     "from": "stage3-mid-b",
+     "to": "stage3-join-bc",
+     "zone": [
+      1260,
+      1284
+     ],
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
+     "events": [
+      {
+       "cam": 2380,
+       "band": [
+        616,
+        664
+       ],
+       "bandUnits": 24,
+       "ghost": 0.451,
+       "ghostAt": 633,
+       "texture": 3.413,
+       "ghostRef": 1.706,
+       "cuts": [],
+       "ghostRatio": 0.264,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": true,
+       "reasons": [],
+       "join": 3
+      }
+     ]
+    },
+    {
+     "join": 4,
+     "from": "stage3-join-bc",
+     "to": "stage3-mid-c",
+     "zone": [
+      1524,
+      1548
+     ],
+     "fadeIn": 24,
+     "fadeOut": 24,
+     "pass": true,
+     "events": [
+      {
+       "cam": 3040,
+       "band": [
+        616,
+        664
+       ],
+       "bandUnits": 24,
+       "ghost": 0.948,
+       "ghostAt": 633,
+       "texture": 3.486,
+       "ghostRef": 1.743,
+       "cuts": [],
+       "ghostRatio": 0.544,
+       "cutRatio": 0,
+       "worstCut": null,
+       "pass": true,
+       "reasons": [],
+       "join": 4
       }
      ]
     }
@@ -499,11 +674,11 @@
    "plate": "stage1-mid-b",
    "style": "dual-ramp-dissolve",
    "shiftUnits": 0,
-   "ghost": 9.757,
+   "ghost": 0.171,
    "ghostRef": 1.915,
-   "ghostRatio": 5.094,
+   "ghostRatio": 0.089,
    "cutRatio": 0,
-   "pass": false
+   "pass": true
   },
   {
    "stage": 2,
@@ -565,9 +740,9 @@
    "plate": "stage2-mid-b",
    "style": "dual-ramp-dissolve",
    "shiftUnits": 0,
-   "ghost": 8.965,
+   "ghost": 0.478,
    "ghostRef": 3.412,
-   "ghostRatio": 2.627,
+   "ghostRatio": 0.14,
    "cutRatio": 0,
    "pass": true
   },
@@ -631,11 +806,11 @@
    "plate": "stage3-mid-b",
    "style": "dual-ramp-dissolve",
    "shiftUnits": 0,
-   "ghost": 6.747,
+   "ghost": 0.231,
    "ghostRef": 1.954,
-   "ghostRatio": 3.453,
+   "ghostRatio": 0.118,
    "cutRatio": 0,
-   "pass": false
+   "pass": true
   },
   {
    "stage": 4,
@@ -697,11 +872,11 @@
    "plate": "stage4-mid-cont",
    "style": "dual-ramp-dissolve",
    "shiftUnits": 0,
-   "ghost": 8.627,
+   "ghost": 0.322,
    "ghostRef": 2.333,
-   "ghostRatio": 3.699,
+   "ghostRatio": 0.138,
    "cutRatio": 0,
-   "pass": false
+   "pass": true
   },
   {
    "stage": 5,
@@ -763,19 +938,12 @@
    "plate": "stage5-mid-cont",
    "style": "dual-ramp-dissolve",
    "shiftUnits": 0,
-   "ghost": 2.358,
+   "ghost": 0.41,
    "ghostRef": 1.281,
-   "ghostRatio": 1.841,
+   "ghostRatio": 0.32,
    "cutRatio": 0,
    "pass": true
   }
  ],
- "failures": [
-  "S1 join 1: ghost 3.52 > 3, cut 2.40 > 2",
-  "S1 join 2: ghost 5.11 > 3; ghost 8.10 > 3, cut 2.55 > 2",
-  "S2 join 1: ghost 5.92 > 3",
-  "S2 join 2: ghost 7.75 > 3",
-  "S3 join 1: ghost 6.36 > 3",
-  "S3 join 2: ghost 10.15 > 3"
- ]
+ "failures": []
 }
