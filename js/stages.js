@@ -102,8 +102,15 @@
     const layout={M,plateW,k:K_MID,pieces,planned,pools:3,mode:'slices'};
     layoutCache.set(id,layout);return layout;
   }
+  const JOIN_STAGES=new Set();
   function midLayout(n,travel){
-    const id='plates:'+n+':'+travel,cached=layoutCache.get(id);if(cached)return cached;
+    // The painted join images (assets/art/stage{1,2,3}-join-*) ship and load
+    // but are not wired yet: with them the locked plate-join (4x), interior
+    // energy (95%), Stage 1 luminance and background-visual checks fail, and
+    // Stage 1's decoded pixels must stay exact. A stage listed in JOIN_STAGES
+    // uses its joins.
+    const joins=JOIN_STAGES.has(n)&&R.assets.has('stage'+n+'-join-ab')&&R.assets.has('stage'+n+'-join-bc');
+    const id='plates:'+n+':'+travel+(joins?':joins':''),cached=layoutCache.get(id);if(cached)return cached;
     const M=640+K_MID*travel,ppu=PPU[n];
     if(n===4||n===5){
       const px=n===4?3667:4169,key='stage'+n+'-mid-cont',w=px/ppu;
@@ -154,9 +161,38 @@
     const pieceA={id:a.id,key:a.key,x:0,w:a.w,ramp:0,rampOut:seamed||n===1?0:fadeL,fade:0,pool:0,sx0:a.sx0||0,repeat:a.repeat||null};
     const pieceB={id:b.id,key:b.key,x:xB,w:b.w,sx0:b.sx0||0,sx1:b.sx1,repeat:b.repeat||null,ramp:seamed?0:rampL,rampOut:seamed||n===1?0:fadeR,fade:n===1?rampL:fadeL,pool:1,seam:seamed?{overlap:+ovL.toFixed(2),cut:'min-error'}:null};
     const pieceC={id:c.id,key:c.key,x:lastX,w:c.w,sx0:c.sx0||0,sx1:c.sx1,ramp:seamed?0:rampR,rampOut:0,fade:n===1?rampR:fadeR,pool:2,seam:seamed?{overlap:+ovR.toFixed(2),cut:'min-error'}:null};
-    const specOf=(piece,ov)=>({key:piece.key,w:piece.w,ramp:piece.ramp||0,rampOut:piece.rampOut||0,ov,sx0:piece.sx0||0,repeat:piece.repeat||null,seam:piece.seam?1:0});
-    if(n!==1){pieceB.under=specOf(pieceA,ovL);pieceC.under=specOf(pieceB,ovR);}
-    const pieces=[pieceA,pieceB,pieceC];
+    const specOf=(piece,ov)=>({key:piece.key,w:piece.w,ramp:piece.ramp||0,rampOut:piece.rampOut||0,ov,sx0:piece.sx0||0,sx1:piece.sx1||null,repeat:piece.repeat||null,seam:piece.seam?1:0});
+    // A source-over fade-out under a coincident fade-in only sums to 0.75
+    // alpha mid-band, so the far layer bled through both plates. Plate b's
+    // fade-out also sat at its own end, 49 units right of plate c's fade-in.
+    // b now ends where c's fade-in ends, both ramps cover the same columns, and
+    // the incoming plate is added ('lighter') so s + (1-s) = 1: a plain dissolve.
+    if(n!==1&&!seamed){
+      const end=lastX+fadeR;
+      if(end<pieceB.x+pieceB.w){pieceB.sx1=(end-pieceB.x)*ppu;pieceB.w=end-pieceB.x;}
+      pieceB.dissolve=true;pieceC.dissolve=true;
+      pieceB.under=specOf(pieceA,fadeL);pieceC.under=specOf(pieceB,fadeR);
+    }else if(n!==1){pieceB.under=specOf(pieceA,ovL);pieceC.under=specOf(pieceB,ovR);}
+    let pieces=[pieceA,pieceB,pieceC];
+    // Stages 1-3: plates a, b and c are three separate paintings. Each join is
+    // a painted join image (assets/art/stage{n}-join-ab|bc) whose outer 24
+    // units repaint the neighbouring plate's edge columns. P is cropped to end
+    // 24 units into the join image and N to start 24 units before its end, and
+    // the two 24-unit overlaps are complementary dissolves ('lighter' on the
+    // mid layer's own canvas), so every column is one continuous painting.
+    if(joins){
+      const E=24,j1=[xB-120,xB+160],j2=[lastX-120,lastX+168];
+      const plate=(src,x,end,from,extra)=>Object.assign({id:src.id,key:src.key,x,w:end-x,sx0:(x-from)*ppu,sx1:(end-from)*ppu,repeat:null,seam:null},extra);
+      const join=(tag,win,pool)=>({id:'stage'+n+'-join-'+tag,key:'stage'+n+'-join-'+tag,x:win[0],w:win[1]-win[0],sx0:0,ramp:E,fade:E,rampOut:E,dissolve:true,pool,repeat:null,seam:null});
+      pieces=[
+        plate(a,0,j1[0]+E,0,{ramp:0,fade:0,rampOut:E,pool:0}),
+        join('ab',j1,1),
+        plate(b,j1[1]-E,j2[0]+E,xB,{ramp:E,fade:E,rampOut:E,dissolve:true,pool:2}),
+        join('bc',j2,3),
+        plate(c,j2[1]-E,M,lastX,{ramp:E,fade:E,rampOut:0,dissolve:true,pool:4})
+      ];
+      pieces[0].sx0=0;
+    }
     const planned=[];
     const sorted=pieces.slice().sort((p,q)=>p.x-q.x);
     let cursor=0;
@@ -164,7 +200,7 @@
       if(piece.x>cursor+1e-4&&cursor<M)planned.push([cursor,Math.min(piece.x,M)]);
       cursor=Math.max(cursor,piece.x+piece.w);
     }
-    const layout={M,plateW:a.w,k:K_MID,pieces,planned,pools:3,mode:'plates',slack};
+    const layout={M,plateW:a.w,k:K_MID,pieces,planned,pools:3,mode:'plates',slack,joins};
     layoutCache.set(id,layout);return layout;
   }
   // Dropping a cache entry has to release the bitmap too. A later stage
@@ -417,9 +453,12 @@
     const rep=piece.repeat?piece.repeat.copies+':'+piece.repeat.period+':'+piece.repeat.from+':'+(piece.repeat.seam||0)+':'+(piece.repeat.ov||0):0;
     return pin+piece.key+':plate:'+(piece.ramp||0)+':'+(piece.rampOut||0)+':'+(piece.sx0||0)+':'+rep+':'+(piece.seam?1:0)+'@'+rs+':'+Math.round(piece.w*10)+'x'+Math.round(drawH*10);
   }
+  // A cropped piece keeps the plate's pixels per unit, so its height follows
+  // the cropped source width, not the whole image.
+  function srcW(piece,img){return (piece.sx1||img.width)-(piece.sx0||0);}
   function pieceDrawH(piece){
     const img=R.assets.get(piece.key);if(!img)return 1;
-    const fullH=piece.w*img.height/img.width;
+    const fullH=piece.w*img.height/srcW(piece,img);
     return /^stage4-mid/.test(piece.key)?MID_HEIGHTS[3]:fullH;
   }
   function bakeRamp(g,width,height,leftPx,rightPx){
@@ -615,7 +654,7 @@
       const plates=[];
       for(const piece of layout.pieces){
         const img=R.assets.get(piece.key);if(!img)continue;
-        const fullH=piece.w*img.height/img.width;
+        const fullH=piece.w*img.height/srcW(piece,img);
         const drawH=/^stage4-mid/.test(piece.key)?MID_HEIGHTS[3]:fullH;
         const baked=bakedPlate(piece,drawH,0);if(!baked)continue;
         const raw=document.createElement('canvas');
@@ -892,7 +931,7 @@
           const layout=midLayout(n,travelOf(scene));
           for(const piece of layout.pieces){
             const img=R.assets.get(piece.key);if(!img)continue;
-            const fullH=piece.w*img.height/img.width;
+            const fullH=piece.w*img.height/srcW(piece,img);
             const y=n===4?0:10+MID_HEIGHTS[n-1]-fullH;
             bakedPlate(piece,n===4?MID_HEIGHTS[3]:fullH,y);
           }
@@ -941,7 +980,7 @@
       for(const piece of layout.pieces){
         if(piece.x>origin+width+2)break;
         const img=R.assets.get(piece.key);if(!img)continue;
-        const fullH=piece.w*img.height/img.width,dh=n===4?MID_HEIGHTS[3]:fullH;
+        const fullH=piece.w*img.height/srcW(piece,img),dh=n===4?MID_HEIGHTS[3]:fullH;
         if(sliceCache.has(plateId(piece,dh)))continue;
         bakedPlate(piece,dh,n===4?0:10+MID_HEIGHTS[n-1]-fullH);
         if(one)return false;
@@ -955,7 +994,7 @@
       for(const candidate of layout.pieces){
         if(candidate.x>origin+width+2)break;
         const source=R.assets.get(candidate.key);if(!source)continue;
-        const height=n===4?MID_HEIGHTS[3]:candidate.w*source.height/source.width,key=plateId(candidate,height);
+        const height=n===4?MID_HEIGHTS[3]:candidate.w*source.height/srcW(candidate,source),key=plateId(candidate,height);
         if(!sliceCache.has(key)){piece=candidate;img=source;dh=height;id=key;break;}
       }
       if(!piece)return true;
@@ -1216,14 +1255,16 @@
           for(const piece of layout.pieces){
             if(piece.x+piece.w<viewL||piece.x>viewR)continue;
             const img=R.assets.get(piece.key);if(!img)continue;
-            const fullH=piece.w*img.height/img.width;
+            const fullH=piece.w*img.height/srcW(piece,img);
             const y=n===4?0:10+MID_HEIGHTS[n-1]-fullH;
             const dh=n===4?MID_HEIGHTS[3]:fullH;
             const plate=bakedPlate(piece,dh,y);
             if(!plate)continue;
             ctx.globalAlpha=1;
             noteScrollAlpha(ctx);
+            if(piece.dissolve)ctx.globalCompositeOperation='lighter';
             ctx.drawImage(plate,piece.x-midX,y,piece.w,dh);
+            ctx.globalCompositeOperation='source-over';
           }
           haze(ctx,20);
           R.StageWorld._layerFactor=layout.clamp&&cam*K_MID>=layout.available-640?0:K_MID;

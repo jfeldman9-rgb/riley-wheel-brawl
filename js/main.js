@@ -232,13 +232,28 @@
     return !(job.pri>0&&job.name==='pose:'+job.kind+':'+job.key&&speculativeKickKey.test(job.key)&&
       RWB.Puppet&&RWB.Puppet.defs&&Object.prototype.hasOwnProperty.call(RWB.Puppet.defs,job.kind));
   }
+  const POSE_PUMP_CAP_MS=8,POSE_PUMP_FRAME_MS=15,POSE_PUMP_STEP_MS=1.5,POSE_PUMP_GROW_MS=.25;
+  let poseExtraMs=POSE_PUMP_CAP_MS;
+  // The job Bake.pump would pick next (same order: priority, then FIFO), if it
+  // is a paced pose. Waiting dependencies are skipped exactly as pump does.
+  function pacedPoseNext(eligible){
+    let best=null;
+    for(const job of RWB.Bake.q){
+      if(eligible&&!eligible(job))continue;
+      if(job.ready&&!job.ready())continue;
+      if(!best||job.pri<best.pri||(job.pri===best.pri&&job.seq<best.seq))best=job;
+    }
+    // Only demanded frames and enemy walk cycles (priority 0-1) get extra time.
+    return !!(best&&best.rasterPaced&&best.pri<=1);
+  }
   const clock=new RWB.FrameClock();let clockScene=null;
   let last = performance.now();
   let musicToast = 0;
   let fpsT = 0, frames = 0, fps = 0;
   function frame(now) {
     const started=performance.now();
-    let dt = (now - last) / 1000; last = now;
+    const frameMs0 = now - last;
+    let dt = frameMs0 / 1000; last = now;
     if (dt > 0.1) dt = 0.1; // tab switch protection
     frames++; fpsT += dt;
     if (fpsT >= 1) {
@@ -280,16 +295,34 @@
       RWB.perf.frameJobs=[];
       const pumpAt=performance.now();
       const activeCombat=scene.isGameplay&&scene.phase==='play'&&!scene.paused&&game.fadeDir===0;
-      if(RWB.Bake)RWB.Bake.pump(budget,activeCombat?combatBakeEligible:undefined);
+      const eligible=activeCombat?combatBakeEligible:undefined;
+      if(RWB.Bake){
+        RWB.Bake.pump(budget,eligible);
+        // Fight start queues dozens of walk frames. Paced pose slices raster
+        // inside their own ~1 ms step, so while one is next in line and the
+        // frame has headroom they get more time in short pumps. Any other job
+        // keeps the base budget above: an atomic bake never starts with more
+        // than one paced-slice window left.
+        // The extra time adapts: a frame that missed its vsync (interval over
+        // 20 ms) halves it, each on-time frame grows it back slowly.
+        if(gameplay){
+          poseExtraMs=frameMs0>20?Math.max(0,poseExtraMs/2-1):Math.min(POSE_PUMP_CAP_MS,poseExtraMs+POSE_PUMP_GROW_MS);
+          const until=pumpAt+Math.min(budget+poseExtraMs,Math.max(1,POSE_PUMP_FRAME_MS-(RWB.perf.lastUpdateDraw||8)));
+          for(let n=0;n<16&&performance.now()<until-.5&&pacedPoseNext(eligible);n++)RWB.Bake.pump(Math.min(POSE_PUMP_STEP_MS,until-performance.now()),eligible);
+        }
+      }
       else if(RWB.Puppet&&RWB.Puppet.drainPoses)RWB.Puppet.drainPoses(budget);
       const pumpMs=performance.now()-pumpAt;
       const drawAt=performance.now();
       scene.draw(ctx);
-      // A task queued after this RAF runs after its rendering opportunity. Do
-      // not start a new music decode in the first visible stage-frame work.
-      if(game.fade<1&&!scene._musicFrameQueued&&RWB.audio.markFirstVisibleFrame){
+      // Music fetch/decode work (and the decoded buffer's main-thread delivery)
+      // stays off the stage-enter path: it is queued only after the scene's
+      // second visible frame, in idle time (bounded so music still starts
+      // within a quarter second), never inside the first frames' work.
+      if(game.fade<1&&!scene._musicFrameQueued&&RWB.audio.markFirstVisibleFrame&&(scene._musicFrames=(scene._musicFrames||0)+1)>=2){
         scene._musicFrameQueued=true;
-        setTimeout(()=>{if(game.scene===scene)RWB.audio.markFirstVisibleFrame(scene.music);},0);
+        const mark=()=>{if(game.scene===scene)RWB.audio.markFirstVisibleFrame(scene.music);};
+        if(typeof requestIdleCallback==='function')requestIdleCallback(mark,{timeout:250});else setTimeout(mark,0);
       }
       const drawMs=performance.now()-drawAt;
       RWB.perf.lastUpdateDraw=updateMs+drawMs;

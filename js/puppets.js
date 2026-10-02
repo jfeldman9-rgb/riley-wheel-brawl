@@ -128,6 +128,9 @@
       const shadeMs=performance.now()-t0;
       if(shadeMs>4&&R.perf.markStep)R.perf.markStep('rig-shade:'+st.cacheKey,shadeMs);
       if(st.shadeY<th||(!sync&&performance.now()>=end))return false;
+      // Only the sole scan reads these pixels, and it never looks above the
+      // higher ankle (or at all when the rig has authored soles).
+      if(st.scanY0==null){st.scanY0=d.soles&&d.soles.length>=2?th:Math.max(0,Math.floor(Math.min(st.legs[0][2].y,st.legs[1][2].y)*th/st.h)-2);st.ry=Math.max(st.ry||0,st.scanY0);}
       do{
         const y=st.ry||0;if(y>=th)break;
         const rows=Math.min(sync?64:16,th-y),slice=st.tc.getImageData(0,y,tw,rows);
@@ -153,6 +156,10 @@
     }
     if(st.phase==='soles'){
       const texture=st.texture,w=st.w,h=st.h,pixels=st.pixels,legs=st.legs,soles=st.soles;
+      // A sole only ever moves down (py>=soles[i].y, which starts at the ankle),
+      // so rows above the higher ankle can never change it: the scan starts at
+      // scanY0. Rigs with authored soles overwrite the result, so they skip it.
+      if(!st.yy)st.yy=st.scanY0;
       const yEnd=Math.min(texture.height,st.yy+32);
       for(let yy=st.yy;yy<yEnd;yy++)for(let xx=0;xx<texture.width;xx++){
         if(pixels[(yy*texture.width+xx)*4+3]<96)continue;
@@ -427,6 +434,27 @@
     const vertices=job.state.vertices;job.state.vertices=null;
     const pool=poseVertexPools.get(job.rig);
     if(vertices&&pool&&pool.length<POSE_VERTEX_POOL_LIMIT)pool.push(vertices);
+  }
+  // Queued pose slices record mesh faces, but Canvas defers their raster until
+  // the surface is first drawn. That lands as one 5-15 ms flush on the pose's
+  // first blit, outside the bake budget, and a fresh fight queues dozens. A
+  // queued slice records at most 1 ms of faces, then a 1x1 draw rasters those
+  // faces inside the same slice. Pixels, order and synchronous bakes are unchanged.
+  // The 1x1 draw goes to the game canvas, as warmBitmaps' blits do: no
+  // extra canvas is allocated, and the frame's own draw covers that pixel.
+  const POSE_SLICE_MS=1;
+  function rasterPoseSlice(surface){
+    const canvas=document.getElementById('game'),g=canvas&&canvas.getContext('2d');
+    if(!g)return;
+    g.save();g.setTransform(1,0,0,1,0,0);g.drawImage(surface,0,0,1,1);g.restore();
+  }
+  function stepQueuedPose(job,end){
+    if(!(end<1e12))return stepPose(job,end);
+    const was=job.state,before=was&&was.surface?was.ln+':'+was.fi:null;
+    const done=stepPose(job,Math.min(end,performance.now()+POSE_SLICE_MS));
+    const st=job.state,at=st&&st.surface?st.ln+':'+st.fi:null;
+    if(at&&!st.identity&&at!==before&&at!=='0:0')rasterPoseSlice(st.surface);
+    return done;
   }
   function stepPose(job,end){
     const d=defs[job.kind];if(!d)return true;
@@ -722,12 +750,13 @@
     R.perf.allowSync=true;R.perf.poseFallbacks=0;R.perf.poseMiss=[];
     R.perf.queueEmptyAt=0;R.perf.stageEnteredAt=bakeAt;R.perf.stageLevel=level;
     const kinds=STAGE_RIGS[level]||STAGE_RIGS[0],keep=new Set(kinds);
-    const visible=scene?new Set(['loial']):new Set(kinds);
+    const visible=scene?new Set(['loial']):new Set(kinds),foes=scene?new Set():visible;
     if(scene){
       for(const actor of [...(scene.enemies||[]),...(scene.allies||[])]){
-        if(defs[actor.kind])visible.add(actor.kind);
-        else if(actor instanceof R.Trolloc)visible.add(actor.boss?'chieftain':'trolloc');
-        else if(actor instanceof R.Loial)visible.add('loial');
+        const kind=defs[actor.kind]?actor.kind:actor instanceof R.Trolloc?(actor.boss?'chieftain':'trolloc'):actor instanceof R.Loial?'loial':null;
+        if(!kind)continue;
+        visible.add(kind);
+        if((scene.enemies||[]).includes(actor))foes.add(kind);
       }
       if(scene.twinkle)visible.add('twinkle');
     }
@@ -738,7 +767,7 @@
     const pending=[],boss={0:['chieftain'],1:['fade'],4:['taim','twinkle']}[level]||[];
     for(const kind of kinds){
       const d=defs[kind];if(!d)continue;
-      if(!visible.has(kind)){for(const key of POSE_KEYS){pending.push({kind,key,pri:key==='idle'?1:4});this.wantPose(kind,key,key==='idle'?1:4);}continue;}
+      if(!visible.has(kind)){for(const key of POSE_KEYS){const pri=key==='idle'?2:4;pending.push({kind,key,pri});this.wantPose(kind,key,pri);}continue;}
       const rigAt=performance.now(),r=getRig(d),rigMs=performance.now()-rigAt;if(!r)continue;
       const poseAt=performance.now(),cached=!!(r.library&&r.library.has('idle'));
       if(!(r.library&&r.library.has('idle'))){
@@ -751,7 +780,11 @@
       R.perf.stageRigTimings.push({kind,rigMs,poseMs,touchMs:performance.now()-touchAt,cached,identity:!!idle?.identity});
       for(const key of POSE_KEYS){
         if(key==='idle'||(r.library&&r.library.has(key)))continue;
-        const pri=boss.includes(kind)?1:key[0]==='w'?2:3;
+        // Fight start: enemies walk in at once, then act (hurt/cast/attack).
+        // Their walk cycles go first, then those reactions and boss poses,
+        // then ally walk cycles, then the rest.
+        const walk=key[0]==='w',react=key==='hurt'||key==='cast'||key==='attack';
+        const pri=walk&&foes.has(kind)?1:(boss.includes(kind)||(react&&foes.has(kind)))?2:walk?2.5:3;
         pending.push({kind,key,pri});this.wantPose(kind,key,pri);
       }
       r.warmed=true;
@@ -774,8 +807,8 @@
     const stage=R.perf.stageLevel;
     const name='pose:'+kind+':'+key;
     if(!R.Bake)return;
-    const job=R.Bake.enqueue(pri==null?3:pri,name,(item,end)=>stepPose(item,end),{kind,key,level:pri>=4?null:stage});
-    if(job)job.kind=kind,job.key=key;
+    const job=R.Bake.enqueue(pri==null?3:pri,name,(item,end)=>stepQueuedPose(item,end),{kind,key,level:pri>=4?null:stage});
+    if(job)job.kind=kind,job.key=key,job.rasterPaced=true;
     if(pri<4){
       const q=R.perf.poseQueue||(R.perf.poseQueue=[]);
       if(!q.some(it=>it.kind===kind&&it.key===key))q.push({kind,key,pri});
