@@ -15,12 +15,20 @@ export class Input {
       this.emit('key', e.code);
     });
     addEventListener('keyup', e => { const a = KEYS[e.code]; if (a) this.held[a] = false; });
-    addEventListener('blur', () => { this.held = {}; });
+    addEventListener('blur', () => this.clear());
     if (matchMedia && matchMedia('(pointer: coarse)').matches) this.enableTouch();
     addEventListener('touchstart', () => this.enableTouch(), { once: true, passive: true });
     this.bindTouch();
   }
-  on(ev, fn) { (this.listeners[ev] = this.listeners[ev] || []).push(fn); }
+  on(ev, fn) { (this.listeners[ev] = this.listeners[ev] || []).push(fn); return () => this.off(ev, fn); }
+  off(ev, fn) { this.listeners[ev] = (this.listeners[ev] || []).filter(f => f !== fn); }
+  clear() {
+    this.held = {}; this.buf = {}; this.touchHeld = {}; this.touchAxis = { x: 0, y: 0 };
+    this.demo = null; this.x = 0; this.y = 0; this.run = false; this.runLatch = false;
+    this.lastTap = { left: -9, right: -9 };
+    const knob = document.getElementById('knob'); if (knob) knob.style.transform = '';
+    document.querySelectorAll('.tb.on').forEach(el => el.classList.remove('on'));
+  }
   emit(ev, v) { (this.listeners[ev] || []).forEach(f => f(v)); }
   press(a) {
     this.buf[a] = this.t;

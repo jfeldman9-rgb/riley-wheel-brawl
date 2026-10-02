@@ -63,11 +63,15 @@ export class Enemy extends Fighter {
     if (this.done) { this.swung = false; this.cool = rand(...this.T.cool); this.setState('approach', 'walk'); }
   }
   takeHit(h, from) {
-    if (!this.canBeHit) return false;
+    // A held enemy stays immune to bystanders; only its holder's knee can connect.
+    const heldKnee = this.alive && !this.entering && this.state === 'held' && this.heldBy === from && from.held === this && from.state === 'knee' && h.anim === 'knee';
+    if (!this.canBeHit && !heldKnee) return false;
     const dir = Math.sign(this.x - from.x) || 1;
     this.hp -= h.dmg; this.shudder = 0.12;
-    if (this.state === 'attack' && this.armor && !h.down && h.kind !== 'heavy') { this.flashArmor(); return true; }   // super armor (boss)
+    // Armor resists interruption, never death. Both melee attack states use it.
     if (this.hp <= 0) { this.die(dir, h); return true; }
+    if (heldKnee) return true;
+    if (['attack', 'sweep'].includes(this.state) && this.armor && !h.down && h.kind !== 'heavy') { this.flashArmor(); return true; }
     if (this.airborne || this.state === 'thrown') { this.juggle++; this.vz = Math.max(this.vz, this.juggle < 3 ? 320 : 120); this.vx = dir * Math.abs(h.kb || 200) * 0.6; this.setState('down', 'knockdown'); this.sprite.anims.setCurrentFrame(this.sprite.anims.currentAnim.frames[1]); return true; }
     if ((h.down && !this.T.boss) || (this.hitsTaken += (h.down ? 2 : 1)) >= this.poise()) return this.knockdown(dir, h), true;
     this.setState('hurt', 'hurt'); this.vx = dir * Math.abs(h.kb || 120) * (this.T.boss ? 0.3 : 1); this.face(-dir);
@@ -79,7 +83,7 @@ export class Enemy extends Fighter {
     this.setState('down', 'knockdown'); this.vx = dir * Math.max(260, Math.abs(h.kb || 300)) * (this.T.boss ? 0.5 : 1); this.vz = (h.launch || 260) * (this.T.boss ? 0.5 : 1); this.z = 1;
     this.scene.dustLater(this, 0.35); sfx.hurt();
   }
-  die(dir, h) { this.alive = false; this.knockdown(dir, h); this.scene.onEnemyDie(this); }
+  die(dir, h) { this.heldBy = null; this.alive = false; this.knockdown(dir, h); this.scene.onEnemyDie(this); }
   downed(dt) {
     if (this.z <= 0 && this.st > 0.15 && !this.landed) { this.landed = true; }
     const lieT = this.T.boss ? 1.1 : 0.85;
@@ -90,13 +94,19 @@ export class Enemy extends Fighter {
     }
   }
   onLand(v) {
-    if (this.state === 'thrown') { this.scene.fx.thump(this.x, this.y, true); sfx.thud(); this.hp -= 12; this.state = 'down'; this.st = 0.2; if (this.hp <= 0 && this.alive) { this.alive = false; this.scene.onEnemyDie(this); } return; }
+    if (this.state === 'thrown') {
+      // Physics lands after update(): resume here before leaving 'thrown', or flying()
+      // never runs again and the paused body can neither get up nor finish dying.
+      this.sprite.anims.resume(); this.play('knockdown'); this.sprite.anims.setCurrentFrame(this.sprite.anims.currentAnim.frames[2]);
+      this.scene.fx.thump(this.x, this.y, true); sfx.thud(); this.hp -= 12; this.state = 'down'; this.st = 0.2;
+      if (this.hp <= 0 && this.alive) { this.alive = false; this.scene.onEnemyDie(this); } return;
+    }
     if (this.state === 'down') { this.scene.fx.thump(this.x, this.y, v < -500); sfx.thud(); }
   }
-  grabbed(by) { this.setState('held', 'hurt'); this.sprite.anims.pause(); this.heldT = 0; this.vx = 0; }
-  release() { if (this.state === 'held') { this.sprite.anims.resume(); this.setState('approach', 'walk'); this.cool = 0.8; } }
+  grabbed(by) { this.heldBy = by; this.setState('held', 'hurt'); this.sprite.anims.pause(); this.heldT = 0; this.vx = 0; }
+  release() { if (this.state === 'held') { this.heldBy = null; this.sprite.anims.resume(); this.setState('approach', 'walk'); this.cool = 0.8; } }
   throwFrom(by, dir) {
-    this.sprite.anims.resume(); this.setState('thrown', 'knockdown'); this.sprite.anims.setCurrentFrame(this.sprite.anims.currentAnim.frames[1]); this.sprite.anims.pause();
+    this.heldBy = null; this.sprite.anims.resume(); this.setState('thrown', 'knockdown'); this.sprite.anims.setCurrentFrame(this.sprite.anims.currentAnim.frames[1]); this.sprite.anims.pause();
     this.face(-dir); this.vx = dir * 560; this.vz = 560; this.z = Math.max(this.z, 60); this.thrownBy = by; this.hitIds.clear();
   }
   flying(dt) {
@@ -104,7 +114,6 @@ export class Enemy extends Fighter {
     for (const e of this.scene.enemies) if (e !== this && e.canBeHit && !this.hitIds.has(e.id) && Math.abs(e.x - this.x) < 90 && Math.abs(e.y - this.y) < 30) {
       this.hitIds.add(e.id); this.scene.hitTarget(this.thrownBy, e, { dmg: 10, kind: 'heavy', kb: Math.sign(this.vx) * 420, launch: 380, down: true }, this);
     }
-    if (this.z <= 0) { this.sprite.anims.resume(); this.play('knockdown'); this.sprite.anims.setCurrentFrame(this.sprite.anims.currentAnim.frames[2]); }
   }
   flashArmor() { this.sprite.setTint(0xffb0a0); this.scene.time.delayedCall(70, () => this.sprite.clearTint()); }
 }

@@ -37,6 +37,11 @@ export class Stage1 extends Phaser.Scene {
     this.load.on('progress', p => { const b = document.getElementById('boot'); if (b) b.textContent = `Loading Emond's Field… ${Math.round(p * 100)}%`; });
   }
   create() {
+    this.runId = (this.runId || 0) + 1;
+    this.pauseReasons = new Set(); this.paused = false; this.gameOver = false;
+    this.clearShown = false; this.boss = null; this.bot = null;
+    this.backdropLit = []; this.ambient = undefined;
+    this.inp = this.game.inp; this.inp.clear();
     const b = document.getElementById('boot'); if (b) b.remove();
     patchFlippedNormals();
     this.metas = makeCharAnims(this);
@@ -58,12 +63,20 @@ export class Stage1 extends Phaser.Scene {
     if (q.get('lit') === '0') this.setBackdropLit(false);
     this.caption = (who, text) => this.hud && this.hud.caption(who, text);
     this.scene.launch('hud'); this.hud = this.scene.get('hud'); this.hud.stage = this;
-    this.inp.on('key', code => {
+    const removeKey = this.inp.on('key', code => {
+      if (this.paused) return;
       if (code === 'Digit1') this.toggleLights(); if (code === 'Digit2') this.setBloom(!this.bloom);
       if (code === 'Digit3') this.timeScale = this.timeScale === 1 ? 0.25 : 1; if (code === 'KeyM') toggleMusic(); if (code === 'KeyN') toggleMute();
       if (code === 'KeyH') this.hud.togglePerf();
     });
-    this.inp.on('press', a => this.onPress(a));
+    const removePress = this.inp.on('press', a => this.onPress(a));
+    this.events.once('shutdown', () => {
+      removeKey(); removePress(); this.inp.clear();
+      if (this.bot && this.bot.destroy) this.bot.destroy();
+      for (const reason of this.pauseReasons) perf.setSuspended(reason, false);
+      this.scene.stop('hud');
+      perf.reset();
+    });
     this.god = !!q.get('god');
     // ?skip=boss starts at the Chieftain arena (testing / quick device checks)
     if (q.get('skip') === 'boss') { this.zoneI = 2; this.riley.x = 3990; this.camX = this.camMax = 3500; }
@@ -116,10 +129,25 @@ export class Stage1 extends Phaser.Scene {
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
   // ---------- flow ----------
   onPress(a) {
+    if (a === 'pause') {
+      if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) this.setPauseReason('manual', !this.pauseReasons.has('manual'));
+      return;
+    }
+    if (this.paused) { this.inp.clear(); return; }
     unlock();
     if (!this.started && !this.ended) return this.start();
     if (this.gameOver && a === 'attack') return this.continueGame();
     if (this.ended && this.clearShown && (a === 'attack' || a === 'start')) return this.scene.restart();
+  }
+  setPauseReason(reason, paused) {
+    if (paused) this.pauseReasons.add(reason); else this.pauseReasons.delete(reason);
+    perf.setSuspended(reason, paused);
+    const next = this.pauseReasons.size > 0;
+    this.inp.clear();
+    if (next === this.paused) return;
+    this.paused = next;
+    if (next) this.scene.pause(); else this.scene.resume();
+    if (this.hud && this.hud.pauseLabel) this.hud.pauseLabel.setVisible(next);
   }
   start() {
     if (this.started) return; this.started = true; unlock(); playMusic(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
@@ -307,13 +335,16 @@ export class Stage1 extends Phaser.Scene {
   wallHit(x) { this.fx.debris.emitParticleAt(x, LANE_TOP - 40, 14); this.fx.snowPuff.emitParticleAt(x, LANE_TOP, 14); }
   // ---------- main loop ----------
   update(time, deltaMs) {
-    perf.tick(performance.now());
+    perf.tick(performance.now(), {
+      active: this.started && !this.gameOver && !this.ended && !this.paused,
+      inFight: this.enemies.some(e => e.alive && !e.entering),
+      context: { mode: this.bot ? 'demo' : 'manual', zone: this.zoneI + 1, wave: this.wave + 1, bossPhase: this.boss && this.boss.phase || null, godMode: this.god, timeScale: this.timeScale },
+    });
     let dt = Math.min(deltaMs, 50) / 1000;
-    this.inp.update(dt); if (this.bot) this.bot.update(dt);
+    if (this.bot) this.bot.update(dt);
     for (const L of this.fires) L.intensity = this.lightsOn ? L.baseI * (0.82 + 0.18 * Math.sin(time * 0.009 + L.seed) * Math.sin(time * 0.023 + L.seed * 3)) : 0;
     this.fx.update(dt);
     const R = this.riley, fx = this.fx;
-    perf.inFight = this.enemies.some(e => e.alive && !e.entering);
     if (fx.hitstop > 0) {
       fx.hitstop -= dt; this.anims.globalTimeScale = 0;
       for (const f of [R, ...this.enemies]) { if (f.shudder > 0) f.shudder -= dt * 0.2; f.sync(); }

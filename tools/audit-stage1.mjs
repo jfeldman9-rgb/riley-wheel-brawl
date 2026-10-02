@@ -1,0 +1,61 @@
+// Deterministic shipped-content audit. Reports open acceptance gaps; it never lowers gates.
+import { readFileSync, statSync, readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { resolve, dirname } from 'node:path';
+export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const read = p => readFileSync(resolve(ROOT, p));
+const json = p => JSON.parse(read(p));
+export function dimensions(b) {
+  if (b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP') {
+    let p = 12;
+    while (p + 8 <= b.length) {
+      const kind = b.toString('ascii', p, p + 4), n = b.readUInt32LE(p + 4), s = p + 8;
+      if (kind === 'VP8X') return [1 + b.readUIntLE(s + 4, 3), 1 + b.readUIntLE(s + 7, 3)];
+      if (kind === 'VP8 ') return [b.readUInt16LE(s + 6) & 0x3fff, b.readUInt16LE(s + 8) & 0x3fff];
+      if (kind === 'VP8L') { const v = b.readUInt32LE(s + 1); return [(v & 0x3fff) + 1, ((v >>> 14) & 0x3fff) + 1]; }
+      p += 8 + n + (n & 1);
+    }
+  }
+  if (b[0] === 0xff && b[1] === 0xd8) {
+    let p = 2;
+    while (p < b.length) {
+      if (b[p++] !== 0xff) continue;
+      let marker = b[p++]; while (marker === 0xff) marker = b[p++];
+      if (marker === 0xd9 || marker === 0xda) break;
+      const len = b.readUInt16BE(p);
+      if ([0xc0,0xc1,0xc2,0xc3,0xc5,0xc6,0xc7,0xc9,0xca,0xcb,0xcd,0xce,0xcf].includes(marker)) return [b.readUInt16BE(p + 5), b.readUInt16BE(p + 3)];
+      p += len;
+    }
+  }
+  throw Error('Unsupported image header');
+}
+export function audit() {
+  const characters = ['riley','grunt','spear','hound','chief'].map(key => {
+    const m = json(`assets/chars/${key}.anims.json`);
+    const frames = new Set(m.anims.flatMap(a => a.frames));
+    const target = key === 'riley' ? 150 : key === 'chief' ? null : 40;
+    return { key, frames: frames.size, target, densityStatus: target === null ? 'NO_SLICE_COUNT_SPECIFIED' : frames.size >= target ? 'PASS' : 'FAIL',
+      animations: m.anims.map(a => ({ name:a.name, frames:a.frames.length })),
+      pages: m.pages.map(p => ({ name:p, ...json(`assets/chars/${p}.json`).meta.size })) };
+  });
+  const images = [];
+  for (const group of ['chars','bg','props','ui']) for (const name of readdirSync(resolve(ROOT, 'assets', group)).sort()) {
+    if (!/\.(webp|jpg|png)$/.test(name)) continue;
+    const path = `assets/${group}/${name}`, bytes = read(path), [w,h] = dimensions(bytes);
+    images.push({path, bytes:bytes.length, width:w, height:h, rgbaBytes:w*h*4});
+  }
+  const files = new Set(['index.html','lib/phaser.min.js','assets/fonts/press-start-2p.ttf']);
+  for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) files.add(`src/${name}`);
+  for (const group of ['chars','bg','props','ui']) for (const name of readdirSync(resolve(ROOT,'assets',group))) files.add(`assets/${group}/${name}`);
+  files.add('assets/audio/music-main.mp3');
+  for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) files.add(`assets/audio/voice/${name}`);
+  const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
+  const rgbaBytes = images.reduce((n,x)=>n+x.rgbaBytes,0);
+  return { characters, preFight: { inventoryUpperBoundBytes:preFightUpperBoundBytes, budgetBytes:25_000_000,
+      inventoryStatus:preFightUpperBoundBytes <= 25_000_000 ? 'PASS' : 'FAIL',
+      note:'Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence.' },
+    textureEstimate: { rgbaBaseBytes:rgbaBytes, withFullMipChainBytes:Math.ceil(rgbaBytes*4/3), images,
+      note:'RGBA8 decoded base-level estimate, not measured GPU allocation. Excludes framebuffer/filter/canvas/driver allocations. Normal maps counted separately; no device-safe claim.' },
+    physicalDeviceGate:'UNMEASURED', blindReview:'PENDING', freezeFrameReview:'PENDING', likenessReview:'PENDING' };
+}
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) console.log(JSON.stringify(audit(),null,2));

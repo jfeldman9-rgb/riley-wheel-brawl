@@ -1,6 +1,6 @@
 # Riley Wheel Brawl 2.0 — Stage 1 vertical slice (branch `rwb-2`)
 
-Phaser 4.2.1 (WebGL2) rewrite with frame-by-frame painted, normal-mapped sprites. This is a playable **Emond's Field** slice: 3 fight zones, then the Trolloc Chieftain. The live 1.2 game (`main`) is untouched.
+Phaser 4.2.1 (WebGL2) rewrite with frame-by-frame painted, normal-mapped sprites. This is a playable **Emond's Field** slice: 3 fight zones, then the Trolloc Chieftain. The live game is **1.1 on `rwb-w2`**; it and `main` are untouched. Stage 1 is playable, but the full acceptance gate in `plan/PLAN.md` §10 has **not passed**.
 
 - Play: open `index.html` (any static server, or the raw.githack preview link for a commit).
 - Keyboard:
@@ -9,9 +9,11 @@ Phaser 4.2.1 (WebGL2) rewrite with frame-by-frame painted, normal-mapped sprites
   - L/Q/C: fireball. Esc/P: pause.
   - Walk into a dazed foe to grab it.
 - Touch: an on-screen stick and buttons appear only on touch devices. Gamepad works too.
-- Perf: the HUD readout (press H) and `window.__perf.summary` in the console. Use the `fight` block for numbers taken while enemies are engaged.
+- Perf: press H for the HUD or use **Performance report** to pause, inspect strict fight p95, reset, and copy/save a local JSON capture. Use the fight block for active combat, not the all-active average. No report is uploaded automatically.
+- Acceptance target remains fight p95 ≤16.7 ms on both physical iPad and desktop. Software-renderer captures and regression tests are not device acceptance.
+- Checks: `node --test tests/*.test.mjs`; `node tools/audit-stage1.mjs`. See `docs/stage1/INDEPENDENT_PASS.md` for the current gaps.
 - Flags:
-  - `?demo=1` autopilot, `?skip=boss`, `?god=1`, `?hud=0`.
+  - `?demo=1` autopilot, `?demo=boss-coverage&skip=boss` input-only boss coverage, `?skip=boss`, `?god=1`, `?hud=0`.
   - `?bloom=0`, `?lit=0`, `?rs=1|2`.
   - `?q=fixed|N` controls the quality governor.
 

@@ -1,10 +1,16 @@
 // HUD scene: portrait + health + saidin, enemy/boss bars, combo counter, captions, GO arrow, title/clear cards, perf readout.
 import { VW, VH } from './config.js';
-import { perf } from './perf.js';
+import { perf, displayMs } from './perf.js';
+import { installPerfPanel } from './perf-panel.js';
 const F = 'system-ui,-apple-system,Segoe UI,sans-serif', PX = 'PressStart, monospace';
 export class HUD extends Phaser.Scene {
   constructor() { super('hud'); }
   create() {
+    // Phaser restarts scene instances; display objects from the prior run are destroyed.
+    this.boss = null; this.bossName = null; this.bossPic = null; this.bossRing = null;
+    this.rHp = undefined; this.comboHold = 0; this.pt = 0;
+    this.perfPanel = installPerfPanel({ game: this.game, getStage: () => this.stage || this.game.scene.getScene('stage1') });
+    this.events.once('shutdown', () => this.perfPanel.destroy());
     const cam = this.cameras.main; cam.setOrigin(0, 0); cam.setZoom(this.game.rs);
     const g = this.g = this.add.graphics();
     this.portrait = this.add.image(58, 58, 'portrait').setDisplaySize(84, 84);
@@ -24,9 +30,10 @@ export class HUD extends Phaser.Scene {
     this.flash = this.add.text(VW / 2, 200, '', { fontFamily: PX, fontSize: '20px', color: '#ff9a7a', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setAlpha(0);
     this.perfT = this.add.text(VW - 10, VH - 8, '', { fontFamily: 'ui-monospace,Menlo,monospace', fontSize: '12px', color: '#bcd0ff', backgroundColor: 'rgba(0,0,0,0.35)', padding: { x: 4, y: 2 } }).setOrigin(1, 1);
     this.showPerf = new URLSearchParams(location.search).get('hud') !== '0';
+    this.pauseLabel = this.add.text(VW / 2, VH / 2, 'PAUSED\nP / Esc or II to resume', { fontFamily: F, fontStyle: '700', fontSize: '28px', color: '#ffffff', backgroundColor: '#0b1428', padding: { x: 24, y: 18 }, align: 'center' }).setOrigin(0.5).setDepth(200).setVisible(false);
     this.card = this.add.container(VW / 2, VH / 2).setDepth(100);
     this.titleCard();
-    this.enemyRef = null; this.enemyT = 0; this.capT = 0; this.boss = this.boss || null;
+    this.enemyRef = null; this.enemyT = 0; this.capT = 0;
     if (this.pendingCap) { this.caption(...this.pendingCap); this.pendingCap = null; }
   }
   titleCard() {
@@ -77,6 +84,7 @@ export class HUD extends Phaser.Scene {
   }
   update(time, delta) {
     const dt = delta / 1000, s = this.stage; if (!s || !s.riley) return;
+    this.pauseLabel.setVisible(!!s.paused);
     const R = s.riley, g = this.g; g.clear();
     this.rHp = this.rHp === undefined ? R.hp : this.rHp + (R.hp - this.rHp) * Math.min(1, dt * 6);
     this.bar(112, 42, 300, 18, this.rHp / R.maxHp, R.hp > 35 ? 0x54d27a : 0xe0503c);
@@ -105,7 +113,7 @@ export class HUD extends Phaser.Scene {
     if (this.capT > 0) { this.capT -= dt; const a = Math.min(1, this.capT * 3); this.capWho.setAlpha(a); this.capText.setAlpha(a); this.capBg.setAlpha(a); }
     if ((this.pt = (this.pt || 0) + 1) % 20 === 0) {
       const p = perf.update();
-      if (this.showPerf && p) { const f = p.fight; this.perfT.setText(`${p.fps} fps  p95 ${p.p95}ms  >33ms ${p.over33}/${p.frames}` + (f ? `  | fight: ${f.avgFps} fps, >33ms ${f.over33}/${f.frames}` : '') + `  | RS ${this.game.rs} q${s.fx.quality}`).setAlpha(1); }
+      if (this.showPerf && p) { const f = p.fight; this.perfT.setText(`${p.fps.toFixed(1)} fps  p95 ${displayMs(p.p95)}ms  >33.4ms ${p.over33_4}/${p.frames}` + (f ? `\nFight p95 ${displayMs(f.p95)}ms ${p.gate.status === 'PASS' ? '≤16.7' : '>16.7'} · >33.4ms ${f.over33_4}/${f.frames}` : '\nFight: no samples') + `  | RS ${this.game.rs} q${s.fx.quality}`).setAlpha(1); }
       else this.perfT.setAlpha(0);
     }
   }

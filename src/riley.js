@@ -99,8 +99,10 @@ export class Riley extends Fighter {
     const e = this.held; if (!e || !e.alive || e.state !== 'held') { this.held = null; return this.setState('idle', 'idle'); }
     this.placeHeld(); this.holdT += dt;
     if (this.state === 'knee') { if (this.fi >= 0 && !this.kneeHit) { this.kneeHit = true; this.scene.hitTarget(this, e, ATK.knee); } if (this.done) this.setState('hold', 'hold'); return; }
-    if (inp.take('jump') || (inp.peek('attack') && inp.x === -this.facing) || (inp.take('attack') && this.knees >= 2)) { inp.take('attack'); return this.startThrow(); }
-    if (inp.take('attack')) { this.knees++; this.kneeHit = false; this.setState('knee', 'knee'); sfx.swing(); return; }
+    // Consume a press once: testing the throw branch used to eat the first two knees.
+    const attack = inp.take('attack'), jump = inp.take('jump');
+    if (jump || (attack && (inp.x === -this.facing || this.knees >= 2))) return this.startThrow();
+    if (attack) { this.knees++; this.kneeHit = false; this.setState('knee', 'knee'); sfx.swing(); return; }
     if (this.holdT > 1.6) { e.release(); this.held = null; this.setState('idle', 'idle'); }
   }
   startThrow() { this.setState('throw', 'throw'); this.thrown = false; if (Math.random() < 0.5) say('riley_throw_01', this.scene.caption, false); }

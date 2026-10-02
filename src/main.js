@@ -17,9 +17,11 @@ const game = window.__game = new Phaser.Game({
   fps: { target: 60 }, scene: [Boot, Stage1, HUD],
 });
 game.inp = new Input(); game.rs = RS0;
+// Keep polling gamepads while the gameplay scene is paused so Start can resume it.
+game.events.on('step', (time, delta) => game.inp.update(Math.min(delta || 0, 50) / 1000));
 // Quality governor: if frames run long (2 s windows), step down: bloom off -> fewer particles -> lower render scale ->
 // unlit backdrop (sprites stay lit) -> render scale 1. Software WebGL (SwiftShader/llvmpipe) starts at level 4. ?q=fixed disables it.
-let acc = 0, n = 0, level = 0, inited = false;
+let acc = 0, n = 0, level = 0, inited = false, appliedRun = null;
 game.setRS = (rs) => {
   game.rs = rs; game.scale.resize(VW * rs, VH * rs);
   for (const k of ['stage1', 'hud']) { const s = game.scene.getScene(k); if (s && s.cameras && s.cameras.main) s.cameras.main.setZoom(rs); }
@@ -37,6 +39,12 @@ function applyLevel(st, lv) {
 }
 game.governor = (dt) => {
   const st = game.scene.getScene('stage1'); if (!st) return;
+  if (appliedRun !== st.runId) {
+    // Scene restarts recreate filters/particles. Reapply the current quality tier
+    // instead of reporting q5 while silently rendering full-cost q0 effects.
+    if (inited) { const previous = level; level = 0; applyLevel(st, previous); }
+    appliedRun = st.runId; acc = 0; n = 0;
+  }
   if (!inited) {
     inited = true;
     try { const gl = game.renderer.gl, ext = gl.getExtension('WEBGL_debug_renderer_info'); perf.renderer = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER); } catch (e) { perf.renderer = '?'; }
@@ -45,7 +53,7 @@ game.governor = (dt) => {
     if (q.get('q') && /^\d$/.test(q.get('q'))) applyLevel(st, +q.get('q'));
   }
   if (q.get('q') === 'fixed' || !st.started) return;
-  const d = perf.all[perf.all.length - 1]; if (d === undefined) return;
+  const d = perf.lastSampleMs; if (d === null || d === undefined) return;
   acc += d; n++; if (acc < 2000) return;
   const avg = acc / n; acc = 0; n = 0;
   if (avg > 21 && level < 5) { applyLevel(st, level + 1); console.log('quality ->', level, 'avg frame', avg.toFixed(1)); }
