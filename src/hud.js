@@ -16,8 +16,10 @@ export class HUD extends Phaser.Scene {
     this.comboT = this.add.text(VW - 26, 150, '', { fontFamily: F, fontStyle: '900 italic', fontSize: '44px', color: '#ffd27a', stroke: '#2a1200', strokeThickness: 7 }).setOrigin(1, 0.5).setAlpha(0);
     this.enemyName = this.add.text(112, 106, '', { fontFamily: PX, fontSize: '10px', color: '#ffb3a0', stroke: '#000', strokeThickness: 3 });
     this.capBg = this.add.graphics().setAlpha(0);
-    this.capWho = this.add.text(VW / 2, VH - 92, '', { fontFamily: PX, fontSize: '11px', color: '#ffd27a', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5);
-    this.capText = this.add.text(VW / 2, VH - 64, '', { fontFamily: F, fontStyle: '600', fontSize: '22px', color: '#ffffff', stroke: '#000', strokeThickness: 5, align: 'center', wordWrap: { width: 900 } }).setOrigin(0.5, 0);
+    // on touch devices the thumb controls sit at the bottom corners, so captions move to the top
+    this.capY = this.game.inp.isTouch ? 84 : VH - 106;
+    this.capWho = this.add.text(VW / 2, this.capY + 14, '', { fontFamily: PX, fontSize: '11px', color: '#ffd27a', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5);
+    this.capText = this.add.text(VW / 2, this.capY + 42, '', { fontFamily: F, fontStyle: '600', fontSize: '22px', color: '#ffffff', stroke: '#000', strokeThickness: 5, align: 'center', wordWrap: { width: 900 } }).setOrigin(0.5, 0);
     this.goT = this.add.text(VW - 60, VH / 2 - 40, 'GO ▶', { fontFamily: PX, fontSize: '26px', color: '#ffe9a8', stroke: '#000', strokeThickness: 6 }).setOrigin(1, 0.5).setAlpha(0);
     this.flash = this.add.text(VW / 2, 200, '', { fontFamily: PX, fontSize: '20px', color: '#ff9a7a', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setAlpha(0);
     this.perfT = this.add.text(VW - 10, VH - 8, '', { fontFamily: 'ui-monospace,Menlo,monospace', fontSize: '12px', color: '#bcd0ff', backgroundColor: 'rgba(0,0,0,0.35)', padding: { x: 4, y: 2 } }).setOrigin(1, 1);
@@ -46,7 +48,7 @@ export class HUD extends Phaser.Scene {
     if (!this.capWho) { this.pendingCap = [who, text]; return; }   // HUD not created yet (slow network on first load)
     this.capWho.setText(who); this.capText.setText(text); this.capT = Math.max(2.2, text.length * 0.065);
     const w = Math.min(960, this.capText.width + 60), h = this.capText.height + 50;
-    this.capBg.clear(); this.capBg.fillStyle(0x000000, 0.5); this.capBg.fillRoundedRect(VW / 2 - w / 2, VH - 106, w, h, 10);
+    this.capBg.clear(); this.capBg.fillStyle(0x000000, 0.5); this.capBg.fillRoundedRect(VW / 2 - w / 2, this.capY, w, h, 10);
   }
   target(e) { this.enemyRef = e; this.enemyT = 2.5; }
   combo(n) { if (n < 2 || !this.comboT) return; this.comboT.setText(`${n} HITS`).setAlpha(1).setScale(1.25); this.tweens.add({ targets: this.comboT, scale: 1, duration: 120 }); this.comboHold = 1.4; }

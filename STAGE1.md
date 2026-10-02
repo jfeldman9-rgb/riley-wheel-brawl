@@ -72,12 +72,13 @@ No frame was faked: nothing blurred, mirrored, recolored, interpolated or invent
 
 **Audio:** carried over from 1.2: music track, procedural SFX, and 20 Stage 1 voice lines with captions (same licenses and provenance files).
 
-**Touch:** stick plus KICK/JUMP/FIRE/pause, shown only when the device reports touch (the `touch` body class). Desktop shows no buttons.
+**Touch:** stick plus KICK/JUMP/FIRE/pause, shown only when the device reports touch (the `touch` body class). Desktop shows no buttons. On touch devices, captions move to the top so the thumb controls don't cover them (`docs/stage1/touch-ipad.jpg`, emulated iPad).
 
 **Demo playthrough (box, autopilot, normal damage):** the bot cleared the whole stage in about 3:20 and lost 1 life. Earlier runs found and fixed:
 - enemies that wandered off-screen forever while entering;
 - a boss stun-lock;
-- boss state timers that never advanced, which froze the roar.
+- boss state timers that never advanced, which froze the roar;
+- a HUD race on the first load from the live preview (a caption fired before the HUD existed).
 
 ## Performance
 
