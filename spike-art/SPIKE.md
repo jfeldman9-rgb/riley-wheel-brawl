@@ -12,7 +12,7 @@
 | 60 fps on iPad | **Not measurable from here.** The box has no GPU (software WebGL), and Jason's MacBook was offline. The prototype shows live fps, p95 frame time and frames over 33 ms on screen, so Jason can read it on the iPad. |
 | "Jason says it looks like a different game" | **Pending Jason.** Use the preview link and the side-by-sides below. |
 
-**Recommendation:** consistency holds, so the art pipeline is fit to build Stage 1 on. Before going on, get Jason's two readings: his "different game" call and the iPad numbers from the HUD.
+**Recommendation:** consistency holds, so the art pipeline is fit to build Stage 1 on. Jason has approved going straight into the Stage 1 slice. His "different game" call and the iPad HUD numbers can come from the preview link in parallel.
 
 ## 1. Deliverables (all in `/workspace/rwb-2/spike/`)
 
@@ -26,13 +26,17 @@
 | **Old 1.2 vs new: stills** | `shots/sbs-riley-old-vs-new.png`, `shots/sbs-trolloc-old-vs-new.png` |
 | **Old 1.2 vs new: animated** | `loops/sbs-riley-combo.mp4/.gif`, `loops/sbs-riley-walk.mp4/.gif`, `loops/sbs-riley-knockdown.mp4/.gif` |
 | **Lit Phaser 4 prototype** | `proto/` (also on branch `rwb-2-spike`, preview link below) |
-| **Prototype screenshots** | `shots/still-lit.png`, `shots/still-unlit.png`, `shots/still-fireball-light.png`, `shots/still-hitstop-spark.png`, `shots/proto-demo-60fps-f*.png` |
+| **Prototype screenshots** | `shots/still-lit.png`, `shots/still-unlit.png`, `shots/still-fireball-light.png`, `shots/still-impact-spark.png` (demo frame 100, combo impact spark during hit-stop), `shots/proto-demo-60fps-f*.png` |
 | **Prototype screen capture** | `shots/proto-demo-60fps.mp4` (15.5 s scripted fight) |
 | **Raw generations + exact prompts** | `gen/**/` (each folder has the sheet, `prompt*.md`, `prompts-*.json` with every attempt) |
 | **Pipeline tools** | `tools/slice2.py` (cut sheets), `tools/build_anim.py` (register, normal maps, loops), `tools/pack.py` (atlas), `tools/contact.py`, `tools/consistency.py`, `tools/sbs*.py`, `tools/render_video.cjs`, `tools/stills.cjs` |
 | **Ten-stage plan** | `/workspace/rwb-2/plan/LEVELS.md` |
 
-**Preview:** PREVIEW_LINK
+**Preview** (branch `rwb-2-spike`, commit `603566c7fa0eec45445ef8e4fcc180e0ba4fd95a`):
+- Play: https://raw.githack.com/jfeldman9-rgb/riley-wheel-brawl/603566c7fa0eec45445ef8e4fcc180e0ba4fd95a/index.html
+- Scripted fight: https://raw.githack.com/jfeldman9-rgb/riley-wheel-brawl/603566c7fa0eec45445ef8e4fcc180e0ba4fd95a/index.html?demo=loop
+
+raw.githack may show a one-time "One more step → Open the page" screen first. I verified the link loads in headless Chromium with no console errors. Textures load with CORS, which WebGL needs because githack redirects images to raw.githubusercontent.
 
 ## 2. What was made, and how
 
