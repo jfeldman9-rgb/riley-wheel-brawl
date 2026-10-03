@@ -1,0 +1,50 @@
+{
+ "title": {
+  "file": "music-title.mp3",
+  "bpm": 84,
+  "bars": 16,
+  "loopStart": 0.25,
+  "loopEnd": 45.964285714285715,
+  "loopSeconds": 45.714285714285715,
+  "lufs": -17.0,
+  "peakDbfs": -4.7,
+  "bytes": 648089,
+  "doc": "\"The Wheel Turns\" - title / menu / story-card theme. D dorian, gentle and heroic. 16 bars @ 84 bpm."
+ },
+ "boss1": {
+  "file": "music-boss1.mp3",
+  "bpm": 150,
+  "bars": 24,
+  "loopStart": 0.25,
+  "loopEnd": 38.65,
+  "loopSeconds": 38.4,
+  "lufs": -15.2,
+  "peakDbfs": -1.6,
+  "bytes": 545689,
+  "doc": "\"Chieftain's Fury\" - Stage 1 boss. E minor, driving war drums, low string ostinato, brass and choir. 24 bars @ 150 bpm."
+ },
+ "stage2": {
+  "file": "music-stage2.mp3",
+  "bpm": 104,
+  "bars": 28,
+  "loopStart": 0.25,
+  "loopEnd": 64.86537414965986,
+  "loopSeconds": 64.61537414965986,
+  "lufs": -16.0,
+  "peakDbfs": -2.7,
+  "bytes": 912500,
+  "doc": "\"Baerlon in the Rain\" - Stage 2. A minor, tense and wet: pizzicato ostinato, low cello, fiddle and oboe,\nmuffled frame drum, tremolo swells. 28 bars @ 104 bpm."
+ },
+ "boss2": {
+  "file": "music-boss2.mp3",
+  "bpm": 138,
+  "bars": 32,
+  "loopStart": 0.25,
+  "loopEnd": 55.9021768707483,
+  "loopSeconds": 55.6521768707483,
+  "lufs": -15.2,
+  "peakDbfs": -1.9,
+  "bytes": 787060,
+  "doc": "\"Child of the Light\" - Stage 2 boss (Jaret Byar). D minor, zealous and martial: military snare, minor fanfare,\nstring tremolo, choir, timpani. 32 bars @ 138 bpm."
+ }
+}

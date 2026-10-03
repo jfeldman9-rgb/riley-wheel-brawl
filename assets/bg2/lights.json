@@ -1,0 +1,163 @@
+{
+ "note": "Stage 2 world lights. lanterns: [plateIndex, x, y, intensity, radius] in plate pixels (measured on bg2-mid / bg2-mid2). Lanterns ride the mid plates (parallax midParallax) as world-space lights, at most capOnScreen at once.",
+ "ambient": "0x34405a",
+ "ambientUnlit": "0x58627e",
+ "lanternColor": "0xffb45e",
+ "capOnScreen": 4,
+ "flicker": 0.12,
+ "lanterns": [
+  [
+   0,
+   75,
+   566,
+   1.5,
+   460
+  ],
+  [
+   0,
+   472,
+   567,
+   1.5,
+   460
+  ],
+  [
+   0,
+   708,
+   512,
+   0.9,
+   300
+  ],
+  [
+   0,
+   1028,
+   578,
+   1.6,
+   480
+  ],
+  [
+   0,
+   1234,
+   576,
+   1.6,
+   480
+  ],
+  [
+   0,
+   1716,
+   568,
+   1.5,
+   460
+  ],
+  [
+   0,
+   2101,
+   569,
+   1.5,
+   460
+  ],
+  [
+   1,
+   220,
+   538,
+   1.4,
+   460
+  ],
+  [
+   1,
+   530,
+   532,
+   1.4,
+   460
+  ],
+  [
+   1,
+   789,
+   532,
+   1.4,
+   460
+  ],
+  [
+   1,
+   1035,
+   533,
+   1.4,
+   460
+  ],
+  [
+   1,
+   1424,
+   536,
+   1.7,
+   520
+  ],
+  [
+   1,
+   1916,
+   529,
+   1.7,
+   520
+  ]
+ ],
+ "barnFire": [
+  [
+   1,
+   1520,
+   300,
+   2.6,
+   760
+  ],
+  [
+   1,
+   1700,
+   420,
+   2.4,
+   700
+  ],
+  [
+   1,
+   1880,
+   330,
+   2.2,
+   640
+  ]
+ ],
+ "rain": {
+  "front": {
+   "frequency": 14,
+   "speedY": [
+    1050,
+    1350
+   ],
+   "speedX": [
+    -260,
+    -200
+   ],
+   "alpha": [
+    0.25,
+    0.5
+   ]
+  },
+  "back": {
+   "frequency": 10,
+   "speedY": [
+    700,
+    850
+   ],
+   "speedX": [
+    -150,
+    -120
+   ],
+   "alpha": [
+    0.12,
+    0.25
+   ]
+  }
+ },
+ "lightning": {
+  "every": [
+   11,
+   19
+  ],
+  "ambientFlash": "0x8a9ac0"
+ }
+}
