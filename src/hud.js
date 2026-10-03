@@ -24,6 +24,11 @@ export class HUD extends Phaser.Scene {
     this.lives = this.add.text(112, 76, '', { fontFamily: PX, fontSize: '11px', color: '#f3e6c8', stroke: '#000', strokeThickness: 3 });
     this.score = this.add.text(VW - 20, 18, '', { fontFamily: PX, fontSize: '14px', color: '#f3e6c8', stroke: '#000', strokeThickness: 4 }).setOrigin(1, 0);
     this.comboT = this.add.text(VW - 26, 150, '', { fontFamily: F, fontStyle: '900 italic', fontSize: '44px', color: '#ffd27a', stroke: '#2a1200', strokeThickness: 7 }).setOrigin(1, 0.5).setAlpha(0);
+    // Restored 1.1 readiness: balefire on a full saidin meter, Loial once per stage.
+    this.baleT = this.add.text(342, 60, 'BALEFIRE READY', { fontFamily: PX, fontSize: '9px', color: '#e8f6ff', stroke: '#000', strokeThickness: 3 }).setAlpha(0);
+    this.loialPic = this.textures.exists('loialPortrait') ? this.add.image(214, 83, 'loialPortrait').setDisplaySize(30, 30) : null;
+    this.loialT = this.add.text(234, 77, 'LOIAL READY', { fontFamily: PX, fontSize: '10px', color: '#8cf0ae', stroke: '#000', strokeThickness: 3 });
+    this.touchState = '';
     this.enemyName = this.add.text(112, 106, '', { fontFamily: PX, fontSize: '10px', color: '#ffb3a0', stroke: '#000', strokeThickness: 3 });
     this.capBg = this.add.graphics().setAlpha(0);
     // on touch devices the thumb controls sit at the bottom corners, so captions move to the top
@@ -59,7 +64,7 @@ export class HUD extends Phaser.Scene {
     const t3 = this.add.text(0, 10, "EMOND'S FIELD — WINTERNIGHT", { fontFamily: F, fontStyle: '800', fontSize: '30px', color: '#ffffff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5);
     const touch = this.game.inp.isTouch;
     const t4 = this.add.text(0, 110, touch ? 'TAP TO START' : 'PRESS ENTER OR ATTACK', { fontFamily: PX, fontSize: '18px', color: '#ffe9a8', stroke: '#000', strokeThickness: 5 }).setOrigin(0.5);
-    const t5 = this.add.text(0, 170, touch ? 'Stick: move (push far to run)   KICK: attack   JUMP   FIRE: fireball' : 'WASD/Arrows move · Shift or double-tap: run · J/Z attack · K/Space jump · L/Q fireball · walk into a dazed foe to grab\nAttack + back = back kick · Jump + attack = flying kick · M music · N mute · H perf readout',
+    const t5 = this.add.text(0, 170, touch ? 'Stick: move (push far to run)   KICK: attack   JUMP   FIRE: fireball   BALE: balefire   CALL: Loial' : 'WASD/Arrows move · Shift or double-tap: run · J/Z attack · K/Space jump · L/Q fireball · F balefire (full saidin) · R call Loial · walk into a dazed foe to grab\nAttack + back = back kick · Jump + attack = flying kick · M music · N mute · H perf readout',
       { fontFamily: F, fontSize: '15px', color: '#cbd6ee', align: 'center', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5, 0);
     c.add([bg, t1, t2, t3, t4, t5]);
     this.tweens.add({ targets: t4, alpha: 0.35, yoyo: true, repeat: -1, duration: 700 });
@@ -116,7 +121,18 @@ export class HUD extends Phaser.Scene {
     const R = s.riley, g = this.g; g.clear();
     this.rHp = this.rHp === undefined ? R.hp : this.rHp + (R.hp - this.rHp) * Math.min(1, dt * 6);
     this.bar(112, 42, 300, 18, this.rHp / R.maxHp, R.hp > 35 ? 0x54d27a : 0xe0503c);
-    this.bar(112, 64, 220, 8, R.saidin / 100, R.saidin >= 34 ? 0x6fd2ff : 0x3a6e90, 0x0c1420);
+    const baleReady = R.saidin >= 100;
+    this.bar(112, 64, 220, 8, R.saidin / 100, baleReady ? (Math.floor(time / 180) % 2 ? 0xffffff : 0xbfe8ff) : R.saidin >= 34 ? 0x6fd2ff : 0x3a6e90, 0x0c1420);
+    this.baleT.setAlpha(baleReady ? 0.75 + 0.25 * Math.sin(time / 120) : 0);
+    const loialReady = R.loialReady && !s.loial;
+    this.loialT.setText(s.loial ? 'LOIAL!' : R.loialReady ? 'LOIAL READY' : 'LOIAL SPENT').setColor(R.loialReady || s.loial ? '#8cf0ae' : '#87909a');
+    if (this.loialPic) this.loialPic.setAlpha(R.loialReady || s.loial ? 1 : 0.35);
+    const ts = (baleReady ? 'b' : '') + (loialReady ? 'l' : '');
+    if (ts !== this.touchState && typeof document !== 'undefined') {
+      this.touchState = ts; const b = document.getElementById('tbB'), l = document.getElementById('tbL');
+      if (b) { b.classList.toggle('off', !baleReady); b.classList.toggle('ready', baleReady); }
+      if (l) l.classList.toggle('off', !loialReady);
+    }
     this.lives.setText('×' + Math.max(0, R.lives)); this.score.setText(String(R.score).padStart(7, '0'));
     if (this.enemyRef && this.enemyT > 0 && !this.enemyRef.T.boss) { this.enemyT -= dt; const e = this.enemyRef; this.enemyName.setText(e.name).setAlpha(1); this.bar(112, 122, 200, 8, Math.max(0, e.hp) / e.maxHp, 0xe07a3c); }
     else this.enemyName.setAlpha(0);

@@ -1,0 +1,58 @@
+{
+ "key": "loial",
+ "canvas": [
+  960,
+  700
+ ],
+ "baseline": 680,
+ "scale": 0.85,
+ "pages": [
+  "loial-0"
+ ],
+ "anims": [
+  {
+   "name": "loial_run",
+   "frames": [
+    "loial_run_00",
+    "loial_run_01",
+    "loial_run_02",
+    "loial_run_03"
+   ],
+   "holds": [
+    90,
+    90,
+    90,
+    90
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "loial_sweep",
+   "frames": [
+    "loial_sweep_00",
+    "loial_sweep_01",
+    "loial_sweep_02",
+    "loial_sweep_03"
+   ],
+   "holds": [
+    140,
+    90,
+    120,
+    130
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ ]
+}

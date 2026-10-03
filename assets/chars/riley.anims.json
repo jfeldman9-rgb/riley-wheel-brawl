@@ -77,15 +77,24 @@
    "frames": [
     "riley_combo1_00",
     "riley_combo1_01",
-    "riley_combo1_02"
+    "riley_combo1_02",
+    "riley_combo1_03",
+    "riley_combo1_04",
+    "riley_combo1_05"
    ],
    "holds": [
+    50,
+    50,
+    50,
+    110,
     70,
-    120,
-    100
+    60
    ],
    "loop": false,
    "pages": [
+    0,
+    0,
+    0,
     0,
     0,
     0
@@ -97,16 +106,22 @@
     "riley_combo2_00",
     "riley_combo2_01",
     "riley_combo2_02",
-    "riley_combo2_03"
+    "riley_combo2_03",
+    "riley_combo2_04",
+    "riley_combo2_05"
    ],
    "holds": [
-    70,
+    50,
+    60,
     130,
-    90,
-    90
+    80,
+    60,
+    70
    ],
    "loop": false,
    "pages": [
+    0,
+    0,
     0,
     0,
     0,
@@ -314,15 +329,21 @@
    "frames": [
     "riley_airkick_00",
     "riley_airkick_01",
-    "riley_airkick_02"
+    "riley_airkick_02",
+    "riley_airkick_03",
+    "riley_airkick_04"
    ],
    "holds": [
+    50,
     60,
     240,
-    140
+    120,
+    70
    ],
    "loop": false,
    "pages": [
+    0,
+    0,
     0,
     0,
     0
@@ -334,16 +355,19 @@
     "riley_back_00",
     "riley_back_01",
     "riley_back_02",
-    "riley_back_03"
+    "riley_back_03",
+    "riley_back_04"
    ],
    "holds": [
-    70,
+    50,
+    60,
     80,
     170,
-    130
+    120
    ],
    "loop": false,
    "pages": [
+    0,
     0,
     0,
     0,
@@ -356,16 +380,19 @@
     "riley_cast_00",
     "riley_cast_01",
     "riley_cast_02",
-    "riley_cast_03"
+    "riley_cast_03",
+    "riley_cast_04"
    ],
    "holds": [
     90,
     110,
     190,
-    170
+    140,
+    90
    ],
    "loop": false,
    "pages": [
+    0,
     0,
     0,
     0,
@@ -402,14 +429,23 @@
    "name": "riley_knee",
    "frames": [
     "riley_knee_00",
-    "riley_knee_01"
+    "riley_knee_01",
+    "riley_knee_02",
+    "riley_knee_03",
+    "riley_knee_04"
    ],
    "holds": [
-    150,
-    130
+    45,
+    95,
+    70,
+    55,
+    75
    ],
    "loop": false,
    "pages": [
+    0,
+    0,
+    0,
     0,
     0
    ]
@@ -420,16 +456,78 @@
     "riley_throw_00",
     "riley_throw_01",
     "riley_throw_02",
-    "riley_throw_03"
+    "riley_throw_03",
+    "riley_throw_04"
    ],
    "holds": [
     120,
     190,
     120,
-    110
+    90,
+    90
    ],
    "loop": false,
    "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "riley_runkick",
+   "frames": [
+    "riley_runkick_00",
+    "riley_runkick_01",
+    "riley_runkick_02",
+    "riley_runkick_03",
+    "riley_runkick_04"
+   ],
+   "holds": [
+    60,
+    70,
+    150,
+    90,
+    80
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "riley_balefire",
+   "frames": [
+    "riley_balefire_00",
+    "riley_balefire_01",
+    "riley_balefire_02",
+    "riley_balefire_03",
+    "riley_balefire_04",
+    "riley_balefire_05",
+    "riley_balefire_06",
+    "riley_balefire_07"
+   ],
+   "holds": [
+    90,
+    90,
+    100,
+    120,
+    220,
+    200,
+    140,
+    120
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
     0,
     0,
     0,

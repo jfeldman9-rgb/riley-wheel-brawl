@@ -36,6 +36,10 @@ body.touch #touch{display:block}
 #tbJ{right:3vw;bottom:calc(5vh + min(11vh,70px));border-color:rgba(120,180,255,.7)}
 #tbS{right:calc(4vw + min(15vh,100px));bottom:calc(6vh + min(16vh,108px));border-color:rgba(120,230,255,.7)}
 #tbP{right:3vw;top:3vh;width:52px;height:52px;font-size:16px}
+#tbB{right:3vw;bottom:calc(6vh + min(27vh,180px));width:min(11vh,72px);height:min(11vh,72px);font-size:11px;border-color:rgba(230,245,255,.8)}
+#tbL{right:calc(5vw + min(30vh,200px));bottom:calc(6vh + min(16vh,108px));width:min(11vh,72px);height:min(11vh,72px);font-size:12px;border-color:rgba(140,240,174,.8)}
+.tb.off{opacity:.35}
+.tb.ready{box-shadow:0 0 16px rgba(200,235,255,.9)}
 /* Performance capture is an ordinary local DOM dialog, above every canvas/touch input. */
 #perf-open{position:fixed;z-index:20;left:max(12px,env(safe-area-inset-left));bottom:max(48px,env(safe-area-inset-bottom));min-height:44px;padding:10px 14px;border:1px solid #8195bd;border-radius:8px;background:#0d1429e8;color:#e7eeff;font:600 14px system-ui;cursor:pointer}
 body.touch #perf-open{left:50%;bottom:max(48px,env(safe-area-inset-bottom));transform:translateX(-50%)}
@@ -65,7 +69,7 @@ html.perf-open,html.perf-open body{touch-action:pan-y pinch-zoom}
 <h1 id="graphics-title">Graphics interrupted</h1><p>Gameplay is paused while this browser restores graphics. If it does not recover, Reload game restarts Stage 1. You can still save the Perf report below.</p><button id="graphics-retry" type="button">Reload game</button>
 </aside>
 <div id="touch"><div id="stick"><div id="knob"></div></div>
-<div class="tb" id="tbA">KICK</div><div class="tb" id="tbJ">JUMP</div><div class="tb" id="tbS">FIRE</div><div class="tb" id="tbP">II</div></div>
+<div class="tb" id="tbA">KICK</div><div class="tb" id="tbJ">JUMP</div><div class="tb" id="tbS">FIRE</div><div class="tb" id="tbP">II</div><div class="tb off" id="tbB">BALE</div><div class="tb" id="tbL">CALL</div></div>
 <button id="perf-open" type="button" aria-haspopup="dialog" aria-controls="perf-dialog" aria-expanded="false" aria-label="Open local performance report">Perf report</button>
 <div id="perf-overlay" hidden>
 <section id="perf-dialog" role="dialog" aria-modal="true" aria-labelledby="perf-title" aria-describedby="perf-description" tabindex="-1">
