@@ -102,8 +102,8 @@
       "pages": [
         {
           "name": "riley-0",
-          "w": 4084,
-          "h": 1940
+          "w": 4080,
+          "h": 1936
         }
       ]
     },
@@ -289,14 +289,14 @@
       "pages": [
         {
           "name": "loial-0",
-          "w": 3184,
-          "h": 488
+          "w": 3544,
+          "h": 496
         }
       ]
     }
   ],
   "preFight": {
-    "inventoryUpperBoundBytes": 18081638,
+    "inventoryUpperBoundBytes": 18059672,
     "budgetBytes": 25000000,
     "inventoryStatus": "PASS",
     "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."
@@ -372,8 +372,8 @@
     "note": "Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Balefire (8) is a special, not in this list; candidate artwork outside game assets is excluded."
   },
   "textureEstimate": {
-    "rgbaBaseBytes": 243572796,
-    "withFullMipChainBytes": 324763728,
+    "rgbaBaseBytes": 244652508,
+    "withFullMipChainBytes": 326203344,
     "images": [
       {
         "path": "assets/chars/chief-0.webp",
@@ -440,45 +440,45 @@
       },
       {
         "path": "assets/chars/loial-0.webp",
-        "bytes": 526066,
-        "width": 3184,
-        "height": 488,
-        "rgbaBytes": 6215168
+        "bytes": 500702,
+        "width": 3544,
+        "height": 496,
+        "rgbaBytes": 7031296
       },
       {
         "path": "assets/chars/loial-0_n.webp",
-        "bytes": 73080,
-        "width": 1592,
-        "height": 244,
-        "rgbaBytes": 1553792
+        "bytes": 71638,
+        "width": 1772,
+        "height": 248,
+        "rgbaBytes": 1757824
       },
       {
         "path": "assets/chars/loial-0_nl.webp",
-        "bytes": 75036,
-        "width": 1592,
-        "height": 244,
-        "rgbaBytes": 1553792
+        "bytes": 75590,
+        "width": 1772,
+        "height": 248,
+        "rgbaBytes": 1757824
       },
       {
         "path": "assets/chars/riley-0.webp",
-        "bytes": 2076222,
-        "width": 4084,
-        "height": 1940,
-        "rgbaBytes": 31691840
+        "bytes": 2079478,
+        "width": 4080,
+        "height": 1936,
+        "rgbaBytes": 31595520
       },
       {
         "path": "assets/chars/riley-0_n.webp",
-        "bytes": 249594,
-        "width": 2042,
-        "height": 970,
-        "rgbaBytes": 7922960
+        "bytes": 250126,
+        "width": 2040,
+        "height": 968,
+        "rgbaBytes": 7898880
       },
       {
         "path": "assets/chars/riley-0_nl.webp",
-        "bytes": 261298,
-        "width": 2042,
-        "height": 970,
-        "rgbaBytes": 7922960
+        "bytes": 261796,
+        "width": 2040,
+        "height": 968,
+        "rgbaBytes": 7898880
       },
       {
         "path": "assets/chars/spear-0.webp",

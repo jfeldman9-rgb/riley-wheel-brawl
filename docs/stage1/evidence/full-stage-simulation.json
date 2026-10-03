@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "evidenceKind": "deterministic combat-logic simulation",
-  "baseGitCommit": "a0b732600a591852cae6b25a245eb897eb733678",
+  "baseGitCommit": "3ce245a13bfd675762793abe96b6821b253bc645",
   "sourceSha256": {
     "src/stage1.js": "1ac172445a4f7fbadaae8514aa3526e3455d470e480ba3137a2453784c989683",
     "src/riley.js": "6895b1a42ec09a6a3a8244fdbd5be49316a893fe4f840542a21be11c95468a1b",
