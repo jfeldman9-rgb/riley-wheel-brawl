@@ -1,0 +1,573 @@
+{
+  "characters": [
+    {
+      "key": "riley",
+      "frames": 72,
+      "target": 150,
+      "densityStatus": "FAIL",
+      "animations": [
+        {
+          "name": "riley_idle",
+          "frames": 6
+        },
+        {
+          "name": "riley_walk",
+          "frames": 8
+        },
+        {
+          "name": "riley_combo1",
+          "frames": 3
+        },
+        {
+          "name": "riley_combo2",
+          "frames": 4
+        },
+        {
+          "name": "riley_combo3",
+          "frames": 8
+        },
+        {
+          "name": "riley_hurt",
+          "frames": 3
+        },
+        {
+          "name": "riley_knockdown",
+          "frames": 4
+        },
+        {
+          "name": "riley_getup",
+          "frames": 4
+        },
+        {
+          "name": "riley_run",
+          "frames": 8
+        },
+        {
+          "name": "riley_jump_crouch",
+          "frames": 1
+        },
+        {
+          "name": "riley_jump_rise",
+          "frames": 1
+        },
+        {
+          "name": "riley_jump_apex",
+          "frames": 1
+        },
+        {
+          "name": "riley_jump_fall",
+          "frames": 1
+        },
+        {
+          "name": "riley_land",
+          "frames": 1
+        },
+        {
+          "name": "riley_airkick",
+          "frames": 3
+        },
+        {
+          "name": "riley_back",
+          "frames": 4
+        },
+        {
+          "name": "riley_cast",
+          "frames": 4
+        },
+        {
+          "name": "riley_grab",
+          "frames": 1
+        },
+        {
+          "name": "riley_hold",
+          "frames": 1
+        },
+        {
+          "name": "riley_knee",
+          "frames": 2
+        },
+        {
+          "name": "riley_throw",
+          "frames": 4
+        }
+      ],
+      "pages": [
+        {
+          "name": "riley-0",
+          "w": 4060,
+          "h": 1576
+        }
+      ]
+    },
+    {
+      "key": "grunt",
+      "frames": 23,
+      "target": 40,
+      "densityStatus": "FAIL",
+      "animations": [
+        {
+          "name": "grunt_walk",
+          "frames": 8
+        },
+        {
+          "name": "grunt_hurt",
+          "frames": 2
+        },
+        {
+          "name": "grunt_knockdown",
+          "frames": 5
+        },
+        {
+          "name": "grunt_attack",
+          "frames": 6
+        },
+        {
+          "name": "grunt_getup",
+          "frames": 2
+        }
+      ],
+      "pages": [
+        {
+          "name": "grunt-0",
+          "w": 4076,
+          "h": 1212
+        }
+      ]
+    },
+    {
+      "key": "spear",
+      "frames": 16,
+      "target": 40,
+      "densityStatus": "FAIL",
+      "animations": [
+        {
+          "name": "spear_walk",
+          "frames": 4
+        },
+        {
+          "name": "spear_attack",
+          "frames": 4
+        },
+        {
+          "name": "spear_hurt",
+          "frames": 2
+        },
+        {
+          "name": "spear_knockdown",
+          "frames": 3
+        },
+        {
+          "name": "spear_getup",
+          "frames": 3
+        }
+      ],
+      "pages": [
+        {
+          "name": "spear-0",
+          "w": 3792,
+          "h": 852
+        }
+      ]
+    },
+    {
+      "key": "hound",
+      "frames": 16,
+      "target": 40,
+      "densityStatus": "FAIL",
+      "animations": [
+        {
+          "name": "hound_walk",
+          "frames": 4
+        },
+        {
+          "name": "hound_attack",
+          "frames": 4
+        },
+        {
+          "name": "hound_hurt",
+          "frames": 2
+        },
+        {
+          "name": "hound_knockdown",
+          "frames": 3
+        },
+        {
+          "name": "hound_getup",
+          "frames": 3
+        }
+      ],
+      "pages": [
+        {
+          "name": "hound-0",
+          "w": 3612,
+          "h": 1084
+        }
+      ]
+    },
+    {
+      "key": "chief",
+      "frames": 24,
+      "target": null,
+      "densityStatus": "NO_SLICE_COUNT_SPECIFIED",
+      "animations": [
+        {
+          "name": "chief_walk",
+          "frames": 4
+        },
+        {
+          "name": "chief_chop",
+          "frames": 4
+        },
+        {
+          "name": "chief_sweep",
+          "frames": 2
+        },
+        {
+          "name": "chief_charge",
+          "frames": 2
+        },
+        {
+          "name": "chief_roar",
+          "frames": 1
+        },
+        {
+          "name": "chief_lift",
+          "frames": 1
+        },
+        {
+          "name": "chief_hurl",
+          "frames": 1
+        },
+        {
+          "name": "chief_stunned",
+          "frames": 1
+        },
+        {
+          "name": "chief_hurt",
+          "frames": 2
+        },
+        {
+          "name": "chief_knockdown",
+          "frames": 3
+        },
+        {
+          "name": "chief_getup",
+          "frames": 3
+        }
+      ],
+      "pages": [
+        {
+          "name": "chief-0",
+          "w": 4036,
+          "h": 1848
+        }
+      ]
+    }
+  ],
+  "preFight": {
+    "inventoryUpperBoundBytes": 16533938,
+    "budgetBytes": 25000000,
+    "inventoryStatus": "PASS",
+    "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."
+  },
+  "playerAttackDensity": {
+    "minimumFrames": 5,
+    "attacks": [
+      {
+        "action": "combo1",
+        "animation": "riley_combo1",
+        "namedFrames": 3,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "combo2",
+        "animation": "riley_combo2",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "combo3",
+        "animation": "riley_combo3",
+        "namedFrames": 8,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "back",
+        "animation": "riley_back",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "airkick",
+        "animation": "riley_airkick",
+        "namedFrames": 3,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "runkick",
+        "animation": "riley_combo2",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL",
+        "sharedAnimationWith": "combo2"
+      },
+      {
+        "action": "cast",
+        "animation": "riley_cast",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "knee",
+        "animation": "riley_knee",
+        "namedFrames": 2,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "throw",
+        "animation": "riley_throw",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      }
+    ],
+    "densityStatus": "FAIL",
+    "note": "Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Runkick shares combo2; candidate artwork outside game assets is excluded."
+  },
+  "textureEstimate": {
+    "rgbaBaseBytes": 224841500,
+    "withFullMipChainBytes": 299788667,
+    "images": [
+      {
+        "path": "assets/chars/chief-0.webp",
+        "bytes": 1822528,
+        "width": 4036,
+        "height": 1848,
+        "rgbaBytes": 29834112
+      },
+      {
+        "path": "assets/chars/chief-0_n.webp",
+        "bytes": 216856,
+        "width": 2018,
+        "height": 924,
+        "rgbaBytes": 7458528
+      },
+      {
+        "path": "assets/chars/chief-0_nl.webp",
+        "bytes": 217458,
+        "width": 2018,
+        "height": 924,
+        "rgbaBytes": 7458528
+      },
+      {
+        "path": "assets/chars/grunt-0.webp",
+        "bytes": 1265536,
+        "width": 4076,
+        "height": 1212,
+        "rgbaBytes": 19760448
+      },
+      {
+        "path": "assets/chars/grunt-0_n.webp",
+        "bytes": 143348,
+        "width": 2038,
+        "height": 606,
+        "rgbaBytes": 4940112
+      },
+      {
+        "path": "assets/chars/grunt-0_nl.webp",
+        "bytes": 142128,
+        "width": 2038,
+        "height": 606,
+        "rgbaBytes": 4940112
+      },
+      {
+        "path": "assets/chars/hound-0.webp",
+        "bytes": 934384,
+        "width": 3612,
+        "height": 1084,
+        "rgbaBytes": 15661632
+      },
+      {
+        "path": "assets/chars/hound-0_n.webp",
+        "bytes": 112090,
+        "width": 1806,
+        "height": 542,
+        "rgbaBytes": 3915408
+      },
+      {
+        "path": "assets/chars/hound-0_nl.webp",
+        "bytes": 111466,
+        "width": 1806,
+        "height": 542,
+        "rgbaBytes": 3915408
+      },
+      {
+        "path": "assets/chars/riley-0.webp",
+        "bytes": 1486042,
+        "width": 4060,
+        "height": 1576,
+        "rgbaBytes": 25594240
+      },
+      {
+        "path": "assets/chars/riley-0_n.webp",
+        "bytes": 172622,
+        "width": 2030,
+        "height": 788,
+        "rgbaBytes": 6398560
+      },
+      {
+        "path": "assets/chars/riley-0_nl.webp",
+        "bytes": 181070,
+        "width": 2030,
+        "height": 788,
+        "rgbaBytes": 6398560
+      },
+      {
+        "path": "assets/chars/spear-0.webp",
+        "bytes": 771850,
+        "width": 3792,
+        "height": 852,
+        "rgbaBytes": 12923136
+      },
+      {
+        "path": "assets/chars/spear-0_n.webp",
+        "bytes": 90084,
+        "width": 1896,
+        "height": 426,
+        "rgbaBytes": 3230784
+      },
+      {
+        "path": "assets/chars/spear-0_nl.webp",
+        "bytes": 88560,
+        "width": 1896,
+        "height": 426,
+        "rgbaBytes": 3230784
+      },
+      {
+        "path": "assets/bg/bg-far.jpg",
+        "bytes": 200817,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-floor.jpg",
+        "bytes": 423452,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-floor2.jpg",
+        "bytes": 440086,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-floor2_n.webp",
+        "bytes": 316152,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-floor_n.webp",
+        "bytes": 448084,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-mid.webp",
+        "bytes": 440206,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-mid2.webp",
+        "bytes": 654766,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-mid2_n.webp",
+        "bytes": 285812,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-mid_n.webp",
+        "bytes": 243334,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/props/prop-barrel.webp",
+        "bytes": 93584,
+        "width": 490,
+        "height": 586,
+        "rgbaBytes": 1148560
+      },
+      {
+        "path": "assets/props/prop-barrel_n.webp",
+        "bytes": 38090,
+        "width": 490,
+        "height": 586,
+        "rgbaBytes": 1148560
+      },
+      {
+        "path": "assets/props/prop-cart.webp",
+        "bytes": 235088,
+        "width": 1225,
+        "height": 669,
+        "rgbaBytes": 3278100
+      },
+      {
+        "path": "assets/props/prop-cart_n.webp",
+        "bytes": 116538,
+        "width": 1225,
+        "height": 669,
+        "rgbaBytes": 3278100
+      },
+      {
+        "path": "assets/props/staves.webp",
+        "bytes": 247626,
+        "width": 2261,
+        "height": 353,
+        "rgbaBytes": 3192532
+      },
+      {
+        "path": "assets/ui/chief-portrait.webp",
+        "bytes": 25474,
+        "width": 256,
+        "height": 256,
+        "rgbaBytes": 262144
+      },
+      {
+        "path": "assets/ui/riley-portrait.webp",
+        "bytes": 15520,
+        "width": 256,
+        "height": 256,
+        "rgbaBytes": 262144
+      }
+    ],
+    "mipmaps": "Disabled by the pinned Phaser default and current game configuration; full-chain bytes are hypothetical.",
+    "note": "RGBA8 decoded base-level estimate, not measured GPU allocation. Excludes framebuffer/filter/canvas/driver allocations. Normal maps counted separately; no device-safe claim."
+  },
+  "physicalDeviceGate": "UNMEASURED",
+  "blindReview": "PENDING",
+  "freezeFrameReview": "PENDING",
+  "likenessReview": "PENDING"
+}

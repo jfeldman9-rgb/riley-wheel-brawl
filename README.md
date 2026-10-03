@@ -1,70 +1,29 @@
-# Riley Wheel Brawl
+# Riley Wheel Brawl 2.0 — Stage 1 vertical slice (branch `rwb-2`)
 
-A kid-friendly, five-stage fantasy beat-'em-up. Riley is a young Asha'man who
-uses Tae Kwon Do and fireballs to rescue his sister, Twinkle Toes, from Mazrim
-Taim. The game is plain HTML5 Canvas and JavaScript with no build step.
+Phaser 4.2.1 (WebGL) rewrite with frame-by-frame painted, normal-mapped sprites. This is a playable **Emond's Field** slice: 3 fight zones, then the Trolloc Chieftain. The live game is **1.1 on `rwb-w2`**; it and `main` are untouched. Stage 1 is playable, but the full acceptance gate in `plan/PLAN.md` §10 has **not passed**. The pinned library requests `webgl`/`experimental-webgl`; earlier descriptions calling the shipped renderer WebGL2 were inaccurate. The renderer has not been replaced.
 
-## Play locally
+Current review: draft [PR #13](https://github.com/jfeldman9-rgb/riley-wheel-brawl/pull/13), `rwb-2-stage1-evidence` into `rwb-2`. See [the hardening handoff](docs/stage1/TWO_HOUR_PASS.md) for verified fixes, reproduction commands and open gates.
 
-```sh
-python3 -m http.server 8000
-# open http://localhost:8000/
-```
+- Play: serve the repository over HTTP(S), then open `index.html`, or use a commit-pinned raw.githack preview. Double-clicking a `file://` page does not support this module/asset-loading workflow.
+- Keyboard:
+  - WASD or arrows: move. Shift or double-tap: run.
+  - J/E/Z: attack. Attack plus back: back kick. K/Space/X: jump. Jump then attack: flying kick.
+  - L/Q/C: fireball. Esc/P or Enter during gameplay: pause.
+  - Walk into a dazed foe to grab it.
+- Touch: an on-screen stick and buttons appear only on touch devices. Gamepad works too.
+- Gamepad Start starts the title, pauses/resumes a fight, continues game-over, and replays stage-clear.
+- Graphics recovery: startup failures show a reload action. A lost graphics context pauses combat and keeps prior performance samples; the pause lifts only after Phaser finishes restoring resources. Reloading manually starts over.
+- Perf: press H for the HUD or use **Performance report** to pause, inspect strict fight p95, reset, and copy/save a local JSON capture. Use the fight block for active combat, not the all-active average. No report is uploaded automatically.
+- Acceptance target remains fight p95 ≤16.7 ms on both physical iPad and desktop. Software-renderer captures and regression tests are not device acceptance.
+- Checks (Node 24, no npm install): `node --test tests/*.test.mjs`; `node tools/audit-stage1.mjs`. See `docs/stage1/TWO_HOUR_PASS.md` for the current gaps.
+- Flags:
+  - `?demo=1` autopilot, `?demo=boss-coverage&skip=boss` input-only boss coverage, `?skip=boss`, `?god=1`, `?hud=0`.
+  - `?bloom=0`, `?lit=0`, `?rs=1|2`.
+  - `?q=fixed|N` controls the quality governor.
 
-## Controls
-
-| Action | Keyboard | Gamepad |
-|---|---|---|
-| Move / change lane | WASD / arrows | D-pad / left stick |
-| Three-hit kick chain | E / J / Z | X |
-| Jump / flying kick | Space / K / X, then Kick | A, then X |
-| 360 spinning kick | Hold Down and press Kick, or press Jump + Kick together | Down + X, or A + X |
-| Fireball (**FIRE**) | Q / L / C | Y |
-| Grab | Walk into a hurt or knocked-back normal Trolloc | Walk into the target |
-| Knee a grabbed target | Kick, up to twice | X, up to twice |
-| Throw a grabbed target | Press away from the target | Press away from the target |
-| Call Loial (**LOIAL**, once per stage) | R / I / V / U | LB / RB |
-| Spend full meter (**SAIDIN**) | F / B | B |
-| Pause | Escape / P | Start / Options or Back / Share |
-| Music on/off | M | Options → MUSIC |
-| Mute all sound | N | Options → SOUND |
-
-The ground chain is front kick, roundhouse, then spinning back kick. FIRE has a
-cooldown and no health cost. A full SAIDIN meter enables Balefire; holding it
-past the grace period begins the warned, nonlethal taint effect. Menus support
-keyboard, gamepad, mouse, and touch, and bindings can be remapped. Standard-layout Xbox A / PlayStation Cross confirms menus; B / Circle goes back. **How to Play** is available from the title and pause menus. On phones, landscape gives the largest controls.
-
-## Difficulty
-
-Choose NORMAL or HARD in Options before starting a new run. HARD coordinates enemy flanks and attack timing with identical HP. Continue and Restart keep the difficulty saved with that run; old saves use Normal.
-
-## Campaign
-
-Five stages with distinct enemy waves and bosses. Change lanes to avoid Mashadar;
-use jumping kicks or fireballs against the airborne Draghkar. Claim Callandor after
-Be'lal to double the super's boss damage. On the Black Tower roof, weaken Taim to
-free Twinkle Toes, then spend full saidin with POWER for the joint finish. Taim
-keeps fighting until both beams hit.
-
-## Verification
-
-`node tools/v11-menu-check.cjs` covers all-stage saves, menu navigation and simulated device input. `node tools/v11-device-browser.cjs` runs the new browser/device-emulation flow. See `docs/V11_MENU_DEVICE.md` for evidence and physical-device limits.
-
-`node tools/check.cjs` covers Stage 1 combat plus all-stage progression, safe Reel
-skipping, boss rules, hazards, Callandor persistence, the joint finish, taint, and
-art/cache contracts. `node tools/soak.cjs` runs 10 seeds on each of five stages and
-requires every boss attack on every seed. Use `--stage=3` for one stage.
-
-The default soak keeps the inherited HP top-up below 28 HP and 99 lives; it is a
-completion/attack-coverage test. `--natural` disables those assists and reports
-3-life masher balance. See `docs/STATUS.md` for both sets of measured results.
-
-## Audio
-
-Jason's theme loops on the title, story cards and stages (starts on the first key, click or tap); M toggles it. Riley, Twinkle Toes, Moiraine, Loial, Be'lal, the other villains and the narrator speak. The new cast uses user-approved original stock voices generated locally with free Kokoro; no real-person voice cloning. Family recordings can still replace the stable filenames listed in `assets/audio/voice/RECORDING_LIST.md`. See `docs/AUDIO.md`. `node tools/audio-check.cjs` checks it in a browser.
-
-All supplied painted assets are wired through `js/artmanifest.js`.
-`CHROMIUM_PATH=/path/to/chromium node tools/review.cjs` regenerates the headless
-review screenshots and image-loading audit (requires Playwright). See
-`docs/review/README.md` for evidence, reproduction, and visual limitations.
-No build step or new runtime dependency is required.
+Layout:
+- `src/` holds the game modules.
+- `assets/chars|bg|props|ui|audio|fonts` holds the packed atlases with normal maps, the backdrop plates, and the audio carried over from 1.2.
+- `spike-art/` holds the spike's art pipeline.
+- `STAGE1.md` is the slice report; `docs/stage1/` has the screenshots and contact sheets.
+- The legacy `main.js` and `assets/riley*.webp` and `assets/trolloc*.webp` at the repo root are the spike prototype, kept for reference.

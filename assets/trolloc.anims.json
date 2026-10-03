@@ -1,0 +1,84 @@
+{
+ "canvas": [
+  900,
+  760
+ ],
+ "baseline": 730,
+ "anims": [
+  {
+   "name": "trolloc_walk",
+   "frames": [
+    "trolloc_walk_00",
+    "trolloc_walk_01",
+    "trolloc_walk_02",
+    "trolloc_walk_03",
+    "trolloc_walk_04",
+    "trolloc_walk_05",
+    "trolloc_walk_06",
+    "trolloc_walk_07"
+   ],
+   "holds": [
+    110,
+    110,
+    110,
+    110,
+    110,
+    110,
+    110,
+    110
+   ],
+   "loop": true
+  },
+  {
+   "name": "trolloc_attack",
+   "frames": [
+    "trolloc_attack_00",
+    "trolloc_attack_01",
+    "trolloc_attack_02",
+    "trolloc_attack_03",
+    "trolloc_attack_04",
+    "trolloc_attack_05"
+   ],
+   "holds": [
+    120,
+    140,
+    220,
+    70,
+    160,
+    200
+   ],
+   "loop": true
+  },
+  {
+   "name": "trolloc_hurt",
+   "frames": [
+    "trolloc_hurt_00",
+    "trolloc_hurt_01"
+   ],
+   "holds": [
+    90,
+    160
+   ],
+   "loop": false
+  },
+  {
+   "name": "trolloc_knockdown",
+   "frames": [
+    "trolloc_knockdown_00",
+    "trolloc_knockdown_01",
+    "trolloc_knockdown_02",
+    "trolloc_knockdown_03",
+    "trolloc_knockdown_04"
+   ],
+   "holds": [
+    90,
+    140,
+    120,
+    900,
+    300
+   ],
+   "loop": false
+  }
+ ],
+ "scale": 1.0
+}

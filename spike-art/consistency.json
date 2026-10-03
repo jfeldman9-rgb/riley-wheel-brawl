@@ -1,0 +1,76 @@
+{
+ "riley": {
+  "frames": 60,
+  "skin_dE_mean": 5.01,
+  "skin_dE_max": 6.83,
+  "second_dE_mean": 3.22,
+  "second_dE_max": 4.35,
+  "per_anim": {
+   "riley_idle": {
+    "skin": 4.27,
+    "second": 3.72
+   },
+   "riley_walk": {
+    "skin": 3.85,
+    "second": 2.24
+   },
+   "riley_combo": {
+    "skin": 5.29,
+    "second": 3.08
+   },
+   "riley_combo1": {
+    "skin": 5.93,
+    "second": 3.45
+   },
+   "riley_combo2": {
+    "skin": 5.53,
+    "second": 3.03
+   },
+   "riley_combo3": {
+    "skin": 5.01,
+    "second": 3.01
+   },
+   "riley_hurt": {
+    "skin": 6.52,
+    "second": 4.02
+   },
+   "riley_knockdown": {
+    "skin": 4.98,
+    "second": 3.63
+   },
+   "riley_getup": {
+    "skin": 5.21,
+    "second": 3.55
+   },
+   "riley_knockdown_full": {
+    "skin": 5.09,
+    "second": 3.59
+   }
+  }
+ },
+ "trolloc": {
+  "frames": 21,
+  "skin_dE_mean": 2.95,
+  "skin_dE_max": 5.47,
+  "second_dE_mean": 3.49,
+  "second_dE_max": 7.82,
+  "per_anim": {
+   "trolloc_walk": {
+    "skin": 1.78,
+    "second": 3.7
+   },
+   "trolloc_attack": {
+    "skin": 2.95,
+    "second": 2.27
+   },
+   "trolloc_hurt": {
+    "skin": 3.3,
+    "second": 1.66
+   },
+   "trolloc_knockdown": {
+    "skin": 4.67,
+    "second": 5.33
+   }
+  }
+ }
+}
