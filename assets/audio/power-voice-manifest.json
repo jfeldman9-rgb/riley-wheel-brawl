@@ -1,0 +1,222 @@
+{
+  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0",
+  "model_revision_requested": "f3ff3571791e39611d31c381e3a41a3af07b4987",
+  "cast": {
+    "riley": {
+      "lang": "a",
+      "blend": {
+        "am_puck": 0.8,
+        "am_fenrir": 0.2
+      },
+      "speed": 1.04,
+      "pitch": 1.02
+    },
+    "grunt": {
+      "lang": "a",
+      "blend": {
+        "am_onyx": 0.7,
+        "am_fenrir": 0.3
+      },
+      "speed": 0.92,
+      "pitch": 0.74
+    },
+    "spear": {
+      "lang": "b",
+      "blend": {
+        "bm_lewis": 1.0
+      },
+      "speed": 0.98,
+      "pitch": 0.8
+    },
+    "hound": {
+      "lang": "a",
+      "blend": {
+        "am_fenrir": 0.6,
+        "am_echo": 0.4
+      },
+      "speed": 1.06,
+      "pitch": 0.84,
+      "rasp": true
+    }
+  },
+  "pronunciation": {
+    "saidin": "sIˈdin",
+    "Ishamael": "ɪʃˈAmAɛl",
+    "Lanfear": "lˈænfɪɹ",
+    "Aginor": "ˈæɡɪnɔɹ",
+    "Myrddraal": "mˈɜɹdɹɑl",
+    "Twix": "twˈɪks",
+    "Forsaken": "fɔɹsˈAkən",
+    "Trollocs": "tɹˈɑlɑks"
+  },
+  "lines": [
+    {
+      "id": "riley_saangreal_01",
+      "who": "riley",
+      "text": "Whoa. That is a LOT of saidin!",
+      "speech_input": "Whoa. That is a lot of [saidin](/sIˈdin/)!",
+      "phonemes": [
+        "wˈO. ðˈæt ɪz ɐ lˈɑt ʌv sIˈdin!"
+      ],
+      "duration_s": 1.272,
+      "sha256": "4e5a3baffbcd95aa3169b4ef12661773218bff02fe08ee9ff52f65a72db0e078",
+      "asset_path": "assets/audio/voice/riley_saangreal_01.mp3"
+    },
+    {
+      "id": "riley_lightning_01",
+      "who": "riley",
+      "text": "Lightning, on my call!",
+      "speech_input": "Lightning, on my call!",
+      "phonemes": [
+        "lˈItnɪŋ, ˌɔn mI kˈɔl!"
+      ],
+      "duration_s": 0.96,
+      "sha256": "875f82aecb8d9efa56773a5b8de4de1bda13728c592cef098edd0f13af94a04a",
+      "asset_path": "assets/audio/voice/riley_lightning_01.mp3"
+    },
+    {
+      "id": "riley_fireshield_01",
+      "who": "riley",
+      "text": "Try touching me now!",
+      "speech_input": "Try touching me now!",
+      "phonemes": [
+        "tɹˈI tˈʌʧɪŋ mˌi nˈW!"
+      ],
+      "duration_s": 0.984,
+      "sha256": "5b1ea4fed807d8ff5082f31daebeffdd416054109098a3fc2c7da283b99cef3c",
+      "asset_path": "assets/audio/voice/riley_fireshield_01.mp3"
+    },
+    {
+      "id": "riley_airwhip_01",
+      "who": "riley",
+      "text": "Come here, you!",
+      "speech_input": "Come here, you!",
+      "phonemes": [
+        "kˈʌm hˈɪɹ, ju!"
+      ],
+      "duration_s": 0.696,
+      "sha256": "15b5fafd89d3899d95560b53595886d64228dee4a09b284241ca1253888b210d",
+      "asset_path": "assets/audio/voice/riley_airwhip_01.mp3"
+    },
+    {
+      "id": "riley_twix_01",
+      "who": "riley",
+      "text": "Wait... is that a Twix?",
+      "speech_input": "Wait... is that a [Twix](/twˈɪks/)?",
+      "phonemes": [
+        "wˈAt... ɪz ðæt ɐ twˈɪks?"
+      ],
+      "duration_s": 1.08,
+      "sha256": "3b238b50611db5b1f5f7fab4d1160a53644454ac9f9cfa6480819bd1043115b2",
+      "asset_path": "assets/audio/voice/riley_twix_01.mp3"
+    },
+    {
+      "id": "twix_01",
+      "who": "riley",
+      "text": "Snack truce. One Twix each, and nobody bites anybody.",
+      "speech_input": "Snack truce. One [Twix](/twˈɪks/) each, and nobody bites anybody.",
+      "phonemes": [
+        "snˈæk tɹˈus. wˈʌn twˈɪks ˈiʧ, ænd nˈObˌɑdi bˈIts ˈɛnibˌɑdi."
+      ],
+      "duration_s": 3.024,
+      "sha256": "ea96b15dc15da57eae0b8578952e4b09b1c9c0c70b71dc9188a7e2ccf3c5d94e",
+      "asset_path": "assets/audio/voice/twix_01.mp3"
+    },
+    {
+      "id": "twix_02",
+      "who": "grunt",
+      "text": "Mmf. Crunchy. Way better than Ishamael's stew. His stew bites back.",
+      "speech_input": "Mmf. Crunchy. Way better than [Ishamael](/ɪʃˈAmAɛl/)'s stew. His stew bites back.",
+      "phonemes": [
+        "ˌɛmˌɛmˈɛf. kɹˈʌnʧi. wˈA bˈɛTəɹ ðən ɪʃˈAmAɛls stˈu. hˌɪz stˈu bˈIts bˈæk."
+      ],
+      "duration_s": 3.984,
+      "sha256": "00f4095cf3124f2c2a5020f56c182cc0ec530bc976d6e5e2d937cefb5a7cd06f",
+      "asset_path": "assets/audio/voice/twix_02.mp3"
+    },
+    {
+      "id": "twix_03",
+      "who": "spear",
+      "text": "Lanfear calls us smelly. Every day! I took a bath once. Last spring!",
+      "speech_input": "[Lanfear](/lˈænfɪɹ/) calls us smelly. Every day! I took a bath once. Last spring!",
+      "phonemes": [
+        "lˈænfɪɹ kˈɔːlz ˌʌs smˈɛli. ˈɛvəɹi dˈA! ˌI tˈʊk ɐ bˈɑːθ wˈʌns. lˈɑːst spɹˈɪŋ!"
+      ],
+      "duration_s": 4.728,
+      "sha256": "cd0e2f07302c29f5791ca6ef16752005e2502a06b953eab7f2e1e33d25e749ca",
+      "asset_path": "assets/audio/voice/twix_03.mp3"
+    },
+    {
+      "id": "twix_04",
+      "who": "hound",
+      "text": "Aginor made my snout. Then he laughed at my snout.",
+      "speech_input": "[Aginor](/ˈæɡɪnɔɹ/) made my snout. Then he laughed at my snout.",
+      "phonemes": [
+        "ˈæɡɪnɔɹ mˌAd mI snˈWt. ðˈɛn hi lˈæft æt mI snˈWt."
+      ],
+      "duration_s": 2.544,
+      "sha256": "45fa3af4e4e0bf4a3cee76da0b5553c29a4759e67c536538d128dc205b8b7134",
+      "asset_path": "assets/audio/voice/twix_04.mp3"
+    },
+    {
+      "id": "twix_05",
+      "who": "grunt",
+      "text": "And the Myrddraal stare at you with no eyes. How do they stare with NO EYES?",
+      "speech_input": "And the [Myrddraal](/mˈɜɹdɹɑl/) stare at you with no eyes. How do they stare with no eyes?",
+      "phonemes": [
+        "ˌænd ðə mˈɜɹdɹɑl stˈɛɹ æt ju wɪð nˈO ˈIz. hˌW dˈu ðA stˈɛɹ wɪð nˈO ˈIz?"
+      ],
+      "duration_s": 4.152,
+      "sha256": "4f28f020c321d3674727a67841089358e63e2ac6041229c7fd473b65a906e6e6",
+      "asset_path": "assets/audio/voice/twix_05.mp3"
+    },
+    {
+      "id": "twix_06",
+      "who": "spear",
+      "text": "No Forsaken ever says thank you. Not one time. Not even on Winternight.",
+      "speech_input": "No [Forsaken](/fɔɹsˈAkən/) ever says thank you. Not one time. Not even on Winternight.",
+      "phonemes": [
+        "nˈQ fɔɹsˈAkən ˈɛvə sˈɛz θˈaŋk juː. nˌɒt wˈʌn tˈIm. nˌɒt ˈiːvᵊn ˌɒn wˈɪntənˌIt."
+      ],
+      "duration_s": 4.944,
+      "sha256": "727a7c0755543b5d0682abcea5db11bd31551a1256a8c5acb7164dee6eb6c9af",
+      "asset_path": "assets/audio/voice/twix_06.mp3"
+    },
+    {
+      "id": "twix_07",
+      "who": "riley",
+      "text": "Have you guys ever thought about... not working for the Dark One?",
+      "speech_input": "Have you guys ever thought about... not working for the Dark One?",
+      "phonemes": [
+        "hˌæv ju ɡˈIz ˈɛvəɹ θˈɔt əbˈWt... nˌɑt wˈɜɹkɪŋ fɔɹ ðə dˈɑɹk wˈʌn?"
+      ],
+      "duration_s": 2.88,
+      "sha256": "3187a84d513c70e2ff96e3413abba78b653a971a7a70caa9321311bc49e56d19",
+      "asset_path": "assets/audio/voice/twix_07.mp3"
+    },
+    {
+      "id": "twix_08",
+      "who": "all",
+      "text": "...Does the Light have more Twix?",
+      "speech_input": "...Does the Light have more [Twix](/twˈɪks/)?",
+      "phonemes": [
+        "(3-voice chorus: grunt + spear + hound)"
+      ],
+      "duration_s": 2.16,
+      "sha256": "81fe33a2091e32e45e6436aba5cf43ebafe5a6f0dcf8bdbb2921132cb238e81a",
+      "asset_path": "assets/audio/voice/twix_08.mp3"
+    },
+    {
+      "id": "twix_09",
+      "who": "riley",
+      "text": "Ask me after I win. Break's over!",
+      "speech_input": "Ask me after I win. Break's over!",
+      "phonemes": [
+        "ˈæsk mˌi ˈæftəɹ ˌI wˈɪn. bɹˈAks ˈOvəɹ!"
+      ],
+      "duration_s": 1.728,
+      "sha256": "4a17f43bec195688425c1f79f4b2e70ff62a561d6ea8e4ee9ccbd13988552ab8",
+      "asset_path": "assets/audio/voice/twix_09.mp3"
+    }
+  ]
+}

@@ -296,7 +296,7 @@
     }
   ],
   "preFight": {
-    "inventoryUpperBoundBytes": 18062189,
+    "inventoryUpperBoundBytes": 18872623,
     "budgetBytes": 25000000,
     "inventoryStatus": "PASS",
     "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."
@@ -372,8 +372,8 @@
     "note": "Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Balefire (8) is a special, not in this list; candidate artwork outside game assets is excluded."
   },
   "textureEstimate": {
-    "rgbaBaseBytes": 244652508,
-    "withFullMipChainBytes": 326203344,
+    "rgbaBaseBytes": 271707612,
+    "withFullMipChainBytes": 362276816,
     "images": [
       {
         "path": "assets/chars/chief-0.webp",
@@ -619,6 +619,132 @@
         "width": 256,
         "height": 256,
         "rgbaBytes": 262144
+      },
+      {
+        "path": "assets/powers/fx_airwhip.png",
+        "bytes": 4482,
+        "width": 512,
+        "height": 48,
+        "rgbaBytes": 98304
+      },
+      {
+        "path": "assets/powers/fx_fireshield.png",
+        "bytes": 14193,
+        "width": 384,
+        "height": 320,
+        "rgbaBytes": 491520
+      },
+      {
+        "path": "assets/powers/fx_lightning.png",
+        "bytes": 19541,
+        "width": 512,
+        "height": 192,
+        "rgbaBytes": 393216
+      },
+      {
+        "path": "assets/powers/hud_airwhip.png",
+        "bytes": 980,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_angreal.png",
+        "bytes": 1156,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_fireshield.png",
+        "bytes": 802,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_lightning.png",
+        "bytes": 785,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_saangreal.png",
+        "bytes": 1030,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/pu_airwhip.png",
+        "bytes": 2710,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_angreal.png",
+        "bytes": 2746,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_fireshield.png",
+        "bytes": 2241,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_lightning.png",
+        "bytes": 2320,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_saangreal.png",
+        "bytes": 2536,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_twix.png",
+        "bytes": 2536,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/riley_lightning.png",
+        "bytes": 90985,
+        "width": 2880,
+        "height": 1280,
+        "rgbaBytes": 14745600
+      },
+      {
+        "path": "assets/powers/twix_panel_1.jpg",
+        "bytes": 61839,
+        "width": 1280,
+        "height": 720,
+        "rgbaBytes": 3686400
+      },
+      {
+        "path": "assets/powers/twix_panel_2.jpg",
+        "bytes": 61043,
+        "width": 1280,
+        "height": 720,
+        "rgbaBytes": 3686400
+      },
+      {
+        "path": "assets/powers/twix_panel_3.jpg",
+        "bytes": 61526,
+        "width": 1280,
+        "height": 720,
+        "rgbaBytes": 3686400
       }
     ],
     "mipmaps": "Disabled by the pinned Phaser default and current game configuration; full-chain bytes are hypothetical.",

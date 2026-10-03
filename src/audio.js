@@ -23,6 +23,27 @@ export const VOICE = {
   riley_super_01: ['RILEY', 'Balefire!'], riley_call_01: ['RILEY', 'Loial, now!'], riley_call_spent_01: ['RILEY', 'Loial needs a rest.'],
   loial_charge_01: ['LOIAL', 'For my friends!'], loial_done_01: ['LOIAL', 'That should help!'],
 };
+// Power-up and Twix-cutscene lines. Kept out of VOICE so the start-of-run preload stays the 25 Stage 1 clips;
+// these load on demand when a power pickup or the Twix appears (preloadClips). riley_angreal_01 is the approved
+// 1.1 Kokoro file; the rest are Kokoro TTS (see VOICE_PROVENANCE.md).
+export const EXTRA_VOICE = {
+  riley_angreal_01: ['RILEY', 'The fire burns brighter!'],
+  riley_saangreal_01: ['RILEY', 'Whoa. That is a LOT of saidin!'],
+  riley_lightning_01: ['RILEY', 'Lightning, on my call!'],
+  riley_fireshield_01: ['RILEY', 'Try touching me now!'],
+  riley_airwhip_01: ['RILEY', 'Come here, you!'],
+  riley_twix_01: ['RILEY', 'Wait... is that a Twix?'],
+  // The Twix campfire cutscene script (order and panels: src/twix.js). Riley is 16; PG on purpose.
+  twix_01: ['RILEY', 'Snack truce. One Twix each, and nobody bites anybody.'],
+  twix_02: ['GRUNT TROLLOC', "Mmf. Crunchy. Way better than Ishamael's stew. His stew bites back."],
+  twix_03: ['SPEAR TROLLOC', 'Lanfear calls us smelly. Every day! I took a bath once. Last spring!'],
+  twix_04: ['HOUND TROLLOC', 'Aginor made my snout. Then he laughed at my snout.'],
+  twix_05: ['GRUNT TROLLOC', 'And the Myrddraal stare at you with no eyes. How do they stare with NO EYES?'],
+  twix_06: ['SPEAR TROLLOC', 'No Forsaken ever says thank you. Not one time. Not even on Winternight.'],
+  twix_07: ['RILEY', 'Have you guys ever thought about... not working for the Dark One?'],
+  twix_08: ['ALL TROLLOCS', '...Does the Light have more Twix?'],
+  twix_09: ['RILEY', "Ask me after I win. Break's over!"],
+};
 function init() {
   if (ctx) return;
   try {
@@ -109,6 +130,12 @@ export const sfx = {
   // 1.1 recipes
   balefire() { tone({ f0: 180, f1: 880, dur: 0.35, vol: 0.22, type: 'sawtooth' }); noise({ f0: 3000, f1: 400, dur: 0.4, vol: 0.2, filter: 'highpass' }); tone({ f0: 90, f1: 40, dur: 0.4, vol: 0.35, type: 'sine' }); duck(0.3, 0.1, 1.2); },
   loialHorn() { tone({ f0: 220, f1: 330, dur: 0.22, vol: 0.28, type: 'sawtooth' }); tone({ f0: 330, f1: 440, dur: 0.24, delay: 0.18, vol: 0.24, type: 'sawtooth' }); },
+  // power-ups
+  powerUp() { [784, 988, 1175, 1568].forEach((n, i) => tone({ f0: n, dur: 0.12, delay: i * 0.06, vol: 0.18, type: 'triangle' })); },
+  powerDown() { tone({ f0: 660, f1: 220, dur: 0.3, vol: 0.14, type: 'triangle' }); },
+  zap() { if (!gate('zap', 60)) return; noise({ f0: 6000, f1: 900, dur: 0.18, vol: 0.32, filter: 'highpass' }); tone({ f0: 1400, f1: 180, dur: 0.16, vol: 0.16, type: 'sawtooth' }); tone({ f0: 70, f1: 40, dur: 0.25, vol: 0.35, type: 'sine' }); },
+  fall() { tone({ f0: 1800, f1: 500, dur: 0.7, vol: 0.12, type: 'sine' }); },
+  grumble() { if (!gate('grumble', 300)) return; tone({ f0: vary(85, 0.15), f1: 60, dur: 0.45, vol: 0.16, type: 'sawtooth' }); noise({ f0: 380, f1: 160, dur: 0.4, vol: 0.12, attack: 0.06 }); },
   impact() { if (!gate('impact', 120)) return; tone({ f0: 70, f1: 30, dur: 0.5, vol: 0.6, type: 'sine' }); noise({ f0: 2400, f1: 160, dur: 0.35, vol: 0.45 }); duck(0.35, 0.15, 0.5); },
 };
 let musicWanted = false;
@@ -142,10 +169,12 @@ function loadClip(id) {
     }));
 }
 export function preloadVoices() { Object.keys(VOICE).forEach(loadClip); }
+/** on-demand preload for EXTRA_VOICE lines (power pickups and the Twix cutscene) */
+export function preloadClips(ids) { for (const id of ids) if (Object.hasOwn(EXTRA_VOICE, id)) loadClip(id); }
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
 export function say(id, onCaption, interrupt = true) {
-  if (!Object.hasOwn(VOICE, id)) return;
-  const cap = VOICE[id];
+  const cap = Object.hasOwn(VOICE, id) ? VOICE[id] : Object.hasOwn(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : null;
+  if (!cap) return;
   if (!interrupt && (voiceSrc || voicePending)) return cap;
   const request = ++voiceRequest, shouldPlay = !muted;
   voicePending = shouldPlay;

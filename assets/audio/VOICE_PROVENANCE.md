@@ -36,3 +36,19 @@ Pronunciation annotations for Callandor, Caemlyn, Loial, Saidin, Asha'man and Ba
 Suggested credit: “Original synthetic character voices generated locally with Kokoro-82M by hexgrad (Apache-2.0), using approved stock-voice blends and character processing. No real-person voice cloning.”
 
 An explicit primary stress on the existing contraction in “I'll guard our home” improves clarity; displayed wording and approved voice settings are unchanged.
+
+## Angreal / ter'angreal and Twix cutscene lines (Stage 1 2.0, TTS)
+
+`riley_angreal_01.mp3` is the approved 1.1 file, restored unchanged. The other 14 lines (5 Riley power barks and
+the 9-line Twix campfire scene) were generated locally with the same Kokoro 0.9.4 / Kokoro-82M v1.0 model
+(`tools/tts-power-lines.py`; text, speech input, phonemes, durations and hashes in `power-voice-manifest.json`).
+
+- Riley: the approved cast above (80% am_puck + 20% am_fenrir, speed 1.04, pitch 1.02).
+- Trollocs (new TTS casting, approved as "TTS growls/lines" for this feature; not an audition-approved cast):
+  Grunt 70% am_onyx + 30% am_fenrir, speed 0.92, pitch 0.74; Spear bm_lewis (British), speed 0.98, pitch 0.80;
+  Hound 60% am_fenrir + 40% am_echo, speed 1.06, pitch 0.84 with a light vibrato rasp. "ALL TROLLOCS" is the three
+  Trolloc voices mixed with 70 ms offsets. A procedural growl SFX plays under each Trolloc line.
+- Processing: rubberband pitch shift with shifted formants, 70 Hz high-pass, start/end silence trim, loudnorm
+  toward -16 LUFS, limiter, mono 24 kHz MP3 at 96 kbps. No real-person cloning, no paid API.
+- Checks: every clip decodes with audible level and headroom (peaks about -3 dBFS). Not yet reviewed by ear or by
+  speech recognition; invented names (Ishamael, Aginor, Myrddraal) use explicit phoneme hints and may still be imperfect.

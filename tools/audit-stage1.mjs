@@ -42,14 +42,14 @@ export function audit() {
       pages: m.pages.map(p => ({ name:p, ...json(`assets/chars/${p}.json`).meta.size })) };
   });
   const images = [];
-  for (const group of ['chars','bg','props','ui']) for (const name of readdirSync(resolve(ROOT, 'assets', group)).sort()) {
+  for (const group of ['chars','bg','props','ui','powers']) for (const name of readdirSync(resolve(ROOT, 'assets', group)).sort()) {
     if (!/\.(webp|jpg|png)$/.test(name)) continue;
     const path = `assets/${group}/${name}`, bytes = read(path), [w,h] = dimensions(bytes);
     images.push({path, bytes:bytes.length, width:w, height:h, rgbaBytes:w*h*4});
   }
   const files = new Set(['index.html','lib/phaser.min.js','assets/fonts/press-start-2p.ttf']);
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) files.add(`src/${name}`);
-  for (const group of ['chars','bg','props','ui']) for (const name of readdirSync(resolve(ROOT,'assets',group))) files.add(`assets/${group}/${name}`);
+  for (const group of ['chars','bg','props','ui','powers']) for (const name of readdirSync(resolve(ROOT,'assets',group))) if (!name.endsWith('.md')) files.add(`assets/${group}/${name}`);
   files.add('assets/audio/music-main.mp3');
   for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) files.add(`assets/audio/voice/${name}`);
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);

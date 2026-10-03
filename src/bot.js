@@ -13,7 +13,11 @@ export class Bot {
     if (!s.started || !R.alive || s.ended || s.gameOver) { inp.demo = { x: 0, y: 0 }; return; }
     if (this.bossCoverage) return this.updateBossCoverage();
     const foes = s.enemies.filter(e => e.alive && !e.entering);
-    if (!foes.length) { inp.demo = { x: (s.zone && !s.locked) || !s.zone ? 1 : 0, y: R.y > 640 ? -1 : R.y < 620 ? 1 : 0, run: !s.zone }; if (s.pickups.length) { const p = s.pickups[0]; inp.demo = { x: Math.sign(p.x - R.x), y: Math.abs(p.y - R.y) > 10 ? Math.sign(p.y - R.y) : 0 }; } return; }
+    // Only pickups inside the arena are reachable; a power that has landed nearby is worth a detour mid-fight.
+    const reachable = s.pickups.filter(p => p.x > s.bounds.l + 40 && p.x < s.bounds.r - 40 && (!p.power || p.ready));
+    const power = reachable.find(p => p.power && Math.abs(p.x - R.x) < 360);
+    if (power && !R.busy) { inp.demo = { x: Math.abs(power.x - R.x) > 20 ? Math.sign(power.x - R.x) : 0, y: Math.abs(power.y - R.y) > 10 ? Math.sign(power.y - R.y) : 0 }; return; }
+    if (!foes.length) { inp.demo = { x: (s.zone && !s.locked) || !s.zone ? 1 : 0, y: R.y > 640 ? -1 : R.y < 620 ? 1 : 0, run: !s.zone }; if (reachable.length) { const p = reachable[0]; inp.demo = { x: Math.sign(p.x - R.x), y: Math.abs(p.y - R.y) > 10 ? Math.sign(p.y - R.y) : 0 }; } return; }
     foes.sort((a, b) => Math.abs(a.x - R.x) - Math.abs(b.x - R.x));
     const e = foes[0], dx = e.x - R.x, dy = e.y - R.y, side = Math.sign(dx) || 1;
     const want = e.T.boss ? 170 : 125;
@@ -23,7 +27,9 @@ export class Bot {
     if (this.t < this.next || R.busy) return;
     const aligned = Math.abs(dy) < 14;
     if (R.facing !== side) { inp.demo.x = side; return; }
-    if (aligned && Math.abs(dx) > 300 && R.saidin >= 34 && Math.random() < 0.5) { inp.press('special'); this.next = this.t + 0.9; return; }
+    const cast = s.powers ? s.powers.castKind(R) : R.saidin >= 34 ? 'fireball' : null;
+    if (cast && cast !== 'fireball' && Math.abs(dy) < 50 && Math.abs(dx) > 150 && Math.random() < 0.6) { inp.press('special'); this.next = this.t + 0.8; return; }
+    if (aligned && Math.abs(dx) > 300 && cast === 'fireball' && Math.random() < 0.5) { inp.press('special'); this.next = this.t + 0.9; return; }
     if (aligned && Math.abs(dx) < want + 40) {
       const r = Math.random();
       if (r < 0.12) { inp.press('jump'); this.pressLater('attack', 260); this.next = this.t + 1.0; }
