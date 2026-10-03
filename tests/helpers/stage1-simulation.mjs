@@ -76,7 +76,7 @@ export function stage1Simulation({ mode = '1' } = {}) {
     textures: { exists: () => true, get: key => ({ source: [{}], getSourceImage: () => ({ width: 2048, height: 1024 }), getFrameNames: () => key === 'staves' ? staves : [] }) },
     cache: { json: { get: key => key === 'plates' ? plates : metas[key.replace(/\.A$/, '')] } },
     anims: { exists: key => !!animations[key], globalTimeScale: 1 },
-    lights: { enable() { return this; }, setAmbientColor() {}, addLight(x, y, radius, color, intensity) { const L = { x, y, radius, color, intensity, setScrollFactor() { return this; } }; lights.add(L); return L; }, removeLight(L) { lights.delete(L); } },
+    lights: { enable() { return this; }, setAmbientColor() {}, addLight(x, y, radius, color, intensity) { const L = { x, y, radius, color, intensity, visible: true, setScrollFactor() { return this; }, setVisible(v) { this.visible = v; return this; } }; lights.add(L); return L; }, removeLight(L) { lights.delete(L); } },
     time: { now: 0, delayedCall(ms, fn) { const timer = { delay: ms, elapsed: 0, fn, remove() { const i = timers.indexOf(this); if (i >= 0) timers.splice(i, 1); } }; timers.push(timer); return timer; } },
     tweens: { add(config) { tweens.push({ config, elapsed: 0, counter: false }); }, addCounter(config) { tweens.push({ config, elapsed: 0, counter: true }); } },
     scene: { launch() { hudLaunchRequested = true; }, get: () => hud, pause() {}, resume() {}, stop() {}, restart() { observations.restarts++; restartRequested = true; } },

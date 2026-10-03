@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "evidenceKind": "deterministic combat-logic simulation",
-  "baseGitCommit": "9f553279a027f3a852d324292773194c770deae7",
+  "baseGitCommit": "e85c87a0bf6fbfa536fca6d749a4ee13bc3af73c",
   "sourceSha256": {
-    "src/stage1.js": "0b094c0666db90178c7e5757a52b2d9e146bae3fbef2047996032b17f135b77b",
+    "src/stage1.js": "59cbfc7967d83d8d555a31492cd3d7b7ef830899fc754745fc8594095071e156",
     "src/riley.js": "f7a98dd70738fc6fd051a9342daf2e120ff01c98a1d2aca661003ab28c63e558",
     "src/enemies.js": "88314da46278dd8685edc64962c7eeaf5d601287ade012cd36abc20609038644",
     "src/fighter.js": "6d67d33bfec2e6c2dd80e57144c1a0ac2c88feacb28d0fac17f69481c4855970",
@@ -23,7 +23,7 @@
     "lib/phaser.min.js": "66348b1b5141e49b7d5ebbe688cddcb502eab1cb00f21c538686a5b2c5abe4de",
     "tests/helpers/animation-clock.mjs": "41e6608aeab4f26e2efd06484b4e47bbcce45c70a4a764e6cc4fa968c4dbe01a",
     "tests/animation-clock.test.mjs": "611a241239a31447cf7fc663ce367a877103163ee631f45790fa2ecc75d418b9",
-    "tests/helpers/stage1-simulation.mjs": "c77c544614972ab3b5f91604a929b86a5912401246af35df469be8e9cb38d1bd",
+    "tests/helpers/stage1-simulation.mjs": "3981bd45fac12cc78038982fca43ce8d257ab3abe76c2b34cbb90593993a6414",
     "tests/helpers/run-full-stage-simulations.mjs": "887c97a375d0b9bcdf96b3f09b2877bf1cd5e468601e5cd95269c51f26df1e05",
     "tests/full-stage-simulation.test.mjs": "27ab8dd7c4eca25a5d51d4b1b66f771a970d9eebafec6544876057ad6c509503"
   },

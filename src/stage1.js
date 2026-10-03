@@ -25,6 +25,22 @@ const ZONES = [
 export const MOON_X = VW * 0.85, MOON_Y = 60;
 export function addMoon(lights) { return lights.addLight(MOON_X, MOON_Y, 1500, 0xa8c0ff, 1.25, 260); }
 export function placeMoon(moon, scrollX) { if (moon) moon.x = scrollX + MOON_X; }
+// Fires sit on the mid plates (parallax 0.4) but are world-space lights for the same culling reason as the moon:
+// world x = baseX + (1 - 0.4) * scrollX projects to the parallax screen position baseX - 0.4 * scrollX. Only the
+// FIRE_LIGHT_CAP on-screen fires nearest the screen centre stay active, which bounds per-frame lighting cost.
+export const FIRE_PARALLAX = 0.4, FIRE_LIGHT_CAP = 4;
+export function placeFires(fires, scrollX, cap = FIRE_LIGHT_CAP) {
+  if (!fires) return;
+  const ranked = [];
+  for (const L of fires) {
+    const sx = L.baseX - FIRE_PARALLAX * scrollX;
+    L.x = sx + scrollX;
+    const onScreen = sx + L.radius > 0 && sx - L.radius < VW;
+    if (onScreen) ranked.push([Math.abs(sx - VW / 2), L]); else L.setVisible(false);
+  }
+  ranked.sort((a, b) => a[0] - b[0]);
+  ranked.forEach(([, L], i) => L.setVisible(i < cap));
+}
 const BARRELS = [[880, 600], [2140, 650], [3330, 610], [4600, 596]];
 
 export class Stage1 extends Phaser.Scene {
@@ -90,7 +106,8 @@ export class Stage1 extends Phaser.Scene {
     });
     this.god = !!q.get('god');
     // ?skip=boss starts at the Chieftain arena (testing / quick device checks)
-    if (q.get('skip') === 'boss') { this.zoneI = 2; this.riley.x = 3990; this.camX = this.camMax = 3500; }
+    // Bounds follow the skipped camera too; the post-physics arena clamp otherwise pins Riley to the left wall.
+    if (q.get('skip') === 'boss') { this.zoneI = 2; this.riley.x = 3990; this.camX = this.camMax = 3500; this.bounds = { l: this.camX, r: this.camX + VW }; }
     if (q.get('demo')) { this.bot = new Bot(this); }
     if (q.get('demo') || q.get('autostart')) this.time.delayedCall(300, () => this.start());
     window.__stage = this; window.__spike = this;
@@ -125,7 +142,7 @@ export class Stage1 extends Phaser.Scene {
     for (const [pi, px, py, I, rad] of fires) {
       const m = this.midPlates[pi]; if (!m) continue;
       const wx = m.x + px * MID_SCALE, wy = MID_Y - m.height * MID_SCALE + py * MID_SCALE;
-      const L = this.lights.addLight(wx, wy, rad, 0xff8a3a, I, 110); L.setScrollFactor(0.4, 1); L.baseI = I; L.seed = Math.random() * 10; this.fires.push(L);
+      const L = this.lights.addLight(wx, wy, rad, 0xff8a3a, I, 110); L.baseX = wx; L.baseI = I; L.seed = Math.random() * 10; this.fires.push(L);
       if (I > 1) this.add.particles(wx, wy, 'ember', { lifespan: 2600, speedY: { min: -80, max: -30 }, speedX: { min: -25, max: 30 }, scale: { start: 0.9, end: 0 }, frequency: 110, blendMode: 'ADD' }).setScrollFactor(0.4, 1).setDepth(-49);
     }
   }
@@ -423,6 +440,6 @@ export class Stage1 extends Phaser.Scene {
     else { this.bounds.l = this.camX; this.bounds.r = Math.min(WORLD_W, this.camX + VW + (this.zone ? 0 : 0)); }
     const [sx, sy] = this.fx.shakeOffset();
     this.cameras.main.setScroll(this.camX + sx, sy);
-    placeMoon(this.moon, this.camX + sx);
+    placeMoon(this.moon, this.camX + sx); placeFires(this.fires, this.camX + sx);
   }
 }
