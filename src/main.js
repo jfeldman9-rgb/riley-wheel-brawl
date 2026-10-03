@@ -6,6 +6,8 @@ import { queueCharJson } from './assets.js';
 import { Stage1 } from './stage1.js';
 import { HUD } from './hud.js';
 import { releaseIdleRenderTargets } from './render-resources.js';
+import { installGraphicsLifecycle } from './graphics-lifecycle.js';
+import { installGraphicsNotice } from './graphics-notice.js';
 class Boot extends Phaser.Scene {
   constructor() { super('boot'); }
   preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); }
@@ -18,6 +20,10 @@ const game = window.__game = new Phaser.Game({
   fps: { target: 60 }, scene: [Boot, Stage1, HUD],
 });
 game.inp = new Input(); game.rs = RS0;
+const graphicsNotice = installGraphicsNotice(window);
+game.graphicsRecovery = installGraphicsLifecycle({ game, meter: perf,
+  onLost: () => graphicsNotice.lost(), onRestored: () => graphicsNotice.restored() });
+game.events.on('destroy', () => graphicsNotice.destroy());
 // Keep polling gamepads while the gameplay scene is paused so Start can resume it.
 game.events.on('step', (time, delta) => game.inp.update(Math.min(delta || 0, 50) / 1000));
 // Quality governor: if frames run long (2 s windows), step down: bloom off -> fewer particles -> lower render scale ->

@@ -29,3 +29,15 @@ test('asset ledger honestly retains unmet animation targets', () => {
   assert.equal(data.physicalDeviceGate,'UNMEASURED');
   assert.ok(data.textureEstimate.rgbaBaseBytes>0);
 });
+test('every player attack keeps the five-frame target and reused artwork is disclosed', () => {
+  const ledger = data.playerAttackDensity;
+  assert.equal(ledger.minimumFrames, 5);
+  assert.equal(ledger.attacks.length, 9);
+  for (const attack of ledger.attacks) {
+    assert.equal(attack.minimumFrames, 5);
+    assert.equal(attack.densityStatus, attack.namedFrames >= 5 ? 'PASS' : 'FAIL');
+  }
+  const runkick = ledger.attacks.find(a => a.action === 'runkick');
+  assert.equal(runkick.animation, 'riley_combo2'); assert.equal(runkick.sharedAnimationWith, 'combo2');
+  assert.equal(ledger.densityStatus, 'FAIL');
+});

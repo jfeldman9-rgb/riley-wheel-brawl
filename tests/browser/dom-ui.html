@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stage 1 DOM controls test fixture</title></head>
+<body>
+<script type="module">
+import { Input } from '../../src/input.js';
+import { installPerfPanel } from '../../src/perf-panel.js';
+import { perf } from '../../src/perf.js';
+import { installGraphicsNotice } from '../../src/graphics-notice.js';
+// Real shipped DOM/CSS and panel/input modules; the scene is a clearly labelled
+// stub. This fixture records NO frame samples and cannot establish a game pass.
+const response = await fetch('../../index.html');
+if (!response.ok) throw new Error('Could not load production DOM fixture');
+const source = new DOMParser().parseFromString(await response.text(), 'text/html');
+document.head.append(source.querySelector('style').cloneNode(true));
+for (const id of ['game', 'touch', 'perf-open', 'perf-overlay', 'graphics-notice']) document.body.append(source.getElementById(id).cloneNode(true));
+const style = document.createElement('style');
+style.textContent = '#fixture-note{position:fixed;inset:24px 24px auto;z-index:10;max-width:720px;padding:20px;border:1px solid #61769e;border-radius:12px;color:#e7eeff;background:#0b1428;font:16px/1.5 system-ui}#fixture-note h1{font-size:22px;margin:0 0 10px}#fixture-state{white-space:pre-wrap;font:14px/1.5 monospace}';
+document.head.append(style);
+const note = document.createElement('section'); note.id = 'fixture-note';
+note.innerHTML = '<h1>DOM controls test fixture</h1><p>NO GAMEPLAY · NO PERFORMANCE SAMPLES · SCENE STUB</p><p>This page loads the shipped input and report controls to check keyboard focus, shielding, export and repeated open/close behavior without WebGL.</p><button id="show-graphics-notice">Show graphics notice (UI only)</button> <button id="hide-graphics-notice">Hide graphics notice (UI only)</button><pre id="fixture-state" aria-live="polite"></pre>';
+document.getElementById('game').append(note);
+const canvas = document.createElement('canvas'); canvas.setAttribute('aria-label', 'Non-rendered game focus target');
+document.getElementById('game').append(canvas);
+const input = new Input(), actions = [], reasons = new Set();
+let opens = 0, closes = 0;
+const state = document.getElementById('fixture-state');
+const render = () => state.textContent = `Panel opens: ${opens}\nPanel closes: ${closes}\nPause reasons: ${[...reasons].join(', ') || 'none'}\nGameplay action count: ${actions.length}\nLast gameplay action: ${actions.at(-1) || 'none'}\nFrame samples: ${perf.totalFrames}`;
+input.on('press', action => { actions.push(action); render(); });
+const stage = { setPauseReason(reason, value) { value ? reasons.add(reason) : reasons.delete(reason); value ? opens++ : closes++; render(); } };
+const panel = installPerfPanel({ game: { inp: input, canvas }, getStage: () => stage });
+const graphicsNotice = installGraphicsNotice(window);
+document.getElementById('show-graphics-notice').addEventListener('click', () => graphicsNotice.lost());
+document.getElementById('hide-graphics-notice').addEventListener('click', () => graphicsNotice.restored());
+addEventListener('pagehide', () => { panel.destroy(); graphicsNotice.destroy(); }, { once: true });
+render();
+</script>
+</body></html>

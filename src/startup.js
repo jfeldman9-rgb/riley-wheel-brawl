@@ -7,7 +7,7 @@ export function createStartupGuard(root = globalThis) {
   const cleanups = [];
   const detach = () => { for (const cleanup of cleanups.splice(0)) cleanup(); };
   const messages = {
-    graphics: ['Graphics could not start', 'This browser could not create the WebGL2 graphics context Riley needs. Try Reload game once. If this returns, open this same preview in a WebGL2-capable browser or device.'],
+    graphics: ['Graphics could not start', 'This browser could not create the WebGL graphics context Riley needs. Try Reload game once. If this returns, open this same preview in a WebGL-capable browser or device.'],
     assets: ['Some game files could not load', 'The game stopped before the title screen because a required file did not load. Check your connection, then reload this same preview.'],
     startup: ['The game could not start', 'A startup error stopped the game before the title screen. Try Reload game. If it happens again, share this preview link and the error code below.'],
   };

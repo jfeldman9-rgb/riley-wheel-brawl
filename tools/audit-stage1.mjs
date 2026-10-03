@@ -51,10 +51,24 @@ export function audit() {
   for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) files.add(`assets/audio/voice/${name}`);
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
   const rgbaBytes = images.reduce((n,x)=>n+x.rgbaBytes,0);
+  const rileyAnimations = json('assets/chars/riley.anims.json').anims;
+  // These are the shipped attack-animation mappings, not a claim that every
+  // move is visually distinct. Runkick intentionally shares combo2's artwork.
+  const playerAttacks = Object.entries({ combo1:'combo1', combo2:'combo2', combo3:'combo3', back:'back',
+    airkick:'airkick', runkick:'combo2', cast:'cast', knee:'knee', throw:'throw' }).map(([action, animation]) => {
+    const name = `riley_${animation}`, data = rileyAnimations.find(a => a.name === name);
+    const namedFrames = new Set(data?.frames || []).size;
+    return { action, animation:name, namedFrames, minimumFrames:5, densityStatus:namedFrames>=5?'PASS':'FAIL',
+      ...(action==='runkick'?{sharedAnimationWith:'combo2'}:{}) };
+  });
   return { characters, preFight: { inventoryUpperBoundBytes:preFightUpperBoundBytes, budgetBytes:25_000_000,
       inventoryStatus:preFightUpperBoundBytes <= 25_000_000 ? 'PASS' : 'FAIL',
       note:'Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence.' },
+    playerAttackDensity: { minimumFrames:5, attacks:playerAttacks,
+      densityStatus:playerAttacks.every(a=>a.densityStatus==='PASS')?'PASS':'FAIL',
+      note:'Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Runkick shares combo2; candidate artwork outside game assets is excluded.' },
     textureEstimate: { rgbaBaseBytes:rgbaBytes, withFullMipChainBytes:Math.ceil(rgbaBytes*4/3), images,
+      mipmaps:'Disabled by the pinned Phaser default and current game configuration; full-chain bytes are hypothetical.',
       note:'RGBA8 decoded base-level estimate, not measured GPU allocation. Excludes framebuffer/filter/canvas/driver allocations. Normal maps counted separately; no device-safe claim.' },
     physicalDeviceGate:'UNMEASURED', blindReview:'PENDING', freezeFrameReview:'PENDING', likenessReview:'PENDING' };
 }

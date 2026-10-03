@@ -18,6 +18,13 @@ html,body{margin:0;height:100%;background:#05070d;overflow:hidden;touch-action:n
 #startup-card button{min-height:48px;padding:12px 20px;border:1px solid #91a8d1;border-radius:8px;background:#203452;color:#fff;font:600 16px system-ui;cursor:pointer;touch-action:manipulation}
 #startup-card button:focus-visible{outline:3px solid #ffd578;outline-offset:4px}
 #startup-code{font:13px/1.5 ui-monospace,monospace}
+#graphics-notice[hidden]{display:none}
+#graphics-notice{position:fixed;z-index:90;left:50%;top:max(20px,env(safe-area-inset-top));transform:translateX(-50%);box-sizing:border-box;width:min(600px,calc(100% - 32px));padding:18px 22px;border:1px solid #e7bf76;border-radius:12px;background:#121b2ff5;color:#fff;font:16px/1.5 system-ui,sans-serif;box-shadow:0 12px 48px #0008}
+#graphics-notice h1{font-size:22px;margin:0 0 8px}
+#graphics-notice p{margin:8px 0 12px;color:#d8e2f5}
+#graphics-notice button{min-height:44px;padding:10px 16px;border:1px solid #91a8d1;border-radius:8px;background:#203452;color:#fff;font:600 16px system-ui;cursor:pointer;touch-action:manipulation}
+#graphics-notice button:focus-visible{outline:3px solid #ffd578;outline-offset:3px}
+body.graphics-lost #touch{display:none}
 /* touch controls: only shown on touch devices (body.touch is set on the first real touch or a coarse pointer) */
 #touch{position:fixed;inset:0;pointer-events:none;display:none}
 body.touch #touch{display:block}
@@ -54,6 +61,9 @@ html.perf-open,html.perf-open body{touch-action:pan-y pinch-zoom}
 <section id="startup-error" hidden role="alert" aria-labelledby="startup-title" aria-describedby="startup-description">
 <div id="startup-card"><h1 id="startup-title">The game could not start</h1><p id="startup-description"></p><button id="startup-retry" type="button">Reload game</button><p id="startup-code"></p></div>
 </section>
+<aside id="graphics-notice" hidden role="status" aria-live="polite" aria-labelledby="graphics-title">
+<h1 id="graphics-title">Graphics interrupted</h1><p>Gameplay is paused while this browser restores graphics. If it does not recover, Reload game restarts Stage 1. You can still save the Perf report below.</p><button id="graphics-retry" type="button">Reload game</button>
+</aside>
 <div id="touch"><div id="stick"><div id="knob"></div></div>
 <div class="tb" id="tbA">KICK</div><div class="tb" id="tbJ">JUMP</div><div class="tb" id="tbS">FIRE</div><div class="tb" id="tbP">II</div></div>
 <button id="perf-open" type="button" aria-haspopup="dialog" aria-controls="perf-dialog" aria-expanded="false" aria-label="Open local performance report">Perf report</button>

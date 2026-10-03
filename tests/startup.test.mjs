@@ -23,7 +23,7 @@ test('WebGL boot failure replaces endless loading with a focused recovery action
   assert.equal(guard.failed, true); assert.equal(guard.finished, false);
   assert.equal(e.boot.hidden, true); assert.equal(e['startup-error'].hidden, false);
   assert.equal(e['startup-title'].textContent, 'Graphics could not start');
-  assert.match(e['startup-description'].textContent, /WebGL2/);
+  assert.match(e['startup-description'].textContent, /WebGL/);
   assert.match(e['startup-code'].textContent, /WEBGL_UNAVAILABLE/);
   assert.equal(e['startup-retry'].focused, true);
   assert.equal(e['perf-open'].hidden, true); assert.equal(e['perf-open'].disabled, true);
