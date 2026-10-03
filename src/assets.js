@@ -1,13 +1,16 @@
 // Asset manifest + loading. Characters are packed by stage1/tools/pack2.py into atlas pages, each with a normal map
 // (<page>_n) and a "flipped" normal map (<page>_nl, red channel inverted) used when the sprite is mirrored to face the
 // other way, so the scene lights still hit the side of the body that faces them.
+// CHARS is Stage 1's set (the default page / animation queue); Stage 2 passes its own list (src/stages.js STAGE_CHARS).
+// Every character's small anims.json loads at boot (ALL_CHARS); only the current stage's atlas pages are fetched.
 export const CHARS = ['riley', 'grunt', 'spear', 'hound', 'chief', 'loial'];
+export const ALL_CHARS = [...CHARS, 'zealot', 'archer', 'byar'];
 const NML = {};
 export function queueCharJson(scene) {
-  for (const k of CHARS) scene.load.json(k + '.A', `assets/chars/${k}.anims.json`);
+  for (const k of ALL_CHARS) scene.load.json(k + '.A', `assets/chars/${k}.anims.json`);
 }
-export function queueCharPages(scene) {
-  for (const k of CHARS) {
+export function queueCharPages(scene, keys = CHARS) {
+  for (const k of keys) {
     const m = scene.cache.json.get(k + '.A'); if (!m) continue;
     for (const p of m.pages) {
       // Textures survive a scene restart. Phaser skips their cached images but
@@ -17,9 +20,9 @@ export function queueCharPages(scene) {
     }
   }
 }
-export function makeCharAnims(scene) {
+export function makeCharAnims(scene, keys = CHARS) {
   const metas = {};
-  for (const k of CHARS) {
+  for (const k of keys) {
     const m = scene.cache.json.get(k + '.A'); if (!m) continue; metas[k] = m;
     for (const p of m.pages) if (scene.textures.exists(p + '_nl')) NML[p] = scene.textures.get(p + '_nl').source[0];
     for (const a of m.anims) {
@@ -28,6 +31,14 @@ export function makeCharAnims(scene) {
     }
   }
   return metas;
+}
+/** drop a stage's character atlases and their animations (switching stages on an iPad keeps one stage resident) */
+export function releaseChars(scene, keys) {
+  for (const k of keys) {
+    const m = scene.cache.json.get(k + '.A'); if (!m) continue;
+    for (const a of m.anims) if (scene.anims.exists(a.name)) scene.anims.remove(a.name);
+    for (const p of m.pages) { for (const t of [p, p + '_nl']) if (scene.textures.exists(t)) scene.textures.remove(t); delete NML[p]; }
+  }
 }
 let patched = false;
 /** Phaser 4 rotates normal maps with the sprite but ignores flipX; swap in the mirrored normal map for flipped sprites. */

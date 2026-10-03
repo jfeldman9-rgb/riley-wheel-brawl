@@ -21,10 +21,12 @@ const { Bot } = await import('../../src/bot.js');
 const { Input } = await import('../../src/input.js');
 const { perf } = await import('../../src/perf.js');
 const readJSON = path => JSON.parse(readFileSync(new URL(path, import.meta.url)));
-const metas = Object.fromEntries(['riley', 'chief', 'hound', 'grunt', 'spear', 'loial'].map(key => [key, readJSON(`../../assets/chars/${key}.anims.json`)]));
+const metas = Object.fromEntries(['riley', 'chief', 'hound', 'grunt', 'spear', 'loial', 'zealot', 'archer', 'byar'].map(key => [key, readJSON(`../../assets/chars/${key}.anims.json`)]));
 const animations = Object.fromEntries(Object.values(metas).flatMap(m => m.anims.map(a => [a.name, a])));
 const plates = readJSON('../../assets/bg/plates.json');
 const staves = Object.keys(readJSON('../../assets/props/staves.json').frames);
+const planks = Object.keys(readJSON('../../assets/props/planks.json').frames);
+const jsonCache = { plates, plates2: readJSON('../../assets/bg2/plates.json'), lights2: readJSON('../../assets/bg2/lights.json') };
 
 export function withSeed(seed, fn) {
   const random = Math.random, tick = perf.tick;
@@ -38,10 +40,12 @@ export function withSeed(seed, fn) {
 export const FULL_STAGE_SEEDS = [1, 2, 3, 4, 5, 10, 20, 100, 97];
 export const FULL_STAGE_MODES = ['1', 'boss-coverage'];
 
-export function stage1Simulation({ mode = '1' } = {}) {
+// stage: 2 creates the scene as Stage 2 (Baerlon). followRestart: forward scene.restart(data) into the next create(data)
+// (the default keeps the original data-less restart, which recreates the stage the harness started with).
+export function stage1Simulation({ mode = '1', stage, followRestart = false } = {}) {
   const visuals = new Set(), lights = new Set(), timers = [], tweens = [], fighters = new Set();
-  let wallTime = 0, restartRequested = false, controllerMode = mode, hudLaunchRequested = false;
-  const observations = { spawns: [], deaths: [], zones: [], waves: [], entries: new Map(), hud: [], peak: {}, restarts: 0 };
+  let wallTime = 0, restartRequested = false, restartData, controllerMode = mode, hudLaunchRequested = false;
+  const observations = { spawns: [], deaths: [], zones: [], waves: [], entries: new Map(), hud: [], peak: {}, restarts: 0, restartData: [] };
   const peak = values => { for (const [key, value] of Object.entries(values)) observations.peak[key] = Math.max(observations.peak[key] || 0, value); };
   function visual(x = 0, y = 0, key = '') {
     const anims = createFrameClock();
@@ -68,24 +72,24 @@ export function stage1Simulation({ mode = '1' } = {}) {
   const camera = { setOrigin() {}, setZoom() {}, setRoundPixels() {}, setScroll(x, y) { this.x = x; this.y = y; },
     filters: { internal: { remove() {}, addParallelFilters() { return { top: { addThreshold() {}, addBlur() {} }, blend: {} }; } }, external: { addVignette() { return {}; }, remove() {} } } };
   const hud = {};
-  for (const method of ['caption', 'hideTitle', 'bossBar', 'target', 'combo', 'go', 'flashText', 'togglePerf', 'hideGameOver', 'gameOver', 'stageClear', 'showCutscene', 'cutsceneLine', 'hideCutscene']) hud[method] = (...args) => observations.hud.push({ method, at: s.time.now, args });
+  for (const method of ['caption', 'hideTitle', 'bossBar', 'target', 'combo', 'go', 'flashText', 'togglePerf', 'hideGameOver', 'gameOver', 'stageClear', 'showCutscene', 'cutsceneLine', 'hideCutscene', 'titleSelect', 'ribbon']) hud[method] = (...args) => observations.hud.push({ method, at: s.time.now, args });
   Object.assign(s, {
     events: new EventEmitter(), cameras: { main: camera },
     add: { image: visual, sprite: visual, tileSprite: visual, particles(x, y, key, config) { const v = visual(x, y, key); v.emitting = config.emitting !== false; return v; } },
     make: { graphics: () => visual() },
-    textures: { exists: () => true, get: key => ({ source: [{}], getSourceImage: () => ({ width: 2048, height: 1024 }), getFrameNames: () => key === 'staves' ? staves : [] }) },
-    cache: { json: { get: key => key === 'plates' ? plates : metas[key.replace(/\.A$/, '')] } },
+    textures: { exists: () => true, get: key => ({ source: [{}], getSourceImage: () => ({ width: 2048, height: 1024 }), getFrameNames: () => key === 'staves' ? staves : key === 'planks' ? planks : [] }) },
+    cache: { json: { get: key => jsonCache[key] || metas[key.replace(/\.A$/, '')] } },
     anims: { exists: key => !!animations[key], globalTimeScale: 1 },
     lights: { enable() { return this; }, setAmbientColor() {}, addLight(x, y, radius, color, intensity) { const L = { x, y, radius, color, intensity, visible: true, setScrollFactor() { return this; }, setVisible(v) { this.visible = v; return this; } }; lights.add(L); return L; }, removeLight(L) { lights.delete(L); } },
     time: { now: 0, delayedCall(ms, fn) { const timer = { delay: ms, elapsed: 0, fn, remove() { const i = timers.indexOf(this); if (i >= 0) timers.splice(i, 1); } }; timers.push(timer); return timer; } },
     tweens: { add(config) { tweens.push({ config, elapsed: 0, counter: false }); }, addCounter(config) { tweens.push({ config, elapsed: 0, counter: true }); } },
-    scene: { launch() { hudLaunchRequested = true; }, get: () => hud, pause() {}, resume() {}, stop() {}, restart() { observations.restarts++; restartRequested = true; } },
+    scene: { launch() { hudLaunchRequested = true; }, get: () => hud, pause() {}, resume() {}, stop() {}, restart(data) { observations.restarts++; observations.restartData.push(data); restartData = data; restartRequested = true; } },
     game: { inp: new Input(), rs: 1, governor() {} },
   });
   const spawn = s.spawn, die = s.onEnemyDie;
   s.spawn = function(type, side) { const e = spawn.call(this, type, side); fighters.add(e); observations.spawns.push({ type, side, zone: this.zoneI, wave: this.wave, at: this.time.now, id: e.id, run: this.runId }); observations.entries.set(e.id, { start: this.time.now, end: null }); return e; };
   s.onEnemyDie = function(e) { observations.deaths.push({ type: e.type, id: e.id, at: this.time.now, run: this.runId }); return die.call(this, e); };
-  s.create();
+  s.create(stage ? { stage } : undefined);
   s.bot = mode ? new Bot(s, { mode }) : null;
   s.inp.press('start');
   const baseline = { visuals: visuals.size, lights: lights.size };
@@ -114,7 +118,7 @@ export function stage1Simulation({ mode = '1' } = {}) {
     resources() { return { visuals: visuals.size, lights: lights.size, timers: timers.length, tweens: tweens.length }; },
     step(dt = 1 / 60) {
       if (restartRequested) {
-        restartRequested = false; shutdown(); s.create();
+        restartRequested = false; shutdown(); s.create(followRestart ? restartData : (stage ? { stage } : undefined));
         s.bot = controllerMode ? new Bot(s, { mode: controllerMode }) : null;
       }
       wallTime += dt * 1000;

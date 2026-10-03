@@ -43,6 +43,26 @@ export const EXTRA_VOICE = {
   twix_07: ['RILEY', 'Have you guys ever thought about... not working for the Dark One?'],
   twix_08: ['ALL TROLLOCS', '...Does the Light have more Twix?'],
   twix_09: ['RILEY', "Ask me after I win. Break's over!"],
+  // Stage 2: Baerlon and the Whitecloaks (Kokoro TTS; casts in VOICE_PROVENANCE.md). Kid-safe on purpose.
+  st2_story_01: ['NARRATOR', "The Fade's trail led north, through the rain, to the walled town of Baerlon."],
+  st2_story_02: ['RILEY', 'These hoofprints... a Myrddraal came this way. Hang on, Twinkle Toes.'],
+  st2_story_03: ['RILEY', "That's her ribbon! She was here!"],
+  st2_story_04: ['JARET BYAR', 'A boy who channels? Darkfriend! Children of the Light, seize him!'],
+  st2_story_05: ['RILEY', "Darkfriend? I'm sixteen! I'm just looking for my friend!"],
+  st2_story_06: ['WHITECLOAK', "That's exactly what a Darkfriend would say!"],
+  zealot_intro_01: ['WHITECLOAK', 'Halt, Darkfriend! In the name of the Light!'],
+  riley_st2_stable_01: ['RILEY', 'Hound Trollocs? The Fade left guards behind!'],
+  riley_ribbon_01: ['RILEY', "Twinkle Toes' ribbon! I'm getting closer."],
+  zealot_mud_01: ['WHITECLOAK', 'My cloak! Do you know how hard it is to get mud out of white wool?!'],
+  riley_mud_01: ['RILEY', 'Try cold water!'],
+  byar_intro_01: ['JARET BYAR', 'I am Jaret Byar, Child of the Light. Kneel, Darkfriend!'],
+  byar_parry_01: ['JARET BYAR', 'Too slow, Darkfriend!'],
+  byar_mid_01: ['JARET BYAR', 'Archers! Cover the yard!'],
+  byar_volley_01: ['JARET BYAR', 'Loose!'],
+  byar_rage_01: ['JARET BYAR', 'Burn the barn! Smoke the Darkfriend out!'],
+  byar_defeat_01: ['JARET BYAR', 'This is not over, Darkfriend! The Light will find you!'],
+  riley_st2_victory_01: ['RILEY', "I'm NOT a Darkfriend! ...And your barn is on fire!"],
+  riley_st2_clear_01: ['RILEY', 'The trail keeps going. Hang on, Twinkle Toes. I am coming.'],
 };
 function init() {
   if (ctx) return;
@@ -136,6 +156,17 @@ export const sfx = {
   zap() { if (!gate('zap', 60)) return; noise({ f0: 6000, f1: 900, dur: 0.18, vol: 0.32, filter: 'highpass' }); tone({ f0: 1400, f1: 180, dur: 0.16, vol: 0.16, type: 'sawtooth' }); tone({ f0: 70, f1: 40, dur: 0.25, vol: 0.35, type: 'sine' }); },
   fall() { tone({ f0: 1800, f1: 500, dur: 0.7, vol: 0.12, type: 'sine' }); },
   grumble() { if (!gate('grumble', 300)) return; tone({ f0: vary(85, 0.15), f1: 60, dur: 0.45, vol: 0.16, type: 'sawtooth' }); noise({ f0: 380, f1: 160, dur: 0.4, vol: 0.12, attack: 0.06 }); },
+  // Stage 2 (Baerlon) cues
+  clang() { if (!gate('clang', 70)) return; tone({ f0: vary(1250), f1: 880, dur: 0.11, vol: 0.14, type: 'square' }); tone({ f0: vary(1870), dur: 0.22, vol: 0.09, type: 'triangle' }); noise({ f0: 5200, f1: 2000, dur: 0.08, vol: 0.18, filter: 'highpass' }); },
+  glint() { if (!gate('glint', 200)) return; tone({ f0: 2600, f1: 3400, dur: 0.16, vol: 0.06, type: 'sine' }); tone({ f0: 3900, dur: 0.1, delay: 0.06, vol: 0.04, type: 'sine' }); },
+  bowDraw() { if (!gate('bow', 150)) return; noise({ f0: 700, f1: 1700, dur: 0.3, vol: 0.07, filter: 'bandpass', q: 3, attack: 0.2 }); },
+  twang() { if (!gate('twang', 60)) return; tone({ f0: vary(190), f1: 120, dur: 0.14, vol: 0.16, type: 'triangle' }); noise({ f0: 3200, f1: 900, dur: 0.12, vol: 0.12, filter: 'bandpass', q: 1.5 }); },
+  warcry() { if (!gate('warcry', 400)) return; for (let i = 0; i < 2; i++) tone({ f0: vary(200 + i * 70), f1: 150, dur: 0.55, vol: 0.12, type: 'sawtooth', delay: i * 0.04 }); noise({ f0: 900, f1: 400, dur: 0.5, vol: 0.14, attack: 0.08 }); duck(0.5, 0.3, 0.5); },
+  thunder() { if (!gate('thunder', 1500)) return; noise({ f0: 260, f1: 50, dur: 2.4, vol: 0.42, attack: 0.04 }); noise({ f0: 1400, f1: 180, dur: 0.5, vol: 0.2 }); tone({ f0: 55, f1: 30, dur: 1.6, vol: 0.25, type: 'sine', delay: 0.05 }); },
+  horn() { tone({ f0: 196, f1: 220, dur: 0.5, vol: 0.18, type: 'sawtooth' }); tone({ f0: 294, f1: 330, dur: 0.6, delay: 0.32, vol: 0.16, type: 'sawtooth' }); },
+  volleyWhistle() { for (let i = 0; i < 4; i++) tone({ f0: vary(2600, 0.1), f1: 700, dur: 0.38, vol: 0.05, type: 'sine', delay: i * 0.05 }); },
+  flame() { if (!gate('flame', 150)) return; noise({ f0: 350, f1: 1900, dur: 0.55, vol: 0.28, filter: 'bandpass', attack: 0.08 }); tone({ f0: 90, f1: 60, dur: 0.4, vol: 0.2, type: 'sine' }); },
+  creak() { if (!gate('creak', 400)) return; tone({ f0: vary(140, 0.15), f1: 95, dur: 0.6, vol: 0.1, type: 'sawtooth', attack: 0.15 }); noise({ f0: 600, f1: 300, dur: 0.5, vol: 0.08, filter: 'bandpass', q: 4 }); },
   impact() { if (!gate('impact', 120)) return; tone({ f0: 70, f1: 30, dur: 0.5, vol: 0.6, type: 'sine' }); noise({ f0: 2400, f1: 160, dur: 0.35, vol: 0.45 }); duck(0.35, 0.15, 0.5); },
 };
 let musicWanted = false, unlocked = false;
