@@ -1,0 +1,33 @@
+{
+  "tool": "built-in image_gen",
+  "tries": 1,
+  "selected_try": 1,
+  "prompts": [
+    "Use case: stylized-concept. Asset: locked character master sprite for Riley Wheel Brawl 2.0.\nCreate ONE full-body ordinary human WHITECLOAK ZEALOT, facing LEFT in profile/slight three-quarter view, on genuinely transparent alpha background, portrait 1024x1536.\nThe two supplied images are STYLE REFERENCES ONLY: trolloc-master.png defines the locked ink, cel shading, metal and cloth rendering; riley-master.png defines matching human anatomy style and PIXEL SCALE. Match their confident dark-brown/near-black thick outer outlines, thinner interior ink, hand-drawn HD 2D fighting-game art in the spirit of Streets of Rage 4, clean 2-3 tone cel shading with subtle painterly gradients, rich grounded palette. No photorealism, 3D, chibi or pixel art. Match the references closely so this appears drawn by the same artist for the same game.\nSubject: grown man about 30, a bit taller and broader than Riley, strong human proportions, stern clean-shaven square-jawed face clearly visible, eyes looking LEFT. Burnished CONICAL steel helmet with short nasal guard, no closed visor. Long WHITE wool cloak, lower hem splashed with brown mud from rainy Baerlon streets. White tabard over polished steel breastplate, grey mail sleeves. Large golden SUNBURST on the LEFT breast of tabard. Brown leather belt and gloves. Steel greaves over brown boots.\nPose and anatomy: ready combat stance facing LEFT, two arms and two legs. LEFT arm carries a large round wooden shield painted white, golden sunburst centered on its face, steel rim. Shield raised forward toward enemy on image LEFT, attached to left forearm; show its outer painted face clearly. RIGHT gloved hand grips a straight steel arming sword with simple brass crossguard, drawn back on image RIGHT ready to strike; right arm bent back, sword held diagonally upward behind the shoulder. Single straight blade, coherent hilt, clear hand gripping handle. Shield a fixed clean circle in perspective, sword a fixed straight arming sword; maintain these exact weapon sizes and shapes for this master.\nComposition: whole figure from helmet tip to boots with clear margin on every edge; sword and shield wholly inside frame. Human head and anatomical scale comparable to Riley standing next to him, slightly taller/broader; accommodate combat stance without cropping. Broad readable silhouette. Soft upper LEFT key light, gentle cool rim on right edge, moderate baked shading.\nBackground: real transparent alpha, including gaps between limbs and gear. NO background glow from Riley reference, NO ground shadow, floor, scenery, text, labels, border or extra figures."
+  ],
+  "reference_images": [
+    "/workspace/rwb-2/stage1/gen/spear-master/trolloc-master.png",
+    "/workspace/rwb-2/stage1/gen/spear-master/riley-master.png"
+  ],
+  "output": "master-side.png",
+  "verification": {
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "fully_transparent_pixels": 785477,
+    "total_pixels": 1572864,
+    "corner_alpha": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "inspection": "Compared with both references: matching dark silhouette ink, cel shading with painterly texture and cool right rim; left-facing human, full body, shield forward and right-hand sword raised back. Selected first generation."
+}

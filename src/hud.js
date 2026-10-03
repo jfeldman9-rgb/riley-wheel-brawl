@@ -5,6 +5,12 @@ import { installPerfPanel } from './perf-panel.js';
 import { POWERS, ART } from './powers.js';
 import { TWIX_PANELS } from './twix.js';
 const F = 'system-ui,-apple-system,Segoe UI,sans-serif', PX = 'PressStart, monospace';
+export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS' });
+export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
+export function clearPrompt(stage, touch) {
+  const verb = touch ? 'TAP KICK' : 'PRESS ATTACK';
+  return stage === 1 ? `${verb} TO CONTINUE TO STAGE 2` : stage === 2 ? `${verb} TO RETURN TO THE TITLE` : `${verb} TO PLAY AGAIN`;
+}
 export class HUD extends Phaser.Scene {
   constructor() { super('hud'); }
   create() {
@@ -32,6 +38,7 @@ export class HUD extends Phaser.Scene {
     this.loialT = this.add.text(234, 77, 'LOIAL READY', { fontFamily: PX, fontSize: '10px', color: '#8cf0ae', stroke: '#000', strokeThickness: 3 });
     this.touchState = ''; this.loialState = 'ready';
     this.makePowerSlots();
+    this.ribbonPic = null; this.ribbonT = null;
     this.cut = null;
     this.enemyName = this.add.text(112, 106, '', { fontFamily: PX, fontSize: '10px', color: '#ffb3a0', stroke: '#000', strokeThickness: 3 });
     this.capBg = this.add.graphics().setAlpha(0);
@@ -64,17 +71,27 @@ export class HUD extends Phaser.Scene {
     const c = this.card; c.removeAll(true);
     const bg = this.add.graphics(); bg.fillStyle(0x000000, 0.45); bg.fillRect(-VW / 2, -VH / 2, VW, VH);
     const t1 = this.add.text(0, -120, 'RILEY WHEEL BRAWL', { fontFamily: PX, fontSize: '40px', color: '#ffe2a0', stroke: '#2a1000', strokeThickness: 10 }).setOrigin(0.5);
-    const t2 = this.add.text(0, -62, '2.0  ·  STAGE 1 VERTICAL SLICE', { fontFamily: PX, fontSize: '14px', color: '#cfe0ff', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5);
-    const t3 = this.add.text(0, 10, "EMOND'S FIELD — WINTERNIGHT", { fontFamily: F, fontStyle: '800', fontSize: '30px', color: '#ffffff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5);
+    const t2 = this.add.text(0, -62, '2.0  ·  CHOOSE YOUR STAGE', { fontFamily: PX, fontSize: '14px', color: '#cfe0ff', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5);
+    const sel = (this.stage && (this.stage.titleSel || this.stage.stageNo)) || 1;
+    const t3 = this.titleStageT = this.add.text(0, 10, STAGE_NAMES[sel], { fontFamily: F, fontStyle: '800', fontSize: '30px', color: '#ffffff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5);
+    // ◀ ▶ pick the stage: keys / d-pad / stick left-right, or tap the arrows
+    const arrow = (x, dir) => { const a = this.add.text(x, 10, dir < 0 ? '◀' : '▶', { fontFamily: F, fontStyle: '900', fontSize: '34px', color: '#ffe9a8', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setInteractive({ useHandCursor: true }); a.isStageArrow = true; a.on('pointerdown', () => this.stage && this.stage.selectStage && this.stage.selectStage(dir)); return a; };
+    const al = this.titleArrowL = arrow(-430, -1), ar = this.titleArrowR = arrow(430, 1);
+    this.titleSelect(sel);
     const touch = this.game.inp.isTouch;
     const t4 = this.add.text(0, 110, touch ? 'TAP TO START' : 'PRESS ENTER OR ATTACK', { fontFamily: PX, fontSize: '18px', color: '#ffe9a8', stroke: '#000', strokeThickness: 5 }).setOrigin(0.5);
     const t5 = this.add.text(0, 170, touch ? 'Stick: move (push far to run)   KICK: attack   JUMP   FIRE: fireball   BALE: balefire   CALL: Loial' : 'WASD/Arrows move · Shift or double-tap: run · J/Z attack · K/Space jump · L/Q fireball · F balefire (full saidin) · R call Loial · walk into a dazed foe to grab\nAttack + back = back kick · Jump + attack = flying kick · M music · N mute · H perf readout',
       { fontFamily: F, fontSize: '15px', color: '#cbd6ee', align: 'center', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5, 0);
-    c.add([bg, t1, t2, t3, t4, t5]);
+    c.add([bg, t1, t2, t3, al, ar, t4, t5]);
     this.tweens.add({ targets: t4, alpha: 0.35, yoyo: true, repeat: -1, duration: 700 });
     // A title tap starts play. Don't turn later battlefield taps into Start:
     // controller Start also pauses an active fight.
-    this.input.on('pointerdown', () => this.onTitlePointer());
+    this.input.on('pointerdown', (ptr, over) => { if (over && over.some(o => o.isStageArrow)) return; this.onTitlePointer(); });
+  }
+  titleSelect(n) {
+    if (this.titleStageT && this.titleStageT.active !== false) this.titleStageT.setText(STAGE_NAMES[n] || STAGE_NAMES[1]);
+    if (this.titleArrowL) this.titleArrowL.setAlpha(n > 1 ? 1 : 0.25);
+    if (this.titleArrowR) this.titleArrowR.setAlpha(n < 2 ? 1 : 0.25);
   }
   onTitlePointer() { if (this.stage && !this.stage.started && !this.stage.ended) this.game.inp.press('start'); }
   hideTitle() { if (!this.card) return; this.tweens.add({ targets: this.card, alpha: 0, duration: 400, onComplete: () => { this.card.removeAll(true); this.card.setAlpha(1); } }); }
@@ -99,6 +116,11 @@ export class HUD extends Phaser.Scene {
   go() { if (!this.goT) return; this.goT.setAlpha(1); this.tweens.add({ targets: this.goT, x: VW - 40, yoyo: true, repeat: 5, duration: 300, onComplete: () => this.goT.setAlpha(0).setX(VW - 60) }); }
   flashText(t) { if (!this.flash) return; this.flash.setText(t).setAlpha(1); this.tweens.add({ targets: this.flash, alpha: 0, delay: 1400, duration: 600 }); }
   bossBar(c) { this.boss = c; this.bossShown = 0; }
+  /** Twinkle Toes' ribbon (Stage 2 collectible) */
+  ribbon(n) {
+    if (!this.ribbonPic && this.textures.exists('ribbon')) { this.ribbonPic = this.add.image(392, 83, 'ribbon').setDisplaySize(30, 30); this.ribbonT = this.add.text(410, 77, '', { fontFamily: PX, fontSize: '10px', color: '#9fd0ff', stroke: '#000', strokeThickness: 3 }); }
+    if (this.ribbonT) this.ribbonT.setText('×' + n);
+  }
   togglePerf() { this.showPerf = !this.showPerf; }
   gameOver() {
     const c = this.card; c.removeAll(true);
@@ -113,7 +135,8 @@ export class HUD extends Phaser.Scene {
     const m = Math.floor(s.time / 60), sec = Math.floor(s.time % 60);
     c.add([bg, this.add.text(0, -120, 'STAGE CLEAR', { fontFamily: PX, fontSize: '44px', color: '#ffe2a0', stroke: '#2a1000', strokeThickness: 10 }).setOrigin(0.5),
       this.add.text(0, -30, `SCORE ${s.score}\nBEST COMBO ${s.combo} HITS\nTIME ${m}:${String(sec).padStart(2, '0')}`, { fontFamily: PX, fontSize: '18px', color: '#ffffff', stroke: '#000', strokeThickness: 5, align: 'center', lineSpacing: 14 }).setOrigin(0.5, 0),
-      this.add.text(0, 150, this.game.inp.isTouch ? 'TAP KICK TO PLAY AGAIN' : 'PRESS ATTACK TO PLAY AGAIN', { fontFamily: PX, fontSize: '14px', color: '#ffe9a8', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5)]);
+      this.add.text(0, 150, clearPrompt(s.stage, this.game.inp.isTouch), { fontFamily: PX, fontSize: '14px', color: '#ffe9a8', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5)]);
+    if (s.stage === 2 && s.ribbons) c.add(this.add.text(0, 100, "TWINKLE TOES' RIBBON FOUND", { fontFamily: PX, fontSize: '12px', color: '#9fd0ff', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5));
   }
   bar(x, y, w, h, f, col, back = 0x1a1010) {
     const g = this.g; g.fillStyle(0x000000, 0.75); g.fillRect(x - 3, y - 3, w + 6, h + 6); g.fillStyle(back, 1); g.fillRect(x, y, w, h);
@@ -161,11 +184,11 @@ export class HUD extends Phaser.Scene {
     }
   }
   // ---------- the Twix campfire cutscene (logic in src/twix.js, ticked from update while Stage1 is paused) ----------
-  showCutscene(cs) {
+  showCutscene(cs, panels = ART.panels) {
     this.hideCutscene();
     const c = this.add.container(0, 0).setDepth(300);
     const bg = this.add.rectangle(VW / 2, VH / 2, VW, VH, 0x05070d, 1).setInteractive();
-    const panel = this.add.image(VW / 2, VH / 2, ART.panels[0].key).setDisplaySize(VW, VH);
+    const panel = this.add.image(VW / 2, VH / 2, panels[0].key).setDisplaySize(VW, VH);
     const box = this.add.graphics(); box.fillStyle(0x000000, 0.72); box.fillRoundedRect(110, VH - 196, VW - 220, 156, 14); box.lineStyle(2, 0xd8c08a, 0.9); box.strokeRoundedRect(110, VH - 196, VW - 220, 156, 14);
     const who = this.add.text(140, VH - 182, '', { fontFamily: PX, fontSize: '14px', color: '#ffd27a', stroke: '#000', strokeThickness: 4 });
     const text = this.add.text(140, VH - 150, '', { fontFamily: F, fontStyle: '600', fontSize: '26px', color: '#ffffff', stroke: '#000', strokeThickness: 5, wordWrap: { width: VW - 290 } });
@@ -176,14 +199,14 @@ export class HUD extends Phaser.Scene {
     // Taps: SKIP skips, anywhere else advances. Routed through Input so the stage handles them like keys and pads.
     skip.on('pointerdown', (ptr, x, y, ev) => { ev && ev.stopPropagation && ev.stopPropagation(); this.game.inp.press('start'); });
     bg.on('pointerdown', () => this.game.inp.press('attack'));
-    this.cut = { c, panel, who, text, panelI: 0 };
+    this.cut = { c, panel, who, text, panelI: 0, panels };
     if (cs && cs.line) this.cutsceneLine(cs.line);
   }
   cutsceneLine(line) {
     const u = this.cut; if (!u || !line) return;
-    const i = Math.max(0, Math.min(TWIX_PANELS - 1, line.panel | 0));
-    if (i !== u.panelI) { u.panelI = i; u.panel.setTexture(ART.panels[i].key).setDisplaySize(VW, VH); }
-    u.who.setText(line.who).setColor(/TROLLOC/.test(line.who) ? '#ffb3a0' : '#9fd8ff'); u.text.setText(line.text);
+    const panels = u.panels || ART.panels, i = Math.max(0, Math.min(panels.length - 1, line.panel | 0));
+    if (i !== u.panelI) { u.panelI = i; u.panel.setTexture(panels[i].key).setDisplaySize(VW, VH); }
+    u.who.setText(line.who).setColor(speakerColor(line.who)); u.text.setText(line.text);
   }
   hideCutscene() { if (this.cut) { this.cut.c.destroy(true); this.cut = null; } }
   update(time, delta) {
@@ -213,11 +236,12 @@ export class HUD extends Phaser.Scene {
       // boss bar sits top-centre-right so it never covers the fighters' feet or the caption box
       const b = this.boss; this.bossShown = Math.min(1, this.bossShown + dt * 1.5); const W = 500, w = W * this.bossShown, x0 = 560, y0 = 44;
       if (!this.bossName) {
-        this.bossName = this.add.text(x0, y0 - 20, 'TROLLOC CHIEFTAIN', { fontFamily: PX, fontSize: '12px', color: '#ffd0b0', stroke: '#000', strokeThickness: 4 }).setOrigin(0, 0.5);
-        this.bossPic = this.add.image(x0 - 44, y0 + 2, 'bossPortrait').setDisplaySize(68, 68);
+        const byar = s.stageNo === 2 && this.textures.exists('byarPortrait');
+        this.bossName = this.add.text(x0, y0 - 20, s.stageNo === 2 ? 'JARET BYAR, CHILD OF THE LIGHT' : 'TROLLOC CHIEFTAIN', { fontFamily: PX, fontSize: '12px', color: '#ffd0b0', stroke: '#000', strokeThickness: 4 }).setOrigin(0, 0.5);
+        this.bossPic = this.add.image(x0 - 44, y0 + 2, byar ? 'byarPortrait' : 'bossPortrait').setDisplaySize(68, 68);
         this.bossRing = this.add.graphics(); this.bossRing.lineStyle(3, 0xb0503a, 1); this.bossRing.strokeCircle(x0 - 44, y0 + 2, 35); this.bossRing.lineStyle(1, 0x000000, 0.8); this.bossRing.strokeCircle(x0 - 44, y0 + 2, 37);
       }
-      const fade = !b.alive && b.state === 'dead';
+      const fade = !b.alive && (b.state === 'dead' || b.state === 'defeated' || b.state === 'retreat');
       const a = fade ? Math.max(0, this.bossName.alpha - dt * 0.8) : 1;
       this.bossName.setAlpha(a); this.bossPic.setAlpha(a); this.bossRing.setAlpha(a);
       if (a > 0) {

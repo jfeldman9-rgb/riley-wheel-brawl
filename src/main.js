@@ -10,7 +10,7 @@ import { installGraphicsLifecycle } from './graphics-lifecycle.js';
 import { installGraphicsNotice } from './graphics-notice.js';
 class Boot extends Phaser.Scene {
   constructor() { super('boot'); }
-  preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); this.load.image('loialPortrait', 'assets/ui/loial-portrait.webp'); }
+  preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); this.load.image('loialPortrait', 'assets/ui/loial-portrait.webp'); this.load.image('byarPortrait', 'assets/ui/byar-portrait.webp'); }
   create() { if (!window.__rwbStartup?.failed) this.scene.start('stage1'); }
 }
 const game = window.__game = new Phaser.Game({
