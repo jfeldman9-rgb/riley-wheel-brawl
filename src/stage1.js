@@ -8,7 +8,7 @@ import { queueCharPages, makeCharAnims, patchFlippedNormals, releaseChars } from
 import { sfx, say, playMusic, playTrack, audioUnlocked, preloadVoices, preloadClips, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
 import { Bot } from './bot.js';
 import { Loial } from './loial.js';
-import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK, TWIX_DROP_Z, queuePowerArt, makePowerAnims, iconKey } from './powers.js';
+import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK, TWIX_DROP_Z, TWIX_ART_KEYS, queuePowerArt, makePowerAnims, iconKey } from './powers.js';
 import { Cutscene, TWIX_SCRIPT } from './twix.js';
 import { STAGE2, STAGE_CHARS, resolveStage } from './stages.js';
 import { WHITECLOAKS } from './whitecloaks.js';
@@ -66,7 +66,7 @@ export class Stage1 extends Phaser.Scene {
     }
     this.loadedStage = stageNo;
     if (stageNo === 2) {
-      queueCharPages(this, STAGE_CHARS[2]); queueStage2(this); queuePowerArt(this);
+      queueCharPages(this, STAGE_CHARS[2]); queueStage2(this); queuePowerArt(this, { twix: false });
       this.load.on('progress', p => { const b = document.getElementById('boot'); if (b) b.textContent = `${STAGE2.loading} ${Math.round(p * 100)}%`; });
       return;
     }
@@ -85,7 +85,7 @@ export class Stage1 extends Phaser.Scene {
   }
   releaseStage(n) {
     if (!this.textures || !this.textures.remove) return;
-    for (const k of STAGE_TEXTURES[n]) if (this.textures.exists(k)) this.textures.remove(k);
+    for (const k of n === 1 ? [...STAGE_TEXTURES[1], ...TWIX_ART_KEYS] : STAGE_TEXTURES[n]) if (this.textures.exists(k)) this.textures.remove(k);
     releaseChars(this, STAGE_CHARS[n].filter(k => !STAGE_CHARS[n === 1 ? 2 : 1].includes(k)));
   }
   create(data) {
@@ -146,7 +146,7 @@ export class Stage1 extends Phaser.Scene {
     this.god = !!q.get('god');
     // ?skip=boss starts at the Chieftain arena (testing / quick device checks)
     // Bounds follow the skipped camera too; the post-physics arena clamp otherwise pins Riley to the left wall.
-    if (q.get('skip') === 'boss') { this.zoneI = 2; this.riley.x = 3990; this.camX = this.camMax = 3500; this.bounds = { l: this.camX, r: this.camX + VW }; }
+    if (q.get('skip') === 'boss') { const k = this.kit ? STAGE2.skipBoss : { zoneI: 2, x: 3990, camX: 3500 }; this.zoneI = k.zoneI; this.riley.x = k.x; this.camX = this.camMax = k.camX; this.bounds = { l: this.camX, r: this.camX + VW }; }
     if (q.get('demo')) { this.bot = new Bot(this); }
     if (q.get('demo') || q.get('autostart') || sd.autostart) this.time.delayedCall(300, () => this.start());
     else if (audioUnlocked()) this.music?.set('title');
@@ -228,8 +228,8 @@ export class Stage1 extends Phaser.Scene {
   selectStage(dir) {
     if (this.started || this.ended) return;
     unlock(); this.music?.set('title');
-    const n = Math.max(1, Math.min(2, (this.titleSel || this.stageNo) + dir));
-    if (n !== this.titleSel) { this.titleSel = n; sfx.go(); this.hud.titleSelect?.(n); }
+    const cur = this.titleSel || this.stageNo, n = Math.max(1, Math.min(2, cur + dir));
+    if (n !== cur) { this.titleSel = n; sfx.go(); this.hud.titleSelect?.(n); }
   }
   start() {
     if (this.started) return;

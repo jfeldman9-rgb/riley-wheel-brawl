@@ -105,7 +105,7 @@ export class Stage2Kit {
       if (s.lightsOn) s.lights.setAmbientColor(k > 0.2 ? (hex((this.cfg.lightning || {}).ambientFlash) || 0x8a9ac0) : (s.ambient || this.ambient));
       return;
     }
-    if (!s.started || s.paused) return;
+    if (!s.started || s.paused || s.ended || s.victoryPending) return;   // the storm quiets once Byar is beaten
     if ((this.lightningT -= dt) <= 0) {
       const e = (this.cfg.lightning || {}).every || [11, 19]; this.lightningT = rand(e[0], e[1]); this.flashT = 0.32;
       s.time.delayedCall(rand(500, 1300), () => sfx.thunder());

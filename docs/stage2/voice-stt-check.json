@@ -1,0 +1,116 @@
+[
+ {
+  "id": "st2_story_01",
+  "text": "The Fade's trail led north, through the rain, to the walled town of Baerlon.",
+  "heard": "The Fades Trail led north, through the rain, to the walled town of Berlant.",
+  "word_match": 0.929
+ },
+ {
+  "id": "st2_story_02",
+  "text": "These hoofprints... a Myrddraal came this way. Hang on, Twinkle Toes.",
+  "heard": "These hoof prints emerald came this way, hang on twinkle toes.",
+  "word_match": 0.727
+ },
+ {
+  "id": "st2_story_03",
+  "text": "That's her ribbon! She was here!",
+  "heard": "That's her ribbon she was here.\"",
+  "word_match": 1.0
+ },
+ {
+  "id": "st2_story_04",
+  "text": "A boy who channels? Darkfriend! Children of the Light, seize him!",
+  "heard": "A boy who channels, dark friend, children of the light sees him.",
+  "word_match": 0.783
+ },
+ {
+  "id": "st2_story_05",
+  "text": "Darkfriend? I'm sixteen! I'm just looking for my friend!",
+  "heard": "Dark friend I'm 16, I'm just looking for my friends.",
+  "word_match": 0.667
+ },
+ {
+  "id": "st2_story_06",
+  "text": "That's exactly what a Darkfriend would say!",
+  "heard": "That's exactly what a dark friend would say.",
+  "word_match": 0.8
+ },
+ {
+  "id": "zealot_intro_01",
+  "text": "Halt, Darkfriend! In the name of the Light!",
+  "heard": "Hall Darkfriend in the name of the light.",
+  "word_match": 0.875
+ },
+ {
+  "id": "riley_st2_stable_01",
+  "text": "Hound Trollocs? The Fade left guards behind!",
+  "heard": "Hound Trollocks the Fade Lift guards behind.",
+  "word_match": 0.714
+ },
+ {
+  "id": "riley_ribbon_01",
+  "text": "Twinkle Toes' ribbon! I'm getting closer.",
+  "heard": "Ribbon, I'm getting closer.",
+  "word_match": 0.8
+ },
+ {
+  "id": "zealot_mud_01",
+  "text": "My cloak! Do you know how hard it is to get mud out of white wool?!",
+  "heard": "My cloak, do you know how hard it is to get mud out of white wool?",
+  "word_match": 1.0
+ },
+ {
+  "id": "riley_mud_01",
+  "text": "Try cold water!",
+  "heard": "Try cold water.",
+  "word_match": 1.0
+ },
+ {
+  "id": "byar_intro_01",
+  "text": "I am Jaret Byar, Child of the Light. Kneel, Darkfriend!",
+  "heard": "I am Gerrit Bayar, Child of the Light, Neil Dockfriend.",
+  "word_match": 0.6
+ },
+ {
+  "id": "byar_parry_01",
+  "text": "Too slow, Darkfriend!",
+  "heard": "Too slow, dark friend.",
+  "word_match": 0.571
+ },
+ {
+  "id": "byar_mid_01",
+  "text": "Archers! Cover the yard!",
+  "heard": "Archers cover the yard.",
+  "word_match": 1.0
+ },
+ {
+  "id": "byar_volley_01",
+  "text": "Loose!",
+  "heard": "Looser.",
+  "word_match": 0.0
+ },
+ {
+  "id": "byar_rage_01",
+  "text": "Burn the barn! Smoke the Darkfriend out!",
+  "heard": "Burn the barn, smoke the dark friend out.",
+  "word_match": 0.8
+ },
+ {
+  "id": "byar_defeat_01",
+  "text": "This is not over, Darkfriend! The Light will find you!",
+  "heard": "This is not over, dark friend, the light will find you.",
+  "word_match": 0.857
+ },
+ {
+  "id": "riley_st2_victory_01",
+  "text": "I'm NOT a Darkfriend! ...And your barn is on fire!",
+  "heard": "I'm not a dark friend and your barn is on fire.",
+  "word_match": 0.857
+ },
+ {
+  "id": "riley_st2_clear_01",
+  "text": "The trail keeps going. Hang on, Twinkle Toes. I am coming.",
+  "heard": "The trail keeps going, hang on, twinkle toes, I am coming.",
+  "word_match": 1.0
+ }
+]

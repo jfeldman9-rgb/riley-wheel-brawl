@@ -140,28 +140,69 @@
    "name": "byar_rage",
    "frames": [
     "byar_rage_00",
-    "byar_rage_01"
+    "byar_rage_01",
+    "byar_rage_02",
+    "byar_rage_03"
    ],
    "holds": [
-    450,
-    1000
+    300,
+    320,
+    620,
+    480
    ],
    "loop": false,
    "pages": [
     0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_rushup",
+   "frames": [
+    "byar_rushup_00"
+   ],
+   "holds": [
+    220
+   ],
+   "loop": false,
+   "pages": [
     0
    ]
   },
   {
    "name": "byar_rush",
    "frames": [
-    "byar_rush_00"
+    "byar_rush_00",
+    "byar_rush_01",
+    "byar_rush_02"
    ],
    "holds": [
-    200
+    110,
+    120,
+    120
    ],
    "loop": true,
    "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_rushend",
+   "frames": [
+    "byar_rushend_00",
+    "byar_rushend_01"
+   ],
+   "holds": [
+    200,
+    300
+   ],
+   "loop": false,
+   "pages": [
+    0,
     0
    ]
   },

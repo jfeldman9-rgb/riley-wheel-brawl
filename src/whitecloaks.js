@@ -20,7 +20,7 @@ export const ZEALOT = Object.freeze({ blocksToBreak: 3, blockReset: 2.5, breakTi
   charge: { x0: -10, x1: 150, z0: 0, z1: 220, dmg: 12, kind: 'heavy', kb: 440, launch: 360, down: true } });
 export const ARCHER = Object.freeze({ keep: [420, 520], tooClose: 230, backstep: 430, backCool: 2.4, releaseFrame: 4, skyRelease: 3, arrowSpeed: 760, arrowZ: 150,
   arrowDmg: 8, skyDmg: 9, skyDelay: 1.15, skyChance: 0.35 });
-export const BYAR = Object.freeze({ parry: 1.5, open: 0.9, openDmg: 1.4, parryEvery: [5, 8], torchEvery: [4.5, 6.5], rushSpeed: 470, rushMax: 1.0,
+export const BYAR = Object.freeze({ parry: 1.5, open: 0.9, openDmg: 1.4, parryEvery: [5, 8], torchEvery: [4.5, 6.5], rushSpeed: 470, rushMax: 1.0, rushUp: 0.22,
   riposte: { anim: 'riposte', active: [2, 3], x0: 0, x1: 285, z0: 0, z1: 240, dmg: 14, kind: 'heavy', kb: 420, launch: 340, down: true, sfx: 'blade' },
   rush: { x0: -10, x1: 160, z0: 0, z1: 240, dmg: 12, kind: 'heavy', kb: 480, launch: 380, down: true },
   thrust: { dmg: 14, kind: 'heavy', down: true, kb: 380 } });
@@ -202,7 +202,7 @@ export class Byar extends Whitecloak {
       if (['approach', 'wait'].includes(this.state)) this.cool = 0;
     }
     this.nextParry -= dt; this.nextVolley -= dt; this.nextTorch -= dt;
-    const own = ['parry', 'open', 'riposte', 'volley', 'rage', 'torch', 'rush', 'defeated', 'retreat'];
+    const own = ['parry', 'open', 'riposte', 'volley', 'rage', 'torch', 'rushup', 'rush', 'rushend', 'defeated', 'retreat'];
     if (own.includes(this.state)) { this.st += dt; this.cool -= dt; if (this.shudder > 0) this.shudder -= dt; }
     switch (this.state) {
       case 'parry': if (this.st > BYAR.parry) { this.setState('open', 'accuse'); } return;
@@ -214,7 +214,9 @@ export class Byar extends Whitecloak {
         if (this.done) { this.setState('approach', 'walk'); this.cool = 0; this.nextTorch = 0.3; } return;
       case 'torch': if (this.fi >= 3 && !this.thrown) { this.thrown = true; this.torches++; this.scene.kit?.throwTorch(this); }
         if (this.done) { this.thrown = false; this.setState('approach', 'walk'); this.cool = rand(0.6, 1.0); this.nextTorch = rand(...BYAR.torchEvery); } return;
+      case 'rushup': if (this.st > BYAR.rushUp) { this.setState('rush', 'rush'); this.rushDir = this.facing; this.hitIds.clear(); sfx.warcry(); } return;
       case 'rush': return this.rushing(dt);
+      case 'rushend': if (this.done) { this.setState('approach', 'walk'); this.cool = rand(0.8, 1.2); } return;
       case 'defeated': if (this.st > 2.4) { this.retreatDir = Math.sign(this.x - this.target.x) || 1; this.face(this.retreatDir); this.setState('retreat', 'walk'); } return;
       case 'retreat': {
         this.x += this.retreatDir * 170 * dt;
@@ -252,11 +254,12 @@ export class Byar extends Whitecloak {
   startVolley() { this.face(Math.sign(this.target.x - this.x)); this.setState('volley', 'volley'); this.signalled = false; say('byar_volley_01', this.scene.caption, false); }
   startRage() { this.pendingRage = false; this.face(Math.sign(this.target.x - this.x)); this.setState('rage', 'rage'); this.raged = false; sfx.warcry(); this.scene.fx.trauma = Math.min(1, this.scene.fx.trauma + 0.5); }
   startTorch() { this.face(Math.sign(this.target.x - this.x)); this.setState('torch', 'torch'); this.thrown = false; }
-  startRush() { this.face(Math.sign(this.target.x - this.x)); this.setState('rush', 'rush'); this.rushDir = this.facing; this.hitIds.clear(); sfx.warcry(); this.cool = rand(1.4, 2.2); }
+  /** shield rush: a crouched wind-up (the telegraph), the run, then a shield bash and recovery that leave him open */
+  startRush() { this.face(Math.sign(this.target.x - this.x)); this.setState('rushup', 'rushup'); this.cool = rand(1.4, 2.2); }
   rushing(dt) {
     this.x += this.rushDir * BYAR.rushSpeed * dt; this.scene.resolveAttack(this, BYAR.rush);
     const b = this.scene.bounds, wall = (this.rushDir > 0 && this.x >= b.r - 80) || (this.rushDir < 0 && this.x <= b.l + 80);
-    if (this.hitIds.has('riley') || wall || this.st > BYAR.rushMax) { this.setState('approach', 'walk'); this.cool = rand(0.8, 1.2); }
+    if (this.hitIds.has('riley') || wall || this.st > BYAR.rushMax) { this.setState('rushend', 'rushend'); this.vx = this.rushDir * 90; }
   }
   takeHit(h, from) {
     if (!this.canBeHit) return false;
@@ -267,7 +270,7 @@ export class Byar extends Whitecloak {
       return false;
     }
     if (this.state === 'open') h = Object.assign({}, h, { dmg: h.dmg * BYAR.openDmg });
-    if (['volley', 'rage', 'torch', 'rush', 'riposte'].includes(this.state) || this.wake > 0) {
+    if (['volley', 'rage', 'torch', 'rushup', 'rush', 'riposte'].includes(this.state) || this.wake > 0) {
       this.hp -= h.dmg * 0.6; this.shudder = 0.1; this.flashArmor(); if (this.hp <= 0) this.die(Math.sign(this.x - from.x) || 1, h); return true;
     }
     return super.takeHit(h, from);

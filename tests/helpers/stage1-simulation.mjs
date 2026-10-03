@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { EventEmitter } from 'node:events';
 import { createFrameClock, startFrameClock, advanceFrameClock } from './animation-clock.mjs';
 
-globalThis.location = { search: '' };
+globalThis.location = { search: process.env.RWB_SEARCH || '' };   // RWB_SEARCH: a child-process probe of URL params (default: none)
 globalThis.window = { devicePixelRatio: 1 };
 globalThis.Phaser = { Scene: class {}, BlendModes: { ADD: 1 }, Renderer: { WebGL: { RenderNodes: { SubmitterQuad: class { setRenderOptions() {} } } } } };
 globalThis.addEventListener = () => {};

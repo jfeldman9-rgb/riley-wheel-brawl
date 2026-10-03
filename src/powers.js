@@ -48,9 +48,11 @@ export const ART = Object.freeze({
   // anim 'riley_lightning' in riley.anims.json) so they are lit and scaled exactly like his other frames.
   rileyLightning: { anim: 'riley_lightning', page: 'riley-1', url: 'assets/powers/riley_lightning.png', frameWidth: 960, frameHeight: 640, frames: 6, holds: [80, 90, 110, 160, 130, 90], ready: true },
 });
-export function queuePowerArt(scene) {
+/** the Twix joke's art (Stage 1 only): Stage 2 neither loads it nor keeps it resident */
+export const TWIX_ART_KEYS = Object.freeze([ART.pickups.twix.key, ...ART.panels.map(a => a.key)]);
+export function queuePowerArt(scene, { twix = true } = {}) {
   const L = scene.load, has = k => scene.textures.exists(k);
-  for (const a of [...Object.values(ART.pickups), ...Object.values(ART.hud), ...ART.panels]) if (!has(a.key)) L.image(a.key, a.url);
+  for (const a of [...Object.values(ART.pickups), ...Object.values(ART.hud), ...ART.panels]) if (!has(a.key) && (twix || !TWIX_ART_KEYS.includes(a.key))) L.image(a.key, a.url);
   for (const a of Object.values(ART.fx)) if (a.ready && !has(a.key)) L.spritesheet(a.key, a.url, { frameWidth: a.frameWidth, frameHeight: a.frameHeight });
 }
 /** Riley's lightning cast uses his painted lightning frames (atlas page riley-1, made by makeCharAnims) while

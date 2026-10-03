@@ -52,3 +52,23 @@ the 9-line Twix campfire scene) were generated locally with the same Kokoro 0.9.
   toward -16 LUFS, limiter, mono 24 kHz MP3 at 96 kbps. No real-person cloning, no paid API.
 - Checks: every clip decodes with audible level and headroom (peaks about -3 dBFS). Not yet reviewed by ear or by
   speech recognition; invented names (Ishamael, Aginor, Myrddraal) use explicit phoneme hints and may still be imperfect.
+
+## Stage 2: Baerlon and the Whitecloaks (TTS)
+
+19 new lines (`tools/tts-stage2-lines.py`), the same local Kokoro 0.9.4 / Kokoro-82M v1.0 model and processing
+chain as above. Text, speech input, phonemes, durations and hashes are in `stage2-voice-manifest.json`.
+
+- Story beat (6 lines, `st2_story_01`-`06`), Whitecloak barks (`zealot_intro_01`, `zealot_mud_01`), Jaret Byar
+  (`byar_intro_01`, `byar_parry_01`, `byar_mid_01`, `byar_volley_01`, `byar_rage_01`, `byar_defeat_01`) and Riley
+  (`riley_st2_stable_01`, `riley_ribbon_01`, `riley_mud_01`, `riley_st2_victory_01`, `riley_st2_clear_01`).
+- Riley: the approved cast (80% am_puck + 20% am_fenrir, speed 1.04, pitch 1.02).
+- New TTS casting for this stage (not audition-approved casts):
+  - Narrator: bm_fable, speed 0.95, pitch 0.97 (British).
+  - Jaret Byar: 70% bm_daniel + 30% bm_lewis, speed 0.94, pitch 0.90 (British).
+  - Whitecloak zealot: 70% am_eric + 30% am_liam, speed 1.02, pitch 0.93.
+- Pronunciation hints: Baerlon, Myrddraal and Darkfriend (displayed text unchanged).
+- Checks: every clip decodes, has audible level and headroom, and is under 200 KB. A local speech-recognition pass
+  (faster-whisper small.en, `docs/stage2/voice-stt-check.json`) scored a mean word match of 0.79. Most misses are
+  spacing ("dark friend" vs "Darkfriend") or invented names: Myrddraal was heard as "emerald" and Byar as "Bayar".
+  "Kneel" was heard as "Neil", which is the same sound. The one-word bark "Loose!" was heard as "Looser". None of
+  these has been reviewed by ear.

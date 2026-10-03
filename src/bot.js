@@ -67,7 +67,7 @@ export class Bot {
         const dx = R.x - e.x, side = Math.sign(dx) || 1;
         return go(Math.abs(dx) < 250 ? side : Math.abs(dx) > 320 ? -side : 0, 0);
       }
-      if (e.type === 'byar' && e.state === 'rush' && Math.abs(R.y - e.y) < 40) return go(0, away(e.y));
+      if (e.type === 'byar' && (e.state === 'rush' || e.state === 'rushup') && Math.abs(R.y - e.y) < 40) return go(0, away(e.y));
     }
     return false;
   }

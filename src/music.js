@@ -21,10 +21,10 @@ export class MusicDirector {
     }
   }
   fadeFor(from, to) {
-    if (to === 'boss') return FADES.toBoss;
     if (to === 'cutscene') return FADES.toCutscene;
     if (from === 'cutscene' && (to === 'stage' || to === 'boss')) return FADES.fromCutscene;
     if (from === 'gameover') return FADES.resume;
+    if (to === 'boss') return FADES.toBoss;
     if (to === 'victory') return FADES.victory;
     if (to === 'gameover') return FADES.gameOver;
     if (to === 'title' || to === 'clear') return FADES.toTitle;
