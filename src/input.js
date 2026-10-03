@@ -5,11 +5,15 @@ const KEYS = {
   KeyE: 'attack', KeyJ: 'attack', KeyZ: 'attack', Space: 'jump', KeyK: 'jump', KeyX: 'jump', KeyQ: 'special', KeyL: 'special', KeyC: 'special',
   ShiftLeft: 'run', ShiftRight: 'run', Escape: 'pause', KeyP: 'pause', Enter: 'start',
 };
+const nativeControl = target => !!target?.closest?.('button,input,textarea,select,a[href],[contenteditable]:not([contenteditable="false"])');
 export class Input {
   constructor() {
     this.held = {}; this.keysDown = new Set(); this.buf = {}; this.t = 0; this.touchAxis = { x: 0, y: 0 }; this.touchHeld = {}; this.lastTap = { left: -9, right: -9 }; this.runLatch = false;
     this.listeners = {}; this.isTouch = false; this.demo = null;
     addEventListener('keydown', e => {
+      // Native DOM controls own Enter/Space/text input. In particular, recovery
+      // buttons must stay keyboard-activatable when the canvas cannot render.
+      if (e.defaultPrevented || nativeControl(e.target)) return;
       const a = KEYS[e.code]; if (e.repeat) return;
       if (a) { e.preventDefault(); this.press(a); this.keysDown.add(e.code); this.held[a] = true; }
       this.emit('key', e.code);

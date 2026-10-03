@@ -1,14 +1,16 @@
 # Riley Wheel Brawl 2.0 — Stage 1 vertical slice (branch `rwb-2`)
 
-Phaser 4.2.1 (WebGL2) rewrite with frame-by-frame painted, normal-mapped sprites. This is a playable **Emond's Field** slice: 3 fight zones, then the Trolloc Chieftain. The live game is **1.1 on `rwb-w2`**; it and `main` are untouched. Stage 1 is playable, but the full acceptance gate in `plan/PLAN.md` §10 has **not passed**.
+Phaser 4.2.1 (WebGL) rewrite with frame-by-frame painted, normal-mapped sprites. This is a playable **Emond's Field** slice: 3 fight zones, then the Trolloc Chieftain. The live game is **1.1 on `rwb-w2`**; it and `main` are untouched. Stage 1 is playable, but the full acceptance gate in `plan/PLAN.md` §10 has **not passed**. The pinned library requests `webgl`/`experimental-webgl`; earlier descriptions calling the shipped renderer WebGL2 were inaccurate. The renderer has not been replaced.
 
-- Play: open `index.html` (any static server, or the raw.githack preview link for a commit).
+- Play: serve the repository over HTTP(S), then open `index.html`, or use a commit-pinned raw.githack preview. Double-clicking a `file://` page does not support this module/asset-loading workflow.
 - Keyboard:
   - WASD or arrows: move. Shift or double-tap: run.
   - J/E/Z: attack. Attack plus back: back kick. K/Space/X: jump. Jump then attack: flying kick.
-  - L/Q/C: fireball. Esc/P: pause.
+  - L/Q/C: fireball. Esc/P or Enter during gameplay: pause.
   - Walk into a dazed foe to grab it.
 - Touch: an on-screen stick and buttons appear only on touch devices. Gamepad works too.
+- Gamepad Start starts the title, pauses/resumes a fight, continues game-over, and replays stage-clear.
+- Graphics recovery: startup failures show a reload action. A lost graphics context pauses combat and keeps prior performance samples; the pause lifts only after Phaser finishes restoring resources. Reloading manually starts over.
 - Perf: press H for the HUD or use **Performance report** to pause, inspect strict fight p95, reset, and copy/save a local JSON capture. Use the fight block for active combat, not the all-active average. No report is uploaded automatically.
 - Acceptance target remains fight p95 ≤16.7 ms on both physical iPad and desktop. Software-renderer captures and regression tests are not device acceptance.
 - Checks: `node --test tests/*.test.mjs`; `node tools/audit-stage1.mjs`. See `docs/stage1/INDEPENDENT_PASS.md` for the current gaps.

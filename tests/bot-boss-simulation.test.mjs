@@ -6,6 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { createFrameClock, startFrameClock, advanceFrameClock } from './helpers/animation-clock.mjs';
 
 globalThis.location = { search: '' };
 globalThis.window = { devicePixelRatio: 1 };
@@ -28,18 +29,13 @@ const animations = Object.fromEntries(Object.values(metas).flatMap(m => m.anims.
 function harness() {
   const visuals = [];
   function visual() {
-    const anims = {
-      isPlaying: false, currentFrame: { index: 1 }, currentAnim: { frames: [] }, timeScale: 1, paused: false,
-      pause() { this.paused = true; }, resume() { this.paused = false; },
-      setCurrentFrame(frame) { this.currentFrame = frame; this.index = frame.index - 1; this.elapsed = 0; },
-    };
+    const anims = createFrameClock();
     const v = {
       anims, alpha: 1, rotation: 0,
       destroy() { this.dead = true; },
       play(key) {
         const data = animations[key]; assert.ok(data, `Shipped animation exists: ${key}`);
-        Object.assign(anims, { data, index: 0, elapsed: 0, currentAnim: { frames: data.frames.map((_, i) => ({ index: i + 1 })) }, isPlaying: true, paused: false });
-        anims.currentFrame = anims.currentAnim.frames[0]; return this;
+        startFrameClock(anims, data); return this;
       },
       setPosition(x, y) { this.x = x; this.y = y; return this; },
       setAlpha(alpha) { this.alpha = alpha; return this; },
@@ -50,23 +46,10 @@ function harness() {
     visuals.push(v); return v;
   }
   function animate(dt, globalTimeScale) {
-    for (const v of visuals) {
-      const a = v.anims;
-      if (v.dead || !a.isPlaying || a.paused) continue;
-      a.elapsed += dt * 1000 * globalTimeScale * a.timeScale;
-      // Phaser 4.2.1 uses each nonzero frame duration instead of msPerFrame.
-      while (a.elapsed >= a.data.holds[a.index]) {
-        a.elapsed -= a.data.holds[a.index]; a.index++;
-        if (a.index >= a.data.frames.length) {
-          if (a.data.loop) a.index = 0;
-          else { a.isPlaying = false; a.index = a.data.frames.length - 1; break; }
-        }
-        a.currentFrame = a.currentAnim.frames[a.index];
-      }
-    }
+    for (const v of visuals) if (!v.dead) advanceFrameClock(v.anims, dt, globalTimeScale);
   }
   const s = Object.create(Stage1.prototype), pending = [];
-  s.time = { now: 0, delayedCall(ms, fn) { pending.push({ at: this.now + ms, fn }); } };
+  s.time = { now: 0, delayedCall(ms, fn) { pending.push({ delay: ms, elapsed: 0, fn }); } };
   Object.assign(s, {
     metas, add: { image: visual, sprite: visual, particles: visual },
     anims: { exists: key => !!animations[key], globalTimeScale: 1 },
@@ -89,10 +72,16 @@ function harness() {
     s,
     step() {
       const dt = 1 / 60; s.time.now += dt * 1000;
-      for (const p of pending.slice()) if (p.at <= s.time.now) { pending.splice(pending.indexOf(p), 1); p.fn(); }
-      animate(dt, s.anims.globalTimeScale);
       // Mirrors the game's pre-step input hook (also active while scene is paused).
-      s.inp.update(dt); s.update(s.time.now, dt * 1000);
+      s.inp.update(dt);
+      // Pinned UpdateList animation updates precede Clock callbacks. Manual
+      // setCurrentFrame above preserves elapsed and nextTick like AnimationState.
+      animate(dt, s.anims.globalTimeScale);
+      for (const p of pending.slice()) {
+        p.elapsed += dt * 1000;
+        if (p.elapsed >= p.delay) { pending.splice(pending.indexOf(p), 1); p.fn(); }
+      }
+      s.update(s.time.now, dt * 1000);
     },
   };
 }

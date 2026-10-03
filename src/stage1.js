@@ -42,6 +42,7 @@ export class Stage1 extends Phaser.Scene {
     this.runId = (this.runId || 0) + 1;
     this.pauseReasons = new Set(); this.paused = false; this.gameOver = false;
     this.clearShown = false; this.victoryPending = false; this.boss = null; this.bot = null;
+    this.hudReady = false; this.startRequested = false;
     this.backdropLit = []; this.ambient = undefined;
     this.inp = this.game.inp; this.inp.clear();
     const b = document.getElementById('boot'); if (b) b.remove();
@@ -86,7 +87,6 @@ export class Stage1 extends Phaser.Scene {
     if (q.get('demo')) { this.bot = new Bot(this); }
     if (q.get('demo') || q.get('autostart')) this.time.delayedCall(300, () => this.start());
     window.__stage = this; window.__spike = this;
-    window.__rwbStartup?.ready();
   }
   // ---------- backdrop ----------
   buildBackdrop() {
@@ -154,7 +154,9 @@ export class Stage1 extends Phaser.Scene {
     if (this.hud && this.hud.pauseLabel) this.hud.pauseLabel.setVisible(next);
   }
   start() {
-    if (this.started) return; this.started = true; unlock(); playMusic(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
+    if (this.started) return;
+    if (!this.hudReady) { this.startRequested = true; return; }
+    this.startRequested = false; this.started = true; unlock(); playMusic(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
     perf.reset();
     say('st1_narrator_01', this.caption);
     this.time.delayedCall(5200, () => !this.zone && say('riley_st1_01', this.caption));
@@ -208,7 +210,10 @@ export class Stage1 extends Phaser.Scene {
   bossDown(c) {
     if (this.victoryPending || this.ended) return;
     // Commit the victory before delayed adds or in-flight hazards can end the run.
+    // A last projectile may win after game-over's timer: victory takes terminal
+    // precedence in either ordering, without restoring health or spare lives.
     this.victoryPending = true;
+    if (this.gameOver) { this.gameOver = false; stopSceneAudio(); this.hud.hideGameOver(); }
     this.fx.slowmo = 1.2; this.fx.hitstop = 0.25; sfx.impact();
     for (const e of this.enemies) if (e !== c && e.alive) { e.hp = 0; e.die(Math.sign(e.x - this.riley.x) || 1, { kb: 300, launch: 300 }); }
     this.time.delayedCall(900, () => say('chieftain_defeat_01', this.caption));
@@ -229,6 +234,7 @@ export class Stage1 extends Phaser.Scene {
   // ---------- combat ----------
   /** check an attack's active frame against the other team */
   resolveAttack(att, a) {
+    if (att.entering) return;
     const targets = att.team === 0 ? this.enemies : [this.riley];
     for (const t of targets) {
       if (t.entering || att.hitIds.has(t.id || 'riley')) continue;
@@ -346,6 +352,9 @@ export class Stage1 extends Phaser.Scene {
   wallHit(x) { this.fx.debris.emitParticleAt(x, LANE_TOP - 40, 14); this.fx.snowPuff.emitParticleAt(x, LANE_TOP, 14); }
   // ---------- main loop ----------
   update(time, deltaMs) {
+    // Phaser still installs update() when create() exits early after a loader
+    // failure. Keep that failed or uninitialized scene inert behind recovery UI.
+    if (window.__rwbStartup?.failed || !this.riley || !this.enemies || !this.fx) return;
     perf.tick(performance.now(), {
       active: this.started && !this.gameOver && !this.ended && !this.paused,
       inFight: this.enemies.some(e => e.alive && !e.entering),
@@ -368,13 +377,25 @@ export class Stage1 extends Phaser.Scene {
     for (const e of this.enemies) {
       e.update(dt); const wasEntering = e.entering;
       if (e.entering && e.x > this.bounds.l + 60 && e.x < this.bounds.r - 60) e.entering = false;
-      if (e.entering) { e.x += Math.sign(this.riley.x - e.x) * e.T.speed * dt; if (e.vx) { e.x += e.vx * dt; e.vx *= Math.pow(0.004, dt); if (Math.abs(e.vx) < 6) e.vx = 0; } e.x = clamp(e.x, this.bounds.l - 260, this.bounds.r + 260); e.y = clamp(e.y, LANE_TOP, LANE_BOT); if (e.z > 0 || e.vz) { e.vz -= 2600 * dt; e.z = Math.max(0, e.z + e.vz * dt); if (!e.z) e.vz = 0; } }
+      if (e.entering) {
+        // Admit actors into the arena before normal slots/attacks. Chasing a
+        // wall-hugging player can stop outside the stricter 60px entry margin.
+        const dir = Math.sign((this.bounds.l + this.bounds.r) / 2 - e.x);
+        if (e.alive) e.face(dir);
+        e.x += dir * e.T.speed * dt;
+        if (e.vx) { e.x += e.vx * dt; e.vx *= Math.pow(0.004, dt); if (Math.abs(e.vx) < 6) e.vx = 0; }
+        e.x = clamp(e.x, this.bounds.l - 260, this.bounds.r + 260); e.y = clamp(e.y, LANE_TOP, LANE_BOT);
+        if (e.z > 0 || e.vz) { e.vz -= 2600 * dt; e.z = Math.max(0, e.z + e.vz * dt); if (!e.z) e.vz = 0; }
+      }
       else e.physics(dt);
     }
     // keep Riley from walking through enemies
     for (const e of this.enemies) if (e.alive && !e.entering && e.state !== 'held' && R.state !== 'down' && Math.abs(e.y - R.y) < 18 && R.z < 40 && e.z < 40) {
       const dx = R.x - e.x, min = 62; if (Math.abs(dx) < min) R.x = e.x + Math.sign(dx || -R.facing) * min;
     }
+    // Separation runs after physics; a wall-pinned enemy must not push Riley
+    // back outside the arena bounds that physics already enforced.
+    R.x = clamp(R.x, this.bounds.l + 40, this.bounds.r - 40);
     this.enemies = this.enemies.filter(e => { if (e.gone) { e.destroy(); return false; } return true; });
     this.updateFireballs(dt); this.updateCarts(dt); this.updatePickups(dt);
     if (this.started) this.updateZones(dt);

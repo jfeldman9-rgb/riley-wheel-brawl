@@ -43,3 +43,21 @@ test('keyboard auto-repeat never creates extra buffered attack edges', () => {
   const i = input(); key('keydown', 'KeyJ'); assert.equal(i.take('attack'), true);
   key('keydown', 'KeyJ', true); assert.equal(i.take('attack'), false);
 });
+test('native DOM controls retain keyboard activation without gameplay or debug inputs', () => {
+  const i = input(), presses = [], debugKeys = [];
+  i.on('press', action => presses.push(action)); i.on('key', code => debugKeys.push(code));
+  for (const code of ['Enter', 'Space', 'KeyJ', 'KeyM']) {
+    let prevented = false;
+    events.keydown[0]({ code, target: { closest: () => ({ tagName: 'BUTTON' }) }, preventDefault() { prevented = true; } });
+    assert.equal(prevented, false);
+  }
+  assert.deepEqual(presses, []); assert.deepEqual(debugKeys, []);
+  assert.equal(i.keysDown.size, 0);
+});
+test('already-handled key events do not leak to gameplay, while keyup still releases held keys', () => {
+  const i = input();
+  events.keydown[0]({ code: 'KeyJ', defaultPrevented: true }); assert.equal(i.take('attack'), false);
+  key('keydown', 'KeyD');
+  events.keyup[0]({ code: 'KeyD', target: { closest: () => ({ tagName: 'BUTTON' }) } });
+  i.update(1 / 60); assert.equal(i.x, 0);
+});

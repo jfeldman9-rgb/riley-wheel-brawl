@@ -7,7 +7,7 @@ Branch: `rwb-2` (started from `rwb-2-spike`). `main` and `rwb-w2` were not touch
 (Previous: `861b6c32bfd7c72fe4dfacef57a5ddfe3b8cbfd3`, the first slice report.)
 Add `?demo=1` to watch the autopilot, or `?skip=boss` to start at the Chieftain.
 
-Engine: Phaser 4.2.1 (WebGL2), ES modules, no build step. Code is in `src/`, art in `assets/`, docs and screenshots in `docs/stage1/`.
+Engine: Phaser 4.2.1 (WebGL), ES modules, no build step. The pinned library requests `webgl`/`experimental-webgl`; the earlier WebGL2 label was inaccurate. No renderer replacement was made. Code is in `src/`, art in `assets/`, docs and screenshots in `docs/stage1/`.
 
 ## Milestone 1: art batch (done)
 

@@ -265,10 +265,81 @@
     }
   ],
   "preFight": {
-    "inventoryUpperBoundBytes": 16513773,
+    "inventoryUpperBoundBytes": 16533262,
     "budgetBytes": 25000000,
     "inventoryStatus": "PASS",
     "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."
+  },
+  "playerAttackDensity": {
+    "minimumFrames": 5,
+    "attacks": [
+      {
+        "action": "combo1",
+        "animation": "riley_combo1",
+        "namedFrames": 3,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "combo2",
+        "animation": "riley_combo2",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "combo3",
+        "animation": "riley_combo3",
+        "namedFrames": 8,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "back",
+        "animation": "riley_back",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "airkick",
+        "animation": "riley_airkick",
+        "namedFrames": 3,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "runkick",
+        "animation": "riley_combo2",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL",
+        "sharedAnimationWith": "combo2"
+      },
+      {
+        "action": "cast",
+        "animation": "riley_cast",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "knee",
+        "animation": "riley_knee",
+        "namedFrames": 2,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      },
+      {
+        "action": "throw",
+        "animation": "riley_throw",
+        "namedFrames": 4,
+        "minimumFrames": 5,
+        "densityStatus": "FAIL"
+      }
+    ],
+    "densityStatus": "FAIL",
+    "note": "Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Runkick shares combo2; candidate artwork outside game assets is excluded."
   },
   "textureEstimate": {
     "rgbaBaseBytes": 224841500,
@@ -492,6 +563,7 @@
         "rgbaBytes": 262144
       }
     ],
+    "mipmaps": "Disabled by the pinned Phaser default and current game configuration; full-chain bytes are hypothetical.",
     "note": "RGBA8 decoded base-level estimate, not measured GPU allocation. Excludes framebuffer/filter/canvas/driver allocations. Normal maps counted separately; no device-safe claim."
   },
   "physicalDeviceGate": "UNMEASURED",

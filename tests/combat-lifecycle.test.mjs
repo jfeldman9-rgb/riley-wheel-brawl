@@ -108,6 +108,22 @@ test('pending Riley death cannot overwrite an already-committed victory', () => 
   assert.deepEqual(events, ['stageClear']); assert.equal(s.gameOver, false);
 });
 
+test('a later boss death replaces already-shown game-over and attack replays rather than continues', () => {
+  const { s, events, advance } = arena();
+  // Explicit last-life fixture; normal damage and both production terminal
+  // timers run. No such state writes are used by the full-stage input tests.
+  s.riley.hp = 1; s.riley.lives = 1;
+  s.riley.takeHit({ dmg: 10 }, s.boss); advance(1600);
+  assert.equal(s.gameOver, true); assert.deepEqual(events, ['gameOver']);
+  killBoss(s);
+  assert.equal(s.victoryPending, true); assert.equal(s.gameOver, false);
+  assert.deepEqual(events, ['gameOver', 'hideGameOver']);
+  assert.equal(s.riley.hp, 0); assert.equal(s.riley.lives, 0, 'Victory does not grant replacement lives');
+  advance(7400); s.onPress('attack');
+  assert.deepEqual(events, ['gameOver', 'hideGameOver', 'stageClear', 'restart']);
+  assert.equal(s.riley.lives, 0, 'Replay never takes the continue branch');
+});
+
 test('repeated bossDown cannot schedule multiple clear cards', () => {
   const { s, events, advance } = arena();
   killBoss(s); s.bossDown(s.boss); advance(7400);
@@ -176,4 +192,22 @@ test('Start continues game-over and replays the completed stage', () => {
   assert.deepEqual(events, ['hideGameOver']);
   s.ended = true; s.clearShown = true; s.onPress('start');
   assert.deepEqual(events, ['hideGameOver', 'restart']);
+});
+
+test('failed initial create remains inert when Phaser subsequently calls update', () => {
+  const previous = window.__rwbStartup;
+  window.__rwbStartup = { failed: true };
+  try {
+    const s = new Stage1();
+    assert.doesNotThrow(() => s.create());
+    assert.equal(s.riley, undefined); assert.equal(s.enemies, undefined);
+    for (let frame = 0; frame < 10; frame++) assert.doesNotThrow(() => s.update(frame * 16.7, 16.7));
+    assert.equal(s.riley, undefined); assert.equal(s.enemies, undefined);
+  } finally { if (previous === undefined) delete window.__rwbStartup; else window.__rwbStartup = previous; }
+});
+
+test('uninitialized scene update never samples or starts combat', () => {
+  const s = new Stage1();
+  assert.doesNotThrow(() => s.update(0, 16.7));
+  assert.equal(s.started, undefined); assert.equal(s.riley, undefined);
 });

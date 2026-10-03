@@ -22,7 +22,7 @@ export class Enemy extends Fighter {
   }
   get target() { return this.scene.riley; }
   get canBeHit() { return this.alive && !this.entering && !['dead', 'held'].includes(this.state) && !(this.state === 'down' && this.z <= 0 && this.st > 0.08) && this.state !== 'getup' && !(this.airborne && this.juggle >= 3); }
-  get grabbable() { return this.alive && !this.T.boss && ['approach', 'wait', 'hurt'].includes(this.state) && this.z <= 0; }
+  get grabbable() { return this.alive && !this.entering && !this.T.boss && ['approach', 'wait', 'hurt'].includes(this.state) && this.z <= 0; }
   update(dt) {
     this.st += dt; this.cool -= dt; if (this.shudder > 0) this.shudder -= dt;
     switch (this.state) {
@@ -42,6 +42,7 @@ export class Enemy extends Fighter {
     return { x: R.x + side * this.T.pref, y: R.y + this.slotOff, side };
   }
   think(dt) {
+    if (this.entering) return; // Scene entry movement owns admission before combat AI.
     const R = this.target, sl = this.slot(); const dx = sl.x - this.x, dy = sl.y - this.y;
     this.face(Math.sign(R.x - this.x));
     const tokens = this.scene.attackTokens();
@@ -141,6 +142,7 @@ export class Chieftain extends Enemy {
     super.update(dt);
   }
   think(dt) {
+    if (this.entering) return;
     const R = this.target, dx = R.x - this.x, ady = Math.abs(R.y - this.y);
     if (this.cool <= 0 && R.alive) {
       if (this.phase >= 2 && this.nextRoar <= 0 && this.scene.enemies.filter(e => e.alive && e.type === 'hound').length < 2) return this.startRoar();

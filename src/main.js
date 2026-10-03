@@ -1,4 +1,4 @@
-// Riley Wheel Brawl 2.0 - Stage 1 vertical slice (Phaser 4, WebGL2, lit sprites).
+// Riley Wheel Brawl 2.0 - Stage 1 vertical slice (Phaser 4, WebGL, lit sprites).
 import { VW, VH, RS0, q } from './config.js';
 import { Input } from './input.js';
 import { perf } from './perf.js';
