@@ -233,6 +233,8 @@ export class Stage2Kit {
       const wx = m.x + px * ms, wy = MID_Y - m.height * ms + py * ms;
       const L = s.lights.addLight(wx, wy, rad, 0xff7a2a, 0.01, 110); L.baseX = wx; L.baseI = 0.01; L.fullI = I; L.seed = Math.random() * 10; L.par = m.scrollFactorX ?? (this.plates.midParallax || 0.5); s.fires.push(L); lights.push(L);
       emitters.push(s.add.particles(wx, wy + 40, 'ember', { x: { min: -90, max: 90 }, lifespan: 1800, speedY: { min: -150, max: -60 }, speedX: { min: -30, max: 30 }, scale: { start: 2.2, end: 0 }, frequency: s.fx.quality >= 2 ? 90 : 40, blendMode: 'ADD' }).setScrollFactor(L.par, 1).setDepth(-48));
+      // the flames themselves: big additive tongues licking up the barn front (the plate is painted unburnt)
+      emitters.push(s.add.particles(wx, wy + 70, 'ember', { x: { min: -120, max: 120 }, y: { min: -20, max: 30 }, lifespan: { min: 650, max: 1050 }, speedY: { min: -210, max: -90 }, speedX: { min: -25, max: 25 }, scale: { start: 4.2, end: 0.6 }, alpha: { start: 0.85, end: 0 }, tint: [0xffe08a, 0xffa040, 0xff6a1a], frequency: s.fx.quality >= 2 ? 22 : 45, blendMode: 'ADD' }).setScrollFactor(L.par, 1).setDepth(-48));
       emitters.push(s.add.particles(wx, wy - 40, 'smoke', { x: { min: -80, max: 80 }, lifespan: 2600, speedY: { min: -60, max: -25 }, scale: { start: 1.2, end: 3.2 }, alpha: { start: 0.45, end: 0 }, frequency: 220 }).setScrollFactor(L.par, 1).setDepth(-49));
     }
     this.barn = { lights, emitters, t: 0 };
