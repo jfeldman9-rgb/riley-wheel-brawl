@@ -1,11 +1,14 @@
 # Riley Wheel Brawl 2.0: Stage 1 (Emond's Field) vertical slice
 
-Branch: `rwb-2` (started from `rwb-2-spike`). `main` and `rwb-w2` were not touched; 1.2 is still live.
+Branch: `rwb-2` (started from `rwb-2-spike`). `main` and `rwb-w2` were not touched; **1.1 is live on `rwb-w2`** (8a17bcd). 1.2 remains a separate draft.
+
+**Acceptance status:** playable slice, not accepted against `plan/PLAN.md` §10. See [the independent pass](docs/stage1/INDEPENDENT_PASS.md) for current fixes, measurement changes, and unchanged open gates. The historical slice/art evidence below is retained.
+**October 3 follow-on:** [hardening and handoff](docs/stage1/TWO_HOUR_PASS.md), including startup/graphics recovery, entry/terminal-state fixes and source-hashed full-stage simulations.
 **Preview (commit 74a1b712c74167bc0b590bd7fb11472c7345dc43, with the Oct 2 re-rolls):** https://raw.githack.com/jfeldman9-rgb/riley-wheel-brawl/74a1b712c74167bc0b590bd7fb11472c7345dc43/index.html
 (Previous: `861b6c32bfd7c72fe4dfacef57a5ddfe3b8cbfd3`, the first slice report.)
 Add `?demo=1` to watch the autopilot, or `?skip=boss` to start at the Chieftain.
 
-Engine: Phaser 4.2.1 (WebGL2), ES modules, no build step. Code is in `src/`, art in `assets/`, docs and screenshots in `docs/stage1/`.
+Engine: Phaser 4.2.1 (WebGL), ES modules, no build step. The pinned library requests `webgl`/`experimental-webgl`; the earlier WebGL2 label was inaccurate. No renderer replacement was made. Code is in `src/`, art in `assets/`, docs and screenshots in `docs/stage1/`.
 
 ## Milestone 1: art batch (done)
 
@@ -42,7 +45,7 @@ No frame was faked: nothing blurred, mirrored, recolored, interpolated or invent
   | Hound | 16 | 0.8 |
   | Chieftain | 24 | 0.7 |
 
-  Each atlas page has a half-resolution normal map. The character atlases total 7.5 MB on disk, about 185 MB of GPU memory estimated. That is fine for iPad and desktop but a watch item for older phones.
+  Each atlas page has a half-resolution normal map. The character atlases total 7.5 MB on disk, about 185 MB of GPU memory estimated. This is an estimate, not physical-device evidence. The independent audit now distinguishes base RGBA texture bytes from mipmaps and runtime allocations; no iPad/desktop memory-safety claim is made.
 
 ## Milestone 2: the playable slice (done)
 
@@ -96,7 +99,9 @@ All three images came from ChatGPT image generation through Codex, with no frame
 
 Riley's and the Chieftain's atlases were rebuilt and repacked (Riley 72 frames, Chieftain 24; same page sizes, give or take a few pixels).
 
-## Performance
+## Performance (historical slice instrumentation)
+
+The independent pass replaces the rounded timing display and adds explicit lifecycle boundaries plus local report export. Historical software-renderer numbers below are unchanged; they are not a result from the new head. See [current measurement details](docs/stage1/INDEPENDENT_PASS.md).
 
 - **`window.__perf.summary`** gives:
   - `fps`, `avgFps`, `p50`, `p95`, `p99` (ms);

@@ -31,7 +31,11 @@ export class Fighter {
   }
   sync() {
     const s = this.sprite; s.x = this.x + (this.shudder ? (Math.random() * 2 - 1) * 4 : 0); s.y = this.y - this.z; s.setDepth(1000 + this.y);
-    const k = Math.max(0.35, 1 - this.z / 500); this.shadow.setPosition(this.x, this.y + 2).setDepth(900).setAlpha(0.9 * k).setScale(this.def.shadowW / 64 * k, this.def.shadowW * 0.22 / 64 * k);
+    const k = Math.max(0.35, 1 - this.z / 500);
+    // Keep a fading corpse's shadow in sync. Live Riley's invulnerability blink
+    // must not make his ground shadow flicker with the sprite.
+    const shadowAlpha = this.state === 'dead' ? s.alpha * 0.8 : 0.9 * k;
+    this.shadow.setPosition(this.x, this.y + 2).setDepth(900).setAlpha(shadowAlpha).setScale(this.def.shadowW / 64 * k, this.def.shadowW * 0.22 / 64 * k);
   }
   destroy() { this.sprite.destroy(); this.shadow.destroy(); }
 }

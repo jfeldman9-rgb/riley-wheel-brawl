@@ -2,7 +2,8 @@
 // and the procedural WebAudio SFX (same synth recipes as 1.2's audio.js, with a few new cues).
 let ctx = null, master, music, sfxBus, voiceBus, duckG, comp, noiseBuf;
 let muted = false, musicOn = true, musicEl = null, musicSrc = null;
-const clips = {}, gates = {};
+const clips = Object.create(null), gates = Object.create(null), oneShots = new Map();
+let voiceSrc = null, voiceRequest = 0, voicePending = false;
 export const VOICE = {
   st1_narrator_01: ['NARRATOR', "Emond's Field, on Winternight. The Two Rivers sleeps, but the Shadow is on the road."],
   st1_moiraine_01: ['MOIRAINE', 'Winternight has begun. Stay sharp.'],
@@ -23,7 +24,7 @@ function init() {
   if (ctx) return;
   try {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
-    master = ctx.createGain(); master.gain.value = 0.8; master.connect(ctx.destination);
+    master = ctx.createGain(); master.gain.value = muted ? 0 : 0.8; master.connect(ctx.destination);
     duckG = ctx.createGain(); duckG.connect(master);
     music = ctx.createGain(); music.gain.value = 0.34; music.connect(duckG);
     voiceBus = ctx.createGain(); voiceBus.gain.value = 1.0; voiceBus.connect(master);
@@ -32,14 +33,38 @@ function init() {
     sfxBus.connect(comp); comp.connect(master);
   } catch (e) { ctx = null; }
 }
-export function unlock() { init(); if (ctx && ctx.state === 'suspended') ctx.resume(); if (musicWanted) playMusic(); }
-const gate = (n, ms) => { if (!ctx) return false; const t = ctx.currentTime * 1000; if (gates[n] && t - gates[n] < ms) return false; gates[n] = t; return true; };
+export function unlock() { init(); if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {}); if (musicWanted) playMusic(); }
+const gate = (n, ms) => { if (!ctx || muted) return false; const t = ctx.currentTime * 1000; if (gates[n] !== undefined && t - gates[n] < ms) return false; gates[n] = t; return true; };
 const vary = (f, a = 0.05) => f * (1 + (Math.random() * 2 - 1) * a);
+function trackSource(source, ...nodes) {
+  const cleanup = () => {
+    if (!oneShots.delete(source)) return;
+    source.onended = null; source.disconnect();
+    for (const node of nodes) node.disconnect();
+    if (voiceSrc === source) voiceSrc = null;
+  };
+  oneShots.set(source, cleanup); source.onended = cleanup;
+}
+function stopSource(source) {
+  try { source.stop(); } catch (e) { }
+  const cleanup = oneShots.get(source); if (cleanup) cleanup();
+}
+function resetDuck() {
+  if (!ctx) return;
+  duckG.gain.cancelScheduledValues(ctx.currentTime); duckG.gain.setValueAtTime(1, ctx.currentTime);
+}
+/** Cancel scene-owned speech and one-shots; keep cached clips, music and user preferences. */
+export function stopSceneAudio() {
+  voiceRequest++; voicePending = false;
+  for (const source of oneShots.keys()) stopSource(source);
+  for (const name of Object.keys(gates)) delete gates[name];
+  resetDuck();
+}
 function tone(o) {
   if (!ctx || muted) return; const t0 = ctx.currentTime + (o.delay || 0), osc = ctx.createOscillator(), g = ctx.createGain(), d = o.dur || 0.1;
   osc.type = o.type || 'square'; osc.frequency.setValueAtTime(o.f0 || 440, t0); if (o.f1 !== undefined) osc.frequency.exponentialRampToValueAtTime(Math.max(20, o.f1), t0 + d);
   g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(o.vol || 0.3, t0 + (o.attack || 0.005)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
-  osc.connect(g); g.connect(sfxBus); osc.start(t0); osc.stop(t0 + d + 0.02);
+  osc.connect(g); g.connect(sfxBus); trackSource(osc, g); osc.start(t0); osc.stop(t0 + d + 0.02);
 }
 function noise(o) {
   if (!ctx || muted) return;
@@ -47,10 +72,10 @@ function noise(o) {
   const t0 = ctx.currentTime + (o.delay || 0), s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(), d = o.dur || 0.2;
   s.buffer = noiseBuf; f.type = o.filter || 'lowpass'; f.frequency.setValueAtTime(o.f0 || 1000, t0); if (o.f1 !== undefined) f.frequency.exponentialRampToValueAtTime(Math.max(30, o.f1), t0 + d); f.Q.value = o.q || 1;
   g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(o.vol || 0.3, t0 + (o.attack || 0.005)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
-  s.connect(f); f.connect(g); g.connect(sfxBus); s.start(t0, Math.random()); s.stop(t0 + d + 0.02);
+  s.connect(f); f.connect(g); g.connect(sfxBus); trackSource(s, f, g); s.start(t0, Math.random()); s.stop(t0 + d + 0.02);
 }
 function duck(depth = 0.5, hold = 0.18, rel = 0.45) {
-  if (!ctx) return; const t = ctx.currentTime, g = duckG.gain;
+  if (!ctx || muted) return; const t = ctx.currentTime, g = duckG.gain;
   g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(depth, t + 0.025); g.setValueAtTime(depth, t + 0.025 + hold); g.linearRampToValueAtTime(1, t + 0.025 + hold + rel);
 }
 export const sfx = {
@@ -87,26 +112,45 @@ export function playMusic() {
     musicEl = new Audio('assets/audio/music-main.mp3'); musicEl.loop = true; musicEl.crossOrigin = 'anonymous';
     try { musicSrc = ctx.createMediaElementSource(musicEl); musicSrc.connect(music); } catch (e) { musicEl.volume = 0.34; }
   }
+  musicEl.muted = muted; // Also covers the HTMLAudio fallback, which bypasses master.
   musicEl.play().catch(() => {});
 }
-export function toggleMusic() { musicOn = !musicOn; if (musicEl) musicOn ? musicEl.play().catch(() => {}) : musicEl.pause(); return musicOn; }
-export function toggleMute() { muted = !muted; if (master) master.gain.value = muted ? 0 : 0.8; return muted; }
+export function toggleMusic() { musicOn = !musicOn; if (musicOn && musicWanted) playMusic(); else if (musicEl) musicEl.pause(); return musicOn; }
+export function toggleMute() {
+  muted = !muted; if (master) master.gain.value = muted ? 0 : 0.8;
+  if (musicEl) musicEl.muted = muted;
+  if (muted) stopSceneAudio();
+  return muted;
+}
 function loadClip(id) {
   init(); if (!ctx) return Promise.resolve(null);
   if (clips[id]) return clips[id];
   return (clips[id] = fetch(`assets/audio/voice/${id}.mp3`).then(r => r.ok ? r.arrayBuffer() : null)
-    .then(b => b ? new Promise(res => ctx.decodeAudioData(b, res, () => res(null))) : null).catch(() => null));
+    .then(b => b ? new Promise(res => {
+      // Some implementations expose both callbacks and a rejecting decode promise.
+      const pending = ctx.decodeAudioData(b, res, () => res(null));
+      if (pending && pending.catch) pending.catch(() => res(null));
+    }) : null).catch(() => null).then(buf => {
+      if (!buf) delete clips[id]; // A temporary load/decode failure must not poison the cache.
+      return buf;
+    }));
 }
 export function preloadVoices() { Object.keys(VOICE).forEach(loadClip); }
-let voiceSrc = null;
-/** play a voice line; returns its caption [speaker, text] and calls onCaption so the HUD can show subtitles */
+/** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
 export function say(id, onCaption, interrupt = true) {
-  const cap = VOICE[id]; if (onCaption && cap) onCaption(cap[0], cap[1]);
+  if (!Object.hasOwn(VOICE, id)) return;
+  const cap = VOICE[id];
+  if (!interrupt && (voiceSrc || voicePending)) return cap;
+  const request = ++voiceRequest, shouldPlay = !muted;
+  voicePending = shouldPlay;
+  if (voiceSrc) { stopSource(voiceSrc); resetDuck(); }
+  if (onCaption) onCaption(cap[0], cap[1]);
+  if (!shouldPlay || muted || request !== voiceRequest) return cap;
   loadClip(id).then(buf => {
+    if (request !== voiceRequest) return;
+    voicePending = false;
     if (!buf || muted || !ctx) return;
-    if (voiceSrc) { if (!interrupt) return; try { voiceSrc.stop(); } catch (e) { } }
-    const s = ctx.createBufferSource(); s.buffer = buf; s.connect(voiceBus); s.start(); voiceSrc = s;
-    s.onended = () => { if (voiceSrc === s) voiceSrc = null; };
+    const s = ctx.createBufferSource(); s.buffer = buf; s.connect(voiceBus); trackSource(s); voiceSrc = s; s.start();
     duck(0.45, buf.duration, 0.4);
   });
   return cap;

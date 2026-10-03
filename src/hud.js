@@ -1,10 +1,20 @@
 // HUD scene: portrait + health + saidin, enemy/boss bars, combo counter, captions, GO arrow, title/clear cards, perf readout.
 import { VW, VH } from './config.js';
-import { perf } from './perf.js';
+import { perf, displayMs } from './perf.js';
+import { installPerfPanel } from './perf-panel.js';
 const F = 'system-ui,-apple-system,Segoe UI,sans-serif', PX = 'PressStart, monospace';
 export class HUD extends Phaser.Scene {
   constructor() { super('hud'); }
   create() {
+    // Phaser restarts scene instances; display objects from the prior run are destroyed.
+    this.boss = null; this.bossName = null; this.bossPic = null; this.bossRing = null;
+    this.rHp = undefined; this.comboHold = 0; this.pt = 0;
+    this.perfPanel = installPerfPanel({ game: this.game, getStage: () => this.stage || this.game.scene.getScene('stage1') });
+    this.events.once('shutdown', () => {
+      this.perfPanel.destroy();
+      if (this.stage) this.stage.hudReady = false;
+      this.card = null; this.capWho = null; this.capText = null; this.capBg = null;
+    });
     const cam = this.cameras.main; cam.setOrigin(0, 0); cam.setZoom(this.game.rs);
     const g = this.g = this.add.graphics();
     this.portrait = this.add.image(58, 58, 'portrait').setDisplaySize(84, 84);
@@ -20,14 +30,26 @@ export class HUD extends Phaser.Scene {
     this.capY = this.game.inp.isTouch ? 84 : VH - 106;
     this.capWho = this.add.text(VW / 2, this.capY + 14, '', { fontFamily: PX, fontSize: '11px', color: '#ffd27a', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5);
     this.capText = this.add.text(VW / 2, this.capY + 42, '', { fontFamily: F, fontStyle: '600', fontSize: '22px', color: '#ffffff', stroke: '#000', strokeThickness: 5, align: 'center', wordWrap: { width: 900 } }).setOrigin(0.5, 0);
+    const removeTouch = this.game.inp.on('touch', () => this.positionCaptions());
+    this.events.once('shutdown', removeTouch);
     this.goT = this.add.text(VW - 60, VH / 2 - 40, 'GO ▶', { fontFamily: PX, fontSize: '26px', color: '#ffe9a8', stroke: '#000', strokeThickness: 6 }).setOrigin(1, 0.5).setAlpha(0);
     this.flash = this.add.text(VW / 2, 200, '', { fontFamily: PX, fontSize: '20px', color: '#ff9a7a', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setAlpha(0);
     this.perfT = this.add.text(VW - 10, VH - 8, '', { fontFamily: 'ui-monospace,Menlo,monospace', fontSize: '12px', color: '#bcd0ff', backgroundColor: 'rgba(0,0,0,0.35)', padding: { x: 4, y: 2 } }).setOrigin(1, 1);
     this.showPerf = new URLSearchParams(location.search).get('hud') !== '0';
+    this.pauseLabel = this.add.text(VW / 2, VH / 2, 'PAUSED\nP / Esc / Enter / Start or II to resume', { fontFamily: F, fontStyle: '700', fontSize: '28px', color: '#ffffff', backgroundColor: '#0b1428', padding: { x: 24, y: 18 }, align: 'center' }).setOrigin(0.5).setDepth(200).setVisible(false);
     this.card = this.add.container(VW / 2, VH / 2).setDepth(100);
     this.titleCard();
-    this.enemyRef = null; this.enemyT = 0; this.capT = 0; this.boss = this.boss || null;
+    this.enemyRef = null; this.enemyT = 0; this.capT = 0;
     if (this.pendingCap) { this.caption(...this.pendingCap); this.pendingCap = null; }
+    this.readyForPlay();
+  }
+  readyForPlay() {
+    const stage = this.stage || this.game.scene.getScene('stage1');
+    if (!stage) return;
+    this.stage = stage; stage.hudReady = true;
+    if (stage.startRequested) stage.start();
+    else if (stage.started) this.hideTitle();
+    window.__rwbStartup?.ready();
   }
   titleCard() {
     const c = this.card; c.removeAll(true);
@@ -36,17 +58,30 @@ export class HUD extends Phaser.Scene {
     const t2 = this.add.text(0, -62, '2.0  ·  STAGE 1 VERTICAL SLICE', { fontFamily: PX, fontSize: '14px', color: '#cfe0ff', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5);
     const t3 = this.add.text(0, 10, "EMOND'S FIELD — WINTERNIGHT", { fontFamily: F, fontStyle: '800', fontSize: '30px', color: '#ffffff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5);
     const touch = this.game.inp.isTouch;
-    const t4 = this.add.text(0, 110, touch ? 'TAP TO START' : 'PRESS ANY KEY', { fontFamily: PX, fontSize: '18px', color: '#ffe9a8', stroke: '#000', strokeThickness: 5 }).setOrigin(0.5);
+    const t4 = this.add.text(0, 110, touch ? 'TAP TO START' : 'PRESS ENTER OR ATTACK', { fontFamily: PX, fontSize: '18px', color: '#ffe9a8', stroke: '#000', strokeThickness: 5 }).setOrigin(0.5);
     const t5 = this.add.text(0, 170, touch ? 'Stick: move (push far to run)   KICK: attack   JUMP   FIRE: fireball' : 'WASD/Arrows move · Shift or double-tap: run · J/Z attack · K/Space jump · L/Q fireball · walk into a dazed foe to grab\nAttack + back = back kick · Jump + attack = flying kick · M music · N mute · H perf readout',
       { fontFamily: F, fontSize: '15px', color: '#cbd6ee', align: 'center', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5, 0);
     c.add([bg, t1, t2, t3, t4, t5]);
     this.tweens.add({ targets: t4, alpha: 0.35, yoyo: true, repeat: -1, duration: 700 });
-    this.input.on('pointerdown', () => { this.game.inp.press('start'); });
+    // A title tap starts play. Don't turn later battlefield taps into Start:
+    // controller Start also pauses an active fight.
+    this.input.on('pointerdown', () => this.onTitlePointer());
   }
-  hideTitle() { this.tweens.add({ targets: this.card, alpha: 0, duration: 400, onComplete: () => { this.card.removeAll(true); this.card.setAlpha(1); } }); }
+  onTitlePointer() { if (this.stage && !this.stage.started && !this.stage.ended) this.game.inp.press('start'); }
+  hideTitle() { if (!this.card) return; this.tweens.add({ targets: this.card, alpha: 0, duration: 400, onComplete: () => { this.card.removeAll(true); this.card.setAlpha(1); } }); }
   caption(who, text) {
     if (!this.capWho) { this.pendingCap = [who, text]; return; }   // HUD not created yet (slow network on first load)
     this.capWho.setText(who); this.capText.setText(text); this.capT = Math.max(2.2, text.length * 0.065);
+    this.drawCaptionBackground();
+  }
+  positionCaptions() {
+    this.capY = this.game.inp.isTouch ? 84 : VH - 106;
+    if (!this.capWho || !this.capText) return;
+    this.capWho.y = this.capY + 14; this.capText.y = this.capY + 42;
+    this.drawCaptionBackground();
+  }
+  drawCaptionBackground() {
+    if (!this.capText || !this.capBg) return;
     const w = Math.min(960, this.capText.width + 60), h = this.capText.height + 50;
     this.capBg.clear(); this.capBg.fillStyle(0x000000, 0.5); this.capBg.fillRoundedRect(VW / 2 - w / 2, this.capY, w, h, 10);
   }
@@ -77,6 +112,7 @@ export class HUD extends Phaser.Scene {
   }
   update(time, delta) {
     const dt = delta / 1000, s = this.stage; if (!s || !s.riley) return;
+    this.pauseLabel.setVisible(!!s.paused);
     const R = s.riley, g = this.g; g.clear();
     this.rHp = this.rHp === undefined ? R.hp : this.rHp + (R.hp - this.rHp) * Math.min(1, dt * 6);
     this.bar(112, 42, 300, 18, this.rHp / R.maxHp, R.hp > 35 ? 0x54d27a : 0xe0503c);
@@ -105,7 +141,7 @@ export class HUD extends Phaser.Scene {
     if (this.capT > 0) { this.capT -= dt; const a = Math.min(1, this.capT * 3); this.capWho.setAlpha(a); this.capText.setAlpha(a); this.capBg.setAlpha(a); }
     if ((this.pt = (this.pt || 0) + 1) % 20 === 0) {
       const p = perf.update();
-      if (this.showPerf && p) { const f = p.fight; this.perfT.setText(`${p.fps} fps  p95 ${p.p95}ms  >33ms ${p.over33}/${p.frames}` + (f ? `  | fight: ${f.avgFps} fps, >33ms ${f.over33}/${f.frames}` : '') + `  | RS ${this.game.rs} q${s.fx.quality}`).setAlpha(1); }
+      if (this.showPerf && p) { const f = p.fight; this.perfT.setText(`${p.fps.toFixed(1)} fps  p95 ${displayMs(p.p95)}ms  >33.4ms ${p.over33_4}/${p.frames}` + (f ? `\nFight p95 ${displayMs(f.p95)}ms ${p.gate.status === 'PASS' ? '≤16.7' : '>16.7'} · >33.4ms ${f.over33_4}/${f.frames}` : '\nFight: no samples') + `  | RS ${this.game.rs} q${s.fx.quality}`).setAlpha(1); }
       else this.perfT.setAlpha(0);
     }
   }
