@@ -45,6 +45,8 @@ export class Input {
     if (a === 'left' || a === 'right') { if (this.t - this.lastTap[a] < 0.26) this.runLatch = true; this.lastTap[a] = this.t; }
     this.emit('press', a);
   }
+  /** drop every buffered press (held keys/buttons stay held): the press that starts the game must not replay as a move */
+  flushPresses() { this.buf = {}; }
   /** consume a buffered press made within `win` seconds */
   take(a, win = 0.18) { if (this.buf[a] !== undefined && this.t - this.buf[a] <= win) { delete this.buf[a]; return true; } return false; }
   peek(a, win = 0.18) { return this.buf[a] !== undefined && this.t - this.buf[a] <= win; }

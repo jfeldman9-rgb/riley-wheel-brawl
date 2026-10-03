@@ -273,7 +273,7 @@
     },
     {
       "key": "loial",
-      "frames": 8,
+      "frames": 7,
       "target": null,
       "densityStatus": "NO_SLICE_COUNT_SPECIFIED",
       "animations": [
@@ -283,7 +283,7 @@
         },
         {
           "name": "loial_sweep",
-          "frames": 4
+          "frames": 3
         }
       ],
       "pages": [
@@ -296,7 +296,7 @@
     }
   ],
   "preFight": {
-    "inventoryUpperBoundBytes": 18060020,
+    "inventoryUpperBoundBytes": 18062189,
     "budgetBytes": 25000000,
     "inventoryStatus": "PASS",
     "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."

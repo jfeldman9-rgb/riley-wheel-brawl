@@ -28,18 +28,26 @@ body.touch.graphics-lost #touch{display:none}
 /* touch controls: only shown on touch devices (body.touch is set on the first real touch or a coarse pointer) */
 #touch{position:fixed;inset:0;pointer-events:none;display:none}
 body.touch #touch{display:block}
-#stick{position:absolute;left:3vw;bottom:4vh;width:min(30vh,200px);height:min(30vh,200px);border-radius:50%;border:2px solid rgba(255,255,255,.22);background:rgba(15,22,40,.28);pointer-events:auto}
+#stick{position:absolute;left:calc(3vw + env(safe-area-inset-left,0px));bottom:calc(4vh + env(safe-area-inset-bottom,0px));width:min(30vh,200px);height:min(30vh,200px);border-radius:50%;border:2px solid rgba(255,255,255,.22);background:rgba(15,22,40,.28);pointer-events:auto}
 #knob{position:absolute;left:50%;top:50%;width:42%;height:42%;margin:-21% 0 0 -21%;border-radius:50%;background:rgba(200,215,255,.35);border:2px solid rgba(255,255,255,.4)}
 .tb{position:absolute;width:min(14vh,92px);height:min(14vh,92px);border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(20,30,50,.38);color:#fff;font:bold 13px system-ui;display:flex;align-items:center;justify-content:center;pointer-events:auto;letter-spacing:.05em}
 .tb.on{background:rgba(255,200,120,.45)}
-#tbA{right:calc(4vw + min(15vh,100px));bottom:5vh;border-color:rgba(255,120,110,.7)}
-#tbJ{right:3vw;bottom:calc(5vh + min(11vh,70px));border-color:rgba(120,180,255,.7)}
-#tbS{right:calc(4vw + min(15vh,100px));bottom:calc(6vh + min(16vh,108px));border-color:rgba(120,230,255,.7)}
-#tbP{right:3vw;top:3vh;width:52px;height:52px;font-size:16px}
-#tbB{right:3vw;bottom:calc(6vh + min(27vh,180px));width:min(11vh,72px);height:min(11vh,72px);font-size:11px;border-color:rgba(230,245,255,.8)}
-#tbL{right:calc(5vw + min(30vh,200px));bottom:calc(6vh + min(16vh,108px));width:min(11vh,72px);height:min(11vh,72px);font-size:12px;border-color:rgba(140,240,174,.8)}
+#tbA{right:calc(4vw + min(15vh,100px) + env(safe-area-inset-right,0px));bottom:calc(5vh + env(safe-area-inset-bottom,0px));border-color:rgba(255,120,110,.7)}
+#tbJ{right:calc(3vw + env(safe-area-inset-right,0px));bottom:calc(5vh + min(11vh,70px) + env(safe-area-inset-bottom,0px));border-color:rgba(120,180,255,.7)}
+#tbS{right:calc(4vw + min(15vh,100px) + env(safe-area-inset-right,0px));bottom:calc(6vh + min(16vh,108px) + env(safe-area-inset-bottom,0px));border-color:rgba(120,230,255,.7)}
+#tbP{right:calc(3vw + env(safe-area-inset-right,0px));top:calc(3vh + env(safe-area-inset-top,0px));width:52px;height:52px;font-size:16px}
+#tbB{right:calc(3vw + env(safe-area-inset-right,0px));bottom:calc(5vh + min(11vh,70px) + min(14vh,92px) + max(20px,4vh) + env(safe-area-inset-bottom,0px));width:max(48px,min(13vh,80px));height:max(48px,min(13vh,80px));font-size:12px;border-color:rgba(230,245,255,.8)}
+#tbL{right:calc(5vw + min(30vh,200px) + env(safe-area-inset-right,0px));bottom:calc(6vh + min(16vh,108px) + env(safe-area-inset-bottom,0px));width:max(44px,min(11vh,72px));height:max(44px,min(11vh,72px));font-size:12px;border-color:rgba(140,240,174,.8)}
 .tb.off{opacity:.35}
 .tb.ready{box-shadow:0 0 16px rgba(200,235,255,.9)}
+/* Upright phones: the 200px stick covers half the width, so shrink it; stack CALL above BALE in the right column
+   instead of beside FIRE (where it sat on the stick); move the Perf report opener to the top so it is clear of
+   the stick and KICK. Landscape layout is unchanged. */
+@media (orientation:portrait){
+#stick{width:min(38vw,30vh,200px);height:min(38vw,30vh,200px)}
+html body.touch #perf-open{top:max(12px,env(safe-area-inset-top));bottom:auto}
+#tbL{right:calc(3vw + env(safe-area-inset-right,0px));bottom:calc(5vh + min(11vh,70px) + min(14vh,92px) + max(20px,4vh) + max(48px,min(13vh,80px)) + max(16px,2.5vh) + env(safe-area-inset-bottom,0px))}
+}
 /* Performance capture is an ordinary local DOM dialog, above every canvas/touch input. */
 #perf-open{position:fixed;z-index:20;left:max(12px,env(safe-area-inset-left));bottom:max(48px,env(safe-area-inset-bottom));min-height:44px;padding:10px 14px;border:1px solid #8195bd;border-radius:8px;background:#0d1429e8;color:#e7eeff;font:600 14px system-ui;cursor:pointer}
 body.touch #perf-open{left:50%;bottom:max(48px,env(safe-area-inset-bottom));transform:translateX(-50%)}

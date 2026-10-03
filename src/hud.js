@@ -28,7 +28,7 @@ export class HUD extends Phaser.Scene {
     this.baleT = this.add.text(342, 59, 'BALEFIRE READY', { fontFamily: PX, fontSize: '10px', color: '#e8f6ff', stroke: '#000', strokeThickness: 3 }).setAlpha(0);
     this.loialPic = this.textures.exists('loialPortrait') ? this.add.image(214, 83, 'loialPortrait').setDisplaySize(30, 30) : null;
     this.loialT = this.add.text(234, 77, 'LOIAL READY', { fontFamily: PX, fontSize: '10px', color: '#8cf0ae', stroke: '#000', strokeThickness: 3 });
-    this.touchState = '';
+    this.touchState = ''; this.loialState = 'ready';
     this.enemyName = this.add.text(112, 106, '', { fontFamily: PX, fontSize: '10px', color: '#ffb3a0', stroke: '#000', strokeThickness: 3 });
     this.capBg = this.add.graphics().setAlpha(0);
     // on touch devices the thumb controls sit at the bottom corners, so captions move to the top
@@ -115,6 +115,15 @@ export class HUD extends Phaser.Scene {
     const g = this.g; g.fillStyle(0x000000, 0.75); g.fillRect(x - 3, y - 3, w + 6, h + 6); g.fillStyle(back, 1); g.fillRect(x, y, w, h);
     g.fillStyle(col, 1); g.fillRect(x, y, Math.max(0, w * f), h); g.fillStyle(0xffffff, 0.18); g.fillRect(x, y, Math.max(0, w * f), h * 0.35);
   }
+  /** LOIAL READY / LOIAL! / LOIAL SPENT. Text.setColor always redraws and re-uploads the text texture, so only
+   *  touch the label (and portrait) when the state actually changes, not every frame. */
+  updateLoialLabel(s, R) {
+    const ls = s.loial ? 'on' : R.loialReady ? 'ready' : 'spent';
+    if (ls === this.loialState) return;
+    this.loialState = ls;
+    this.loialT.setText(ls === 'on' ? 'LOIAL!' : ls === 'ready' ? 'LOIAL READY' : 'LOIAL SPENT').setColor(ls === 'spent' ? '#87909a' : '#8cf0ae');
+    if (this.loialPic) this.loialPic.setAlpha(ls === 'spent' ? 0.35 : 1);
+  }
   update(time, delta) {
     const dt = delta / 1000, s = this.stage; if (!s || !s.riley) return;
     this.pauseLabel.setVisible(!!s.paused);
@@ -125,8 +134,7 @@ export class HUD extends Phaser.Scene {
     this.bar(112, 64, 220, 8, R.saidin / 100, baleReady ? (Math.floor(time / 180) % 2 ? 0xffffff : 0xbfe8ff) : R.saidin >= 34 ? 0x6fd2ff : 0x3a6e90, 0x0c1420);
     this.baleT.setAlpha(baleReady ? 0.75 + 0.25 * Math.sin(time / 120) : 0);
     const loialReady = R.loialReady && !s.loial;
-    this.loialT.setText(s.loial ? 'LOIAL!' : R.loialReady ? 'LOIAL READY' : 'LOIAL SPENT').setColor(R.loialReady || s.loial ? '#8cf0ae' : '#87909a');
-    if (this.loialPic) this.loialPic.setAlpha(R.loialReady || s.loial ? 1 : 0.35);
+    this.updateLoialLabel(s, R);
     const ts = (baleReady ? 'b' : '') + (loialReady ? 'l' : '');
     if (ts !== this.touchState && typeof document !== 'undefined') {
       this.touchState = ts; const b = document.getElementById('tbB'), l = document.getElementById('tbL');
