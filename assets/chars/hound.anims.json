@@ -1,0 +1,112 @@
+{
+ "key": "hound",
+ "canvas": [
+  1100,
+  760
+ ],
+ "baseline": 730,
+ "scale": 0.8,
+ "pages": [
+  "hound-0"
+ ],
+ "anims": [
+  {
+   "name": "hound_walk",
+   "frames": [
+    "hound_walk_00",
+    "hound_walk_01",
+    "hound_walk_02",
+    "hound_walk_03"
+   ],
+   "holds": [
+    85,
+    85,
+    85,
+    85
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "hound_attack",
+   "frames": [
+    "hound_attack_00",
+    "hound_attack_01",
+    "hound_attack_02",
+    "hound_attack_03"
+   ],
+   "holds": [
+    220,
+    120,
+    170,
+    240
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "hound_hurt",
+   "frames": [
+    "hound_hurt_00",
+    "hound_hurt_01"
+   ],
+   "holds": [
+    100,
+    180
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "hound_knockdown",
+   "frames": [
+    "hound_knockdown_00",
+    "hound_knockdown_01",
+    "hound_knockdown_02"
+   ],
+   "holds": [
+    90,
+    150,
+    900
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "hound_getup",
+   "frames": [
+    "hound_getup_00",
+    "hound_getup_01",
+    "hound_getup_02"
+   ],
+   "holds": [
+    160,
+    140,
+    130
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  }
+ ]
+}

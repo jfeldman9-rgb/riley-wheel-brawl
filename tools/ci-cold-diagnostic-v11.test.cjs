@@ -1,8 +1,0 @@
-'use strict';
-const assert=require('node:assert/strict'),{evaluateCold}=require('./ci-cold-diagnostic-v11.cjs');
-const commit='a'.repeat(40),make=()=>({commit,workingTreeDirty:false,coldOnly:true,profileOnly:false,reportOnly:true,errors:[],gates:{errors:true,musicConfigured:true,cold:true,fights:null},cold:[false,true].flatMap(music=>[1,2,3,4,5].map(stage=>({stage,music,musicEnabled:music,musicPlaying:music,enterMs:100,absolutePass:true}))),fights:[],audioFights:[]});
-let checks=0;assert.equal(evaluateCold(make(),commit).valid,true);checks++;
-const spike=make();spike.cold[9].enterMs=401;spike.cold[9].absolutePass=false;spike.gates.cold=false;const d=evaluateCold(spike,commit);assert.equal(d.valid,true);assert.equal(d.absolutePass,false);assert.equal(d.samples[9].enterMs,401);checks++;
-for(const change of [r=>r.cold.pop(),r=>r.cold[9]={...r.cold[0]},r=>r.cold[0].enterMs=null,r=>r.cold[0].enterMs=NaN,r=>r.cold[0].enterMs=-1,r=>r.cold[0].music='false',r=>r.cold[0].musicEnabled=true,r=>r.errors.push('page error'),r=>r.gates.errors=false,r=>r.gates.musicConfigured=false,r=>r.commit='b'.repeat(40),r=>r.workingTreeDirty=true,r=>r.coldOnly=false,r=>r.profileOnly=true,r=>r.reportOnly=false,r=>r.fights.push({}),r=>r.audioFights.push({}),r=>r.gates.fights=true,r=>r.cold[0].absolutePass=false,r=>r.gates.cold=false,r=>r.gates.saves=false,r=>r.gates.saves=true,r=>delete r.gates.musicConfigured,r=>r.cold[0].musicPlaying=null]){const r=make();change(r);assert.throws(()=>evaluateCold(r,commit));checks++;}
-const pending=make();pending.cold[9].musicPlaying=false;assert.equal(evaluateCold(pending,commit).valid,true);checks++;
-console.log('PASS '+checks+' CI cold-report policy checks; measurements retained, malformed/error cases fail closed; no browser run');

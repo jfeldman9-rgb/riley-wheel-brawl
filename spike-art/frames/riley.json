@@ -1,0 +1,256 @@
+{
+ "out": "built/riley",
+ "loops": "../loops",
+ "canvas": [
+  720,
+  600
+ ],
+ "baseline": 570,
+ "anchor_x": 0.45,
+ "target_height": 380,
+ "anims": [
+  {
+   "name": "riley_idle",
+   "slices": "raw/riley_idle",
+   "order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "holds": [
+    120,
+    120,
+    130,
+    120,
+    130,
+    120
+   ],
+   "ref": 0,
+   "loop": true
+  },
+  {
+   "name": "riley_walk",
+   "slices": "raw/riley_walk",
+   "order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "holds": [
+    95,
+    95,
+    95,
+    95,
+    95,
+    95,
+    95,
+    95
+   ],
+   "anchor": "torso",
+   "ref_height": 483
+  },
+  {
+   "name": "riley_combo",
+   "slices": "raw/riley_combo",
+   "order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "holds": [
+    80,
+    110,
+    70,
+    120,
+    60,
+    60,
+    120,
+    100,
+    90,
+    80,
+    80,
+    90
+   ],
+   "ref": 0,
+   "row_scale": {
+    "1": 1.115
+   },
+   "loop": true
+  },
+  {
+   "name": "riley_combo1",
+   "slices": "raw/riley_combo",
+   "order": [
+    0,
+    1,
+    0
+   ],
+   "holds": [
+    70,
+    120,
+    100
+   ],
+   "ref": 0,
+   "loop": false
+  },
+  {
+   "name": "riley_combo2",
+   "slices": "raw/riley_combo",
+   "order": [
+    2,
+    3,
+    4,
+    11
+   ],
+   "holds": [
+    70,
+    130,
+    90,
+    90
+   ],
+   "ref": 0,
+   "row_scale": {
+    "1": 1.115
+   },
+   "loop": false
+  },
+  {
+   "name": "riley_combo3",
+   "slices": "raw/riley_combo",
+   "order": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "holds": [
+    50,
+    60,
+    120,
+    100,
+    90,
+    80,
+    80,
+    90
+   ],
+   "ref": 0,
+   "row_scale": {
+    "1": 1.115
+   },
+   "loop": false
+  },
+  {
+   "name": "riley_hurt",
+   "slices": "raw/riley_hurt",
+   "order": [
+    0,
+    1,
+    2
+   ],
+   "holds": [
+    80,
+    140,
+    120
+   ],
+   "ref": 3,
+   "loop": false
+  },
+  {
+   "name": "riley_knockdown",
+   "slices": "raw/riley_down",
+   "order": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "holds": [
+    90,
+    150,
+    110,
+    700
+   ],
+   "ref": 7,
+   "loop": false,
+   "anchor_override": {
+    "1": "center",
+    "2": "center",
+    "3": "center"
+   }
+  },
+  {
+   "name": "riley_getup",
+   "slices": "raw/riley_down",
+   "order": [
+    4,
+    5,
+    6,
+    7
+   ],
+   "holds": [
+    140,
+    140,
+    120,
+    120
+   ],
+   "ref": 7,
+   "loop": false,
+   "anchor_override": {
+    "0": "center"
+   }
+  },
+  {
+   "name": "riley_knockdown_full",
+   "slices": "raw/riley_down",
+   "order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "holds": [
+    90,
+    150,
+    110,
+    700,
+    140,
+    140,
+    120,
+    160
+   ],
+   "ref": 7,
+   "loop": true,
+   "anchor_override": {
+    "1": "center",
+    "2": "center",
+    "3": "center",
+    "4": "center"
+   }
+  }
+ ]
+}
