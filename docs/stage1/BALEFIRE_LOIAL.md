@@ -35,3 +35,13 @@ combo1 6, combo2 6, combo3 8, back 5, airkick 5, runkick 5, cast 5, knee 5, thro
 ![balefire](balefire.jpg)
 ![loial](loial-assist.jpg)
 ![touch](touch-bale-call.jpg)
+![combo1 kick (candidate 1)](move-combo1-kick.jpg)
+![runkick](move-runkick.jpg)
+
+## Perf (same box, SwiftShader software GL, `?skip=boss&demo=1`, default quality, 30 s, alternating)
+| build | fps (3 runs) | frames >33 ms |
+|---|---|---|
+| before 326faff | 20.79 / 21.26 / 21.98 (avg 21.3) | 98.1 / 98.0 / 97.1 % |
+| after | 21.11 / 22.08 / 22.22 (avg 21.8) | 96.8 / 97.6 / 95.7 % |
+
+Moment checks (new build, open field after Start): balefire 2 s window 26.2 / 27.5 fps vs 28.7 / 28.1 without; Loial 4 s window 24.5 / 23.0 vs 25.9 / 24.8 without. SwiftShader numbers are relative only, not device numbers.
