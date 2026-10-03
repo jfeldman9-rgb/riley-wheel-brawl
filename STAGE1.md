@@ -3,6 +3,7 @@
 Branch: `rwb-2` (started from `rwb-2-spike`). `main` and `rwb-w2` were not touched; **1.1 is live on `rwb-w2`** (8a17bcd). 1.2 remains a separate draft.
 
 **Acceptance status:** playable slice, not accepted against `plan/PLAN.md` §10. See [the independent pass](docs/stage1/INDEPENDENT_PASS.md) for current fixes, measurement changes, and unchanged open gates. The historical slice/art evidence below is retained.
+**October 3 follow-on:** [hardening and handoff](docs/stage1/TWO_HOUR_PASS.md), including startup/graphics recovery, entry/terminal-state fixes and source-hashed full-stage simulations.
 **Preview (commit 74a1b712c74167bc0b590bd7fb11472c7345dc43, with the Oct 2 re-rolls):** https://raw.githack.com/jfeldman9-rgb/riley-wheel-brawl/74a1b712c74167bc0b590bd7fb11472c7345dc43/index.html
 (Previous: `861b6c32bfd7c72fe4dfacef57a5ddfe3b8cbfd3`, the first slice report.)
 Add `?demo=1` to watch the autopilot, or `?skip=boss` to start at the Chieftain.

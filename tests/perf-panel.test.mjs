@@ -55,7 +55,7 @@ function panelDOM() {
     querySelectorAll() { return this.children.filter(node => ['perf-close', 'perf-reset', 'perf-copy', 'perf-save', 'perf-json'].includes(node.id)); }
   }
   const make = id => { const node = new Element(id); nodes.set(id, node); return node; };
-  for (const id of ['game', 'touch', 'perf-open', 'perf-overlay', 'perf-dialog', 'perf-summary', 'perf-json', 'perf-status', 'perf-close', 'perf-reset', 'perf-copy', 'perf-save', 'canvas']) make(id);
+  for (const id of ['game', 'touch', 'graphics-notice', 'perf-open', 'perf-overlay', 'perf-dialog', 'perf-summary', 'perf-json', 'perf-status', 'perf-close', 'perf-reset', 'perf-copy', 'perf-save', 'canvas']) make(id);
   const dialog = nodes.get('perf-dialog');
   dialog.children = ['perf-close', 'perf-summary', 'perf-copy', 'perf-save', 'perf-reset', 'perf-status', 'perf-json'].map(id => nodes.get(id));
   nodes.get('perf-overlay').children = [dialog]; nodes.get('game').children = [nodes.get('canvas')];
@@ -81,6 +81,8 @@ test('panel pauses safely, exports observed coverage, closes to playable canvas 
       nodes.get('perf-open').focus(); click('perf-open');
       assert.equal(doc.activeElement, nodes.get('perf-close'));
       assert.equal(nodes.get('game').inert, true); assert.equal(nodes.get('perf-overlay').hidden, false);
+      assert.equal(nodes.get('graphics-notice').inert, true);
+      assert.equal(nodes.get('graphics-notice').getAttribute('aria-hidden'), 'true');
       assert.deepEqual([...reasons], ['manual', 'report']);
       const exported = JSON.parse(nodes.get('perf-json').value);
       assert.deepEqual(exported.observations.bossCoverage, stage.bot.coverage);
@@ -96,6 +98,8 @@ test('panel pauses safely, exports observed coverage, closes to playable canvas 
       assert.equal(doc.activeElement, game.canvas, 'gameplay keys no longer land on the shielded opener');
       assert.equal(game.canvas.getAttribute('tabindex'), '-1');
       assert.equal(nodes.get('game').inert, false); assert.equal(nodes.get('game').getAttribute('aria-hidden'), null);
+      assert.equal(nodes.get('graphics-notice').inert, false);
+      assert.equal(nodes.get('graphics-notice').getAttribute('aria-hidden'), null);
       assert.equal(nodes.get('perf-overlay').hidden, true); assert.deepEqual([...reasons], ['manual']);
       assert.deepEqual(perf.suspended, []); assert.equal(doc.documentElement.classList.values.has('perf-open'), false);
     }

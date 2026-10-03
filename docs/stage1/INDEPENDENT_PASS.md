@@ -2,6 +2,8 @@
 
 Date: October 2, 2026. Base: `df4ef46477eb424ecd384154fa7feeff5ac7d70f` on `rwb-2`.
 
+For the October 3 continuation, see [Stage 1 hardening and handoff](TWO_HOUR_PASS.md). This earlier pass is retained as historical evidence; its initial browser blocker was subsequently investigated and the new recovery UI was checked.
+
 **Stage 1 remains playable, not accepted.** The unchanged guardrail is fight p95 ≤16.7 ms on both physical iPad and desktop. There are no new physical-device FPS claims here. No art/audio was generated, repainted, recolored, blurred, interpolated or counted as filler. No live/base branch was changed and no deployment or merge is part of this pass.
 
 ## Correctness changes

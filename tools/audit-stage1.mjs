@@ -6,6 +6,9 @@ export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = p => readFileSync(resolve(ROOT, p));
 const json = p => JSON.parse(read(p));
 export function dimensions(b) {
+  if (b.length >= 24 && b.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10])) && b.toString('ascii',12,16)==='IHDR') {
+    return [b.readUInt32BE(16), b.readUInt32BE(20)];
+  }
   if (b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP') {
     let p = 12;
     while (p + 8 <= b.length) {

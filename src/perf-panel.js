@@ -92,7 +92,7 @@ export function installPerfPanel({ game, getStage }) {
     overlay.hidden = false; opener.setAttribute('aria-expanded', 'true'); status.textContent = '';
     document.documentElement.classList.add('perf-open');
     closeButton.focus({ preventScroll: true });
-    for (const el of [document.getElementById('game'), document.getElementById('touch'), opener]) if (el) {
+    for (const el of [document.getElementById('game'), document.getElementById('touch'), document.getElementById('graphics-notice'), opener]) if (el) {
       savedAttributes.push({ el, inert: el.inert, ariaHidden: el.getAttribute('aria-hidden') });
       el.inert = true; el.setAttribute('aria-hidden', 'true');
     }
