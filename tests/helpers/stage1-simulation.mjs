@@ -68,7 +68,7 @@ export function stage1Simulation({ mode = '1' } = {}) {
   const camera = { setOrigin() {}, setZoom() {}, setRoundPixels() {}, setScroll(x, y) { this.x = x; this.y = y; },
     filters: { internal: { remove() {}, addParallelFilters() { return { top: { addThreshold() {}, addBlur() {} }, blend: {} }; } }, external: { addVignette() { return {}; }, remove() {} } } };
   const hud = {};
-  for (const method of ['caption', 'hideTitle', 'bossBar', 'target', 'combo', 'go', 'flashText', 'togglePerf', 'hideGameOver', 'gameOver', 'stageClear']) hud[method] = (...args) => observations.hud.push({ method, at: s.time.now, args });
+  for (const method of ['caption', 'hideTitle', 'bossBar', 'target', 'combo', 'go', 'flashText', 'togglePerf', 'hideGameOver', 'gameOver', 'stageClear', 'showCutscene', 'cutsceneLine', 'hideCutscene']) hud[method] = (...args) => observations.hud.push({ method, at: s.time.now, args });
   Object.assign(s, {
     events: new EventEmitter(), cameras: { main: camera },
     add: { image: visual, sprite: visual, tileSprite: visual, particles(x, y, key, config) { const v = visual(x, y, key); v.emitting = config.emitting !== false; return v; } },
@@ -126,7 +126,9 @@ export function stage1Simulation({ mode = '1' } = {}) {
         if (s.startRequested) s.start();
         window.__rwbStartup?.ready();
       }
-      if (s.paused) return;
+      // Explicit HUD-scene stub: the HUD scene keeps updating while Stage1 is
+      // paused, and production HUD.update drives the Twix cutscene clock.
+      if (s.paused) { s.tickCutscene?.(dt); return; }
       // Pinned CoreScene UpdateList precedes DefaultScene Clock/TweenManager.
       animate(dt, s.anims.globalTimeScale);
       // Phaser Clock.now uses game time, while timer elapsed uses only active

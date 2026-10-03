@@ -25,7 +25,7 @@ for (const mode of FULL_STAGE_MODES) for (const seed of FULL_STAGE_SEEDS) withSe
   } finally { h.destroy(); }
 });
 const sourceFiles = [
-  ...['stage1', 'riley', 'loial', 'enemies', 'fighter', 'bot', 'input', 'fx', 'assets', 'config', 'audio'].map(name => `src/${name}.js`),
+  ...['stage1', 'riley', 'loial', 'enemies', 'fighter', 'bot', 'input', 'fx', 'assets', 'config', 'audio', 'powers', 'twix'].map(name => `src/${name}.js`),
   ...['riley', 'grunt', 'spear', 'hound', 'chief', 'loial'].map(name => `assets/chars/${name}.anims.json`),
   'assets/bg/plates.json', 'assets/props/staves.json', 'lib/phaser.min.js',
   'tests/helpers/animation-clock.mjs', 'tests/animation-clock.test.mjs', 'tests/helpers/stage1-simulation.mjs',

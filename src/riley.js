@@ -2,6 +2,7 @@
 import { Fighter } from './fighter.js';
 import { clamp } from './config.js';
 import { sfx, say } from './audio.js';
+import { LIGHTNING } from './powers.js';
 export const RILEY_DEF = { key: 'riley', prefix: 'riley_', native: 1, scale: 0.58, anchorX: 0.45, hp: 100, team: 0, shadowW: 120, friction: 0.002 };
 // Attack data. x0..x1 = reach in front (world px), z0..z1 = height band above the ground the strike covers.
 const ATK = {
@@ -50,7 +51,12 @@ export class Riley extends Fighter {
   free(dt, inp) {
     const { x, y } = inp;
     if (inp.take('power') && this.saidin >= BALEFIRE.cost && this.scene.canBalefire?.()) return this.startBalefire();
-    if (inp.take('special') && this.saidin >= 34) return this.startCast();
+    if (inp.take('special')) {
+      // An active ter'angreal turns the fireball button into its own cast (free); an angreal makes fireballs cheaper.
+      const kind = this.scene.powers ? this.scene.powers.castKind(this) : this.saidin >= 34 ? 'fireball' : null;
+      if (kind === 'fireball') return this.startCast();
+      if (kind) return this.startPowerCast(kind);
+    }
     if (inp.take('jump')) { this.jumpVx = x * (this.state === 'run' ? 360 : 210); this.setState('squat', 'jump_crouch'); return; }
     if (inp.take('attack')) {
       if (x && x !== this.facing) { this.setState('back', ATK.back.anim); this.atk = ATK.back; sfx.swing(); return; }
@@ -92,11 +98,22 @@ export class Riley extends Fighter {
     if (this.done) { this.setState('idle', 'idle'); if (inp.x) this.face(inp.x); }
   }
   startCast() {
-    this.saidin -= 34; this.setState('cast', 'cast'); this.cast_fired = false; sfx.fire();
+    this.saidin -= this.scene.powers ? this.scene.powers.castCost() : 34; this.castKind = 'fireball'; this.setState('cast', 'cast'); this.cast_fired = false; sfx.fire();
     if (Math.random() < 0.5) say('riley_fire_01', this.scene.caption, false);
   }
+  /** LIGHTNING / AIR WHIP casts: Riley's painted lightning-cast frames once they exist, else his fireball cast */
+  startPowerCast(kind) {
+    this.castKind = kind; this.cast_fired = false;
+    this.setState('cast', kind === 'lightning' && this.scene.anims.exists('riley_lightning') ? 'lightning' : 'cast');
+  }
   cast(dt) {
-    if (this.fi >= 2 && !this.cast_fired) { this.cast_fired = true; this.scene.spawnFireball(this); this.vx = -this.facing * 120; }
+    const fireAt = this.cur === 'riley_lightning' ? LIGHTNING.fireFrame : 2;
+    if (this.fi >= fireAt && !this.cast_fired) {
+      this.cast_fired = true;
+      if (this.castKind === 'lightning') this.scene.powers.fireLightning(this);
+      else if (this.castKind === 'airwhip') this.scene.powers.fireWhip(this);
+      else { this.scene.spawnFireball(this); this.vx = -this.facing * 120; }
+    }
     if (this.done) this.setState('idle', 'idle');
   }
   startBalefire() {
@@ -147,5 +164,5 @@ export class Riley extends Fighter {
   down(dir, h) { this.setState('down', 'knockdown'); this.vx = dir * 360; this.scene.dustLater(this, 0.32); sfx.hurt(); }
   respawn() { this.alive = true; this.hp = this.maxHp; this.saidin = Math.max(this.saidin, 60); this.setState('getup', 'getup'); this.inv = 2.5; say('riley_respawn_01', this.scene.caption, false); }
   // noMeter: balefire hits build no saidin (it just spent the full meter)
-  landedHit(dmg, noMeter = false) { this.combo++; this.comboT = 1.6; this.maxCombo = Math.max(this.maxCombo, this.combo); if (!noMeter) this.saidin = Math.min(100, this.saidin + 3); this.score += dmg * 10 * (1 + Math.floor(this.combo / 5)); }
+  landedHit(dmg, noMeter = false) { this.combo++; this.comboT = 1.6; this.maxCombo = Math.max(this.maxCombo, this.combo); if (!noMeter) this.saidin = Math.min(100, this.saidin + 3 * (this.scene.powers ? this.scene.powers.meterMul() : 1)); this.score += dmg * 10 * (1 + Math.floor(this.combo / 5)); }
 }

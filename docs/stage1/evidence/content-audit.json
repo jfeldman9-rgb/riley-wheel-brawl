@@ -2,7 +2,7 @@
   "characters": [
     {
       "key": "riley",
-      "frames": 98,
+      "frames": 104,
       "target": 150,
       "densityStatus": "FAIL",
       "animations": [
@@ -97,6 +97,10 @@
         {
           "name": "riley_balefire",
           "frames": 8
+        },
+        {
+          "name": "riley_lightning",
+          "frames": 6
         }
       ],
       "pages": [
@@ -104,6 +108,11 @@
           "name": "riley-0",
           "w": 4080,
           "h": 1936
+        },
+        {
+          "name": "riley-1",
+          "w": 1884,
+          "h": 328
         }
       ]
     },
@@ -296,7 +305,7 @@
     }
   ],
   "preFight": {
-    "inventoryUpperBoundBytes": 18062189,
+    "inventoryUpperBoundBytes": 20643925,
     "budgetBytes": 25000000,
     "inventoryStatus": "PASS",
     "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."
@@ -372,8 +381,8 @@
     "note": "Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Balefire (8) is a special, not in this list; candidate artwork outside game assets is excluded."
   },
   "textureEstimate": {
-    "rgbaBaseBytes": 244652508,
-    "withFullMipChainBytes": 326203344,
+    "rgbaBaseBytes": 275448092,
+    "withFullMipChainBytes": 367264123,
     "images": [
       {
         "path": "assets/chars/chief-0.webp",
@@ -479,6 +488,27 @@
         "width": 2040,
         "height": 968,
         "rgbaBytes": 7898880
+      },
+      {
+        "path": "assets/chars/riley-1.webp",
+        "bytes": 144436,
+        "width": 1884,
+        "height": 328,
+        "rgbaBytes": 2471808
+      },
+      {
+        "path": "assets/chars/riley-1_n.webp",
+        "bytes": 17578,
+        "width": 942,
+        "height": 164,
+        "rgbaBytes": 617952
+      },
+      {
+        "path": "assets/chars/riley-1_nl.webp",
+        "bytes": 19434,
+        "width": 942,
+        "height": 164,
+        "rgbaBytes": 617952
       },
       {
         "path": "assets/chars/spear-0.webp",
@@ -619,6 +649,132 @@
         "width": 256,
         "height": 256,
         "rgbaBytes": 262144
+      },
+      {
+        "path": "assets/powers/fx_airwhip.png",
+        "bytes": 38148,
+        "width": 512,
+        "height": 64,
+        "rgbaBytes": 131072
+      },
+      {
+        "path": "assets/powers/fx_fireshield.png",
+        "bytes": 52805,
+        "width": 384,
+        "height": 320,
+        "rgbaBytes": 491520
+      },
+      {
+        "path": "assets/powers/fx_lightning.png",
+        "bytes": 107334,
+        "width": 512,
+        "height": 192,
+        "rgbaBytes": 393216
+      },
+      {
+        "path": "assets/powers/hud_airwhip.png",
+        "bytes": 5956,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_angreal.png",
+        "bytes": 5262,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_fireshield.png",
+        "bytes": 5379,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_lightning.png",
+        "bytes": 4955,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_saangreal.png",
+        "bytes": 5251,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/pu_airwhip.png",
+        "bytes": 15580,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_angreal.png",
+        "bytes": 10569,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_fireshield.png",
+        "bytes": 16671,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_lightning.png",
+        "bytes": 8094,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_saangreal.png",
+        "bytes": 6050,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_twix.png",
+        "bytes": 11883,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/riley_lightning.png",
+        "bytes": 785442,
+        "width": 2880,
+        "height": 1280,
+        "rgbaBytes": 14745600
+      },
+      {
+        "path": "assets/powers/twix_panel_1.jpg",
+        "bytes": 274048,
+        "width": 1280,
+        "height": 720,
+        "rgbaBytes": 3686400
+      },
+      {
+        "path": "assets/powers/twix_panel_2.jpg",
+        "bytes": 269531,
+        "width": 1280,
+        "height": 720,
+        "rgbaBytes": 3686400
+      },
+      {
+        "path": "assets/powers/twix_panel_3.jpg",
+        "bytes": 298206,
+        "width": 1280,
+        "height": 720,
+        "rgbaBytes": 3686400
       }
     ],
     "mipmaps": "Disabled by the pinned Phaser default and current game configuration; full-chain bytes are hypothetical.",

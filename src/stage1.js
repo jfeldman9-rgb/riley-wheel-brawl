@@ -5,9 +5,11 @@ import { FX } from './fx.js';
 import { Riley, BALEFIRE } from './riley.js';
 import { Enemy, Chieftain, TYPES } from './enemies.js';
 import { queueCharPages, makeCharAnims, patchFlippedNormals } from './assets.js';
-import { sfx, say, playMusic, preloadVoices, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
+import { sfx, say, playMusic, preloadVoices, preloadClips, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
 import { Bot } from './bot.js';
 import { Loial } from './loial.js';
+import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK, TWIX_DROP_Z, queuePowerArt, makePowerAnims, iconKey } from './powers.js';
+import { Cutscene, TWIX_SCRIPT } from './twix.js';
 // Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
 const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
 
@@ -60,6 +62,7 @@ export class Stage1 extends Phaser.Scene {
     this.load.image('cart', ['assets/props/prop-cart.webp', 'assets/props/prop-cart_n.webp']);
     this.load.image('barrel', ['assets/props/prop-barrel.webp', 'assets/props/prop-barrel_n.webp']);
     if (!this.textures.exists('staves')) this.load.atlas('staves', 'assets/props/staves.webp', 'assets/props/staves.json');
+    queuePowerArt(this);
     this.load.json('plates', 'assets/bg/plates.json');
     this.load.on('progress', p => { const b = document.getElementById('boot'); if (b) b.textContent = `Loading Emond's Field… ${Math.round(p * 100)}%`; });
   }
@@ -73,7 +76,7 @@ export class Stage1 extends Phaser.Scene {
     this.inp = this.game.inp; this.inp.clear();
     const b = document.getElementById('boot'); if (b) b.remove();
     patchFlippedNormals();
-    this.metas = makeCharAnims(this);
+    this.metas = makeCharAnims(this); makePowerAnims(this);
     this.inp = this.game.inp; this.rs = this.game.rs;
     const cam = this.cameras.main; cam.setOrigin(0, 0); cam.setZoom(this.rs); cam.setRoundPixels(false);
     this.lights.enable().setAmbientColor(0x39425f);
@@ -82,7 +85,9 @@ export class Stage1 extends Phaser.Scene {
     this.buildBackdrop();
     this.enemies = []; this.fireballs = []; this.carts = []; this.patches = []; this.pickups = []; this.barrels = [];
     this.loial = null; this.beam = null; this.spentSaidAt = -9; this.makeBeamTexture();
+    this.powerDrops = []; this.twixDropped = false; this.cutscene = null;
     this.riley = new Riley(this, 180, 630);
+    this.powers = new Powers(this);
     this.heroLight = this.lights.addLight(0, 0, 440, 0xd8e2ff, 1.0, 150);
     for (const [x, y] of BARRELS) this.addBarrel(x, y);
     this.snowFront = this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: -20, lifespan: 6000, speedY: { min: 80, max: 130 }, speedX: { min: -50, max: -10 }, scale: { min: 0.5, max: 0.9 }, alpha: { min: 0.5, max: 0.9 }, frequency: 80 }).setDepth(5000).setScrollFactor(0);
@@ -161,6 +166,8 @@ export class Stage1 extends Phaser.Scene {
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
   // ---------- flow ----------
   onPress(a) {
+    // The Twix cutscene owns every press while it is up: Start/pause skips it, attack/jump/fireball advance a line.
+    if (this.cutscene) { this.cutscene.press(a); return; }
     if (a === 'pause' || (a === 'start' && this.started && !this.ended && !this.gameOver)) {
       if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) this.setPauseReason('manual', !this.pauseReasons.has('manual'));
       return;
@@ -179,8 +186,10 @@ export class Stage1 extends Phaser.Scene {
     if (next === this.paused) return;
     this.paused = next;
     if (next) this.scene.pause(); else this.scene.resume();
-    if (this.hud && this.hud.pauseLabel) this.hud.pauseLabel.setVisible(next);
+    if (this.hud && this.hud.pauseLabel) this.hud.pauseLabel.setVisible(this.showPauseLabel());
   }
+  /** PAUSED card: any pause except the cutscene (which draws its own screen) */
+  showPauseLabel() { return this.paused && [...this.pauseReasons].some(r => r !== 'cutscene'); }
   start() {
     if (this.started) return;
     if (!this.hudReady) { this.startRequested = true; return; }
@@ -211,6 +220,7 @@ export class Stage1 extends Phaser.Scene {
       const w = this.zone.waves[this.wave];
       if (!w) { this.zone = null; this.locked = false; this.hud.go(); sfx.go(); return; }
       this.pending = w.map(([type, side, t]) => ({ type, side, t })); this.waveGap = 0.8;
+      if (this.powerDrops) for (const d of DROPS) if (d.zone === this.zoneI && d.wave === this.wave) this.powerDrops.push({ kind: d.kind, t: d.delay });
     }
   }
   startBoss() {
@@ -221,6 +231,7 @@ export class Stage1 extends Phaser.Scene {
   }
   onBossPhase(c, ph) {
     if (ph === 2) { say('chieftain_mid_01', this.caption); this.fx.trauma = 0.6; }
+    if (ph === BOSS_DROP.phase && this.powerDrops) this.powerDrops.push({ kind: BOSS_DROP.kind, t: 0.6 });
     if (ph === 3) { sfx.roar(); this.hud.flashText('THE CHIEFTAIN IS ENRAGED'); }
   }
   summonHounds(c) {
@@ -240,7 +251,7 @@ export class Stage1 extends Phaser.Scene {
     // Commit the victory before delayed adds or in-flight hazards can end the run.
     // A last projectile may win after game-over's timer: victory takes terminal
     // precedence in either ordering, without restoring health or spare lives.
-    this.victoryPending = true;
+    this.victoryPending = true; this.powers?.clearAll(); if (this.powerDrops) this.powerDrops = [];
     if (this.gameOver) { this.gameOver = false; stopSceneAudio(); this.hud.hideGameOver(); }
     this.fx.slowmo = 1.2; this.fx.hitstop = 0.25; sfx.impact();
     for (const e of this.enemies) if (e !== c && e.alive) { e.hp = 0; e.die(Math.sign(e.x - this.riley.x) || 1, { kb: 300, launch: 300 }); }
@@ -251,7 +262,7 @@ export class Stage1 extends Phaser.Scene {
   }
   stats() { const R = this.riley; return { score: R.score, combo: R.maxCombo, time: (this.time.now - this.time0) / 1000, lives: R.lives }; }
   rileyDied() {
-    const R = this.riley; R.lives--;
+    const R = this.riley; R.lives--; this.powers?.clearAll();
     this.time.delayedCall(1600, () => {
       if (R !== this.riley || this.victoryPending || this.ended) return;
       if (R.lives > 0) { R.respawn(); for (const e of this.enemies) if (e.alive && Math.abs(e.x - R.x) < 260) e.vx = Math.sign(e.x - R.x) * 500; }
@@ -289,23 +300,30 @@ export class Stage1 extends Phaser.Scene {
   }
   dustLater(f, t) { this.time.delayedCall(t * 1000, () => { this.fx.thump(f.x - f.facing * 40, f.y, true); sfx.thud(); }); }
   spawnFireball(R) {
-    const x = R.x + R.facing * 120, y = R.y - 150;
-    const core = this.add.image(x, y, 'core').setBlendMode('ADD').setScale(0.9).setDepth(4003);
-    const glow = this.add.image(x, y, 'glow').setBlendMode('ADD').setScale(1.4).setAlpha(0.8).setDepth(4003);
-    const light = this.lights.addLight(x, y, 420, 0xff9a40, 3.0, 70);
-    const trail = this.add.particles(0, 0, 'ember', { follow: core, lifespan: 480, speed: { min: 10, max: 70 }, scale: { start: 1.3, end: 0 }, frequency: this.fx.quality >= 2 ? 30 : 14, blendMode: 'ADD' }).setDepth(4002);
-    this.fireballs.push({ x, y, gy: R.y, dir: R.facing, core, glow, light, trail, t: 0 });
+    // An active angreal / sa'angreal throws three bigger fireballs in parallel lanes (1.1). Only the middle one
+    // carries a light: the scene light budget (maxLights 10) is shared with the fires, moon, Riley and impacts.
+    const B = this.powers?.boost && POWERS[this.powers.boost.kind], lanes = B ? B.lanes : [0];
+    for (const off of lanes) {
+      const x = R.x + R.facing * (120 - Math.abs(off) * 0.9), y = R.y - 150 + off, big = B ? 1.15 : 1;   // outer lanes trail: reads as three
+      const core = this.add.image(x, y, 'core').setBlendMode('ADD').setScale(0.9 * big).setDepth(4003);
+      const glow = this.add.image(x, y, 'glow').setBlendMode('ADD').setScale(1.4 * big).setAlpha(0.8).setDepth(4003);
+      if (B) glow.setTint(B.color);
+      const light = off === 0 ? this.lights.addLight(x, y, 420, 0xff9a40, 3.0, 70) : null;
+      const trail = this.add.particles(0, 0, 'ember', { follow: core, lifespan: 480, speed: { min: 10, max: 70 }, scale: { start: 1.3, end: 0 }, frequency: this.fx.quality >= 2 ? 30 : 14, blendMode: 'ADD' }).setDepth(4002);
+      this.fireballs.push({ x, y, gy: R.y + off, dir: R.facing, core, glow, light, trail, t: 0, dmg: B ? B.fireDmg : 14, big });
+    }
   }
   updateFireballs(dt) {
     for (const f of this.fireballs.slice()) {
-      f.t += dt; f.x += f.dir * 680 * dt; const wob = Math.sin(f.t * 40) * 0.08;
-      f.core.setPosition(f.x, f.y).setScale(0.9 + wob); f.glow.setPosition(f.x, f.y).setScale(1.4 + wob * 2); f.light.x = f.x; f.light.y = f.y; f.light.intensity = 2.8 + Math.sin(f.t * 33) * 0.4;
+      f.t += dt; f.x += f.dir * 680 * dt; const wob = Math.sin(f.t * 40) * 0.08, big = f.big || 1;
+      f.core.setPosition(f.x, f.y).setScale((0.9 + wob) * big); f.glow.setPosition(f.x, f.y).setScale((1.4 + wob * 2) * big);
+      if (f.light) { f.light.x = f.x; f.light.y = f.y; f.light.intensity = 2.8 + Math.sin(f.t * 33) * 0.4; }
       let hit = null;
       for (const e of this.enemies) if (e.canBeHit && Math.abs(e.x - f.x) < 60 && Math.abs(e.y - f.gy) < 42) { hit = e; break; }
       const off = f.x < this.camX - 200 || f.x > this.camX + VW + 200;
       if (hit || off) {
-        if (hit) { this.hitTarget(this.riley, hit, { dmg: 14, kind: 'heavy', kb: f.dir * 420, launch: 420, down: true }, { x: f.x - f.dir * 50, facing: f.dir }); this.fx.boom(f.x, f.y); sfx.boom(); }
-        this.lights.removeLight(f.light); f.core.destroy(); f.glow.destroy(); f.trail.stop(); this.time.delayedCall(600, () => f.trail.destroy());
+        if (hit) { this.hitTarget(this.riley, hit, { dmg: f.dmg || 14, kind: 'heavy', kb: f.dir * 420, launch: 420, down: true }, { x: f.x - f.dir * 50, facing: f.dir }); this.fx.boom(f.x, f.y); sfx.boom(); }
+        if (f.light) this.lights.removeLight(f.light); f.core.destroy(); f.glow.destroy(); f.trail.stop(); this.time.delayedCall(600, () => f.trail.destroy());
         this.fireballs.splice(this.fireballs.indexOf(f), 1);
       }
     }
@@ -394,21 +412,97 @@ export class Stage1 extends Phaser.Scene {
     this.dropPickup(b.x, b.y, Math.random() < 0.5 ? 'heal' : 'saidin');
   }
   dropPickup(x, y, kind) {
+    const P = POWERS[kind];
+    if (P) return this.dropPower(x, y, kind);
     const col = kind === 'heal' ? 0xff8866 : 0x88ccff;
     const g = this.add.image(x, y - 30, 'glow').setBlendMode('ADD').setScale(0.55).setTint(col).setDepth(1000 + y);
     const c = this.add.image(x, y - 30, 'core').setBlendMode('ADD').setScale(0.35).setTint(col).setDepth(1000 + y);
     const L = this.lights.addLight(x, y - 40, 160, col, 1.2, 80);
-    this.pickups.push({ x, y, kind, g, c, L, t: 0 });
+    const p = { x, y, kind, g, c, L, t: 0 }; this.pickups.push(p); return p;
   }
+  /** a power pickup: glow + painted icon + light (the same two visuals and one light as a heal pickup).
+   *  Powers pop in where they land; the Twix falls into the screen from above. Uncollected powers fade after PICKUP_LIFE. */
+  dropPower(x, y, kind) {
+    const P = POWERS[kind], twix = kind === 'twix';
+    const g = this.add.image(x, y - 30, 'glow').setBlendMode('ADD').setScale(1).setTint(P.color).setDepth(1000 + y);
+    const c = this.add.image(x, y - 30, iconKey(kind)).setScale(0.7).setDepth(1000 + y + 1);
+    const L = this.lights.addLight(x, y - 40, 200, P.color, 1.4, 80);
+    const p = { x, y, kind, g, c, L, t: 0, power: true, z: twix ? TWIX_DROP_Z : 0, vz: 0, ready: !twix, pop: twix ? 1 : 0 };
+    this.pickups.push(p);
+    preloadClips(twix ? ['riley_twix_01', ...TWIX_SCRIPT.map(l => l.id)] : [P.voice]);
+    if (twix) { this.twixDropped = true; sfx.fall(); } else sfx.powerUp();
+    this.powers?.dropped.push(kind);
+    return p;
+  }
+  /** wave-start power drops land a step ahead of Riley, inside the current arena */
+  updatePowerDrops(dt) {
+    if (!this.powerDrops) return;
+    for (const d of this.powerDrops.slice()) {
+      if ((d.t -= dt) > 0) continue;
+      this.powerDrops.splice(this.powerDrops.indexOf(d), 1);
+      if (this.victoryPending || this.ended) continue;
+      let kind = d.kind === 'ter?' ? pick(TER_POWERS) : d.kind;
+      if (kind === 'twix' && this.twixDropped) continue;
+      const R = this.riley, x = clamp(R.x + R.facing * 170, this.bounds.l + 90, this.bounds.r - 90), y = clamp(R.y, LANE_TOP + 12, LANE_BOT - 12);
+      this.dropPickup(x, y, kind);
+    }
+  }
+  removePickup(p) { p.g.destroy(); p.c.destroy(); this.lights.removeLight(p.L); this.pickups.splice(this.pickups.indexOf(p), 1); }
   updatePickups(dt) {
     const R = this.riley;
     for (const p of this.pickups.slice()) {
-      p.t += dt; const bob = Math.sin(p.t * 4) * 6; p.g.y = p.c.y = p.y - 34 + bob; p.L.y = p.y - 44 + bob;
+      p.t += dt; const bob = Math.sin(p.t * 4) * 6;
+      if (p.power) {
+        if (!p.ready) {   // falling in (the Twix): gravity, then one small bounce
+          p.vz -= 1800 * dt; p.z = Math.max(0, p.z + p.vz * dt);
+          if (p.z === 0) { if (p.vz < -500) { p.vz = -p.vz * 0.3; p.z = 0.01; this.fx.thump(p.x, p.y, false); } else { p.ready = true; p.vz = 0; say('riley_twix_01', this.caption, false); this.hud.flashText('A TWIX?!'); } }
+        }
+        if (p.pop < 1) p.pop = Math.min(1, p.pop + dt * 4);
+        const left = PICKUP_LIFE - p.t, blink = left < PICKUP_BLINK && Math.floor(left * 8) % 2 ? 0.25 : 1;
+        p.c.setPosition(p.x, p.y - 44 - p.z + (p.ready ? bob : 0)).setScale(0.7 * p.pop).setAlpha(blink);
+        p.g.setPosition(p.x, p.y - 44 - p.z + (p.ready ? bob : 0)).setScale((1 + 0.08 * Math.sin(p.t * 6)) * p.pop).setAlpha(0.9 * blink); p.L.x = p.x; p.L.y = p.y - 54 - p.z;
+        if (left <= 0) { this.removePickup(p); continue; }
+        if (!p.ready) continue;
+      } else { p.g.y = p.c.y = p.y - 34 + bob; p.L.y = p.y - 44 + bob; }
       if (Math.abs(R.x - p.x) < 50 && Math.abs(R.y - p.y) < 30 && R.alive) {
-        if (p.kind === 'heal') R.hp = Math.min(R.maxHp, R.hp + 35); else R.saidin = 100;
-        sfx.pickup(); p.g.destroy(); p.c.destroy(); this.lights.removeLight(p.L); this.pickups.splice(this.pickups.indexOf(p), 1);
+        this.removePickup(p);
+        if (p.kind === 'heal') { R.hp = Math.min(R.maxHp, R.hp + 35); sfx.pickup(); }
+        else if (p.kind === 'saidin') { R.saidin = 100; sfx.pickup(); }
+        else this.collectPower(p.kind);
       }
     }
+  }
+  collectPower(kind) {
+    const P = POWERS[kind];
+    if (kind === 'twix') return this.startTwixCutscene();
+    this.powers.activate(kind); sfx.powerUp();
+    this.hud.flashText(`${P.name}  ${P.seconds}s`);
+    say(P.voice, this.caption, false);
+  }
+  // ---------- the Twix campfire cutscene ----------
+  startTwixCutscene() {
+    if (this.cutscene || this.victoryPending || this.ended || this.gameOver) return false;
+    sfx.pickup();
+    const cs = this.cutscene = new Cutscene(TWIX_SCRIPT, {
+      onLine: line => { if (/TROLLOC/.test(line.who)) sfx.grumble(); say(line.id, null); this.hud.cutsceneLine(line); },
+      onEnd: how => this.endTwixCutscene(how),
+    });
+    this.setPauseReason('cutscene', true);
+    this.hud.showCutscene(cs);
+    cs.begin();
+    return true;
+  }
+  /** ticked by the HUD scene (which keeps running while Stage1 is paused); other pauses freeze it too */
+  tickCutscene(dt) {
+    const cs = this.cutscene; if (!cs) return;
+    for (const r of this.pauseReasons) if (r !== 'cutscene') return;
+    cs.update(dt);
+  }
+  endTwixCutscene(how) {
+    if (!this.cutscene) return;
+    this.cutsceneResult = how; this.cutscene = null;
+    stopSceneAudio(); this.hud.hideCutscene(how);
+    this.setPauseReason('cutscene', false);
   }
   throwCart(c) {
     const R = this.riley, x0 = c.x + c.facing * 30, z0 = 330, tx = clamp(R.x, this.bounds.l + 80, this.bounds.r - 80), ty = R.y;
@@ -493,7 +587,7 @@ export class Stage1 extends Phaser.Scene {
     // back outside the arena bounds that physics already enforced.
     R.x = clamp(R.x, this.bounds.l + 40, this.bounds.r - 40);
     this.enemies = this.enemies.filter(e => { if (e.gone) { e.destroy(); return false; } return true; });
-    this.updateFireballs(dt); this.updateCarts(dt); this.updatePickups(dt); this.updateBalefire(dt); this.updateLoial(dt);
+    this.updateFireballs(dt); this.updateCarts(dt); this.updatePowerDrops(dt); this.updatePickups(dt); this.powers?.update(dt); this.updateBalefire(dt); this.updateLoial(dt);
     if (this.started) this.updateZones(dt);
     R.sync(); for (const e of this.enemies) e.sync();
     this.updateCamera(dt);
