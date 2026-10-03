@@ -45,3 +45,16 @@ combo1 6, combo2 6, combo3 8, back 5, airkick 5, runkick 5, cast 5, knee 5, thro
 | after | 21.11 / 22.08 / 22.22 (avg 21.8) | 96.8 / 97.6 / 95.7 % |
 
 Moment checks (new build, open field after Start): balefire 2 s window 26.2 / 27.5 fps vs 28.7 / 28.1 without; Loial 4 s window 24.5 / 23.0 vs 25.9 / 24.8 without. SwiftShader numbers are relative only, not device numbers.
+
+## Repaint (Jason, Oct 2 10:48 PM PT)
+- **Riley balefire, 8 frames** repainted with ChatGPT image gen via Codex (jfeldman9@gmail.com), from `riley.jpg`, the Riley master and model sheet and the combo frames as references: short dark hair, thin blue-framed glasses, sleeveless black Asha'man coat, 16 and very muscular. Sheet `gen/riley-balefire2/balefire-sheet2.png`, cut into `frames/raw/riley_balefire2`. Checked each frame side by side against the combo frames.
+- **The in-game wash-out was partly the effect.** The old 1.6x additive muzzle flare sat over Riley and turned his black coat grey-brown. Now the flare is small (0.5x) and just ahead of his palms, and the two beam lights sit ahead of him on the beam (at least 300 px out, intensity 1.5). With the beam on, he keeps his black coat in the same lighting as idle.
+- **Loial with boots.** Run and sweep (8 frames) come from a new sheet with knee-high brown leather boots and no hooves (`gen/loial2/loial-sheet2-try2.png`, from the new locked master `master-side2.png`). Two stray pieces were reassigned by hand to the figure they belong to (see `slices.json` `hand_fixes`). The HUD portrait was regenerated with tufted ears and hanging eyebrows (`gen/loial-portrait2/loial-portrait2.png`).
+- The Codex job for the third Loial sheet try hung when the box stalled. I killed it and kept the second try. Both tries are in `gen/loial2/`.
+
+![balefire before/after](repaint-balefire-before-after.jpg)
+![same lighting: idle vs balefire](repaint-balefire-lighting.jpg)
+![Loial before/after](repaint-loial-before-after.jpg)
+![repainted frames](repaint-frames.jpg)
+
+Perf after the repaint (same box, SwiftShader, `?skip=boss&demo=1`, 30 s, alternating): before 326faff 21.67 / 23.23 / 21.01 fps (avg 22.0), after 21.91 / 20.99 / 20.82 (avg 21.2). That is within run-to-run noise on this box. Moments: balefire 2 s window 25.3 / 28.9 fps vs 28.5 / 30.1 without; Loial 4 s window 26.9 / 25.4 vs 29.8 / 27.4 without.

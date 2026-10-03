@@ -296,7 +296,7 @@
     }
   ],
   "preFight": {
-    "inventoryUpperBoundBytes": 18059672,
+    "inventoryUpperBoundBytes": 18060020,
     "budgetBytes": 25000000,
     "inventoryStatus": "PASS",
     "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."
@@ -608,7 +608,7 @@
       },
       {
         "path": "assets/ui/loial-portrait.webp",
-        "bytes": 29668,
+        "bytes": 29708,
         "width": 256,
         "height": 256,
         "rgbaBytes": 262144

@@ -9,7 +9,7 @@ import { sfx, say, playMusic, preloadVoices, unlock, toggleMusic, toggleMute, st
 import { Bot } from './bot.js';
 import { Loial } from './loial.js';
 // Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
-const BEAM_LIGHT = 1.7;
+const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
 
 const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
 // fire spots measured on the plates (plate px): [plateIndex, x, y, intensity, radius]
@@ -327,8 +327,10 @@ export class Stage1 extends Phaser.Scene {
     const glow = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 120).setTint(0x7cc0ff).setAlpha(0.6).setBlendMode('ADD').setDepth(depth);
     const core = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 40).setBlendMode('ADD').setDepth(depth + 1);
     const hot = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 16).setBlendMode('ADD').setDepth(depth + 1);
-    const flare = this.add.image(x0, y, 'glow').setTint(0xdff4ff).setScale(1.6).setBlendMode('ADD').setDepth(depth + 2);
-    const lights = [0.25, 0.7].map(f => this.lights.addLight(x0 + dir * len * f, y + 40, 420, 0xd6ecff, BEAM_LIGHT, 110));
+    // Small muzzle flare just ahead of the palms: a big additive flare washed Riley's black coat out to grey-brown.
+    const flare = this.add.image(x0 + dir * 18, y, 'glow').setTint(0xdff4ff).setScale(FLARE_SCALE).setBlendMode('ADD').setDepth(depth + 2);
+    // Lights ride the beam AHEAD of Riley so they light the foes and ground without washing out his own black coat.
+    const lights = [Math.max(300, len * 0.4), len * 0.82].map(d => this.lights.addLight(x0 + dir * d, y + 40, 380, 0xd6ecff, BEAM_LIGHT, 110));
     this.beam = { t: 0, fade: 0, dir, x0, y, len, glow, core, hot, flare, lights, struck: new Set() };
     this.fx.trauma = Math.min(1, this.fx.trauma + 0.8); this.fx.hitstop = Math.max(this.fx.hitstop, 0.06);
     sfx.balefire(); this.balefireSweep();
@@ -352,7 +354,7 @@ export class Stage1 extends Phaser.Scene {
     if (!B.fade) this.balefireSweep(); else B.fade += dt;
     const k = B.fade ? Math.max(0, 1 - B.fade / 0.25) : Math.min(1, B.t / 0.06), wob = 0.85 + Math.random() * 0.3;
     B.core.setDisplaySize(B.len, 40 * wob * k).setAlpha(k); B.hot.setDisplaySize(B.len, 16 * wob * k).setAlpha(k); B.glow.setDisplaySize(B.len, 120 * (0.9 + Math.random() * 0.2) * k).setAlpha(0.6 * k);
-    B.flare.setScale(1.6 * wob * Math.max(0.2, k)).setAlpha(k);
+    B.flare.setScale(FLARE_SCALE * wob * Math.max(0.2, k)).setAlpha(0.85 * k);
     for (const L of B.lights) L.intensity = this.lightsOn ? BEAM_LIGHT * k * wob : 0;
     if (B.fade && k <= 0) { for (const L of B.lights) this.lights.removeLight(L); B.glow.destroy(); B.core.destroy(); B.hot.destroy(); B.flare.destroy(); this.beam = null; }
   }
