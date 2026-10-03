@@ -5,10 +5,11 @@ import { perf } from './perf.js';
 import { queueCharJson } from './assets.js';
 import { Stage1 } from './stage1.js';
 import { HUD } from './hud.js';
+import { releaseIdleRenderTargets } from './render-resources.js';
 class Boot extends Phaser.Scene {
   constructor() { super('boot'); }
-  preload() { this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); }
-  create() { this.scene.start('stage1'); }
+  preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); }
+  create() { if (!window.__rwbStartup?.failed) this.scene.start('stage1'); }
 }
 const game = window.__game = new Phaser.Game({
   type: Phaser.WEBGL, parent: 'game', backgroundColor: '#05070d', width: VW * RS0, height: VH * RS0,
@@ -23,18 +24,24 @@ game.events.on('step', (time, delta) => game.inp.update(Math.min(delta || 0, 50)
 // unlit backdrop (sprites stay lit) -> render scale 1. Software WebGL (SwiftShader/llvmpipe) starts at level 4. ?q=fixed disables it.
 let acc = 0, n = 0, level = 0, inited = false, appliedRun = null;
 game.setRS = (rs) => {
+  if (game.rs === rs) return;
   game.rs = rs; game.scale.resize(VW * rs, VH * rs);
   for (const k of ['stage1', 'hud']) { const s = game.scene.getScene(k); if (s && s.cameras && s.cameras.main) s.cameras.main.setZoom(rs); }
+  // Quality changes happen during update, between renderer passes. Release only
+  // idle old-size targets; asset textures and checked-out filter targets remain.
+  releaseIdleRenderTargets(game);
 };
 function applyLevel(st, lv) {
+  let removedBloom = false;
   while (level < lv) {
     level++; st.fx.quality = level;
-    if (level === 1) st.setBloom(false);
+    if (level === 1) { st.setBloom(false); removedBloom = true; }
     if (level === 2) { st.snowFront.frequency = 240; }
     if (level === 3 && game.rs > 1) game.setRS(Math.max(1, game.rs - 0.5));
     if (level === 4) { st.setBackdropLit(false); }
     if (level === 5 && game.rs > 1) game.setRS(1);
   }
+  if (removedBloom) releaseIdleRenderTargets(game);
   perf.quality = level;
 }
 game.governor = (dt) => {

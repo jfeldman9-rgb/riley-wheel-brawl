@@ -5,7 +5,7 @@ import { FX } from './fx.js';
 import { Riley } from './riley.js';
 import { Enemy, Chieftain, TYPES } from './enemies.js';
 import { queueCharPages, makeCharAnims, patchFlippedNormals } from './assets.js';
-import { sfx, say, playMusic, preloadVoices, unlock, toggleMusic, toggleMute } from './audio.js';
+import { sfx, say, playMusic, preloadVoices, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
 import { Bot } from './bot.js';
 
 const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
@@ -23,6 +23,7 @@ const BARRELS = [[880, 600], [2140, 650], [3330, 610], [4600, 596]];
 export class Stage1 extends Phaser.Scene {
   constructor() { super('stage1'); }
   preload() {
+    window.__rwbStartup?.watchLoader(this.load);
     this.load.setCORS('anonymous');
     queueCharPages(this);
     this.load.image('far', 'assets/bg/bg-far.jpg');
@@ -32,14 +33,15 @@ export class Stage1 extends Phaser.Scene {
     this.load.image('floor2', ['assets/bg/bg-floor2.jpg', 'assets/bg/bg-floor2_n.webp']);
     this.load.image('cart', ['assets/props/prop-cart.webp', 'assets/props/prop-cart_n.webp']);
     this.load.image('barrel', ['assets/props/prop-barrel.webp', 'assets/props/prop-barrel_n.webp']);
-    this.load.atlas('staves', 'assets/props/staves.webp', 'assets/props/staves.json');
+    if (!this.textures.exists('staves')) this.load.atlas('staves', 'assets/props/staves.webp', 'assets/props/staves.json');
     this.load.json('plates', 'assets/bg/plates.json');
     this.load.on('progress', p => { const b = document.getElementById('boot'); if (b) b.textContent = `Loading Emond's Field… ${Math.round(p * 100)}%`; });
   }
   create() {
+    if (window.__rwbStartup?.failed) return;
     this.runId = (this.runId || 0) + 1;
     this.pauseReasons = new Set(); this.paused = false; this.gameOver = false;
-    this.clearShown = false; this.boss = null; this.bot = null;
+    this.clearShown = false; this.victoryPending = false; this.boss = null; this.bot = null;
     this.backdropLit = []; this.ambient = undefined;
     this.inp = this.game.inp; this.inp.clear();
     const b = document.getElementById('boot'); if (b) b.remove();
@@ -72,6 +74,7 @@ export class Stage1 extends Phaser.Scene {
     const removePress = this.inp.on('press', a => this.onPress(a));
     this.events.once('shutdown', () => {
       removeKey(); removePress(); this.inp.clear();
+      stopSceneAudio();
       if (this.bot && this.bot.destroy) this.bot.destroy();
       for (const reason of this.pauseReasons) perf.setSuspended(reason, false);
       this.scene.stop('hud');
@@ -83,6 +86,7 @@ export class Stage1 extends Phaser.Scene {
     if (q.get('demo')) { this.bot = new Bot(this); }
     if (q.get('demo') || q.get('autostart')) this.time.delayedCall(300, () => this.start());
     window.__stage = this; window.__spike = this;
+    window.__rwbStartup?.ready();
   }
   // ---------- backdrop ----------
   buildBackdrop() {
@@ -129,14 +133,14 @@ export class Stage1 extends Phaser.Scene {
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
   // ---------- flow ----------
   onPress(a) {
-    if (a === 'pause') {
+    if (a === 'pause' || (a === 'start' && this.started && !this.ended && !this.gameOver)) {
       if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) this.setPauseReason('manual', !this.pauseReasons.has('manual'));
       return;
     }
     if (this.paused) { this.inp.clear(); return; }
     unlock();
     if (!this.started && !this.ended) return this.start();
-    if (this.gameOver && a === 'attack') return this.continueGame();
+    if (this.gameOver && (a === 'attack' || a === 'start')) return this.continueGame();
     if (this.ended && this.clearShown && (a === 'attack' || a === 'start')) return this.scene.restart();
   }
   setPauseReason(reason, paused) {
@@ -190,8 +194,11 @@ export class Stage1 extends Phaser.Scene {
     if (ph === 3) { sfx.roar(); this.hud.flashText('THE CHIEFTAIN IS ENRAGED'); }
   }
   summonHounds(c) {
+    const runId = this.runId;
+    const canSummon = () => this.runId === runId && c === this.boss && c.alive && !this.victoryPending && !this.ended && !this.gameOver;
+    if (!canSummon()) return;
     const n = 2 - this.enemies.filter(e => e.alive && e.type === 'hound').length;
-    for (let i = 0; i < n; i++) this.time.delayedCall(i * 500, () => this.spawn('hound', i % 2 ? 'L' : 'R'));
+    for (let i = 0; i < n; i++) this.time.delayedCall(i * 500, () => { if (canSummon()) this.spawn('hound', i % 2 ? 'L' : 'R'); });
   }
   onEnemyAttack(e) { }
   onEnemyDie(e) {
@@ -199,6 +206,9 @@ export class Stage1 extends Phaser.Scene {
     if (e === this.boss) this.bossDown(e);
   }
   bossDown(c) {
+    if (this.victoryPending || this.ended) return;
+    // Commit the victory before delayed adds or in-flight hazards can end the run.
+    this.victoryPending = true;
     this.fx.slowmo = 1.2; this.fx.hitstop = 0.25; sfx.impact();
     for (const e of this.enemies) if (e !== c && e.alive) { e.hp = 0; e.die(Math.sign(e.x - this.riley.x) || 1, { kb: 300, launch: 300 }); }
     this.time.delayedCall(900, () => say('chieftain_defeat_01', this.caption));
@@ -210,6 +220,7 @@ export class Stage1 extends Phaser.Scene {
   rileyDied() {
     const R = this.riley; R.lives--;
     this.time.delayedCall(1600, () => {
+      if (R !== this.riley || this.victoryPending || this.ended) return;
       if (R.lives > 0) { R.respawn(); for (const e of this.enemies) if (e.alive && Math.abs(e.x - R.x) < 260) e.vx = Math.sign(e.x - R.x) * 500; }
       else { this.gameOver = true; sfx.gameOver(); this.hud.gameOver(); }
     });

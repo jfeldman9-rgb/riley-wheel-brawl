@@ -48,8 +48,11 @@ export class HUD extends Phaser.Scene {
       { fontFamily: F, fontSize: '15px', color: '#cbd6ee', align: 'center', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5, 0);
     c.add([bg, t1, t2, t3, t4, t5]);
     this.tweens.add({ targets: t4, alpha: 0.35, yoyo: true, repeat: -1, duration: 700 });
-    this.input.on('pointerdown', () => { this.game.inp.press('start'); });
+    // A title tap starts play. Don't turn later battlefield taps into Start:
+    // controller Start also pauses an active fight.
+    this.input.on('pointerdown', () => this.onTitlePointer());
   }
+  onTitlePointer() { if (this.stage && !this.stage.started && !this.stage.ended) this.game.inp.press('start'); }
   hideTitle() { this.tweens.add({ targets: this.card, alpha: 0, duration: 400, onComplete: () => { this.card.removeAll(true); this.card.setAlpha(1); } }); }
   caption(who, text) {
     if (!this.capWho) { this.pendingCap = [who, text]; return; }   // HUD not created yet (slow network on first load)

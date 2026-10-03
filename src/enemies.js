@@ -145,7 +145,7 @@ export class Chieftain extends Enemy {
     if (this.cool <= 0 && R.alive) {
       if (this.phase >= 2 && this.nextRoar <= 0 && this.scene.enemies.filter(e => e.alive && e.type === 'hound').length < 2) return this.startRoar();
       if (this.phase >= 3 && this.nextCart <= 0 && Math.abs(dx) > 260) return this.startLift();
-      if (this.phase >= 2 && Math.abs(dx) > 330 && ady < 40 && Math.random() < 0.6) return this.startCharge();
+      if (this.phase >= 2 && Math.abs(dx) > 330 && ady < 40 && this.scene.attackTokens() < this.scene.maxTokens && Math.random() < 0.6) return this.startCharge();
     }
     super.think(dt);
   }

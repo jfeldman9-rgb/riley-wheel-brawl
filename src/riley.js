@@ -20,7 +20,7 @@ export class Riley extends Fighter {
     this.setState('idle', 'idle');
   }
   get busy() { return !['idle', 'walk', 'run'].includes(this.state); }
-  get vulnerable() { return this.inv <= 0 && this.alive && !['down', 'getup', 'dead'].includes(this.state); }
+  get vulnerable() { return this.inv <= 0 && this.alive && !this.scene.victoryPending && !this.scene.ended && !['down', 'getup', 'dead'].includes(this.state); }
   update(dt, inp) {
     this.st += dt; if (this.inv > 0) this.inv -= dt; if (this.comboT > 0 && (this.comboT -= dt) <= 0) this.combo = 0;
     this.sprite.setAlpha(this.inv > 0 && this.state !== 'down' && this.state !== 'getup' ? (Math.floor(this.st * 20) % 2 ? 0.45 : 1) : 1);
@@ -70,7 +70,7 @@ export class Riley extends Fighter {
     this.x += (this.jumpVx + this.facing * 80) * dt;
     if (this.fi >= 1) this.scene.resolveAttack(this, this.atk);
   }
-  onLand() { if (['air', 'airkick'].includes(this.state)) { this.kicked = false; this.setState('land', 'land'); sfx.land(); this.scene.fx.snowPuff.emitParticleAt(this.x, this.y, 6); } }
+  onLand() { this.kicked = false; if (['air', 'airkick'].includes(this.state)) { this.setState('land', 'land'); sfx.land(); this.scene.fx.snowPuff.emitParticleAt(this.x, this.y, 6); } }
   startCombo(n) {
     const a = ATK['combo' + n]; this.atk = a; this.setState('combo' + n, a.anim); this.next = false; sfx.swing();
     if (a.voice && Math.random() < 0.35) say(a.voice, this.scene.caption, false);

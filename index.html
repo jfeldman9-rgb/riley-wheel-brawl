@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="rwb-build" content="stage1-evidence-v1">
+<meta name="rwb-build" content="stage1-evidence-v2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Riley Wheel Brawl 2.0 - Stage 1: Emond's Field</title>
@@ -10,6 +10,14 @@
 html,body{margin:0;height:100%;background:#05070d;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #game{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
 #boot{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#9fb0d0;font:14px/1.6 system-ui,sans-serif;pointer-events:none}
+#boot[hidden],#touch[hidden],#perf-open[hidden],#startup-error[hidden]{display:none!important}
+#startup-error{position:fixed;z-index:200;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:#05070d;color:#e7eeff;font:16px/1.6 system-ui,sans-serif;touch-action:pan-y}
+#startup-card{max-width:540px;padding:28px;border:1px solid #61769e;border-radius:16px;background:#0b1428;box-shadow:0 12px 48px #0008}
+#startup-card h1{margin:0 0 12px;font-size:28px;line-height:1.2}
+#startup-card p{margin:12px 0;color:#c4d1eb}
+#startup-card button{min-height:48px;padding:12px 20px;border:1px solid #91a8d1;border-radius:8px;background:#203452;color:#fff;font:600 16px system-ui;cursor:pointer;touch-action:manipulation}
+#startup-card button:focus-visible{outline:3px solid #ffd578;outline-offset:4px}
+#startup-code{font:13px/1.5 ui-monospace,monospace}
 /* touch controls: only shown on touch devices (body.touch is set on the first real touch or a coarse pointer) */
 #touch{position:fixed;inset:0;pointer-events:none;display:none}
 body.touch #touch{display:block}
@@ -43,6 +51,9 @@ html.perf-open,html.perf-open body{touch-action:pan-y pinch-zoom}
 </style></head><body>
 <div id="game"></div>
 <div id="boot">Loading Emond's Field…</div>
+<section id="startup-error" hidden role="alert" aria-labelledby="startup-title" aria-describedby="startup-description">
+<div id="startup-card"><h1 id="startup-title">The game could not start</h1><p id="startup-description"></p><button id="startup-retry" type="button">Reload game</button><p id="startup-code"></p></div>
+</section>
 <div id="touch"><div id="stick"><div id="knob"></div></div>
 <div class="tb" id="tbA">KICK</div><div class="tb" id="tbJ">JUMP</div><div class="tb" id="tbS">FIRE</div><div class="tb" id="tbP">II</div></div>
 <button id="perf-open" type="button" aria-haspopup="dialog" aria-controls="perf-dialog" aria-expanded="false" aria-label="Open local performance report">Perf report</button>
@@ -57,5 +68,5 @@ html.perf-open,html.perf-open body{touch-action:pan-y pinch-zoom}
 <label for="perf-json">Report JSON (select and copy if needed)</label><textarea id="perf-json" readonly spellcheck="false" aria-label="Performance report JSON"></textarea>
 </section></div>
 <script src="lib/phaser.min.js"></script>
-<script type="module" src="src/main.js"></script>
+<script type="module" src="src/bootstrap.js"></script>
 </body></html>

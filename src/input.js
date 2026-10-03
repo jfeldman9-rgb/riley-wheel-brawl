@@ -7,14 +7,17 @@ const KEYS = {
 };
 export class Input {
   constructor() {
-    this.held = {}; this.buf = {}; this.t = 0; this.touchAxis = { x: 0, y: 0 }; this.touchHeld = {}; this.lastTap = { left: -9, right: -9 }; this.runLatch = false;
+    this.held = {}; this.keysDown = new Set(); this.buf = {}; this.t = 0; this.touchAxis = { x: 0, y: 0 }; this.touchHeld = {}; this.lastTap = { left: -9, right: -9 }; this.runLatch = false;
     this.listeners = {}; this.isTouch = false; this.demo = null;
     addEventListener('keydown', e => {
       const a = KEYS[e.code]; if (e.repeat) return;
-      if (a) { e.preventDefault(); this.press(a); this.held[a] = true; }
+      if (a) { e.preventDefault(); this.press(a); this.keysDown.add(e.code); this.held[a] = true; }
       this.emit('key', e.code);
     });
-    addEventListener('keyup', e => { const a = KEYS[e.code]; if (a) this.held[a] = false; });
+    addEventListener('keyup', e => {
+      const a = KEYS[e.code]; this.keysDown.delete(e.code);
+      if (a) this.held[a] = [...this.keysDown].some(code => KEYS[code] === a);
+    });
     addEventListener('blur', () => this.clear());
     if (matchMedia && matchMedia('(pointer: coarse)').matches) this.enableTouch();
     addEventListener('touchstart', () => this.enableTouch(), { once: true, passive: true });
@@ -23,7 +26,7 @@ export class Input {
   on(ev, fn) { (this.listeners[ev] = this.listeners[ev] || []).push(fn); return () => this.off(ev, fn); }
   off(ev, fn) { this.listeners[ev] = (this.listeners[ev] || []).filter(f => f !== fn); }
   clear() {
-    this.held = {}; this.buf = {}; this.touchHeld = {}; this.touchAxis = { x: 0, y: 0 };
+    this.held = {}; this.keysDown.clear(); this.buf = {}; this.touchHeld = {}; this.touchAxis = { x: 0, y: 0 };
     this.demo = null; this.x = 0; this.y = 0; this.run = false; this.runLatch = false;
     this.lastTap = { left: -9, right: -9 };
     const knob = document.getElementById('knob'); if (knob) knob.style.transform = '';
@@ -64,8 +67,10 @@ export class Input {
   }
   pollPad() {
     const pads = navigator.getGamepads ? navigator.getGamepads() : []; const p = pads && [...pads].find(Boolean);
-    if (!p) return { x: 0, y: 0 };
-    const map = { 2: 'attack', 0: 'jump', 3: 'special', 9: 'pause', 5: 'run', 4: 'run' };
+    if (!p) { this.padPrev = {}; this.padId = null; return { x: 0, y: 0 }; }
+    const id = `${p.index ?? 0}:${p.id || ''}`;
+    if (this.padId !== id) { this.padPrev = {}; this.padId = id; }
+    const map = { 2: 'attack', 0: 'jump', 3: 'special', 9: 'start', 5: 'run', 4: 'run' };
     this.padPrev = this.padPrev || {};
     for (const b in map) { const d = p.buttons[b] && p.buttons[b].pressed; if (d && !this.padPrev[b]) this.press(map[b]); this.padPrev[b] = d; this.touchHeld['pad' + b] = d; }
     let x = p.axes[0] || 0, y = p.axes[1] || 0;
