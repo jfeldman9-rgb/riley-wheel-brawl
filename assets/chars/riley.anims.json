@@ -7,7 +7,8 @@
  "baseline": 610,
  "scale": 0.85,
  "pages": [
-  "riley-0"
+  "riley-0",
+  "riley-1"
  ],
  "anims": [
   {
@@ -532,6 +533,34 @@
     0,
     0,
     0
+   ]
+  },
+  {
+   "name": "riley_lightning",
+   "frames": [
+    "riley_lightning_00",
+    "riley_lightning_01",
+    "riley_lightning_02",
+    "riley_lightning_03",
+    "riley_lightning_04",
+    "riley_lightning_05"
+   ],
+   "holds": [
+    80,
+    90,
+    110,
+    160,
+    130,
+    90
+   ],
+   "loop": false,
+   "pages": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
    ]
   }
  ]

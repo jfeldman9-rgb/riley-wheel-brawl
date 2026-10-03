@@ -1,5 +1,13 @@
 # Angreal / ter'angreal / Twix art list (Riley Wheel Brawl 2.0, Stage 1)
 
+> **Status (Oct 3 2026): all 18 assets are painted and live (`ready: true`); no placeholders remain.**
+> Painted with ChatGPT image generation via the Codex CLI (jfeldman9@gmail.com account, the same pipeline as the
+> Stage 1 balefire repaint), with no Grok, Gemini, Seedance/Manus or Claude CLI and no paid usage. Post-processing was
+> limited to cropping, downscaling, black-to-alpha keying for the additive FX, and placing frames on the grid.
+> Riley's 6 lightning-cast frames are also packed into his atlas as page `riley-1` (anim `riley_lightning`,
+> normal maps included) on the shared 960x640 canvas, with feet on y=610. `fx_airwhip.png` is 512x64, not 48 high, so
+> the tendril isn't clipped. The original prompts are kept below for reference.
+
 Every file below already exists in `assets/powers/` as a **clearly labelled placeholder** at its final pixel size
 and frame layout (made by `tools/make-power-placeholders.py`; they are labelled cards, not art). Replace each one
 with the painted file **using the same filename, size and layout**. No code change is needed except where marked
@@ -72,7 +80,7 @@ Prompts (generate at 512×512, downscale to 48×48; simpler than the pickups so 
 | --- | --- | --- | --- | --- |
 | `fx_lightning.png` | 512×192 | yes | 3 | 512×64 each, stacked vertically |
 | `fx_fireshield.png` | 384×320 | yes | 2 | 384×160 each, stacked: frame 0 = back half of the ring, frame 1 = front half |
-| `fx_airwhip.png` | 512×48 | yes | 1 | single strip |
+| `fx_airwhip.png` | 512×64 | yes | 1 | single strip (was 512×48; taller so the curl is not clipped) |
 
 The game stretches each strip between two points (Riley's hand → enemy, enemy → enemy), so paint them
 **horizontal, left-to-right, edge to edge**, centred vertically, on pure transparency (or pure black if your tool

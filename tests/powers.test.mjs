@@ -239,7 +239,7 @@ test('every power appears in every normal Stage 1 run; the Twix exactly once, mi
   assert.equal(DROPS.filter(d => d.kind === 'twix').length, 1); assert.equal(BOSS_DROP.kind, 'saangreal');
 });
 
-test('cutscene script, voices and placeholder art are wired with the exact sizes in ART_LIST.md', () => {
+test('cutscene script, voices and art are wired with the exact sizes in ART_LIST.md', () => {
   assert.ok(TWIX_SCRIPT.length >= 6 && TWIX_SCRIPT.length <= 10);
   for (const l of TWIX_SCRIPT) assert.ok(l.text.length <= 90, l.id);
   assert.ok(['Ishamael', 'Lanfear', 'Aginor', 'Myrddraal'].every(n => TWIX_SCRIPT.some(l => l.text.includes(n))));
@@ -252,8 +252,30 @@ test('cutscene script, voices and placeholder art are wired with the exact sizes
   for (const a of Object.values(ART.pickups)) assert.deepEqual(size(a.url), [96, 96], a.url);
   for (const a of Object.values(ART.hud)) assert.deepEqual(size(a.url), [48, 48], a.url);
   for (const a of ART.panels) assert.deepEqual(size(a.url), [1280, 720], a.url);
-  assert.deepEqual(size(ART.fx.lightning.url), [512, 192]); assert.deepEqual(size(ART.fx.fireshield.url), [384, 320]); assert.deepEqual(size(ART.fx.airwhip.url), [512, 48]);
+  assert.deepEqual(size(ART.fx.lightning.url), [512, 192]); assert.deepEqual(size(ART.fx.fireshield.url), [384, 320]); assert.deepEqual(size(ART.fx.airwhip.url), [512, 64]);
+  for (const a of Object.values(ART.fx)) assert.deepEqual(size(a.url), [a.frameWidth, a.frameHeight * a.frames], a.url);
   assert.deepEqual(size(ART.rileyLightning.url), [2880, 1280]); assert.ok(ART.rileyLightning.holds.length >= 5);
   const list = readFileSync(new URL('../assets/powers/ART_LIST.md', import.meta.url), 'utf8');
   for (const a of [...Object.values(ART.pickups), ...Object.values(ART.hud), ...ART.panels, ...Object.values(ART.fx), ART.rileyLightning]) assert.ok(list.includes(a.url.split('/').pop()), `${a.url} listed`);
+});
+
+test('painted lightning cast: 6 frames packed in Riley\'s atlas page riley-1, on his canvas and baseline, fired on the release frame', () => {
+  const read = p => JSON.parse(readFileSync(new URL('../' + p, import.meta.url), 'utf8'));
+  const meta = read('assets/chars/riley.anims.json'), A = ART.rileyLightning;
+  assert.equal(A.ready, true); assert.ok(Object.values(ART.fx).every(f => f.ready));
+  const anim = meta.anims.find(a => a.name === A.anim);
+  assert.ok(anim, 'riley_lightning anim'); assert.equal(anim.frames.length, A.frames); assert.ok(A.frames >= 5);
+  assert.deepEqual(anim.holds, A.holds); assert.equal(anim.loop, false);
+  assert.ok(anim.pages.every(i => meta.pages[i] === A.page));
+  const atlas = read(`assets/chars/${A.page}.json`);
+  for (const f of anim.frames) {
+    const fr = atlas.frames[f]; assert.ok(fr, f);
+    // same 960x640 canvas at the atlas scale as every other Riley frame, feet on the 610 baseline
+    assert.deepEqual(fr.sourceSize, { w: Math.round(meta.canvas[0] * meta.scale), h: Math.round(meta.canvas[1] * meta.scale) }, f);
+    const feet = (fr.spriteSourceSize.y + fr.spriteSourceSize.h) / meta.scale;
+    assert.ok(Math.abs(feet - meta.baseline) <= 4, `${f} feet at ${feet}`);
+  }
+  for (const s of ['.webp', '_n.webp', '_nl.webp']) assert.ok(existsSync(new URL(`../assets/chars/${A.page}${s}`, import.meta.url)), A.page + s);
+  assert.ok(LIGHTNING.fireFrame > 0 && LIGHTNING.fireFrame < A.frames);
+  assert.deepEqual(dimensions(readFileSync(new URL('../' + A.url, import.meta.url))), [A.frameWidth * 3, A.frameHeight * 2]);
 });

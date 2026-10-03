@@ -14,7 +14,7 @@ export const POWERS = Object.freeze({
   twix: { slot: 'joke', name: 'TWIX', color: 0xd9a35a, css: '#e8b878' },
 });
 export const TER_POWERS = ['lightning', 'fireshield', 'airwhip'];
-export const LIGHTNING = Object.freeze({ range: 620, hop: 320, maxTargets: 4, dmg: 12, chainDmg: 9, life: 0.24, fireFrame: 3 });
+export const LIGHTNING = Object.freeze({ range: 620, hop: 320, maxTargets: 4, dmg: 12, chainDmg: 9, life: 0.24, fireFrame: 3, hand: [145, 180] });   // hand: fingertips of the painted release frame (x ahead, y up)
 export const FIRE_SHIELD = Object.freeze({ rx: 125, ry: 38, dmg: 5, tick: 0.55, kb: 300, embers: 8 });
 export const AIR_WHIP = Object.freeze({ range: 640, dy: 70, dmg: 6, pull: 0.26, stand: 96, life: 0.3 });
 export const PICKUP_LIFE = 25, PICKUP_BLINK = 3, TWIX_DROP_Z = 640;
@@ -30,31 +30,34 @@ export const DROPS = Object.freeze([
   { zone: 2, wave: 1, kind: 'ter?', delay: 1.0 },
 ]);
 export const BOSS_DROP = Object.freeze({ phase: 2, kind: 'saangreal' });
-// Art. Pickup icons, HUD icons and cutscene panels are shown as-is (clearly labelled placeholders until the painted
-// files replace them). Effect sprites and Riley's lightning-cast frames are only used once `ready` is set to true
-// after the real art lands; until then the effects are drawn procedurally and Riley uses his fireball cast.
+// Art (painted with ChatGPT image gen via Codex; see ART_LIST.md). Pickup icons, HUD icons and cutscene panels are shown
+// as-is. Effect sprites and Riley's lightning-cast frames are only used when `ready` is true; with `ready` false the
+// effects are drawn procedurally and Riley uses his fireball cast.
 // Full specs and prompts: ART_LIST.md (kept beside this file in assets/powers/).
 export const ART = Object.freeze({
   pickups: Object.fromEntries(['angreal', 'saangreal', 'lightning', 'fireshield', 'airwhip', 'twix'].map(k => [k, { key: 'pu_' + k, url: `assets/powers/pu_${k}.png`, size: 96 }])),
   hud: Object.fromEntries(['angreal', 'saangreal', 'lightning', 'fireshield', 'airwhip'].map(k => [k, { key: 'hud_' + k, url: `assets/powers/hud_${k}.png`, size: 48 }])),
   panels: [1, 2, 3].map(n => ({ key: 'twix_panel_' + n, url: `assets/powers/twix_panel_${n}.jpg` })),
   fx: {
-    lightning: { key: 'fx_lightning', url: 'assets/powers/fx_lightning.png', frameWidth: 512, frameHeight: 64, frames: 3, ready: false },
-    fireshield: { key: 'fx_fireshield', url: 'assets/powers/fx_fireshield.png', frameWidth: 384, frameHeight: 160, frames: 2, ready: false },
-    airwhip: { key: 'fx_airwhip', url: 'assets/powers/fx_airwhip.png', frameWidth: 512, frameHeight: 48, frames: 1, ready: false },
+    lightning: { key: 'fx_lightning', url: 'assets/powers/fx_lightning.png', frameWidth: 512, frameHeight: 64, frames: 3, ready: true },
+    fireshield: { key: 'fx_fireshield', url: 'assets/powers/fx_fireshield.png', frameWidth: 384, frameHeight: 160, frames: 2, ready: true },
+    airwhip: { key: 'fx_airwhip', url: 'assets/powers/fx_airwhip.png', frameWidth: 512, frameHeight: 64, frames: 1, ready: true },
   },
-  rileyLightning: { key: 'riley_lightning_sheet', url: 'assets/powers/riley_lightning.png', frameWidth: 960, frameHeight: 640, frames: 6, holds: [80, 90, 110, 160, 130, 90], ready: false },
+  // Riley's lightning cast: the registered 3x2 grid (960x640 frames, feet y=610, sprite anchor x=432) is
+  // riley_lightning.png; the game plays the same 6 frames packed into Riley's own atlas page riley-1 (with normal maps,
+  // anim 'riley_lightning' in riley.anims.json) so they are lit and scaled exactly like his other frames.
+  rileyLightning: { anim: 'riley_lightning', page: 'riley-1', url: 'assets/powers/riley_lightning.png', frameWidth: 960, frameHeight: 640, frames: 6, holds: [80, 90, 110, 160, 130, 90], ready: true },
 });
 export function queuePowerArt(scene) {
   const L = scene.load, has = k => scene.textures.exists(k);
   for (const a of [...Object.values(ART.pickups), ...Object.values(ART.hud), ...ART.panels]) if (!has(a.key)) L.image(a.key, a.url);
-  for (const a of [...Object.values(ART.fx), ART.rileyLightning]) if (a.ready && !has(a.key)) L.spritesheet(a.key, a.url, { frameWidth: a.frameWidth, frameHeight: a.frameHeight });
+  for (const a of Object.values(ART.fx)) if (a.ready && !has(a.key)) L.spritesheet(a.key, a.url, { frameWidth: a.frameWidth, frameHeight: a.frameHeight });
 }
-/** Riley's lightning cast uses its own painted frames once they exist; otherwise his fireball cast. */
+/** Riley's lightning cast uses his painted lightning frames (atlas page riley-1, made by makeCharAnims) while
+ *  ART.rileyLightning.ready is true; with it false the anim is dropped and he uses his fireball cast. */
 export function makePowerAnims(scene) {
   const A = ART.rileyLightning;
-  if (!A.ready || scene.anims.exists('riley_lightning') || !scene.textures.exists(A.key)) return;
-  scene.anims.create({ key: 'riley_lightning', frames: A.holds.map((duration, frame) => ({ key: A.key, frame, duration })), repeat: 0 });
+  if (!A.ready && scene.anims.exists(A.anim)) scene.anims.remove(A.anim);
 }
 export const iconKey = kind => (ART.pickups[kind] || {}).key;
 
@@ -111,7 +114,7 @@ export class Powers {
     const s = this.s, parts = [], A = ART.fx.lightning;
     if (A.ready) {
       const len = Math.hypot(x1 - x0, y1 - y0);
-      parts.push(s.add.image(x0, y0, A.key, (Math.random() * A.frames) | 0).setOrigin(0, 0.5).setDisplaySize(len, 64).setRotation(Math.atan2(y1 - y0, x1 - x0)).setBlendMode('ADD').setDepth(4004));
+      parts.push(s.add.image(x0, y0, A.key, (Math.random() * A.frames) | 0).setOrigin(0, 0.5).setDisplaySize(len, 84).setRotation(Math.atan2(y1 - y0, x1 - x0)).setBlendMode('ADD').setDepth(4004));
       return parts;
     }
     let px = x0, py = y0; const n = 4;
@@ -127,7 +130,7 @@ export class Powers {
   }
   /** LIGHTNING: strikes the nearest foe ahead, then chains to nearby foes */
   fireLightning(R) {
-    const s = this.s, hand = { x: R.x + R.facing * 70, y: R.y - R.z - 150 };
+    const s = this.s, [hx, hy] = R.cur === 'riley_lightning' ? LIGHTNING.hand : [70, 150], hand = { x: R.x + R.facing * hx, y: R.y - R.z - hy };
     const targets = this.chainTargets(R);
     const parts = [], dir = R.facing;
     let from = hand;
@@ -168,7 +171,7 @@ export class Powers {
     const tip = e ? { x: e.x, y: e.y - e.z - 140 } : { x: hand.x + dir * 420, y: hand.y };
     const A = ART.fx.airwhip, len = Math.abs(tip.x - hand.x) || 1, rot = Math.atan2(tip.y - hand.y, tip.x - hand.x);
     const parts = A.ready
-      ? [s.add.image(hand.x, hand.y, A.key).setOrigin(0, 0.5).setDisplaySize(len, 48).setRotation(rot).setBlendMode('ADD').setDepth(4004)]
+      ? [s.add.image(hand.x, hand.y, A.key).setOrigin(0, 0.5).setDisplaySize(len, A.frameHeight).setRotation(rot).setBlendMode('ADD').setDepth(4004)]
       : [s.add.image(hand.x, hand.y, 'beam').setOrigin(0, 0.5).setDisplaySize(len, 26).setRotation(rot).setTint(0xd8f4ff).setAlpha(0.55).setBlendMode('ADD').setDepth(4004),
         s.add.image(hand.x, hand.y, 'beam').setOrigin(0, 0.5).setDisplaySize(len, 8).setRotation(rot).setAlpha(0.8).setBlendMode('ADD').setDepth(4005)];
     this.whips.push({ parts, t: 0, hand, tip, e });
@@ -207,7 +210,7 @@ export class Powers {
   updateShield(dt) {
     const s = this.s, R = s.riley, sh = this.shield; sh.t += dt;
     const fading = this.left('ter') < 2 && Math.floor(this.left('ter') * 8) % 2;
-    if (ART.fx.fireshield.ready) sh.parts.forEach((o, f) => o.setPosition(R.x, R.y - R.z - 30).setDepth(1000 + R.y + (f ? 2 : -2)).setAlpha(fading ? 0.3 : 0.95));
+    if (ART.fx.fireshield.ready) sh.parts.forEach((o, f) => o.setPosition(R.x, R.y - R.z - 30).setDepth(1000 + R.y + (f ? 2 : -2)).setAlpha(fading ? 0.3 : 0.86 + 0.12 * Math.sin(sh.t * (f ? 23 : 19))));
     else sh.parts.forEach((o, i) => {
       const a = sh.t * 3.2 + (i / sh.parts.length) * Math.PI * 2, x = R.x + Math.cos(a) * FIRE_SHIELD.rx, y = R.y + Math.sin(a) * FIRE_SHIELD.ry;
       o.setPosition(x, y - R.z - 70).setDepth(1000 + y).setAlpha(fading ? 0.3 : 0.9).setScale(0.5 + 0.1 * Math.sin(sh.t * 20 + i));
