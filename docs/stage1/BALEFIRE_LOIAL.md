@@ -31,3 +31,7 @@ Riley: 72 → 98 named frames (target 150 still open). Every shipped attack now 
 combo1 6, combo2 6, combo3 8, back 5, airkick 5, runkick 5, cast 5, knee 5, throw 5 (+ balefire 8).
 
 ![new frames](contact-riley-v2-attacks.jpg)
+
+![balefire](balefire.jpg)
+![loial](loial-assist.jpg)
+![touch](touch-bale-call.jpg)

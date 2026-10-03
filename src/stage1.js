@@ -8,6 +8,8 @@ import { queueCharPages, makeCharAnims, patchFlippedNormals } from './assets.js'
 import { sfx, say, playMusic, preloadVoices, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
 import { Bot } from './bot.js';
 import { Loial } from './loial.js';
+// Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
+const BEAM_LIGHT = 1.7;
 
 const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
 // fire spots measured on the plates (plate px): [plateIndex, x, y, intensity, radius]
@@ -322,11 +324,12 @@ export class Stage1 extends Phaser.Scene {
     const dir = R.facing, x0 = R.x + dir * 95, y = R.y - R.z - 138;
     const edge = dir > 0 ? this.camX + VW + 160 : this.camX - 160, len = Math.max(60, Math.abs(edge - x0));
     const ox = dir > 0 ? 0 : 1, depth = 1000 + R.y + 2;
-    const glow = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 150).setTint(0x8fd0ff).setAlpha(0.55).setBlendMode('ADD').setDepth(depth);
-    const core = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 52).setBlendMode('ADD').setDepth(depth + 1);
+    const glow = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 120).setTint(0x7cc0ff).setAlpha(0.6).setBlendMode('ADD').setDepth(depth);
+    const core = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 40).setBlendMode('ADD').setDepth(depth + 1);
+    const hot = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 16).setBlendMode('ADD').setDepth(depth + 1);
     const flare = this.add.image(x0, y, 'glow').setTint(0xdff4ff).setScale(1.6).setBlendMode('ADD').setDepth(depth + 2);
-    const lights = [0.2, 0.65].map(f => this.lights.addLight(x0 + dir * len * f, y, 620, 0xe6f3ff, 3.2, 120));
-    this.beam = { t: 0, fade: 0, dir, x0, y, len, glow, core, flare, lights, struck: new Set() };
+    const lights = [0.25, 0.7].map(f => this.lights.addLight(x0 + dir * len * f, y + 40, 420, 0xd6ecff, BEAM_LIGHT, 110));
+    this.beam = { t: 0, fade: 0, dir, x0, y, len, glow, core, hot, flare, lights, struck: new Set() };
     this.fx.trauma = Math.min(1, this.fx.trauma + 0.8); this.fx.hitstop = Math.max(this.fx.hitstop, 0.06);
     sfx.balefire(); this.balefireSweep();
     for (const b of this.barrels) if (!b.broken && (b.x - R.x) * dir > 0 && Math.abs(b.x - x0) <= len) this.breakBarrel(b, dir);
@@ -348,10 +351,10 @@ export class Stage1 extends Phaser.Scene {
     if (!B.fade && released) B.fade = 0.0001;
     if (!B.fade) this.balefireSweep(); else B.fade += dt;
     const k = B.fade ? Math.max(0, 1 - B.fade / 0.25) : Math.min(1, B.t / 0.06), wob = 0.85 + Math.random() * 0.3;
-    B.core.setDisplaySize(B.len, 52 * wob * k).setAlpha(k); B.glow.setDisplaySize(B.len, 150 * (0.9 + Math.random() * 0.2) * k).setAlpha(0.55 * k);
+    B.core.setDisplaySize(B.len, 40 * wob * k).setAlpha(k); B.hot.setDisplaySize(B.len, 16 * wob * k).setAlpha(k); B.glow.setDisplaySize(B.len, 120 * (0.9 + Math.random() * 0.2) * k).setAlpha(0.6 * k);
     B.flare.setScale(1.6 * wob * Math.max(0.2, k)).setAlpha(k);
-    for (const L of B.lights) L.intensity = this.lightsOn ? 3.2 * k * wob : 0;
-    if (B.fade && k <= 0) { for (const L of B.lights) this.lights.removeLight(L); B.glow.destroy(); B.core.destroy(); B.flare.destroy(); this.beam = null; }
+    for (const L of B.lights) L.intensity = this.lightsOn ? BEAM_LIGHT * k * wob : 0;
+    if (B.fade && k <= 0) { for (const L of B.lights) this.lights.removeLight(L); B.glow.destroy(); B.core.destroy(); B.hot.destroy(); B.flare.destroy(); this.beam = null; }
   }
   // ---------- Loial assist (restored from 1.1) ----------
   callLoial() {

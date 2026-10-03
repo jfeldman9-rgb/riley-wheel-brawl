@@ -25,7 +25,7 @@ export class HUD extends Phaser.Scene {
     this.score = this.add.text(VW - 20, 18, '', { fontFamily: PX, fontSize: '14px', color: '#f3e6c8', stroke: '#000', strokeThickness: 4 }).setOrigin(1, 0);
     this.comboT = this.add.text(VW - 26, 150, '', { fontFamily: F, fontStyle: '900 italic', fontSize: '44px', color: '#ffd27a', stroke: '#2a1200', strokeThickness: 7 }).setOrigin(1, 0.5).setAlpha(0);
     // Restored 1.1 readiness: balefire on a full saidin meter, Loial once per stage.
-    this.baleT = this.add.text(342, 60, 'BALEFIRE READY', { fontFamily: PX, fontSize: '9px', color: '#e8f6ff', stroke: '#000', strokeThickness: 3 }).setAlpha(0);
+    this.baleT = this.add.text(342, 59, 'BALEFIRE READY', { fontFamily: PX, fontSize: '10px', color: '#e8f6ff', stroke: '#000', strokeThickness: 3 }).setAlpha(0);
     this.loialPic = this.textures.exists('loialPortrait') ? this.add.image(214, 83, 'loialPortrait').setDisplaySize(30, 30) : null;
     this.loialT = this.add.text(234, 77, 'LOIAL READY', { fontFamily: PX, fontSize: '10px', color: '#8cf0ae', stroke: '#000', strokeThickness: 3 });
     this.touchState = '';
