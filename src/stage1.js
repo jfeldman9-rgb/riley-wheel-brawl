@@ -184,7 +184,7 @@ export class Stage1 extends Phaser.Scene {
   start() {
     if (this.started) return;
     if (!this.hudReady) { this.startRequested = true; return; }
-    this.startRequested = false; this.started = true; unlock(); playMusic(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
+    this.startRequested = false; this.started = true; this.inp.flushPresses?.(); unlock(); playMusic(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
     perf.reset();
     say('st1_narrator_01', this.caption);
     this.time.delayedCall(5200, () => !this.zone && say('riley_st1_01', this.caption));
@@ -280,7 +280,7 @@ export class Stage1 extends Phaser.Scene {
     const hx = (t.x + (src || att).x) / 2 + (t.x > (src || att).x ? 20 : -20), hy = t.y - t.z - (t.T && t.T.boss ? 230 : 160);
     this.fx.impact(a.kind || 'medium', hx, hy, Math.sign(t.x - (src || att).x) || 1);
     sfx.hit(a.kind === 'heavy' || a.kind === 'finisher');
-    if (att === this.riley && t !== this.riley) { this.riley.landedHit(a.dmg); this.hud.target(t); this.hud.combo(this.riley.combo); }
+    if (att === this.riley && t !== this.riley) { this.riley.landedHit(a.dmg, a.noMeter); this.hud.target(t); this.hud.combo(this.riley.combo); }
     return true;
   }
   grabCandidate(R) {
@@ -318,7 +318,9 @@ export class Stage1 extends Phaser.Scene {
     for (let y = 0; y < H; y++) { const d = Math.abs(y - (H - 1) / 2) / (H / 2); const a = Math.max(0, 1 - d * d); g.fillStyle(d < 0.28 ? 0xffffff : d < 0.6 ? 0xd8f0ff : 0x7cc4ff, a); g.fillRect(0, y, 8, 1); }
     g.generateTexture('beam', 8, H); g.destroy();
   }
-  canBalefire() { return this.started && !this.gameOver && !this.ended && !this.victoryPending && !this.paused && !this.beam; }
+  /** is there a foe on screen that a strike could hit right now? Balefire and Loial are refused (nothing spent) without one. */
+  hasHittableFoe() { return this.enemies.some(e => e.canBeHit && e.x > this.camX - 60 && e.x < this.camX + VW + 60); }
+  canBalefire() { return this.started && !this.gameOver && !this.ended && !this.victoryPending && !this.paused && !this.beam && this.hasHittableFoe(); }
   /** thrust frame: a white-hot beam to the screen edge in Riley's facing direction; every enemy in front is struck once */
   fireBalefire(R) {
     const dir = R.facing, x0 = R.x + dir * 95, y = R.y - R.z - 138;
@@ -342,7 +344,7 @@ export class Stage1 extends Phaser.Scene {
       if (B.struck.has(e) || !e.canBeHit) continue;
       const ahead = (e.x - R.x) * B.dir; if (ahead < -30 || ahead > B.len + 120) continue;
       const dmg = e.T && e.T.boss ? 80 : e.maxHp + 10;
-      if (this.hitTarget(R, e, { dmg, kind: 'finisher', kb: B.dir * 520, launch: 520, down: true }, { x: R.x, facing: B.dir })) B.struck.add(e);
+      if (this.hitTarget(R, e, { dmg, kind: 'finisher', kb: B.dir * 520, launch: 520, down: true, noMeter: true }, { x: R.x, facing: B.dir })) B.struck.add(e);
     }
   }
   endBalefire() { if (this.beam && !this.beam.fade) this.beam.fade = 0.0001; }
@@ -364,6 +366,7 @@ export class Stage1 extends Phaser.Scene {
     const R = this.riley;
     if (!R.loialReady || this.loial) { if (this.time.now - this.spentSaidAt > 2500) { this.spentSaidAt = this.time.now; say('riley_call_spent_01', this.caption, false); } return false; }
     if (!this.metas || !this.metas.loial) return false;
+    if (!this.hasHittableFoe()) return false;   // don't spend Loial on an empty street
     R.loialReady = false;
     this.loial = new Loial(this, this.camX - 140, clamp(R.y, LANE_TOP, LANE_BOT));
     sfx.loialHorn(); say('riley_call_01', this.caption);

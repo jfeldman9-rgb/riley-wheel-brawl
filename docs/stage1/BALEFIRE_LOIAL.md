@@ -58,3 +58,14 @@ Moment checks (new build, open field after Start): balefire 2 s window 26.2 / 27
 ![repainted frames](repaint-frames.jpg)
 
 Perf after the repaint (same box, SwiftShader, `?skip=boss&demo=1`, 30 s, alternating): before 326faff 21.67 / 23.23 / 21.01 fps (avg 22.0), after 21.91 / 20.99 / 20.82 (avg 21.2). That is within run-to-run noise on this box. Moments: balefire 2 s window 25.3 / 28.9 fps vs 28.5 / 30.1 without; Loial 4 s window 26.9 / 25.4 vs 29.8 / 27.4 without.
+
+## Review fixes (Claude Code review of PR #16, Oct 3)
+- **Start press no longer replays as a move.** `start()` flushes buffered presses (`Input.flushPresses`), so tapping CALL/BALE (or R/F) on the title starts the game without spending Loial or the meter.
+- **No Loial or balefire on an empty street.** Both are refused, spending nothing, unless a foe on screen can be hit (`Stage1.hasHittableFoe`).
+- **Balefire builds no saidin.** Its hits pass `noMeter`, so the meter stays empty after the beam (it used to refill +3 per foe).
+- **HUD:** the LOIAL label/portrait are only redrawn when the Loial state changes (`HUD.updateLoialLabel`); `Text.setColor` re-rendered and re-uploaded the texture every frame.
+- **Touch:** every touch control adds `env(safe-area-inset-*)`; BALE is larger (`max(48px, min(13vh, 80px))`) and sits at least 20 px above JUMP; CALL is at least 44 px. On upright phones the stick is narrower, CALL stacks above BALE in the right column and the Perf report opener moves to the top, so nothing overlaps the stick or KICK. Landscape layout is otherwise unchanged.
+- **Balefire frames 04–05** re-registered by trim offset only (`spriteSourceSize.y` +4 and +6 in `riley-0.json`, even offsets) so the feet sit with the other balefire frames (lowest opaque row 515–517 for all eight). No pixels changed. A repack with `pack2.py` would need the same offsets.
+- **Loial swing** drops the back-view frame `loial_sweep_02` (still in the atlas, unused); `loial_sweep_01` holds its 120 ms, so the swing length (480 ms) and hit frame are unchanged.
+- **Sound:** balefire plays only its own sfx (the fireball sfx at the start was removed).
+- Tests: `tests/review-fixes.test.mjs`, `tests/hud-loial-label.test.mjs`.

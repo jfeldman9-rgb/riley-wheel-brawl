@@ -101,7 +101,7 @@ export class Riley extends Fighter {
   }
   startBalefire() {
     this.saidin -= BALEFIRE.cost; this.inv = Math.max(this.inv, BALEFIRE.invuln); this.vx = 0; this.fired = false;
-    this.setState('balefire', this.scene.anims.exists('riley_balefire') ? 'balefire' : 'cast'); sfx.fire();
+    this.setState('balefire', this.scene.anims.exists('riley_balefire') ? 'balefire' : 'cast');   // its own sfx plays when the beam fires
     say('riley_super_01', this.scene.caption);
   }
   balefire(dt) {
@@ -146,5 +146,6 @@ export class Riley extends Fighter {
   }
   down(dir, h) { this.setState('down', 'knockdown'); this.vx = dir * 360; this.scene.dustLater(this, 0.32); sfx.hurt(); }
   respawn() { this.alive = true; this.hp = this.maxHp; this.saidin = Math.max(this.saidin, 60); this.setState('getup', 'getup'); this.inv = 2.5; say('riley_respawn_01', this.scene.caption, false); }
-  landedHit(dmg) { this.combo++; this.comboT = 1.6; this.maxCombo = Math.max(this.maxCombo, this.combo); this.saidin = Math.min(100, this.saidin + 3); this.score += dmg * 10 * (1 + Math.floor(this.combo / 5)); }
+  // noMeter: balefire hits build no saidin (it just spent the full meter)
+  landedHit(dmg, noMeter = false) { this.combo++; this.comboT = 1.6; this.maxCombo = Math.max(this.maxCombo, this.combo); if (!noMeter) this.saidin = Math.min(100, this.saidin + 3); this.score += dmg * 10 * (1 + Math.floor(this.combo / 5)); }
 }

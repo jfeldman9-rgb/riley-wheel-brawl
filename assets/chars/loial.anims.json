@@ -37,18 +37,15 @@
    "frames": [
     "loial_sweep_00",
     "loial_sweep_01",
-    "loial_sweep_02",
     "loial_sweep_03"
    ],
    "holds": [
     140,
-    90,
-    120,
+    210,
     130
    ],
    "loop": false,
    "pages": [
-    0,
     0,
     0,
     0
