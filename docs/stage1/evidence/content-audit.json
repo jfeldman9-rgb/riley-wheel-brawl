@@ -265,7 +265,7 @@
     }
   ],
   "preFight": {
-    "inventoryUpperBoundBytes": 16533306,
+    "inventoryUpperBoundBytes": 16533938,
     "budgetBytes": 25000000,
     "inventoryStatus": "PASS",
     "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."

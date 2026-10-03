@@ -18,6 +18,13 @@ const ZONES = [
   { at: 2800, l: 2560, r: 3840, waves: [[['hound', 'R', 0], ['hound', 'L', 0.5]], [['spear', 'R', 0], ['grunt', 'L', 0.6], ['hound', 'R', 1.6]]] },
   { at: 4140, l: 3920, r: 5200, boss: true },
 ];
+// Moon: screen-fixed at x=VW*0.85, but as an ordinary world-space light. Phaser 4.2.1 LightsManager.getLights
+// culls raw light x/y against camera.worldView before scroll factors apply, so a scrollFactorX=0 light was
+// dropped once the camera passed x~2600 (zone 3 and the boss arena). placeMoon() keeps world x = scrollX + MOON_X
+// (shake included), which projects to the same screen x and stays inside every camera's worldView.
+export const MOON_X = VW * 0.85, MOON_Y = 60;
+export function addMoon(lights) { return lights.addLight(MOON_X, MOON_Y, 1500, 0xa8c0ff, 1.25, 260); }
+export function placeMoon(moon, scrollX) { if (moon) moon.x = scrollX + MOON_X; }
 const BARRELS = [[880, 600], [2140, 650], [3330, 610], [4600, 596]];
 
 export class Stage1 extends Phaser.Scene {
@@ -112,7 +119,7 @@ export class Stage1 extends Phaser.Scene {
       this.backdropLit.push(this.add.tileSprite(split - 200, fy, 200, fh, 'floor2').setOrigin(0, 0).setLighting(true).setTileScale(ts2).setTilePosition(-200 / ts2, 0).setDepth(-39).setAlpha(0.5));
     }
     this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 200 }, y: -20, lifespan: 9000, speedY: { min: 30, max: 55 }, speedX: { min: -25, max: 5 }, scale: { min: 0.15, max: 0.35 }, alpha: { min: 0.35, max: 0.7 }, frequency: 26 }).setScrollFactor(0).setDepth(-45);
-    this.moon = this.lights.addLight(VW * 0.85, 60, 1500, 0xa8c0ff, 1.25, 260); this.moon.setScrollFactor(0, 1);
+    this.moon = addMoon(this.lights);
     this.fires = [];
     const fires = FIRES.concat((this.plates.fires || []).map(f => [1, ...f]));
     for (const [pi, px, py, I, rad] of fires) {
@@ -416,5 +423,6 @@ export class Stage1 extends Phaser.Scene {
     else { this.bounds.l = this.camX; this.bounds.r = Math.min(WORLD_W, this.camX + VW + (this.zone ? 0 : 0)); }
     const [sx, sy] = this.fx.shakeOffset();
     this.cameras.main.setScroll(this.camX + sx, sy);
+    placeMoon(this.moon, this.camX + sx);
   }
 }

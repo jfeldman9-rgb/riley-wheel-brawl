@@ -56,10 +56,16 @@ Two genuine six-pose front-kick sheets were generated against the approved Riley
 - Sampled hit audio and music-intensity layers remain absent. Approved voice/music files and the procedural synthesis recipes were retained
 - Blind review at least 8/10 and at least 4 points above 1.2, freeze-frame review 9/10, likeness, dynamic-light appearance, and the full combat-depth target remain open
 - Fight p95 **at most 16.7 ms on both physical iPad and desktop** remains unmeasured
-- Static initial-content upper bound is **16,533,306 bytes / 25,000,000**. Actual transfer and a cold load within 4 seconds on home Wi-Fi remain unmeasured
+- Static initial-content upper bound is **16,533,938 bytes / 25,000,000**. Actual transfer and a cold load within 4 seconds on home Wi-Fi remain unmeasured
 - Base RGBA texture estimate remains **224,841,500 bytes**, before framebuffer/filter/canvas/driver costs. Default mipmaps are disabled; 299,788,667 bytes is only a hypothetical full mip-chain bound. Resource cleanup is not a measured GPU-memory or OOM fix
 
 No threshold was lowered. No shipped image, animation manifest, music file, voice file, plan target, live branch, merge or deployment was changed by this hardening pass.
+
+## Follow-up: moon light culling (fixed)
+
+The camera-fixed moon (`scrollFactorX=0`, world x 1088) was dropped by pinned Phaser 4.2.1 `LightsManager.getLights`, which culls raw light x/y against `camera.worldView` before scroll factors apply. It was unlit at camera x 3500 and 3920 (zone 3 end and the Chieftain arena). The moon is now an ordinary world-space light (`addMoon`) whose x `Stage1.updateCamera` keeps at the final shaken `scrollX + 1088` (`placeMoon`). Radius, intensity, color, height and vertical behavior are unchanged. `tests/moon-light.test.mjs` runs the actual pinned `getLights`/`TransformMatrix` methods and the production `updateCamera` to check selection and an unchanged projected position across every camera x. In headless Chromium with SwiftShader, the moon was selected at camera x 0, 1240, 2560, 3500 and 3920 after the fix (before: not at 3500/3920). Boss-arena frame pacing was unchanged on that software renderer. Not a device or perceptual measurement.
+
+Known related issue, not fixed: the parallax fire lights (`scrollFactorX=0.4`) go through the same raw-coordinate culling. At camera x 3500/3920 none is selected even though three or four should project on screen. At 2560, two on-screen fires are also skipped.
 
 ## Reproduce and continue
 
