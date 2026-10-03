@@ -37,7 +37,9 @@ test('every player attack keeps the five-frame target and reused artwork is disc
     assert.equal(attack.minimumFrames, 5);
     assert.equal(attack.densityStatus, attack.namedFrames >= 5 ? 'PASS' : 'FAIL');
   }
+  // Since the balefire/Loial branch every shipped attack has at least five named frames and runkick has its own art.
   const runkick = ledger.attacks.find(a => a.action === 'runkick');
-  assert.equal(runkick.animation, 'riley_combo2'); assert.equal(runkick.sharedAnimationWith, 'combo2');
-  assert.equal(ledger.densityStatus, 'FAIL');
+  assert.equal(runkick.animation, 'riley_runkick'); assert.equal(runkick.sharedAnimationWith, undefined);
+  for (const attack of ledger.attacks) assert.ok(attack.namedFrames >= 5, `${attack.action} has ${attack.namedFrames} frames`);
+  assert.equal(ledger.densityStatus, 'PASS');
 });

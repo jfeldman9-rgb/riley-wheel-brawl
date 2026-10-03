@@ -91,7 +91,8 @@ test('repeated requests for the same pending clip start only the latest request'
 test('preloading shares cached clip promises with speech and repeated preloads', async () => {
   const h = harness(); h.api.preloadVoices(); h.api.preloadVoices(); h.api.say('st1_narrator_01');
   await h.decode('st1_narrator_01');
-  assert.equal(h.fetches.length, 20); assert.equal(new Set(h.fetches).size, 20);
+  // 20 Stage 1 lines + 5 restored 1.1 lines (Loial call/charge/done/spent, balefire).
+  assert.equal(h.fetches.length, 25); assert.equal(new Set(h.fetches).size, 25);
   assert.equal(h.voices().length, 1);
 });
 

@@ -21,7 +21,7 @@ const { Bot } = await import('../../src/bot.js');
 const { Input } = await import('../../src/input.js');
 const { perf } = await import('../../src/perf.js');
 const readJSON = path => JSON.parse(readFileSync(new URL(path, import.meta.url)));
-const metas = Object.fromEntries(['riley', 'chief', 'hound', 'grunt', 'spear'].map(key => [key, readJSON(`../../assets/chars/${key}.anims.json`)]));
+const metas = Object.fromEntries(['riley', 'chief', 'hound', 'grunt', 'spear', 'loial'].map(key => [key, readJSON(`../../assets/chars/${key}.anims.json`)]));
 const animations = Object.fromEntries(Object.values(metas).flatMap(m => m.anims.map(a => [a.name, a])));
 const plates = readJSON('../../assets/bg/plates.json');
 const staves = Object.keys(readJSON('../../assets/props/staves.json').frames);
@@ -58,7 +58,7 @@ export function stage1Simulation({ mode = '1' } = {}) {
       setScale(scale) { this.displayWidth = this.width * scale; return this; },
       stop() { this.emitting = false; return this; },
     };
-    for (const method of ['setLighting', 'setDepth', 'setTint', 'clearTint', 'setOrigin', 'setBlendMode', 'setVisible', 'emitParticleAt', 'setScrollFactor', 'setTileScale', 'setTilePosition', 'fillGradientStyle', 'fillRect', 'generateTexture']) v[method] = () => v;
+    for (const method of ['setLighting', 'setDepth', 'setTint', 'clearTint', 'setOrigin', 'setBlendMode', 'setVisible', 'emitParticleAt', 'setScrollFactor', 'setTileScale', 'setTilePosition', 'fillGradientStyle', 'fillRect', 'generateTexture', 'setDisplaySize']) v[method] = () => v;
     visuals.add(v); return v;
   }
   function animate(dt, globalTimeScale) {

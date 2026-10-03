@@ -1,7 +1,7 @@
 // Asset manifest + loading. Characters are packed by stage1/tools/pack2.py into atlas pages, each with a normal map
 // (<page>_n) and a "flipped" normal map (<page>_nl, red channel inverted) used when the sprite is mirrored to face the
 // other way, so the scene lights still hit the side of the body that faces them.
-export const CHARS = ['riley', 'grunt', 'spear', 'hound', 'chief'];
+export const CHARS = ['riley', 'grunt', 'spear', 'hound', 'chief', 'loial'];
 const NML = {};
 export function queueCharJson(scene) {
   for (const k of CHARS) scene.load.json(k + '.A', `assets/chars/${k}.anims.json`);

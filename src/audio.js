@@ -19,6 +19,9 @@ export const VOICE = {
   riley_victory_01: ['RILEY', 'The way is clear.'],
   st1_clear_moiraine_01: ['MOIRAINE', 'The road is open. The Shadow fled east.'],
   riley_st1_clear_01: ['RILEY', 'Twinkle Toes, I am coming.'],
+  // Restored from 1.1 (same approved Kokoro files): balefire and the Loial assist.
+  riley_super_01: ['RILEY', 'Balefire!'], riley_call_01: ['RILEY', 'Loial, now!'], riley_call_spent_01: ['RILEY', 'Loial needs a rest.'],
+  loial_charge_01: ['LOIAL', 'For my friends!'], loial_done_01: ['LOIAL', 'That should help!'],
 };
 function init() {
   if (ctx) return;
@@ -103,6 +106,9 @@ export const sfx = {
   pickup() { tone({ f0: 660, dur: 0.07, vol: 0.2 }); tone({ f0: 880, dur: 0.08, delay: 0.07, vol: 0.2 }); tone({ f0: 1320, dur: 0.12, delay: 0.14, vol: 0.2 }); },
   levelClear() { [523, 659, 784, 1047, 784, 1047, 1319].forEach((n, i) => tone({ f0: n, dur: 0.18, delay: i * 0.11, vol: 0.2 })); },
   gameOver() { [440, 415, 392, 370, 349, 330, 220].forEach((n, i) => tone({ f0: n, dur: 0.3, delay: i * 0.22, vol: 0.22, type: 'triangle' })); },
+  // 1.1 recipes
+  balefire() { tone({ f0: 180, f1: 880, dur: 0.35, vol: 0.22, type: 'sawtooth' }); noise({ f0: 3000, f1: 400, dur: 0.4, vol: 0.2, filter: 'highpass' }); tone({ f0: 90, f1: 40, dur: 0.4, vol: 0.35, type: 'sine' }); duck(0.3, 0.1, 1.2); },
+  loialHorn() { tone({ f0: 220, f1: 330, dur: 0.22, vol: 0.28, type: 'sawtooth' }); tone({ f0: 330, f1: 440, dur: 0.24, delay: 0.18, vol: 0.24, type: 'sawtooth' }); },
   impact() { if (!gate('impact', 120)) return; tone({ f0: 70, f1: 30, dur: 0.5, vol: 0.6, type: 'sine' }); noise({ f0: 2400, f1: 160, dur: 0.35, vol: 0.45 }); duck(0.35, 0.15, 0.5); },
 };
 let musicWanted = false;

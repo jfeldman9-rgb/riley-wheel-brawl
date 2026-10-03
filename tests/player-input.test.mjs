@@ -31,9 +31,11 @@ test('third grab attack throws; jump and back+attack still throw', () => {
 });
 test('one knee frame damages its held target once', () => {
   const r = holder(); r.state = 'knee'; r.kneeHit = false;
-  Object.defineProperty(r, 'fi', { value: 0 }); Object.defineProperty(r, 'done', { value: false });
+  // Frame 0 is the pull-down anticipation; the knee lands on frame 1 (the contact frame).
+  let fi = 0; Object.defineProperty(r, 'fi', { get: () => fi }); Object.defineProperty(r, 'done', { value: false });
   const calls = []; r.scene = { hitTarget: (...args) => calls.push(args) };
-  r.hold(1 / 60, press(null)); r.hold(1 / 60, press(null));
+  r.hold(1 / 60, press(null)); assert.equal(calls.length, 0, 'anticipation frame does not hit');
+  fi = 1; r.hold(1 / 60, press(null)); r.hold(1 / 60, press(null));
   assert.equal(calls.length, 1); assert.equal(calls[0][0], r); assert.equal(calls[0][1], r.held);
   assert.equal(calls[0][2].dmg, 8); assert.equal(calls[0][2].anim, 'knee');
 });

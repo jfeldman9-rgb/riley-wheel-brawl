@@ -2,7 +2,7 @@
   "characters": [
     {
       "key": "riley",
-      "frames": 72,
+      "frames": 98,
       "target": 150,
       "densityStatus": "FAIL",
       "animations": [
@@ -16,11 +16,11 @@
         },
         {
           "name": "riley_combo1",
-          "frames": 3
+          "frames": 6
         },
         {
           "name": "riley_combo2",
-          "frames": 4
+          "frames": 6
         },
         {
           "name": "riley_combo3",
@@ -64,15 +64,15 @@
         },
         {
           "name": "riley_airkick",
-          "frames": 3
+          "frames": 5
         },
         {
           "name": "riley_back",
-          "frames": 4
+          "frames": 5
         },
         {
           "name": "riley_cast",
-          "frames": 4
+          "frames": 5
         },
         {
           "name": "riley_grab",
@@ -84,18 +84,26 @@
         },
         {
           "name": "riley_knee",
-          "frames": 2
+          "frames": 5
         },
         {
           "name": "riley_throw",
-          "frames": 4
+          "frames": 5
+        },
+        {
+          "name": "riley_runkick",
+          "frames": 5
+        },
+        {
+          "name": "riley_balefire",
+          "frames": 8
         }
       ],
       "pages": [
         {
           "name": "riley-0",
-          "w": 4060,
-          "h": 1576
+          "w": 4080,
+          "h": 1936
         }
       ]
     },
@@ -262,10 +270,33 @@
           "h": 1848
         }
       ]
+    },
+    {
+      "key": "loial",
+      "frames": 8,
+      "target": null,
+      "densityStatus": "NO_SLICE_COUNT_SPECIFIED",
+      "animations": [
+        {
+          "name": "loial_run",
+          "frames": 4
+        },
+        {
+          "name": "loial_sweep",
+          "frames": 4
+        }
+      ],
+      "pages": [
+        {
+          "name": "loial-0",
+          "w": 3544,
+          "h": 496
+        }
+      ]
     }
   ],
   "preFight": {
-    "inventoryUpperBoundBytes": 16534979,
+    "inventoryUpperBoundBytes": 18060020,
     "budgetBytes": 25000000,
     "inventoryStatus": "PASS",
     "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."
@@ -276,16 +307,16 @@
       {
         "action": "combo1",
         "animation": "riley_combo1",
-        "namedFrames": 3,
+        "namedFrames": 6,
         "minimumFrames": 5,
-        "densityStatus": "FAIL"
+        "densityStatus": "PASS"
       },
       {
         "action": "combo2",
         "animation": "riley_combo2",
-        "namedFrames": 4,
+        "namedFrames": 6,
         "minimumFrames": 5,
-        "densityStatus": "FAIL"
+        "densityStatus": "PASS"
       },
       {
         "action": "combo3",
@@ -297,53 +328,52 @@
       {
         "action": "back",
         "animation": "riley_back",
-        "namedFrames": 4,
+        "namedFrames": 5,
         "minimumFrames": 5,
-        "densityStatus": "FAIL"
+        "densityStatus": "PASS"
       },
       {
         "action": "airkick",
         "animation": "riley_airkick",
-        "namedFrames": 3,
+        "namedFrames": 5,
         "minimumFrames": 5,
-        "densityStatus": "FAIL"
+        "densityStatus": "PASS"
       },
       {
         "action": "runkick",
-        "animation": "riley_combo2",
-        "namedFrames": 4,
+        "animation": "riley_runkick",
+        "namedFrames": 5,
         "minimumFrames": 5,
-        "densityStatus": "FAIL",
-        "sharedAnimationWith": "combo2"
+        "densityStatus": "PASS"
       },
       {
         "action": "cast",
         "animation": "riley_cast",
-        "namedFrames": 4,
+        "namedFrames": 5,
         "minimumFrames": 5,
-        "densityStatus": "FAIL"
+        "densityStatus": "PASS"
       },
       {
         "action": "knee",
         "animation": "riley_knee",
-        "namedFrames": 2,
+        "namedFrames": 5,
         "minimumFrames": 5,
-        "densityStatus": "FAIL"
+        "densityStatus": "PASS"
       },
       {
         "action": "throw",
         "animation": "riley_throw",
-        "namedFrames": 4,
+        "namedFrames": 5,
         "minimumFrames": 5,
-        "densityStatus": "FAIL"
+        "densityStatus": "PASS"
       }
     ],
-    "densityStatus": "FAIL",
-    "note": "Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Runkick shares combo2; candidate artwork outside game assets is excluded."
+    "densityStatus": "PASS",
+    "note": "Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Balefire (8) is a special, not in this list; candidate artwork outside game assets is excluded."
   },
   "textureEstimate": {
-    "rgbaBaseBytes": 224841500,
-    "withFullMipChainBytes": 299788667,
+    "rgbaBaseBytes": 244652508,
+    "withFullMipChainBytes": 326203344,
     "images": [
       {
         "path": "assets/chars/chief-0.webp",
@@ -409,25 +439,46 @@
         "rgbaBytes": 3915408
       },
       {
+        "path": "assets/chars/loial-0.webp",
+        "bytes": 500702,
+        "width": 3544,
+        "height": 496,
+        "rgbaBytes": 7031296
+      },
+      {
+        "path": "assets/chars/loial-0_n.webp",
+        "bytes": 71638,
+        "width": 1772,
+        "height": 248,
+        "rgbaBytes": 1757824
+      },
+      {
+        "path": "assets/chars/loial-0_nl.webp",
+        "bytes": 75590,
+        "width": 1772,
+        "height": 248,
+        "rgbaBytes": 1757824
+      },
+      {
         "path": "assets/chars/riley-0.webp",
-        "bytes": 1486042,
-        "width": 4060,
-        "height": 1576,
-        "rgbaBytes": 25594240
+        "bytes": 2079478,
+        "width": 4080,
+        "height": 1936,
+        "rgbaBytes": 31595520
       },
       {
         "path": "assets/chars/riley-0_n.webp",
-        "bytes": 172622,
-        "width": 2030,
-        "height": 788,
-        "rgbaBytes": 6398560
+        "bytes": 250126,
+        "width": 2040,
+        "height": 968,
+        "rgbaBytes": 7898880
       },
       {
         "path": "assets/chars/riley-0_nl.webp",
-        "bytes": 181070,
-        "width": 2030,
-        "height": 788,
-        "rgbaBytes": 6398560
+        "bytes": 261796,
+        "width": 2040,
+        "height": 968,
+        "rgbaBytes": 7898880
       },
       {
         "path": "assets/chars/spear-0.webp",
@@ -551,6 +602,13 @@
       {
         "path": "assets/ui/chief-portrait.webp",
         "bytes": 25474,
+        "width": 256,
+        "height": 256,
+        "rgbaBytes": 262144
+      },
+      {
+        "path": "assets/ui/loial-portrait.webp",
+        "bytes": 29708,
         "width": 256,
         "height": 256,
         "rgbaBytes": 262144

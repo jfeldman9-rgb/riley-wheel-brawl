@@ -2,11 +2,14 @@
 import { VW, VH, LANE_TOP, LANE_BOT, WORLD_W, q, clamp, rand, pick, DEBUG } from './config.js';
 import { perf } from './perf.js';
 import { FX } from './fx.js';
-import { Riley } from './riley.js';
+import { Riley, BALEFIRE } from './riley.js';
 import { Enemy, Chieftain, TYPES } from './enemies.js';
 import { queueCharPages, makeCharAnims, patchFlippedNormals } from './assets.js';
 import { sfx, say, playMusic, preloadVoices, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
 import { Bot } from './bot.js';
+import { Loial } from './loial.js';
+// Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
+const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
 
 const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
 // fire spots measured on the plates (plate px): [plateIndex, x, y, intensity, radius]
@@ -78,6 +81,7 @@ export class Stage1 extends Phaser.Scene {
     this.plates = this.cache.json.get('plates') || {};
     this.buildBackdrop();
     this.enemies = []; this.fireballs = []; this.carts = []; this.patches = []; this.pickups = []; this.barrels = [];
+    this.loial = null; this.beam = null; this.spentSaidAt = -9; this.makeBeamTexture();
     this.riley = new Riley(this, 180, 630);
     this.heroLight = this.lights.addLight(0, 0, 440, 0xd8e2ff, 1.0, 150);
     for (const [x, y] of BARRELS) this.addBarrel(x, y);
@@ -306,6 +310,70 @@ export class Stage1 extends Phaser.Scene {
       }
     }
   }
+  // ---------- balefire (restored from 1.1) ----------
+  makeBeamTexture() {
+    if (this.textures.exists('beam')) return;
+    // vertical profile: transparent edge -> blue-white -> white-hot core -> blue-white -> transparent
+    const g = this.make.graphics({ x: 0, y: 0 }, false), H = 64;
+    for (let y = 0; y < H; y++) { const d = Math.abs(y - (H - 1) / 2) / (H / 2); const a = Math.max(0, 1 - d * d); g.fillStyle(d < 0.28 ? 0xffffff : d < 0.6 ? 0xd8f0ff : 0x7cc4ff, a); g.fillRect(0, y, 8, 1); }
+    g.generateTexture('beam', 8, H); g.destroy();
+  }
+  canBalefire() { return this.started && !this.gameOver && !this.ended && !this.victoryPending && !this.paused && !this.beam; }
+  /** thrust frame: a white-hot beam to the screen edge in Riley's facing direction; every enemy in front is struck once */
+  fireBalefire(R) {
+    const dir = R.facing, x0 = R.x + dir * 95, y = R.y - R.z - 138;
+    const edge = dir > 0 ? this.camX + VW + 160 : this.camX - 160, len = Math.max(60, Math.abs(edge - x0));
+    const ox = dir > 0 ? 0 : 1, depth = 1000 + R.y + 2;
+    const glow = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 120).setTint(0x7cc0ff).setAlpha(0.6).setBlendMode('ADD').setDepth(depth);
+    const core = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 40).setBlendMode('ADD').setDepth(depth + 1);
+    const hot = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 16).setBlendMode('ADD').setDepth(depth + 1);
+    // Small muzzle flare just ahead of the palms: a big additive flare washed Riley's black coat out to grey-brown.
+    const flare = this.add.image(x0 + dir * 18, y, 'glow').setTint(0xdff4ff).setScale(FLARE_SCALE).setBlendMode('ADD').setDepth(depth + 2);
+    // Lights ride the beam AHEAD of Riley so they light the foes and ground without washing out his own black coat.
+    const lights = [Math.max(300, len * 0.4), len * 0.82].map(d => this.lights.addLight(x0 + dir * d, y + 40, 380, 0xd6ecff, BEAM_LIGHT, 110));
+    this.beam = { t: 0, fade: 0, dir, x0, y, len, glow, core, hot, flare, lights, struck: new Set() };
+    this.fx.trauma = Math.min(1, this.fx.trauma + 0.8); this.fx.hitstop = Math.max(this.fx.hitstop, 0.06);
+    sfx.balefire(); this.balefireSweep();
+    for (const b of this.barrels) if (!b.broken && (b.x - R.x) * dir > 0 && Math.abs(b.x - x0) <= len) this.breakBarrel(b, dir);
+  }
+  balefireSweep() {
+    const B = this.beam, R = this.riley; if (!B || B.fade) return;
+    for (const e of this.enemies) {
+      if (B.struck.has(e) || !e.canBeHit) continue;
+      const ahead = (e.x - R.x) * B.dir; if (ahead < -30 || ahead > B.len + 120) continue;
+      const dmg = e.T && e.T.boss ? 80 : e.maxHp + 10;
+      if (this.hitTarget(R, e, { dmg, kind: 'finisher', kb: B.dir * 520, launch: 520, down: true }, { x: R.x, facing: B.dir })) B.struck.add(e);
+    }
+  }
+  endBalefire() { if (this.beam && !this.beam.fade) this.beam.fade = 0.0001; }
+  updateBalefire(dt) {
+    const B = this.beam; if (!B) return;
+    B.t += dt;
+    const R = this.riley, released = R.state !== 'balefire' || (R.cur === 'riley_balefire' ? R.fi >= BALEFIRE.releaseFrame : B.t > 0.6);
+    if (!B.fade && released) B.fade = 0.0001;
+    if (!B.fade) this.balefireSweep(); else B.fade += dt;
+    const k = B.fade ? Math.max(0, 1 - B.fade / 0.25) : Math.min(1, B.t / 0.06), wob = 0.85 + Math.random() * 0.3;
+    B.core.setDisplaySize(B.len, 40 * wob * k).setAlpha(k); B.hot.setDisplaySize(B.len, 16 * wob * k).setAlpha(k); B.glow.setDisplaySize(B.len, 120 * (0.9 + Math.random() * 0.2) * k).setAlpha(0.6 * k);
+    B.flare.setScale(FLARE_SCALE * wob * Math.max(0.2, k)).setAlpha(0.85 * k);
+    for (const L of B.lights) L.intensity = this.lightsOn ? BEAM_LIGHT * k * wob : 0;
+    if (B.fade && k <= 0) { for (const L of B.lights) this.lights.removeLight(L); B.glow.destroy(); B.core.destroy(); B.hot.destroy(); B.flare.destroy(); this.beam = null; }
+  }
+  // ---------- Loial assist (restored from 1.1) ----------
+  callLoial() {
+    if (!this.started || this.gameOver || this.ended || this.victoryPending || this.paused) return false;
+    const R = this.riley;
+    if (!R.loialReady || this.loial) { if (this.time.now - this.spentSaidAt > 2500) { this.spentSaidAt = this.time.now; say('riley_call_spent_01', this.caption, false); } return false; }
+    if (!this.metas || !this.metas.loial) return false;
+    R.loialReady = false;
+    this.loial = new Loial(this, this.camX - 140, clamp(R.y, LANE_TOP, LANE_BOT));
+    sfx.loialHorn(); say('riley_call_01', this.caption);
+    return true;
+  }
+  updateLoial(dt) {
+    const L = this.loial; if (!L) return;
+    L.update(dt); L.sync();
+    if (L.gone) { L.destroy(); this.loial = null; }
+  }
   // ---------- props ----------
   addBarrel(x, y) {
     const s = this.add.image(x, y, 'barrel').setOrigin(0.5, 0.97).setScale(0.19).setLighting(true).setDepth(1000 + y);
@@ -392,6 +460,7 @@ export class Stage1 extends Phaser.Scene {
     if (fx.hitstop > 0) {
       fx.hitstop -= dt; this.anims.globalTimeScale = 0;
       for (const f of [R, ...this.enemies]) { if (f.shudder > 0) f.shudder -= dt * 0.2; f.sync(); }
+      if (this.loial) this.loial.sync();
       this.updateCamera(dt); return;
     }
     if (fx.slowmo > 0) { fx.slowmo -= dt; dt *= 0.3; this.anims.globalTimeScale = 0.3; } else this.anims.globalTimeScale = this.timeScale;
@@ -421,7 +490,7 @@ export class Stage1 extends Phaser.Scene {
     // back outside the arena bounds that physics already enforced.
     R.x = clamp(R.x, this.bounds.l + 40, this.bounds.r - 40);
     this.enemies = this.enemies.filter(e => { if (e.gone) { e.destroy(); return false; } return true; });
-    this.updateFireballs(dt); this.updateCarts(dt); this.updatePickups(dt);
+    this.updateFireballs(dt); this.updateCarts(dt); this.updatePickups(dt); this.updateBalefire(dt); this.updateLoial(dt);
     if (this.started) this.updateZones(dt);
     R.sync(); for (const e of this.enemies) e.sync();
     this.updateCamera(dt);

@@ -7,7 +7,7 @@ const report = JSON.parse(readFileSync(new URL('../docs/stage1/evidence/full-sta
 const regenerate = 'Regenerate with node tests/helpers/run-full-stage-simulations.mjs > docs/stage1/evidence/full-stage-simulation.json';
 
 test('checked-in full-stage evidence identifies the current runtime, assets and tested clock', () => {
-  for (const required of ['src/stage1.js', 'src/riley.js', 'src/enemies.js', 'src/bot.js', 'src/input.js', 'src/fx.js',
+  for (const required of ['src/stage1.js', 'src/riley.js', 'src/loial.js', 'assets/chars/loial.anims.json', 'src/enemies.js', 'src/bot.js', 'src/input.js', 'src/fx.js',
     'lib/phaser.min.js', 'tests/helpers/animation-clock.mjs', 'tests/animation-clock.test.mjs',
     'tests/helpers/stage1-simulation.mjs', 'tests/helpers/run-full-stage-simulations.mjs', 'tests/full-stage-simulation.test.mjs']) {
     assert.ok(report.sourceSha256[required], `Missing evidence source: ${required}`);

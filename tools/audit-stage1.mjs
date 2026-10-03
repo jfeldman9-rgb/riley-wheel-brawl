@@ -33,10 +33,10 @@ export function dimensions(b) {
   throw Error('Unsupported image header');
 }
 export function audit() {
-  const characters = ['riley','grunt','spear','hound','chief'].map(key => {
+  const characters = ['riley','grunt','spear','hound','chief','loial'].map(key => {
     const m = json(`assets/chars/${key}.anims.json`);
     const frames = new Set(m.anims.flatMap(a => a.frames));
-    const target = key === 'riley' ? 150 : key === 'chief' ? null : 40;
+    const target = key === 'riley' ? 150 : key === 'chief' || key === 'loial' ? null : 40;
     return { key, frames: frames.size, target, densityStatus: target === null ? 'NO_SLICE_COUNT_SPECIFIED' : frames.size >= target ? 'PASS' : 'FAIL',
       animations: m.anims.map(a => ({ name:a.name, frames:a.frames.length })),
       pages: m.pages.map(p => ({ name:p, ...json(`assets/chars/${p}.json`).meta.size })) };
@@ -56,20 +56,19 @@ export function audit() {
   const rgbaBytes = images.reduce((n,x)=>n+x.rgbaBytes,0);
   const rileyAnimations = json('assets/chars/riley.anims.json').anims;
   // These are the shipped attack-animation mappings, not a claim that every
-  // move is visually distinct. Runkick intentionally shares combo2's artwork.
+  // move is visually distinct. Runkick has its own artwork since the balefire/Loial branch.
   const playerAttacks = Object.entries({ combo1:'combo1', combo2:'combo2', combo3:'combo3', back:'back',
-    airkick:'airkick', runkick:'combo2', cast:'cast', knee:'knee', throw:'throw' }).map(([action, animation]) => {
+    airkick:'airkick', runkick:'runkick', cast:'cast', knee:'knee', throw:'throw' }).map(([action, animation]) => {
     const name = `riley_${animation}`, data = rileyAnimations.find(a => a.name === name);
     const namedFrames = new Set(data?.frames || []).size;
-    return { action, animation:name, namedFrames, minimumFrames:5, densityStatus:namedFrames>=5?'PASS':'FAIL',
-      ...(action==='runkick'?{sharedAnimationWith:'combo2'}:{}) };
+    return { action, animation:name, namedFrames, minimumFrames:5, densityStatus:namedFrames>=5?'PASS':'FAIL' };
   });
   return { characters, preFight: { inventoryUpperBoundBytes:preFightUpperBoundBytes, budgetBytes:25_000_000,
       inventoryStatus:preFightUpperBoundBytes <= 25_000_000 ? 'PASS' : 'FAIL',
       note:'Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence.' },
     playerAttackDensity: { minimumFrames:5, attacks:playerAttacks,
       densityStatus:playerAttacks.every(a=>a.densityStatus==='PASS')?'PASS':'FAIL',
-      note:'Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Runkick shares combo2; candidate artwork outside game assets is excluded.' },
+      note:'Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Balefire (8) is a special, not in this list; candidate artwork outside game assets is excluded.' },
     textureEstimate: { rgbaBaseBytes:rgbaBytes, withFullMipChainBytes:Math.ceil(rgbaBytes*4/3), images,
       mipmaps:'Disabled by the pinned Phaser default and current game configuration; full-chain bytes are hypothetical.',
       note:'RGBA8 decoded base-level estimate, not measured GPU allocation. Excludes framebuffer/filter/canvas/driver allocations. Normal maps counted separately; no device-safe claim.' },

@@ -1,30 +1,32 @@
 {
   "schemaVersion": 1,
   "evidenceKind": "deterministic combat-logic simulation",
-  "baseGitCommit": "e85c87a0bf6fbfa536fca6d749a4ee13bc3af73c",
+  "baseGitCommit": "a74ca4005324356fc8ec887e7c723f1539fea961",
   "sourceSha256": {
-    "src/stage1.js": "59cbfc7967d83d8d555a31492cd3d7b7ef830899fc754745fc8594095071e156",
-    "src/riley.js": "f7a98dd70738fc6fd051a9342daf2e120ff01c98a1d2aca661003ab28c63e558",
+    "src/stage1.js": "bd24c69b34d8846ea47ff6b89794d9454cb1cc6effe8ba24730f77ba3fa34c03",
+    "src/riley.js": "6895b1a42ec09a6a3a8244fdbd5be49316a893fe4f840542a21be11c95468a1b",
+    "src/loial.js": "7f564b884fe81c9efddad49e5100f13ff6ec5543463f12f4797822c8ac3cb5a5",
     "src/enemies.js": "88314da46278dd8685edc64962c7eeaf5d601287ade012cd36abc20609038644",
     "src/fighter.js": "6d67d33bfec2e6c2dd80e57144c1a0ac2c88feacb28d0fac17f69481c4855970",
     "src/bot.js": "526a70db30f4576bd895f4de81caf11bf5742b8095865560cfc8ac415497963e",
-    "src/input.js": "479bbb21935f1ab4d29e7bc3357ea5b48e6cfe5beebe73f5a03ff35324ecd528",
+    "src/input.js": "ae4a01b4febd59a992a99e64abfcd4de699d4b96d7b02a866ef16a0c2a5934f0",
     "src/fx.js": "a6147b88f04f5ae1b1853f7b610cce20fc6027fed6b63846798316a37d0fd6e0",
-    "src/assets.js": "4168817396b3f5f3a0ee5a35b232b1f6970c650c1f72b321e7e57d3c6bf9e85d",
+    "src/assets.js": "12f5a35f3fb434150f9535ce038bc5a1da0c8e924dcb6a04fff93cf0b76ed4a3",
     "src/config.js": "dbe7dda121c137c191db1f6b538efad8d8547f7eee2f58780650a5494d04a8b1",
-    "src/audio.js": "04d77f83b3d737384dd4126e0bcb6111d3a697be9c1368d68c523a18acbf31a2",
-    "assets/chars/riley.anims.json": "18392371a4c4c0fe67f26d24a32ad83980ff4803440530ad4c97bbb125aa6b0a",
+    "src/audio.js": "d06704ea739bd17005066d93bbd2549500cdba227e22deba45755583fc85219e",
+    "assets/chars/riley.anims.json": "d444cd45de2782210d70b8fd300411d56fce528ab90d2f86ea9775dd2a77bb73",
     "assets/chars/grunt.anims.json": "a21a67d311422dea2445dd5be01679abb8711e400f3e1a8ef0f0b503b225318f",
     "assets/chars/spear.anims.json": "877d81c18a10fa19adb6a10eec0297a506c8860fe2f50ecb9ce4f549d5698f5e",
     "assets/chars/hound.anims.json": "d026835f853dfe9cb0e128fe552d1f467955fb2482d2787d12504931934f017a",
     "assets/chars/chief.anims.json": "f5ad78e0a10571600a54fe2b750524d1bef7f5744a88b3f08e1e03e10ae4091d",
+    "assets/chars/loial.anims.json": "962abdc21e62e5fb63d86a95d731a0db5c9f28dc7027abf1537236bdba42e5f8",
     "assets/bg/plates.json": "886e4b01b1783faf5dba6a141c628b4cd7acc030955ef79f8ee10128d24e8472",
     "assets/props/staves.json": "dd84dfeaf3c9e0faec8868266e57ab57ed51c3298500109c499b656e58d49a03",
     "lib/phaser.min.js": "66348b1b5141e49b7d5ebbe688cddcb502eab1cb00f21c538686a5b2c5abe4de",
     "tests/helpers/animation-clock.mjs": "41e6608aeab4f26e2efd06484b4e47bbcce45c70a4a764e6cc4fa968c4dbe01a",
     "tests/animation-clock.test.mjs": "611a241239a31447cf7fc663ce367a877103163ee631f45790fa2ecc75d418b9",
-    "tests/helpers/stage1-simulation.mjs": "3981bd45fac12cc78038982fca43ce8d257ab3abe76c2b34cbb90593993a6414",
-    "tests/helpers/run-full-stage-simulations.mjs": "887c97a375d0b9bcdf96b3f09b2877bf1cd5e468601e5cd95269c51f26df1e05",
+    "tests/helpers/stage1-simulation.mjs": "6fc5d880b98314b1dff4aa27b74fb883c63986f1df413f80cac3669b94ef8c26",
+    "tests/helpers/run-full-stage-simulations.mjs": "55fa4e826f2bc32e86fc4d69dcf233258db23a229c954953a42339c742e13ba3",
     "tests/full-stage-simulation.test.mjs": "27ab8dd7c4eca25a5d51d4b1b66f771a970d9eebafec6544876057ad6c509503"
   },
   "reproduction": "node tests/helpers/run-full-stage-simulations.mjs > docs/stage1/evidence/full-stage-simulation.json",
@@ -67,20 +69,20 @@
     "runs": 18,
     "clears": 18,
     "gameOvers": 0,
-    "maximumActualCombo": 18,
-    "runsWithActualComboAtLeast20": 0
+    "maximumActualCombo": 23,
+    "runsWithActualComboAtLeast20": 1
   },
   "records": [
     {
       "seed": 1,
       "mode": "1",
-      "simulatedSecondsToOutcome": 156.36666666666721,
+      "simulatedSecondsToOutcome": 164.41666666666254,
       "clear": true,
       "gameOver": false,
       "lives": 3,
-      "hp": 15,
-      "score": 23040,
-      "maxCombo": 13,
+      "hp": 41,
+      "score": 24430,
+      "maxCombo": 17,
       "actualLandedHitComboAtLeast20": false,
       "zones": [
         0,
@@ -107,7 +109,78 @@
         "complete": false
       },
       "peak": {
-        "visuals": 45,
+        "visuals": 46,
+        "lights": 11,
+        "timers": 7,
+        "tweens": 8,
+        "enemies": 5,
+        "liveEnemies": 3,
+        "fireballs": 2,
+        "carts": 0,
+        "patches": 0,
+        "pickups": 1,
+        "booms": 1
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 29,
+          "lights": 9,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 1,
+        "remainingPickups": 0,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 2,
+      "mode": "1",
+      "simulatedSecondsToOutcome": 159.49999999999872,
+      "clear": true,
+      "gameOver": false,
+      "lives": 3,
+      "hp": 4,
+      "score": 24120,
+      "maxCombo": 15,
+      "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 18,
+      "deaths": 18,
+      "coverage": {
+        "phases": [],
+        "attacks": [],
+        "wallStun": false,
+        "summonedHounds": 0,
+        "carts": 0,
+        "complete": false
+      },
+      "peak": {
+        "visuals": 46,
         "lights": 11,
         "timers": 9,
         "tweens": 8,
@@ -143,16 +216,158 @@
       "stageClearNotifications": 1
     },
     {
-      "seed": 2,
+      "seed": 3,
       "mode": "1",
-      "simulatedSecondsToOutcome": 155.15000000000126,
+      "simulatedSecondsToOutcome": 172.31666666665794,
+      "clear": true,
+      "gameOver": false,
+      "lives": 2,
+      "hp": 19,
+      "score": 25680,
+      "maxCombo": 13,
+      "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 20,
+      "deaths": 20,
+      "coverage": {
+        "phases": [],
+        "attacks": [],
+        "wallStun": false,
+        "summonedHounds": 0,
+        "carts": 0,
+        "complete": false
+      },
+      "peak": {
+        "visuals": 44,
+        "lights": 13,
+        "timers": 6,
+        "tweens": 8,
+        "enemies": 4,
+        "liveEnemies": 3,
+        "fireballs": 2,
+        "carts": 1,
+        "patches": 2,
+        "pickups": 1,
+        "booms": 2
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 25,
+          "lights": 9,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 3,
+        "remainingPickups": 0,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 1.966666666667239,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 4,
+      "mode": "1",
+      "simulatedSecondsToOutcome": 158.66666666666586,
       "clear": true,
       "gameOver": false,
       "lives": 2,
       "hp": 100,
-      "score": 24000,
+      "score": 23750,
       "maxCombo": 16,
       "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 18,
+      "deaths": 18,
+      "coverage": {
+        "phases": [],
+        "attacks": [],
+        "wallStun": false,
+        "summonedHounds": 0,
+        "carts": 0,
+        "complete": false
+      },
+      "peak": {
+        "visuals": 42,
+        "lights": 11,
+        "timers": 8,
+        "tweens": 8,
+        "enemies": 5,
+        "liveEnemies": 3,
+        "fireballs": 2,
+        "carts": 0,
+        "patches": 0,
+        "pickups": 1,
+        "booms": 1
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 29,
+          "lights": 9,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 1,
+        "remainingPickups": 0,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 5,
+      "mode": "1",
+      "simulatedSecondsToOutcome": 156.25000000000063,
+      "clear": true,
+      "gameOver": false,
+      "lives": 2,
+      "hp": 100,
+      "score": 26870,
+      "maxCombo": 23,
+      "actualLandedHitComboAtLeast20": true,
       "zones": [
         0,
         1,
@@ -197,12 +412,12 @@
           "lights": 9
         },
         "afterSettle": {
-          "visuals": 27,
+          "visuals": 29,
           "lights": 9,
           "timers": 0,
           "tweens": 0
         },
-        "brokenBarrels": 2,
+        "brokenBarrels": 1,
         "remainingPickups": 0,
         "remainingEnemies": 0,
         "remainingFireballs": 0,
@@ -210,18 +425,18 @@
         "remainingPatches": 0,
         "remainingBooms": 0
       },
-      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "maxCompletedEntrySeconds": 1.966666666667239,
       "stageClearNotifications": 1
     },
     {
-      "seed": 3,
+      "seed": 10,
       "mode": "1",
-      "simulatedSecondsToOutcome": 156.00000000000077,
+      "simulatedSecondsToOutcome": 153.90000000000197,
       "clear": true,
       "gameOver": false,
       "lives": 3,
-      "hp": 68,
-      "score": 25120,
+      "hp": 52,
+      "score": 24760,
       "maxCombo": 16,
       "actualLandedHitComboAtLeast20": false,
       "zones": [
@@ -240,77 +455,6 @@
       ],
       "spawns": 18,
       "deaths": 18,
-      "coverage": {
-        "phases": [],
-        "attacks": [],
-        "wallStun": false,
-        "summonedHounds": 0,
-        "carts": 0,
-        "complete": false
-      },
-      "peak": {
-        "visuals": 46,
-        "lights": 11,
-        "timers": 8,
-        "tweens": 8,
-        "enemies": 5,
-        "liveEnemies": 3,
-        "fireballs": 2,
-        "carts": 0,
-        "patches": 0,
-        "pickups": 1,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 25,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 3,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 2.2666666666663366,
-      "stageClearNotifications": 1
-    },
-    {
-      "seed": 4,
-      "mode": "1",
-      "simulatedSecondsToOutcome": 181.98333333331897,
-      "clear": true,
-      "gameOver": false,
-      "lives": 1,
-      "hp": 100,
-      "score": 25770,
-      "maxCombo": 14,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 21,
-      "deaths": 21,
       "coverage": {
         "phases": [],
         "attacks": [],
@@ -339,12 +483,12 @@
           "lights": 9
         },
         "afterSettle": {
-          "visuals": 25,
+          "visuals": 23,
           "lights": 9,
           "timers": 0,
           "tweens": 0
         },
-        "brokenBarrels": 3,
+        "brokenBarrels": 4,
         "remainingPickups": 0,
         "remainingEnemies": 0,
         "remainingFireballs": 0,
@@ -356,15 +500,15 @@
       "stageClearNotifications": 1
     },
     {
-      "seed": 5,
+      "seed": 20,
       "mode": "1",
-      "simulatedSecondsToOutcome": 173.98333333332363,
+      "simulatedSecondsToOutcome": 163.08333333332996,
       "clear": true,
       "gameOver": false,
       "lives": 2,
-      "hp": 36,
-      "score": 24730,
-      "maxCombo": 16,
+      "hp": 100,
+      "score": 24350,
+      "maxCombo": 13,
       "actualLandedHitComboAtLeast20": false,
       "zones": [
         0,
@@ -380,8 +524,8 @@
         "2:0",
         "2:1"
       ],
-      "spawns": 18,
-      "deaths": 18,
+      "spawns": 19,
+      "deaths": 19,
       "coverage": {
         "phases": [],
         "attacks": [],
@@ -391,15 +535,15 @@
         "complete": false
       },
       "peak": {
-        "visuals": 46,
+        "visuals": 44,
         "lights": 11,
-        "timers": 8,
+        "timers": 7,
         "tweens": 8,
-        "enemies": 4,
+        "enemies": 5,
         "liveEnemies": 3,
         "fireballs": 2,
-        "carts": 0,
-        "patches": 0,
+        "carts": 1,
+        "patches": 1,
         "pickups": 1,
         "booms": 1
       },
@@ -427,15 +571,15 @@
       "stageClearNotifications": 1
     },
     {
-      "seed": 10,
+      "seed": 100,
       "mode": "1",
-      "simulatedSecondsToOutcome": 163.7999999999962,
+      "simulatedSecondsToOutcome": 172.79999999999097,
       "clear": true,
       "gameOver": false,
       "lives": 2,
-      "hp": 100,
-      "score": 24340,
-      "maxCombo": 16,
+      "hp": 72,
+      "score": 23940,
+      "maxCombo": 14,
       "actualLandedHitComboAtLeast20": false,
       "zones": [
         0,
@@ -451,8 +595,8 @@
         "2:0",
         "2:1"
       ],
-      "spawns": 18,
-      "deaths": 18,
+      "spawns": 19,
+      "deaths": 19,
       "coverage": {
         "phases": [],
         "attacks": [],
@@ -481,12 +625,12 @@
           "lights": 9
         },
         "afterSettle": {
-          "visuals": 29,
+          "visuals": 25,
           "lights": 9,
           "timers": 0,
           "tweens": 0
         },
-        "brokenBarrels": 1,
+        "brokenBarrels": 3,
         "remainingPickups": 0,
         "remainingEnemies": 0,
         "remainingFireballs": 0,
@@ -498,157 +642,15 @@
       "stageClearNotifications": 1
     },
     {
-      "seed": 20,
-      "mode": "1",
-      "simulatedSecondsToOutcome": 149.18333333333806,
-      "clear": true,
-      "gameOver": false,
-      "lives": 3,
-      "hp": 13,
-      "score": 25690,
-      "maxCombo": 16,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 18,
-      "deaths": 18,
-      "coverage": {
-        "phases": [],
-        "attacks": [],
-        "wallStun": false,
-        "summonedHounds": 0,
-        "carts": 0,
-        "complete": false
-      },
-      "peak": {
-        "visuals": 41,
-        "lights": 11,
-        "timers": 7,
-        "tweens": 8,
-        "enemies": 5,
-        "liveEnemies": 3,
-        "fireballs": 2,
-        "carts": 0,
-        "patches": 0,
-        "pickups": 0,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 29,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 1,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 1.966666666667239,
-      "stageClearNotifications": 1
-    },
-    {
-      "seed": 100,
-      "mode": "1",
-      "simulatedSecondsToOutcome": 154.91666666666805,
-      "clear": true,
-      "gameOver": false,
-      "lives": 3,
-      "hp": 18,
-      "score": 24950,
-      "maxCombo": 16,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 18,
-      "deaths": 18,
-      "coverage": {
-        "phases": [],
-        "attacks": [],
-        "wallStun": false,
-        "summonedHounds": 0,
-        "carts": 0,
-        "complete": false
-      },
-      "peak": {
-        "visuals": 46,
-        "lights": 11,
-        "timers": 6,
-        "tweens": 8,
-        "enemies": 4,
-        "liveEnemies": 3,
-        "fireballs": 2,
-        "carts": 0,
-        "patches": 0,
-        "pickups": 1,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 29,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 1,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 1.966666666667239,
-      "stageClearNotifications": 1
-    },
-    {
       "seed": 97,
       "mode": "1",
-      "simulatedSecondsToOutcome": 152.81666666666928,
+      "simulatedSecondsToOutcome": 158.23333333333278,
       "clear": true,
       "gameOver": false,
       "lives": 3,
-      "hp": 72,
-      "score": 24940,
-      "maxCombo": 16,
+      "hp": 5,
+      "score": 23420,
+      "maxCombo": 14,
       "actualLandedHitComboAtLeast20": false,
       "zones": [
         0,
@@ -679,11 +681,11 @@
         "lights": 11,
         "timers": 6,
         "tweens": 8,
-        "enemies": 5,
+        "enemies": 4,
         "liveEnemies": 3,
         "fireballs": 2,
-        "carts": 0,
-        "patches": 0,
+        "carts": 1,
+        "patches": 1,
         "pickups": 1,
         "booms": 1
       },
@@ -713,13 +715,587 @@
     {
       "seed": 1,
       "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 173.71666666665712,
+      "simulatedSecondsToOutcome": 162.03333333333057,
       "clear": true,
       "gameOver": false,
       "lives": 3,
-      "hp": 27,
-      "score": 25690,
-      "maxCombo": 16,
+      "hp": 1,
+      "score": 24290,
+      "maxCombo": 12,
+      "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 18,
+      "deaths": 18,
+      "coverage": {
+        "phases": [
+          1,
+          2,
+          3
+        ],
+        "attacks": [
+          "sweep",
+          "chop",
+          "roar",
+          "charge",
+          "lift",
+          "hurl"
+        ],
+        "wallStun": true,
+        "summonedHounds": 3,
+        "carts": 1,
+        "complete": true
+      },
+      "peak": {
+        "visuals": 43,
+        "lights": 13,
+        "timers": 5,
+        "tweens": 8,
+        "enemies": 5,
+        "liveEnemies": 3,
+        "fireballs": 0,
+        "carts": 1,
+        "patches": 1,
+        "pickups": 2,
+        "booms": 1
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 27,
+          "lights": 11,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 4,
+        "remainingPickups": 2,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 2,
+      "mode": "boss-coverage",
+      "simulatedSecondsToOutcome": 186.39999999998307,
+      "clear": true,
+      "gameOver": false,
+      "lives": 3,
+      "hp": 22,
+      "score": 25680,
+      "maxCombo": 11,
+      "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 23,
+      "deaths": 23,
+      "coverage": {
+        "phases": [
+          1,
+          2,
+          3
+        ],
+        "attacks": [
+          "chop",
+          "sweep",
+          "roar",
+          "charge",
+          "lift",
+          "hurl"
+        ],
+        "wallStun": true,
+        "summonedHounds": 8,
+        "carts": 1,
+        "complete": true
+      },
+      "peak": {
+        "visuals": 43,
+        "lights": 11,
+        "timers": 7,
+        "tweens": 8,
+        "enemies": 5,
+        "liveEnemies": 3,
+        "fireballs": 0,
+        "carts": 1,
+        "patches": 1,
+        "pickups": 1,
+        "booms": 1
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 29,
+          "lights": 9,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 1,
+        "remainingPickups": 0,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 3,
+      "mode": "boss-coverage",
+      "simulatedSecondsToOutcome": 173.19999999999075,
+      "clear": true,
+      "gameOver": false,
+      "lives": 2,
+      "hp": 79,
+      "score": 25050,
+      "maxCombo": 10,
+      "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 22,
+      "deaths": 22,
+      "coverage": {
+        "phases": [
+          1,
+          2,
+          3
+        ],
+        "attacks": [
+          "chop",
+          "sweep",
+          "roar",
+          "charge",
+          "lift",
+          "hurl"
+        ],
+        "wallStun": true,
+        "summonedHounds": 7,
+        "carts": 2,
+        "complete": true
+      },
+      "peak": {
+        "visuals": 43,
+        "lights": 13,
+        "timers": 6,
+        "tweens": 8,
+        "enemies": 5,
+        "liveEnemies": 3,
+        "fireballs": 0,
+        "carts": 1,
+        "patches": 2,
+        "pickups": 1,
+        "booms": 1
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 25,
+          "lights": 10,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 4,
+        "remainingPickups": 1,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 4,
+      "mode": "boss-coverage",
+      "simulatedSecondsToOutcome": 155.71666666666758,
+      "clear": true,
+      "gameOver": false,
+      "lives": 3,
+      "hp": 3,
+      "score": 24700,
+      "maxCombo": 13,
+      "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 19,
+      "deaths": 19,
+      "coverage": {
+        "phases": [
+          1,
+          2,
+          3
+        ],
+        "attacks": [
+          "sweep",
+          "chop",
+          "roar",
+          "charge",
+          "lift",
+          "hurl"
+        ],
+        "wallStun": true,
+        "summonedHounds": 4,
+        "carts": 1,
+        "complete": true
+      },
+      "peak": {
+        "visuals": 41,
+        "lights": 11,
+        "timers": 6,
+        "tweens": 8,
+        "enemies": 5,
+        "liveEnemies": 3,
+        "fireballs": 0,
+        "carts": 1,
+        "patches": 1,
+        "pickups": 0,
+        "booms": 1
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 29,
+          "lights": 9,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 1,
+        "remainingPickups": 0,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 5,
+      "mode": "boss-coverage",
+      "simulatedSecondsToOutcome": 178.11666666665454,
+      "clear": true,
+      "gameOver": false,
+      "lives": 2,
+      "hp": 56,
+      "score": 24550,
+      "maxCombo": 12,
+      "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 20,
+      "deaths": 20,
+      "coverage": {
+        "phases": [
+          1,
+          2,
+          3
+        ],
+        "attacks": [
+          "chop",
+          "sweep",
+          "roar",
+          "charge",
+          "lift",
+          "hurl"
+        ],
+        "wallStun": true,
+        "summonedHounds": 5,
+        "carts": 1,
+        "complete": true
+      },
+      "peak": {
+        "visuals": 43,
+        "lights": 11,
+        "timers": 6,
+        "tweens": 8,
+        "enemies": 5,
+        "liveEnemies": 3,
+        "fireballs": 0,
+        "carts": 1,
+        "patches": 1,
+        "pickups": 1,
+        "booms": 1
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 27,
+          "lights": 9,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 2,
+        "remainingPickups": 0,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 10,
+      "mode": "boss-coverage",
+      "simulatedSecondsToOutcome": 175.1999999999896,
+      "clear": true,
+      "gameOver": false,
+      "lives": 2,
+      "hp": 62,
+      "score": 27230,
+      "maxCombo": 15,
+      "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 22,
+      "deaths": 22,
+      "coverage": {
+        "phases": [
+          1,
+          2,
+          3
+        ],
+        "attacks": [
+          "chop",
+          "sweep",
+          "roar",
+          "charge",
+          "lift",
+          "hurl"
+        ],
+        "wallStun": true,
+        "summonedHounds": 7,
+        "carts": 2,
+        "complete": true
+      },
+      "peak": {
+        "visuals": 41,
+        "lights": 12,
+        "timers": 6,
+        "tweens": 8,
+        "enemies": 5,
+        "liveEnemies": 3,
+        "fireballs": 0,
+        "carts": 1,
+        "patches": 2,
+        "pickups": 1,
+        "booms": 1
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 25,
+          "lights": 9,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 3,
+        "remainingPickups": 0,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 20,
+      "mode": "boss-coverage",
+      "simulatedSecondsToOutcome": 163.96666666666277,
+      "clear": true,
+      "gameOver": false,
+      "lives": 2,
+      "hp": 86,
+      "score": 26090,
+      "maxCombo": 17,
+      "actualLandedHitComboAtLeast20": false,
+      "zones": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "waves": [
+        "0:0",
+        "0:1",
+        "1:0",
+        "1:1",
+        "2:0",
+        "2:1"
+      ],
+      "spawns": 20,
+      "deaths": 20,
+      "coverage": {
+        "phases": [
+          1,
+          2,
+          3
+        ],
+        "attacks": [
+          "sweep",
+          "chop",
+          "roar",
+          "charge",
+          "lift",
+          "hurl"
+        ],
+        "wallStun": true,
+        "summonedHounds": 5,
+        "carts": 1,
+        "complete": true
+      },
+      "peak": {
+        "visuals": 43,
+        "lights": 11,
+        "timers": 7,
+        "tweens": 8,
+        "enemies": 5,
+        "liveEnemies": 3,
+        "fireballs": 0,
+        "carts": 1,
+        "patches": 1,
+        "pickups": 1,
+        "booms": 1
+      },
+      "resources": {
+        "settleSeconds": 15,
+        "baseline": {
+          "visuals": 31,
+          "lights": 9
+        },
+        "afterSettle": {
+          "visuals": 25,
+          "lights": 9,
+          "timers": 0,
+          "tweens": 0
+        },
+        "brokenBarrels": 3,
+        "remainingPickups": 0,
+        "remainingEnemies": 0,
+        "remainingFireballs": 0,
+        "remainingCarts": 0,
+        "remainingPatches": 0,
+        "remainingBooms": 0
+      },
+      "maxCompletedEntrySeconds": 2.2666666666663366,
+      "stageClearNotifications": 1
+    },
+    {
+      "seed": 100,
+      "mode": "boss-coverage",
+      "simulatedSecondsToOutcome": 176.84999999998863,
+      "clear": true,
+      "gameOver": false,
+      "lives": 2,
+      "hp": 48,
+      "score": 24900,
+      "maxCombo": 14,
       "actualLandedHitComboAtLeast20": false,
       "zones": [
         0,
@@ -757,417 +1333,7 @@
         "complete": true
       },
       "peak": {
-        "visuals": 43,
-        "lights": 11,
-        "timers": 8,
-        "tweens": 8,
-        "enemies": 5,
-        "liveEnemies": 3,
-        "fireballs": 0,
-        "carts": 1,
-        "patches": 1,
-        "pickups": 1,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 25,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 3,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 2.2666666666663366,
-      "stageClearNotifications": 1
-    },
-    {
-      "seed": 2,
-      "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 158.09999999999954,
-      "clear": true,
-      "gameOver": false,
-      "lives": 2,
-      "hp": 81,
-      "score": 23250,
-      "maxCombo": 12,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 18,
-      "deaths": 18,
-      "coverage": {
-        "phases": [
-          1,
-          2,
-          3
-        ],
-        "attacks": [
-          "chop",
-          "sweep",
-          "roar",
-          "charge",
-          "lift",
-          "hurl"
-        ],
-        "wallStun": true,
-        "summonedHounds": 3,
-        "carts": 1,
-        "complete": true
-      },
-      "peak": {
-        "visuals": 43,
-        "lights": 11,
-        "timers": 5,
-        "tweens": 8,
-        "enemies": 5,
-        "liveEnemies": 3,
-        "fireballs": 0,
-        "carts": 1,
-        "patches": 1,
-        "pickups": 1,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 27,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 2,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 2.2666666666663366,
-      "stageClearNotifications": 1
-    },
-    {
-      "seed": 3,
-      "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 177.26666666665506,
-      "clear": true,
-      "gameOver": false,
-      "lives": 3,
-      "hp": 10,
-      "score": 26290,
-      "maxCombo": 13,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 22,
-      "deaths": 22,
-      "coverage": {
-        "phases": [
-          1,
-          2,
-          3
-        ],
-        "attacks": [
-          "sweep",
-          "chop",
-          "roar",
-          "charge",
-          "lift",
-          "hurl"
-        ],
-        "wallStun": true,
-        "summonedHounds": 7,
-        "carts": 1,
-        "complete": true
-      },
-      "peak": {
-        "visuals": 43,
-        "lights": 11,
-        "timers": 7,
-        "tweens": 8,
-        "enemies": 4,
-        "liveEnemies": 3,
-        "fireballs": 0,
-        "carts": 1,
-        "patches": 1,
-        "pickups": 1,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 25,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 3,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 2.2666666666663366,
-      "stageClearNotifications": 1
-    },
-    {
-      "seed": 4,
-      "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 160.9333333333312,
-      "clear": true,
-      "gameOver": false,
-      "lives": 3,
-      "hp": 24,
-      "score": 24230,
-      "maxCombo": 13,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 20,
-      "deaths": 20,
-      "coverage": {
-        "phases": [
-          1,
-          2,
-          3
-        ],
-        "attacks": [
-          "chop",
-          "sweep",
-          "roar",
-          "charge",
-          "lift",
-          "hurl"
-        ],
-        "wallStun": true,
-        "summonedHounds": 5,
-        "carts": 1,
-        "complete": true
-      },
-      "peak": {
-        "visuals": 43,
-        "lights": 11,
-        "timers": 7,
-        "tweens": 8,
-        "enemies": 5,
-        "liveEnemies": 3,
-        "fireballs": 0,
-        "carts": 1,
-        "patches": 1,
-        "pickups": 1,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 27,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 2,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 2.2666666666663366,
-      "stageClearNotifications": 1
-    },
-    {
-      "seed": 5,
-      "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 162.86666666666343,
-      "clear": true,
-      "gameOver": false,
-      "lives": 3,
-      "hp": 8,
-      "score": 22680,
-      "maxCombo": 11,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 18,
-      "deaths": 18,
-      "coverage": {
-        "phases": [
-          1,
-          2,
-          3
-        ],
-        "attacks": [
-          "sweep",
-          "chop",
-          "roar",
-          "charge",
-          "lift",
-          "hurl"
-        ],
-        "wallStun": true,
-        "summonedHounds": 3,
-        "carts": 1,
-        "complete": true
-      },
-      "peak": {
-        "visuals": 43,
-        "lights": 11,
-        "timers": 5,
-        "tweens": 8,
-        "enemies": 4,
-        "liveEnemies": 3,
-        "fireballs": 0,
-        "carts": 1,
-        "patches": 1,
-        "pickups": 1,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 27,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 2,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 2.2666666666663366,
-      "stageClearNotifications": 1
-    },
-    {
-      "seed": 10,
-      "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 173.4499999999906,
-      "clear": true,
-      "gameOver": false,
-      "lives": 3,
-      "hp": 23,
-      "score": 27450,
-      "maxCombo": 18,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 22,
-      "deaths": 22,
-      "coverage": {
-        "phases": [
-          1,
-          2,
-          3
-        ],
-        "attacks": [
-          "sweep",
-          "chop",
-          "roar",
-          "charge",
-          "lift",
-          "hurl"
-        ],
-        "wallStun": true,
-        "summonedHounds": 7,
-        "carts": 2,
-        "complete": true
-      },
-      "peak": {
-        "visuals": 43,
+        "visuals": 45,
         "lights": 12,
         "timers": 6,
         "tweens": 8,
@@ -1175,170 +1341,6 @@
         "liveEnemies": 3,
         "fireballs": 0,
         "carts": 1,
-        "patches": 2,
-        "pickups": 1,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 25,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 3,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 2.2666666666663366,
-      "stageClearNotifications": 1
-    },
-    {
-      "seed": 20,
-      "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 166.99999999999434,
-      "clear": true,
-      "gameOver": false,
-      "lives": 3,
-      "hp": 47,
-      "score": 25000,
-      "maxCombo": 14,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 20,
-      "deaths": 20,
-      "coverage": {
-        "phases": [
-          1,
-          2,
-          3
-        ],
-        "attacks": [
-          "chop",
-          "sweep",
-          "roar",
-          "charge",
-          "lift",
-          "hurl"
-        ],
-        "wallStun": true,
-        "summonedHounds": 5,
-        "carts": 2,
-        "complete": true
-      },
-      "peak": {
-        "visuals": 43,
-        "lights": 12,
-        "timers": 6,
-        "tweens": 8,
-        "enemies": 5,
-        "liveEnemies": 3,
-        "fireballs": 0,
-        "carts": 1,
-        "patches": 2,
-        "pickups": 1,
-        "booms": 1
-      },
-      "resources": {
-        "settleSeconds": 15,
-        "baseline": {
-          "visuals": 31,
-          "lights": 9
-        },
-        "afterSettle": {
-          "visuals": 25,
-          "lights": 9,
-          "timers": 0,
-          "tweens": 0
-        },
-        "brokenBarrels": 3,
-        "remainingPickups": 0,
-        "remainingEnemies": 0,
-        "remainingFireballs": 0,
-        "remainingCarts": 0,
-        "remainingPatches": 0,
-        "remainingBooms": 0
-      },
-      "maxCompletedEntrySeconds": 2.2666666666663366,
-      "stageClearNotifications": 1
-    },
-    {
-      "seed": 100,
-      "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 164.53333333332913,
-      "clear": true,
-      "gameOver": false,
-      "lives": 2,
-      "hp": 100,
-      "score": 23190,
-      "maxCombo": 11,
-      "actualLandedHitComboAtLeast20": false,
-      "zones": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "waves": [
-        "0:0",
-        "0:1",
-        "1:0",
-        "1:1",
-        "2:0",
-        "2:1"
-      ],
-      "spawns": 20,
-      "deaths": 20,
-      "coverage": {
-        "phases": [
-          1,
-          2,
-          3
-        ],
-        "attacks": [
-          "chop",
-          "sweep",
-          "roar",
-          "charge",
-          "lift",
-          "hurl"
-        ],
-        "wallStun": true,
-        "summonedHounds": 5,
-        "carts": 1,
-        "complete": true
-      },
-      "peak": {
-        "visuals": 41,
-        "lights": 11,
-        "timers": 8,
-        "tweens": 8,
-        "enemies": 5,
-        "liveEnemies": 3,
-        "fireballs": 0,
-        "carts": 1,
         "patches": 1,
         "pickups": 1,
         "booms": 1
@@ -1350,13 +1352,13 @@
           "lights": 9
         },
         "afterSettle": {
-          "visuals": 23,
-          "lights": 9,
+          "visuals": 31,
+          "lights": 10,
           "timers": 0,
           "tweens": 0
         },
-        "brokenBarrels": 4,
-        "remainingPickups": 0,
+        "brokenBarrels": 1,
+        "remainingPickups": 1,
         "remainingEnemies": 0,
         "remainingFireballs": 0,
         "remainingCarts": 0,
@@ -1369,13 +1371,13 @@
     {
       "seed": 97,
       "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 165.51666666666188,
+      "simulatedSecondsToOutcome": 181.39999999998597,
       "clear": true,
       "gameOver": false,
-      "lives": 3,
-      "hp": 18,
-      "score": 24680,
-      "maxCombo": 12,
+      "lives": 1,
+      "hp": 100,
+      "score": 27020,
+      "maxCombo": 17,
       "actualLandedHitComboAtLeast20": false,
       "zones": [
         0,
@@ -1391,8 +1393,8 @@
         "2:0",
         "2:1"
       ],
-      "spawns": 20,
-      "deaths": 20,
+      "spawns": 22,
+      "deaths": 22,
       "coverage": {
         "phases": [
           1,
@@ -1400,28 +1402,28 @@
           3
         ],
         "attacks": [
-          "chop",
           "sweep",
+          "chop",
           "roar",
           "charge",
           "lift",
           "hurl"
         ],
         "wallStun": true,
-        "summonedHounds": 5,
-        "carts": 1,
+        "summonedHounds": 7,
+        "carts": 3,
         "complete": true
       },
       "peak": {
-        "visuals": 44,
-        "lights": 12,
-        "timers": 5,
+        "visuals": 43,
+        "lights": 13,
+        "timers": 6,
         "tweens": 8,
         "enemies": 5,
         "liveEnemies": 3,
         "fireballs": 0,
         "carts": 1,
-        "patches": 1,
+        "patches": 2,
         "pickups": 1,
         "booms": 1
       },
@@ -1432,13 +1434,13 @@
           "lights": 9
         },
         "afterSettle": {
-          "visuals": 27,
-          "lights": 10,
+          "visuals": 25,
+          "lights": 9,
           "timers": 0,
           "tweens": 0
         },
         "brokenBarrels": 3,
-        "remainingPickups": 1,
+        "remainingPickups": 0,
         "remainingEnemies": 0,
         "remainingFireballs": 0,
         "remainingCarts": 0,

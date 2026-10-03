@@ -1,10 +1,13 @@
 // Keyboard + touch + gamepad. Same bindings as 1.2: attack E/J/Z, jump Space/K/X, special Q/L/C, run Shift (or double-tap).
+// Restored from 1.1: balefire ('power') F/B, call Loial ('assist') R/V/U/I; pad B = balefire, LB = Loial, RB = run.
 // Touch controls are shown only on touch devices: on the first real touch, or when the primary pointer is coarse.
 const KEYS = {
   KeyW: 'up', ArrowUp: 'up', KeyS: 'down', ArrowDown: 'down', KeyA: 'left', ArrowLeft: 'left', KeyD: 'right', ArrowRight: 'right',
   KeyE: 'attack', KeyJ: 'attack', KeyZ: 'attack', Space: 'jump', KeyK: 'jump', KeyX: 'jump', KeyQ: 'special', KeyL: 'special', KeyC: 'special',
   ShiftLeft: 'run', ShiftRight: 'run', Escape: 'pause', KeyP: 'pause', Enter: 'start',
+  KeyF: 'power', KeyB: 'power', KeyR: 'assist', KeyV: 'assist', KeyU: 'assist', KeyI: 'assist',
 };
+export const PAD_MAP = Object.freeze({ 2: 'attack', 0: 'jump', 3: 'special', 9: 'start', 5: 'run', 1: 'power', 4: 'assist' });
 const nativeControl = target => !!target?.closest?.('button,input,textarea,select,a[href],[contenteditable]:not([contenteditable="false"])');
 export class Input {
   constructor() {
@@ -62,8 +65,8 @@ export class Input {
     stick.addEventListener('touchmove', e => { e.preventDefault(); for (const t of e.changedTouches) if (t.identifier === sid) move(t); }, { passive: false });
     const end = e => { for (const t of e.changedTouches) if (t.identifier === sid) { sid = null; this.touchAxis = { x: 0, y: 0 }; knob.style.transform = ''; } };
     stick.addEventListener('touchend', end); stick.addEventListener('touchcancel', end);
-    for (const [id, a] of [['tbA', 'attack'], ['tbJ', 'jump'], ['tbS', 'special'], ['tbP', 'pause']]) {
-      const el = document.getElementById(id);
+    for (const [id, a] of [['tbA', 'attack'], ['tbJ', 'jump'], ['tbS', 'special'], ['tbP', 'pause'], ['tbB', 'power'], ['tbL', 'assist']]) {
+      const el = document.getElementById(id); if (!el) continue;
       el.addEventListener('touchstart', e => { e.preventDefault(); this.press(a); this.touchHeld[a] = true; el.classList.add('on'); this.emit('anytouch'); }, { passive: false });
       const up = e => { e.preventDefault(); this.touchHeld[a] = false; el.classList.remove('on'); };
       el.addEventListener('touchend', up, { passive: false }); el.addEventListener('touchcancel', up, { passive: false });
@@ -74,13 +77,13 @@ export class Input {
     if (!p) { this.padPrev = {}; this.padId = null; return { x: 0, y: 0 }; }
     const id = `${p.index ?? 0}:${p.id || ''}`;
     if (this.padId !== id) { this.padPrev = {}; this.padId = id; }
-    const map = { 2: 'attack', 0: 'jump', 3: 'special', 9: 'start', 5: 'run', 4: 'run' };
+    const map = PAD_MAP;
     this.padPrev = this.padPrev || {};
     for (const b in map) { const d = p.buttons[b] && p.buttons[b].pressed; if (d && !this.padPrev[b]) this.press(map[b]); this.padPrev[b] = d; this.touchHeld['pad' + b] = d; }
     let x = p.axes[0] || 0, y = p.axes[1] || 0;
     if (p.buttons[14] && p.buttons[14].pressed) x = -1; if (p.buttons[15] && p.buttons[15].pressed) x = 1;
     if (p.buttons[12] && p.buttons[12].pressed) y = -1; if (p.buttons[13] && p.buttons[13].pressed) y = 1;
-    return { x: Math.abs(x) > 0.35 ? Math.sign(x) : 0, y: Math.abs(y) > 0.45 ? Math.sign(y) : 0, run: (p.buttons[5] && p.buttons[5].pressed) || (p.buttons[4] && p.buttons[4].pressed) };
+    return { x: Math.abs(x) > 0.35 ? Math.sign(x) : 0, y: Math.abs(y) > 0.45 ? Math.sign(y) : 0, run: !!(p.buttons[5] && p.buttons[5].pressed) };
   }
   update(dt) {
     this.t += dt;
