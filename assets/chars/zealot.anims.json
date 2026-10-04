@@ -1,0 +1,250 @@
+{
+ "key": "zealot",
+ "canvas": [
+  1000,
+  640
+ ],
+ "baseline": 610,
+ "scale": 0.62,
+ "pages": [
+  "zealot-0"
+ ],
+ "anims": [
+  {
+   "name": "zealot_walk",
+   "frames": [
+    "zealot_walk_00",
+    "zealot_walk_01",
+    "zealot_walk_02",
+    "zealot_walk_03"
+   ],
+   "holds": [
+    150,
+    150,
+    150,
+    150
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "zealot_guard",
+   "frames": [
+    "zealot_guard_00"
+   ],
+   "holds": [
+    400
+   ],
+   "loop": true,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "zealot_block",
+   "frames": [
+    "zealot_block_00"
+   ],
+   "holds": [
+    260
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "zealot_guardbreak",
+   "frames": [
+    "zealot_guardbreak_00"
+   ],
+   "holds": [
+    800
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "zealot_slash",
+   "frames": [
+    "zealot_slash_00",
+    "zealot_slash_01",
+    "zealot_slash_02",
+    "zealot_slash_03",
+    "zealot_slash_04"
+   ],
+   "holds": [
+    140,
+    300,
+    110,
+    220,
+    200
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "zealot_chargeup",
+   "frames": [
+    "zealot_chargeup_00"
+   ],
+   "holds": [
+    480
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "zealot_charge",
+   "frames": [
+    "zealot_charge_00",
+    "zealot_charge_01",
+    "zealot_charge_02"
+   ],
+   "holds": [
+    110,
+    110,
+    110
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "zealot_slam",
+   "frames": [
+    "zealot_slam_00",
+    "zealot_slam_01"
+   ],
+   "holds": [
+    170,
+    300
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "zealot_dazed",
+   "frames": [
+    "zealot_dazed_00"
+   ],
+   "holds": [
+    1800
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "zealot_hurt",
+   "frames": [
+    "zealot_hurt_00",
+    "zealot_hurt_01"
+   ],
+   "holds": [
+    100,
+    190
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "zealot_knockdown",
+   "frames": [
+    "zealot_knockdown_00",
+    "zealot_knockdown_01",
+    "zealot_knockdown_02"
+   ],
+   "holds": [
+    100,
+    180,
+    1100
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "zealot_getup",
+   "frames": [
+    "zealot_getup_00",
+    "zealot_getup_01"
+   ],
+   "holds": [
+    280,
+    240
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "zealot_slip",
+   "frames": [
+    "zealot_slip_00",
+    "zealot_slip_01"
+   ],
+   "holds": [
+    220,
+    2000
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "zealot_flee",
+   "frames": [
+    "zealot_flee_00",
+    "zealot_flee_01",
+    "zealot_flee_02",
+    "zealot_flee_03"
+   ],
+   "holds": [
+    110,
+    110,
+    110,
+    110
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ ]
+}

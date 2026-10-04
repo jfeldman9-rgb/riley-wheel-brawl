@@ -1,0 +1,61 @@
+{
+ "method": "same box, SwiftShader software GL headless Chrome 1280x720, default quality, demo bot; 3 reps alternating builds; A=boss arena 30 s, B=stage start 60 s; fight frames = a hittable foe on screen, cutscenes excluded; over33 = frames >33.4 ms",
+ "baseline": "a483d02",
+ "branch": "a1886fb",
+ "results": [
+  {
+   "scenario": "S1-A boss arena",
+   "label": "a483d02",
+   "avgFps": 19.13,
+   "avgFightFps": 18.84,
+   "avgFightOver33pct": 86.93,
+   "avgAllOver33pct": 85.87,
+   "avgFightFrames": 500
+  },
+  {
+   "scenario": "S1-A boss arena",
+   "label": "stage2",
+   "avgFps": 20.04,
+   "avgFightFps": 19.69,
+   "avgFightOver33pct": 83.6,
+   "avgAllOver33pct": 81.83,
+   "avgFightFrames": 500.33
+  },
+  {
+   "scenario": "S1-B stage start",
+   "label": "a483d02",
+   "avgFps": 20.37,
+   "avgFightFps": 18.78,
+   "avgFightOver33pct": 88.97,
+   "avgAllOver33pct": 78.33,
+   "avgFightFrames": 300
+  },
+  {
+   "scenario": "S1-B stage start",
+   "label": "stage2",
+   "avgFps": 20.07,
+   "avgFightFps": 18.79,
+   "avgFightOver33pct": 87.33,
+   "avgAllOver33pct": 77.77,
+   "avgFightFrames": 357
+  },
+  {
+   "scenario": "S2-A boss arena",
+   "label": "stage2",
+   "avgFps": 23.45,
+   "avgFightFps": 23.18,
+   "avgFightOver33pct": 59.8,
+   "avgAllOver33pct": 58.87,
+   "avgFightFrames": 564.33
+  },
+  {
+   "scenario": "S2-B stage start",
+   "label": "stage2",
+   "avgFps": 22.06,
+   "avgFightFps": 21.55,
+   "avgFightOver33pct": 73.7,
+   "avgAllOver33pct": 69.03,
+   "avgFightFrames": 871.33
+  }
+ ]
+}

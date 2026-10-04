@@ -1,5 +1,6 @@
 // Riley Wheel Brawl 2.0 - Stage 1 vertical slice (Phaser 4, WebGL, lit sprites).
 import { VW, VH, RS0, q } from './config.js';
+import { installAudioLifecycle } from './audio.js';
 import { Input } from './input.js';
 import { perf } from './perf.js';
 import { queueCharJson } from './assets.js';
@@ -10,7 +11,7 @@ import { installGraphicsLifecycle } from './graphics-lifecycle.js';
 import { installGraphicsNotice } from './graphics-notice.js';
 class Boot extends Phaser.Scene {
   constructor() { super('boot'); }
-  preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); this.load.image('loialPortrait', 'assets/ui/loial-portrait.webp'); }
+  preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); this.load.image('loialPortrait', 'assets/ui/loial-portrait.webp'); this.load.image('byarPortrait', 'assets/ui/byar-portrait.webp'); }
   create() { if (!window.__rwbStartup?.failed) this.scene.start('stage1'); }
 }
 const game = window.__game = new Phaser.Game({
@@ -20,6 +21,7 @@ const game = window.__game = new Phaser.Game({
   fps: { target: 60 }, scene: [Boot, Stage1, HUD],
 });
 game.inp = new Input(); game.rs = RS0;
+installAudioLifecycle(game);
 const graphicsNotice = installGraphicsNotice(window);
 game.graphicsRecovery = installGraphicsLifecycle({ game, meter: perf,
   onLost: () => graphicsNotice.lost(), onRestored: () => graphicsNotice.restored() });
@@ -42,7 +44,7 @@ function applyLevel(st, lv) {
   while (level < lv) {
     level++; st.fx.quality = level;
     if (level === 1) { st.setBloom(false); removedBloom = true; }
-    if (level === 2) { st.snowFront.frequency = 240; }
+    if (level === 2) { st.snowFront.frequency = 240; st.kit?.setQuality(level); }
     if (level === 3 && game.rs > 1) game.setRS(Math.max(1, game.rs - 0.5));
     if (level === 4) { st.setBackdropLit(false); }
     if (level === 5 && game.rs > 1) game.setRS(1);

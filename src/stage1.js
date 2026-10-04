@@ -4,12 +4,17 @@ import { perf } from './perf.js';
 import { FX } from './fx.js';
 import { Riley, BALEFIRE } from './riley.js';
 import { Enemy, Chieftain, TYPES } from './enemies.js';
-import { queueCharPages, makeCharAnims, patchFlippedNormals } from './assets.js';
-import { sfx, say, playMusic, preloadVoices, preloadClips, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
+import { queueCharPages, makeCharAnims, patchFlippedNormals, releaseChars } from './assets.js';
+import { sfx, say, playMusic, playTrack, audioUnlocked, preloadVoices, preloadClips, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
 import { Bot } from './bot.js';
 import { Loial } from './loial.js';
-import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK, TWIX_DROP_Z, queuePowerArt, makePowerAnims, iconKey } from './powers.js';
+import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK, TWIX_DROP_Z, TWIX_ART_KEYS, queuePowerArt, makePowerAnims, iconKey } from './powers.js';
 import { Cutscene, TWIX_SCRIPT } from './twix.js';
+import { STAGE2, STAGE_CHARS, resolveStage } from './stages.js';
+import { WHITECLOAKS } from './whitecloaks.js';
+import { Stage2Kit, queueStage2, STAGE_TEXTURES, STORY_PANELS, STORY_SCRIPT } from './stage2.js';
+import { MusicDirector } from './music.js';
+
 // Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
 const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
 
@@ -38,7 +43,7 @@ export function placeFires(fires, scrollX, cap = FIRE_LIGHT_CAP) {
   if (!fires) return;
   const ranked = [];
   for (const L of fires) {
-    const sx = L.baseX - FIRE_PARALLAX * scrollX;
+    const sx = L.baseX - (L.par ?? FIRE_PARALLAX) * scrollX;
     L.x = sx + scrollX;
     const onScreen = sx + L.radius > 0 && sx - L.radius < VW;
     if (onScreen) ranked.push([Math.abs(sx - VW / 2), L]); else L.setVisible(false);
@@ -53,7 +58,19 @@ export class Stage1 extends Phaser.Scene {
   preload() {
     window.__rwbStartup?.watchLoader(this.load);
     this.load.setCORS('anonymous');
-    queueCharPages(this);
+    const stageNo = resolveStage(this.sys && this.sys.settings && this.sys.settings.data, q);
+    // Only one stage's backdrop and enemy atlases stay resident (iPad memory): drop the other stage's first.
+    this.releaseStage(stageNo === 2 ? 1 : 2);
+    if (!document.getElementById('boot') && this.game.canvas && this.game.canvas.parentNode && this.loadedStage !== undefined) {
+      const b = document.createElement('div'); b.id = 'boot'; b.className = 'boot-reload'; document.body.appendChild(b);
+    }
+    this.loadedStage = stageNo;
+    if (stageNo === 2) {
+      queueCharPages(this, STAGE_CHARS[2]); queueStage2(this); queuePowerArt(this, { twix: false });
+      this.load.on('progress', p => { const b = document.getElementById('boot'); if (b) b.textContent = `${STAGE2.loading} ${Math.round(p * 100)}%`; });
+      return;
+    }
+    queueCharPages(this, STAGE_CHARS[1]);
     this.load.image('far', 'assets/bg/bg-far.jpg');
     this.load.image('mid0', ['assets/bg/bg-mid.webp', 'assets/bg/bg-mid_n.webp']);
     this.load.image('mid1', ['assets/bg/bg-mid2.webp', 'assets/bg/bg-mid2_n.webp']);
@@ -66,31 +83,43 @@ export class Stage1 extends Phaser.Scene {
     this.load.json('plates', 'assets/bg/plates.json');
     this.load.on('progress', p => { const b = document.getElementById('boot'); if (b) b.textContent = `Loading Emond's Field… ${Math.round(p * 100)}%`; });
   }
-  create() {
+  releaseStage(n) {
+    if (!this.textures || !this.textures.remove) return;
+    for (const k of n === 1 ? [...STAGE_TEXTURES[1], ...TWIX_ART_KEYS] : STAGE_TEXTURES[n]) if (this.textures.exists(k)) this.textures.remove(k);
+    releaseChars(this, STAGE_CHARS[n].filter(k => !STAGE_CHARS[n === 1 ? 2 : 1].includes(k)));
+  }
+  create(data) {
     if (window.__rwbStartup?.failed) return;
     this.runId = (this.runId || 0) + 1;
+    const sd = data && Object.keys(data).length ? data : (this.sys && this.sys.settings && this.sys.settings.data) || {};
+    this.stageNo = resolveStage(sd, q); this.stageData = sd;
+    this.zones = this.stageNo === 2 ? STAGE2.zones : ZONES; this.drops = this.stageNo === 2 ? STAGE2.drops : DROPS; this.bossDrop = this.stageNo === 2 ? STAGE2.bossDrop : BOSS_DROP;
+    this.music = new MusicDirector((id, o) => playTrack(id, o), this.stageNo);
+    this.kit = null; this.koCount = 0; this.titleSel = this.stageNo;
     this.pauseReasons = new Set(); this.paused = false; this.gameOver = false;
     this.clearShown = false; this.victoryPending = false; this.boss = null; this.bot = null;
     this.hudReady = false; this.startRequested = false;
-    this.backdropLit = []; this.ambient = undefined;
+    this.backdropLit = []; this.ambient = undefined; this.fireCap = FIRE_LIGHT_CAP;
     this.inp = this.game.inp; this.inp.clear();
     const b = document.getElementById('boot'); if (b) b.remove();
     patchFlippedNormals();
-    this.metas = makeCharAnims(this); makePowerAnims(this);
+    this.metas = makeCharAnims(this, STAGE_CHARS[this.stageNo]); makePowerAnims(this);
     this.inp = this.game.inp; this.rs = this.game.rs;
     const cam = this.cameras.main; cam.setOrigin(0, 0); cam.setZoom(this.rs); cam.setRoundPixels(false);
     this.lights.enable().setAmbientColor(0x39425f);
     this.fx = new FX(this);
     this.plates = this.cache.json.get('plates') || {};
-    this.buildBackdrop();
+    if (this.stageNo === 2) { this.kit = new Stage2Kit(this); this.ambient = this.kit.ambient; this.lights.setAmbientColor(this.ambient); this.kit.build(); }
+    else this.buildBackdrop();
     this.enemies = []; this.fireballs = []; this.carts = []; this.patches = []; this.pickups = []; this.barrels = [];
     this.loial = null; this.beam = null; this.spentSaidAt = -9; this.makeBeamTexture();
     this.powerDrops = []; this.twixDropped = false; this.cutscene = null;
     this.riley = new Riley(this, 180, 630);
     this.powers = new Powers(this);
     this.heroLight = this.lights.addLight(0, 0, 440, 0xd8e2ff, 1.0, 150);
-    for (const [x, y] of BARRELS) this.addBarrel(x, y);
-    this.snowFront = this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: -20, lifespan: 6000, speedY: { min: 80, max: 130 }, speedX: { min: -50, max: -10 }, scale: { min: 0.5, max: 0.9 }, alpha: { min: 0.5, max: 0.9 }, frequency: 80 }).setDepth(5000).setScrollFactor(0);
+    if (this.kit) for (const [x, y] of STAGE2.crates) this.addBarrel(x, y, 'crate', 'planks');
+    else for (const [x, y] of BARRELS) this.addBarrel(x, y);
+    if (!this.kit) this.snowFront = this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: -20, lifespan: 6000, speedY: { min: 80, max: 130 }, speedX: { min: -50, max: -10 }, scale: { min: 0.5, max: 0.9 }, alpha: { min: 0.5, max: 0.9 }, frequency: 80 }).setDepth(5000).setScrollFactor(0);
     this.zoneI = -1; this.zone = null; this.wave = -1; this.pending = []; this.locked = false; this.camX = 0; this.camMax = 0;
     this.bounds = { l: 0, r: VW }; this.maxTokens = 2; this.started = false; this.ended = false; this.time0 = 0; this.timeScale = 1; this.lightsOn = true;
     this.bloom = null; if (q.get('bloom') !== '0') this.setBloom(true);
@@ -109,6 +138,7 @@ export class Stage1 extends Phaser.Scene {
       removeKey(); removePress(); this.inp.clear();
       stopSceneAudio();
       if (this.bot && this.bot.destroy) this.bot.destroy();
+      if (this.kit) this.kit.destroy();
       for (const reason of this.pauseReasons) perf.setSuspended(reason, false);
       this.scene.stop('hud');
       perf.reset();
@@ -116,9 +146,10 @@ export class Stage1 extends Phaser.Scene {
     this.god = !!q.get('god');
     // ?skip=boss starts at the Chieftain arena (testing / quick device checks)
     // Bounds follow the skipped camera too; the post-physics arena clamp otherwise pins Riley to the left wall.
-    if (q.get('skip') === 'boss') { this.zoneI = 2; this.riley.x = 3990; this.camX = this.camMax = 3500; this.bounds = { l: this.camX, r: this.camX + VW }; }
+    if (q.get('skip') === 'boss') { const k = this.kit ? STAGE2.skipBoss : { zoneI: 2, x: 3990, camX: 3500 }; this.zoneI = k.zoneI; this.riley.x = k.x; this.camX = this.camMax = k.camX; this.bounds = { l: this.camX, r: this.camX + VW }; }
     if (q.get('demo')) { this.bot = new Bot(this); }
-    if (q.get('demo') || q.get('autostart')) this.time.delayedCall(300, () => this.start());
+    if (q.get('demo') || q.get('autostart') || sd.autostart) this.time.delayedCall(300, () => this.start());
+    else if (audioUnlocked()) this.music?.set('title');
     window.__stage = this; window.__spike = this;
   }
   // ---------- backdrop ----------
@@ -161,7 +192,7 @@ export class Stage1 extends Phaser.Scene {
     if (on && !this.bloom) { const pf = this.bloom = cam.filters.internal.addParallelFilters(); pf.top.addThreshold(0.62, 1); pf.top.addBlur(1, 2, 2, 1.2); pf.blend.blendMode = Phaser.BlendModes.ADD; pf.blend.amount = 0.5; }
   }
   // when the backdrop drops to unlit (software/slow GPUs) the painted plates show at full value, so lift the sprite ambient to keep fighters readable against them
-  setBackdropLit(on) { for (const o of this.backdropLit || []) o.setLighting(on); this.backdropIsLit = on; this.ambient = on ? 0x39425f : 0x5a6482; if (this.lightsOn !== false) this.lights.setAmbientColor(this.ambient); }
+  setBackdropLit(on) { for (const o of this.backdropLit || []) o.setLighting(on); this.backdropIsLit = on; this.ambient = this.kit ? (on ? this.kit.ambient : this.kit.ambientUnlit) : on ? 0x39425f : 0x5a6482; if (this.lightsOn !== false) this.lights.setAmbientColor(this.ambient); }
   dropVignette() { if (this.vignette) { this.cameras.main.filters.external.remove(this.vignette); this.vignette = null; } }
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
   // ---------- flow ----------
@@ -174,9 +205,12 @@ export class Stage1 extends Phaser.Scene {
     }
     if (this.paused) { this.inp.clear(); return; }
     unlock();
+    // Title stage select: left/right pick the stage (when Stage 2 is offered); any other press starts.
+    if (!this.started && !this.ended && (a === 'left' || a === 'right' || a === 'up' || a === 'down')) { if (a === 'left' || a === 'right') this.selectStage(a === 'left' ? -1 : 1); return; }
     if (!this.started && !this.ended) return this.start();
     if (this.gameOver && (a === 'attack' || a === 'start')) return this.continueGame();
-    if (this.ended && this.clearShown && (a === 'attack' || a === 'start')) return this.scene.restart();
+    // Stage 1 clear continues into the Baerlon story beat and Stage 2; Stage 2 clear returns to the title.
+    if (this.ended && this.clearShown && (a === 'attack' || a === 'start')) return this.scene.restart(this.stageNo === 1 ? { stage: 2, fromStage1: true, autostart: true } : { stage: 1 });
   }
   setPauseReason(reason, paused) {
     if (paused) this.pauseReasons.add(reason); else this.pauseReasons.delete(reason);
@@ -190,24 +224,40 @@ export class Stage1 extends Phaser.Scene {
   }
   /** PAUSED card: any pause except the cutscene (which draws its own screen) */
   showPauseLabel() { return this.paused && [...this.pauseReasons].some(r => r !== 'cutscene'); }
+  /** title stage select: the HUD shows the choice; starting a different stage reloads the scene with its assets */
+  selectStage(dir) {
+    if (this.started || this.ended) return;
+    unlock(); this.music?.set('title');
+    const cur = this.titleSel || this.stageNo, n = Math.max(1, Math.min(2, cur + dir));
+    if (n !== cur) { this.titleSel = n; sfx.go(); this.hud.titleSelect?.(n); }
+  }
   start() {
     if (this.started) return;
     if (!this.hudReady) { this.startRequested = true; return; }
-    this.startRequested = false; this.started = true; this.inp.flushPresses?.(); unlock(); playMusic(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
+    if (this.titleSel && this.titleSel !== this.stageNo) { this.startRequested = false; return this.scene.restart({ stage: this.titleSel, autostart: true }); }
+    this.startRequested = false; this.started = true; this.inp.flushPresses?.(); unlock(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
     perf.reset();
+    if (this.kit) return this.startStage2();
+    this.music?.set('stage');
     say('st1_narrator_01', this.caption);
     this.time.delayedCall(5200, () => !this.zone && say('riley_st1_01', this.caption));
+  }
+  startStage2() {
+    this.kit.start();
+    if (q.get('story') === '0' || this.stageData.story === false) { this.music?.set('stage'); return; }
+    this.startCutscene(STORY_SCRIPT, STORY_PANELS, how => { this.storyResult = how; this.music?.set('stage'); });
   }
   attackTokens() { return this.enemies.filter(e => e.alive && (e.state === 'attack' || e.state === 'sweep' || e.state === 'charge')).length; }
   separation(e) { let f = 0; for (const o of this.enemies) if (o !== e && o.alive) { const dx = e.x - o.x, dy = e.y - o.y; if (Math.abs(dx) < 90 && Math.abs(dy) < 30) f += Math.sign(dx || (e.id - o.id)) * 60; } return f; }
   spawn(type, side) {
     const z = this.zone, x = side === 'R' ? z.r + 120 : z.l - 120, y = rand(LANE_TOP + 15, LANE_BOT - 10);
-    const e = type === 'chief' ? new Chieftain(this, x, y) : new Enemy(this, type, x, y); e.entering = true; this.enemies.push(e); return e;
+    const W = WHITECLOAKS[type];
+    const e = type === 'chief' ? new Chieftain(this, x, y) : W ? new W(this, x, y) : new Enemy(this, type, x, y); e.entering = true; this.enemies.push(e); return e;
   }
   updateZones(dt) {
     const R = this.riley;
     if (!this.zone) {
-      const nz = ZONES[this.zoneI + 1];
+      const nz = this.zones[this.zoneI + 1];
       if (nz && R.x > nz.at) { this.zoneI++; this.zone = nz; this.locked = true; this.wave = -1; this.waveGap = 0.3; if (nz.intro) say(nz.intro, this.caption); if (nz.boss) this.startBoss(); }
       return;
     }
@@ -218,18 +268,29 @@ export class Stage1 extends Phaser.Scene {
       this.waveGap -= dt; if (this.waveGap > 0) return;
       this.wave++;
       const w = this.zone.waves[this.wave];
-      if (!w) { this.zone = null; this.locked = false; this.hud.go(); sfx.go(); return; }
+      if (!w) { if (this.kit) this.kit.onZoneClear(this.zoneI); this.zone = null; this.locked = false; this.hud.go(); sfx.go(); return; }
       this.pending = w.map(([type, side, t]) => ({ type, side, t })); this.waveGap = 0.8;
-      if (this.powerDrops) for (const d of DROPS) if (d.zone === this.zoneI && d.wave === this.wave) this.powerDrops.push({ kind: d.kind, t: d.delay });
+      if (this.powerDrops) for (const d of this.drops) if (d.zone === this.zoneI && d.wave === this.wave) this.powerDrops.push({ kind: d.kind, t: d.delay });
+      if (this.kit && STAGE2.ribbon.zone === this.zoneI && STAGE2.ribbon.wave === this.wave && this.powerDrops) this.powerDrops.push({ kind: 'ribbon', t: STAGE2.ribbon.delay });
     }
   }
   startBoss() {
+    this.music?.set('boss');
+    if (this.kit) return this.time.delayedCall(700, () => {
+      const c = this.boss = this.spawn('byar', 'R'); c.cool = 2.2;
+      say('byar_intro_01', this.caption); sfx.horn(); this.hud.bossBar(c);
+    });
     this.time.delayedCall(700, () => {
       const c = this.boss = this.spawn('chief', 'R'); c.cool = 2.5; c.nextRoar = 6;
       say('trolloc_heavy_intro_01', this.caption); sfx.roar(); this.hud.bossBar(c);
     });
   }
   onBossPhase(c, ph) {
+    if (this.kit) {
+      if (ph === 2) { say('byar_mid_01', this.caption); this.fx.trauma = 0.5; this.hud.flashText('JARET BYAR CALLS HIS ARCHERS'); }
+      if (ph === this.bossDrop.phase && this.powerDrops) this.powerDrops.push({ kind: this.bossDrop.kind, t: 0.6 });
+      return;
+    }
     if (ph === 2) { say('chieftain_mid_01', this.caption); this.fx.trauma = 0.6; }
     if (ph === BOSS_DROP.phase && this.powerDrops) this.powerDrops.push({ kind: BOSS_DROP.kind, t: 0.6 });
     if (ph === 3) { sfx.roar(); this.hud.flashText('THE CHIEFTAIN IS ENRAGED'); }
@@ -255,21 +316,30 @@ export class Stage1 extends Phaser.Scene {
     if (this.gameOver) { this.gameOver = false; stopSceneAudio(); this.hud.hideGameOver(); }
     this.fx.slowmo = 1.2; this.fx.hitstop = 0.25; sfx.impact();
     for (const e of this.enemies) if (e !== c && e.alive) { e.hp = 0; e.die(Math.sign(e.x - this.riley.x) || 1, { kb: 300, launch: 300 }); }
+    this.music?.set('victory');
+    if (this.kit) {
+      this.kit.clearHazards();
+      this.time.delayedCall(900, () => say('byar_defeat_01', this.caption));
+      this.time.delayedCall(4400, () => say('riley_st2_victory_01', this.caption));
+      this.time.delayedCall(7600, () => say('riley_st2_clear_01', this.caption));
+      this.time.delayedCall(8200, () => { this.ended = true; sfx.levelClear(); this.hud.stageClear(this.stats()); this.music?.set('clear'); this.time.delayedCall(1200, () => this.clearShown = true); });
+      return;
+    }
     this.time.delayedCall(900, () => say('chieftain_defeat_01', this.caption));
     this.time.delayedCall(3600, () => say('riley_victory_01', this.caption));
     this.time.delayedCall(5600, () => say('st1_clear_moiraine_01', this.caption));
-    this.time.delayedCall(6200, () => { this.ended = true; sfx.levelClear(); this.hud.stageClear(this.stats()); this.time.delayedCall(1200, () => this.clearShown = true); });
+    this.time.delayedCall(6200, () => { this.ended = true; sfx.levelClear(); this.hud.stageClear(this.stats()); this.music?.set('clear'); this.time.delayedCall(1200, () => this.clearShown = true); });
   }
-  stats() { const R = this.riley; return { score: R.score, combo: R.maxCombo, time: (this.time.now - this.time0) / 1000, lives: R.lives }; }
+  stats() { const R = this.riley; return { score: R.score, combo: R.maxCombo, time: (this.time.now - this.time0) / 1000, lives: R.lives, stage: this.stageNo, ribbons: this.kit ? this.kit.ribbons : undefined }; }
   rileyDied() {
     const R = this.riley; R.lives--; this.powers?.clearAll();
     this.time.delayedCall(1600, () => {
       if (R !== this.riley || this.victoryPending || this.ended) return;
       if (R.lives > 0) { R.respawn(); for (const e of this.enemies) if (e.alive && Math.abs(e.x - R.x) < 260) e.vx = Math.sign(e.x - R.x) * 500; }
-      else { this.gameOver = true; sfx.gameOver(); this.hud.gameOver(); }
+      else { this.gameOver = true; sfx.gameOver(); this.hud.gameOver(); this.music?.set('gameover'); }
     });
   }
-  continueGame() { const R = this.riley; this.gameOver = false; R.lives = 3; R.score = Math.floor(R.score / 2); R.respawn(); this.hud.hideGameOver(); }
+  continueGame() { const R = this.riley; this.gameOver = false; R.lives = 3; R.score = Math.floor(R.score / 2); R.respawn(); this.hud.hideGameOver(); this.music?.resumeFight(); }
   // ---------- combat ----------
   /** check an attack's active frame against the other team */
   resolveAttack(att, a) {
@@ -362,7 +432,7 @@ export class Stage1 extends Phaser.Scene {
       if (B.struck.has(e) || !e.canBeHit) continue;
       const ahead = (e.x - R.x) * B.dir; if (ahead < -30 || ahead > B.len + 120) continue;
       const dmg = e.T && e.T.boss ? 80 : e.maxHp + 10;
-      if (this.hitTarget(R, e, { dmg, kind: 'finisher', kb: B.dir * 520, launch: 520, down: true, noMeter: true }, { x: R.x, facing: B.dir })) B.struck.add(e);
+      if (this.hitTarget(R, e, { dmg, kind: 'finisher', kb: B.dir * 520, launch: 520, down: true, power: true, noMeter: true }, { x: R.x, facing: B.dir })) B.struck.add(e);
     }
   }
   endBalefire() { if (this.beam && !this.beam.fade) this.beam.fade = 0.0001; }
@@ -396,16 +466,16 @@ export class Stage1 extends Phaser.Scene {
     if (L.gone) { L.destroy(); this.loial = null; }
   }
   // ---------- props ----------
-  addBarrel(x, y) {
-    const s = this.add.image(x, y, 'barrel').setOrigin(0.5, 0.97).setScale(0.19).setLighting(true).setDepth(1000 + y);
+  addBarrel(x, y, tex = 'barrel', debris = 'staves') {
+    const s = this.add.image(x, y, tex).setOrigin(0.5, 0.97).setScale(0.19).setLighting(true).setDepth(1000 + y);
     const sh = this.add.image(x, y + 2, 'shadow').setScale(1.2, 0.28).setDepth(900);
-    this.barrels.push({ x, y, s, sh, broken: false });
+    this.barrels.push({ x, y, s, sh, broken: false, debris });
   }
   breakBarrel(b, dir) {
     b.broken = true; b.s.destroy(); b.sh.destroy(); sfx.smash(); this.fx.impact('medium', b.x, b.y - 60, dir);
-    const fr = this.textures.get('staves').getFrameNames();
+    const atlas = b.debris || 'staves', fr = this.textures.get(atlas).getFrameNames();
     for (const n of fr) {
-      const p = this.add.image(b.x + rand(-20, 20), b.y - rand(30, 90), 'staves', n).setScale(0.19).setLighting(true).setDepth(1000 + b.y);
+      const p = this.add.image(b.x + rand(-20, 20), b.y - rand(30, 90), atlas, n).setScale(0.19).setLighting(true).setDepth(1000 + b.y);
       const vx = dir * rand(80, 360) + rand(-80, 80), vz = rand(-620, -300), spin = rand(-12, 12);
       this.tweens.addCounter({ from: 0, to: 1, duration: 900, onUpdate: (tw) => { const t = tw.getValue() * 0.9; p.x += vx * 0.016; p.y = b.y - 60 + vz * t + 1400 * t * t; if (p.y > b.y + rand(-6, 6)) { p.y = b.y; } p.rotation += spin * 0.016 * (p.y < b.y ? 1 : 0); }, onComplete: () => this.tweens.add({ targets: p, alpha: 0, delay: 1500, duration: 600, onComplete: () => p.destroy() }) });
     }
@@ -441,6 +511,7 @@ export class Stage1 extends Phaser.Scene {
       if ((d.t -= dt) > 0) continue;
       this.powerDrops.splice(this.powerDrops.indexOf(d), 1);
       if (this.victoryPending || this.ended) continue;
+      if (d.kind === 'ribbon') { if (this.kit) this.kit.dropRibbon(); continue; }
       let kind = d.kind === 'ter?' ? pick(TER_POWERS) : d.kind;
       if (kind === 'twix' && this.twixDropped) continue;
       const R = this.riley, x = clamp(R.x + R.facing * 170, this.bounds.l + 90, this.bounds.r - 90), y = clamp(R.y, LANE_TOP + 12, LANE_BOT - 12);
@@ -468,6 +539,7 @@ export class Stage1 extends Phaser.Scene {
         this.removePickup(p);
         if (p.kind === 'heal') { R.hp = Math.min(R.maxHp, R.hp + 35); sfx.pickup(); }
         else if (p.kind === 'saidin') { R.saidin = 100; sfx.pickup(); }
+        else if (p.kind === 'ribbon') this.kit.collectRibbon(p);
         else this.collectPower(p.kind);
       }
     }
@@ -488,7 +560,22 @@ export class Stage1 extends Phaser.Scene {
       onEnd: how => this.endTwixCutscene(how),
     });
     this.setPauseReason('cutscene', true);
+    this.music?.set('cutscene');
     this.hud.showCutscene(cs);
+    cs.begin();
+    return true;
+  }
+  /** a story cutscene on painted panels (Stage 2's opening beat); same pause / skip / HUD path as the Twix scene */
+  startCutscene(script, panels, after) {
+    if (this.cutscene) return false;
+    this.cutsceneAfter = after;
+    const cs = this.cutscene = new Cutscene(script, {
+      onLine: line => { say(line.id, null); this.hud.cutsceneLine(line); },
+      onEnd: how => this.endTwixCutscene(how),
+    });
+    this.setPauseReason('cutscene', true);
+    this.music?.set('cutscene');
+    this.hud.showCutscene(cs, panels);
     cs.begin();
     return true;
   }
@@ -503,6 +590,8 @@ export class Stage1 extends Phaser.Scene {
     this.cutsceneResult = how; this.cutscene = null;
     stopSceneAudio(); this.hud.hideCutscene(how);
     this.setPauseReason('cutscene', false);
+    const after = this.cutsceneAfter; this.cutsceneAfter = null;
+    if (after) after(how); else this.music?.resumeFight();
   }
   throwCart(c) {
     const R = this.riley, x0 = c.x + c.facing * 30, z0 = 330, tx = clamp(R.x, this.bounds.l + 80, this.bounds.r - 80), ty = R.y;
@@ -532,8 +621,8 @@ export class Stage1 extends Phaser.Scene {
     }
   }
   addPatch(x, y) {
-    if (this.patches.length >= 3) { const o = this.patches.shift(); this.lights.removeLight(o.L); o.em.destroy(); o.sm.destroy(); }
-    const em = this.add.particles(x, y - 10, 'ember', { x: { min: -60, max: 60 }, lifespan: 900, speedY: { min: -160, max: -60 }, speedX: { min: -20, max: 20 }, scale: { start: 1.8, end: 0 }, frequency: this.fx.quality >= 2 ? 50 : 22, blendMode: 'ADD' }).setDepth(1000 + y);
+    if (this.patches.length >= (this.kit ? 2 : 3)) { const o = this.patches.shift(); this.lights.removeLight(o.L); o.em.destroy(); o.sm.destroy(); }
+    const em = this.add.particles(x, y - 10, 'ember', { x: { min: -60, max: 60 }, lifespan: 900, speedY: { min: -160, max: -60 }, speedX: { min: -20, max: 20 }, scale: { start: this.kit ? 1.2 : 1.8, end: 0 }, frequency: this.fx.quality >= 2 ? 50 : 22, blendMode: 'ADD' }).setDepth(1000 + y);
     const sm = this.add.particles(x, y - 40, 'smoke', { x: { min: -40, max: 40 }, lifespan: 1800, speedY: { min: -70, max: -30 }, scale: { start: 0.8, end: 2.2 }, alpha: { start: 0.5, end: 0 }, frequency: 160 }).setDepth(1000 + y - 1);
     const L = this.lights.addLight(x, y - 40, 420, 0xff7a2a, 1.8, 90);
     this.patches.push({ x, y, em, sm, L, t: 0, tick: 0, seed: Math.random() * 9 });
@@ -588,6 +677,7 @@ export class Stage1 extends Phaser.Scene {
     R.x = clamp(R.x, this.bounds.l + 40, this.bounds.r - 40);
     this.enemies = this.enemies.filter(e => { if (e.gone) { e.destroy(); return false; } return true; });
     this.updateFireballs(dt); this.updateCarts(dt); this.updatePowerDrops(dt); this.updatePickups(dt); this.powers?.update(dt); this.updateBalefire(dt); this.updateLoial(dt);
+    if (this.kit) this.kit.update(dt);
     if (this.started) this.updateZones(dt);
     R.sync(); for (const e of this.enemies) e.sync();
     this.updateCamera(dt);
@@ -606,6 +696,7 @@ export class Stage1 extends Phaser.Scene {
     else { this.bounds.l = this.camX; this.bounds.r = Math.min(WORLD_W, this.camX + VW + (this.zone ? 0 : 0)); }
     const [sx, sy] = this.fx.shakeOffset();
     this.cameras.main.setScroll(this.camX + sx, sy);
-    placeMoon(this.moon, this.camX + sx); placeFires(this.fires, this.camX + sx);
+    placeMoon(this.moon, this.camX + sx); placeFires(this.fires, this.camX + sx, this.fireCap || FIRE_LIGHT_CAP);
+    this.kit?.applyLightBudget?.();
   }
 }

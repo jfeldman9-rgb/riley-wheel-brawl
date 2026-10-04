@@ -4,6 +4,8 @@ let ctx = null, master, music, sfxBus, voiceBus, duckG, comp, noiseBuf;
 let muted = false, musicOn = true, musicEl = null, musicSrc = null;
 const clips = Object.create(null), gates = Object.create(null), oneShots = new Map();
 let voiceSrc = null, voiceRequest = 0, voicePending = false;
+let audioHidden = false, audioEpoch = 0;
+const audioTimers = new Set();
 export const VOICE = {
   st1_narrator_01: ['NARRATOR', "Emond's Field, on Winternight. The Two Rivers sleeps, but the Shadow is on the road."],
   st1_moiraine_01: ['MOIRAINE', 'Winternight has begun. Stay sharp.'],
@@ -43,6 +45,26 @@ export const EXTRA_VOICE = {
   twix_07: ['RILEY', 'Have you guys ever thought about... not working for the Dark One?'],
   twix_08: ['ALL TROLLOCS', '...Does the Light have more Twix?'],
   twix_09: ['RILEY', "Ask me after I win. Break's over!"],
+  // Stage 2: Baerlon and the Whitecloaks (Kokoro TTS; casts in VOICE_PROVENANCE.md). Kid-safe on purpose.
+  st2_story_01: ['NARRATOR', "The Fade's trail led north, through the rain, to the walled town of Baerlon."],
+  st2_story_02: ['RILEY', 'These hoofprints... a Myrddraal came this way. Hang on, Twinkle Toes.'],
+  st2_story_03: ['RILEY', "That's her ribbon! She was here!"],
+  st2_story_04: ['JARET BYAR', 'A boy who channels? Darkfriend! Children of the Light, seize him!'],
+  st2_story_05: ['RILEY', "Darkfriend? I'm sixteen! I'm just looking for my friend!"],
+  st2_story_06: ['WHITECLOAK', "That's exactly what a Darkfriend would say!"],
+  zealot_intro_01: ['WHITECLOAK', 'Halt, Darkfriend! In the name of the Light!'],
+  riley_st2_stable_01: ['RILEY', 'Hound Trollocs? The Fade left guards behind!'],
+  riley_ribbon_01: ['RILEY', "Twinkle Toes' ribbon! I'm getting closer."],
+  zealot_mud_01: ['WHITECLOAK', 'My cloak! Do you know how hard it is to get mud out of white wool?!'],
+  riley_mud_01: ['RILEY', 'Try cold water!'],
+  byar_intro_01: ['JARET BYAR', 'I am Jaret Byar, Child of the Light. Kneel, Darkfriend!'],
+  byar_parry_01: ['JARET BYAR', 'Too slow, Darkfriend!'],
+  byar_mid_01: ['JARET BYAR', 'Archers! Cover the yard!'],
+  byar_volley_01: ['JARET BYAR', 'Loose!'],
+  byar_rage_01: ['JARET BYAR', 'Burn the barn! Smoke the Darkfriend out!'],
+  byar_defeat_01: ['JARET BYAR', 'This is not over, Darkfriend! The Light will find you!'],
+  riley_st2_victory_01: ['RILEY', "I'm NOT a Darkfriend! ...And your barn is on fire!"],
+  riley_st2_clear_01: ['RILEY', 'The trail keeps going. Hang on, Twinkle Toes. I am coming.'],
 };
 function init() {
   if (ctx) return;
@@ -55,9 +77,65 @@ function init() {
     sfxBus = ctx.createGain(); sfxBus.gain.value = 1.05;
     comp = ctx.createDynamicsCompressor(); comp.threshold.value = -16; comp.knee.value = 8; comp.ratio.value = 4.5; comp.attack.value = 0.002; comp.release.value = 0.14;
     sfxBus.connect(comp); comp.connect(master);
+    if (audioHidden) suspendAudio();
   } catch (e) { ctx = null; }
 }
-export function unlock() { init(); if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {}); if (musicWanted) playMusic(); }
+function suspendAudio() {
+  // Media elements can keep advancing (or bypass WebAudio in the fallback), so
+  // pause them as well as the graph. Do not change the user's music preference.
+  for (const T of Object.values(tracks)) if (T.el && T.el.paused !== true) T.el.pause();
+  if (ctx && ctx.state !== 'closed' && ctx.state !== 'suspended') {
+    ctx.suspend().then(() => { if (!audioHidden && unlocked) resumeAudio(); }).catch(() => {});
+  }
+}
+function resumeAudio() {
+  if (audioHidden || !ctx) return;
+  // iOS Safari also uses 'interrupted' after backgrounding / audio-route changes.
+  if (ctx.state !== 'running' && ctx.state !== 'closed') {
+    ctx.resume().then(() => { if (audioHidden) suspendAudio(); }).catch(() => {});
+  }
+  if (musicWanted && musicOn) resumeMusic();
+}
+export function unlock() { init(); unlocked = true; resumeAudio(); }
+/** One game-wide listener pair; scene restarts must not install extra listeners. */
+export function installAudioLifecycle(game) {
+  let disposed = false;
+  const gestureEvents = ['pointerdown', 'touchend', 'keydown'];
+  const gesture = () => { if (!disposed && unlocked) resumeAudio(); };
+  const hidden = () => { if (disposed) return; audioHidden = true; suspendAudio(); };
+  const visible = () => { if (disposed) return; audioHidden = false; if (unlocked) resumeAudio(); };
+  const destroy = () => {
+    if (disposed) return;
+    disposed = true; disposeAudio();
+    game.events.off('hidden', hidden); game.events.off('visible', visible); game.events.off('destroy', destroy);
+    for (const event of gestureEvents) window.removeEventListener?.(event, gesture, true);
+  };
+  game.events.on('hidden', hidden); game.events.on('visible', visible); game.events.on('destroy', destroy);
+  // Capture gestures even when a story/pause screen handles input before unlock().
+  for (const event of gestureEvents) window.addEventListener?.(event, gesture, { capture: true, passive: true });
+  // Phaser may have emitted its first hidden event before audio was installed.
+  if (typeof document !== 'undefined' && document.hidden) hidden(); else audioHidden = false;
+  return { destroy };
+}
+/** Terminal teardown, unlike a temporary hidden-tab suspension. */
+function disposeAudio() {
+  audioHidden = true; audioEpoch++; unlocked = false; musicWanted = false; currentTrack = null;
+  stopSceneAudio();
+  // Finish old rain/track cleanup immediately, cancelling all wall-clock polling.
+  for (const timer of [...audioTimers]) timer.finish();
+  if (rainNodes) { disposeRain(rainNodes); rainNodes = null; }
+  for (const T of Object.values(tracks)) {
+    stopTrack(T, 0); T.gain.disconnect(); T.mediaSrc?.disconnect(); T.buf = null;
+    if (T.el) { T.el.removeAttribute?.('src'); T.el.load?.(); }
+    delete tracks[T.id];
+  }
+  for (const cache of [clips, musicBytes]) for (const key of Object.keys(cache)) delete cache[key];
+  for (const node of [master, music, sfxBus, voiceBus, duckG, comp]) node?.disconnect();
+  const oldContext = ctx; ctx = null;
+  master = music = sfxBus = voiceBus = duckG = comp = noiseBuf = musicEl = musicSrc = null;
+  wantedTrack = 'stage1';
+  if (oldContext && oldContext.state !== 'closed') oldContext.close().catch(() => {});
+}
 const gate = (n, ms) => { if (!ctx || muted) return false; const t = ctx.currentTime * 1000; if (gates[n] !== undefined && t - gates[n] < ms) return false; gates[n] = t; return true; };
 const vary = (f, a = 0.05) => f * (1 + (Math.random() * 2 - 1) * a);
 function trackSource(source, ...nodes) {
@@ -136,34 +214,193 @@ export const sfx = {
   zap() { if (!gate('zap', 60)) return; noise({ f0: 6000, f1: 900, dur: 0.18, vol: 0.32, filter: 'highpass' }); tone({ f0: 1400, f1: 180, dur: 0.16, vol: 0.16, type: 'sawtooth' }); tone({ f0: 70, f1: 40, dur: 0.25, vol: 0.35, type: 'sine' }); },
   fall() { tone({ f0: 1800, f1: 500, dur: 0.7, vol: 0.12, type: 'sine' }); },
   grumble() { if (!gate('grumble', 300)) return; tone({ f0: vary(85, 0.15), f1: 60, dur: 0.45, vol: 0.16, type: 'sawtooth' }); noise({ f0: 380, f1: 160, dur: 0.4, vol: 0.12, attack: 0.06 }); },
+  // Stage 2 (Baerlon) cues
+  clang() { if (!gate('clang', 70)) return; tone({ f0: vary(1250), f1: 880, dur: 0.11, vol: 0.14, type: 'square' }); tone({ f0: vary(1870), dur: 0.22, vol: 0.09, type: 'triangle' }); noise({ f0: 5200, f1: 2000, dur: 0.08, vol: 0.18, filter: 'highpass' }); },
+  glint() { if (!gate('glint', 200)) return; tone({ f0: 2600, f1: 3400, dur: 0.16, vol: 0.06, type: 'sine' }); tone({ f0: 3900, dur: 0.1, delay: 0.06, vol: 0.04, type: 'sine' }); },
+  bowDraw() { if (!gate('bow', 150)) return; noise({ f0: 700, f1: 1700, dur: 0.3, vol: 0.07, filter: 'bandpass', q: 3, attack: 0.2 }); },
+  twang() { if (!gate('twang', 60)) return; tone({ f0: vary(190), f1: 120, dur: 0.14, vol: 0.16, type: 'triangle' }); noise({ f0: 3200, f1: 900, dur: 0.12, vol: 0.12, filter: 'bandpass', q: 1.5 }); },
+  warcry() { if (!gate('warcry', 400)) return; for (let i = 0; i < 2; i++) tone({ f0: vary(200 + i * 70), f1: 150, dur: 0.55, vol: 0.12, type: 'sawtooth', delay: i * 0.04 }); noise({ f0: 900, f1: 400, dur: 0.5, vol: 0.14, attack: 0.08 }); duck(0.5, 0.3, 0.5); },
+  thunder() { if (!gate('thunder', 1500)) return; noise({ f0: 260, f1: 50, dur: 2.4, vol: 0.3, attack: 0.04 }); noise({ f0: 1400, f1: 180, dur: 0.5, vol: 0.2 }); tone({ f0: 55, f1: 30, dur: 1.6, vol: 0.25, type: 'sine', delay: 0.05 }); },
+  horn() { tone({ f0: 196, f1: 220, dur: 0.5, vol: 0.18, type: 'sawtooth' }); tone({ f0: 294, f1: 330, dur: 0.6, delay: 0.32, vol: 0.16, type: 'sawtooth' }); },
+  volleyWhistle() { for (let i = 0; i < 4; i++) tone({ f0: vary(2600, 0.1), f1: 700, dur: 0.38, vol: 0.05, type: 'sine', delay: i * 0.05 }); },
+  flame() { if (!gate('flame', 150)) return; noise({ f0: 350, f1: 1900, dur: 0.55, vol: 0.28, filter: 'bandpass', attack: 0.08 }); tone({ f0: 90, f1: 60, dur: 0.4, vol: 0.2, type: 'sine' }); },
+  creak() { if (!gate('creak', 400)) return; tone({ f0: vary(140, 0.15), f1: 95, dur: 0.6, vol: 0.1, type: 'sawtooth', attack: 0.15 }); noise({ f0: 600, f1: 300, dur: 0.5, vol: 0.08, filter: 'bandpass', q: 4 }); },
   impact() { if (!gate('impact', 120)) return; tone({ f0: 70, f1: 30, dur: 0.5, vol: 0.6, type: 'sine' }); noise({ f0: 2400, f1: 160, dur: 0.35, vol: 0.45 }); duck(0.35, 0.15, 0.5); },
 };
-let musicWanted = false;
-export function playMusic() {
-  musicWanted = true; init(); if (!ctx || !musicOn) return;
-  if (!musicEl) {
-    musicEl = new Audio('assets/audio/music-main.mp3'); musicEl.loop = true; musicEl.crossOrigin = 'anonymous';
-    try { musicSrc = ctx.createMediaElementSource(musicEl); musicSrc.connect(music); } catch (e) { musicEl.volume = 0.34; }
+let musicWanted = false, unlocked = false;
+// ---------- music tracks (sources and licences: assets/audio/AUDIO_PROVENANCE.md) ----------
+// stage1 is Jason's 1.1 theme, streamed through an <audio> element (too long to hold decoded on an iPad); its
+// loop region is [31.103 s, 159.103 s) and the element jumps back exactly 128 s inside the baked crossfade.
+// The other tracks are short original loops decoded once and looped sample-accurately with loopStart/loopEnd
+// (each file carries 0.25 s of overlap on both sides of its loop). gain: per-track balance against the stage1
+// theme, which the SFX mix was tuned to (track loudness: title -17, boss -15.2, stage2 -16 LUFS vs stage1 -15.7).
+export const MUSIC = {
+  stage1: { url: 'assets/audio/music-main.mp3', stream: true, loopStart: 31.103, loopEnd: 159.103, gain: 1 },
+  title: { url: 'assets/audio/music-title.mp3', loopStart: 0.25, loopEnd: 45.964286, gain: 1 },
+  boss1: { url: 'assets/audio/music-boss1.mp3', loopStart: 0.25, loopEnd: 38.65, gain: 0.94 },
+  stage2: { url: 'assets/audio/music-stage2.mp3', loopStart: 0.25, loopEnd: 64.865374, gain: 1 },
+  boss2: { url: 'assets/audio/music-boss2.mp3', loopStart: 0.25, loopEnd: 55.902177, gain: 0.94 },
+};
+const tracks = Object.create(null), musicBytes = Object.create(null);
+let currentTrack = null, wantedTrack = 'stage1';
+/** equal-power fade on a GainNode, built from short linear ramps (works on every WebAudio implementation) */
+function fadeGain(param, to, secs) {
+  const t = ctx.currentTime, from = param.value; param.cancelScheduledValues(t); param.setValueAtTime(from, t);
+  if (!(secs > 0)) { param.setValueAtTime(to, t); return; }
+  const steps = 8, up = to > from;
+  for (let i = 1; i <= steps; i++) {
+    const u = i / steps, v = up ? from + (to - from) * Math.sin(u * Math.PI / 2) : to + (from - to) * Math.cos(u * Math.PI / 2);
+    param.linearRampToValueAtTime(v, t + secs * u);
   }
-  musicEl.muted = muted; // Also covers the HTMLAudio fallback, which bypasses master.
-  musicEl.play().catch(() => {});
+  // Do not assign .value here: that schedules a new value at NOW and replaces
+  // the fade start, making the curve jump before it reaches the first ramp.
 }
-export function toggleMusic() { musicOn = !musicOn; if (musicOn && musicWanted) playMusic(); else if (musicEl) musicEl.pause(); return musicOn; }
+function trackNode(id) {
+  let T = tracks[id]; if (T) return T;
+  const M = MUSIC[id]; T = tracks[id] = { id, M, gain: ctx.createGain(), el: null, src: null, buf: null, t0: 0, pos: M.loopStart || 0, playing: false, fallback: false, stopTimer: null };
+  T.gain.gain.value = 0; T.gain.connect(music);
+  return T;
+}
+function streamEl(T) {
+  if (T.el) return T.el;
+  const el = T.el = new Audio(T.M.url); el.loop = true; el.crossOrigin = 'anonymous';
+  // seamless loop region: jump back one loop length while inside the baked crossfade at the end of the file
+  const L = T.M.loopEnd - T.M.loopStart;
+  el.ontimeupdate = () => { if (el.currentTime >= T.M.loopEnd - 0.35 && el.currentTime < T.M.loopEnd + 1) el.currentTime -= L; };
+  try { const src = ctx.createMediaElementSource(el); src.connect(T.gain); T.mediaSrc = src; } catch (e) { T.fallback = true; el.volume = 0.34 * T.M.gain; }
+  if (T.id === 'stage1') { musicEl = el; musicSrc = T.mediaSrc || null; }
+  return el;
+}
+function loadMusicBuffer(T) {
+  if (T.buf) return Promise.resolve(T.buf);
+  if (T.loading) return T.loading;
+  const audioContext = ctx, epoch = audioEpoch;
+  return (T.loading = (musicBytes[T.id] || (musicBytes[T.id] = fetch(T.M.url).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)))
+    .then(b => b ? new Promise(res => { const p = audioContext.decodeAudioData(b.slice ? b.slice(0) : b, res, () => res(null)); if (p && p.catch) p.catch(() => res(null)); }) : null)
+    .catch(() => null).then(buf => { T.loading = null; if (epoch !== audioEpoch) return null; if (!buf) delete musicBytes[T.id]; T.buf = buf; return buf; }));
+}
+function startBuffer(T, fade) {
+  if (!T.buf || T.playing || !ctx) return;
+  const s = ctx.createBufferSource(); s.buffer = T.buf; s.loop = true; s.loopStart = T.M.loopStart; s.loopEnd = T.M.loopEnd; s.connect(T.gain);
+  const off = Math.min(Math.max(T.pos, T.M.loopStart), T.M.loopEnd - 0.01);
+  s.start(0, off); T.src = s; T.t0 = ctx.currentTime - off; T.playing = true;
+  fadeGain(T.gain.gain, T.M.gain, fade);
+}
+function trackPos(T) {
+  if (T.el) return T.el.currentTime || T.M.loopStart;
+  if (!T.playing) return T.pos;
+  const L = T.M.loopEnd - T.M.loopStart, t = ctx.currentTime - T.t0;
+  return t < T.M.loopEnd ? t : T.M.loopStart + ((t - T.M.loopStart) % L);
+}
+// Cleanup must use the same clock as the gain ramp: a background tab freezes
+// AudioContext.currentTime, but ordinary setTimeout callbacks can still run.
+function afterAudioTime(secs, fn) {
+  const deadline = ctx.currentTime + secs;
+  const timer = {
+    id: null, cancelled: false,
+    cancel() { this.cancelled = true; clearTimeout(this.id); audioTimers.delete(this); },
+    finish() { if (!this.cancelled) { this.cancel(); fn(); } },
+  };
+  audioTimers.add(timer);
+  const check = () => {
+    if (timer.cancelled) return;
+    const remaining = deadline - ctx.currentTime;
+    if (remaining > 0) timer.id = setTimeout(check, remaining * 1000 + 60);
+    else timer.finish();
+  };
+  timer.id = setTimeout(check, secs * 1000 + 60);
+  return timer;
+}
+function stopTrack(T, fade) {
+  if (!T) return;
+  if (T.stopTimer) T.stopTimer.cancel();
+  T.pos = trackPos(T);
+  const halt = () => {
+    T.stopTimer = null; if (currentTrack === T.id) return;
+    if (T.el) T.el.pause();
+    if (T.src) { try { T.src.stop(); } catch (e) { } T.src.disconnect(); T.src = null; }
+    T.playing = false;
+    // keep at most the current and one previous decoded track resident (about 20 MB each on an iPad)
+    for (const k in tracks) if (k !== currentTrack && k !== T.id && tracks[k].buf && !tracks[k].playing) tracks[k].buf = null;
+  };
+  if (T.fallback || !(fade > 0)) { if (!T.fallback) fadeGain(T.gain.gain, 0, 0); halt(); return; }
+  fadeGain(T.gain.gain, 0, fade);
+  T.stopTimer = afterAudioTime(fade, halt);
+}
+/** Crossfade to a music track. opts.fade seconds (default 1.5); opts.restart starts the new track from its top. */
+export function playTrack(id, opts = {}) {
+  if (id !== null && !MUSIC[id]) return;
+  musicWanted = true; wantedTrack = id; init(); if (!ctx || !musicOn) return;
+  const fade = opts.fade === undefined ? 1.5 : opts.fade, prev = currentTrack;
+  if (prev && prev !== id) stopTrack(tracks[prev], fade);
+  currentTrack = id; if (id === null) return;
+  const T = trackNode(id);
+  if (T.stopTimer) { T.stopTimer.cancel(); T.stopTimer = null; }
+  if (opts.restart && prev !== id) { T.pos = T.M.loopStart || 0; if (T.el) T.el.currentTime = 0; }
+  if (T.M.stream) {
+    const el = streamEl(T); el.muted = muted;
+    if (T.fallback) { el.volume = 0.34 * T.M.gain; } else fadeGain(T.gain.gain, T.M.gain, prev && prev !== id ? fade : 0);
+    if (!audioHidden && (el.paused !== false || !T.playing)) el.play().catch(() => {});
+    T.playing = true;
+    return;
+  }
+  if (T.playing) { fadeGain(T.gain.gain, T.M.gain, fade); return; }
+  loadMusicBuffer(T).then(buf => { if (buf && tracks[id] === T && currentTrack === id && musicOn) startBuffer(T, prev ? fade : 0.4); });
+}
+/** what the backend is playing (or will play once decoded): for tests and the perf panel */
+export function musicState() { return { current: currentTrack, wanted: wantedTrack, on: musicOn, decoded: Object.keys(tracks).filter(k => tracks[k].buf) }; }
+/** after a user gesture: retry a stream element the browser refused to autoplay */
+function resumeMusic() {
+  if (audioHidden) return;
+  // Include an outgoing streamed track if a crossfade was in progress at hide.
+  for (const T of Object.values(tracks)) if (T.playing && T.el && T.el.paused !== false) T.el.play().catch(() => {});
+  if (!currentTrack && wantedTrack !== null) playMusic();
+}
+export function audioUnlocked() { return unlocked; }
+export function playMusic() { playTrack(wantedTrack === undefined ? 'stage1' : wantedTrack, { fade: 0 }); }
+export function toggleMusic() {
+  musicOn = !musicOn;
+  if (musicOn && musicWanted) { const id = wantedTrack; currentTrack = null; playTrack(id, { fade: 0.6 }); }
+  else if (!musicOn) for (const k in tracks) { const T = tracks[k]; T.pos = trackPos(T); if (T.el) T.el.pause(); if (T.src) { try { T.src.stop(); } catch (e) { } T.src.disconnect(); T.src = null; } T.playing = false; }
+  return musicOn;
+}
 export function toggleMute() {
   muted = !muted; if (master) master.gain.value = muted ? 0 : 0.8;
-  if (musicEl) musicEl.muted = muted;
+  for (const k in tracks) if (tracks[k].el) tracks[k].el.muted = muted;
   if (muted) stopSceneAudio();
   return muted;
+}
+// ---------- rain ambience (Stage 2): two looping filtered-noise beds, no file ----------
+let rainNodes = null;
+function disposeRain(R) {
+  for (const [s, fl, v] of R.parts) { try { s.stop(); } catch (e) { } s.disconnect(); fl.disconnect(); v.disconnect(); }
+  R.g.disconnect();
+}
+export function setRain(on, level = 1) {
+  init(); if (!ctx) return;
+  if (on && !rainNodes) {
+    const n = ctx.sampleRate * 2, buf = ctx.createBuffer(1, n, ctx.sampleRate), c = buf.getChannelData(0);
+    let b = 0; for (let i = 0; i < n; i++) { const w = Math.random() * 2 - 1; b = 0.97 * b + 0.03 * w; c[i] = w * 0.6 + b * 2.2; }
+    const g = ctx.createGain(); g.gain.value = 0; g.connect(master);
+    const mk = (type, f, q, vol) => { const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; const fl = ctx.createBiquadFilter(); fl.type = type; fl.frequency.value = f; fl.Q.value = q; const v = ctx.createGain(); v.gain.value = vol; s.connect(fl); fl.connect(v); v.connect(g); s.start(0, Math.random() * 1.5); return [s, fl, v]; };
+    rainNodes = { g, parts: [mk('highpass', 2600, 0.5, 0.055), mk('bandpass', 900, 0.7, 0.07)] };
+    fadeGain(g.gain, level, 2.5);
+  } else if (!on && rainNodes) {
+    const R = rainNodes; rainNodes = null; fadeGain(R.g.gain, 0, 1.2);
+    afterAudioTime(1.4, () => disposeRain(R));
+  }
 }
 function loadClip(id) {
   init(); if (!ctx) return Promise.resolve(null);
   if (clips[id]) return clips[id];
+  const audioContext = ctx, epoch = audioEpoch;
   return (clips[id] = fetch(`assets/audio/voice/${id}.mp3`).then(r => r.ok ? r.arrayBuffer() : null)
     .then(b => b ? new Promise(res => {
       // Some implementations expose both callbacks and a rejecting decode promise.
-      const pending = ctx.decodeAudioData(b, res, () => res(null));
+      const pending = audioContext.decodeAudioData(b, res, () => res(null));
       if (pending && pending.catch) pending.catch(() => res(null));
     }) : null).catch(() => null).then(buf => {
+      if (epoch !== audioEpoch) return null;
       if (!buf) delete clips[id]; // A temporary load/decode failure must not poison the cache.
       return buf;
     }));

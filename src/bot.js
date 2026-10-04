@@ -1,5 +1,6 @@
 // ?demo=1: a simple autopilot for Riley so the slice can be captured and perf-measured hands-free.
 import { rand, q, LANE_TOP, LANE_BOT } from './config.js';
+import { VOLLEY_BANDS } from './stages.js';
 export class Bot {
   constructor(scene, { mode = q.get('demo') } = {}) {
     this.s = scene; this.t = 0; this.next = 0; this.plan = null;
@@ -12,6 +13,8 @@ export class Bot {
     const s = this.s, R = s.riley, inp = s.inp; this.t += dt;
     if (!s.started || !R.alive || s.ended || s.gameOver) { inp.demo = { x: 0, y: 0 }; return; }
     if (this.bossCoverage) return this.updateBossCoverage();
+    // Stage 2 hazards (lane volleys, arrows, charges, the parry bait, torches, falling beams). Stage 1 never enters here.
+    if (s.kit && this.evadeStage2()) return;
     const foes = s.enemies.filter(e => e.alive && !e.entering);
     // Only pickups inside the arena are reachable; a power that has landed nearby is worth a detour mid-fight.
     const reachable = s.pickups.filter(p => p.x > s.bounds.l + 40 && p.x < s.bounds.r - 40 && (!p.power || p.ready));
@@ -35,6 +38,38 @@ export class Bot {
       if (r < 0.12) { inp.press('jump'); this.pressLater('attack', 260); this.next = this.t + 1.0; }
       else { inp.press('attack'); this.pressLater('attack', 220); this.pressLater('attack', 470); this.next = this.t + rand(0.9, 1.3); }
     }
+  }
+  /** step out of the lane band / spot something is about to hit; returns true while it owns the controls */
+  evadeStage2() {
+    const s = this.s, R = s.riley, inp = s.inp, k = s.kit, t = k.threats();
+    if (R.busy && !['idle', 'walk', 'run'].includes(R.state)) return false;
+    const away = (y, dy = 1) => { const up = R.y - LANE_TOP, down = LANE_BOT - R.y; return Math.abs(R.y - y) < 4 ? (up > down ? -1 : 1) : Math.sign(R.y - y) * dy || 1; };
+    const go = (x, y) => { inp.demo = { x, y, run: false }; return true; };
+    const v = t.volley;
+    if (v && !v.struck) {
+      const cur = k.bandOf(R.y), safe = [0, 1, 2].filter(i => !v.bands.includes(i));
+      if (safe.length) {
+        const tgt = safe.sort((a, b) => Math.abs(a - cur) - Math.abs(b - cur))[0], [y0, y1] = VOLLEY_BANDS[tgt], mid = (y0 + y1) / 2;
+        if (v.bands.includes(cur) || Math.abs(R.y - mid) > (y1 - y0) / 2 - 6) return go(0, Math.sign(mid - R.y));
+        return go(0, 0);
+      }
+    }
+    for (const m of t.sky) if (Math.abs(R.x - m.tx) < 80 && Math.abs(R.y - m.ty) < 34) return go(0, away(m.ty));
+    for (const a of t.arrows) { const d = (R.x - a.x) * a.dir; if (d > -20 && d < 420 && Math.abs(R.y - a.y) < 26) return go(0, away(a.y)); }
+    for (const b of t.beams) if (b.hurts && !b.landed && Math.abs(R.x - b.x) < 140 && Math.abs(R.y - b.y) < 34) return go(0, away(b.y));
+    for (const c of t.torches) if (Math.abs(R.x - c.tx) < 130 && Math.abs(R.y - c.ty) < 48) return go(0, away(c.ty));
+    for (const p of s.patches) if (Math.abs(R.x - p.x) < 90 && Math.abs(R.y - p.y) < 30) return go(0, away(p.y));
+    for (const e of s.enemies) {
+      if (!e.alive || e.entering) continue;
+      if (e.type === 'zealot' && (e.state === 'chargeup' || e.state === 'charge') && Math.abs(R.y - e.y) < 36 && (R.x - e.x) * e.facing > 0) return go(0, away(e.y));
+      if (e.type === 'byar' && e.state === 'parry') {
+        // the bait: never swing at his raised shield; hold just out of reach until he lowers it
+        const dx = R.x - e.x, side = Math.sign(dx) || 1;
+        return go(Math.abs(dx) < 250 ? side : Math.abs(dx) > 320 ? -side : 0, 0);
+      }
+      if (e.type === 'byar' && (e.state === 'rush' || e.state === 'rushup') && Math.abs(R.y - e.y) < 40) return go(0, away(e.y));
+    }
+    return false;
   }
   pressLater(action, delayMs) {
     const s = this.s, R = s.riley;

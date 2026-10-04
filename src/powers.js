@@ -48,9 +48,11 @@ export const ART = Object.freeze({
   // anim 'riley_lightning' in riley.anims.json) so they are lit and scaled exactly like his other frames.
   rileyLightning: { anim: 'riley_lightning', page: 'riley-1', url: 'assets/powers/riley_lightning.png', frameWidth: 960, frameHeight: 640, frames: 6, holds: [80, 90, 110, 160, 130, 90], ready: true },
 });
-export function queuePowerArt(scene) {
+/** the Twix joke's art (Stage 1 only): Stage 2 neither loads it nor keeps it resident */
+export const TWIX_ART_KEYS = Object.freeze([ART.pickups.twix.key, ...ART.panels.map(a => a.key)]);
+export function queuePowerArt(scene, { twix = true } = {}) {
   const L = scene.load, has = k => scene.textures.exists(k);
-  for (const a of [...Object.values(ART.pickups), ...Object.values(ART.hud), ...ART.panels]) if (!has(a.key)) L.image(a.key, a.url);
+  for (const a of [...Object.values(ART.pickups), ...Object.values(ART.hud), ...ART.panels]) if (!has(a.key) && (twix || !TWIX_ART_KEYS.includes(a.key))) L.image(a.key, a.url);
   for (const a of Object.values(ART.fx)) if (a.ready && !has(a.key)) L.spritesheet(a.key, a.url, { frameWidth: a.frameWidth, frameHeight: a.frameHeight });
 }
 /** Riley's lightning cast uses his painted lightning frames (atlas page riley-1, made by makeCharAnims) while
@@ -139,7 +141,7 @@ export class Powers {
       const to = { x: e.x, y: e.y - e.z - 140 };
       parts.push(...this.boltParts(from.x, from.y, to.x, to.y));
       const kb = Math.sign(e.x - (i ? targets[i - 1].x : R.x)) || dir;
-      s.hitTarget(R, e, { dmg: i ? LIGHTNING.chainDmg : LIGHTNING.dmg, kind: 'medium', kb: kb * 220, noMeter: i > 0 }, { x: e.x - kb * 40, facing: kb });
+      s.hitTarget(R, e, { dmg: i ? LIGHTNING.chainDmg : LIGHTNING.dmg, kind: 'medium', kb: kb * 220, power: true, noMeter: i > 0 }, { x: e.x - kb * 40, facing: kb });
       from = to;
     });
     const end = targets.length ? { x: targets[0].x, y: targets[0].y - 160 } : { x: hand.x + dir * 200, y: hand.y };
@@ -177,7 +179,7 @@ export class Powers {
     this.whips.push({ parts, t: 0, hand, tip, e });
     sfx.whoosh();
     if (!e) return null;
-    const hit = s.hitTarget(R, e, { dmg: AIR_WHIP.dmg, kind: 'light', kb: -dir * 1 }, { x: e.x + dir * 40, facing: -dir });
+    const hit = s.hitTarget(R, e, { dmg: AIR_WHIP.dmg, kind: 'light', kb: -dir * 1, power: true }, { x: e.x + dir * 40, facing: -dir });
     if (hit && e.alive && !(e.T && e.T.boss)) {
       const to = clamp(R.x + dir * AIR_WHIP.stand, s.bounds.l + 40, s.bounds.r - 40);
       e.vx = 0; this.pulls.push({ e, from: e.x, to, y0: e.y, y1: clamp(R.y, LANE_TOP, LANE_BOT), t: 0 });
@@ -224,7 +226,7 @@ export class Powers {
       if (nx * nx + ny * ny > 1) continue;
       const dir = Math.sign(e.x - R.x) || R.facing;
       this.shieldHits.set(e, FIRE_SHIELD.tick);
-      if (s.hitTarget(R, e, { dmg: FIRE_SHIELD.dmg, kind: 'light', kb: dir * FIRE_SHIELD.kb, noMeter: true }, { x: R.x, facing: dir })) s.fx.embers.emitParticleAt(e.x, e.y - 90, 8);
+      if (s.hitTarget(R, e, { dmg: FIRE_SHIELD.dmg, kind: 'light', kb: dir * FIRE_SHIELD.kb, power: true, noMeter: true }, { x: R.x, facing: dir })) s.fx.embers.emitParticleAt(e.x, e.y - 90, 8);
     }
   }
 }
