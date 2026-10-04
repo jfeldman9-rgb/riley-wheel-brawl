@@ -1,0 +1,14 @@
+{
+ "id": "cutthroat-master",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "trolloc master",
+  "riley master"
+ ],
+ "output": "cutthroat-master.png",
+ "prompts": [
+  "Use case: stylized-concept. Create a locked character master sprite for Riley Wheel Brawl 2.0, a Wheel of Time side-scrolling beat-em-up. Output exactly 1024x1536 portrait PNG with a genuinely transparent background (real alpha), no ground shadow, no floor, no text, no border.\nReference images: trolloc-master.png is the LOCKED house style; riley-master.png is the human rendering and relative scale reference. Match both exactly: confident near-black/dark-brown ink outlines, thick on the silhouette and thin inside; clean 2-3 step cel shading with subtle painterly gradients; hand-drawn HD 2D fighting-game art in the spirit of Streets of Rage 4. Key light upper left, gentle cool rim on the right. Not pixel art, not 3D, not photo-real, not chibi. Do not copy reference backgrounds.\nSubject: ONE ordinary adult HUMAN man, a DARKFRIEND CUTTHROAT from the back alleys of Caemlyn, about 30, wiry and quick, a little shorter than Riley and much leaner. Narrow sly face, sharp nose, thin smirk, stubble, sly narrowed dark eyes, short messy black hair under a dark brown hood pushed back. Clothing: dark charcoal hooded short cloak, worn brown leather jerkin over a dull oxblood-red shirt, dark grey trousers, soft brown boots wrapped with cord, a wide belt with pouches and a SHEATHED short knife (never drawn). Right hand holds a short black leather COSH (a padded club). Left hand open, fingers ready to grab. No armour, no insignia.\nPose: full body head to boots, side / slight three-quarter view FACING LEFT, low crouched sneaking ready stance, knees bent, weight forward, cosh held low behind him. Exactly two arms, two legs, five-finger hands. A sneaky theatrical villain, kid-friendly, no blood."
+ ]
+}

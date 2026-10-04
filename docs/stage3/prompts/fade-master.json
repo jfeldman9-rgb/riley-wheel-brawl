@@ -1,0 +1,14 @@
+{
+ "id": "fade-master",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "trolloc master",
+  "riley master"
+ ],
+ "output": "fade-master.png",
+ "prompts": [
+  "Use case: stylized-concept. Create a locked character master sprite for Riley Wheel Brawl 2.0, a Wheel of Time side-scrolling beat-em-up. Output exactly 1024x1536 portrait PNG with a genuinely transparent background (real alpha), no ground shadow, no floor, no text, no border.\nReference images: trolloc-master.png is the LOCKED house style; riley-master.png is the human rendering and relative scale reference. Match both exactly: confident near-black/dark-brown ink outlines, thick on the silhouette and thin inside; clean 2-3 step cel shading with subtle painterly gradients; hand-drawn HD 2D fighting-game art in the spirit of Streets of Rage 4. Key light upper left, gentle cool rim on the right. Not pixel art, not 3D, not photo-real, not chibi. Do not copy reference backgrounds.\nSubject: ONE MYRDDRAAL (a \"Fade\") from the Wheel of Time: tall and unnaturally thin, a head taller than Riley, moving like a snake. Its face is pale grey-white like a maggot, smooth and EYELESS: smooth skin where eyes should be, no eye sockets, no gore, thin bloodless lips in a cold smile. Black hair cropped close. It wears overlapping black armour plates like snake scales from neck to knee, black gloves, black boots, and a long BLACK CLOAK that hangs perfectly straight and still, as if no wind can touch it. Right hand holds a long slightly curved BLACK-BLADED sword with a plain black hilt; the blade has a faint cold blue-white edge highlight. Palette: blacks and charcoal with cold blue highlights, pale grey face and hands only. Theatrical spooky villain, kid-friendly, no blood.\nPose: full body head to boots, side / slight three-quarter view FACING LEFT, tall upright menacing stance, head tilted as if \"looking\" without eyes, sword held low and angled forward."
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "id": "prop-rooftiles",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [],
+ "output": "prop-rooftiles.png",
+ "prompts": [
+  "Create prop-rooftiles.png for Riley Wheel Brawl 2.0. OUTPUT: exactly 1024x256 PNG, genuinely transparent background, real alpha, no shadows/text/borders. FOUR equal cells of 256x256 in one row, left to right, a short tumbling animation of a CLUSTER OF RED CLAY ROOF TILES (5-6 curved terracotta tiles and a few broken shards) sliding and tumbling to the LEFT: 1: the cluster sliding flat, 2: tiles lifting and rotating, 3: tiles tumbling apart in mid-air, 4: tiles scattering with small shards and a puff of painted dust. Same tile size in every cell. Hand-drawn HD 2D game art in the spirit of Streets of Rage 4: fine dark outlines, clean cel shading, light from the upper left. Not pixel art or 3D."
+ ]
+}

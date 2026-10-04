@@ -1,0 +1,14 @@
+{
+ "id": "bg3-far-day",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "assets/bg2/bg2-far.jpg",
+  "assets/bg/bg-far.jpg"
+ ],
+ "output": "bg3-far-day.png",
+ "prompts": [
+  "Use case: stylized-concept. Production parallax background plate for Riley Wheel Brawl 2.0, a 2D side-scrolling Wheel of Time beat-em-up. Generate a single exact 2172x724 pixel, 3:1 panoramic image, FULLY OPAQUE. Reference images are STYLE AND CAMERA REFERENCES ONLY, not edit targets: match their confident fine dark ink contours, detailed hand-painted HD cel shading, brush textures and fixed side-on camera, Streets of Rage 4-like painted game art, never pixel art or 3D. Keep the reference horizon height: distant skyline at about y=340/724, upper two thirds sky.\nLocation: CAEMLYN, the royal capital of Andor, seen from far away in GOLDEN LATE AFTERNOON. Warm honey-gold sunlight from the upper left, long soft shadows, a pale blue sky with a few warm cream clouds. The Inner City rises on a hill in the middle distance: pale white and silver stone towers, slender spires and the gold-tiled domes of the Royal Palace catching the sun, small red-and-white banners with a white lion. In front of it, the great pale grey-white stone outer wall with round towers runs across the plate, and below it the red-tiled roofs of the New City fill the lower quarter. Faint hills beyond. No people, no animals, no text, letters, numbers, logos or watermarks; pictorial banners only. Atmospheric distant scale, flat horizontal bands, no road vanishing point."
+ ]
+}

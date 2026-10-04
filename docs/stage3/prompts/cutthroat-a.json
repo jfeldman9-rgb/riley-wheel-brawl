@@ -1,0 +1,14 @@
+{
+ "id": "cutthroat-a",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "cutthroat-master",
+  "trolloc master"
+ ],
+ "output": "cutthroat-a.png",
+ "prompts": [
+  "Create cutthroat-a.png, a production animation sprite sheet for Riley Wheel Brawl 2.0. Use the attached cutthroat-master.png as the LOCKED character and style reference; reproduce that exact man, face, hood, charcoal cloak, brown jerkin, oxblood shirt, belt pouches, sheathed knife and black leather cosh in every drawing. Do not copy any background.\nOUTPUT: 1536x1024 landscape PNG, genuinely transparent background, real alpha, no shadows/floor/text/labels/borders/frame numbers. Exactly EIGHT full-body figures in TWO rows of FOUR, read left to right. Equal cells 384x512, generous transparent separation, nothing clipped or overlapping. Same character scale in every cell, common boot baseline at y=490 (top row) and y=1000 (bottom row). Every figure faces LEFT, profile / slight 3/4. All eight are independently drawn different moments, never copied or mirrored.\nSTYLE: match the reference exactly: hand-drawn HD 2D fighting-game art in the spirit of Streets of Rage 4, near-black outlines thick outside thin inside, clean 2-3 step cel shading, light from upper left, cool right rim. Not pixel art, 3D or chibi. Kid-friendly, no blood. Exactly two arms, two legs, five-finger hands.\nTOP ROW + first two of BOTTOM ROW, a 6-frame SNEAKING WALK cycle to the LEFT, low crouched, cosh held low:\n1: left foot forward planted, right foot trailing on toes. 2: passing pose, right foot lifting past the left leg, body lowest. 3: right foot reaching forward, heel about to touch. 4: right foot planted, left foot trailing on toes. 5: passing pose, left foot lifting past. 6: left foot reaching forward.\nBOTTOM ROW cells 7-8, HURT: 7: struck in the face, head snapped back to the right, eyes squeezed shut, cosh arm flung out, knees buckling. 8: recoiling further, hunched, one hand to his jaw, stumbling back a step."
+ ]
+}

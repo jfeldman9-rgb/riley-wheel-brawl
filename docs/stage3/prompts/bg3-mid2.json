@@ -1,0 +1,14 @@
+{
+ "id": "bg3-mid2",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "assets/bg2/bg2-mid2.webp",
+  "bg3-far-night.png"
+ ],
+ "output": "bg3-mid2.png",
+ "prompts": [
+  "Use case: stylized-concept. Production parallax MID background plate for Riley Wheel Brawl 2.0. Generate a single exact 2172x724 pixel, 3:1 panoramic image with a genuinely TRANSPARENT SKY (real alpha above the rooflines and treetops); everything else opaque. The references are STYLE, SCALE AND CAMERA references only: match bg2-mid2's fine dark ink contours, hand-painted HD cel shading, building scale, the fixed side-on camera and the ground line along the bottom edge. Never pixel art or 3D.\nThe light changes across the plate from left to right. LEFT HALF (x 0-1086), THE ROOFTOPS OF CAEMLYN AT SUNSET: we are up on the roofs; a jumble of red and slate tile roofs, brick chimneys, little dormer windows, a washing line strung between chimneys, a flat lead-roofed walkway in front, all lit by a low deep orange-pink sun from the left with long purple shadows; distant palace domes beyond. RIGHT HALF (x 1086-2172), THE ROYAL PALACE GARDEN AT NIGHT: a tall pale stone garden wall with an ivy-covered top (the wall Riley drops over) at x about 1086-1200, then a moonlit formal garden: clipped dark hedges, white stone paths, rose bushes, a round white marble fountain, slender white palace towers with warm lit windows behind, deep blue night tones with cool moon rims. Iron standing TORCH POSTS (unlit; the game adds the light) every 250-350 px in the garden at about y=500-560, and a few unlit chimney-side lanterns on the roofs. No people, no animals, no text, letters, numbers, logos or watermarks."
+ ]
+}
