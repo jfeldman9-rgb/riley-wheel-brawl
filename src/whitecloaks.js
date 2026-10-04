@@ -19,8 +19,8 @@ Object.assign(TYPES, {
 export const ZEALOT = Object.freeze({ blocksToBreak: 3, blockReset: 2.5, breakTime: 0.8, chargeUp: 0.5, chargeSpeed: 540, chargeMax: 1.35, dazed: 1.8, dazedDmg: 1.3,
   charge: { x0: -10, x1: 150, z0: 0, z1: 220, dmg: 12, kind: 'heavy', kb: 440, launch: 360, down: true } });
 export const ARCHER = Object.freeze({ keep: [420, 520], tooClose: 230, backstep: 430, backCool: 2.4, releaseFrame: 4, skyRelease: 3, arrowSpeed: 760, arrowZ: 150,
-  arrowDmg: 8, skyDmg: 9, skyDelay: 1.15, skyChance: 0.35 });
-export const BYAR = Object.freeze({ parry: 1.5, open: 0.9, openDmg: 1.4, parryEvery: [5, 8], torchEvery: [4.5, 6.5], rushSpeed: 470, rushMax: 1.0, rushUp: 0.22,
+  arrowDmg: 8, skyDmg: 9, skyDelay: 1.15, skyChance: 0.35, drawTrack: 90, drawGlintFrame: 2, fanEvery: 3 });
+export const BYAR = Object.freeze({ parry: 1.5, open: 0.9, openDmg: 1.4, parryEvery: [5, 8], torchEvery: [4.5, 6.5], rushSpeed: 470, rushMax: 1.0, rushUp: 0.55, volleyKeep: 300,
   riposte: { anim: 'riposte', active: [2, 3], x0: 0, x1: 285, z0: 0, z1: 240, dmg: 14, kind: 'heavy', kb: 420, launch: 340, down: true, sfx: 'blade' },
   rush: { x0: -10, x1: 160, z0: 0, z1: 240, dmg: 12, kind: 'heavy', kb: 480, launch: 380, down: true },
   thrust: { dmg: 14, kind: 'heavy', down: true, kb: 380 } });
@@ -144,11 +144,14 @@ export class Zealot extends Whitecloak {
 
 // ---------------- Whitecloak archer ----------------
 export class Archer extends Whitecloak {
-  constructor(scene, x, y) { super(scene, 'archer', x, y); this.backCool = 0; this.skyCool = rand(3, 6); this.cool = rand(1.0, 1.8); }
+  constructor(scene, x, y) { super(scene, 'archer', x, y); this.backCool = 0; this.skyCool = rand(3, 6); this.cool = rand(1.0, 1.8); this.shots = 0; }
   update(dt) {
     switch (this.state) {
       case 'shoot': this.st += dt; this.cool -= dt;
-        if (this.fi >= ARCHER.releaseFrame && !this.loosed) { this.loosed = true; this.scene.kit?.fireArrow(this); }
+        // Commit the lane at release; before then, turn the draw into readable, limited tracking.
+        if (this.fi < ARCHER.releaseFrame) this.y = clamp(this.y + clamp(this.target.y - this.y, -ARCHER.drawTrack * dt, ARCHER.drawTrack * dt), LANE_TOP, LANE_BOT);
+        if (this.fi >= ARCHER.drawGlintFrame && !this.drawGlinted) { this.drawGlinted = true; this.scene.kit?.telegraph(this); }
+        if (this.fi >= ARCHER.releaseFrame && !this.loosed) { this.loosed = true; this.shots++; this.scene.kit?.fireArrow(this, { fan: this.scene.zoneI >= 1 && this.shots % ARCHER.fanEvery === 0 }); }
         if (this.done) { this.loosed = false; this.cool = rand(...this.T.cool); this.setState('approach', 'walk'); } return;
       case 'skyshot': this.st += dt; this.cool -= dt;
         if (this.fi >= ARCHER.skyRelease && !this.loosed) { this.loosed = true; this.scene.kit?.loseSkyArrow(this); }
@@ -168,15 +171,15 @@ export class Archer extends Whitecloak {
     let wantX = R.x + side * keep; wantX = clamp(wantX, s.bounds.l + 70, s.bounds.r - 70);
     const wantY = clamp(R.y + this.slotOff * 0.4, LANE_TOP + 4, LANE_BOT - 4);
     const tdx = wantX - this.x, tdy = wantY - this.y, ady = Math.abs(R.y - this.y);
-    const ready = this.cool <= 0 && R.alive && R.state !== 'down' && adx > 260 && adx < 800 && !s.kit?.archerBusy(this);
-    if (ready && this.skyCool <= 0 && s.zoneI >= 1 && Math.random() < ARCHER.skyChance) return this.startSkyshot();
-    if (ready && ady < 26 && Math.abs(tdx) < 170) return this.startShoot();
+    const ready = this.cool <= 0 && R.alive && R.state !== 'down' && adx > 260 && adx < 800;
+    if (ready && this.skyCool <= 0 && s.zoneI >= 1 && !s.kit?.archerBusy(this, 'skyshot') && Math.random() < ARCHER.skyChance) return this.startSkyshot();
+    if (ready && ady < 26 && Math.abs(tdx) < 170 && !s.kit?.archerBusy(this, 'shoot')) return this.startShoot();
     const mx = Math.abs(tdx) > 10 ? Math.sign(tdx) : 0, my = Math.abs(tdy) > 6 ? Math.sign(tdy) : 0;
     const sep = s.separation(this);
     this.x += (mx * this.T.speed + sep) * dt; this.y += my * this.T.speed * 0.6 * dt;
     if (mx || my) this.play('walk', mx && Math.sign(mx) !== this.facing ? 0.8 : 1, false); else this.play('walk', 0.0001, false);
   }
-  startShoot() { this.face(Math.sign(this.target.x - this.x)); this.setState('shoot', 'shoot'); this.loosed = false; sfx.bowDraw(); }
+  startShoot() { this.face(Math.sign(this.target.x - this.x)); this.setState('shoot', 'shoot'); this.loosed = false; this.drawGlinted = false; sfx.bowDraw(); }
   startSkyshot() { this.face(Math.sign(this.target.x - this.x)); this.setState('skyshot', 'skyshot'); this.loosed = false; this.skyCool = rand(5, 8); sfx.bowDraw(); this.scene.kit?.markSky(this); }
   startBackstep(side) { this.setState('backstep', 'backstep'); this.vx = side * ARCHER.backstep; this.backCool = ARCHER.backCool; }
 }
@@ -202,22 +205,32 @@ export class Byar extends Whitecloak {
       if (['approach', 'wait'].includes(this.state)) this.cool = 0;
     }
     this.nextParry -= dt; this.nextVolley -= dt; this.nextTorch -= dt;
+    // A volley owns the whole attack window, including attacks already winding up when it began.
+    if (this.alive && this.scene.kit?.volleyActive()) {
+      if (['attack', 'parry', 'open', 'riposte', 'torch', 'rushup', 'rush', 'rushend'].includes(this.state)) { this.setState('approach', 'walk'); this.cool = Math.max(this.cool, 0.35); }
+      if (['approach', 'wait'].includes(this.state)) { this.cool -= dt; this.holdVolley(dt); return; }
+      if (this.state === 'volley') this.holdVolley(dt, false);
+    }
     const own = ['parry', 'open', 'riposte', 'volley', 'rage', 'torch', 'rushup', 'rush', 'rushend', 'defeated', 'retreat'];
     if (own.includes(this.state)) { this.st += dt; this.cool -= dt; if (this.shudder > 0) this.shudder -= dt; }
     switch (this.state) {
-      case 'parry': if (this.st > BYAR.parry) { this.setState('open', 'accuse'); } return;
+      case 'parry': if (this.st > BYAR.parry) { this.setState('open', 'accuse'); this.scene.kit?.guardOpen?.(this); } return;
       case 'open': if (this.st > BYAR.open) { this.setState('approach', 'walk'); this.cool = rand(0.3, 0.6); } return;
       case 'riposte': return this.attacking(dt);
-      case 'volley': if (this.fi >= 2 && !this.signalled) { this.signalled = true; this.volleys++; this.scene.kit?.startVolley(this); }
+      case 'volley': if (this.commanding && this.st >= 0.3) { this.commanding = false; this.play('volley'); }
+        if (!this.commanding && this.fi >= 2 && !this.signalled) {
+          if (this.scene.kit?.startVolley(this) === false) { this.setState('approach', 'walk'); this.cool = 0; this.nextVolley = 0; return; }
+          this.signalled = true; this.volleys++;
+        }
         if (this.done) { this.signalled = false; this.setState('approach', 'walk'); this.cool = rand(0.5, 0.9); this.nextVolley = rand(...VOLLEY.every); } return;
       case 'rage': if (this.st > 0.4 && !this.raged) { this.raged = true; this.scene.kit?.rage(this); }
         if (this.done) { this.setState('approach', 'walk'); this.cool = 0; this.nextTorch = 0.3; } return;
       case 'torch': if (this.fi >= 3 && !this.thrown) { this.thrown = true; this.torches++; this.scene.kit?.throwTorch(this); }
         if (this.done) { this.thrown = false; this.setState('approach', 'walk'); this.cool = rand(0.6, 1.0); this.nextTorch = rand(...BYAR.torchEvery); } return;
-      case 'rushup': if (this.st > BYAR.rushUp) { this.setState('rush', 'rush'); this.rushDir = this.facing; this.hitIds.clear(); sfx.warcry(); } return;
+      case 'rushup': if (this.st > BYAR.rushUp) { this.setState('rush', 'rush'); this.rushDir = this.facing; this.hitIds.clear(); } return;
       case 'rush': return this.rushing(dt);
       case 'rushend': if (this.done) { this.setState('approach', 'walk'); this.cool = rand(0.8, 1.2); } return;
-      case 'defeated': if (this.st > 2.4) { this.retreatDir = Math.sign(this.x - this.target.x) || 1; this.face(this.retreatDir); this.setState('retreat', 'walk'); } return;
+      case 'defeated': if (this.st > 2.4) { this.retreatDir = Math.sign(this.x - this.target.x) || 1; this.face(this.retreatDir); this.setState('retreat', 'retreat'); } return;
       case 'retreat': {
         this.x += this.retreatDir * 170 * dt;
         if (this.st > 1.2) { const a = Math.max(0, 1 - (this.st - 1.2) / 1.0); this.sprite.setAlpha(a); this.shadow.setAlpha(a * 0.8); }
@@ -227,12 +240,27 @@ export class Byar extends Whitecloak {
     super.update(dt);
   }
   physics(dt) { if (this.state === 'retreat') return; super.physics(dt); }
+  /** Retreat harmlessly toward the 300px hold line. At a wall, never teleport through Riley. */
+  holdVolley(dt, animate = true) {
+    const R = this.target, bounds = this.scene.bounds, side = Math.sign(this.x - R.x) || -this.facing || 1;
+    const limit = clamp(R.x + side * BYAR.volleyKeep, bounds.l + 40, bounds.r - 40);
+    const distance = Math.max(0, (limit - this.x) * side), step = Math.min(distance, 240 * dt);
+    this.x += side * step; this.vx = 0; this.face(-side);
+    if (animate) this.play('walk', step ? 0.8 : 0.0001, false);
+    return distance <= step + 0.01;
+  }
   think(dt) {
     if (this.entering) return;
+    if (this.scene.kit?.volleyActive()) return this.holdVolley(dt);
     const R = this.target, dx = R.x - this.x, adx = Math.abs(dx), ady = Math.abs(R.y - this.y);
+    if (this.cool <= 0 && R.alive && R.state !== 'down' && this.pendingRage) return this.startRage();
+    // Once a volley is due, stop feeding the torch/patch cycle while old hazards finish.
+    if (this.phase >= 2 && this.nextVolley <= 0) {
+      const held = this.holdVolley(dt);
+      if (held && this.cool <= 0 && R.alive && R.state !== 'down' && (this.scene.kit?.volleyReady?.() ?? !this.scene.kit?.volleyActive())) this.startVolley();
+      return;
+    }
     if (this.cool <= 0 && R.alive && R.state !== 'down') {
-      if (this.pendingRage) return this.startRage();
-      if (this.phase >= 2 && this.nextVolley <= 0 && !this.scene.kit?.volleyActive()) return this.startVolley();
       if (this.phase >= 3 && this.nextTorch <= 0 && adx > 120) return this.startTorch();
       if (this.phase >= 3 && adx > 320 && ady < 36 && Math.random() < 0.5) return this.startRush();
       if (this.nextParry <= 0 && adx < 340 && ady < 40 && this.phase !== 2) return this.startParry();
@@ -242,6 +270,7 @@ export class Byar extends Whitecloak {
   startAttack() { this.face(Math.sign(this.target.x - this.x)); this.atk = this.T.atk; this.setState('attack', 'combo'); this.lastActive = -1; this.scene.onEnemyAttack(this); }
   /** two-hit combo: each active frame can land once; the thrust (second) knocks down */
   attacking(dt) {
+    if (this.scene.kit?.volleyActive()) { this.setState('approach', 'walk'); this.holdVolley(dt); return; }
     const a = this.atk, fi = this.fi;
     if (a.active.includes(fi)) {
       if (fi !== this.lastActive) { this.lastActive = fi; this.hitIds.clear(); sfx[a.sfx || 'swing'](); }
@@ -251,12 +280,13 @@ export class Byar extends Whitecloak {
   }
   startParry() { this.face(Math.sign(this.target.x - this.x)); this.setState('parry', 'parry'); this.parries++; this.nextParry = rand(...BYAR.parryEvery) + (this.phase === 3 ? 3 : 0); this.scene.kit?.parryBait(this); }
   startRiposte() { this.face(Math.sign(this.target.x - this.x)); this.ripostes++; this.atk = BYAR.riposte; this.setState('riposte', 'riposte'); this.lastActive = -1; sfx.clang(); this.scene.kit?.onRiposte(this); }
-  startVolley() { this.face(Math.sign(this.target.x - this.x)); this.setState('volley', 'volley'); this.signalled = false; say('byar_volley_01', this.scene.caption, false); }
+  startVolley() { if (this.scene.kit?.volleyReady?.() === false) return false; this.face(Math.sign(this.target.x - this.x)); this.setState('volley', 'command'); this.commanding = true; this.signalled = false; say('byar_volley_01', this.scene.caption, false); }
   startRage() { this.pendingRage = false; this.face(Math.sign(this.target.x - this.x)); this.setState('rage', 'rage'); this.raged = false; sfx.warcry(); this.scene.fx.trauma = Math.min(1, this.scene.fx.trauma + 0.5); }
   startTorch() { this.face(Math.sign(this.target.x - this.x)); this.setState('torch', 'torch'); this.thrown = false; }
   /** shield rush: a crouched wind-up (the telegraph), the run, then a shield bash and recovery that leave him open */
-  startRush() { this.face(Math.sign(this.target.x - this.x)); this.setState('rushup', 'rushup'); this.cool = rand(1.4, 2.2); }
+  startRush() { this.face(Math.sign(this.target.x - this.x)); this.setState('rushup', 'rushup'); this.cool = rand(1.4, 2.2); this.scene.kit?.telegraph(this); this.scene.kit?.markRush?.(this); sfx.warcry(); }
   rushing(dt) {
+    if (this.scene.kit?.volleyActive()) { this.setState('approach', 'walk'); this.holdVolley(dt); return; }
     this.x += this.rushDir * BYAR.rushSpeed * dt; this.scene.resolveAttack(this, BYAR.rush);
     const b = this.scene.bounds, wall = (this.rushDir > 0 && this.x >= b.r - 80) || (this.rushDir < 0 && this.x <= b.l + 80);
     if (this.hitIds.has('riley') || wall || this.st > BYAR.rushMax) { this.setState('rushend', 'rushend'); this.vx = this.rushDir * 90; }
@@ -264,7 +294,7 @@ export class Byar extends Whitecloak {
   takeHit(h, from) {
     if (!this.canBeHit) return false;
     const front = (Math.sign(from.x - this.x) || 1) === this.facing, R = this.scene.riley;
-    if (this.state === 'parry' && front && !h.power && from !== this.scene.loial) {
+    if (this.state === 'parry' && !this.scene.kit?.volleyActive() && front && !h.power && from !== this.scene.loial) {
       // the bait: strike his raised shield from the front and he ripostes; fireballs just glance off it
       if (from === R) this.startRiposte(); else { sfx.clang(); this.scene.fx.impact('light', this.x - this.facing * -60, this.y - 200, -this.facing); }
       return false;

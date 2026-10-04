@@ -75,7 +75,13 @@ export class HUD extends Phaser.Scene {
     const sel = (this.stage && (this.stage.titleSel || this.stage.stageNo)) || 1;
     const t3 = this.titleStageT = this.add.text(0, 10, STAGE_NAMES[sel], { fontFamily: F, fontStyle: '800', fontSize: '30px', color: '#ffffff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5);
     // ◀ ▶ pick the stage: keys / d-pad / stick left-right, or tap the arrows
-    const arrow = (x, dir) => { const a = this.add.text(x, 10, dir < 0 ? '◀' : '▶', { fontFamily: F, fontStyle: '900', fontSize: '34px', color: '#ffe9a8', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setInteractive({ useHandCursor: true }); a.isStageArrow = true; a.on('pointerdown', () => this.stage && this.stage.selectStage && this.stage.selectStage(dir)); return a; };
+    const arrow = (x, dir) => {
+      const a = this.add.text(x, 10, dir < 0 ? '◀' : '▶', { fontFamily: F, fontStyle: '900', fontSize: '34px', color: '#ffe9a8', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5);
+      // Text hit areas use untransformed top-left coordinates, even with a centred origin.
+      // Keep the visible glyph small but make the entire 120×100 target tappable.
+      a.setInteractive({ useHandCursor: true, hitArea: new Phaser.Geom.Rectangle((a.width - 120) / 2, (a.height - 100) / 2, 120, 100), hitAreaCallback: Phaser.Geom.Rectangle.Contains });
+      a.isStageArrow = true; a.on('pointerdown', () => this.stage && this.stage.selectStage && this.stage.selectStage(dir)); return a;
+    };
     const al = this.titleArrowL = arrow(-430, -1), ar = this.titleArrowR = arrow(430, 1);
     this.titleSelect(sel);
     const touch = this.game.inp.isTouch;

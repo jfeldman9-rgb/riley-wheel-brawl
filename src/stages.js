@@ -1,5 +1,6 @@
 // Stage table. Stage 1 (Emond's Field) keeps its original constants inside stage1.js untouched; Stage 2 (Baerlon and
 // the Whitecloaks) is described here and the shared scene class reads it when stageNo === 2.
+import { LANE_TOP, LANE_BOT } from './config.js';
 export const STAGE_COUNT = 2;
 /** ?stage=2 (testing / jump-in); anything else is Stage 1 */
 export function stageFromQuery(q) { const n = q && q.get ? +q.get('stage') : 0; return n === 2 ? 2 : 1; }
@@ -11,7 +12,7 @@ export const STAGE_CHARS = Object.freeze({
   2: Object.freeze(['riley', 'zealot', 'archer', 'hound', 'byar', 'loial']),
 });
 // Lane bands for Jaret Byar's archer volleys: the walkable depth band split into thirds.
-export const VOLLEY_BANDS = Object.freeze([[572, 611], [611, 651], [651, 690]]);
+export const VOLLEY_BANDS = Object.freeze(Array.from({ length: 3 }, (_, i) => Object.freeze([Math.round(LANE_TOP + (LANE_BOT - LANE_TOP) * i / 3), Math.round(LANE_TOP + (LANE_BOT - LANE_TOP) * (i + 1) / 3)])));
 export const VOLLEY = Object.freeze({ warn: 1.45, rain: 0.45, every: [7.5, 9.5], dmg: 12 });
 export const STAGE2 = Object.freeze({
   no: 2, key: 'baerlon', title: 'BAERLON — THE WHITECLOAKS', loading: 'Loading Baerlon…',

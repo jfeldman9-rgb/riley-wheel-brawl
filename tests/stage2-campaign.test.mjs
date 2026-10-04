@@ -27,7 +27,7 @@ function checkFrame(h, previousBounds) {
 }
 
 for (const seed of FULL_STAGE_SEEDS) {
-  test(`Stage 2 campaign bot clears Baerlon, seed ${seed}`, () => withSeed(seed, () => {
+  test(`Stage 2 campaign bot clears Baerlon, seed ${seed}`, testContext => withSeed(seed, () => {
     const h = stage1Simulation({ mode: '1', stage: 2 }), s = h.s;
     try {
       assert.equal(s.stageNo, 2); assert.equal(s.riley.hp, 100); assert.equal(s.riley.lives, 3); assert.equal(s.zoneI, -1); assert.equal(s.god, false);
@@ -37,6 +37,8 @@ for (const seed of FULL_STAGE_SEEDS) {
         if (s.boss) { phases.add(s.boss.phase); states.add(s.boss.state); }
       }
       const result = JSON.stringify({ ...h.summary(), kit: s.kit.stats });
+      // Keep the requested 4–8-hit tuning goal visible without pretending it is met or weakening the clear gates.
+      testContext.diagnostic(`Archer pressure: ${s.kit.stats.arrowHits} hits, ${s.kit.stats.arrows} straight arrows, ${s.kit.stats.skyArrows} lobs; target 4–8 hits/run`);
       assert.equal(s.gameOver, false, result); assert.equal(s.ended, true, result); assert.ok(s.riley.lives > 0, result);
       assert.equal(s.storyResult, 'end', 'the story beat played through');
       assert.deepEqual(h.observations.zones, [0, 1, 2, 3]); assert.deepEqual(h.observations.waves, expectedWaves);

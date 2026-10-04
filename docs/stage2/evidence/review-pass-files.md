@@ -1,0 +1,52 @@
+# Changed files and purpose
+
+- `.github/workflows/stage1-regression.yml`: Run unchanged regression gates for the Stage 2 head/base branches.
+- `art-in/barn-fire/barn-edit-reference.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/door-01.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/door-02.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/door-03.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/door-04.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/eave-01.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/eave-02.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/eave-03.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/generated/barn-burning-source.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/generated/flame-door-source.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/generated/flame-eave-source.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/generated/flame-roof-source.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/pack_barn_fire.py`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/roof-01.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/roof-02.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/roof-03.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `art-in/barn-fire/roof-04.png`: Painted source/accepted frame or repeatable crop/registration packer.
+- `assets/bg2/barn-burning-overlay.png`: Runtime painted fire asset and packing metadata.
+- `assets/bg2/barn-fire.json`: Runtime painted fire asset and packing metadata.
+- `assets/bg2/barn-flame-door.png`: Runtime painted fire asset and packing metadata.
+- `assets/bg2/barn-flame-eave.png`: Runtime painted fire asset and packing metadata.
+- `assets/bg2/barn-flame-roof.png`: Runtime painted fire asset and packing metadata.
+- `docs/stage1/evidence/full-stage-simulation.json`: Refresh three legitimate runtime hashes and base commit; all 18 outcomes unchanged.
+- `docs/stage2/REVIEW_PASS.md`: Review report and verification evidence; limitations remain explicit.
+- `docs/stage2/evidence/review-pass-perf.json`: Review report and verification evidence; limitations remain explicit.
+- `docs/stage2/evidence/review-pass-tests.json`: Review report and verification evidence; limitations remain explicit.
+- `docs/stage2/prompts/barn-fire-provenance.md`: Art source prompt and provenance.
+- `docs/stage2/prompts/barn-fire.json`: Art source prompt and provenance.
+- `docs/stage2/shots/barn-fire/barn-before-after.jpg`: Static before/after or contact-sheet review evidence.
+- `docs/stage2/shots/barn-fire/flame-door-source-alpha-check.jpg`: Static before/after or contact-sheet review evidence.
+- `docs/stage2/shots/barn-fire/flame-eave-source-alpha-check.jpg`: Static before/after or contact-sheet review evidence.
+- `docs/stage2/shots/barn-fire/flame-roof-source-alpha-check.jpg`: Static before/after or contact-sheet review evidence.
+- `docs/stage2/shots/barn-fire/painted-flame-contact-sheet.jpg`: Static before/after or contact-sheet review evidence.
+- `src/audio.js`: Fades, visibility/interrupted recovery, terminal cleanup and thunder balance.
+- `src/hud.js`: Large title-arrow tap areas.
+- `src/main.js`: Install audio lifecycle and Stage 2 governor callback.
+- `src/powers.js`: Tag non-fireball weave damage as power hits.
+- `src/stage1.js`: Balefire power tag, fire-cap reset, Stage 2 patch/light hooks.
+- `src/stage2.js`: Safe volley readiness, markers, painted fire, weather accessibility, light/particle budgets, ribbon and cleanup.
+- `src/stages.js`: Derive volley bands from shared lane constants.
+- `src/whitecloaks.js`: Safe volley AI, draw tracking/fans, rush warning, command/retreat poses.
+- `tests/audio-lifecycle.test.mjs`: Realistic AudioParam fake and lifecycle/destroy regressions.
+- `tests/helpers/audio-param.mjs`: Audio-time fake including value setter scheduling.
+- `tests/stage2-campaign.test.mjs`: Expose archer pressure as diagnostic data; original gates retained.
+- `tests/stage2-flow.test.mjs`: Realistic AudioParam fake and fade regressions.
+- `tests/stage2-power-bypass.test.mjs`: Production weave/guard, fireball-glance, reset and touch regressions.
+- `tests/stage2-safety.test.mjs`: Hazard reachability, lifecycle, light, weather, art and game-over regressions.
+- `tests/stage2-whitecloaks.test.mjs`: Add AI regressions without changing old assertions.
+- `docs/stage2/evidence/review-pass-files.md`: This complete changed-file inventory.

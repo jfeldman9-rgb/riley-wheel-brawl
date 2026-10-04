@@ -99,7 +99,7 @@ export class Stage1 extends Phaser.Scene {
     this.pauseReasons = new Set(); this.paused = false; this.gameOver = false;
     this.clearShown = false; this.victoryPending = false; this.boss = null; this.bot = null;
     this.hudReady = false; this.startRequested = false;
-    this.backdropLit = []; this.ambient = undefined;
+    this.backdropLit = []; this.ambient = undefined; this.fireCap = FIRE_LIGHT_CAP;
     this.inp = this.game.inp; this.inp.clear();
     const b = document.getElementById('boot'); if (b) b.remove();
     patchFlippedNormals();
@@ -432,7 +432,7 @@ export class Stage1 extends Phaser.Scene {
       if (B.struck.has(e) || !e.canBeHit) continue;
       const ahead = (e.x - R.x) * B.dir; if (ahead < -30 || ahead > B.len + 120) continue;
       const dmg = e.T && e.T.boss ? 80 : e.maxHp + 10;
-      if (this.hitTarget(R, e, { dmg, kind: 'finisher', kb: B.dir * 520, launch: 520, down: true, noMeter: true }, { x: R.x, facing: B.dir })) B.struck.add(e);
+      if (this.hitTarget(R, e, { dmg, kind: 'finisher', kb: B.dir * 520, launch: 520, down: true, power: true, noMeter: true }, { x: R.x, facing: B.dir })) B.struck.add(e);
     }
   }
   endBalefire() { if (this.beam && !this.beam.fade) this.beam.fade = 0.0001; }
@@ -621,8 +621,8 @@ export class Stage1 extends Phaser.Scene {
     }
   }
   addPatch(x, y) {
-    if (this.patches.length >= 3) { const o = this.patches.shift(); this.lights.removeLight(o.L); o.em.destroy(); o.sm.destroy(); }
-    const em = this.add.particles(x, y - 10, 'ember', { x: { min: -60, max: 60 }, lifespan: 900, speedY: { min: -160, max: -60 }, speedX: { min: -20, max: 20 }, scale: { start: 1.8, end: 0 }, frequency: this.fx.quality >= 2 ? 50 : 22, blendMode: 'ADD' }).setDepth(1000 + y);
+    if (this.patches.length >= (this.kit ? 2 : 3)) { const o = this.patches.shift(); this.lights.removeLight(o.L); o.em.destroy(); o.sm.destroy(); }
+    const em = this.add.particles(x, y - 10, 'ember', { x: { min: -60, max: 60 }, lifespan: 900, speedY: { min: -160, max: -60 }, speedX: { min: -20, max: 20 }, scale: { start: this.kit ? 1.2 : 1.8, end: 0 }, frequency: this.fx.quality >= 2 ? 50 : 22, blendMode: 'ADD' }).setDepth(1000 + y);
     const sm = this.add.particles(x, y - 40, 'smoke', { x: { min: -40, max: 40 }, lifespan: 1800, speedY: { min: -70, max: -30 }, scale: { start: 0.8, end: 2.2 }, alpha: { start: 0.5, end: 0 }, frequency: 160 }).setDepth(1000 + y - 1);
     const L = this.lights.addLight(x, y - 40, 420, 0xff7a2a, 1.8, 90);
     this.patches.push({ x, y, em, sm, L, t: 0, tick: 0, seed: Math.random() * 9 });
@@ -697,5 +697,6 @@ export class Stage1 extends Phaser.Scene {
     const [sx, sy] = this.fx.shakeOffset();
     this.cameras.main.setScroll(this.camX + sx, sy);
     placeMoon(this.moon, this.camX + sx); placeFires(this.fires, this.camX + sx, this.fireCap || FIRE_LIGHT_CAP);
+    this.kit?.applyLightBudget?.();
   }
 }

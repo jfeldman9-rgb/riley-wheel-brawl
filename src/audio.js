@@ -4,6 +4,8 @@ let ctx = null, master, music, sfxBus, voiceBus, duckG, comp, noiseBuf;
 let muted = false, musicOn = true, musicEl = null, musicSrc = null;
 const clips = Object.create(null), gates = Object.create(null), oneShots = new Map();
 let voiceSrc = null, voiceRequest = 0, voicePending = false;
+let audioHidden = false, audioEpoch = 0;
+const audioTimers = new Set();
 export const VOICE = {
   st1_narrator_01: ['NARRATOR', "Emond's Field, on Winternight. The Two Rivers sleeps, but the Shadow is on the road."],
   st1_moiraine_01: ['MOIRAINE', 'Winternight has begun. Stay sharp.'],
@@ -75,9 +77,65 @@ function init() {
     sfxBus = ctx.createGain(); sfxBus.gain.value = 1.05;
     comp = ctx.createDynamicsCompressor(); comp.threshold.value = -16; comp.knee.value = 8; comp.ratio.value = 4.5; comp.attack.value = 0.002; comp.release.value = 0.14;
     sfxBus.connect(comp); comp.connect(master);
+    if (audioHidden) suspendAudio();
   } catch (e) { ctx = null; }
 }
-export function unlock() { init(); unlocked = true; if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {}); if (musicWanted && musicOn) resumeMusic(); }
+function suspendAudio() {
+  // Media elements can keep advancing (or bypass WebAudio in the fallback), so
+  // pause them as well as the graph. Do not change the user's music preference.
+  for (const T of Object.values(tracks)) if (T.el && T.el.paused !== true) T.el.pause();
+  if (ctx && ctx.state !== 'closed' && ctx.state !== 'suspended') {
+    ctx.suspend().then(() => { if (!audioHidden && unlocked) resumeAudio(); }).catch(() => {});
+  }
+}
+function resumeAudio() {
+  if (audioHidden || !ctx) return;
+  // iOS Safari also uses 'interrupted' after backgrounding / audio-route changes.
+  if (ctx.state !== 'running' && ctx.state !== 'closed') {
+    ctx.resume().then(() => { if (audioHidden) suspendAudio(); }).catch(() => {});
+  }
+  if (musicWanted && musicOn) resumeMusic();
+}
+export function unlock() { init(); unlocked = true; resumeAudio(); }
+/** One game-wide listener pair; scene restarts must not install extra listeners. */
+export function installAudioLifecycle(game) {
+  let disposed = false;
+  const gestureEvents = ['pointerdown', 'touchend', 'keydown'];
+  const gesture = () => { if (!disposed && unlocked) resumeAudio(); };
+  const hidden = () => { if (disposed) return; audioHidden = true; suspendAudio(); };
+  const visible = () => { if (disposed) return; audioHidden = false; if (unlocked) resumeAudio(); };
+  const destroy = () => {
+    if (disposed) return;
+    disposed = true; disposeAudio();
+    game.events.off('hidden', hidden); game.events.off('visible', visible); game.events.off('destroy', destroy);
+    for (const event of gestureEvents) window.removeEventListener?.(event, gesture, true);
+  };
+  game.events.on('hidden', hidden); game.events.on('visible', visible); game.events.on('destroy', destroy);
+  // Capture gestures even when a story/pause screen handles input before unlock().
+  for (const event of gestureEvents) window.addEventListener?.(event, gesture, { capture: true, passive: true });
+  // Phaser may have emitted its first hidden event before audio was installed.
+  if (typeof document !== 'undefined' && document.hidden) hidden(); else audioHidden = false;
+  return { destroy };
+}
+/** Terminal teardown, unlike a temporary hidden-tab suspension. */
+function disposeAudio() {
+  audioHidden = true; audioEpoch++; unlocked = false; musicWanted = false; currentTrack = null;
+  stopSceneAudio();
+  // Finish old rain/track cleanup immediately, cancelling all wall-clock polling.
+  for (const timer of [...audioTimers]) timer.finish();
+  if (rainNodes) { disposeRain(rainNodes); rainNodes = null; }
+  for (const T of Object.values(tracks)) {
+    stopTrack(T, 0); T.gain.disconnect(); T.mediaSrc?.disconnect(); T.buf = null;
+    if (T.el) { T.el.removeAttribute?.('src'); T.el.load?.(); }
+    delete tracks[T.id];
+  }
+  for (const cache of [clips, musicBytes]) for (const key of Object.keys(cache)) delete cache[key];
+  for (const node of [master, music, sfxBus, voiceBus, duckG, comp]) node?.disconnect();
+  const oldContext = ctx; ctx = null;
+  master = music = sfxBus = voiceBus = duckG = comp = noiseBuf = musicEl = musicSrc = null;
+  wantedTrack = 'stage1';
+  if (oldContext && oldContext.state !== 'closed') oldContext.close().catch(() => {});
+}
 const gate = (n, ms) => { if (!ctx || muted) return false; const t = ctx.currentTime * 1000; if (gates[n] !== undefined && t - gates[n] < ms) return false; gates[n] = t; return true; };
 const vary = (f, a = 0.05) => f * (1 + (Math.random() * 2 - 1) * a);
 function trackSource(source, ...nodes) {
@@ -162,7 +220,7 @@ export const sfx = {
   bowDraw() { if (!gate('bow', 150)) return; noise({ f0: 700, f1: 1700, dur: 0.3, vol: 0.07, filter: 'bandpass', q: 3, attack: 0.2 }); },
   twang() { if (!gate('twang', 60)) return; tone({ f0: vary(190), f1: 120, dur: 0.14, vol: 0.16, type: 'triangle' }); noise({ f0: 3200, f1: 900, dur: 0.12, vol: 0.12, filter: 'bandpass', q: 1.5 }); },
   warcry() { if (!gate('warcry', 400)) return; for (let i = 0; i < 2; i++) tone({ f0: vary(200 + i * 70), f1: 150, dur: 0.55, vol: 0.12, type: 'sawtooth', delay: i * 0.04 }); noise({ f0: 900, f1: 400, dur: 0.5, vol: 0.14, attack: 0.08 }); duck(0.5, 0.3, 0.5); },
-  thunder() { if (!gate('thunder', 1500)) return; noise({ f0: 260, f1: 50, dur: 2.4, vol: 0.42, attack: 0.04 }); noise({ f0: 1400, f1: 180, dur: 0.5, vol: 0.2 }); tone({ f0: 55, f1: 30, dur: 1.6, vol: 0.25, type: 'sine', delay: 0.05 }); },
+  thunder() { if (!gate('thunder', 1500)) return; noise({ f0: 260, f1: 50, dur: 2.4, vol: 0.3, attack: 0.04 }); noise({ f0: 1400, f1: 180, dur: 0.5, vol: 0.2 }); tone({ f0: 55, f1: 30, dur: 1.6, vol: 0.25, type: 'sine', delay: 0.05 }); },
   horn() { tone({ f0: 196, f1: 220, dur: 0.5, vol: 0.18, type: 'sawtooth' }); tone({ f0: 294, f1: 330, dur: 0.6, delay: 0.32, vol: 0.16, type: 'sawtooth' }); },
   volleyWhistle() { for (let i = 0; i < 4; i++) tone({ f0: vary(2600, 0.1), f1: 700, dur: 0.38, vol: 0.05, type: 'sine', delay: i * 0.05 }); },
   flame() { if (!gate('flame', 150)) return; noise({ f0: 350, f1: 1900, dur: 0.55, vol: 0.28, filter: 'bandpass', attack: 0.08 }); tone({ f0: 90, f1: 60, dur: 0.4, vol: 0.2, type: 'sine' }); },
@@ -188,13 +246,14 @@ let currentTrack = null, wantedTrack = 'stage1';
 /** equal-power fade on a GainNode, built from short linear ramps (works on every WebAudio implementation) */
 function fadeGain(param, to, secs) {
   const t = ctx.currentTime, from = param.value; param.cancelScheduledValues(t); param.setValueAtTime(from, t);
-  if (!(secs > 0)) { param.setValueAtTime(to, t); param.value = to; return; }
+  if (!(secs > 0)) { param.setValueAtTime(to, t); return; }
   const steps = 8, up = to > from;
   for (let i = 1; i <= steps; i++) {
     const u = i / steps, v = up ? from + (to - from) * Math.sin(u * Math.PI / 2) : to + (from - to) * Math.cos(u * Math.PI / 2);
     param.linearRampToValueAtTime(v, t + secs * u);
   }
-  param.value = to;
+  // Do not assign .value here: that schedules a new value at NOW and replaces
+  // the fade start, making the curve jump before it reaches the first ramp.
 }
 function trackNode(id) {
   let T = tracks[id]; if (T) return T;
@@ -215,9 +274,10 @@ function streamEl(T) {
 function loadMusicBuffer(T) {
   if (T.buf) return Promise.resolve(T.buf);
   if (T.loading) return T.loading;
+  const audioContext = ctx, epoch = audioEpoch;
   return (T.loading = (musicBytes[T.id] || (musicBytes[T.id] = fetch(T.M.url).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)))
-    .then(b => b ? new Promise(res => { const p = ctx.decodeAudioData(b.slice ? b.slice(0) : b, res, () => res(null)); if (p && p.catch) p.catch(() => res(null)); }) : null)
-    .then(buf => { T.loading = null; if (!buf) delete musicBytes[T.id]; T.buf = buf; return buf; }));
+    .then(b => b ? new Promise(res => { const p = audioContext.decodeAudioData(b.slice ? b.slice(0) : b, res, () => res(null)); if (p && p.catch) p.catch(() => res(null)); }) : null)
+    .catch(() => null).then(buf => { T.loading = null; if (epoch !== audioEpoch) return null; if (!buf) delete musicBytes[T.id]; T.buf = buf; return buf; }));
 }
 function startBuffer(T, fade) {
   if (!T.buf || T.playing || !ctx) return;
@@ -232,9 +292,28 @@ function trackPos(T) {
   const L = T.M.loopEnd - T.M.loopStart, t = ctx.currentTime - T.t0;
   return t < T.M.loopEnd ? t : T.M.loopStart + ((t - T.M.loopStart) % L);
 }
+// Cleanup must use the same clock as the gain ramp: a background tab freezes
+// AudioContext.currentTime, but ordinary setTimeout callbacks can still run.
+function afterAudioTime(secs, fn) {
+  const deadline = ctx.currentTime + secs;
+  const timer = {
+    id: null, cancelled: false,
+    cancel() { this.cancelled = true; clearTimeout(this.id); audioTimers.delete(this); },
+    finish() { if (!this.cancelled) { this.cancel(); fn(); } },
+  };
+  audioTimers.add(timer);
+  const check = () => {
+    if (timer.cancelled) return;
+    const remaining = deadline - ctx.currentTime;
+    if (remaining > 0) timer.id = setTimeout(check, remaining * 1000 + 60);
+    else timer.finish();
+  };
+  timer.id = setTimeout(check, secs * 1000 + 60);
+  return timer;
+}
 function stopTrack(T, fade) {
   if (!T) return;
-  if (T.stopTimer) clearTimeout(T.stopTimer);
+  if (T.stopTimer) T.stopTimer.cancel();
   T.pos = trackPos(T);
   const halt = () => {
     T.stopTimer = null; if (currentTrack === T.id) return;
@@ -246,7 +325,7 @@ function stopTrack(T, fade) {
   };
   if (T.fallback || !(fade > 0)) { if (!T.fallback) fadeGain(T.gain.gain, 0, 0); halt(); return; }
   fadeGain(T.gain.gain, 0, fade);
-  T.stopTimer = setTimeout(halt, fade * 1000 + 60);
+  T.stopTimer = afterAudioTime(fade, halt);
 }
 /** Crossfade to a music track. opts.fade seconds (default 1.5); opts.restart starts the new track from its top. */
 export function playTrack(id, opts = {}) {
@@ -256,23 +335,26 @@ export function playTrack(id, opts = {}) {
   if (prev && prev !== id) stopTrack(tracks[prev], fade);
   currentTrack = id; if (id === null) return;
   const T = trackNode(id);
-  if (T.stopTimer) { clearTimeout(T.stopTimer); T.stopTimer = null; }
+  if (T.stopTimer) { T.stopTimer.cancel(); T.stopTimer = null; }
   if (opts.restart && prev !== id) { T.pos = T.M.loopStart || 0; if (T.el) T.el.currentTime = 0; }
   if (T.M.stream) {
     const el = streamEl(T); el.muted = muted;
     if (T.fallback) { el.volume = 0.34 * T.M.gain; } else fadeGain(T.gain.gain, T.M.gain, prev && prev !== id ? fade : 0);
-    if (el.paused !== false || !T.playing) { el.play().catch(() => {}); T.playing = true; }
+    if (!audioHidden && (el.paused !== false || !T.playing)) el.play().catch(() => {});
+    T.playing = true;
     return;
   }
   if (T.playing) { fadeGain(T.gain.gain, T.M.gain, fade); return; }
-  loadMusicBuffer(T).then(buf => { if (buf && currentTrack === id && musicOn) startBuffer(T, prev ? fade : 0.4); });
+  loadMusicBuffer(T).then(buf => { if (buf && tracks[id] === T && currentTrack === id && musicOn) startBuffer(T, prev ? fade : 0.4); });
 }
 /** what the backend is playing (or will play once decoded): for tests and the perf panel */
 export function musicState() { return { current: currentTrack, wanted: wantedTrack, on: musicOn, decoded: Object.keys(tracks).filter(k => tracks[k].buf) }; }
 /** after a user gesture: retry a stream element the browser refused to autoplay */
 function resumeMusic() {
-  if (!currentTrack) return playMusic();
-  const T = tracks[currentTrack]; if (T && T.el && T.el.paused !== false) T.el.play().catch(() => {});
+  if (audioHidden) return;
+  // Include an outgoing streamed track if a crossfade was in progress at hide.
+  for (const T of Object.values(tracks)) if (T.playing && T.el && T.el.paused !== false) T.el.play().catch(() => {});
+  if (!currentTrack && wantedTrack !== null) playMusic();
 }
 export function audioUnlocked() { return unlocked; }
 export function playMusic() { playTrack(wantedTrack === undefined ? 'stage1' : wantedTrack, { fade: 0 }); }
@@ -290,6 +372,10 @@ export function toggleMute() {
 }
 // ---------- rain ambience (Stage 2): two looping filtered-noise beds, no file ----------
 let rainNodes = null;
+function disposeRain(R) {
+  for (const [s, fl, v] of R.parts) { try { s.stop(); } catch (e) { } s.disconnect(); fl.disconnect(); v.disconnect(); }
+  R.g.disconnect();
+}
 export function setRain(on, level = 1) {
   init(); if (!ctx) return;
   if (on && !rainNodes) {
@@ -301,18 +387,20 @@ export function setRain(on, level = 1) {
     fadeGain(g.gain, level, 2.5);
   } else if (!on && rainNodes) {
     const R = rainNodes; rainNodes = null; fadeGain(R.g.gain, 0, 1.2);
-    setTimeout(() => { for (const [s, fl, v] of R.parts) { try { s.stop(); } catch (e) { } s.disconnect(); fl.disconnect(); v.disconnect(); } R.g.disconnect(); }, 1400);
+    afterAudioTime(1.4, () => disposeRain(R));
   }
 }
 function loadClip(id) {
   init(); if (!ctx) return Promise.resolve(null);
   if (clips[id]) return clips[id];
+  const audioContext = ctx, epoch = audioEpoch;
   return (clips[id] = fetch(`assets/audio/voice/${id}.mp3`).then(r => r.ok ? r.arrayBuffer() : null)
     .then(b => b ? new Promise(res => {
       // Some implementations expose both callbacks and a rejecting decode promise.
-      const pending = ctx.decodeAudioData(b, res, () => res(null));
+      const pending = audioContext.decodeAudioData(b, res, () => res(null));
       if (pending && pending.catch) pending.catch(() => res(null));
     }) : null).catch(() => null).then(buf => {
+      if (epoch !== audioEpoch) return null;
       if (!buf) delete clips[id]; // A temporary load/decode failure must not poison the cache.
       return buf;
     }));

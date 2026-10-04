@@ -189,3 +189,105 @@ test('beaten Whitecloaks alternate: knocked out (stars) or get up and flee off t
   assert.ok(seen[fl.id].has('flee') && !seen[fl.id].has('dead'), 'the other one runs away');
   assert.ok(!s.enemies.includes(a) && !s.enemies.includes(b));
 }));
+
+// ---------------- review regressions ----------------
+test('archer: tracks only draw frames 0–3 at no more than 90px/s, and glints once on frame 2', () => stage2(31, (h, s, R) => {
+  R.x = 300; R.y = 690; const a = place(s, Archer, 470); a.y = 572; a.startShoot();
+  const glints = []; s.kit.telegraph = e => glints.push({ e, frame: e.fi });
+  for (let fi = 0; fi < ARCHER.releaseFrame; fi++) {
+    a.sprite.anims.setCurrentFrame(a.sprite.anims.currentAnim.frames[fi]);
+    const y = a.y; a.update(0.1);
+    assert.ok(a.y > y && a.y - y <= 9 + 1e-9, `frame ${fi} stays within 90px/s`);
+  }
+  assert.deepEqual(glints.map(g => g.frame), [2]);
+  a.sprite.anims.setCurrentFrame(a.sprite.anims.currentAnim.frames[ARCHER.releaseFrame]);
+  const committedY = a.y; a.update(0.1); R.y = 572; a.update(0.1);
+  assert.equal(a.y, committedY, 'the release and recovery cannot retarget');
+  assert.equal(s.kit.stats.arrows, 1, 'the release still fires exactly once');
+}));
+
+test('archer: every third released straight shot requests a fan only from zone 2', () => stage2(32, (h, s, R) => {
+  const a = place(s, Archer, 470), calls = []; s.kit.fireArrow = (e, options) => calls.push(options.fan);
+  for (const zone of [0, 1]) {
+    s.zoneI = zone; a.shots = 0;
+    for (let shot = 0; shot < 6; shot++) {
+      a.startShoot(); a.sprite.anims.setCurrentFrame(a.sprite.anims.currentAnim.frames[ARCHER.releaseFrame]); a.update(1 / 60); a.update(1 / 60);
+    }
+  }
+  assert.deepEqual(calls, [false, false, false, false, false, false, false, false, true, false, false, true]);
+}));
+
+test('Byar: an active volley cancels every harmful move already underway and holds a safe distance', () => {
+  for (const move of ['startAttack', 'startParry', 'startRiposte', 'startTorch', 'startRush', 'rushing']) stage2(40, (h, s, R) => {
+    s.enemies = []; R.x = 400; const b = boss(s, 210); b.hp = b.maxHp * 0.3; b.phase = 3; b.nextVolley = 99;
+    if (move === 'rushing') { b.startRush(); b.setState('rush', 'rush'); b.rushDir = b.facing; }
+    else b[move]();
+    s.kit.volleyActive = () => true;
+    const hp = R.hp, torches = s.kit.stats.torches, ripostes = b.ripostes;
+    if (move === 'startParry') assert.equal(b.takeHit({ ...jab }, R), true, 'cannot bait a riposte during a volley');
+    const oldX = b.x; b.update(1 / 60);
+    assert.ok(Math.abs(b.x - oldX) <= 240 / 60 + 1e-9, 'retreat never teleports');
+    run(h, 1.2);
+    assert.equal(R.hp, hp, move); assert.equal(s.kit.stats.torches, torches, move); assert.equal(b.ripostes, ripostes, move);
+    assert.ok(Math.abs(b.x - R.x) >= BYAR.volleyKeep - 1, `${move}: holds 300px once there is room to retreat`);
+    assert.ok(!['attack', 'parry', 'riposte', 'torch', 'rushup', 'rush'].includes(b.state), move);
+  });
+});
+
+test('Byar: Riley may approach a wall-pinned volley hold without triggering attacks or a teleport', () => stage2(41, (h, s, R) => {
+  s.enemies = []; R.x = s.bounds.r - 190; const b = boss(s, 150); b.phase = 3; b.hp = b.maxHp * 0.3; b.nextVolley = 0;
+  s.kit.volleyActive = () => true; const hp = R.hp, x = b.x;
+  for (let i = 0; i < 90; i++) { const oldX = b.x; h.step(); assert.ok(Math.abs(b.x - oldX) <= 4 + 1e-9); }
+  assert.equal(b.x, x, 'holds the wall instead of teleporting through Riley'); assert.equal(R.hp, hp);
+  assert.equal(b.state, 'approach');
+}));
+
+test('Byar: a pending volley holds harmlessly while old fire remains, then signals when ready', () => stage2(42, (h, s, R) => {
+  s.enemies = []; R.x = 300; const b = boss(s, 420); b.phase = 3; b.hp = b.maxHp * 0.3; b.cool = 0; b.nextVolley = 0; b.nextTorch = 0;
+  s.kit.volleyReady = () => false;
+  const hp = R.hp; run(h, 2);
+  assert.equal(b.state, 'approach'); assert.equal(b.torches, 0); assert.equal(b.volleys, 0); assert.equal(R.hp, hp);
+  s.kit.volleyReady = () => true; h.step();
+  assert.equal(b.state, 'volley'); assert.equal(b.cur, 'byar_command');
+}));
+
+test('Byar: rush gives a glint, lane cue and war cry before the full 0.55s wind-up', async () => {
+  const { sfx } = await import('../src/audio.js'), warcry = sfx.warcry; let cries = 0;
+  sfx.warcry = () => { cries++; };
+  try { stage2(43, (h, s, R) => {
+    s.enemies = []; const b = boss(s, 460); b.nextVolley = 99;
+    let glints = 0, lanes = 0; s.kit.telegraph = e => { assert.equal(e, b); glints++; }; s.kit.markRush = e => { assert.equal(e, b); lanes++; };
+    b.startRush(); assert.equal(cries, 1); assert.equal(glints, 1); assert.equal(lanes, 1); assert.equal(BYAR.rushUp, 0.55);
+    run(h, 0.5); assert.equal(b.state, 'rushup'); assert.equal(cries, 1);
+    assert.ok(run(h, 0.1, () => b.state === 'rush')); assert.equal(cries, 1, 'the warning is not delayed until the rush');
+  }); } finally { sfx.warcry = warcry; }
+});
+
+test('Byar: the painted command, volley and retreat poses are used and every open guard is announced', () => stage2(44, (h, s, R) => {
+  s.enemies = []; const b = boss(s, 440); let opens = 0; s.kit.guardOpen = e => { assert.equal(e, b); opens++; };
+  b.startVolley(); assert.equal(b.cur, 'byar_command');
+  assert.ok(run(h, 0.4, () => b.cur === 'byar_volley'));
+  s.kit.clearHazards(); b.nextVolley = 99;
+  for (let i = 0; i < 2; i++) { b.startParry(); assert.ok(run(h, BYAR.parry + 0.2, () => b.state === 'open')); }
+  assert.equal(opens, 2);
+  b.alive = false; b.setState('defeated', 'defeated'); assert.ok(run(h, 2.6, () => b.state === 'retreat'));
+  assert.equal(b.cur, 'byar_retreat');
+}));
+
+test('archers: one straight draw and one lob may overlap, but a second of either kind waits', () => stage2(45, (h, s, R) => {
+  s.enemies = []; R.x = 640; const a = place(s, Archer, 470), b = place(s, Archer, -470), c = place(s, Archer, 450);
+  s.zoneI = 1; a.startSkyshot(); b.cool = 0; b.skyCool = 99; b.think(1 / 60);
+  assert.equal(a.state, 'skyshot'); assert.equal(b.state, 'shoot', 'a lob does not monopolize the straight-shot slot');
+  assert.equal(s.kit.archerBusy(c, 'skyshot'), true); assert.equal(s.kit.archerBusy(c, 'shoot'), true);
+  c.cool = 0; c.skyCool = 0; c.think(1 / 60); assert.equal(c.state, 'approach', 'both occupied slots remain exclusive');
+  a.setState('approach', 'walk'); assert.equal(s.kit.archerBusy(c, 'skyshot'), false); assert.equal(s.kit.archerBusy(c, 'shoot'), true);
+}));
+
+test('archer: a three-arrow fan visibly diverges and a straight arrow can hit at 25px lane offset', () => stage2(46, (h, s, R) => {
+  s.enemies = []; R.x = 300; const a = place(s, Archer, 470); a.cool = 99; a.skyCool = 99;
+  s.kit.fireArrow(a, { fan: true }); const fan = [...s.kit.arrows], y = a.y;
+  assert.equal(fan.length, 3); assert.deepEqual(fan.map(arrow => arrow.y), [y, y, y]);
+  s.kit.updateArrows(0.1, R); assert.ok(fan[0].y < fan[1].y && fan[1].y < fan[2].y);
+  s.kit.clearHazards(); s.kit.fireArrow(a); R.y = a.y + 25; const hp = R.hp;
+  assert.ok(run(h, 1, () => s.kit.arrows.length === 0)); assert.equal(R.hp, hp - ARCHER.arrowDmg);
+}));
