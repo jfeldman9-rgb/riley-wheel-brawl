@@ -4,22 +4,27 @@
 // Kid-safe: a beaten Whitecloak is knocked out (dizzy stars, then gone) or picks himself up and runs off; Byar
 // kneels, then retreats. All sprites face LEFT natively like the Trollocs; the game mirrors them to turn.
 import { Enemy, TYPES } from './enemies.js';
-import { clamp, rand, LANE_TOP, LANE_BOT } from './config.js';
+import { clamp, rand, LANE_TOP, LANE_BOT, VW } from './config.js';
 import { sfx, say } from './audio.js';
 import { VOLLEY } from './stages.js';
 const D = (key, scale, anchorX, hp, shadowW) => ({ key, prefix: key + '_', native: -1, scale, anchorX, hp, team: 1, shadowW });
 Object.assign(TYPES, {
   zealot: { def: D('zealot', 0.55, 0.5, 46, 150), name: 'WHITECLOAK ZEALOT', speed: 104, pref: 185, cool: [1.4, 2.4], score: 400,
     atk: { anim: 'slash', active: [2], x0: 20, x1: 235, z0: 0, z1: 220, dmg: 10, kind: 'medium', kb: 240, sfx: 'blade' } },
-  archer: { def: D('archer', 0.55, 0.5, 30, 130), name: 'WHITECLOAK ARCHER', speed: 118, pref: 470, cool: [2.2, 3.2], score: 350, ranged: true,
+  archer: { def: D('archer', 0.55, 0.5, 30, 130), name: 'WHITECLOAK ARCHER', speed: 126, pref: 470, cool: [0.85, 1.25], score: 350, ranged: true,
     atk: { anim: 'shoot', active: [], x0: 0, x1: 0, z0: 0, z1: 0, dmg: 8, kind: 'medium', kb: 200 } },
   byar: { def: D('byar', 0.54, 0.5, 400, 190), name: 'JARET BYAR', speed: 96, pref: 205, cool: [1.0, 1.7], score: 6000, boss: true,
     atk: { anim: 'combo', active: [2, 5], x0: 20, x1: 265, z0: 0, z1: 240, dmg: 12, kind: 'medium', kb: 300, sfx: 'blade' } },
 });
 export const ZEALOT = Object.freeze({ blocksToBreak: 3, blockReset: 2.5, breakTime: 0.8, chargeUp: 0.5, chargeSpeed: 540, chargeMax: 1.35, dazed: 1.8, dazedDmg: 1.3,
   charge: { x0: -10, x1: 150, z0: 0, z1: 220, dmg: 12, kind: 'heavy', kb: 440, launch: 360, down: true } });
-export const ARCHER = Object.freeze({ keep: [420, 520], tooClose: 230, backstep: 430, backCool: 2.4, releaseFrame: 4, skyRelease: 3, arrowSpeed: 760, arrowZ: 150,
-  arrowDmg: 8, skyDmg: 9, skyDelay: 1.15, skyChance: 0.35, drawTrack: 90, drawGlintFrame: 2, fanEvery: 3 });
+// Draw stays on the painted frames (glint on frame 2, release on frame 4). The lane mark is up for that whole
+// wind-up, and Riley outruns the 90px/s track, so a shot is avoidable if you step off the mark. Arrow damage is
+// unchanged. Speed is high enough that standing in the marked lane through the release gets hit; leaving it does not.
+// Each archer looses twice, then holds. A short breath after release lets the next bow take a visible turn.
+export const ARCHER = Object.freeze({ keep: [390, 510], tooClose: 280, backstep: 540, backCool: 1.45, releaseFrame: 4, skyRelease: 3, arrowSpeed: 2280, arrowZ: 150,
+  arrowDmg: 8, skyDmg: 9, skyDelay: 1.05, skyChance: 0.42, drawTrack: 90, drawGlintFrame: 2, fanEvery: 3, leadTime: 0.16, leadMax: 14, fanVy: 150,
+  maxShots: 2, breath: 0.75 });
 export const BYAR = Object.freeze({ parry: 1.5, open: 0.9, openDmg: 1.4, parryEvery: [5, 8], torchEvery: [4.5, 6.5], rushSpeed: 470, rushMax: 1.0, rushUp: 0.55, volleyKeep: 300,
   riposte: { anim: 'riposte', active: [2, 3], x0: 0, x1: 285, z0: 0, z1: 240, dmg: 14, kind: 'heavy', kb: 420, launch: 340, down: true, sfx: 'blade' },
   rush: { x0: -10, x1: 160, z0: 0, z1: 240, dmg: 12, kind: 'heavy', kb: 480, launch: 380, down: true },
@@ -144,15 +149,30 @@ export class Zealot extends Whitecloak {
 
 // ---------------- Whitecloak archer ----------------
 export class Archer extends Whitecloak {
-  constructor(scene, x, y) { super(scene, 'archer', x, y); this.backCool = 0; this.skyCool = rand(3, 6); this.cool = rand(1.0, 1.8); this.shots = 0; }
+  constructor(scene, x, y) { super(scene, 'archer', x, y); this.backCool = 0; this.skyCool = rand(2.2, 4.2); this.cool = rand(0.2, 0.55); this.shots = 0; this.ry = 0; this.seenY = y; this.laneSeen = false; }
+  // Where the arrow should be committed. Still targets (the draw test) aim at Riley's feet.
+  // A walking target is led a little, and never farther than the lane tell can show.
+  aimY() {
+    const R = this.target, lead = clamp((this.ry || 0) * ARCHER.leadTime, -ARCHER.leadMax, ARCHER.leadMax);
+    return clamp(R.y + lead, LANE_TOP + 4, LANE_BOT - 4);
+  }
   update(dt) {
+    if (this.drawMark && this.state !== 'shoot') this.scene.kit?.clearDraw(this);
     switch (this.state) {
       case 'shoot': this.st += dt; this.cool -= dt;
-        // Commit the lane at release; before then, turn the draw into readable, limited tracking.
-        if (this.fi < ARCHER.releaseFrame) this.y = clamp(this.y + clamp(this.target.y - this.y, -ARCHER.drawTrack * dt, ARCHER.drawTrack * dt), LANE_TOP, LANE_BOT);
+        // Commit the lane at release. Until then, slide toward the aim at the capped track rate
+        // and hold standoff so the bow actually looses before Riley walks into it.
+        if (this.fi < ARCHER.releaseFrame) {
+          const R = this.target, aim = this.aimY();
+          this.y = clamp(this.y + clamp(aim - this.y, -ARCHER.drawTrack * dt, ARCHER.drawTrack * dt), LANE_TOP, LANE_BOT);
+          const side = Math.sign(this.x - R.x) || 1, keep = (ARCHER.keep[0] + ARCHER.keep[1]) / 2;
+          const dx = clamp(R.x + side * keep - this.x, -this.T.speed * dt, this.T.speed * dt);
+          if (dx * side > 0) this.x += dx;
+          if (this.drawMark) { this.drawMark.setPosition(this.scene.camX + VW / 2, this.y); this.drawMark.setAlpha(0.4 + 0.16 * Math.sin(this.st * 14)); }
+        }
         if (this.fi >= ARCHER.drawGlintFrame && !this.drawGlinted) { this.drawGlinted = true; this.scene.kit?.telegraph(this); }
-        if (this.fi >= ARCHER.releaseFrame && !this.loosed) { this.loosed = true; this.shots++; this.scene.kit?.fireArrow(this, { fan: this.scene.zoneI >= 1 && this.shots % ARCHER.fanEvery === 0 }); }
-        if (this.done) { this.loosed = false; this.cool = rand(...this.T.cool); this.setState('approach', 'walk'); } return;
+        if (this.fi >= ARCHER.releaseFrame) this.loose();
+        if (this.done) { this.loosed = false; this.scene.kit?.clearDraw(this); this.cool = rand(...this.T.cool); this.setState('approach', 'walk'); } return;
       case 'skyshot': this.st += dt; this.cool -= dt;
         if (this.fi >= ARCHER.skyRelease && !this.loosed) { this.loosed = true; this.scene.kit?.loseSkyArrow(this); }
         if (this.done) { this.loosed = false; this.cool = rand(...this.T.cool); this.setState('approach', 'walk'); } return;
@@ -164,23 +184,45 @@ export class Archer extends Whitecloak {
     if (this.entering) return;
     this.backCool -= dt; this.skyCool -= dt;
     const R = this.target, s = this.scene, dx = R.x - this.x, adx = Math.abs(dx), side = Math.sign(this.x - R.x) || 1;
+    if (!this.laneSeen) { this.seenY = R.y; this.laneSeen = true; this.ry = 0; }
+    else if (dt > 0) { const inst = clamp((R.y - this.seenY) / dt, -420, 420); this.ry += (inst - this.ry) * 0.4; this.seenY = R.y; }
     this.face(Math.sign(dx) || this.facing);
+    const aim = this.aimY(), gap = Math.abs(aim - this.y);
+    // A ready bow shoots before it gives ground, so the arrow leaves before Riley walks into the archer.
+    const ready = this.cool <= 0 && this.shots < ARCHER.maxShots && (s.kit?.breath || 0) <= 0 && R.alive && R.inv <= 0 && R.state !== 'down' && R.state !== 'getup' && adx > 150 && adx < 980;
+    const laneOk = gap < 30 || gap < ARCHER.drawTrack * 0.92;
+    if (ready && this.skyCool <= 0 && this.shots < 1 && s.zoneI >= 1 && !s.kit?.archerBusy(this, 'skyshot') && Math.random() < ARCHER.skyChance) return this.startSkyshot();
+    if (ready && laneOk && !s.kit?.archerBusy(this, 'shoot')) return this.startShoot();
     if (adx < ARCHER.tooClose && this.backCool <= 0 && R.alive) return this.startBackstep(side);
-    // stand off at keep range on its own side of Riley; a cornered archer holds the wall
+    // Stand off at keep range on its own side of Riley and in the lane it means to shoot.
+    // A cornered archer holds the wall instead of running through him.
     const keep = (ARCHER.keep[0] + ARCHER.keep[1]) / 2;
     let wantX = R.x + side * keep; wantX = clamp(wantX, s.bounds.l + 70, s.bounds.r - 70);
-    const wantY = clamp(R.y + this.slotOff * 0.4, LANE_TOP + 4, LANE_BOT - 4);
-    const tdx = wantX - this.x, tdy = wantY - this.y, ady = Math.abs(R.y - this.y);
-    const ready = this.cool <= 0 && R.alive && R.state !== 'down' && adx > 260 && adx < 800;
-    if (ready && this.skyCool <= 0 && s.zoneI >= 1 && !s.kit?.archerBusy(this, 'skyshot') && Math.random() < ARCHER.skyChance) return this.startSkyshot();
-    if (ready && ady < 26 && Math.abs(tdx) < 170 && !s.kit?.archerBusy(this, 'shoot')) return this.startShoot();
+    const wantY = aim;
+    const tdx = wantX - this.x, tdy = wantY - this.y;
     const mx = Math.abs(tdx) > 10 ? Math.sign(tdx) : 0, my = Math.abs(tdy) > 6 ? Math.sign(tdy) : 0;
     const sep = s.separation(this);
-    this.x += (mx * this.T.speed + sep) * dt; this.y += my * this.T.speed * 0.6 * dt;
+    this.x += (mx * this.T.speed + sep) * dt; this.y += my * this.T.speed * 0.95 * dt;
     if (mx || my) this.play('walk', mx && Math.sign(mx) !== this.facing ? 0.8 : 1, false); else this.play('walk', 0.0001, false);
   }
-  startShoot() { this.face(Math.sign(this.target.x - this.x)); this.setState('shoot', 'shoot'); this.loosed = false; this.drawGlinted = false; sfx.bowDraw(); }
-  startSkyshot() { this.face(Math.sign(this.target.x - this.x)); this.setState('skyshot', 'skyshot'); this.loosed = false; this.skyCool = rand(5, 8); sfx.bowDraw(); this.scene.kit?.markSky(this); }
+  startShoot() {
+    const rushed = Math.abs(this.target.x - this.x) < 340;
+    this.face(Math.sign(this.target.x - this.x)); this.setState('shoot', 'shoot', rushed ? 1.35 : 1);
+    this.loosed = false; this.drawGlinted = false; sfx.bowDraw(); this.scene.kit?.markDraw(this);
+  }
+  // Glint commits the arrow. A hit after that still looses it; a hit before the glint stops the shot.
+  loose() {
+    if (this.loosed || this.state !== 'shoot') return;
+    this.loosed = true; this.shots++;
+    if (this.scene.kit) this.scene.kit.breath = ARCHER.breath;
+    this.scene.kit?.clearDraw(this);
+    this.scene.kit?.fireArrow(this, { fan: this.scene.zoneI >= 1 && this.shots % ARCHER.fanEvery === 0 });
+  }
+  takeHit(h, from) {
+    if (this.state === 'shoot' && !this.loosed && this.fi >= ARCHER.drawGlintFrame) this.loose();
+    return super.takeHit(h, from);
+  }
+  startSkyshot() { this.face(Math.sign(this.target.x - this.x)); this.setState('skyshot', 'skyshot'); this.loosed = false; this.skyCool = rand(4.2, 6.4); sfx.bowDraw(); this.scene.kit?.markSky(this); }
   startBackstep(side) { this.setState('backstep', 'backstep'); this.vx = side * ARCHER.backstep; this.backCool = ARCHER.backCool; }
 }
 

@@ -68,3 +68,18 @@ for (const seed of FULL_STAGE_SEEDS) {
     } finally { h.destroy(); }
   }));
 }
+
+for (const seed of FULL_STAGE_SEEDS) {
+  test(`Stage 2 archers land 4 to 8 hits on the campaign bot, seed ${seed}`, () => withSeed(seed, () => {
+    const h = stage1Simulation({ mode: '1', stage: 2 }), s = h.s;
+    try {
+      for (let frame = 0; frame < 60 * 600 && !s.ended && !s.gameOver; frame++) h.step();
+      const hits = s.kit.stats.arrowHits;
+      const detail = `seed ${seed}: ${hits} archer hits, ${s.kit.stats.arrows} straight, ${s.kit.stats.skyArrows} lobs, lives ${s.riley.lives}, hp ${s.riley.hp}, ended ${s.ended}, gameOver ${s.gameOver}`;
+      assert.equal(s.gameOver, false, detail);
+      assert.equal(s.ended, true, detail);
+      assert.ok(s.riley.lives > 0, detail);
+      assert.ok(hits >= 4 && hits <= 8, detail);
+    } finally { h.destroy(); }
+  }));
+}

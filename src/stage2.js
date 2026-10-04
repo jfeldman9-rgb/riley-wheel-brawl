@@ -50,7 +50,7 @@ export class Stage2Kit {
   constructor(s) {
     this.s = s; this.arrows = []; this.skyArrows = []; this.torches = []; this.beams = []; this.stars = []; this.sticks = []; this.fxImgs = [];
     this.volley = null; this.volleys = 0; this.barn = null; this.ribbonDropped = false; this.ribbons = 0; this.mudJokeDone = false; this.hints = new Set();
-    this.lightningT = rand(5, 9); this.flashT = 0; this.beamT = 1.5; this.collapsed = false; this.lastRiposteLine = -99; this.rushMarkers = []; this.parryMarks = []; this.flashAllowed = q.get('flash') !== '0' && !globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    this.lightningT = rand(5, 9); this.flashT = 0; this.beamT = 1.5; this.breath = 0; this.collapsed = false; this.lastRiposteLine = -99; this.rushMarkers = []; this.parryMarks = []; this.flashAllowed = q.get('flash') !== '0' && !globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     this.cfg = s.cache.json.get('lights2') || {}; this.plates = s.cache.json.get('plates2') || {};
     this.stats = { arrows: 0, arrowHits: 0, skyArrows: 0, volleys: 0, volleyHits: 0, torches: 0, beams: 0, beamHits: 0, blocks: 0, guardBreaks: 0, ripostes: 0, mudJoke: 0, ribbon: 0, stars: 0 };
   }
@@ -114,6 +114,7 @@ export class Stage2Kit {
   // ---------- per frame ----------
   update(dt) {
     const s = this.s, R = s.riley;
+    if (this.breath > 0) this.breath -= dt;
     this.updateLightning(dt);
     this.updateArrows(dt, R); this.updateSky(dt, R); this.updateVolley(dt, R); this.updateTorches(dt, R); this.updateBeams(dt, R); this.updateStars(dt); this.updateSticks(dt); this.updateTelegraphs(dt);
     if (this.barn) {
@@ -142,10 +143,17 @@ export class Stage2Kit {
   img(key, x, y, depth) { const o = this.s.add.image(x, y, key).setDepth(depth); return o; }
   // ---------- archers ----------
   archerBusy(a, kind = 'shoot') { return (kind === 'shoot' && this.arrows.length > 1) || this.s.enemies.some(e => e !== a && e.alive && e.type === 'archer' && e.state === kind); }
+  // Ground lane for a straight draw: visible for the whole wind-up, gone once the arrow is the tell.
+  markDraw(a) {
+    if (a.drawMark) return;
+    a.drawMark = this.img('lanemark', a.x, a.y, 948).setDisplaySize(VW + 40, 28).setTint(0xffe7a0).setAlpha(0.5);
+  }
+  clearDraw(a) { if (!a.drawMark) return; a.drawMark.destroy(); a.drawMark = null; }
   fireArrow(a, { fan = false } = {}) {
     const dir = a.facing, x = a.x + dir * 95, y = a.y;
     // The side arrows diverge from the bow; they are not parallel invisible lane offsets.
-    for (const vy of fan ? [-42, 0, 42] : [0]) {
+    const spread = ARCHER.fanVy;
+    for (const vy of fan ? [-spread, 0, spread] : [0]) {
       const img = this.img('arrow', x, y - ARCHER.arrowZ, 1000 + y + 1).setScale(0.2).setLighting(true); img.flipX = dir < 0;
       img.setRotation(Math.atan2(vy, ARCHER.arrowSpeed) * dir);
       this.arrows.push({ img, x, y, dir, vy, t: 0 }); this.stats.arrows++;
@@ -175,7 +183,9 @@ export class Stage2Kit {
   }
   removeLanding(m) { m.mark.destroy(); m.shadow?.destroy(); }
   markSky(a) {
-    const R = this.s.riley, tx = clamp(R.x + (R.vx || 0) * 0.12, this.s.bounds.l + 60, this.s.bounds.r - 60), ty = R.y;
+    const R = this.s.riley, tx = clamp(R.x + (R.vx || 0) * 0.12, this.s.bounds.l + 60, this.s.bounds.r - 60);
+    // Lead the lob a little into the lane he is walking, still on the marker he can see for the whole delay.
+    const ty = clamp(R.y + clamp((a.ry || 0) * 0.34, -28, 28), LANE_TOP + 8, LANE_BOT - 8);
     a.skyMark = { a, ...this.landingMark(tx, ty), tx, ty, t: 0, T: ARCHER.skyDelay, armed: false, arrow: null }; this.skyArrows.push(a.skyMark);
   }
   loseSkyArrow(a) { if (a.skyMark) { a.skyMark.armed = true; this.stats.skyArrows++; sfx.twang(); } }
@@ -399,6 +409,7 @@ export class Stage2Kit {
     for (const k of this.torches) { k.img.destroy(); this.removeLanding(k); k.trail.destroy(); this.s.lights.removeLight(k.L); } this.torches = [];
     for (const m of this.rushMarkers) m.mark.destroy(); this.rushMarkers = [];
     for (const m of this.parryMarks) m.icon.destroy(); this.parryMarks = [];
+    for (const e of this.s.enemies) this.clearDraw(e);
   }
   applyLightBudget() {
     const s = this.s, active = [], seen = new Set();
