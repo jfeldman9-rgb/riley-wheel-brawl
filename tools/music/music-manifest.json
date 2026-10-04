@@ -46,5 +46,33 @@
   "peakDbfs": -1.9,
   "bytes": 787060,
   "doc": "\"Child of the Light\" - Stage 2 boss (Jaret Byar). D minor, zealous and martial: military snare, minor fanfare,\nstring tremolo, choir, timpani. 32 bars @ 138 bpm."
+ },
+ "stage3": {
+  "placeholder": true,
+  "mappedTo": "stage2",
+  "file": "music-stage2.mp3",
+  "bpm": 104,
+  "bars": 28,
+  "loopStart": 0.25,
+  "loopEnd": 64.86537414965986,
+  "loopSeconds": 64.61537414965986,
+  "lufs": -16.0,
+  "peakDbfs": -2.7,
+  "bytes": 912500,
+  "doc": "Placeholder: mapped to stage2 until T8."
+ },
+ "boss3": {
+  "placeholder": true,
+  "mappedTo": "boss2",
+  "file": "music-boss2.mp3",
+  "bpm": 138,
+  "bars": 32,
+  "loopStart": 0.25,
+  "loopEnd": 55.9021768707483,
+  "loopSeconds": 55.6521768707483,
+  "lufs": -15.2,
+  "peakDbfs": -1.9,
+  "bytes": 787060,
+  "doc": "Placeholder: mapped to boss2 until T8."
  }
 }

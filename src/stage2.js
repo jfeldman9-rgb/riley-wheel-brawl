@@ -4,7 +4,7 @@
 // The shared scene (stage1.js) owns combat, waves, pickups and powers; it calls into this kit only when stageNo === 2.
 import { VW, VH, LANE_TOP, LANE_BOT, WORLD_W, clamp, rand, pick } from './config.js';
 import { sfx, say, setRain, preloadClips, EXTRA_VOICE } from './audio.js';
-import { STAGE2, VOLLEY, VOLLEY_BANDS } from './stages.js';
+import { STAGE2, STAGE_TEXTURES, SHARED_TEXTURES, VOLLEY, VOLLEY_BANDS } from './stages.js';
 import { ARCHER } from './whitecloaks.js';
 export const MID_Y = LANE_TOP - 58;
 export const STORY_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story_panel_' + n, url: `assets/story/story_panel_${n}.jpg` })));
@@ -14,10 +14,7 @@ export const STORY_SCRIPT = Object.freeze([
 ].map(([id, panel, voice]) => Object.freeze({ id, who: EXTRA_VOICE[id][0], text: EXTRA_VOICE[id][1], panel, voice })));
 export const STAGE2_VOICES = Object.freeze(Object.keys(EXTRA_VOICE).filter(id => /^(st2_|byar_|zealot_|archer_|riley_st2|riley_ribbon|riley_mud)/.test(id)));
 // textures each stage owns (released when the other stage loads, so an iPad never holds both backdrops)
-export const STAGE_TEXTURES = Object.freeze({
-  1: Object.freeze(['far', 'mid0', 'mid1', 'floor', 'floor2', 'cart', 'barrel', 'staves']),
-  2: Object.freeze(['far2', 'mid2a', 'mid2b', 'floor2a', 'floor2b', 'crate', 'planks', 'beam2', 'arrow', 'torch', 'ribbon', ...STORY_PANELS.map(p => p.key)]),
-});
+export { STAGE_TEXTURES, SHARED_TEXTURES };
 export function queueStage2(scene) {
   const L = scene.load, has = k => scene.textures.exists(k);
   if (!has('far2')) L.image('far2', 'assets/bg2/bg2-far.jpg');
@@ -326,3 +323,6 @@ export class Stage2Kit {
   /** what the campaign bot and the tests can see */
   threats() { return { arrows: this.arrows, sky: this.skyArrows, volley: this.volley, torches: this.torches, beams: this.beams }; }
 }
+
+STAGE2.kit = Stage2Kit;
+

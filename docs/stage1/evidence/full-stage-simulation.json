@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "evidenceKind": "deterministic combat-logic simulation",
-  "baseGitCommit": "0a9e9bae14a45bd9c00048d60f7c3438f47420ab",
+  "baseGitCommit": "afebe672cb8f19438114599bc4a08f3a4300cd37",
   "sourceSha256": {
-    "src/stage1.js": "570fc9f3250123c3e77d851f39061ee38975be54ff956abd41e93709f3de5f8f",
+    "src/stage1.js": "52bdac9fed85078bfb44b90e3c597db715bb8ce24d60eec0a63c049a63da73f9",
     "src/riley.js": "8f4a3cd902f227ffa105a70bd52955b96832aba6e4582d91e15361adf097e0ec",
     "src/loial.js": "7f564b884fe81c9efddad49e5100f13ff6ec5543463f12f4797822c8ac3cb5a5",
     "src/enemies.js": "88314da46278dd8685edc64962c7eeaf5d601287ade012cd36abc20609038644",
@@ -13,7 +13,7 @@
     "src/fx.js": "a6147b88f04f5ae1b1853f7b610cce20fc6027fed6b63846798316a37d0fd6e0",
     "src/assets.js": "e465969d086ed7c005bd39c996dcfcd383411c8b222d478f84261a2a998fb261",
     "src/config.js": "dbe7dda121c137c191db1f6b538efad8d8547f7eee2f58780650a5494d04a8b1",
-    "src/audio.js": "81a5348cf8bfd065cf964ed359eb1c8169811c4ce18433612624ba1392978e38",
+    "src/audio.js": "3e5de8c6cf427b68a528febcfbe0731300323d1c9c911aa74725e30eb47691a0",
     "src/powers.js": "b0e71be36a0568241b4f2eec8c7fdf640077efdf614555f957934fda1168d7a0",
     "src/twix.js": "b8df8820b9efd2d49526d26552b5a36e1b7e2426143973c2fd3d2e81f451032f",
     "assets/chars/riley.anims.json": "7ac00fcc0c9b9d9bd694f6b305c71649b30e646771de517935c4d5016f8f65d9",

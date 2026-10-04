@@ -10,9 +10,9 @@ import { Bot } from './bot.js';
 import { Loial } from './loial.js';
 import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK, TWIX_DROP_Z, TWIX_ART_KEYS, queuePowerArt, makePowerAnims, iconKey } from './powers.js';
 import { Cutscene, TWIX_SCRIPT } from './twix.js';
-import { STAGE2, STAGE_CHARS, resolveStage } from './stages.js';
+import { STAGES, STAGE1, stageEnabled, maxStage, stageFromQuery, resolveStage, STAGE_CHARS, STAGE_TEXTURES } from './stages.js';
 import { WHITECLOAKS } from './whitecloaks.js';
-import { Stage2Kit, queueStage2, STAGE_TEXTURES, STORY_PANELS, STORY_SCRIPT } from './stage2.js';
+import { Stage2Kit, queueStage2, STORY_PANELS, STORY_SCRIPT } from './stage2.js';
 import { MusicDirector } from './music.js';
 
 // Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
@@ -22,12 +22,7 @@ const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
 // fire spots measured on the plates (plate px): [plateIndex, x, y, intensity, radius]
 const FIRES = [[0, 244, 382, 2.4, 700], [0, 2036, 446, 2.4, 700], [0, 1156, 573, 1.1, 420]];
 // Zones: camera locks and waves. side R/L = enter from right/left edge; t = delay (s) after the wave starts
-const ZONES = [
-  { at: 260, l: 0, r: 1280, intro: 'trolloc_intro_01', waves: [[['grunt', 'R', 0], ['grunt', 'R', 1.4]], [['grunt', 'L', 0], ['spear', 'R', 0.6]]] },
-  { at: 1500, l: 1240, r: 2520, waves: [[['spear', 'R', 0], ['grunt', 'R', 0.7]], [['hound', 'L', 0], ['grunt', 'R', 0.4], ['grunt', 'R', 2.0]]] },
-  { at: 2800, l: 2560, r: 3840, waves: [[['hound', 'R', 0], ['hound', 'L', 0.5]], [['spear', 'R', 0], ['grunt', 'L', 0.6], ['hound', 'R', 1.6]]] },
-  { at: 4140, l: 3920, r: 5200, boss: true },
-];
+const ZONES = STAGES[1].zones;
 // Moon: screen-fixed at x=VW*0.85, but as an ordinary world-space light. Phaser 4.2.1 LightsManager.getLights
 // culls raw light x/y against camera.worldView before scroll factors apply, so a scrollFactorX=0 light was
 // dropped once the camera passed x~2600 (zone 3 and the boss arena). placeMoon() keeps world x = scrollX + MOON_X
@@ -51,51 +46,92 @@ export function placeFires(fires, scrollX, cap = FIRE_LIGHT_CAP) {
   ranked.sort((a, b) => a[0] - b[0]);
   ranked.forEach(([, L], i) => L.setVisible(i < cap));
 }
-const BARRELS = [[880, 600], [2140, 650], [3330, 610], [4600, 596]];
+const BARRELS = STAGES[1].crates;
+
+function queueStage1(scene) {
+  scene.load.image('far', 'assets/bg/bg-far.jpg');
+  scene.load.image('mid0', ['assets/bg/bg-mid.webp', 'assets/bg/bg-mid_n.webp']);
+  scene.load.image('mid1', ['assets/bg/bg-mid2.webp', 'assets/bg/bg-mid2_n.webp']);
+  scene.load.image('floor', ['assets/bg/bg-floor.jpg', 'assets/bg/bg-floor_n.webp']);
+  scene.load.image('floor2', ['assets/bg/bg-floor2.jpg', 'assets/bg/bg-floor2_n.webp']);
+  scene.load.image('cart', ['assets/props/prop-cart.webp', 'assets/props/prop-cart_n.webp']);
+  scene.load.image('barrel', ['assets/props/prop-barrel.webp', 'assets/props/prop-barrel_n.webp']);
+  if (!scene.textures.exists('staves')) scene.load.atlas('staves', 'assets/props/staves.webp', 'assets/props/staves.json');
+  queuePowerArt(scene);
+  scene.load.json('plates', 'assets/bg/plates.json');
+}
+
+function queueStage2All(scene) {
+  queueStage2(scene);
+  queuePowerArt(scene, { twix: false });
+}
+
+function queueStage3Stub(scene) {
+  queuePowerArt(scene, { twix: false });
+}
+
+STAGES[1].queue = queueStage1;
+STAGES[2].queue = queueStage2All;
+STAGES[3].queue = queueStage3Stub;
+
+STAGES[1].start = scene => {
+  scene.music?.set('stage');
+  say('st1_narrator_01', scene.caption);
+  scene.time.delayedCall(5200, () => !scene.zone && say('riley_st1_01', scene.caption));
+};
+STAGES[2].start = scene => {
+  scene.startStage2();
+};
+STAGES[3].start = scene => {
+  if (scene.kit) scene.kit.start();
+  scene.music?.set('stage');
+};
 
 export class Stage1 extends Phaser.Scene {
   constructor() { super('stage1'); }
+  get stageDef() { return this._stageDef || STAGES[this.stageNo || 1] || STAGES[1]; }
+  set stageDef(v) { this._stageDef = v; }
   preload() {
     window.__rwbStartup?.watchLoader(this.load);
     this.load.setCORS('anonymous');
     const stageNo = resolveStage(this.sys && this.sys.settings && this.sys.settings.data, q);
     // Only one stage's backdrop and enemy atlases stay resident (iPad memory): drop the other stage's first.
-    this.releaseStage(stageNo === 2 ? 1 : 2);
+    this.releaseStage(stageNo);
     if (!document.getElementById('boot') && this.game.canvas && this.game.canvas.parentNode && this.loadedStage !== undefined) {
       const b = document.createElement('div'); b.id = 'boot'; b.className = 'boot-reload'; document.body.appendChild(b);
     }
     this.loadedStage = stageNo;
-    if (stageNo === 2) {
-      queueCharPages(this, STAGE_CHARS[2]); queueStage2(this); queuePowerArt(this, { twix: false });
-      this.load.on('progress', p => { const b = document.getElementById('boot'); if (b) b.textContent = `${STAGE2.loading} ${Math.round(p * 100)}%`; });
-      return;
-    }
-    queueCharPages(this, STAGE_CHARS[1]);
-    this.load.image('far', 'assets/bg/bg-far.jpg');
-    this.load.image('mid0', ['assets/bg/bg-mid.webp', 'assets/bg/bg-mid_n.webp']);
-    this.load.image('mid1', ['assets/bg/bg-mid2.webp', 'assets/bg/bg-mid2_n.webp']);
-    this.load.image('floor', ['assets/bg/bg-floor.jpg', 'assets/bg/bg-floor_n.webp']);
-    this.load.image('floor2', ['assets/bg/bg-floor2.jpg', 'assets/bg/bg-floor2_n.webp']);
-    this.load.image('cart', ['assets/props/prop-cart.webp', 'assets/props/prop-cart_n.webp']);
-    this.load.image('barrel', ['assets/props/prop-barrel.webp', 'assets/props/prop-barrel_n.webp']);
-    if (!this.textures.exists('staves')) this.load.atlas('staves', 'assets/props/staves.webp', 'assets/props/staves.json');
-    queuePowerArt(this);
-    this.load.json('plates', 'assets/bg/plates.json');
-    this.load.on('progress', p => { const b = document.getElementById('boot'); if (b) b.textContent = `Loading Emond's Field… ${Math.round(p * 100)}%`; });
+    const stageDef = STAGES[stageNo] || STAGES[1];
+    queueCharPages(this, stageDef.chars);
+    if (stageDef.queue) stageDef.queue(this);
+    this.load.on('progress', p => { const b = document.getElementById('boot'); if (b) b.textContent = `${stageDef.loading} ${Math.round(p * 100)}%`; });
   }
-  releaseStage(n) {
+  releaseStage(toStage, fromStage) {
     if (!this.textures || !this.textures.remove) return;
-    for (const k of n === 1 ? [...STAGE_TEXTURES[1], ...TWIX_ART_KEYS] : STAGE_TEXTURES[n]) if (this.textures.exists(k)) this.textures.remove(k);
-    releaseChars(this, STAGE_CHARS[n].filter(k => !STAGE_CHARS[n === 1 ? 2 : 1].includes(k)));
+    const toChars = new Set(STAGE_CHARS[toStage] || []);
+    const toTextures = new Set(STAGE_TEXTURES[toStage] || []);
+    const activeStages = [1, 2];
+    if (stageEnabled(3, q) || toStage === 3 || fromStage === 3) activeStages.push(3);
+    const fromStages = fromStage ? [fromStage] : activeStages.filter(n => n !== toStage);
+    for (const from of fromStages) {
+      const tex = from === 1 ? [...(STAGE_TEXTURES[1] || []), ...TWIX_ART_KEYS] : (STAGE_TEXTURES[from] || []);
+      for (const k of tex) {
+        if (!toTextures.has(k) && this.textures.exists(k)) this.textures.remove(k);
+      }
+      const chars = (STAGE_CHARS[from] || []).filter(k => !toChars.has(k));
+      releaseChars(this, chars);
+    }
   }
   create(data) {
     if (window.__rwbStartup?.failed) return;
     this.runId = (this.runId || 0) + 1;
     const sd = data && Object.keys(data).length ? data : (this.sys && this.sys.settings && this.sys.settings.data) || {};
     this.stageNo = resolveStage(sd, q); this.stageData = sd;
-    this.zones = this.stageNo === 2 ? STAGE2.zones : ZONES; this.drops = this.stageNo === 2 ? STAGE2.drops : DROPS; this.bossDrop = this.stageNo === 2 ? STAGE2.bossDrop : BOSS_DROP;
+    this.stageDef = STAGES[this.stageNo] || STAGES[1];
+    this.zones = this.stageDef.zones; this.drops = this.stageDef.drops; this.bossDrop = this.stageDef.bossDrop;
     this.music = new MusicDirector((id, o) => playTrack(id, o), this.stageNo);
-    this.kit = null; this.koCount = 0; this.titleSel = this.stageNo;
+    this.kit = this.stageDef.kit ? new this.stageDef.kit(this) : null;
+    this.koCount = 0; this.titleSel = this.stageNo;
     this.pauseReasons = new Set(); this.paused = false; this.gameOver = false;
     this.clearShown = false; this.victoryPending = false; this.boss = null; this.bot = null;
     this.hudReady = false; this.startRequested = false;
@@ -103,13 +139,13 @@ export class Stage1 extends Phaser.Scene {
     this.inp = this.game.inp; this.inp.clear();
     const b = document.getElementById('boot'); if (b) b.remove();
     patchFlippedNormals();
-    this.metas = makeCharAnims(this, STAGE_CHARS[this.stageNo]); makePowerAnims(this);
+    this.metas = makeCharAnims(this, this.stageDef.chars); makePowerAnims(this);
     this.inp = this.game.inp; this.rs = this.game.rs;
     const cam = this.cameras.main; cam.setOrigin(0, 0); cam.setZoom(this.rs); cam.setRoundPixels(false);
     this.lights.enable().setAmbientColor(0x39425f);
     this.fx = new FX(this);
     this.plates = this.cache.json.get('plates') || {};
-    if (this.stageNo === 2) { this.kit = new Stage2Kit(this); this.ambient = this.kit.ambient; this.lights.setAmbientColor(this.ambient); this.kit.build(); }
+    if (this.kit) { this.ambient = this.kit.ambient; this.lights.setAmbientColor(this.ambient); this.kit.build(); }
     else this.buildBackdrop();
     this.enemies = []; this.fireballs = []; this.carts = []; this.patches = []; this.pickups = []; this.barrels = [];
     this.loial = null; this.beam = null; this.spentSaidAt = -9; this.makeBeamTexture();
@@ -117,8 +153,7 @@ export class Stage1 extends Phaser.Scene {
     this.riley = new Riley(this, 180, 630);
     this.powers = new Powers(this);
     this.heroLight = this.lights.addLight(0, 0, 440, 0xd8e2ff, 1.0, 150);
-    if (this.kit) for (const [x, y] of STAGE2.crates) this.addBarrel(x, y, 'crate', 'planks');
-    else for (const [x, y] of BARRELS) this.addBarrel(x, y);
+    for (const [x, y] of this.stageDef.crates) this.addBarrel(x, y, this.stageDef.crateProp, this.stageDef.cratePlanks);
     if (!this.kit) this.snowFront = this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: -20, lifespan: 6000, speedY: { min: 80, max: 130 }, speedX: { min: -50, max: -10 }, scale: { min: 0.5, max: 0.9 }, alpha: { min: 0.5, max: 0.9 }, frequency: 80 }).setDepth(5000).setScrollFactor(0);
     this.zoneI = -1; this.zone = null; this.wave = -1; this.pending = []; this.locked = false; this.camX = 0; this.camMax = 0;
     this.bounds = { l: 0, r: VW }; this.maxTokens = 2; this.started = false; this.ended = false; this.time0 = 0; this.timeScale = 1; this.lightsOn = true;
@@ -146,7 +181,7 @@ export class Stage1 extends Phaser.Scene {
     this.god = !!q.get('god');
     // ?skip=boss starts at the Chieftain arena (testing / quick device checks)
     // Bounds follow the skipped camera too; the post-physics arena clamp otherwise pins Riley to the left wall.
-    if (q.get('skip') === 'boss') { const k = this.kit ? STAGE2.skipBoss : { zoneI: 2, x: 3990, camX: 3500 }; this.zoneI = k.zoneI; this.riley.x = k.x; this.camX = this.camMax = k.camX; this.bounds = { l: this.camX, r: this.camX + VW }; }
+    if (q.get('skip') === 'boss') { const k = this.stageDef.skipBoss; this.zoneI = k.zoneI; this.riley.x = k.x; this.camX = this.camMax = k.camX; this.bounds = { l: this.camX, r: this.camX + VW }; }
     if (q.get('demo')) { this.bot = new Bot(this); }
     if (q.get('demo') || q.get('autostart') || sd.autostart) this.time.delayedCall(300, () => this.start());
     else if (audioUnlocked()) this.music?.set('title');
@@ -210,7 +245,7 @@ export class Stage1 extends Phaser.Scene {
     if (!this.started && !this.ended) return this.start();
     if (this.gameOver && (a === 'attack' || a === 'start')) return this.continueGame();
     // Stage 1 clear continues into the Baerlon story beat and Stage 2; Stage 2 clear returns to the title.
-    if (this.ended && this.clearShown && (a === 'attack' || a === 'start')) return this.scene.restart(this.stageNo === 1 ? { stage: 2, fromStage1: true, autostart: true } : { stage: 1 });
+    if (this.ended && this.clearShown && (a === 'attack' || a === 'start')) return this.scene.restart(this.stageDef.next(q));
   }
   setPauseReason(reason, paused) {
     if (paused) this.pauseReasons.add(reason); else this.pauseReasons.delete(reason);
@@ -228,7 +263,7 @@ export class Stage1 extends Phaser.Scene {
   selectStage(dir) {
     if (this.started || this.ended) return;
     unlock(); this.music?.set('title');
-    const cur = this.titleSel || this.stageNo, n = Math.max(1, Math.min(2, cur + dir));
+    const cur = this.titleSel || this.stageNo, n = Math.max(1, Math.min(maxStage(q), cur + dir));
     if (n !== cur) { this.titleSel = n; sfx.go(); this.hud.titleSelect?.(n); }
   }
   start() {
@@ -237,10 +272,7 @@ export class Stage1 extends Phaser.Scene {
     if (this.titleSel && this.titleSel !== this.stageNo) { this.startRequested = false; return this.scene.restart({ stage: this.titleSel, autostart: true }); }
     this.startRequested = false; this.started = true; this.inp.flushPresses?.(); unlock(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
     perf.reset();
-    if (this.kit) return this.startStage2();
-    this.music?.set('stage');
-    say('st1_narrator_01', this.caption);
-    this.time.delayedCall(5200, () => !this.zone && say('riley_st1_01', this.caption));
+    if (this.stageDef.start) return this.stageDef.start(this);
   }
   startStage2() {
     this.kit.start();
@@ -271,29 +303,23 @@ export class Stage1 extends Phaser.Scene {
       if (!w) { if (this.kit) this.kit.onZoneClear(this.zoneI); this.zone = null; this.locked = false; this.hud.go(); sfx.go(); return; }
       this.pending = w.map(([type, side, t]) => ({ type, side, t })); this.waveGap = 0.8;
       if (this.powerDrops) for (const d of this.drops) if (d.zone === this.zoneI && d.wave === this.wave) this.powerDrops.push({ kind: d.kind, t: d.delay });
-      if (this.kit && STAGE2.ribbon.zone === this.zoneI && STAGE2.ribbon.wave === this.wave && this.powerDrops) this.powerDrops.push({ kind: 'ribbon', t: STAGE2.ribbon.delay });
+      if (this.stageDef.ribbon && this.stageDef.ribbon.zone === this.zoneI && this.stageDef.ribbon.wave === this.wave && this.powerDrops) this.powerDrops.push({ kind: 'ribbon', t: this.stageDef.ribbon.delay });
     }
   }
   startBoss() {
     this.music?.set('boss');
-    if (this.kit) return this.time.delayedCall(700, () => {
-      const c = this.boss = this.spawn('byar', 'R'); c.cool = 2.2;
-      say('byar_intro_01', this.caption); sfx.horn(); this.hud.bossBar(c);
-    });
+    const b = this.stageDef.boss;
     this.time.delayedCall(700, () => {
-      const c = this.boss = this.spawn('chief', 'R'); c.cool = 2.5; c.nextRoar = 6;
-      say('trolloc_heavy_intro_01', this.caption); sfx.roar(); this.hud.bossBar(c);
+      const c = this.boss = this.spawn(b.type, 'R');
+      if (b.cool) c.cool = b.cool;
+      if (b.nextRoar) c.nextRoar = b.nextRoar;
+      if (b.introVoice) say(b.introVoice, this.caption);
+      if (b.sfx === 'horn') sfx.horn(); else if (b.sfx === 'roar') sfx.roar();
+      this.hud.bossBar(c);
     });
   }
   onBossPhase(c, ph) {
-    if (this.kit) {
-      if (ph === 2) { say('byar_mid_01', this.caption); this.fx.trauma = 0.5; this.hud.flashText('JARET BYAR CALLS HIS ARCHERS'); }
-      if (ph === this.bossDrop.phase && this.powerDrops) this.powerDrops.push({ kind: this.bossDrop.kind, t: 0.6 });
-      return;
-    }
-    if (ph === 2) { say('chieftain_mid_01', this.caption); this.fx.trauma = 0.6; }
-    if (ph === BOSS_DROP.phase && this.powerDrops) this.powerDrops.push({ kind: BOSS_DROP.kind, t: 0.6 });
-    if (ph === 3) { sfx.roar(); this.hud.flashText('THE CHIEFTAIN IS ENRAGED'); }
+    if (this.stageDef.onBossPhase) this.stageDef.onBossPhase(this, c, ph);
   }
   summonHounds(c) {
     const runId = this.runId;
@@ -317,18 +343,7 @@ export class Stage1 extends Phaser.Scene {
     this.fx.slowmo = 1.2; this.fx.hitstop = 0.25; sfx.impact();
     for (const e of this.enemies) if (e !== c && e.alive) { e.hp = 0; e.die(Math.sign(e.x - this.riley.x) || 1, { kb: 300, launch: 300 }); }
     this.music?.set('victory');
-    if (this.kit) {
-      this.kit.clearHazards();
-      this.time.delayedCall(900, () => say('byar_defeat_01', this.caption));
-      this.time.delayedCall(4400, () => say('riley_st2_victory_01', this.caption));
-      this.time.delayedCall(7600, () => say('riley_st2_clear_01', this.caption));
-      this.time.delayedCall(8200, () => { this.ended = true; sfx.levelClear(); this.hud.stageClear(this.stats()); this.music?.set('clear'); this.time.delayedCall(1200, () => this.clearShown = true); });
-      return;
-    }
-    this.time.delayedCall(900, () => say('chieftain_defeat_01', this.caption));
-    this.time.delayedCall(3600, () => say('riley_victory_01', this.caption));
-    this.time.delayedCall(5600, () => say('st1_clear_moiraine_01', this.caption));
-    this.time.delayedCall(6200, () => { this.ended = true; sfx.levelClear(); this.hud.stageClear(this.stats()); this.music?.set('clear'); this.time.delayedCall(1200, () => this.clearShown = true); });
+    this.stageDef.bossDown(this, c);
   }
   stats() { const R = this.riley; return { score: R.score, combo: R.maxCombo, time: (this.time.now - this.time0) / 1000, lives: R.lives, stage: this.stageNo, ribbons: this.kit ? this.kit.ribbons : undefined }; }
   rileyDied() {
