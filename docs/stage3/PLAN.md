@@ -13,8 +13,10 @@ This is a plan only. It contains no game code; code snippets below are specifica
 2. **Tests.** Never loosen, skip or delete a test. Every new system ships with tests in the same commit. Before every
    commit, run `node --test tests/*.test.mjs`. The count must be ≥ 322 plus every test added so far, with 0 failures.
 3. **Stage 1 and Stage 2 behaviour is frozen.** After every ENGINE task:
-   - `node tests/helpers/run-full-stage-simulations.mjs > /tmp/sim.json`, then diff the output against
-     `docs/stage1/evidence/full-stage-simulation.json`. It must match exactly.
+   - Run `node tests/helpers/run-full-stage-simulations.mjs > /tmp/sim.json` and diff against
+     `docs/stage1/evidence/full-stage-simulation.json`. The simulation output must match exactly, except for
+     `sourceSha256` and `baseGitCommit`, which are regenerated (copy `/tmp/sim.json` over the evidence file) when
+     source files change, so `tests/full-stage-evidence.test.mjs` stays green.
    - `node tools/audit-stage1.mjs` must pass.
    - `tests/stage2-*.test.mjs` must stay green and unedited.
 4. **Stage 3 stays behind a flag until Jason says otherwise** (see §2.1). Four existing assertions pin the 2-stage
