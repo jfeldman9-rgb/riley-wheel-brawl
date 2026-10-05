@@ -17,10 +17,12 @@ const ATK = {
 // Balefire (restored from 1.1): spends a FULL saidin meter. The beam fires on the thrust frame and is held through
 // the sustain frames; Riley is invulnerable for 1.5 s as in 1.1.
 export const BALEFIRE = Object.freeze({ cost: 100, fireFrame: 3, releaseFrame: 6, invuln: 1.5 });
+// Held by a Darkfriend cutthroat (Stage 3): presses that count as mash; the shove beat lands on escape frame 1.
+export const GRABBED = Object.freeze({ mashKeys: Object.freeze(['attack', 'jump', 'special', 'power']), shoveFrame: 1 });
 export class Riley extends Fighter {
   constructor(scene, x, y) {
     super(scene, RILEY_DEF, x, y);
-    this.saidin = 100; this.loialReady = true; this.lives = 3; this.inv = 0; this.combo = 0; this.comboT = 0; this.maxCombo = 0; this.score = 0; this.hurtStreak = 0;
+    this.saidin = 100; this.loialReady = true; this.lives = 3; this.inv = 0; this.combo = 0; this.comboT = 0; this.maxCombo = 0; this.score = 0; this.hurtStreak = 0; this.grabbedBy = null; this.lastGrabber = null; this.mashDir = '0,0'; this.shoveFx = false;
     this.setState('idle', 'idle');
   }
   get busy() { return !['idle', 'walk', 'run'].includes(this.state); }
@@ -43,6 +45,8 @@ export class Riley extends Fighter {
       case 'grab': return this.grab(dt, inp);
       case 'hold': case 'knee': return this.hold(dt, inp);
       case 'throw': return this.throwing(dt);
+      case 'grabbed': return this.grabbed(dt, inp);
+      case 'escape': return this.escape(dt);
       case 'hurt': if (this.done) this.setState('idle', 'idle'); return;
       case 'down': if (this.st > (this.alive ? 0.9 : 99) && this.z <= 0) { this.setState('getup', 'getup'); this.inv = 1.2; } return;
       case 'getup': if (this.done) { this.setState('idle', 'idle'); this.inv = 1.0; } return;
@@ -149,9 +153,43 @@ export class Riley extends Fighter {
     }
     if (this.done) { this.setState('idle', 'idle'); this.face(-this.facing); }
   }
+  /** T4 contract: a cutthroat caught him (it already set grabbedBy, facing and vx) */
+  enterGrabbed(c) {
+    this.lastGrabber = c; this.atk = null; this.next = false; this.kicked = false; this.vx = 0;
+    this.mashDir = `${this.scene.inp?.x || 0},${this.scene.inp?.y || 0}`;   // a direction already held is not "new"
+    this.setState('grabbed', 'grabbed');
+  }
+  /** T4 contract: the hold ended. 'escape' plays the break-free; 'throw'/'break' only leave the grabbed pose
+   *  (the throw's hit, a hazard's hit or Loial decide what happens next) */
+  leaveGrabbed(how) {
+    if (how === 'escape') { this.shoveFx = false; this.vx = 0; return this.setState('escape', 'escape'); }
+    if (this.state === 'grabbed') this.setState('idle', 'idle');
+  }
+  grabbed(dt, inp) {
+    const c = this.grabbedBy; this.vx = 0;
+    if (!c) return this.setState('idle', 'idle');   // safety: the hold ended without leaveGrabbed
+    let n = 0;
+    for (const a of GRABBED.mashKeys) if (inp.take(a)) n++;   // jump/special/balefire never act while held
+    const d = `${inp.x || 0},${inp.y || 0}`;
+    if (d !== this.mashDir && d !== '0,0') n++;                  // every new (non-neutral) direction adds 1
+    this.mashDir = d;
+    for (let i = 0; i < n && this.grabbedBy; i++) this.grabbedBy.mash();   // stops once mash() frees him
+  }
+  escape(dt) {
+    const c = this.lastGrabber;
+    if (!this.shoveFx && this.fi >= GRABBED.shoveFrame) {
+      this.shoveFx = true; const dir = c ? Math.sign(c.x - this.x) || -this.facing : -this.facing;
+      this.scene.fx.impact('medium', this.x + dir * 50, this.y - 150, dir); this.scene.fx.hitstop = 0; sfx.hit(false);
+      say('riley_escape_01', this.scene.caption, false);   // silent until T8 adds the line (audio.js:327-328)
+    }
+    if (this.done) { this.setState('idle', 'idle'); if (c && c.alive) this.face(Math.sign(c.x - this.x)); this.lastGrabber = null; }
+  }
   /** called by the scene when an enemy strike connects */
   takeHit(h, from) {
     if (!this.vulnerable) return false;
+    // Held: only the grabber's throw and environmental knockdowns (fire carts, beams, roof tiles) reach him.
+    // Those hazards break the hold through the cutthroat's break check (Riley is down/hurt next frame).
+    if (this.grabbedBy && from !== this.grabbedBy && !(from && from.team === undefined && h.down)) return false;
     if (this.held) { this.held.release(); this.held = null; }
     this.hp = Math.max(this.scene.god ? 1 : 0, this.hp - h.dmg); this.hurtStreak++;
     const dir = Math.sign(this.x - from.x) || 1; this.face(-dir);
@@ -162,6 +200,7 @@ export class Riley extends Fighter {
     return true;
   }
   down(dir, h) { this.setState('down', 'knockdown'); this.vx = dir * 360; this.scene.dustLater(this, 0.32); sfx.hurt(); }
+  sync() { super.sync(); if (this.grabbedBy && this.state === 'grabbed') this.sprite.setDepth(1000 + this.y + 1); }
   respawn() { this.alive = true; this.hp = this.maxHp; this.saidin = Math.max(this.saidin, 60); this.setState('getup', 'getup'); this.inv = 2.5; say('riley_respawn_01', this.scene.caption, false); }
   // noMeter: balefire hits build no saidin (it just spent the full meter)
   landedHit(dmg, noMeter = false) { this.combo++; this.comboT = 1.6; this.maxCombo = Math.max(this.maxCombo, this.combo); if (!noMeter) this.saidin = Math.min(100, this.saidin + 3 * (this.scene.powers ? this.scene.powers.meterMul() : 1)); this.score += dmg * 10 * (1 + Math.floor(this.combo / 5)); }
