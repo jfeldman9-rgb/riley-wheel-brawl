@@ -15,7 +15,7 @@ import { WHITECLOAKS } from './whitecloaks.js';
 import { DARKFRIENDS, CUTTHROAT } from './darkfriends.js';
 import { MYRDDRAAL } from './myrddraal.js';
 import { Stage2Kit, queueStage2, STORY_PANELS, STORY_SCRIPT } from './stage2.js';
-import { queueStage3 } from './stage3.js';
+import { queueStage3, STORY3_SCRIPT, STORY3_PANELS } from './stage3.js';
 import { MusicDirector } from './music.js';
 
 export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS, ...MYRDDRAAL });
@@ -86,8 +86,7 @@ STAGES[2].start = scene => {
   scene.startStage2();
 };
 STAGES[3].start = scene => {
-  if (scene.kit) scene.kit.start();
-  scene.music?.set('stage');
+  scene.startStage3();
 };
 
 export class Stage1 extends Phaser.Scene {
@@ -281,6 +280,11 @@ export class Stage1 extends Phaser.Scene {
     this.kit.start();
     if (q.get('story') === '0' || this.stageData.story === false) { this.music?.set('stage'); return; }
     this.startCutscene(STORY_SCRIPT, STORY_PANELS, how => { this.storyResult = how; this.music?.set('stage'); });
+  }
+  startStage3() {
+    this.kit.start();
+    if (q.get('story') === '0' || this.stageData.story === false) { this.music?.set('stage'); return; }
+    this.startCutscene(STORY3_SCRIPT, STORY3_PANELS, how => { this.storyResult = how; this.music?.set('stage'); });
   }
   attackTokens() {
     if (this.enemies.some(e => e.alive && e.state === 'holding')) return this.maxTokens;

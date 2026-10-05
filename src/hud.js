@@ -25,8 +25,10 @@ export function bossBannerBox() {
 }
 export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS', 3: 'STAGE 3 · CAEMLYN — THE MYRDDRAAL' });
 export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR|CUTTHROAT|MYRDDRAAL/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
-export function clearPrompt(stage, touch) {
+export function clearPrompt(stage, touch, next) {
   const verb = touch ? 'TAP KICK' : 'PRESS ATTACK';
+  if (next === 3) return `${verb} TO CONTINUE TO STAGE 3`;
+  if (stage === 3) return `${verb} TO RETURN TO THE TITLE`;
   return stage === 1 ? `${verb} TO CONTINUE TO STAGE 2` : stage === 2 ? `${verb} TO RETURN TO THE TITLE` : `${verb} TO PLAY AGAIN`;
 }
 
@@ -242,7 +244,7 @@ export class HUD extends Phaser.Scene {
     const m = Math.floor(s.time / 60), sec = Math.floor(s.time % 60);
     c.add([bg, this.add.text(0, -120, 'STAGE CLEAR', { fontFamily: PX, fontSize: '44px', color: '#ffe2a0', stroke: '#2a1000', strokeThickness: 10 }).setOrigin(0.5),
       this.add.text(0, -30, `SCORE ${s.score}\nBEST COMBO ${s.combo} HITS\nTIME ${m}:${String(sec).padStart(2, '0')}`, { fontFamily: PX, fontSize: '18px', color: '#ffffff', stroke: '#000', strokeThickness: 5, align: 'center', lineSpacing: 14 }).setOrigin(0.5, 0),
-      this.add.text(0, 150, clearPrompt(s.stage, this.game.inp.isTouch), { fontFamily: PX, fontSize: '14px', color: '#ffe9a8', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5)]);
+      this.add.text(0, 150, clearPrompt(s.stage, this.game.inp.isTouch, (this.stage?.stageDef || s?.stageDef)?.next?.(q)?.stage), { fontFamily: PX, fontSize: '14px', color: '#ffe9a8', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5)]);
     if (s.stage >= 2 && s.ribbons) c.add(this.add.text(0, 100, "TWINKLE TOES' RIBBON FOUND", { fontFamily: PX, fontSize: '12px', color: '#9fd0ff', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5));
   }
   bar(x, y, w, h, f, col, back = 0x1a1010) {

@@ -6,7 +6,10 @@ import { STAGE3 } from './stages.js';
 import { MID_Y } from './stage2.js';
 import { Stage3Hazards } from './stage3-hazards.js';
 export const STORY3_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story3_panel_' + n, url: `assets/story/story3_panel_${n}.jpg` })));
-export const STAGE3_VOICES = Object.freeze(Object.keys(EXTRA_VOICE).filter(id => /^(st3_|cutthroat_|fade_|riley_st3|riley_escape|riley_counter)/.test(id)));  // empty until T8
+export const STORY3_SCRIPT = Object.freeze([
+  ['st3_story_01', 0, 3.58], ['st3_story_02', 1, 7.89], ['st3_story_03', 1, 1.54], ['st3_story_04', 1, 3.87], ['st3_story_05', 1, 0.72], ['st3_story_06', 2, 3.41],
+].map(([id, panel, voice]) => Object.freeze({ id, who: EXTRA_VOICE[id][0], text: EXTRA_VOICE[id][1], panel, voice })));
+export const STAGE3_VOICES = Object.freeze(Object.keys(EXTRA_VOICE).filter(id => /^(st3_|cutthroat_|fade_|riley_st3|riley_escape|riley_counter)/.test(id)));
 export const STAGE3_ATLASES = Object.freeze(['riley3', 'cutthroat', 'fade']);   // = STAGE_CHARS[3] minus ALL_CHARS
 export const TOD_FALLBACK = Object.freeze({ t: 0, ambient: 0x39425f, farMix: 0, sunI: 0, torchK: 0 });
 export const TORCH_RAMP = 0.4, TORCH_FLARE = 1.3, TORCH_SETTLE = 0.3;
