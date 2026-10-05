@@ -12,9 +12,12 @@ import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK
 import { Cutscene, TWIX_SCRIPT } from './twix.js';
 import { STAGES, STAGE1, stageEnabled, maxStage, stageFromQuery, resolveStage, STAGE_CHARS, STAGE_TEXTURES } from './stages.js';
 import { WHITECLOAKS } from './whitecloaks.js';
+import { DARKFRIENDS, CUTTHROAT } from './darkfriends.js';
 import { Stage2Kit, queueStage2, STORY_PANELS, STORY_SCRIPT } from './stage2.js';
 import { queueStage3 } from './stage3.js';
 import { MusicDirector } from './music.js';
+
+export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS });
 
 // Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
 const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
@@ -278,11 +281,21 @@ export class Stage1 extends Phaser.Scene {
     if (q.get('story') === '0' || this.stageData.story === false) { this.music?.set('stage'); return; }
     this.startCutscene(STORY_SCRIPT, STORY_PANELS, how => { this.storyResult = how; this.music?.set('stage'); });
   }
-  attackTokens() { return this.enemies.filter(e => e.alive && (e.state === 'attack' || e.state === 'sweep' || e.state === 'charge')).length; }
+  attackTokens() {
+    if (this.enemies.some(e => e.alive && e.state === 'holding')) return this.maxTokens;
+    return this.enemies.filter(e => e.alive && (e.state === 'attack' || e.state === 'sweep' || e.state === 'charge' || e.state === 'lunge' || e.state === 'holding')).length;
+  }
+  grabBusy(e) { return this.enemies.some(o => o !== e && o.alive && (o.state === 'lunge' || o.state === 'holding')); }
   separation(e) { let f = 0; for (const o of this.enemies) if (o !== e && o.alive) { const dx = e.x - o.x, dy = e.y - o.y; if (Math.abs(dx) < 90 && Math.abs(dy) < 30) f += Math.sign(dx || (e.id - o.id)) * 60; } return f; }
   spawn(type, side) {
+    if (side === 'T' && ENEMY_CLASSES[type]?.prototype.dropIn) {
+      const z = this.zone, b = this.bounds, R = this.riley, d = CUTTHROAT.dropSpread;
+      const x = clamp(R.x + rand(-d, d), Math.max(z.l, b.l) + 90, Math.min(z.r, b.r) - 90), y = rand(LANE_TOP + 15, LANE_BOT - 10);
+      const e = new ENEMY_CLASSES[type](this, x, y); e.entering = false; e.dropIn(); this.enemies.push(e); return e;
+    }
+    if (side === 'T') side = 'R';
     const z = this.zone, x = side === 'R' ? z.r + 120 : z.l - 120, y = rand(LANE_TOP + 15, LANE_BOT - 10);
-    const W = WHITECLOAKS[type];
+    const W = ENEMY_CLASSES[type];
     const e = type === 'chief' ? new Chieftain(this, x, y) : W ? new W(this, x, y) : new Enemy(this, type, x, y); e.entering = true; this.enemies.push(e); return e;
   }
   updateZones(dt) {
@@ -360,7 +373,7 @@ export class Stage1 extends Phaser.Scene {
     if (att.entering) return;
     const targets = att.team === 0 ? this.enemies : [this.riley];
     for (const t of targets) {
-      if (t.entering || att.hitIds.has(t.id || 'riley')) continue;
+      if (t.entering || att.hitIds.has(t.id || 'riley') || (t === this.riley && t.grabbedBy && att !== t.grabbedBy)) continue;
       const dx = (t.x - att.x) * att.facing, dy = Math.abs(t.y - att.y), dz = t.z - att.z;
       const bodyW = t.def.shadowW * 0.35;
       if (dy > 34 || dx < a.x0 - bodyW || dx > a.x1 + bodyW * 0.3) continue;
@@ -683,7 +696,7 @@ export class Stage1 extends Phaser.Scene {
       else e.physics(dt);
     }
     // keep Riley from walking through enemies
-    for (const e of this.enemies) if (e.alive && !e.entering && e.state !== 'held' && R.state !== 'down' && Math.abs(e.y - R.y) < 18 && R.z < 40 && e.z < 40) {
+    for (const e of this.enemies) if (e.alive && !e.entering && e.state !== 'held' && e.state !== 'holding' && e.state !== 'dropin' && R.state !== 'down' && Math.abs(e.y - R.y) < 18 && R.z < 40 && e.z < 40) {
       const dx = R.x - e.x, min = 62; if (Math.abs(dx) < min) R.x = e.x + Math.sign(dx || -R.facing) * min;
     }
     // Separation runs after physics; a wall-pinned enemy must not push Riley

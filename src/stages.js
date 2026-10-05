@@ -183,9 +183,9 @@ export const STAGE2 = {
 export const STAGE3 = {
   no: 3, key: 'caemlyn', title: 'CAEMLYN — THE MYRDDRAAL', loading: 'Loading Caemlyn…',
   zones: Object.freeze([
-    { at: 260, l: 0, r: 1280, intro: 'cutthroat_intro_01', waves: [[['zealot', 'R', 0], ['zealot', 'L', 1.2]], [['zealot', 'R', 0], ['zealot', 'L', 0.8]]] },
-    { at: 1500, l: 1240, r: 2520, waves: [[['zealot', 'R', 0], ['archer', 'R', 0.6]], [['zealot', 'L', 0], ['zealot', 'R', 0.5], ['zealot', 'R', 2.0]]] },
-    { at: 2800, l: 2560, r: 3840, waves: [[['hound', 'R', 0], ['hound', 'L', 0.9]], [['hound', 'R', 0], ['hound', 'L', 0.6], ['zealot', 'L', 1.4]]] },
+    { at: 260, l: 0, r: 1280, intro: 'cutthroat_intro_01', waves: [[['cutthroat', 'R', 0], ['cutthroat', 'L', 1.2]], [['zealot', 'R', 0], ['cutthroat', 'L', 0.8]]] },
+    { at: 1500, l: 1240, r: 2520, waves: [[['cutthroat', 'R', 0], ['archer', 'R', 0.6]], [['cutthroat', 'L', 0], ['cutthroat', 'R', 0.5], ['zealot', 'R', 2.0]]] },
+    { at: 2800, l: 2560, r: 3840, waves: [[['cutthroat', 'T', 0], ['cutthroat', 'T', 0.9]], [['hound', 'R', 0], ['cutthroat', 'T', 0.6], ['cutthroat', 'L', 1.4]]] },
     { at: 4140, l: 3920, r: 5200, boss: true },
   ].map(z => Object.freeze(z))),
   drops: Object.freeze([

@@ -28,7 +28,7 @@ export const BYAR = Object.freeze({ parry: 1.5, open: 0.9, openDmg: 1.4, parryEv
 const SHIELDABLE = h => !h.power && !h.down && (h.kind === 'light' || h.kind === 'medium');
 
 /** shared Whitecloak behaviour: knocked out (stars) or flees instead of a Trolloc's fade */
-class Whitecloak extends Enemy {
+export class Whitecloak extends Enemy {
   constructor(scene, type, x, y) {
     super(scene, type, x, y);
     // alternate KO / run away, counted per run so a seeded run is reproducible
