@@ -1,5 +1,14 @@
 # Stage 3 T7–T11 build guide for the Antigravity builder (Gemini Flash)
 
+Cycle 2 hardening starts at `6992c75` on `rwb-2-stage3-ag` (574 tests).
+For this pass, check C uses the already captured baseline and script in
+`/workspace/ag/baselines-6992c75/`; neither baseline directory may be overwritten.
+Check E compares tests against `6992c75`: add regression files and preserve every
+existing test/helper line. Run checks A–E for each fix, including
+`audit().stage3.voices` and `.music`, and commit fixes separately without pushing.
+The hardening scope includes shared audio/HUD/story lifecycle code when needed
+to fix Stage 3 behavior; T12–T17 and art changes remain out of scope.
+
 *Planner: Claude Opus 5.5, Oct 4 2026. Branch `rwb-2-stage3-ag` @ `36d4ba7` (cycle 1, T1–T6 plus the Codex hardening
 pass in `docs/stage3/HARDENING.md`, has landed; draft PR #20 into `rwb-w2`). Baseline: `node --test tests/*.test.mjs` =
 **532/532**.*

@@ -42,3 +42,15 @@ isolated runner.
 
 Rendering, GPU resources and physical iPad Safari acceptance remain unmeasured by
 the headless harness. No network access or push was attempted.
+
+## Cycle 2 (T7–T11), starting at `6992c75`
+
+Each fix has a new regression file; existing tests and helpers remain intact.
+The frozen Stage 2 capture for this pass is `baselines-6992c75/s2.base.json`.
+The sandbox still rejects captured child-process pipes with `EPERM`; verification
+uses the existing `/tmp/rwb-spawn-transport.cjs` transport described above.
+
+- Retire story objects and clear their completion callback on scene shutdown.
+  A retained story cannot advance captions or finish a new run, and its callback
+  cannot leak into a later Stage 1 Twix scene. Coverage:
+  `stage3-story-restart-hardening.test.mjs` (four tests, all three restart targets).

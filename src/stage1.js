@@ -173,6 +173,12 @@ export class Stage1 extends Phaser.Scene {
     const removePress = this.inp.on('press', a => this.onPress(a));
     this.events.once('shutdown', () => {
       removeKey(); removePress(); this.inp.clear();
+      // Retired story objects must never finish against a reused scene instance.
+      if (this.cutscene) {
+        this.cutscene.done = true;
+        this.cutscene.onLine = this.cutscene.onEnd = () => {};
+      }
+      this.cutscene = this.cutsceneAfter = null;
       stopSceneAudio();
       if (this.bot && this.bot.destroy) this.bot.destroy();
       if (this.kit) this.kit.destroy();
