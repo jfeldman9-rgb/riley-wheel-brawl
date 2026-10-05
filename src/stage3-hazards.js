@@ -60,10 +60,8 @@ export class Stage3Hazards extends Stage2Kit {
       }
       if (k.t >= TILES.warn) {
         if (!k.img) {
-          for (const m of k.markers) m.destroy();
-          k.markers.length = 0;
           const x = k.dir > 0 ? s.camX - 120 : s.camX + VW + 120;
-          const y0 = VOLLEY_BANDS[k.bands[0]][0], y1 = VOLLEY_BANDS[k.bands.at(-1)][1];
+          const [y0, y1] = VOLLEY_BANDS[k.bands[0]];
           k.img = this.img('rooftiles', x, (y0 + y1) / 2, 1000 + y1).setScale(0.5).setLighting(true);
           k.img.flipX = k.dir > 0;
           k.x = x;
@@ -95,6 +93,7 @@ export class Stage3Hazards extends Stage2Kit {
         const done = k.dir > 0 ? k.x > s.camX + VW + 140 : k.x < s.camX - 140;
         if (done) {
           k.img.destroy();
+          for (const m of k.markers) m.destroy();
           this.tiles.splice(i--, 1);
         }
       }
@@ -102,7 +101,7 @@ export class Stage3Hazards extends Stage2Kit {
   }
 
   shadowPool(pool) {
-    const entry = { pool, img: this.img('shadowpool', pool.x, pool.y + 2, 905).setScale(0.4).setAlpha(0.4) };
+    const entry = { pool, img: this.img('shadowpool', pool.x, pool.y + 2, 905).setScale(0.4).setAlpha(0.4).setLighting(false) };
     this.pools.push(entry);
     this.stats.pools++;
     return entry;
@@ -118,6 +117,7 @@ export class Stage3Hazards extends Stage2Kit {
   }
 
   copyWisps(copy) {
+    if (this.copies.length >= 2) return;
     const thin = (this.s.fx?.quality || 0) >= 2;
     const em = this.s.add.particles(0, 0, 'smoke', {
       follow: copy.sprite, followOffset: { y: -10 }, lifespan: 700,
@@ -139,7 +139,7 @@ export class Stage3Hazards extends Stage2Kit {
   }
 
   shadowBurst(x, y) {
-    this.bursts.push({ img: this.img('shadowburst', x, y - 100, 1000 + y + 2), t: 0 });
+    this.bursts.push({ img: this.img('shadowburst', x, y - 100, 1000 + y + 2).setLighting(false), t: 0 });
     this.stats.bursts++;
   }
 
@@ -156,7 +156,7 @@ export class Stage3Hazards extends Stage2Kit {
       this.glimpsed = true;
       const startX = s.camX * 0.3 - 128;
       this.glimpse = {
-        img: s.add.image(startX, MID_Y - 330, 'fade_far', 0).setScrollFactor(0.3, 1).setDepth(-60),
+        img: s.add.image(startX, MID_Y - 330, 'fade_far', 0).setScrollFactor(0.3, 1).setDepth(-60).setLighting(false),
         t: 0,
       };
       say('riley_st3_glimpse_01', s.caption, false);
