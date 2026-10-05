@@ -13,21 +13,25 @@ const hex = v => typeof v === 'string' ? parseInt(v, 16) : v;   // stage2.js:34 
 
 /** per-channel linear blend of two 0xRRGGBB colours */
 export function lerpColor(a, b, u) {
-  const ch = s => { const ca = (a >> s) & 255, cb = (b >> s) & 255; return Math.round(ca + (cb - ca) * u); };
-  return (ch(16) << 16) | (ch(8) << 8) | ch(0);
+  return (lerpChannel(a, b, u, 16) << 16) | (lerpChannel(a, b, u, 8) << 8) | lerpChannel(a, b, u, 0);
 }
+const lerpChannel = (a, b, u, s) => { const ca = (a >> s) & 255; return Math.round(ca + (((b >> s) & 255) - ca) * u); };
 
 /** time of day by camera x. keys: [{ x, ambient, farMix, sunI }], x strictly increasing. Returns a fresh object. */
-export function timeOfDay(camX, keys) {
-  if (!keys || !keys.length) return { ...TOD_FALLBACK };
+export function timeOfDay(camX, keys, out = {}) {
+  if (!keys || !keys.length) return Object.assign(out, TOD_FALLBACK);
   const k0 = keys[0];
-  if (keys.length === 1) return { t: 0, ambient: hex(k0.ambient), farMix: k0.farMix, sunI: k0.sunI, torchK: 0 };
+  if (keys.length === 1) {
+    out.t = out.torchK = 0; out.ambient = hex(k0.ambient); out.farMix = k0.farMix; out.sunI = k0.sunI; return out;
+  }
   const last = keys[keys.length - 1];
   const t = clamp((camX - k0.x) / (last.x - k0.x), 0, 1);
   const x = clamp(camX, k0.x, last.x);
   let i = 0; while (i < keys.length - 2 && x > keys[i + 1].x) i++;
   const a = keys[i], b = keys[i + 1], u = clamp((x - a.x) / (b.x - a.x), 0, 1);
-  return { t, ambient: lerpColor(hex(a.ambient), hex(b.ambient), u), farMix: a.farMix + (b.farMix - a.farMix) * u, sunI: a.sunI + (b.sunI - a.sunI) * u, torchK: t };
+  out.t = out.torchK = t; out.ambient = lerpColor(hex(a.ambient), hex(b.ambient), u);
+  out.farMix = a.farMix + (b.farMix - a.farMix) * u; out.sunI = a.sunI + (b.sunI - a.sunI) * u;
+  return out;
 }
 
 export function queueStage3(scene) {
@@ -135,7 +139,7 @@ export class Stage3Kit extends Stage2Kit {
   }
   // ---------- per frame ----------
   update(dt) {
-    const s = this.s, R = s.riley, cfg = this.cfg, tod = this.tod = timeOfDay(s.camX, this.keys);
+    const s = this.s, R = s.riley, cfg = this.cfg, tod = timeOfDay(s.camX, this.keys, this.tod);
     s.ambient = s.backdropIsLit === false ? this.ambientUnlit : tod.ambient;
     if (s.lightsOn !== false) s.lights.setAmbientColor(s.ambient);
     this.farNight.setAlpha(tod.farMix);
@@ -154,15 +158,18 @@ export class Stage3Kit extends Stage2Kit {
       const a = p.age += dt;
       p.L.baseI = p.I * (a < TORCH_RAMP ? TORCH_FLARE * a / TORCH_RAMP : Math.max(1, TORCH_FLARE - (TORCH_FLARE - 1) * (a - TORCH_RAMP) / TORCH_SETTLE));
     }
-    const A = cfg.atmos || {}, thin = s.fx.quality >= 2;
-    if (!this.nightLayer && tod.farMix >= (A.nightFrom ?? 0.5)) {
-      const n = A.night || {}, base = n.frequency || 90, th = n.thin || 300;
+    const A = cfg.atmos, thin = s.fx.quality >= 2;
+    if (!this.nightLayer && tod.farMix >= (A?.nightFrom ?? 0.5)) {
+      const n = A?.night || {}, base = n.frequency || 90, th = n.thin || 300;
       this.nightLayer = s.add.particles(0, 0, 'ember', { x: { min: -100, max: VW + 300 }, y: { min: LANE_TOP - 200, max: VH }, lifespan: 4000, speedY: { min: -40, max: -15 }, speedX: { min: -12, max: 12 }, scale: { start: 0.9, end: 0 }, alpha: { start: 0.7, end: 0 }, tint: hex(n.tint) || 0xffb070, blendMode: 'ADD', frequency: thin ? th : base }).setScrollFactor(0).setDepth(-45);
       this.emitters.push({ em: this.nightLayer, base, thin: th });
     }
     if (tod.farMix >= 1 && !this.dayStopped) { this.motes.stop(); this.dayStopped = true; }
     for (const e of this.emitters) { const f = thin ? e.thin : e.base; if (e.em.frequency !== f) e.em.frequency = f; }
-    this.updateArrows(dt, R); this.updateSky(dt, R); this.updateStars(dt); this.updateSticks(dt);
+    if (this.arrows.length) this.updateArrows(dt, R);
+    if (this.skyArrows.length) this.updateSky(dt, R);
+    if (this.stars.length) this.updateStars(dt);
+    if (this.sticks.length) this.updateSticks(dt);
   }
   onZoneClear(i) {}
 }

@@ -22,7 +22,7 @@ export const GRABBED = Object.freeze({ mashKeys: Object.freeze(['attack', 'jump'
 export class Riley extends Fighter {
   constructor(scene, x, y) {
     super(scene, RILEY_DEF, x, y);
-    this.saidin = 100; this.loialReady = true; this.lives = 3; this.inv = 0; this.combo = 0; this.comboT = 0; this.maxCombo = 0; this.score = 0; this.hurtStreak = 0; this.grabbedBy = null; this.lastGrabber = null; this.mashDir = '0,0'; this.shoveFx = false;
+    this.saidin = 100; this.loialReady = true; this.lives = 3; this.inv = 0; this.combo = 0; this.comboT = 0; this.maxCombo = 0; this.score = 0; this.hurtStreak = 0; this.grabbedBy = null; this.lastGrabber = null; this.mashDir = 0; this.shoveFx = false;
     this.setState('idle', 'idle');
   }
   get busy() { return !['idle', 'walk', 'run'].includes(this.state); }
@@ -156,7 +156,7 @@ export class Riley extends Fighter {
   /** T4 contract: a cutthroat caught him (it already set grabbedBy, facing and vx) */
   enterGrabbed(c) {
     this.lastGrabber = c; this.atk = null; this.next = false; this.kicked = false; this.vx = 0;
-    this.mashDir = `${this.scene.inp?.x || 0},${this.scene.inp?.y || 0}`;   // a direction already held is not "new"
+    this.mashDir = (this.scene.inp?.x || 0) + 3 * (this.scene.inp?.y || 0);   // nine distinct directions; neutral is 0
     this.setState('grabbed', 'grabbed');
   }
   /** T4 contract: the hold ended. 'escape' plays the break-free; 'throw'/'break' only leave the grabbed pose
@@ -171,8 +171,8 @@ export class Riley extends Fighter {
     if (!c) return this.setState('idle', 'idle');   // safety: the hold ended without leaveGrabbed
     let n = 0;
     for (const a of GRABBED.mashKeys) if (inp.take(a)) n++;   // jump/special/balefire never act while held
-    const d = `${inp.x || 0},${inp.y || 0}`;
-    if (d !== this.mashDir && d !== '0,0') n++;                  // every new (non-neutral) direction adds 1
+    const d = (inp.x || 0) + 3 * (inp.y || 0);
+    if (d !== this.mashDir && d !== 0) n++;                  // every new (non-neutral) direction adds 1
     this.mashDir = d;
     for (let i = 0; i < n && this.grabbedBy; i++) this.grabbedBy.mash();   // stops once mash() frees him
   }

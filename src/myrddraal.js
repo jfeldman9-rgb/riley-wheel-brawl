@@ -28,6 +28,8 @@ export const FADE = deep({
 });
 const { blink, fear, split, counter, lunge, thrust, reduction, wake, melt } = FADE;
 const NO_FEAR = ['hurt', 'down', 'getup', 'balefire', 'grabbed', 'escape'];
+const HIT_SKIP = ['dead', 'down', 'getup', 'defeated', 'sunk'], OPEN = ['approach', 'wait'];
+const ARMOR = ['blinkout', 'blinkin', 'fear', 'split', 'intro'], THRUST = { ...TYPES.fade.atk, ...thrust };
 const app = e => e.setState('approach', 'walk');
 
 export const calmMotion = () => q.get('flash') === '0' || !!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
@@ -70,7 +72,7 @@ export class Myrddraal extends Enemy {
   }
   get grabbable() { return false; }
   poise() { return 9; }
-  get canBeHit() { return this.alive && !this.entering && !['dead', 'down', 'getup', 'defeated', 'sunk'].includes(this.state); }
+  get canBeHit() { return this.alive && !this.entering && !HIT_SKIP.includes(this.state); }
   get auraActive() { return this.auraOn && this.dispelT <= 0 && this.alive; }
 
   update(dt) {
@@ -83,7 +85,7 @@ export class Myrddraal extends Enemy {
     this.phase = ph; s.onBossPhase(this, ph);
     if (ph === 2) this.pendingFear = true;
     if (ph === 3) this.pendingSplit = true;
-    if (['approach', 'wait'].includes(this.state)) this.cool = 0;
+    if (OPEN.includes(this.state)) this.cool = 0;
     }
   }
   this.nextBlink -= dt; this.lungeAt -= dt;
@@ -95,7 +97,7 @@ export class Myrddraal extends Enemy {
     if (!this.fi && !this.whooshed) { this.whooshed = true; sfx.shadowWhoosh?.(); }
     if (this.done) { this.whooshed = false; this.introDone = true; this.cool = 1; app(this); }
     return;
-    case 'attack': return this.attacking(dt);
+    case 'attack': return this.attacking();
     case 'lunge': return lungeTick(this, dt, lunge.hit);
     case 'blinkout':
     if (this.done) {
@@ -152,19 +154,19 @@ export class Myrddraal extends Enemy {
   this.lastActive = -1; this.scene.onEnemyAttack(this);
   }
 
-  attacking(dt) {
+  attacking() {
   const a = this.atk, fi = this.fi;
   if (a.active.includes(fi)) {
     if (fi !== this.lastActive) { this.lastActive = fi; this.hitIds.clear(); sfx[a.sfx || 'swing']?.(); }
-    this.scene.resolveAttack(this, fi === a.active[a.active.length - 1] && a === this.T.atk ? { ...a, ...thrust } : a);
+    this.scene.resolveAttack(this, fi === a.active[a.active.length - 1] && a === this.T.atk ? THRUST : a);
   }
-  if (this.done) { this.lastActive = -1; this.cool = rand(...this.T.cool); app(this); }
+  if (this.done) { this.cool = rand(...this.T.cool); app(this); }
   }
 
   startLunge() {
   this.face(sign(this.target.x - this.x) || 1);
   this.setState('lunge', 'lunge');
-  this.forceLungeT = 0; this.lungeAt = rand(...split.relunge); this.hitIds.clear();
+  this.forceLungeT = 0; this.lungeAt = rand(...split.relunge);
   this.scene.kit?.glint?.(this.x - this.facing * 60, this.y - 220, 0xffffff);
   sfx.glint();
   }
@@ -208,7 +210,7 @@ export class Myrddraal extends Enemy {
     if (this.hp <= 0) this.die(dir, h);
     return true;
   }
-  if (['blinkout', 'blinkin', 'fear', 'split', 'intro'].includes(st) || this.wake > 0) {
+  if (ARMOR.includes(st) || this.wake > 0) {
     this.hp -= h.dmg * reduction; this.shudder = 0.1; this.flashArmor();
     if (this.hp <= 0) this.die(dir, h);
     return true;
@@ -284,7 +286,7 @@ export class FadeCopy extends Enemy {
   this.play('walk', (mx || my) ? (mx && sign(mx) !== this.facing ? 0.75 : 1) : 0.0001, false);
   }
 
-  startLunge() { this.face(sign(this.target.x - this.x) || 1); this.setState('lunge', 'lunge'); this.hitIds.clear(); }
+  startLunge() { this.face(sign(this.target.x - this.x) || 1); this.setState('lunge', 'lunge'); }
   update(dt) {
   this.lungeAt -= dt;
   if (this.state === 'lunge') {
