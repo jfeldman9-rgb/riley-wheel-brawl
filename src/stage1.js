@@ -13,6 +13,7 @@ import { Cutscene, TWIX_SCRIPT } from './twix.js';
 import { STAGES, STAGE1, stageEnabled, maxStage, stageFromQuery, resolveStage, STAGE_CHARS, STAGE_TEXTURES } from './stages.js';
 import { WHITECLOAKS } from './whitecloaks.js';
 import { Stage2Kit, queueStage2, STORY_PANELS, STORY_SCRIPT } from './stage2.js';
+import { queueStage3 } from './stage3.js';
 import { MusicDirector } from './music.js';
 
 // Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
@@ -66,13 +67,11 @@ function queueStage2All(scene) {
   queuePowerArt(scene, { twix: false });
 }
 
-function queueStage3Stub(scene) {
-  queuePowerArt(scene, { twix: false });
-}
+function queueStage3All(scene) { queueStage3(scene); queuePowerArt(scene, { twix: false }); }
 
 STAGES[1].queue = queueStage1;
 STAGES[2].queue = queueStage2All;
-STAGES[3].queue = queueStage3Stub;
+STAGES[3].queue = queueStage3All;
 
 STAGES[1].start = scene => {
   scene.music?.set('stage');
