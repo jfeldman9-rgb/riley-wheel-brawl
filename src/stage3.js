@@ -1,8 +1,4 @@
-// Stage 3 kit: Caemlyn from a warm afternoon into night. Day and night far plates cross-faded by alpha, two mid
-// plates, three floors, a sun that fades out and is removed by the boss zone, torches that ignite as the day passes
-// and day/night particle layers, all driven by the pure timeOfDay(camX, keys) (assets/bg3/lights.json).
-// T3 also owns all Stage 3 loading (queueStage3, including the Stage 3 char atlases from assets/stage3/chars).
-// Extends Stage2Kit so every hook the scene, the Whitecloaks and the bot call keeps working.
+// Caemlyn lighting and loading; inherited combat hooks come from Stage2Kit.
 import { VW, VH, LANE_TOP, WORLD_W, clamp } from './config.js';
 import { sfx, preloadClips, EXTRA_VOICE } from './audio.js';
 import { queueCharPages } from './assets.js';
@@ -35,6 +31,7 @@ export function timeOfDay(camX, keys) {
 }
 
 export function queueStage3(scene) {
+  scene.stage3LoadCleanup?.();
   const L = scene.load, has = k => scene.textures.exists(k), B = 'assets/bg3/', P = 'assets/stage3/props/';
   const img = (k, u) => { if (!has(k)) L.image(k, u); };
   img('far3_day', B + 'bg3-far-day.jpg'); img('far3_night', B + 'bg3-far-night.jpg');
@@ -51,10 +48,25 @@ export function queueStage3(scene) {
   for (const p of STORY3_PANELS) img(p.key, p.url);
   L.json('plates3', B + 'plates.json'); L.json('lights3', B + 'lights.json');
   // Stage 3 char metas are not in ALL_CHARS (boot); load them here and queue their pages once each meta arrives.
+  const pending = [];
+  const cleanup = () => {
+    for (const [event, fn] of pending) L.off?.(event, fn);
+    pending.length = 0;
+    L.off?.('complete', cleanup); L.off?.('loaderror', cleanup);
+    scene.events?.off('shutdown', cleanup);
+    scene.stage3LoadCleanup = null;
+  };
   for (const k of STAGE3_ATLASES) {
     if (scene.cache.json.get(k + '.A')) continue;
     L.json(k + '.A', 'assets/stage3/chars/' + k + '.anims.json');
-    L.once('filecomplete-json-' + k + '.A', () => queueCharPages(scene, [k]));
+    const event = 'filecomplete-json-' + k + '.A';
+    const fn = () => { queueCharPages(scene, [k]); };
+    pending.push([event, fn]); L.once(event, fn);
+  }
+  if (pending.length) {
+    scene.stage3LoadCleanup = cleanup;
+    scene.events?.once('shutdown', cleanup);
+    L.on?.('complete', cleanup); L.on?.('loaderror', cleanup);
   }
 }
 
