@@ -244,6 +244,7 @@ export class Myrddraal extends Enemy {
     const inside = !calm && this.auraActive && R.alive && hypot(R.x - this.x, R.y - this.y) <= fear.radius;
     this.fear = clamp(this.fear + (inside ? dt : -dt) / fear.fill, 0, 1);
     if (this.fear >= 1 && R.vulnerable && R.z <= 0 && !R.grabbedBy && !NO_FEAR.includes(R.state)) {
+      if (R.held) { R.held.release(); R.held = null; }
       R.setState('hurt', 'hurt', fear.hurtMs / (fear.shaken * 1000));
       R.vx = 0; this.fear = 0; this.braveT = fear.brave; bump(s, 'shaken');
     }
