@@ -779,8 +779,9 @@ test('fade: the fear meter does not fill while Riley is hurt, casting or in Bale
         const shaken = s.kit.stats.shaken || 0;
         let prev = f.fear;
         let steps = 0;
-        while (s.riley.state === name && steps < 180) {
+        while (steps < 180) {
           hold(h, f);
+          if (s.riley.state !== name) break;
           assert.ok(f.fear <= prev + 1e-9, `${name} fear ${f.fear} rose from ${prev}`);
           prev = f.fear;
           steps++;

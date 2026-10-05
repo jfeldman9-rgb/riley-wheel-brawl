@@ -136,3 +136,12 @@ Not changed: aura radius versus `TYPES.fade.pref`, the phase-3 aura during copy 
 Final size: **14,919 ≤ 16,384**. The pin is check D in `docs/stage3/BUILD-T12-T16.md`.
 Four regression tests live in `tests/stage3-fade.test.mjs`. Older cycle notes above keep
 the 14336 figure they recorded at the time.
+
+Verification on this commit: `stage3-fade` 17/17, the boss suites
+(`stage3-seeded-boss`, `stage3-campaign`, `stage3-hud`, `stage3-split-race`,
+`stage3-punish-recovery`, `stage3-boundary-hardening`) plus `full-stage-evidence`
+47/47, `full-stage-simulation` and the Stage 2 campaign/flow files 63/63.
+Stage 1's golden sim matches `docs/stage1/evidence/full-stage-simulation.json`
+with `sourceSha256` and `baseGitCommit` excluded. The frozen Stage 2 fingerprint
+at `/workspace/ag/baselines-8d8d17b/` is not on this machine, so that `cmp` was
+not run. No seeded-boss count changed.
