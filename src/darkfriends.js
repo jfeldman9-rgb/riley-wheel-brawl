@@ -164,6 +164,7 @@ export class Cutthroat extends Whitecloak {
     super.die(dir, h);
   }
   startHold(R) {
+    if (!this.alive || !R.alive || R.grabbedBy) return;
     let side = Math.sign(this.x - R.x) || -R.facing;
     const bounds = this.scene.bounds;
     if (R.x + side * CUTTHROAT.holdDx < bounds.l + 40 || R.x + side * CUTTHROAT.holdDx > bounds.r - 40) side = -side;
@@ -227,6 +228,7 @@ export class Cutthroat extends Whitecloak {
       bump(this.scene, how === 'escape' ? 'escapes' : how === 'throw' ? 'throws' : 'breaks');
     }
   }
+  destroy() { this.releaseHold('break'); super.destroy(); }
 }
 
 export const DARKFRIENDS = Object.freeze({ cutthroat: Cutthroat });

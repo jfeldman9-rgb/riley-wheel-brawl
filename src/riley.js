@@ -163,6 +163,7 @@ export class Riley extends Fighter {
    *  (the throw's hit, a hazard's hit or Loial decide what happens next) */
   leaveGrabbed(how) {
     if (how === 'escape') { this.shoveFx = false; this.vx = 0; return this.setState('escape', 'escape'); }
+    this.lastGrabber = null;
     if (this.state === 'grabbed') this.setState('idle', 'idle');
   }
   grabbed(dt, inp) {
@@ -199,9 +200,9 @@ export class Riley extends Fighter {
     this.scene.time.delayedCall(900, () => { this.hurtStreak = Math.max(0, this.hurtStreak - 1); });
     return true;
   }
-  down(dir, h) { this.setState('down', 'knockdown'); this.vx = dir * 360; this.scene.dustLater(this, 0.32); sfx.hurt(); }
+  down(dir, h) { this.grabbedBy?.releaseHold('break'); this.lastGrabber = null; this.setState('down', 'knockdown'); this.vx = dir * 360; this.scene.dustLater(this, 0.32); sfx.hurt(); }
   sync() { super.sync(); if (this.grabbedBy && this.state === 'grabbed') this.sprite.setDepth(1000 + this.y + 1); }
-  respawn() { this.alive = true; this.hp = this.maxHp; this.saidin = Math.max(this.saidin, 60); this.setState('getup', 'getup'); this.inv = 2.5; say('riley_respawn_01', this.scene.caption, false); }
+  respawn() { this.grabbedBy?.releaseHold('break'); this.lastGrabber = null; this.alive = true; this.hp = this.maxHp; this.saidin = Math.max(this.saidin, 60); this.setState('getup', 'getup'); this.inv = 2.5; say('riley_respawn_01', this.scene.caption, false); }
   // noMeter: balefire hits build no saidin (it just spent the full meter)
   landedHit(dmg, noMeter = false) { this.combo++; this.comboT = 1.6; this.maxCombo = Math.max(this.maxCombo, this.combo); if (!noMeter) this.saidin = Math.min(100, this.saidin + 3 * (this.scene.powers ? this.scene.powers.meterMul() : 1)); this.score += dmg * 10 * (1 + Math.floor(this.combo / 5)); }
 }
