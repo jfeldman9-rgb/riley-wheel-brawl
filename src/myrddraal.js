@@ -90,6 +90,8 @@ export class Myrddraal extends Enemy {
     }
     this.nextBlink -= dt; this.lungeAt -= dt;
     if (this.resplitT > 0 && (this.resplitT -= dt) <= 0 && this.phase === 3) this.pendingSplit = true;
+    // Activation and dispel share a tick, even if the light expires this frame.
+    if (this.state === 'fear' && this.fi >= fear.auraFrame && !this.auraOn) { this.auraOn = true; bump(s, 'fears', 'fear', 'FEAR AURA! FIRE OR LIGHTNING DRIVES IT BACK'); }
     this.tickFear(dt); this.tickLook(dt);
     this.st += dt; this.cool -= dt; if (this.shudder > 0) this.shudder -= dt;
     switch (this.state) {
@@ -116,7 +118,6 @@ export class Myrddraal extends Enemy {
         return;
       case 'blinkin': if (this.done) this.startAttack(); return;
       case 'fear':
-        if (this.fi >= fear.auraFrame && !this.auraOn) { this.auraOn = true; bump(s, 'fears', 'fear', 'FEAR AURA! FIRE OR LIGHTNING DRIVES IT BACK'); }
         if (this.done) { this.cool = rand(0.4, 0.8); app(this); }
         return;
       case 'split': if (this.done) { this.makeCopies(); this.cool = 0.6; app(this); } return;
