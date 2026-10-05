@@ -235,14 +235,16 @@ export class Myrddraal extends Enemy {
 
   tickFear(dt) {
     const s = this.scene, R = this.target;
+    // Only the part of this frame after both protection windows can fill fear.
+    const protectedT = min(dt, max(0, this.braveT, this.dispelT));
     if (this.auraOn && lightNear(s, this.x, fear.dispelRange)) {
       if (this.dispelT <= 0) { bump(s, 'dispels', 'dispel', 'LIGHT DRIVES THE SHADOW BACK!'); }
       this.dispelT = fear.dispel;
     } else this.dispelT = max(0, this.dispelT - dt);
-    if (this.braveT > 0) this.braveT -= dt;
+    this.braveT = max(0, this.braveT - dt);
     const calm = this.braveT > 0 || NO_FEAR.includes(R.state);
     const inside = !calm && this.auraActive && R.alive && hypot(R.x - this.x, R.y - this.y) <= fear.radius;
-    this.fear = clamp(this.fear + (inside ? dt : -dt) / fear.fill, 0, 1);
+    this.fear = inside ? clamp(max(0, this.fear - protectedT / fear.fill) + (dt - protectedT) / fear.fill, 0, 1) : clamp(this.fear - dt / fear.fill, 0, 1);
     if (this.fear >= 1 && R.vulnerable && R.z <= 0 && !R.grabbedBy && !NO_FEAR.includes(R.state)) {
       if (R.held) { R.held.release(); R.held = null; }
       R.setState('hurt', 'hurt', fear.hurtMs / (fear.shaken * 1000));
