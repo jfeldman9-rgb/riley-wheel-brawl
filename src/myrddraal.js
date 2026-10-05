@@ -63,12 +63,12 @@ function lungeTick(e, dt, hit) {
 
 export class Myrddraal extends Enemy {
   constructor(s, x, y) {
-  super(s, 'fade', x, y);
-  this.T = { ...TYPES.fade };
-  this.auraK = this.fear = this.dispelT = this.resplitT = this.forceLungeT = this.meltT = this.wake = this.t = 0;
-  this.isCopy = this.introDone = this.auraOn = this.pendingFear = this.pendingSplit = this.melting = this.whooshed = false;
-  this.phase = 1; this.cool = 1.6; this.lungeAt = 99; this.lastActive = -1;
-  this.nextBlink = rand(...blink.every); this.pool = null; this.copies = [];
+    super(s, 'fade', x, y);
+    this.T = { ...TYPES.fade };
+    this.auraK = this.fear = this.dispelT = this.resplitT = this.forceLungeT = this.meltT = this.wake = this.t = 0;
+    this.isCopy = this.introDone = this.auraOn = this.pendingFear = this.pendingSplit = this.melting = this.whooshed = false;
+    this.phase = 1; this.cool = 1.6; this.lungeAt = 99; this.lastActive = -1;
+    this.nextBlink = rand(...blink.every); this.pool = null; this.copies = [];
   }
   get grabbable() { return false; }
   poise() { return 9; }
@@ -76,151 +76,151 @@ export class Myrddraal extends Enemy {
   get auraActive() { return this.auraOn && this.dispelT <= 0 && this.alive; }
 
   update(dt) {
-  this.t += dt; const s = this.scene, R = this.target;
-  if (this.state === 'getup' && this.done) { app(this); this.cool = 0.2; this.wake = wake; return; }
-  if (this.wake > 0) this.wake -= dt;
-  if (this.alive) {
-    const ph = this.hp / this.maxHp > 0.66 ? 1 : this.hp / this.maxHp > 0.33 ? 2 : 3;
-    if (ph !== this.phase) {
-    this.phase = ph; s.onBossPhase(this, ph);
-    if (ph === 2) this.pendingFear = true;
-    if (ph === 3) this.pendingSplit = true;
-    if (OPEN.includes(this.state)) this.cool = 0;
+    this.t += dt; const s = this.scene, R = this.target;
+    if (this.state === 'getup' && this.done) { app(this); this.cool = 0.2; this.wake = wake; return; }
+    if (this.wake > 0) this.wake -= dt;
+    if (this.alive) {
+      const ph = this.hp / this.maxHp > 0.66 ? 1 : this.hp / this.maxHp > 0.33 ? 2 : 3;
+      if (ph !== this.phase) {
+        this.phase = ph; s.onBossPhase(this, ph);
+        if (ph === 2) this.pendingFear = true;
+        if (ph === 3) this.pendingSplit = true;
+        if (OPEN.includes(this.state)) this.cool = 0;
+      }
     }
-  }
-  this.nextBlink -= dt; this.lungeAt -= dt;
-  if (this.resplitT > 0 && (this.resplitT -= dt) <= 0 && this.phase === 3) this.pendingSplit = true;
-  this.tickFear(dt); this.tickLook(dt);
-  this.st += dt; this.cool -= dt; if (this.shudder > 0) this.shudder -= dt;
-  switch (this.state) {
-    case 'intro':
-    if (!this.fi && !this.whooshed) { this.whooshed = true; sfx.shadowWhoosh?.(); }
-    if (this.done) { this.whooshed = false; this.introDone = true; this.cool = 1; app(this); }
-    return;
-    case 'attack': return this.attacking();
-    case 'lunge': return lungeTick(this, dt, lunge.hit);
-    case 'blinkout':
-    if (this.done) {
-      this.state = 'sunk'; this.st = 0;
-      this.pool = { ...poolSpot(R, s.bounds), t: 0 };
-      this.pool.fx = s.kit?.shadowPool?.(this.pool);
-      sfx.shadowWhoosh?.();
+    this.nextBlink -= dt; this.lungeAt -= dt;
+    if (this.resplitT > 0 && (this.resplitT -= dt) <= 0 && this.phase === 3) this.pendingSplit = true;
+    this.tickFear(dt); this.tickLook(dt);
+    this.st += dt; this.cool -= dt; if (this.shudder > 0) this.shudder -= dt;
+    switch (this.state) {
+      case 'intro':
+        if (!this.fi && !this.whooshed) { this.whooshed = true; sfx.shadowWhoosh?.(); }
+        if (this.done) { this.whooshed = false; this.introDone = true; this.cool = 1; app(this); }
+        return;
+      case 'attack': return this.attacking();
+      case 'lunge': return lungeTick(this, dt, lunge.hit);
+      case 'blinkout':
+        if (this.done) {
+          this.state = 'sunk'; this.st = 0;
+          this.pool = { ...poolSpot(R, s.bounds), t: 0 };
+          this.pool.fx = s.kit?.shadowPool?.(this.pool);
+          sfx.shadowWhoosh?.();
+        }
+        return;
+      case 'sunk':
+        this.pool.t += dt;
+        if (this.st >= blink.poolWarn) {
+          this.x = this.pool.x; this.y = this.pool.y; this.face(sign(R.x - this.x) || 1);
+          s.kit?.shadowPoolEnd?.(this.pool); this.pool = null; this.setState('blinkin', 'blinkin'); this.sprite.setAlpha(1);
+        }
+        return;
+      case 'blinkin': if (this.done) this.startAttack(); return;
+      case 'fear':
+        if (this.fi >= fear.auraFrame && !this.auraOn) { this.auraOn = true; bump(s, 'fears', 'fear', 'FEAR AURA! FIRE OR LIGHTNING DRIVES IT BACK'); }
+        if (this.done) { this.cool = rand(0.4, 0.8); app(this); }
+        return;
+      case 'split': if (this.done) { this.makeCopies(); this.cool = 0.6; app(this); } return;
+      case 'stagger': if (this.st >= counter.stagger) { this.cool = rand(0.3, 0.6); app(this); } return;
+      case 'defeated':
+        if (this.done && !this.melting) { this.melting = true; s.kit?.shadowBurst?.(this.x, this.y); }
+        if (this.melting) { this.meltT += dt; const a = max(0, 1 - this.meltT / melt); this.setA(a); if (!a) this.gone = true; }
+        return;
+      default: this.st -= dt; this.cool += dt; if (this.shudder > 0) this.shudder += dt; return super.update(dt);
     }
-    return;
-    case 'sunk':
-    this.pool.t += dt;
-    if (this.st >= blink.poolWarn) {
-      this.x = this.pool.x; this.y = this.pool.y; this.face(sign(R.x - this.x) || 1);
-      s.kit?.shadowPoolEnd?.(this.pool); this.pool = null; this.setState('blinkin', 'blinkin'); this.sprite.setAlpha(1);
-    }
-    return;
-    case 'blinkin': if (this.done) this.startAttack(); return;
-    case 'fear':
-    if (this.fi >= fear.auraFrame && !this.auraOn) { this.auraOn = true; bump(s, 'fears', 'fear', 'FEAR AURA! FIRE OR LIGHTNING DRIVES IT BACK'); }
-    if (this.done) { this.cool = rand(0.4, 0.8); app(this); }
-    return;
-    case 'split': if (this.done) { this.makeCopies(); this.cool = 0.6; app(this); } return;
-    case 'stagger': if (this.st >= counter.stagger) { this.cool = rand(0.3, 0.6); app(this); } return;
-    case 'defeated':
-    if (this.done && !this.melting) { this.melting = true; s.kit?.shadowBurst?.(this.x, this.y); }
-    if (this.melting) { this.meltT += dt; const a = max(0, 1 - this.meltT / melt); this.setA(a); if (!a) this.gone = true; }
-    return;
-    default: this.st -= dt; this.cool += dt; if (this.shudder > 0) this.shudder += dt; return super.update(dt);
-  }
   }
 
   think(dt) {
-  if (this.entering) return;
-  if (!this.introDone) return this.setState('intro', 'intro');
-  const R = this.target, s = this.scene;
-  if (this.forceLungeT > 0 && R.alive) return this.startLunge();
-  if (this.cool <= 0 && R.alive && R.state !== 'down') {
-    if (this.pendingFear) return this.startFear();
-    if (this.pendingSplit) return this.startSplit();
-    if (this.nextBlink <= 0 && !this.copies.length) return this.startBlink();
-    if (this.phase === 3 && this.lungeAt <= 0) return this.startLunge();
-    const adx = abs(R.x - this.x);
-    if (adx >= lunge.range[0] && adx <= lunge.range[1] &&
-      abs(R.y - this.y) < lunge.lane && s.attackTokens() < s.maxTokens && Math.random() < lunge.chance) {
-    return this.startLunge();
+    if (this.entering) return;
+    if (!this.introDone) return this.setState('intro', 'intro');
+    const R = this.target, s = this.scene;
+    if (this.forceLungeT > 0 && R.alive) return this.startLunge();
+    if (this.cool <= 0 && R.alive && R.state !== 'down') {
+      if (this.pendingFear) return this.startFear();
+      if (this.pendingSplit) return this.startSplit();
+      if (this.nextBlink <= 0 && !this.copies.length) return this.startBlink();
+      if (this.phase === 3 && this.lungeAt <= 0) return this.startLunge();
+      const adx = abs(R.x - this.x);
+      if (adx >= lunge.range[0] && adx <= lunge.range[1] &&
+        abs(R.y - this.y) < lunge.lane && s.attackTokens() < s.maxTokens && Math.random() < lunge.chance) {
+        return this.startLunge();
+      }
     }
-  }
-  super.think(dt);
+    super.think(dt);
   }
 
   startAttack() {
-  this.face(sign(this.target.x - this.x) || 1);
-  this.atk = this.T.atk; this.setState('attack', this.T.atk.anim);
-  this.lastActive = -1; this.scene.onEnemyAttack(this);
+    this.face(sign(this.target.x - this.x) || 1);
+    this.atk = this.T.atk; this.setState('attack', this.T.atk.anim);
+    this.lastActive = -1; this.scene.onEnemyAttack(this);
   }
 
   attacking() {
-  const a = this.atk, fi = this.fi;
-  if (a.active.includes(fi)) {
-    if (fi !== this.lastActive) { this.lastActive = fi; this.hitIds.clear(); sfx[a.sfx || 'swing']?.(); }
-    this.scene.resolveAttack(this, fi === a.active[a.active.length - 1] && a === this.T.atk ? THRUST : a);
-  }
-  if (this.done) { this.cool = rand(...this.T.cool); app(this); }
+    const a = this.atk, fi = this.fi;
+    if (a.active.includes(fi)) {
+      if (fi !== this.lastActive) { this.lastActive = fi; this.hitIds.clear(); sfx[a.sfx || 'swing']?.(); }
+      this.scene.resolveAttack(this, fi === a.active[a.active.length - 1] && a === this.T.atk ? THRUST : a);
+    }
+    if (this.done) { this.cool = rand(...this.T.cool); app(this); }
   }
 
   startLunge() {
-  this.face(sign(this.target.x - this.x) || 1);
-  this.setState('lunge', 'lunge');
-  this.forceLungeT = 0; this.lungeAt = rand(...split.relunge);
-  this.scene.kit?.glint?.(this.x - this.facing * 60, this.y - 220, 0xffffff);
-  sfx.glint();
+    this.face(sign(this.target.x - this.x) || 1);
+    this.setState('lunge', 'lunge');
+    this.forceLungeT = 0; this.lungeAt = rand(...split.relunge);
+    this.scene.kit?.glint?.(this.x - this.facing * 60, this.y - 220, 0xffffff);
+    sfx.glint();
   }
 
   startBlink() {
-  this.setState('blinkout', 'blinkout');
-  this.nextBlink = rand(...(this.phase === 1 ? blink.every : blink.everyP2));
-  bump(this.scene, 'blinks');
+    this.setState('blinkout', 'blinkout');
+    this.nextBlink = rand(...(this.phase === 1 ? blink.every : blink.everyP2));
+    bump(this.scene, 'blinks');
   }
 
   startFear() { this.pendingFear = false; this.setState('fear', 'fear'); }
   startSplit() { this.pendingSplit = false; this.setState('split', 'split'); }
 
   makeCopies() {
-  const s = this.scene, R = this.target, b = s.bounds, sd = sign(this.x - R.x) || 1;
-  const spots = [R.x - sd * split.spread[0], R.x + sd * split.spread[1]];
-  this.copies = [0, 1].map(i => {
-    const c = new FadeCopy(s, clamp(spots[i], b.l + 80, b.r - 80), clamp(R.y + (i ? 30 : -30), LANE_TOP, LANE_BOT), this);
-    s.enemies.push(c); return c;
-  });
-  const order = [...split.order].sort(() => Math.random() - 0.5);
-  this.lungeAt = order[0]; this.copies[0].lungeAt = order[1]; this.copies[1].lungeAt = order[2];
-  bump(s, 'splits', 'copies', 'ONLY THE REAL ONE CASTS A SHADOW AND CATCHES THE TORCHLIGHT');
+    const s = this.scene, R = this.target, b = s.bounds, sd = sign(this.x - R.x) || 1;
+    const spots = [R.x - sd * split.spread[0], R.x + sd * split.spread[1]];
+    this.copies = [0, 1].map(i => {
+      const c = new FadeCopy(s, clamp(spots[i], b.l + 80, b.r - 80), clamp(R.y + (i ? 30 : -30), LANE_TOP, LANE_BOT), this);
+      s.enemies.push(c); return c;
+    });
+    const order = [...split.order].sort(() => Math.random() - 0.5);
+    this.lungeAt = order[0]; this.copies[0].lungeAt = order[1]; this.copies[1].lungeAt = order[2];
+    bump(s, 'splits', 'copies', 'ONLY THE REAL ONE CASTS A SHADOW AND CATCHES THE TORCHLIGHT');
   }
 
   inParry() {
-  return this.phase === 3 && ((this.state === 'lunge' && this.fi <= 2) || (this.state === 'attack' && this.fi <= 4));
+    return this.phase === 3 && ((this.state === 'lunge' && this.fi <= 2) || (this.state === 'attack' && this.fi <= 4));
   }
 
   takeHit(h, from) {
-  if (!this.canBeHit) return false;
-  const s = this.scene, dir = sign(this.x - from.x) || 1, st = this.state;
-  const isParry = this.inParry(), isBlink = st === 'blinkin' && blink.counterFrames.includes(this.fi);
-  if (isBlink || isParry || st === 'stagger') {
-    this.hp -= h.dmg * counter.mul; this.shudder = 0.12;
-    if (isBlink || isParry) {
-    this.setState('stagger', 'stagger'); this.vx = 0;
-    bump(s, isParry ? 'parries' : 'counters', 'counter', 'COUNTER!');
-    if (isParry) { this.clearCopies(false); this.pendingSplit = false; this.resplitT = rand(...split.every); }
+    if (!this.canBeHit) return false;
+    const s = this.scene, dir = sign(this.x - from.x) || 1, st = this.state;
+    const isParry = this.inParry(), isBlink = st === 'blinkin' && blink.counterFrames.includes(this.fi);
+    if (isBlink || isParry || st === 'stagger') {
+      this.hp -= h.dmg * counter.mul; this.shudder = 0.12;
+      if (isBlink || isParry) {
+        this.setState('stagger', 'stagger'); this.vx = 0;
+        bump(s, isParry ? 'parries' : 'counters', 'counter', 'COUNTER!');
+        if (isParry) { this.clearCopies(false); this.pendingSplit = false; this.resplitT = rand(...split.every); }
+      }
+      if (this.hp <= 0) this.die(dir, h);
+      return true;
     }
-    if (this.hp <= 0) this.die(dir, h);
-    return true;
-  }
-  if (ARMOR.includes(st) || this.wake > 0) {
-    this.hp -= h.dmg * reduction; this.shudder = 0.1; this.flashArmor();
-    if (this.hp <= 0) this.die(dir, h);
-    return true;
-  }
-  return super.takeHit(h, from);
+    if (ARMOR.includes(st) || this.wake > 0) {
+      this.hp -= h.dmg * reduction; this.shudder = 0.1; this.flashArmor();
+      if (this.hp <= 0) this.die(dir, h);
+      return true;
+    }
+    return super.takeHit(h, from);
   }
 
   die(dir, h) {
-  this.heldBy = null; this.alive = false; this.hitsTaken = 0; this.vx = (dir || 1) * 60;
-  this.clearAbilities(); this.setState('defeated', 'defeated'); this.scene.onEnemyDie(this);
+    this.heldBy = null; this.alive = false; this.hitsTaken = 0; this.vx = (dir || 1) * 60;
+    this.clearAbilities(); this.setState('defeated', 'defeated'); this.scene.onEnemyDie(this);
   }
 
   clearAbilities() { this.clearCopies(false); if (this.pool) { this.scene.kit?.shadowPoolEnd?.(this.pool); this.pool = null; } this.auraOn = false; this.fear = 0; this.pendingFear = this.pendingSplit = false; this.resplitT = 0; }
@@ -234,66 +234,66 @@ export class Myrddraal extends Enemy {
   physics(dt) { if (this.state !== 'sunk') super.physics(dt); }
 
   tickFear(dt) {
-  const s = this.scene, R = this.target;
-  if (this.auraOn && lightNear(s, this.x, fear.dispelRange)) {
-    if (this.dispelT <= 0) { bump(s, 'dispels', 'dispel', 'LIGHT DRIVES THE SHADOW BACK!'); }
-    this.dispelT = fear.dispel;
-  } else this.dispelT = max(0, this.dispelT - dt);
-  const inside = this.auraActive && R.alive && hypot(R.x - this.x, R.y - this.y) <= fear.radius;
-  this.fear = clamp(this.fear + (inside ? dt : -dt) / fear.fill, 0, 1);
-  if (this.fear >= 1 && R.vulnerable && R.z <= 0 && !R.grabbedBy && !NO_FEAR.includes(R.state)) {
-    R.setState('hurt', 'hurt', fear.hurtMs / (fear.shaken * 1000));
-    R.vx = 0; this.fear = 0; bump(s, 'shaken');
-  }
+    const s = this.scene, R = this.target;
+    if (this.auraOn && lightNear(s, this.x, fear.dispelRange)) {
+      if (this.dispelT <= 0) { bump(s, 'dispels', 'dispel', 'LIGHT DRIVES THE SHADOW BACK!'); }
+      this.dispelT = fear.dispel;
+    } else this.dispelT = max(0, this.dispelT - dt);
+    const inside = this.auraActive && R.alive && hypot(R.x - this.x, R.y - this.y) <= fear.radius;
+    this.fear = clamp(this.fear + (inside ? dt : -dt) / fear.fill, 0, 1);
+    if (this.fear >= 1 && R.vulnerable && R.z <= 0 && !R.grabbedBy && !NO_FEAR.includes(R.state)) {
+      R.setState('hurt', 'hurt', fear.hurtMs / (fear.shaken * 1000));
+      R.vx = 0; this.fear = 0; bump(s, 'shaken');
+    }
   }
 
   tickLook(dt) {
-  const s = this.scene, k = this.auraActive ? 1 : 0;
-  if (this.auraK < k) this.auraK = min(k, this.auraK + dt / fear.rampIn);
-  else if (this.auraK > k) this.auraK = max(k, this.auraK - dt / fear.rampOut);
-  const vig = fear.vig;
-  if (s.vignette) {
-    s.vignette.strength = this.auraK === 0 ? vig[0] : (vig[0] + (vig[1] - vig[0]) * this.auraK +
-    (calmMotion() ? 0 : fear.pulse * this.auraK * sin(this.t * 4)));
-  }
-  if (s.fires) for (const L of s.fires) {
-    L.baseR ??= L.radius;
-    L.radius = this.auraK === 0 ? L.baseR : L.baseR * (1 - (1 - fear.torchDim) * this.auraK);
-  }
+    const s = this.scene, k = this.auraActive ? 1 : 0;
+    if (this.auraK < k) this.auraK = min(k, this.auraK + dt / fear.rampIn);
+    else if (this.auraK > k) this.auraK = max(k, this.auraK - dt / fear.rampOut);
+    const vig = fear.vig;
+    if (s.vignette) {
+      s.vignette.strength = this.auraK === 0 ? vig[0] : (vig[0] + (vig[1] - vig[0]) * this.auraK +
+      (calmMotion() ? 0 : fear.pulse * this.auraK * sin(this.t * 4)));
+    }
+    if (s.fires) for (const L of s.fires) {
+      L.baseR ??= L.radius;
+      L.radius = this.auraK === 0 ? L.baseR : L.baseR * (1 - (1 - fear.torchDim) * this.auraK);
+    }
   }
 }
 
 export class FadeCopy extends Enemy {
   constructor(s, x, y, owner) {
-  super(s, 'fadecopy', x, y);
-  this.sprite.setLighting(false);
-  this.isCopy = this.introDone = true; this.entering = false;
-  this.owner = owner; this.lungeAt = 99; this.cool = 0.5;
-  this.shadow.setVisible(false);
-  s.kit?.copyWisps?.(this);
+    super(s, 'fadecopy', x, y);
+    this.sprite.setLighting(false);
+    this.isCopy = this.introDone = true; this.entering = false;
+    this.owner = owner; this.lungeAt = 99; this.cool = 0.5;
+    this.shadow.setVisible(false);
+    s.kit?.copyWisps?.(this);
   }
   get grabbable() { return false; }
 
   think(dt) {
-  if (this.entering) return;
-  const R = this.target, s = this.scene;
-  if (this.lungeAt <= 0 && s.attackTokens() < s.maxTokens) { this.startLunge(); this.lungeAt = rand(...split.relunge); return; }
-  const sl = this.slot(), dx = sl.x - this.x, dy = sl.y - this.y;
-  this.face(sign(R.x - this.x));
-  const tx = dx + ((this.cool > 0 || s.attackTokens() >= s.maxTokens) ? sl.side * 70 : 0);
-  const mx = abs(tx) > 8 ? sign(tx) : 0, my = abs(dy) > 6 ? sign(dy) : 0, sp = this.T.speed * (abs(tx) > 400 ? 1.25 : 1);
-  this.x += (mx * sp + s.separation(this)) * dt; this.y += my * sp * 0.55 * dt;
-  this.play('walk', (mx || my) ? (mx && sign(mx) !== this.facing ? 0.75 : 1) : 0.0001, false);
+    if (this.entering) return;
+    const R = this.target, s = this.scene;
+    if (this.lungeAt <= 0 && s.attackTokens() < s.maxTokens) { this.startLunge(); this.lungeAt = rand(...split.relunge); return; }
+    const sl = this.slot(), dx = sl.x - this.x, dy = sl.y - this.y;
+    this.face(sign(R.x - this.x));
+    const tx = dx + ((this.cool > 0 || s.attackTokens() >= s.maxTokens) ? sl.side * 70 : 0);
+    const mx = abs(tx) > 8 ? sign(tx) : 0, my = abs(dy) > 6 ? sign(dy) : 0, sp = this.T.speed * (abs(tx) > 400 ? 1.25 : 1);
+    this.x += (mx * sp + s.separation(this)) * dt; this.y += my * sp * 0.55 * dt;
+    this.play('walk', (mx || my) ? (mx && sign(mx) !== this.facing ? 0.75 : 1) : 0.0001, false);
   }
 
   startLunge() { this.face(sign(this.target.x - this.x) || 1); this.setState('lunge', 'lunge'); }
   update(dt) {
-  this.lungeAt -= dt;
-  if (this.state === 'lunge') {
-    this.st += dt; this.cool -= dt; if (this.shudder > 0) this.shudder -= dt;
-    return lungeTick(this, dt, lunge.copyHit);
-  }
-  return super.update(dt);
+    this.lungeAt -= dt;
+    if (this.state === 'lunge') {
+      this.st += dt; this.cool -= dt; if (this.shudder > 0) this.shudder -= dt;
+      return lungeTick(this, dt, lunge.copyHit);
+    }
+    return super.update(dt);
   }
   takeHit(h, from) { if (!this.canBeHit) return false; this.vanish(true); return true; }
   vanish(p) { const s = this.scene; this.alive = false; this.gone = true; s.kit?.shadowBurst?.(this.x, this.y); s.kit?.copyGone?.(this); sfx.shadowWhoosh?.(); if (p) this.owner.onCopyPopped(this); }
