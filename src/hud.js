@@ -49,23 +49,25 @@ export function bossLabel(s, has = () => true) {
   };
 }
 
-export function mashRing(R) {
+export function mashRing(R, out = {}) {
   if (!R || R.state !== 'grabbed' || !R.grabbedBy) return null;
-  return { fill: clamp01(R.grabbedBy.mashN / MASH_NEED) };
+  out.fill = clamp01(R.grabbedBy.mashN / MASH_NEED); return out;
 }
 
-export function fearArc(s) {
+export function fearArc(s, out = {}) {
   if (!s || s.stageNo !== 3 || !s.boss || !s.boss.alive || s.boss.state === 'defeated' || s.boss.phase < 2 || !s.boss.auraOn) return null;
-  return { fill: clamp01(s.boss.fear || 0) };
+  out.fill = clamp01(s.boss.fear || 0); return out;
 }
 
 const stage3Plates = s => s?.stageNo && s.stageNo !== 3 ? null : s?.cache?.json?.get?.('plates3');
 export const placeholderArt = (s, plates = stage3Plates(s)) => Object.values(s?.metas || {}).some(m => m && m.placeholder === true) || plates?.placeholder === true;
 
+// Drawing consumes each fill immediately, so both meters can reuse one result.
+const METER_FILL = {};
 export function drawStage3Meters(s, g) {
   if (!s || !s.riley || !g) return;
   const R = s.riley;
-  const mr = mashRing(R);
+  const mr = mashRing(R, METER_FILL);
   if (mr) {
     const mx = R.x - (s.camX || 0);
     const my = R.y - (R.z || 0) - 300;
@@ -79,7 +81,7 @@ export function drawStage3Meters(s, g) {
       g.strokePath?.();
     }
   }
-  const fa = fearArc(s);
+  const fa = fearArc(s, METER_FILL);
   if (fa) {
     const fx = R.x - (s.camX || 0);
     const fy = R.y + 8;

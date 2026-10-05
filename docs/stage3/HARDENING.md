@@ -63,3 +63,7 @@ uses the existing `/tmp/rwb-spawn-transport.cjs` transport described above.
 - Scope the plates watermark to the active stage. Cached Stage 3 JSON survives
   texture release and must not mark Stage 1/2 as placeholder art, including with
   `s3` off. Coverage: `stage3-watermark-flow-hardening.test.mjs` (three tests).
+- Reuse meter fill storage in the HUD frame loop, including inactive meters,
+  while preserving fresh snapshots for callers of the exported helpers.
+  Coverage: `stage3-meter-allocation-hardening.test.mjs` (five tests, including
+  stage changes mid-mash and a runtime check of storage passed at draw sites).
