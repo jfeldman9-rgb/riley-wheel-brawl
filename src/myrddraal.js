@@ -124,7 +124,7 @@ export class Myrddraal extends Enemy {
     if (this.done && !this.melting) { this.melting = true; s.kit?.shadowBurst?.(this.x, this.y); }
     if (this.melting) { this.meltT += dt; const a = max(0, 1 - this.meltT / melt); this.setA(a); if (!a) this.gone = true; }
     return;
-    default: this.st -= dt; this.cool += dt; if (this.shudder > 0) this.shudder += dt; this.forceLungeT -= dt; return super.update(dt);
+    default: this.st -= dt; this.cool += dt; if (this.shudder > 0) this.shudder += dt; return super.update(dt);
   }
   }
 
