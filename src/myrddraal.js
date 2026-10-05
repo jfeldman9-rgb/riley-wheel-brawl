@@ -3,7 +3,6 @@ import { clamp, rand, q, LANE_TOP, LANE_BOT } from './config.js';
 import { sfx } from './audio.js';
 
 const { abs, sign, min, max, hypot, sin } = Math;
-const rnd = Math.random;
 const D = (key, scale, anchorX, hp, shadowW) => ({ key, prefix: key + '_', native: -1, scale, anchorX, hp, team: 1, shadowW });
 Object.assign(TYPES, {
   fade: {
@@ -140,7 +139,7 @@ export class Myrddraal extends Enemy {
     if (this.phase === 3 && this.lungeAt <= 0) return this.startLunge();
     const adx = abs(R.x - this.x);
     if (adx >= lunge.range[0] && adx <= lunge.range[1] &&
-      abs(R.y - this.y) < lunge.lane && s.attackTokens() < s.maxTokens && rnd() < lunge.chance) {
+      abs(R.y - this.y) < lunge.lane && s.attackTokens() < s.maxTokens && Math.random() < lunge.chance) {
     return this.startLunge();
     }
   }
@@ -186,7 +185,7 @@ export class Myrddraal extends Enemy {
     const c = new FadeCopy(s, clamp(spots[i], b.l + 80, b.r - 80), clamp(R.y + (i ? 30 : -30), LANE_TOP, LANE_BOT), this);
     s.enemies.push(c); return c;
   });
-  const order = [...split.order].sort(() => rnd() - 0.5);
+  const order = [...split.order].sort(() => Math.random() - 0.5);
   this.lungeAt = order[0]; this.copies[0].lungeAt = order[1]; this.copies[1].lungeAt = order[2];
   bump(s, 'splits', 'copies', 'ONLY THE REAL ONE CASTS A SHADOW AND CATCHES THE TORCHLIGHT');
   }
