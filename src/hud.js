@@ -24,6 +24,9 @@ export function bossBannerBox() {
   return Object.freeze({ x: b.x, y: b.y, w, h, left: b.x - w / 2, right: b.x + w / 2, top: b.y - h / 2, bottom: b.y + h / 2 });
 }
 export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS', 3: 'STAGE 3 · CAEMLYN — THE MYRDDRAAL' });
+// The perf readout is two 12px lines anchored at VH-8 and is on unless ?hud=0.
+// A tag at VH-30 sits inside that block.
+export const PLACEHOLDER_TAG_Y = VH - 56;
 export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR|CUTTHROAT|MYRDDRAAL/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
 export function clearPrompt(stage, touch, next) {
   const verb = touch ? 'TAP KICK' : 'PRESS ATTACK';
@@ -132,8 +135,8 @@ export class HUD extends Phaser.Scene {
     this.flash = this.add.text(VW / 2, 200, '', { fontFamily: PX, fontSize: '20px', color: '#ffe7c8', stroke: '#000', strokeThickness: 6, align: 'center' }).setOrigin(0.5).setAlpha(0);
     this.flashPair = [this.flashBg, this.flash];
     this.perfT = this.add.text(VW - 10, VH - 8, '', { fontFamily: 'ui-monospace,Menlo,monospace', fontSize: '12px', color: '#bcd0ff', backgroundColor: 'rgba(0,0,0,0.35)', padding: { x: 4, y: 2 } }).setOrigin(1, 1);
-    this.phTag = this.add.text(VW - 10, VH - 30, 'PLACEHOLDER ART', { fontFamily: PX, fontSize: '10px', color: '#ffcc66', stroke: '#000', strokeThickness: 3 }).setOrigin(1, 1).setVisible(false);
-    this.phShown = false;
+    this.phTag = this.add.text(VW - 10, PLACEHOLDER_TAG_Y, 'PLACEHOLDER ART', { fontFamily: PX, fontSize: '10px', color: '#ffcc66', stroke: '#000', strokeThickness: 3 }).setOrigin(1, 1).setVisible(false);
+    this.phShown = false; this.phReady = false; this.phMetas = undefined; this.phPlates = undefined;
     this.showPerf = new URLSearchParams(location.search).get('hud') !== '0';
     this.pauseLabel = this.add.text(VW / 2, VH / 2, 'PAUSED\nP / Esc / Enter / Start or II to resume', { fontFamily: F, fontStyle: '700', fontSize: '28px', color: '#ffffff', backgroundColor: '#0b1428', padding: { x: 24, y: 18 }, align: 'center' }).setOrigin(0.5).setDepth(200).setVisible(false);
     this.card = this.add.container(VW / 2, VH / 2).setDepth(100);
@@ -371,8 +374,12 @@ export class HUD extends Phaser.Scene {
   }
   drawStage3Meters(s, g) { drawStage3Meters(s, g); }
   updateWatermark(s) {
+    if (!this.phTag || !s) return;
+    const plates = s.cache?.json?.get?.('plates3');
+    if (this.phReady && this.phMetas === s.metas && this.phPlates === plates) return;
+    this.phReady = true; this.phMetas = s.metas; this.phPlates = plates;
     const on = placeholderArt(s);
-    if (on === this.phShown || !this.phTag) return;
+    if (on === this.phShown) return;
     this.phShown = on;
     this.phTag.setVisible(on);
   }

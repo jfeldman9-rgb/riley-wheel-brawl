@@ -1,10 +1,10 @@
-// Cycle 2 review: tile telegraph, unlit shadow FX, wisp cap.
+// Cycle 2 review: tile telegraph, unlit shadow FX, wisp cap, watermark.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { stage3Simulation, arena, withSeed } from './helpers/stage3-harness.mjs';
 import { TILE_BANDS, TILES } from '../src/stage3-hazards.js';
 import { STAGE3 } from '../src/stages.js';
-import { VW } from '../src/config.js';
+import { VH, VW } from '../src/config.js';
 
 function watchLighting(s) {
   const orig = s.add.image.bind(s.add);
@@ -67,3 +67,22 @@ test('shadow pools, bursts and the Fade glimpse are unlit, and wisps stop at two
     assert.equal(kit.copies.length, 2);
   } finally { h.destroy(); }
 }));
+
+test('PLACEHOLDER ART clears the perf readout and is not recomputed every frame', async () => {
+  const { PLACEHOLDER_TAG_Y, HUD } = await import('../src/hud.js');
+  const perfTop = (VH - 8) - (12 * 2 + 2 * 2);
+  assert.ok(PLACEHOLDER_TAG_Y <= perfTop - 4, `tag y ${PLACEHOLDER_TAG_Y} overlaps perf top ${perfTop}`);
+
+  let gets = 0;
+  const metas = new Proxy({ cutthroat: { placeholder: true } }, {
+    get(target, prop, receiver) { gets++; return Reflect.get(target, prop, receiver); },
+  });
+  const fake = Object.create(HUD.prototype);
+  fake.phTag = { setVisible() {} };
+  fake.phShown = false;
+  fake.updateWatermark({ metas });
+  const afterFirst = gets;
+  assert.ok(afterFirst > 0);
+  for (let i = 0; i < 30; i++) fake.updateWatermark({ metas });
+  assert.equal(gets, afterFirst);
+});
