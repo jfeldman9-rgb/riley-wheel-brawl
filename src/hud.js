@@ -1,10 +1,11 @@
 // HUD scene: portrait + health + saidin, enemy/boss bars, combo counter, captions, GO arrow, title/clear cards, perf readout.
-import { VW, VH } from './config.js';
+import { VW, VH, clamp } from './config.js';
 import { perf, displayMs } from './perf.js';
 import { installPerfPanel } from './perf-panel.js';
 import { POWERS, ART } from './powers.js';
 import { TWIX_PANELS } from './twix.js';
 const F = 'system-ui,-apple-system,Segoe UI,sans-serif', PX = 'PressStart, monospace';
+const clamp01 = v => clamp(v, 0, 1);
 // Boss phase lines share one plate in the open band left of the burning barn.
 // On the locked boss camera the barn overlay starts near x=503 and the roof flames
 // sit over the gable (about x=730–1100, y=50–270). This plate stays left of that,
@@ -22,10 +23,69 @@ export function bossBannerBox() {
   return Object.freeze({ x: b.x, y: b.y, w, h, left: b.x - w / 2, right: b.x + w / 2, top: b.y - h / 2, bottom: b.y + h / 2 });
 }
 export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS' });
-export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
+export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR|CUTTHROAT|MYRDDRAAL/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
 export function clearPrompt(stage, touch) {
   const verb = touch ? 'TAP KICK' : 'PRESS ATTACK';
   return stage === 1 ? `${verb} TO CONTINUE TO STAGE 2` : stage === 2 ? `${verb} TO RETURN TO THE TITLE` : `${verb} TO PLAY AGAIN`;
+}
+
+// Mirrors CUTTHROAT.mashNeed in darkfriends.js (pinned equal in tests)
+export const MASH_NEED = 6;
+
+export function bossLabel(s, has = () => true) {
+  if (s && s.stageNo === 3) {
+    const b = s.stageDef?.boss || {};
+    return { name: b.name, portrait: has(b.portrait) ? b.portrait : 'bossPortrait' };
+  }
+  return {
+    name: s && s.stageNo === 2 ? 'JARET BYAR, CHILD OF THE LIGHT' : 'TROLLOC CHIEFTAIN',
+    portrait: s && s.stageNo === 2 && has('byarPortrait') ? 'byarPortrait' : 'bossPortrait',
+  };
+}
+
+export function mashRing(R) {
+  if (!R || R.state !== 'grabbed' || !R.grabbedBy) return null;
+  return { fill: clamp01(R.grabbedBy.mashN / MASH_NEED) };
+}
+
+export function fearArc(s) {
+  if (!s || s.stageNo !== 3 || !s.boss || !s.boss.alive || s.boss.state === 'defeated' || s.boss.phase < 2 || !s.boss.auraOn) return null;
+  return { fill: clamp01(s.boss.fear || 0) };
+}
+
+export const placeholderArt = s => Object.values(s?.metas || {}).some(m => m && m.placeholder === true) || s?.cache?.json?.get?.('plates3')?.placeholder === true;
+
+export function drawStage3Meters(s, g) {
+  if (!s || !s.riley || !g) return;
+  const R = s.riley;
+  const mr = mashRing(R);
+  if (mr) {
+    const mx = R.x - (s.camX || 0);
+    const my = R.y - (R.z || 0) - 300;
+    const rad = 22;
+    g.lineStyle?.(3, 0x141018, 0.85);
+    g.strokeCircle?.(mx, my, rad);
+    if (mr.fill > 0) {
+      g.lineStyle?.(3, 0xffe2a0, 0.95);
+      g.beginPath?.();
+      g.arc?.(mx, my, rad, -Math.PI / 2, -Math.PI / 2 + mr.fill * Math.PI * 2, false);
+      g.strokePath?.();
+    }
+  }
+  const fa = fearArc(s);
+  if (fa) {
+    const fx = R.x - (s.camX || 0);
+    const fy = R.y + 8;
+    const rad = 28;
+    g.lineStyle?.(2, 0x280c38, 0.5);
+    g.strokeCircle?.(fx, fy, rad);
+    if (fa.fill > 0) {
+      g.lineStyle?.(2, 0x5a1878, 0.9);
+      g.beginPath?.();
+      g.arc?.(fx, fy, rad, -Math.PI / 2, -Math.PI / 2 + fa.fill * Math.PI * 2, false);
+      g.strokePath?.();
+    }
+  }
 }
 export class HUD extends Phaser.Scene {
   constructor() { super('hud'); }
@@ -69,6 +129,8 @@ export class HUD extends Phaser.Scene {
     this.flash = this.add.text(VW / 2, 200, '', { fontFamily: PX, fontSize: '20px', color: '#ffe7c8', stroke: '#000', strokeThickness: 6, align: 'center' }).setOrigin(0.5).setAlpha(0);
     this.flashPair = [this.flashBg, this.flash];
     this.perfT = this.add.text(VW - 10, VH - 8, '', { fontFamily: 'ui-monospace,Menlo,monospace', fontSize: '12px', color: '#bcd0ff', backgroundColor: 'rgba(0,0,0,0.35)', padding: { x: 4, y: 2 } }).setOrigin(1, 1);
+    this.phTag = this.add.text(VW - 10, VH - 30, 'PLACEHOLDER ART', { fontFamily: PX, fontSize: '10px', color: '#ffcc66', stroke: '#000', strokeThickness: 3 }).setOrigin(1, 1).setVisible(false);
+    this.phShown = false;
     this.showPerf = new URLSearchParams(location.search).get('hud') !== '0';
     this.pauseLabel = this.add.text(VW / 2, VH / 2, 'PAUSED\nP / Esc / Enter / Start or II to resume', { fontFamily: F, fontStyle: '700', fontSize: '28px', color: '#ffffff', backgroundColor: '#0b1428', padding: { x: 24, y: 18 }, align: 'center' }).setOrigin(0.5).setDepth(200).setVisible(false);
     this.card = this.add.container(VW / 2, VH / 2).setDepth(100);
@@ -180,7 +242,7 @@ export class HUD extends Phaser.Scene {
     c.add([bg, this.add.text(0, -120, 'STAGE CLEAR', { fontFamily: PX, fontSize: '44px', color: '#ffe2a0', stroke: '#2a1000', strokeThickness: 10 }).setOrigin(0.5),
       this.add.text(0, -30, `SCORE ${s.score}\nBEST COMBO ${s.combo} HITS\nTIME ${m}:${String(sec).padStart(2, '0')}`, { fontFamily: PX, fontSize: '18px', color: '#ffffff', stroke: '#000', strokeThickness: 5, align: 'center', lineSpacing: 14 }).setOrigin(0.5, 0),
       this.add.text(0, 150, clearPrompt(s.stage, this.game.inp.isTouch), { fontFamily: PX, fontSize: '14px', color: '#ffe9a8', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5)]);
-    if (s.stage === 2 && s.ribbons) c.add(this.add.text(0, 100, "TWINKLE TOES' RIBBON FOUND", { fontFamily: PX, fontSize: '12px', color: '#9fd0ff', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5));
+    if (s.stage >= 2 && s.ribbons) c.add(this.add.text(0, 100, "TWINKLE TOES' RIBBON FOUND", { fontFamily: PX, fontSize: '12px', color: '#9fd0ff', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5));
   }
   bar(x, y, w, h, f, col, back = 0x1a1010) {
     const g = this.g; g.fillStyle(0x000000, 0.75); g.fillRect(x - 3, y - 3, w + 6, h + 6); g.fillStyle(back, 1); g.fillRect(x, y, w, h);
@@ -280,9 +342,9 @@ export class HUD extends Phaser.Scene {
       // boss bar sits top-centre-right so it never covers the fighters' feet or the caption box
       const b = this.boss; this.bossShown = Math.min(1, this.bossShown + dt * 1.5); const W = 500, w = W * this.bossShown, x0 = 560, y0 = 44;
       if (!this.bossName) {
-        const byar = s.stageNo === 2 && this.textures.exists('byarPortrait');
-        this.bossName = this.add.text(x0, y0 - 20, s.stageNo === 2 ? 'JARET BYAR, CHILD OF THE LIGHT' : 'TROLLOC CHIEFTAIN', { fontFamily: PX, fontSize: '12px', color: '#ffd0b0', stroke: '#000', strokeThickness: 4 }).setOrigin(0, 0.5);
-        this.bossPic = this.add.image(x0 - 44, y0 + 2, byar ? 'byarPortrait' : 'bossPortrait').setDisplaySize(68, 68);
+        const L = bossLabel(s, k => this.textures.exists(k));
+        this.bossName = this.add.text(x0, y0 - 20, L.name, { fontFamily: PX, fontSize: '12px', color: '#ffd0b0', stroke: '#000', strokeThickness: 4 }).setOrigin(0, 0.5);
+        this.bossPic = this.add.image(x0 - 44, y0 + 2, L.portrait).setDisplaySize(68, 68);
         this.bossRing = this.add.graphics(); this.bossRing.lineStyle(3, 0xb0503a, 1); this.bossRing.strokeCircle(x0 - 44, y0 + 2, 35); this.bossRing.lineStyle(1, 0x000000, 0.8); this.bossRing.strokeCircle(x0 - 44, y0 + 2, 37);
       }
       const fade = !b.alive && (b.state === 'dead' || b.state === 'defeated' || b.state === 'retreat');
@@ -294,6 +356,8 @@ export class HUD extends Phaser.Scene {
         for (const f of [1 / 3, 2 / 3]) { g.fillStyle(0x000000, 0.8); g.fillRect(x0 + w * f - 1, y0, 3, 16); }
       } else this.boss = null;
     }
+    this.drawStage3Meters(s, g);
+    this.updateWatermark(s);
     if (this.comboHold > 0) { this.comboHold -= dt; if (this.comboHold <= 0) this.tweens.add({ targets: this.comboT, alpha: 0, duration: 300 }); }
     if (this.capT > 0) { this.capT -= dt; const a = Math.min(1, this.capT * 3); this.capWho.setAlpha(a); this.capText.setAlpha(a); this.capBg.setAlpha(a); }
     if ((this.pt = (this.pt || 0) + 1) % 20 === 0) {
@@ -301,5 +365,12 @@ export class HUD extends Phaser.Scene {
       if (this.showPerf && p) { const f = p.fight; this.perfT.setText(`${p.fps.toFixed(1)} fps  p95 ${displayMs(p.p95)}ms  >33.4ms ${p.over33_4}/${p.frames}` + (f ? `\nFight p95 ${displayMs(f.p95)}ms ${p.gate.status === 'PASS' ? '≤16.7' : '>16.7'} · >33.4ms ${f.over33_4}/${f.frames}` : '\nFight: no samples') + `  | RS ${this.game.rs} q${s.fx.quality}`).setAlpha(1); }
       else this.perfT.setAlpha(0);
     }
+  }
+  drawStage3Meters(s, g) { drawStage3Meters(s, g); }
+  updateWatermark(s) {
+    const on = placeholderArt(s);
+    if (on === this.phShown || !this.phTag) return;
+    this.phShown = on;
+    this.phTag.setVisible(on);
   }
 }
