@@ -60,3 +60,6 @@ uses the existing `/tmp/rwb-spawn-transport.cjs` transport described above.
 - Start tile movement only with the part of delta after the warning boundary.
   This removes an extra frame of travel (different at 30/60/120 Hz). Coverage:
   `stage3-tile-clock-hardening.test.mjs` (seven tests, both directions and pause).
+- Scope the plates watermark to the active stage. Cached Stage 3 JSON survives
+  texture release and must not mark Stage 1/2 as placeholder art, including with
+  `s3` off. Coverage: `stage3-watermark-flow-hardening.test.mjs` (three tests).

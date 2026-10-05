@@ -59,7 +59,8 @@ export function fearArc(s) {
   return { fill: clamp01(s.boss.fear || 0) };
 }
 
-export const placeholderArt = s => Object.values(s?.metas || {}).some(m => m && m.placeholder === true) || s?.cache?.json?.get?.('plates3')?.placeholder === true;
+const stage3Plates = s => s?.stageNo && s.stageNo !== 3 ? null : s?.cache?.json?.get?.('plates3');
+export const placeholderArt = (s, plates = stage3Plates(s)) => Object.values(s?.metas || {}).some(m => m && m.placeholder === true) || plates?.placeholder === true;
 
 export function drawStage3Meters(s, g) {
   if (!s || !s.riley || !g) return;
@@ -375,10 +376,10 @@ export class HUD extends Phaser.Scene {
   drawStage3Meters(s, g) { drawStage3Meters(s, g); }
   updateWatermark(s) {
     if (!this.phTag || !s) return;
-    const plates = s.cache?.json?.get?.('plates3');
+    const plates = stage3Plates(s);
     if (this.phReady && this.phMetas === s.metas && this.phPlates === plates) return;
     this.phReady = true; this.phMetas = s.metas; this.phPlates = plates;
-    const on = placeholderArt(s);
+    const on = placeholderArt(s, plates);
     if (on === this.phShown) return;
     this.phShown = on;
     this.phTag.setVisible(on);
