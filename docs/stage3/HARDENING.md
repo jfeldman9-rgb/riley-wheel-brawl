@@ -145,3 +145,30 @@ Stage 1's golden sim matches `docs/stage1/evidence/full-stage-simulation.json`
 with `sourceSha256` and `baseGitCommit` excluded. The frozen Stage 2 fingerprint
 at `/workspace/ag/baselines-8d8d17b/` is not on this machine, so that `cmp` was
 not run. No seeded-boss count changed.
+
+## B1 robustness cycle, Oct 5 2026, starting at `e9e56c9`
+
+| Fix | Commit | New regression file |
+| --- | --- | --- |
+| Release Riley's held enemy before a fear shake; prevent a frozen, orphaned hold | `f996546` | `stage3-fear-grab-hardening.test.mjs` (4 tests) |
+| Count only the unprotected fraction of brave/dispel expiry frames; clamp brave to zero | `9a6bd92` | `stage3-fear-clock-hardening.test.mjs` (7 tests) |
+| Activate and dispel the aura in the same tick, including light expiring that frame | `47b5e5a` | `stage3-aura-dispel-race.test.mjs` (4 tests) |
+
+All 15 fix regressions fail against untouched `e9e56c9`. Another 20 tests in
+`stage3-fear-lifecycle-hardening.test.mjs` cover nested pause/resume, brave cleanup
+and restart into all stages, cast/death ordering, grabbed/escape/down/getup, and
+20-second duty cycles at 30/60/120 Hz. These paths needed no further source fix.
+
+Verification: **673/673 tests pass**, across 74 files, with no failures, skips,
+cancellations or TODOs. Existing tests/helpers remain untouched. Stage 1 matches
+the golden simulation excluding only `sourceSha256`/`baseGitCommit`; Stage 2 is
+byte-identical to `/workspace/ag/baselines-e9e56c9/s2.base.json`, also verified at
+HEAD before edits and after each fix. The existing scratch spawn transport above
+was used for sandbox `EPERM` on captured child processes. Audit output is unchanged,
+including the previously documented art-density failures. Final `myrddraal.js`:
+**15,305 ≤ 16,384**; the other capped sources are unchanged. Brave remains **2.5 s**;
+radius, fill, dispel and hurtMs remain unchanged. No art or network/push activity.
+
+The supplied checkout's `.git` is read-only. Commits therefore live on
+`rwb-2-stage3-ag` in `/workspace/ag/riley-wheel-brawl-hardening`; final file edits
+are also mirrored into the supplied checkout. Neither main nor rwb-w2 was changed.
