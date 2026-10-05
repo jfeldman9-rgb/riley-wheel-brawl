@@ -97,7 +97,7 @@ node /tmp/s2-fingerprint.mjs > /tmp/s2.json && cmp /tmp/s2.json /workspace/ag/ba
 # D. Audit and file-size caps
 node tools/audit-stage1.mjs
 wc -c src/stage3.js src/darkfriends.js src/myrddraal.js src/stage3-hazards.js src/bot.js
-#    stage3.js < 12288 · darkfriends.js <= 9216 · myrddraal.js <= 14336 · stage3-hazards.js <= 8192 · bot.js <= 12288
+#    stage3.js < 12288 · darkfriends.js <= 9216 · myrddraal.js <= 16384 · stage3-hazards.js <= 8192 · bot.js <= 12288
 
 # E. Existing tests untouched: only new files appear, and nothing is removed
 git diff --stat <T11> -- tests/
@@ -108,6 +108,10 @@ git diff <T11> -- tests/ | grep '^-[^-]'   # must print NOTHING
 `darkfriends.js`. The only source file that grows is **`src/bot.js`** (T12; 9623 bytes at `6fa65e0`).
 **(deviation)** PLAN sets no cap for `bot.js`; this file sets **≤ 12288** so the bot can't sprawl. Never minify,
 shorten names or delete comments to make room. If a file would cross its cap, stop and report the byte count.
+
+**Cap update (Oct 5 2026).** Jason raised `myrddraal.js` from 14336 to **16384** for the fear-aura fairness fix.
+Check D above uses 16384. The re-indent and the B1 fear change spend part of that room. Leave the rest for
+`forceLungeT` (m3) and one more boss fix. Do not raise the cap again without Jason's OK.
 
 Before committing, run `git status` and stage only the files the task allows, plus the evidence JSON. Never commit
 anything from `/tmp`, `/workspace/rwb-voice/` or a scratch worktree. Commit messages are plain (given per task).

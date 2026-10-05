@@ -117,3 +117,22 @@ that speculative change was removed from the final commit history. The existing
 title-select/campaign tests remain intact, and the new restart/mash tests assert
 one live gameplay press/key listener and no retired story or meter state.
 Physical rendering and device audio remain outside the headless evidence.
+
+## Fear-aura fairness (B1), Oct 5 2026
+
+Jason raised the `src/myrddraal.js` cap from 14336 to **16384**. `022ce79` re-indents the
+Myrddraal and FadeCopy class bodies only (whitespace; no behaviour change). This fix
+then changes fear:
+
+- While Riley's state is in `NO_FEAR`, the meter decays at `-dt / fear.fill` and never fills.
+- `'cast'` is in `NO_FEAR`, so a paid fireball or power cast is not cancelled. `'balefire'`
+  was already listed and now also stops the meter filling.
+- A shake sets `braveT = fear.brave` (2.5 s). The meter decays for that window, so the
+  fastest repeat is `brave + fill` = 3.9 s and the stun duty cycle is about 18%.
+
+Not changed: aura radius versus `TYPES.fade.pref`, the phase-3 aura during copy lunges,
+`hurtMs`, `fill`, and `dispel`. No art, tile, or grab changes.
+
+Final size: **14,919 ≤ 16,384**. The pin is check D in `docs/stage3/BUILD-T12-T16.md`.
+Four regression tests live in `tests/stage3-fade.test.mjs`. Older cycle notes above keep
+the 14336 figure they recorded at the time.

@@ -18,7 +18,7 @@ const LH = { x0: -10, x1: 170, z0: 0, z1: 240 };
 export const FADE = deep({
   blink: { every: [4, 6], everyP2: [6, 8], poolWarn: 0.6, counterFrames: [2, 3], behind: 110, edge: 70 },
   fear: { radius: 300, fill: 1.4, shaken: 0.7, dispel: 4, dispelRange: 400, vig: [0.35, 0.75], torchDim: 0.7,
-  rampIn: 0.5, rampOut: 0.3, pulse: 0.03, auraFrame: 3, hurtMs: 340 },
+  rampIn: 0.5, rampOut: 0.3, pulse: 0.03, auraFrame: 3, hurtMs: 340, brave: 2.5 },
   split: { copies: 2, every: [8, 10], wrongHitPunish: 0.3, spread: [280, 460], order: [0.8, 1.6, 2.4], relunge: [2.4, 3.2] },
   counter: { stagger: 1.4, mul: 1.5 }, reduction: 0.6, wake: 0.8, melt: 1.2,
   lunge: { speed: 760, range: [220, 420], lane: 30, chance: 0.5,
@@ -27,7 +27,7 @@ export const FADE = deep({
   thrust: { dmg: 12, kind: 'heavy', down: true, kb: 380 }
 });
 const { blink, fear, split, counter, lunge, thrust, reduction, wake, melt } = FADE;
-const NO_FEAR = ['hurt', 'down', 'getup', 'balefire', 'grabbed', 'escape'];
+const NO_FEAR = ['hurt', 'down', 'getup', 'cast', 'balefire', 'grabbed', 'escape'];
 const HIT_SKIP = ['dead', 'down', 'getup', 'defeated', 'sunk'], OPEN = ['approach', 'wait'];
 const ARMOR = ['blinkout', 'blinkin', 'fear', 'split', 'intro'], THRUST = { ...TYPES.fade.atk, ...thrust };
 const app = e => e.setState('approach', 'walk');
@@ -65,7 +65,7 @@ export class Myrddraal extends Enemy {
   constructor(s, x, y) {
     super(s, 'fade', x, y);
     this.T = { ...TYPES.fade };
-    this.auraK = this.fear = this.dispelT = this.resplitT = this.forceLungeT = this.meltT = this.wake = this.t = 0;
+    this.auraK = this.fear = this.braveT = this.dispelT = this.resplitT = this.forceLungeT = this.meltT = this.wake = this.t = 0;
     this.isCopy = this.introDone = this.auraOn = this.pendingFear = this.pendingSplit = this.melting = this.whooshed = false;
     this.phase = 1; this.cool = 1.6; this.lungeAt = 99; this.lastActive = -1;
     this.nextBlink = rand(...blink.every); this.pool = null; this.copies = [];
@@ -223,7 +223,7 @@ export class Myrddraal extends Enemy {
     this.clearAbilities(); this.setState('defeated', 'defeated'); this.scene.onEnemyDie(this);
   }
 
-  clearAbilities() { this.clearCopies(false); if (this.pool) { this.scene.kit?.shadowPoolEnd?.(this.pool); this.pool = null; } this.auraOn = false; this.fear = 0; this.pendingFear = this.pendingSplit = false; this.resplitT = 0; }
+  clearAbilities() { this.clearCopies(false); if (this.pool) { this.scene.kit?.shadowPoolEnd?.(this.pool); this.pool = null; } this.auraOn = false; this.fear = 0; this.braveT = 0; this.pendingFear = this.pendingSplit = false; this.resplitT = 0; }
 
   clearCopies(p) { for (const c of this.copies) if (c.alive) c.vanish(p); this.copies = []; }
   onCopyPopped(c) { const i = this.copies.indexOf(c); if (i !== -1) this.copies.splice(i, 1); this.forceLungeT = split.wrongHitPunish; bump(this.scene, 'copiesPopped'); }
@@ -239,11 +239,13 @@ export class Myrddraal extends Enemy {
       if (this.dispelT <= 0) { bump(s, 'dispels', 'dispel', 'LIGHT DRIVES THE SHADOW BACK!'); }
       this.dispelT = fear.dispel;
     } else this.dispelT = max(0, this.dispelT - dt);
-    const inside = this.auraActive && R.alive && hypot(R.x - this.x, R.y - this.y) <= fear.radius;
+    if (this.braveT > 0) this.braveT -= dt;
+    const calm = this.braveT > 0 || NO_FEAR.includes(R.state);
+    const inside = !calm && this.auraActive && R.alive && hypot(R.x - this.x, R.y - this.y) <= fear.radius;
     this.fear = clamp(this.fear + (inside ? dt : -dt) / fear.fill, 0, 1);
     if (this.fear >= 1 && R.vulnerable && R.z <= 0 && !R.grabbedBy && !NO_FEAR.includes(R.state)) {
       R.setState('hurt', 'hurt', fear.hurtMs / (fear.shaken * 1000));
-      R.vx = 0; this.fear = 0; bump(s, 'shaken');
+      R.vx = 0; this.fear = 0; this.braveT = fear.brave; bump(s, 'shaken');
     }
   }
 

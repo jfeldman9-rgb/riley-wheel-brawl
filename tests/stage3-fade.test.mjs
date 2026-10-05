@@ -74,6 +74,22 @@ function toPhase(h, f, n) {
   f.nextBlink = 99;
 }
 
+function armAura(h, dx = 200) {
+  const s = h.s;
+  const f = place(h);
+  toPhase(h, f, 2);
+  f.T.speed = 0;
+  s.riley.x = f.x - dx;
+  s.riley.y = f.y;
+  s.riley.facing = 1;
+  f.startFear();
+  assert.ok(run(h, 2, () => f.auraActive), 'aura must become active');
+  f.cool = 9;
+  return f;
+}
+
+function hold(h, f) { h.step(); f.cool = 9; }
+
 function torch(s, x = 400) {
   const L = s.lights.addLight(x, 500, 400, 0xff9a48, 1);
   Object.assign(L, { baseX: x, baseI: 1, par: 0 });
@@ -102,6 +118,7 @@ test('fade: data matches PLAN §1.4 and the fade atlas has every anim', () => {
   assert.equal(FADE.fear.radius, 300);
   assert.equal(FADE.fear.fill, 1.4);
   assert.equal(FADE.fear.shaken, 0.7);
+  assert.equal(FADE.fear.brave, 2.5);
   assert.equal(FADE.fear.dispel, 4);
   assert.equal(FADE.fear.dispelRange, 400);
 
@@ -707,6 +724,129 @@ test('fade: restarting mid-blink, mid-fear or mid-split leaves nothing behind an
   } finally {
     q.delete('flash');
   }
+});
+
+test('fade: a fireball cast at fear 0.95 completes, spawns and dispels the aura', () => {
+  withSeed(1, () => {
+    const h = stage3Simulation({ mode: '' });
+    try {
+      const s = h.s;
+      const f = armAura(h);
+      s.riley.saidin = 100;
+      f.fear = 0.95;
+      s.riley.startCast();
+      const saidinAfter = s.riley.saidin;
+      const cost = s.powers ? s.powers.castCost() : 34;
+      assert.equal(100 - saidinAfter, cost);
+      let sawHurt = false, sawFireball = false, lowest = saidinAfter;
+      for (let i = 0; i < 60 && s.riley.state === 'cast'; i++) {
+        hold(h, f);
+        if (s.riley.state === 'hurt') sawHurt = true;
+        if (s.fireballs.length >= 1) sawFireball = true;
+        lowest = Math.min(lowest, s.riley.saidin);
+      }
+      assert.notEqual(s.riley.state, 'cast');
+      assert.equal(sawHurt, false);
+      assert.equal(s.riley.cast_fired, true);
+      assert.equal(sawFireball, true);
+      assert.equal(s.kit.stats.shaken || 0, 0);
+      assert.equal(s.kit.stats.dispels, 1);
+      assert.equal(f.auraActive, false);
+      assert.ok(f.dispelT > 0);
+      assert.ok(lowest >= saidinAfter, `saidin dipped to ${lowest} after one charge of ${saidinAfter}`);
+      assert.ok(s.riley.saidin >= saidinAfter, 'cast cost was not charged again');
+    } finally {
+      h.destroy();
+    }
+  });
+});
+
+test('fade: the fear meter does not fill while Riley is hurt, casting or in Balefire', () => {
+  const cases = [
+    { name: 'hurt', enter: (s) => s.riley.setState('hurt', 'hurt') },
+    { name: 'cast', enter: (s) => { s.riley.saidin = 100; s.riley.startCast(); } },
+    { name: 'balefire', enter: (s) => { s.riley.saidin = 100; s.riley.startBalefire(); } },
+  ];
+  for (const { name, enter } of cases) {
+    withSeed(1, () => {
+      const h = stage3Simulation({ mode: '' });
+      try {
+        const s = h.s;
+        const f = armAura(h);
+        enter(s);
+        f.fear = 0.5;
+        f.dispelT = 0;
+        const shaken = s.kit.stats.shaken || 0;
+        let prev = f.fear;
+        let steps = 0;
+        while (s.riley.state === name && steps < 180) {
+          hold(h, f);
+          assert.ok(f.fear <= prev + 1e-9, `${name} fear ${f.fear} rose from ${prev}`);
+          prev = f.fear;
+          steps++;
+        }
+        assert.ok(steps > 0, `${name} should last at least one frame`);
+        assert.equal(s.kit.stats.shaken || 0, shaken, name);
+      } finally {
+        h.destroy();
+      }
+    });
+  }
+});
+
+test('fade: after a shake the meter stays empty for FADE.fear.brave', () => {
+  withSeed(1, () => {
+    const h = stage3Simulation({ mode: '' });
+    try {
+      const s = h.s;
+      const f = armAura(h);
+      f.fear = 0;
+      f.braveT = 0;
+      let first = null, second = null;
+      const emptyFor = FADE.fear.brave * 60 - 2;
+      for (let i = 0; i < 800 && second === null; i++) {
+        hold(h, f);
+        const shaken = s.kit.stats.shaken || 0;
+        if (first === null && shaken >= 1) {
+          first = i;
+          assert.equal(f.fear, 0);
+        } else if (first !== null) {
+          const since = i - first;
+          if (since <= emptyFor) assert.equal(f.fear, 0, `fear ${f.fear} at +${since}`);
+          if (shaken >= 2) second = i;
+        }
+      }
+      assert.ok(first !== null, 'first shake');
+      const gap = second - first;
+      const expect = (FADE.fear.brave + FADE.fear.fill) * 60;
+      assert.ok(Math.abs(gap - expect) <= 3, `second shake gap ${gap} vs ${expect}`);
+    } finally {
+      h.destroy();
+    }
+  });
+});
+
+test('fade: shaken duty cycle stays at or under 25% over 20 s of phase 2 at melee range', () => {
+  withSeed(1, () => {
+    const h = stage3Simulation({ mode: '' });
+    try {
+      const s = h.s;
+      const f = armAura(h, 150);
+      f.fear = 0;
+      f.braveT = 0;
+      let hurtFrames = 0;
+      for (let i = 0; i < 1200; i++) {
+        hold(h, f);
+        if (s.riley.state === 'hurt') hurtFrames++;
+      }
+      const shaken = s.kit.stats.shaken || 0;
+      assert.ok(hurtFrames / 1200 <= 0.25, `hurtFrames ${hurtFrames} / 1200`);
+      assert.ok(shaken <= 6, `shaken ${shaken} (expected 5)`);
+      assert.equal(shaken, 5);
+    } finally {
+      h.destroy();
+    }
+  });
 });
 
 // Test 13
