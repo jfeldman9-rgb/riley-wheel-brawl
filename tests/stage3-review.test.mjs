@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { stage3Simulation, arena, withSeed } from './helpers/stage3-harness.mjs';
+import { stage3Simulation, arena, placeC, withSeed } from './helpers/stage3-harness.mjs';
 
 const { Myrddraal, FADE } = await import('../src/myrddraal.js');
+const { CUTTHROAT } = await import('../src/darkfriends.js');
+
 function placeFade(h) {
   const s = h.s;
   arena(s, 640);
@@ -74,3 +76,38 @@ test('fade: a punish lunge latches through a slash and fires on the next open fr
   });
 });
 
+test('cutthroat: a swing aimed at him whiffs until its active frame', () => {
+  withSeed(4, () => {
+    const h = stage3Simulation({ mode: '' });
+    try {
+      const s = h.s;
+      arena(s);
+      const c = placeC(s, 70);
+      const startup = {
+        x: c.x - 40, y: c.y, z: 0, alive: true, vulnerable: true, grabbedBy: null,
+        state: 'combo2', atk: { active: [2], x1: 185 }, fi: 0, facing: 1,
+      };
+      assert.equal(c.catchResult(startup), null);
+      assert.equal(c.catchResult({ ...startup, fi: 2 }), 'counter');
+      assert.equal(c.catchResult({ ...startup, facing: -1 }), 'grab');
+      assert.equal(c.catchResult({ ...startup, state: 'back', atk: { active: [2], x1: -185 }, facing: 1 }), 'grab');
+
+      arena(s);
+      const R = s.riley;
+      R.face(1);
+      R.startCombo(2);
+      assert.equal(R.state, 'combo2');
+      assert.equal(R.fi, 0);
+      const live = placeC(s, 40);
+      live.setState('lunge', 'lunge');
+      live.st = CUTTHROAT.coil;
+      live.lungeDir = Math.sign(R.x - live.x) || -1;
+      live.face(live.lungeDir);
+      h.step();
+      assert.equal(R.grabbedBy, null);
+      assert.notEqual(live.state, 'holding');
+    } finally {
+      h.destroy();
+    }
+  });
+});

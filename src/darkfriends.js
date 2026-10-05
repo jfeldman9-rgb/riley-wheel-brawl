@@ -24,6 +24,7 @@ export const CUTTHROAT = Object.freeze({
 
 export const GRAB_OK = Object.freeze(['idle', 'walk', 'run', 'hurt', 'land']);
 export const RILEY_ATTACKS = Object.freeze(['combo1', 'combo2', 'combo3', 'back', 'runkick', 'airkick']);
+const HOLD_BREAK = { hurt: 1, down: 1, getup: 1, dead: 1 };
 const bump = (s, k) => { const st = s.kit?.stats; if (st) st[k] = (st[k] || 0) + 1; };
 
 export class Cutthroat extends Whitecloak {
@@ -46,8 +47,11 @@ export class Cutthroat extends Whitecloak {
   catchResult(R) {
     if (Math.abs(R.y - this.y) >= CUTTHROAT.catchDy || Math.abs(R.x - this.x) >= CUTTHROAT.catchDx || !R.alive || R.grabbedBy || this.scene.victoryPending || this.scene.ended) return null;
     if (this.covers(R)) return 'counter';
-    if (R.z <= 0 && R.vulnerable && (GRAB_OK.includes(R.state) || RILEY_ATTACKS.includes(R.state))) return 'grab';
-    return null;
+    if (R.z > 0 || !R.vulnerable) return null;
+    if (GRAB_OK.includes(R.state)) return 'grab';
+    if (!RILEY_ATTACKS.includes(R.state)) return null;
+    const a = R.atk, toward = a && Math.sign(this.x - R.x) === (a.x1 > 0 ? R.facing : -R.facing);
+    return toward ? null : 'grab';
   }
   think(dt) {
     if (this.entering) return;
@@ -176,7 +180,7 @@ export class Cutthroat extends Whitecloak {
   }
   holding(dt) {
     const R = this.target, s = this.scene;
-    if (!R.alive || R.grabbedBy !== this || ['hurt', 'down', 'getup', 'dead'].includes(R.state) || s.victoryPending || s.ended) {
+    if (!R.alive || R.grabbedBy !== this || HOLD_BREAK[R.state] || s.victoryPending || s.ended) {
       this.releaseHold('break');
       this.setState('approach', 'walk');
       this.cool = rand(0.6, 1.0);
