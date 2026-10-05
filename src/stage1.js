@@ -241,7 +241,13 @@ export class Stage1 extends Phaser.Scene {
   // ---------- flow ----------
   onPress(a) {
     // The Twix cutscene owns every press while it is up: Start/pause skips it, attack/jump/fireball advance a line.
-    if (this.cutscene) { this.cutscene.press(a); return; }
+    if (this.cutscene) {
+      for (const reason of this.pauseReasons) if (reason !== 'cutscene') {
+        if (reason === 'manual' && (a === 'pause' || a === 'start')) this.setPauseReason('manual', false);
+        this.inp.clear(); return;
+      }
+      this.cutscene.press(a); return;
+    }
     if (a === 'pause' || (a === 'start' && this.started && !this.ended && !this.gameOver)) {
       if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) this.setPauseReason('manual', !this.pauseReasons.has('manual'));
       return;

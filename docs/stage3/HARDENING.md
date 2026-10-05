@@ -54,3 +54,6 @@ uses the existing `/tmp/rwb-spawn-transport.cjs` transport described above.
   A retained story cannot advance captions or finish a new run, and its callback
   cannot leak into a later Stage 1 Twix scene. Coverage:
   `stage3-story-restart-hardening.test.mjs` (four tests, all three restart targets).
+- Freeze story input as well as its clock during report/graphics suspension;
+  resuming a manual pause preserves the current story instead of skipping it.
+  Coverage: `stage3-story-pause-hardening.test.mjs` (three tests).
