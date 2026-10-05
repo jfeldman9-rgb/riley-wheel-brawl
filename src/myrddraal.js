@@ -204,7 +204,7 @@ export class Myrddraal extends Enemy {
     if (isBlink || isParry) {
     this.setState('stagger', 'stagger'); this.vx = 0;
     bump(s, isParry ? 'parries' : 'counters', 'counter', 'COUNTER!');
-    if (isParry) { this.clearCopies(false); this.resplitT = rand(...split.every); }
+    if (isParry) { this.clearCopies(false); this.pendingSplit = false; this.resplitT = rand(...split.every); }
     }
     if (this.hp <= 0) this.die(dir, h);
     return true;
