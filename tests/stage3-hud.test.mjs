@@ -101,6 +101,17 @@ test('fear arc shows only in Myrddraal phase 2 or later with the aura raised', (
     boss.fear = 0.75;
     assert.deepEqual(fearArc(s), { fill: 0.75 });
 
+    const g = {
+      calls: [],
+      lineStyle(...args) { this.calls.push(args); return this; },
+      strokeCircle() { return this; },
+      beginPath() { return this; },
+      arc() { return this; },
+      strokePath() { return this; },
+    };
+    drawStage3Meters(s, g);
+    assert.ok(g.calls.some(args => args[1] === 0xff00ff && Math.abs(args[2] - 0.85) < 1e-9), 'fear arc is bright magenta at alpha 0.85');
+
     // Stage 1/2 bosses -> null
     assert.equal(fearArc({ stageNo: 1, boss }), null);
     assert.equal(fearArc({ stageNo: 2, boss }), null);

@@ -89,7 +89,7 @@ export function drawStage3Meters(s, g) {
     g.lineStyle?.(2, 0x280c38, 0.5);
     g.strokeCircle?.(fx, fy, rad);
     if (fa.fill > 0) {
-      g.lineStyle?.(2, 0x5a1878, 0.9);
+      g.lineStyle?.(2, 0xff00ff, 0.85);
       g.beginPath?.();
       g.arc?.(fx, fy, rad, -Math.PI / 2, -Math.PI / 2 + fa.fill * Math.PI * 2, false);
       g.strokePath?.();

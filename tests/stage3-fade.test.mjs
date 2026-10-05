@@ -115,10 +115,10 @@ test('fade: data matches PLAN §1.4 and the fade atlas has every anim', () => {
   assert.deepEqual(FADE.blink, { every: [4, 6], everyP2: [6, 8], poolWarn: 0.6, counterFrames: [2, 3], behind: 110, edge: 70 });
   assert.deepEqual(FADE.fear.vig, [0.35, 0.75]);
   assert.equal(FADE.fear.torchDim, 0.7);
-  assert.equal(FADE.fear.radius, 300);
-  assert.equal(FADE.fear.fill, 1.4);
+  assert.equal(FADE.fear.radius, 220);
+  assert.equal(FADE.fear.fill, 1.6);
   assert.equal(FADE.fear.shaken, 0.7);
-  assert.equal(FADE.fear.brave, 2.5);
+  assert.equal(FADE.fear.brave, 1.2);
   assert.equal(FADE.fear.dispel, 4);
   assert.equal(FADE.fear.dispelRange, 400);
 
@@ -265,7 +265,7 @@ test('fade: blinkin frames 2–3 counter (stagger, ×1.5); other blink frames ta
 });
 
 // Test 5
-test('fade: inside the aura for 1.4 s Riley is shaken for 0.7 s; outside the meter decays', () => {
+test('fade: inside the aura for fear.fill Riley is shaken for 0.7 s; outside the meter decays', () => {
   withSeed(1, () => {
     const h = stage3Simulation({ mode: '' });
     try {
@@ -289,7 +289,7 @@ test('fade: inside the aura for 1.4 s Riley is shaken for 0.7 s; outside the met
         if (f.state === 'approach') f.cool = 9;
         if (auraFrames > 120) break;
       }
-      assert.ok(Math.abs(auraFrames - 84) <= 3, `auraFrames ${auraFrames} should be ~84`);
+      assert.ok(Math.abs(auraFrames - FADE.fear.fill * 60) <= 3, `auraFrames ${auraFrames} should be ~${FADE.fear.fill * 60}`);
       assert.equal(s.riley.hp, rileyHp0);
       assert.equal(s.kit.stats.shaken, 1);
 
@@ -795,6 +795,37 @@ test('fade: the fear meter does not fill while Riley is hurt, casting or in Bale
   }
 });
 
+test('fade: a copy lunge does not fill the fear meter', () => {
+  withSeed(1, () => {
+    const h = stage3Simulation({ mode: '' });
+    try {
+      const s = h.s;
+      const f = armAura(h, 150);
+      f.makeCopies();
+      const c = f.copies[0];
+      c.startLunge();
+      c.x = f.x + 900;
+      f.fear = 0.5;
+      f.braveT = 0;
+      f.dispelT = 0;
+      let prev = f.fear;
+      let lunging = 0;
+      for (let i = 0; i < 30 && c.state === 'lunge' && s.riley.state !== 'hurt'; i++) {
+        hold(h, f);
+        assert.equal(c.state, 'lunge');
+        assert.ok(f.fear <= prev + 1e-9, `fear ${f.fear} rose from ${prev} during a copy lunge`);
+        prev = f.fear;
+        lunging++;
+      }
+      assert.ok(lunging > 0, 'the copy should lunge while Riley is still free');
+      assert.ok(f.fear < 0.5);
+      assert.equal(s.kit.stats.shaken || 0, 0);
+    } finally {
+      h.destroy();
+    }
+  });
+});
+
 test('fade: after a shake the meter stays empty for FADE.fear.brave', () => {
   withSeed(1, () => {
     const h = stage3Simulation({ mode: '' });
@@ -842,8 +873,7 @@ test('fade: shaken duty cycle stays at or under 25% over 20 s of phase 2 at mele
       }
       const shaken = s.kit.stats.shaken || 0;
       assert.ok(hurtFrames / 1200 <= 0.25, `hurtFrames ${hurtFrames} / 1200`);
-      assert.ok(shaken <= 6, `shaken ${shaken} (expected 5)`);
-      assert.equal(shaken, 5);
+      assert.equal(shaken, 7);
     } finally {
       h.destroy();
     }

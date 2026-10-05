@@ -17,8 +17,8 @@ const deep = o => { for (const v of Object.values(o)) if (v && typeof v === 'obj
 const LH = { x0: -10, x1: 170, z0: 0, z1: 240 };
 export const FADE = deep({
   blink: { every: [4, 6], everyP2: [6, 8], poolWarn: 0.6, counterFrames: [2, 3], behind: 110, edge: 70 },
-  fear: { radius: 300, fill: 1.4, shaken: 0.7, dispel: 4, dispelRange: 400, vig: [0.35, 0.75], torchDim: 0.7,
-  rampIn: 0.5, rampOut: 0.3, pulse: 0.03, auraFrame: 3, hurtMs: 340, brave: 2.5 },
+  fear: { radius: 220, fill: 1.6, shaken: 0.7, dispel: 4, dispelRange: 400, vig: [0.35, 0.75], torchDim: 0.7,
+  rampIn: 0.5, rampOut: 0.3, pulse: 0.03, auraFrame: 3, hurtMs: 340, brave: 1.2 },
   split: { copies: 2, every: [8, 10], wrongHitPunish: 0.3, spread: [280, 460], order: [0.8, 1.6, 2.4], relunge: [2.4, 3.2] },
   counter: { stagger: 1.4, mul: 1.5 }, reduction: 0.6, wake: 0.8, melt: 1.2,
   lunge: { speed: 760, range: [220, 420], lane: 30, chance: 0.5,
@@ -243,7 +243,8 @@ export class Myrddraal extends Enemy {
       this.dispelT = fear.dispel;
     } else this.dispelT = max(0, this.dispelT - dt);
     this.braveT = max(0, this.braveT - dt);
-    const calm = this.braveT > 0 || NO_FEAR.includes(R.state);
+    const copyLunge = this.copies.some(c => c.alive && c.state === 'lunge');
+    const calm = this.braveT > 0 || copyLunge || NO_FEAR.includes(R.state);
     const inside = !calm && this.auraActive && R.alive && hypot(R.x - this.x, R.y - this.y) <= fear.radius;
     this.fear = inside ? clamp(max(0, this.fear - protectedT / fear.fill) + (dt - protectedT) / fear.fill, 0, 1) : clamp(this.fear - dt / fear.fill, 0, 1);
     if (this.fear >= 1 && R.vulnerable && R.z <= 0 && !R.grabbedBy && !NO_FEAR.includes(R.state)) {

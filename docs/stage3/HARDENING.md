@@ -172,3 +172,9 @@ radius, fill, dispel and hurtMs remain unchanged. No art or network/push activit
 The supplied checkout's `.git` is read-only. Commits therefore live on
 `rwb-2-stage3-ag` in `/workspace/ag/riley-wheel-brawl-hardening`; final file edits
 are also mirrored into the supplied checkout. Neither main nor rwb-w2 was changed.
+
+## Nemotron fear tweaks, Oct 5 2026
+
+Jason chose these over the 2.5 s brave window. `fear.brave` is **1.2 s**. Aura radius is **220** (Fade pref is 210). The fear arc fill is bright magenta `0xff00ff` at alpha **0.85**. A living copy in `lunge` counts as calm, so a phase-3 copy lunge does not fill the meter.
+
+Brave 1.2 plus fill 1.4 and a 0.7 s stun is about 27%. `fear.fill` is **1.6** so the steady cycle is 2.8 s and the stun duty is 0.7 / 2.8 = **25%**. `shaken` stays 0.7. Cast remains in `NO_FEAR`, and the meter still decays while calm. `myrddraal.js` is **15,395 ≤ 16,384**.
