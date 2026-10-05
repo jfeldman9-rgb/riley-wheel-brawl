@@ -1,9 +1,10 @@
 // HUD scene: portrait + health + saidin, enemy/boss bars, combo counter, captions, GO arrow, title/clear cards, perf readout.
-import { VW, VH, clamp } from './config.js';
+import { VW, VH, clamp, q } from './config.js';
 import { perf, displayMs } from './perf.js';
 import { installPerfPanel } from './perf-panel.js';
 import { POWERS, ART } from './powers.js';
 import { TWIX_PANELS } from './twix.js';
+import { maxStage } from './stages.js';
 const F = 'system-ui,-apple-system,Segoe UI,sans-serif', PX = 'PressStart, monospace';
 const clamp01 = v => clamp(v, 0, 1);
 // Boss phase lines share one plate in the open band left of the burning barn.
@@ -22,7 +23,7 @@ export function bossBannerBox() {
   const b = BOSS_BANNER, w = b.maxWidth + b.padX * 2, h = b.maxHeight + b.padY * 2;
   return Object.freeze({ x: b.x, y: b.y, w, h, left: b.x - w / 2, right: b.x + w / 2, top: b.y - h / 2, bottom: b.y + h / 2 });
 }
-export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS' });
+export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS', 3: 'STAGE 3 · CAEMLYN — THE MYRDDRAAL' });
 export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR|CUTTHROAT|MYRDDRAAL/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
 export function clearPrompt(stage, touch) {
   const verb = touch ? 'TAP KICK' : 'PRESS ATTACK';
@@ -177,7 +178,7 @@ export class HUD extends Phaser.Scene {
   titleSelect(n) {
     if (this.titleStageT && this.titleStageT.active !== false) this.titleStageT.setText(STAGE_NAMES[n] || STAGE_NAMES[1]);
     if (this.titleArrowL) this.titleArrowL.setAlpha(n > 1 ? 1 : 0.25);
-    if (this.titleArrowR) this.titleArrowR.setAlpha(n < 2 ? 1 : 0.25);
+    if (this.titleArrowR) this.titleArrowR.setAlpha(n < maxStage(q) ? 1 : 0.25);
   }
   onTitlePointer() { if (this.stage && !this.stage.started && !this.stage.ended) this.game.inp.press('start'); }
   hideTitle() { if (!this.card) return; this.tweens.add({ targets: this.card, alpha: 0, duration: 400, onComplete: () => { this.card.removeAll(true); this.card.setAlpha(1); } }); }
