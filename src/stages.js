@@ -202,13 +202,17 @@ export const STAGE3 = {
   crateProp: 'crate',
   cratePlanks: 'planks',
   skipBoss: Object.freeze({ zoneI: 2, x: 3990, camX: 3500 }),
-  boss: Object.freeze({ type: 'fade', name: 'THE MYRDDRAAL', portrait: 'fadePortrait' }),
+  boss: Object.freeze({ type: 'fade', name: 'THE MYRDDRAAL', portrait: 'fadePortrait', cool: 2.2, introVoice: 'fade_intro_01' }),
+  phaseLines: Object.freeze({ 2: Object.freeze({ say: 'fade_mid_01', flash: 'THE MYRDDRAAL SPREADS ITS FEAR' }),
+                              3: Object.freeze({ say: 'fade_split_01', flash: 'WHICH SHADOW IS REAL?' }) }),
   chars: STAGE_CHARS[3],
   textures: STAGE_TEXTURES[3],
   music: Object.freeze({ stage: 'stage3', boss: 'boss3' }),
   kit: null,
   next: () => ({ stage: 1 }),
   onBossPhase: (scene, c, ph) => {
+    const L = STAGE3.phaseLines[ph];
+    if (L) { say(L.say, scene.caption); scene.fx.trauma = 0.5; scene.hud.flashText(L.flash); }
     if (ph === scene.bossDrop.phase && scene.powerDrops) scene.powerDrops.push({ kind: scene.bossDrop.kind, t: 0.6 });
   },
   bossDown: (scene, c) => {

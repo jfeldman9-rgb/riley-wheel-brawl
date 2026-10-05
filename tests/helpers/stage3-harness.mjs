@@ -10,7 +10,7 @@ const { Stage3Kit } = await import('../../src/stage3.js');
 export { withSeed, FULL_STAGE_SEEDS };
 
 export const STAGE3_METAS = Object.fromEntries(
-  ['cutthroat', 'riley3'].map(k => [
+  ['cutthroat', 'riley3', 'fade'].map(k => [
     k,
     JSON.parse(readFileSync(new URL(`../../assets/stage3/chars/${k}.anims.json`, import.meta.url)))
   ])

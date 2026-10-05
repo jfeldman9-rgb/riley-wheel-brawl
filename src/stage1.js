@@ -13,11 +13,12 @@ import { Cutscene, TWIX_SCRIPT } from './twix.js';
 import { STAGES, STAGE1, stageEnabled, maxStage, stageFromQuery, resolveStage, STAGE_CHARS, STAGE_TEXTURES } from './stages.js';
 import { WHITECLOAKS } from './whitecloaks.js';
 import { DARKFRIENDS, CUTTHROAT } from './darkfriends.js';
+import { MYRDDRAAL } from './myrddraal.js';
 import { Stage2Kit, queueStage2, STORY_PANELS, STORY_SCRIPT } from './stage2.js';
 import { queueStage3 } from './stage3.js';
 import { MusicDirector } from './music.js';
 
-export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS });
+export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS, ...MYRDDRAAL });
 
 // Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
 const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
