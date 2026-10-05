@@ -66,7 +66,7 @@ export class Stage3Hazards extends Stage2Kit {
           k.img.flipX = k.dir > 0;
           k.x = x;
         }
-        k.x += k.dir * TILES.speed * dt;
+        k.x += k.dir * TILES.speed * Math.min(dt, k.t - TILES.warn);
         k.img.setPosition(k.x, k.img.y);
         const f = Math.floor((k.t - TILES.warn) * 8) % 4;
         k.frame = f;

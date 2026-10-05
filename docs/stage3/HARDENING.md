@@ -57,3 +57,6 @@ uses the existing `/tmp/rwb-spawn-transport.cjs` transport described above.
 - Freeze story input as well as its clock during report/graphics suspension;
   resuming a manual pause preserves the current story instead of skipping it.
   Coverage: `stage3-story-pause-hardening.test.mjs` (three tests).
+- Start tile movement only with the part of delta after the warning boundary.
+  This removes an extra frame of travel (different at 30/60/120 Hz). Coverage:
+  `stage3-tile-clock-hardening.test.mjs` (seven tests, both directions and pause).
