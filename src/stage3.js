@@ -104,7 +104,23 @@ export class Stage3Kit extends Stage2Kit {
     this.emitters.push({ em: this.motes, base: day.frequency || 60, thin: day.thin || 200 });
   }
   start() { preloadClips(STAGE3_VOICES); }
-  destroy() {}
+  destroy() {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    const s = this.s;
+    for (const e of s.enemies || []) { e.releaseHold?.('break'); e.clearAbilities?.(); }
+    if (s.vignette) s.vignette.strength = 0.35;
+    for (const L of s.fires) if (L.baseR !== undefined) L.radius = L.baseR;
+    super.destroy();
+    if (this.sun) s.lights.removeLight(this.sun);
+    this.sun = null;
+    for (const p of this.torchSpots) if (p.L) { s.lights.removeLight(p.L); p.L = null; }
+    for (const h of this.halos) h.destroy();
+    for (const e of this.emitters) e.em.destroy();
+    s.snowFront?.destroy();
+    this.halos.length = this.emitters.length = this.torchSpots.length = 0;
+    this.nightLayer = this.motes = null;
+  }
   // ---------- per frame ----------
   update(dt) {
     const s = this.s, R = s.riley, cfg = this.cfg, tod = this.tod = timeOfDay(s.camX, this.keys);
