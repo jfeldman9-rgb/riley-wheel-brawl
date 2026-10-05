@@ -1,10 +1,15 @@
-// Cycle 2 review: tile telegraph, unlit shadow FX, wisp cap, watermark.
+// Cycle 2 review: tile telegraph, unlit shadow FX, wisp cap, watermark, voice budget.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readdirSync, statSync } from 'node:fs';
 import { stage3Simulation, arena, withSeed } from './helpers/stage3-harness.mjs';
 import { TILE_BANDS, TILES } from '../src/stage3-hazards.js';
 import { STAGE3 } from '../src/stages.js';
+import { STAGE3_VOICES } from '../src/stage3.js';
 import { VH, VW } from '../src/config.js';
+import { audit } from '../tools/audit-stage1.mjs';
+
+const STAGE3_VOICE = /^(st3_|cutthroat_|fade_|riley_st3_|riley_escape_|riley_counter_)/;
 
 function watchLighting(s) {
   const orig = s.add.image.bind(s.add);
@@ -85,4 +90,25 @@ test('PLACEHOLDER ART clears the perf readout and is not recomputed every frame'
   assert.ok(afterFirst > 0);
   for (let i = 0; i < 30; i++) fake.updateWatermark({ metas });
   assert.equal(gets, afterFirst);
+});
+
+test('Stage 1 pre-fight budget keeps Stage 2 voices and Stage 3 has its own cap', () => {
+  const voices = readdirSync('assets/audio/voice').filter(name => name.endsWith('.mp3'));
+  const stage3Names = voices.filter(name => STAGE3_VOICE.test(name));
+  const earlier = voices.filter(name => !STAGE3_VOICE.test(name));
+  const sum = names => names.reduce((n, name) => n + statSync(`assets/audio/voice/${name}`).size, 0);
+  assert.deepEqual(stage3Names.map(name => name.replace(/\.mp3$/, '')).sort(), [...STAGE3_VOICES].sort());
+  assert.ok(earlier.some(name => name.startsWith('byar_')), 'Stage 2 voices are still in the tree');
+
+  const data = audit();
+  assert.equal(data.preFight.inventoryStatus, 'PASS');
+  assert.ok(data.preFight.inventoryUpperBoundBytes <= data.preFight.budgetBytes);
+  assert.equal(data.preFight.countedVoiceBytes, sum(earlier));
+  assert.equal(data.stage3.voices.count, STAGE3_VOICES.length);
+  assert.equal(data.stage3.voices.bytes, sum(stage3Names));
+  assert.equal(data.stage3.voices.status, 'PASS');
+  assert.equal(data.stage3.music.status, 'PASS');
+  assert.ok(data.stage3.music.bytes > 0);
+  assert.ok(data.preFight.inventoryUpperBoundBytes + data.stage3.voices.bytes > data.preFight.budgetBytes,
+    'Stage 3 voices do not fit the Stage 1 gate; they must not be hidden inside it');
 });
