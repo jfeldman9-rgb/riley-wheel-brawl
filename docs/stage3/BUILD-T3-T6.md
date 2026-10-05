@@ -82,6 +82,10 @@ baselines from the base commit:
   `/tmp/s2.base.json`
 - `git worktree remove /tmp/base`
 
+> **Update (Oct 4 2026):** this note is out of date. Stage 2 changed after `5d24b29`. The Stage 2 fingerprint baseline
+> is now the frozen **8d8d17b capture** in `/workspace/ag/baselines-8d8d17b/` (`s2-fingerprint.mjs`, `s2.base.json`).
+> Compare against that file and never recreate it. See `BUILD-T7-T11.md` §0.
+
 ---
 
 ## Per-commit checks A–E (every task runs all of them before committing)
