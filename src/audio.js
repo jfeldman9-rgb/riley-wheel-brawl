@@ -380,6 +380,9 @@ function resumeMusic() {
   if (audioHidden) return;
   // Include an outgoing streamed track if a crossfade was in progress at hide.
   for (const T of Object.values(tracks)) if (T.playing && T.el && T.el.paused !== false) T.el.play().catch(() => {});
+  // A failed fetch/decode leaves the selection intact; retry it on recovery.
+  const T = tracks[currentTrack];
+  if (T && !T.M.stream && !T.playing && !T.loading) playTrack(T.id, { fade: 0.4 });
   if (!currentTrack && wantedTrack !== null) playMusic();
 }
 export function audioUnlocked() { return unlocked; }

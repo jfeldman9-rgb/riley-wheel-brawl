@@ -67,3 +67,6 @@ uses the existing `/tmp/rwb-spawn-transport.cjs` transport described above.
   while preserving fresh snapshots for callers of the exported helpers.
   Coverage: `stage3-meter-allocation-hardening.test.mjs` (five tests, including
   stage changes mid-mash and a runtime check of storage passed at draw sites).
+- Retry a selected decoded music track after temporary fetch/decode failure on
+  the next unlocked gesture or visible-tab recovery, respecting music-off and
+  newer selections. Coverage: `stage3-music-retry-hardening.test.mjs` (five tests).
