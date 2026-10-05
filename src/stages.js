@@ -2,7 +2,7 @@
 // and Stage 3 (Caemlyn and the Myrddraal) are registered here in STAGES[n].
 import { DROPS, BOSS_DROP } from './powers.js';
 import { sfx, say } from './audio.js';
-
+import { LANE_TOP, LANE_BOT } from './config.js';
 export const STAGE_COUNT = 2;
 
 /**
@@ -49,13 +49,13 @@ export const STAGE_CHARS = Object.freeze({
 export const SHARED_TEXTURES = Object.freeze(['crate', 'planks']);
 export const STAGE_TEXTURES = Object.freeze({
   1: Object.freeze(['far', 'mid0', 'mid1', 'floor', 'floor2', 'cart', 'barrel', 'staves']),
-  2: Object.freeze(['far2', 'mid2a', 'mid2b', 'floor2a', 'floor2b', 'crate', 'planks', 'beam2', 'arrow', 'torch', 'ribbon', 'story_panel_1', 'story_panel_2', 'story_panel_3']),
+  2: Object.freeze(['far2', 'mid2a', 'mid2b', 'floor2a', 'floor2b', 'crate', 'planks', 'beam2', 'arrow', 'torch', 'ribbon', 'barnburn2', 'barnflame_roof', 'barnflame_eave', 'barnflame_door', 'story_panel_1', 'story_panel_2', 'story_panel_3']),
   3: Object.freeze(['far3_day', 'far3_night', 'mid3a', 'mid3b', 'floor3a', 'floor3b', 'floor3c', 'crate', 'planks', 'rooftiles', 'shadowpool', 'shadowburst', 'fade_far', 'story3_panel_1', 'story3_panel_2', 'story3_panel_3']),
   shared: SHARED_TEXTURES,
 });
 
 // Lane bands for Jaret Byar's archer volleys: the walkable depth band split into thirds.
-export const VOLLEY_BANDS = Object.freeze([[572, 611], [611, 651], [651, 690]]);
+export const VOLLEY_BANDS = Object.freeze(Array.from({ length: 3 }, (_, i) => Object.freeze([Math.round(LANE_TOP + (LANE_BOT - LANE_TOP) * i / 3), Math.round(LANE_TOP + (LANE_BOT - LANE_TOP) * (i + 1) / 3)])));
 export const VOLLEY = Object.freeze({ warn: 1.45, rain: 0.45, every: [7.5, 9.5], dmg: 12 });
 
 /**

@@ -52,7 +52,7 @@ const SNAPSHOT_2 = {
   crates: [[880, 600], [2140, 650], [3330, 610], [4600, 596]],
   skipBoss: { zoneI: 2, x: 3990, camX: 3500 },
   chars: ['riley', 'zealot', 'archer', 'hound', 'byar', 'loial'],
-  textures: ['far2', 'mid2a', 'mid2b', 'floor2a', 'floor2b', 'crate', 'planks', 'beam2', 'arrow', 'torch', 'ribbon', 'story_panel_1', 'story_panel_2', 'story_panel_3'],
+  textures: ['far2', 'mid2a', 'mid2b', 'floor2a', 'floor2b', 'crate', 'planks', 'beam2', 'arrow', 'torch', 'ribbon', 'barnburn2', 'barnflame_roof', 'barnflame_eave', 'barnflame_door', 'story_panel_1', 'story_panel_2', 'story_panel_3'],
 };
 
 test('STAGES[1] and STAGES[2] zones, drops, bossDrop, crates, skipBoss, chars and textures deep-equal frozen literal snapshots', () => {

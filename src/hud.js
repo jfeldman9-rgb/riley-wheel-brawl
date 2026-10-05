@@ -5,6 +5,22 @@ import { installPerfPanel } from './perf-panel.js';
 import { POWERS, ART } from './powers.js';
 import { TWIX_PANELS } from './twix.js';
 const F = 'system-ui,-apple-system,Segoe UI,sans-serif', PX = 'PressStart, monospace';
+// Boss phase lines share one plate in the open band left of the burning barn.
+// On the locked boss camera the barn overlay starts near x=503 and the roof flames
+// sit over the gable (about x=730–1100, y=50–270). This plate stays left of that,
+// below the health, power and boss bars, with a solid backing so it stays readable
+// on a phone (landscape or upright) and an iPad. Press Start is monospace, so the
+// wrapped lines below are what actually fit the plate.
+export const BOSS_BANNER = Object.freeze({ x: 244, y: 292, wrap: 400, fontSize: 22, padX: 22, padY: 14, maxWidth: 400, maxHeight: 72 });
+export const BOSS_BANNER_TEXT = Object.freeze(new Map([
+  ['BYAR IS TORCHING THE BARN!', 'BYAR IS TORCHING\nTHE BARN!'],
+  ['JARET BYAR CALLS HIS ARCHERS', 'JARET BYAR CALLS\nHIS ARCHERS'],
+  ['THE CHIEFTAIN IS ENRAGED', 'THE CHIEFTAIN\nIS ENRAGED'],
+]));
+export function bossBannerBox() {
+  const b = BOSS_BANNER, w = b.maxWidth + b.padX * 2, h = b.maxHeight + b.padY * 2;
+  return Object.freeze({ x: b.x, y: b.y, w, h, left: b.x - w / 2, right: b.x + w / 2, top: b.y - h / 2, bottom: b.y + h / 2 });
+}
 export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS' });
 export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
 export function clearPrompt(stage, touch) {
@@ -49,7 +65,9 @@ export class HUD extends Phaser.Scene {
     const removeTouch = this.game.inp.on('touch', () => this.positionCaptions());
     this.events.once('shutdown', removeTouch);
     this.goT = this.add.text(VW - 60, VH / 2 - 40, 'GO ▶', { fontFamily: PX, fontSize: '26px', color: '#ffe9a8', stroke: '#000', strokeThickness: 6 }).setOrigin(1, 0.5).setAlpha(0);
-    this.flash = this.add.text(VW / 2, 200, '', { fontFamily: PX, fontSize: '20px', color: '#ff9a7a', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setAlpha(0);
+    this.flashBg = this.add.graphics().setAlpha(0);
+    this.flash = this.add.text(VW / 2, 200, '', { fontFamily: PX, fontSize: '20px', color: '#ffe7c8', stroke: '#000', strokeThickness: 6, align: 'center' }).setOrigin(0.5).setAlpha(0);
+    this.flashPair = [this.flashBg, this.flash];
     this.perfT = this.add.text(VW - 10, VH - 8, '', { fontFamily: 'ui-monospace,Menlo,monospace', fontSize: '12px', color: '#bcd0ff', backgroundColor: 'rgba(0,0,0,0.35)', padding: { x: 4, y: 2 } }).setOrigin(1, 1);
     this.showPerf = new URLSearchParams(location.search).get('hud') !== '0';
     this.pauseLabel = this.add.text(VW / 2, VH / 2, 'PAUSED\nP / Esc / Enter / Start or II to resume', { fontFamily: F, fontStyle: '700', fontSize: '28px', color: '#ffffff', backgroundColor: '#0b1428', padding: { x: 24, y: 18 }, align: 'center' }).setOrigin(0.5).setDepth(200).setVisible(false);
@@ -75,7 +93,13 @@ export class HUD extends Phaser.Scene {
     const sel = (this.stage && (this.stage.titleSel || this.stage.stageNo)) || 1;
     const t3 = this.titleStageT = this.add.text(0, 10, STAGE_NAMES[sel], { fontFamily: F, fontStyle: '800', fontSize: '30px', color: '#ffffff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5);
     // ◀ ▶ pick the stage: keys / d-pad / stick left-right, or tap the arrows
-    const arrow = (x, dir) => { const a = this.add.text(x, 10, dir < 0 ? '◀' : '▶', { fontFamily: F, fontStyle: '900', fontSize: '34px', color: '#ffe9a8', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setInteractive({ useHandCursor: true }); a.isStageArrow = true; a.on('pointerdown', () => this.stage && this.stage.selectStage && this.stage.selectStage(dir)); return a; };
+    const arrow = (x, dir) => {
+      const a = this.add.text(x, 10, dir < 0 ? '◀' : '▶', { fontFamily: F, fontStyle: '900', fontSize: '34px', color: '#ffe9a8', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5);
+      // Text hit areas use untransformed top-left coordinates, even with a centred origin.
+      // Keep the visible glyph small but make the entire 120×100 target tappable.
+      a.setInteractive({ useHandCursor: true, hitArea: new Phaser.Geom.Rectangle((a.width - 120) / 2, (a.height - 100) / 2, 120, 100), hitAreaCallback: Phaser.Geom.Rectangle.Contains });
+      a.isStageArrow = true; a.on('pointerdown', () => this.stage && this.stage.selectStage && this.stage.selectStage(dir)); return a;
+    };
     const al = this.titleArrowL = arrow(-430, -1), ar = this.titleArrowR = arrow(430, 1);
     this.titleSelect(sel);
     const touch = this.game.inp.isTouch;
@@ -114,7 +138,27 @@ export class HUD extends Phaser.Scene {
   target(e) { this.enemyRef = e; this.enemyT = 2.5; }
   combo(n) { if (n < 2 || !this.comboT) return; this.comboT.setText(`${n} HITS`).setAlpha(1).setScale(1.25); this.tweens.add({ targets: this.comboT, scale: 1, duration: 120 }); this.comboHold = 1.4; }
   go() { if (!this.goT) return; this.goT.setAlpha(1); this.tweens.add({ targets: this.goT, x: VW - 40, yoyo: true, repeat: 5, duration: 300, onComplete: () => this.goT.setAlpha(0).setX(VW - 60) }); }
-  flashText(t) { if (!this.flash) return; this.flash.setText(t).setAlpha(1); this.tweens.add({ targets: this.flash, alpha: 0, delay: 1400, duration: 600 }); }
+  flashText(t) {
+    if (!this.flash) return;
+    const shown = BOSS_BANNER_TEXT.get(t);
+    const boss = shown != null, b = BOSS_BANNER;
+    this.flash.setStyle({ fontFamily: PX, fontSize: (boss ? b.fontSize : 20) + 'px', color: boss ? '#ffe7c8' : '#ff9a7a', stroke: '#000', strokeThickness: 6, align: 'center', lineSpacing: boss ? 6 : 0 });
+    if (this.flash.setWordWrapWidth) this.flash.setWordWrapWidth(boss ? b.wrap : 1100, false);
+    this.flash.setText(shown || t).setPosition(boss ? b.x : VW / 2, boss ? b.y : 200).setOrigin(0.5).setAlpha(1);
+    if (this.flashBg) {
+      this.flashBg.clear();
+      if (boss) {
+        // Fixed plate, not the measured text size, so a late font metric can't spill onto the barn.
+        const w = b.maxWidth + b.padX * 2, h = b.maxHeight + b.padY * 2;
+        this.flashBg.fillStyle(0x140804, 0.9);
+        this.flashBg.fillRoundedRect(b.x - w / 2, b.y - h / 2, w, h, 8);
+        this.flashBg.lineStyle(3, 0xffc080, 0.95);
+        this.flashBg.strokeRoundedRect(b.x - w / 2, b.y - h / 2, w, h, 8);
+        this.flashBg.setAlpha(1);
+      } else this.flashBg.setAlpha(0);
+    }
+    this.tweens.add({ targets: boss && this.flashBg ? this.flashPair : this.flash, alpha: 0, delay: 1400, duration: 600 });
+  }
   bossBar(c) { this.boss = c; this.bossShown = 0; }
   /** Twinkle Toes' ribbon (Stage 2 collectible) */
   ribbon(n) {

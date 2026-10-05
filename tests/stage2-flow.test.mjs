@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import vm from 'node:vm';
+import { audioParam } from './helpers/audio-param.mjs';
 import { stage1Simulation, withSeed } from './helpers/stage1-simulation.mjs';
 const { stageFromQuery, resolveStage, STAGE_CHARS, STAGE2 } = await import('../src/stages.js');
 const { STORY_SCRIPT, STORY_PANELS, STAGE_TEXTURES } = await import('../src/stage2.js');
@@ -119,23 +120,24 @@ test('music during play: Stage 2 runs story -> stage -> boss -> victory; Stage 1
 // production audio backend with WebAudio stubs (structure only; not a listening test)
 function audio() {
   const nodes = [], els = [], fetches = [], decodes = [], timers = [];
-  const param = v => ({ value: v, events: [], setValueAtTime(x, t) { this.events.push(['set', x, t]); }, linearRampToValueAtTime(x, t) { this.events.push(['lin', x, t]); }, exponentialRampToValueAtTime() {}, cancelScheduledValues(t) { this.events.push(['cancel', t]); } });
-  const node = kind => { const n = { kind, starts: [], stops: [], connect(o) { return o; }, disconnect() {}, start(...a) { this.starts.push(a); }, stop(...a) { this.stops.push(a); }, gain: param(1), frequency: param(0), Q: param(0), threshold: param(0), knee: param(0), ratio: param(0), attack: param(0), release: param(0) }; nodes.push(n); return n; };
-  class AudioContext { constructor() { this.currentTime = 0; this.sampleRate = 100; this.state = 'running'; this.destination = {}; }
+  let context;
+  const param = v => audioParam(v, () => context.currentTime);
+  const node = kind => { const n = { kind, starts: [], stops: [], connections: [], connect(o) { this.connections.push(o); return o; }, disconnect() {}, start(...a) { this.starts.push(a); }, stop(...a) { this.stops.push(a); }, gain: param(1), frequency: param(0), Q: param(0), threshold: param(0), knee: param(0), ratio: param(0), attack: param(0), release: param(0) }; nodes.push(n); return n; };
+  class AudioContext { constructor() { context = this; this.currentTime = 0; this.sampleRate = 100; this.state = 'running'; this.destination = {}; }
     createGain() { return node('gain'); } createDynamicsCompressor() { return node('comp'); } createOscillator() { return node('osc'); } createBufferSource() { return node('buffer'); } createBiquadFilter() { return node('filter'); }
     createBuffer(c, n) { return { getChannelData: () => new Float32Array(n) }; } createMediaElementSource() { return node('media'); }
     decodeAudioData(b, ok) { decodes.push(b.id); ok({ id: b.id, duration: 60 }); } resume() { return Promise.resolve(); } }
   class Audio { constructor(url) { this.url = url; this.paused = true; els.push(this); } play() { this.paused = false; return Promise.resolve(); } pause() { this.paused = true; } }
   const src = readFileSync(new URL('../src/audio.js', import.meta.url), 'utf8').replace(/^import .*$/gm, '');
-  const api = vm.runInNewContext(`${src.replace(/^export /gm, '')}\n({ unlock, playTrack, musicState, MUSIC, toggleMusic });`, {
+  const api = vm.runInNewContext(`${src.replace(/^export /gm, '')}\n({ unlock, playTrack, musicState, MUSIC, toggleMusic, setRain });`, {
     window: { AudioContext }, Audio, console, Math, Promise, Object, Array, JSON, Set, Map, Number, Float32Array, Error,
-    setTimeout(fn, ms) { const t = { fn, ms }; timers.push(t); return t; }, clearTimeout(t) { const i = timers.indexOf(t); if (i >= 0) timers.splice(i, 1); },
+    setTimeout(fn, ms) { const t = { fn, ms, at: context.currentTime + ms / 1000 }; timers.push(t); return t; }, clearTimeout(t) { const i = timers.indexOf(t); if (i >= 0) timers.splice(i, 1); },
     fetch(url) { const id = url.match(/([^/]+)\.mp3$/)[1]; fetches.push(id); return Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve({ id }) }); },
     navigator: { userAgent: 'node' }, document: { addEventListener() {}, visibilityState: 'visible' }, addEventListener() {},
   });
   const settle = async () => { for (let i = 0; i < 6; i++) await new Promise(r => setImmediate(r)); };
-  const flush = () => { while (timers.length) timers.shift().fn(); };
-  return { api, nodes, els, fetches, decodes, settle, flush };
+  const flush = () => { while (timers.length) { timers.sort((a, b) => a.at - b.at); const t = timers.shift(); context.currentTime = Math.max(context.currentTime, t.at); t.fn(); } };
+  return { api, nodes, els, fetches, decodes, settle, flush, advance(secs) { context.currentTime += secs; }, get time() { return context.currentTime; } };
 }
 test('audio backend: loop points and gains are sane; tracks loop sample-accurately on their loop region', async () => {
   const a = audio(), M = a.api.MUSIC;
@@ -163,4 +165,74 @@ test('audio backend: crossfades are equal-power ramps, boss restarts from the to
   a.api.playTrack('stage2', { fade: 1 }); await a.settle(); a.flush();
   assert.ok(a.api.musicState().decoded.length <= 2, a.api.musicState().decoded.join());
   assert.equal(a.api.musicState().current, 'stage2');
+});
+
+const closeTo = (actual, expected, label) => assert.ok(Math.abs(actual - expected) < 1e-9, `${label}: ${actual} vs ${expected}`);
+function monotonic(param, fromTime, duration, from, to) {
+  closeTo(param.valueAt(fromTime), from, 'fade starts at the live gain');
+  let previous = from;
+  for (let i = 1; i <= 64; i++) {
+    const value = param.valueAt(fromTime + duration * i / 64);
+    assert.ok(value >= Math.min(from, to) - 1e-9 && value <= Math.max(from, to) + 1e-9, 'gain stays within endpoints');
+    assert.ok(to >= from ? value >= previous - 1e-9 : value <= previous + 1e-9, 'gain moves monotonically toward its target');
+    previous = value;
+  }
+  closeTo(previous, to, 'fade reaches its endpoint');
+}
+const trackSource = (a, id) => a.nodes.filter(n => n.kind === 'buffer' && n.buffer?.id === `music-${id}`).at(-1);
+const trackGain = (a, id) => trackSource(a, id).connections[0].gain;
+
+test('AudioParam fake: .value assignment schedules at now, while ramp scheduling leaves the current value alone', () => {
+  let time = 0;
+  const param = audioParam(0, () => time);
+  param.setValueAtTime(0, 0); param.linearRampToValueAtTime(1, 2);
+  assert.equal(param.value, 0); time = 1; assert.equal(param.value, 0.5);
+  param.value = 0.9;
+  assert.deepEqual(param.events.at(-1), ['set', 0.9, 1]); assert.equal(param.value, 0.9);
+  closeTo(param.valueAt(1.5), 0.95, 'new set value replaces the live curve at now');
+});
+
+test('audio backend: every sample of a music crossfade is monotonic with no immediate endpoint jump', async () => {
+  const a = audio(); a.api.unlock(); a.api.playTrack('stage2'); await a.settle(); a.advance(1);
+  a.api.playTrack('boss2', { fade: 1.2 }); await a.settle();
+  const down = trackGain(a, 'stage2'), up = trackGain(a, 'boss2');
+  monotonic(down, a.time, 1.2, 1, 0); monotonic(up, a.time, 1.2, 0, a.api.MUSIC.boss2.gain);
+  closeTo(down.valueAt(a.time + 0.6), Math.SQRT1_2, 'outgoing equal-power midpoint');
+  closeTo(up.valueAt(a.time + 0.6), Math.SQRT1_2 * a.api.MUSIC.boss2.gain, 'incoming equal-power midpoint');
+});
+
+test('audio backend: overlapping track changes fade from the instantaneous partial gain', async () => {
+  const a = audio(); a.api.unlock(); a.api.playTrack('stage2'); await a.settle(); a.advance(1);
+  a.api.playTrack('boss2', { fade: 1.2 }); await a.settle(); a.advance(0.43);
+  const boss = trackGain(a, 'boss2'), before = boss.value;
+  assert.ok(before > 0 && before < a.api.MUSIC.boss2.gain);
+  a.api.playTrack('title', { fade: 1 }); await a.settle();
+  monotonic(boss, a.time, 1, before, 0); monotonic(trackGain(a, 'title'), a.time, 1, 0, 1);
+  a.flush(); assert.equal(a.api.musicState().current, 'title');
+});
+
+test('audio backend: reversing a crossfade does not restart or jump the outgoing track', async () => {
+  const a = audio(); a.api.unlock(); a.api.playTrack('stage2'); await a.settle(); a.advance(1);
+  a.api.playTrack('boss2', { fade: 1.2 }); await a.settle(); a.advance(0.43);
+  const stage = trackGain(a, 'stage2'), boss = trackGain(a, 'boss2'), stageBefore = stage.value, bossBefore = boss.value;
+  const originalSource = trackSource(a, 'stage2');
+  assert.ok(stageBefore > 0 && stageBefore < 1);
+  a.api.playTrack('stage2', { fade: 0.8 }); await a.settle();
+  monotonic(stage, a.time, 0.8, stageBefore, 1); monotonic(boss, a.time, 0.8, bossBefore, 0);
+  a.flush(); assert.equal(trackSource(a, 'stage2'), originalSource); assert.equal(originalSource.stops.length, 0);
+});
+
+test('audio backend: immediate music changes apply the gain at now without leftover ramps', async () => {
+  const a = audio(); a.api.unlock(); a.api.playTrack('stage2'); await a.settle(); a.advance(0.1);
+  a.api.playTrack('stage2', { fade: 0 });
+  closeTo(trackGain(a, 'stage2').value, 1, 'zero-duration change');
+  closeTo(trackGain(a, 'stage2').valueAt(a.time + 2), 1, 'cancelled initial ramp cannot change it later');
+});
+
+test('audio backend: rain fade-in and an overlapping fade-out are continuous and monotonic', () => {
+  const a = audio(); a.api.unlock(); const first = a.nodes.length; a.api.setRain(true);
+  const gain = a.nodes.slice(first).find(n => n.kind === 'gain').gain;
+  monotonic(gain, a.time, 2.5, 0, 1); a.advance(0.73);
+  const before = gain.value; assert.ok(before > 0 && before < 1);
+  a.api.setRain(false); monotonic(gain, a.time, 1.2, before, 0); a.flush();
 });
