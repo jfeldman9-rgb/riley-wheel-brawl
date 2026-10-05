@@ -1,4 +1,3 @@
-// Stage 3 boss: Myrddraal. Fear aura, blink, shadow copies. Kid-safe: kneels and melts.
 import { Enemy, TYPES } from './enemies.js';
 import { clamp, rand, q, LANE_TOP, LANE_BOT } from './config.js';
 import { sfx } from './audio.js';
@@ -88,7 +87,7 @@ export class Myrddraal extends Enemy {
     if (['approach', 'wait'].includes(this.state)) this.cool = 0;
     }
   }
-  this.nextBlink -= dt; this.forceLungeT -= dt; this.lungeAt -= dt;
+  this.nextBlink -= dt; this.lungeAt -= dt;
   if (this.resplitT > 0 && (this.resplitT -= dt) <= 0 && this.phase === 3) this.pendingSplit = true;
   this.tickFear(dt); this.tickLook(dt);
   this.st += dt; this.cool -= dt; if (this.shudder > 0) this.shudder -= dt;
@@ -125,7 +124,7 @@ export class Myrddraal extends Enemy {
     if (this.done && !this.melting) { this.melting = true; s.kit?.shadowBurst?.(this.x, this.y); }
     if (this.melting) { this.meltT += dt; const a = max(0, 1 - this.meltT / melt); this.setA(a); if (!a) this.gone = true; }
     return;
-    default: return super.update(dt);
+    default: this.st -= dt; this.cool += dt; if (this.shudder > 0) this.shudder += dt; this.forceLungeT -= dt; return super.update(dt);
   }
   }
 
