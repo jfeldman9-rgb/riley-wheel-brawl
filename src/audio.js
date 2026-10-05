@@ -362,7 +362,11 @@ export function playTrack(id, opts = {}) {
   currentTrack = id; if (id === null) return;
   const T = trackNode(id);
   if (T.stopTimer) { T.stopTimer.cancel(); T.stopTimer = null; }
-  if (opts.restart && prev !== id) { T.pos = T.M.loopStart || 0; if (T.el) T.el.currentTime = 0; }
+  if (opts.restart) {
+    if (T.src) { try { T.src.stop(); } catch (e) { } T.src.disconnect(); T.src = null; }
+    T.playing = false; T.pos = T.M.loopStart || 0;
+    if (T.el) T.el.currentTime = 0;
+  }
   if (T.M.stream) {
     const el = streamEl(T); el.muted = muted;
     if (T.fallback) { el.volume = 0.34 * T.M.gain; } else fadeGain(T.gain.gain, T.M.gain, prev && prev !== id ? fade : 0);

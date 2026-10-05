@@ -70,3 +70,7 @@ uses the existing `/tmp/rwb-spawn-transport.cjs` transport described above.
 - Retry a selected decoded music track after temporary fetch/decode failure on
   the next unlocked gesture or visible-tab recovery, respecting music-off and
   newer selections. Coverage: `stage3-music-retry-hardening.test.mjs` (five tests).
+- Honor explicit music restart even when the requested track is already playing
+  or still fading out. Stop/disconnect its old source, cancel obsolete cleanup,
+  and reuse its buffer; ordinary resume stays uninterrupted. Coverage:
+  `stage3-music-restart-hardening.test.mjs` (four tests, also covering streams).
