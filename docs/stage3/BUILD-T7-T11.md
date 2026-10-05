@@ -8,6 +8,10 @@ existing test/helper line. Run checks A–E for each fix, including
 `audit().stage3.voices` and `.music`, and commit fixes separately without pushing.
 The hardening scope includes shared audio/HUD/story lifecycle code when needed
 to fix Stage 3 behavior; T12–T17 and art changes remain out of scope.
+The completed pass has seven fixes and 605 passing tests; commit hashes and
+verification results are in [HARDENING.md](HARDENING.md#cycle-2-t7t11-starting-at-6992c75).
+The raw baseline audit has four pre-existing Stage 1 art-density failures;
+all budget and Stage 3 audio statuses pass and must remain passing.
 
 *Planner: Claude Opus 5.5, Oct 4 2026. Branch `rwb-2-stage3-ag` @ `36d4ba7` (cycle 1, T1–T6 plus the Codex hardening
 pass in `docs/stage3/HARDENING.md`, has landed; draft PR #20 into `rwb-w2`). Baseline: `node --test tests/*.test.mjs` =

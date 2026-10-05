@@ -74,3 +74,46 @@ uses the existing `/tmp/rwb-spawn-transport.cjs` transport described above.
   or still fading out. Stop/disconnect its old source, cancel obsolete cleanup,
   and reuse its buffer; ordinary resume stays uninterrupted. Coverage:
   `stage3-music-restart-hardening.test.mjs` (four tests, also covering streams).
+
+| Fix | Commit |
+| --- | --- |
+| Retire story callbacks on restart | `51f4d7d` |
+| Freeze story input during secondary pauses | `0549cc1` |
+| Exclude tile warning time from sweep movement | `0ca4a00` |
+| Scope cached plates watermark to the active stage | `65b4967` |
+| Reuse HUD meter fill storage | `ceff316` |
+| Retry selected music after fetch/decode failure | `a87f285` |
+| Restart active or fading music sources correctly | `46445d6` |
+
+Cycle 2 verification:
+
+- **605/605 tests pass**, including all original 574 and 31 new tests; no skips,
+  TODOs, cancellations or failures. The full `node --test tests/*.test.mjs` run
+  passes all 68 files. Each file also ran directly to count the individual tests
+  under this sandbox's Node 20 runner. Every fix's new regression file fails
+  against untouched `6992c75` source files in a scratch checkout.
+- Checks A–E ran before each fix commit. Stage 1's full-stage simulation remains
+  identical with `sourceSha256` and `baseGitCommit` excluded; only those metadata
+  fields were refreshed. Stage 2's fingerprint remains byte-identical to the
+  supplied `baselines-6992c75/s2.base.json`, printing **SAME**. Neither frozen
+  baseline directory was modified.
+- Pre-fight inventory: **24,982,182 / 25,000,000 bytes**, **PASS**. Stage 3 audio:
+  **813,463 / 3,686,400 voice bytes** (18 lines) and
+  **1,667,012 / 2,400,000 music bytes**, both **PASS**. All existing passing audit
+  statuses remain passing. The raw audit already reports Stage 1 art-density
+  **FAIL** for Riley, grunt, spear and hound at `6992c75`; these are unchanged.
+  The baseline claim that every raw audit status was PASS was inaccurate.
+- Final capped sizes: `stage3.js` **11,797 < 12,288**, `stage3-hazards.js`
+  **8,169 ≤ 8,192**, `darkfriends.js` **9,058 ≤ 9,216**, `myrddraal.js`
+  **14,336 ≤ 14,336**. No cap changed, and the latter two files are untouched.
+- `git diff 6992c75 -- tests/ | grep '^-[^-]'` prints nothing. No existing test
+  or helper, art asset, audit rule, stage registry entry or other branch changed.
+  No push was attempted.
+
+The shipped Phaser InputPlugin, Loader and TweenManager already remove their
+scene-owned listeners/tweens on shutdown. TweenData also completes when its
+target is destroyed, so an initially suspected title-pulse leak needed no fix;
+that speculative change was removed from the final commit history. The existing
+title-select/campaign tests remain intact, and the new restart/mash tests assert
+one live gameplay press/key listener and no retired story or meter state.
+Physical rendering and device audio remain outside the headless evidence.
