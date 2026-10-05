@@ -51,7 +51,8 @@ export function audit() {
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) files.add(`src/${name}`);
   for (const group of ['chars','bg','props','ui','powers']) for (const name of readdirSync(resolve(ROOT,'assets',group))) if (!name.endsWith('.md')) files.add(`assets/${group}/${name}`);
   files.add('assets/audio/music-main.mp3');
-  for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) files.add(`assets/audio/voice/${name}`);
+  const stage2or3 = /^(st[23]_|byar_|zealot_|archer_|cutthroat_|fade_|riley_st[23]|riley_ribbon|riley_mud|riley_counter|riley_escape)/;
+  for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3') && !stage2or3.test(name)) files.add(`assets/audio/voice/${name}`);
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
   const rgbaBytes = images.reduce((n,x)=>n+x.rgbaBytes,0);
   const rileyAnimations = json('assets/chars/riley.anims.json').anims;

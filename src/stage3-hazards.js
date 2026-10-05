@@ -17,6 +17,7 @@ export class Stage3Hazards extends Stage2Kit {
     super(s);
     this.tiles = []; this.drops = []; this.pools = []; this.copies = [];
     this.bursts = []; this.glimpse = null; this.glimpsed = false; this.roofSaid = false; this.tileT = TILES.every[0];
+    this.saidParries = 0;
     Object.assign(this.stats, {
       tiles: 0, tileHits: 0, tileEnemyHits: 0, dropins: this.stats.dropins || 0,
       pools: 0, bursts: 0, glimpses: 0,
@@ -165,6 +166,7 @@ export class Stage3Hazards extends Stage2Kit {
 
   updateHazards(dt) {
     if (this.s.paused) return;
+    const p = this.stats.parries || 0; if (p !== this.saidParries) { this.saidParries = p; if (p) say('riley_counter_01', this.s.caption, false); }
     this.updateTiles(dt);
 
     for (let i = 0; i < this.pools.length; i++) {

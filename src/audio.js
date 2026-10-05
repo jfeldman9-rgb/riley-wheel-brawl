@@ -65,6 +65,25 @@ export const EXTRA_VOICE = {
   byar_defeat_01: ['JARET BYAR', 'This is not over, Darkfriend! The Light will find you!'],
   riley_st2_victory_01: ['RILEY', "I'm NOT a Darkfriend! ...And your barn is on fire!"],
   riley_st2_clear_01: ['RILEY', 'The trail keeps going. Hang on, Twinkle Toes. I am coming.'],
+  // Stage 3: Caemlyn and the Myrddraal (Kokoro TTS for Riley/narrator; ElevenLabs eleven_v4 for Gill, cutthroat, Myrddraal)
+  st3_story_01: ['NARRATOR', 'The trail led south, to Caemlyn, the great white city of the Queen.'],
+  st3_story_02: ['BASEL GILL', 'A man with no eyes, on my rooftops, at dusk. He carried a little bundle. Blue ribbon on it.'],
+  st3_story_03: ['RILEY', "Twinkle Toes' ribbon. He's here."],
+  st3_story_04: ['BASEL GILL', 'There are Darkfriends in the market too, lad. Watch your back.'],
+  st3_story_05: ['RILEY', 'I always do.'],
+  st3_story_06: ['NARRATOR', 'As the sun went down over the palace, Riley went up onto the roofs.'],
+  cutthroat_intro_01: ['CUTTHROAT', "That's the one the Lady wants. Take him quiet."],
+  cutthroat_grab_01: ['CUTTHROAT', 'Gotcha!'],
+  riley_escape_01: ['RILEY', 'Off me!'],
+  riley_st3_roof_01: ['RILEY', "Roof tiles. Great. Of course it's roof tiles."],
+  riley_st3_glimpse_01: ['RILEY', 'There! On the far roof!'],
+  fade_intro_01: ['MYRDDRAAL', "The boy who channels. Your sister's trail ends here."],
+  fade_mid_01: ['MYRDDRAAL', 'Fear me, boy.'],
+  fade_split_01: ['MYRDDRAAL', 'Which shadow is real?'],
+  riley_counter_01: ['RILEY', 'That one!'],
+  fade_defeat_01: ['MYRDDRAAL', 'The shadow... remembers...'],
+  riley_st3_victory_01: ['RILEY', 'Remember this, then.'],
+  riley_st3_clear_01: ['RILEY', "Another ribbon. I'm coming, Twinkle Toes."],
 };
 function init() {
   if (ctx) return;
@@ -226,6 +245,11 @@ export const sfx = {
   flame() { if (!gate('flame', 150)) return; noise({ f0: 350, f1: 1900, dur: 0.55, vol: 0.28, filter: 'bandpass', attack: 0.08 }); tone({ f0: 90, f1: 60, dur: 0.4, vol: 0.2, type: 'sine' }); },
   creak() { if (!gate('creak', 400)) return; tone({ f0: vary(140, 0.15), f1: 95, dur: 0.6, vol: 0.1, type: 'sawtooth', attack: 0.15 }); noise({ f0: 600, f1: 300, dur: 0.5, vol: 0.08, filter: 'bandpass', q: 4 }); },
   impact() { if (!gate('impact', 120)) return; tone({ f0: 70, f1: 30, dur: 0.5, vol: 0.6, type: 'sine' }); noise({ f0: 2400, f1: 160, dur: 0.35, vol: 0.45 }); duck(0.35, 0.15, 0.5); },
+  // Stage 3 (Caemlyn) cues
+  hiss() { if (!gate('hiss', 100)) return; noise({ f0: 4500, f1: 1200, dur: 0.35, vol: 0.15, filter: 'bandpass', q: 2 }); tone({ f0: vary(320), f1: 160, dur: 0.25, vol: 0.08, type: 'sine' }); },
+  shadowWhoosh() { if (!gate('shadowWhoosh', 100)) return; noise({ f0: 800, f1: 120, dur: 0.4, vol: 0.22, attack: 0.06 }); tone({ f0: vary(90, 0.1), f1: 45, dur: 0.35, vol: 0.2, type: 'sine' }); },
+  tileRattle() { if (!gate('tileRattle', 150)) return; for (let i = 0; i < 3; i++) { tone({ f0: vary(440 + i * 80), f1: 220, dur: 0.08, vol: 0.12, type: 'triangle', delay: i * 0.05 }); noise({ f0: 2200, f1: 800, dur: 0.07, vol: 0.1, delay: i * 0.05 }); } },
+  torchIgnite() { if (!gate('torchIgnite', 120)) return; noise({ f0: 280, f1: 1800, dur: 0.45, vol: 0.25, filter: 'bandpass', attack: 0.05 }); tone({ f0: vary(120), f1: 75, dur: 0.3, vol: 0.18, type: 'sine' }); },
 };
 let musicWanted = false, unlocked = false;
 // ---------- music tracks (sources and licences: assets/audio/AUDIO_PROVENANCE.md) ----------
@@ -233,15 +257,15 @@ let musicWanted = false, unlocked = false;
 // loop region is [31.103 s, 159.103 s) and the element jumps back exactly 128 s inside the baked crossfade.
 // The other tracks are short original loops decoded once and looped sample-accurately with loopStart/loopEnd
 // (each file carries 0.25 s of overlap on both sides of its loop). gain: per-track balance against the stage1
-// theme, which the SFX mix was tuned to (track loudness: title -17, boss -15.2, stage2 -16 LUFS vs stage1 -15.7).
+// theme, which the SFX mix was tuned to (track loudness: title -17, boss1/boss2/boss3 -15.2, stage2/stage3 -16 LUFS vs stage1 -15.7).
 export const MUSIC = {
   stage1: { url: 'assets/audio/music-main.mp3', stream: true, loopStart: 31.103, loopEnd: 159.103, gain: 1 },
   title: { url: 'assets/audio/music-title.mp3', loopStart: 0.25, loopEnd: 45.964286, gain: 1 },
   boss1: { url: 'assets/audio/music-boss1.mp3', loopStart: 0.25, loopEnd: 38.65, gain: 0.94 },
   stage2: { url: 'assets/audio/music-stage2.mp3', loopStart: 0.25, loopEnd: 64.865374, gain: 1 },
   boss2: { url: 'assets/audio/music-boss2.mp3', loopStart: 0.25, loopEnd: 55.902177, gain: 0.94 },
-  stage3: { url: 'assets/audio/music-stage2.mp3', loopStart: 0.25, loopEnd: 64.865374, gain: 1 },
-  boss3: { url: 'assets/audio/music-boss2.mp3', loopStart: 0.25, loopEnd: 55.902177, gain: 0.94 },
+  stage3: { url: 'assets/audio/music-stage3.mp3', loopStart: 0.25, loopEnd: 64.865374, gain: 1 },
+  boss3: { url: 'assets/audio/music-boss3.mp3', loopStart: 0.25, loopEnd: 53.583333, gain: 0.94 },
 };
 const tracks = Object.create(null), musicBytes = Object.create(null);
 let currentTrack = null, wantedTrack = 'stage1';

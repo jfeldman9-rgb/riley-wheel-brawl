@@ -1,0 +1,258 @@
+{
+  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0 (Riley, narrator); ElevenLabs eleven_v4 (Basel Gill, cutthroat, Myrddraal)",
+  "model_revision_requested": "f3ff3571791e39611d31c381e3a41a3af07b4987",
+  "cast": {
+    "riley": {
+      "lang": "a",
+      "blend": {
+        "am_puck": 0.8,
+        "am_fenrir": 0.2
+      },
+      "speed": 1.04,
+      "pitch": 1.02
+    },
+    "narrator": {
+      "lang": "b",
+      "blend": {
+        "bm_fable": 1.0
+      },
+      "speed": 0.95,
+      "pitch": 0.97
+    }
+  },
+  "pronunciation": {
+    "saidin": "sIˈdin",
+    "Myrddraal": "mˈɜɹdɹɑl",
+    "Baerlon": "bˈɛɹlɑn",
+    "Caemlyn": "kˈeɪmlɪn",
+    "Darkfriend": "dˈɑɹkfɹɛnd"
+  },
+  "lines": [
+    {
+      "id": "st3_story_01",
+      "who": "narrator",
+      "text": "The trail led south, to Caemlyn, the great white city of the Queen.",
+      "speech_input": "The trail led south, to [Caemlyn](/kˈeɪmlɪn/), the great white city of the Queen.",
+      "phonemes": [
+        "ðə tɹˈAl lˈɛd sˈWθ, tə kˈeɪmlɪn, ðə ɡɹˈAt wˈIt sˈɪti ɒv ðə kwˈiːn."
+      ],
+      "duration_s": 3.576,
+      "sha256": "5fb66348eb709e3d4b2aeefd6990f3efada6f62ec4878ccd0630d3f259d05f4f",
+      "asset_path": "assets/audio/voice/st3_story_01.mp3",
+      "source": "kokoro"
+    },
+    {
+      "id": "st3_story_02",
+      "who": "BASEL GILL",
+      "text": "A man with no eyes, on my rooftops, at dusk. He carried a little bundle. Blue ribbon on it.",
+      "direction": "[nervous] hushed, worried, leaning in to tell a secret",
+      "source": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "Grandfather Joe",
+      "duration_s": 7.889,
+      "sha256": "fb242f1000c44dc60727b3ffb32f4c29117eda2352fbc5357380366d0bd4372f",
+      "asset_path": "assets/audio/voice/st3_story_02.mp3"
+    },
+    {
+      "id": "st3_story_03",
+      "who": "riley",
+      "text": "Twinkle Toes' ribbon. He's here.",
+      "speech_input": "Twinkle Toes' ribbon. He's here.",
+      "phonemes": [
+        "twˈɪŋkᵊl tˈOz ɹˈɪbən. hˌiz hˈɪɹ."
+      ],
+      "duration_s": 1.536,
+      "sha256": "76baefd24fa607bbd9a9aeefa2f6f0f3a60c6290309df6a950df29ca11629266",
+      "asset_path": "assets/audio/voice/st3_story_03.mp3",
+      "source": "kokoro"
+    },
+    {
+      "id": "st3_story_04",
+      "who": "BASEL GILL",
+      "text": "There are Darkfriends in the market too, lad. Watch your back.",
+      "direction": "[concerned] fatherly warning",
+      "source": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "Grandfather Joe",
+      "duration_s": 3.866,
+      "sha256": "9c8b0e0a211e7355bc26be3a0c72a39d3fe96d13273b876e3c92248e564f57a7",
+      "asset_path": "assets/audio/voice/st3_story_04.mp3"
+    },
+    {
+      "id": "st3_story_05",
+      "who": "riley",
+      "text": "I always do.",
+      "speech_input": "I always do.",
+      "phonemes": [
+        "ˌI ˈɔlwˌAz dˈu."
+      ],
+      "duration_s": 0.72,
+      "sha256": "cf45a37e52f109cd637b619a12bfdfd079f00e7bad1b1f7809920992d8309caa",
+      "asset_path": "assets/audio/voice/st3_story_05.mp3",
+      "source": "kokoro"
+    },
+    {
+      "id": "st3_story_06",
+      "who": "narrator",
+      "text": "As the sun went down over the palace, Riley went up onto the roofs.",
+      "speech_input": "As the sun went down over the palace, Riley went up onto the roofs.",
+      "phonemes": [
+        "ˌaz ðə sˈʌn wˈɛnt dˌWn ˈQvə ðə pˈalɪs, ɹˈIli wˈɛnt ˌʌp ˈɒntuː ðə ɹˈuːfs."
+      ],
+      "duration_s": 3.408,
+      "sha256": "93c2e5cbb087c0c4446daca0d15163076214f11c177183385852ab08565ca79e",
+      "asset_path": "assets/audio/voice/st3_story_06.mp3",
+      "source": "kokoro"
+    },
+    {
+      "id": "cutthroat_intro_01",
+      "who": "CUTTHROAT",
+      "text": "That's the one the Lady wants. Take him quiet.",
+      "direction": "[whispers] low, sneering, to his partner",
+      "source": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "Eastend Steve",
+      "duration_s": 3.396,
+      "sha256": "5a65e14786ca5940738a67b0e717cc7aa8b2c5db4988d6b75f2cbcbba565cb76",
+      "asset_path": "assets/audio/voice/cutthroat_intro_01.mp3"
+    },
+    {
+      "id": "cutthroat_grab_01",
+      "who": "CUTTHROAT",
+      "text": "Gotcha!",
+      "direction": "[shouting] triumphant, grabbing someone",
+      "source": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "Eastend Steve",
+      "duration_s": 1.149,
+      "sha256": "f2b9878f21e9ca219b6e6f7ef53d3f88f3c39a0613f1dbb638d5ec89cfc82e6c",
+      "asset_path": "assets/audio/voice/cutthroat_grab_01.mp3"
+    },
+    {
+      "id": "riley_escape_01",
+      "who": "riley",
+      "text": "Off me!",
+      "speech_input": "Off me!",
+      "phonemes": [
+        "ˈɔf mˌi!"
+      ],
+      "duration_s": 0.576,
+      "sha256": "c0d138e2f4eef348da5a4a0067450f6fe7b7f2f16e643381d96ed3af29f12960",
+      "asset_path": "assets/audio/voice/riley_escape_01.mp3",
+      "source": "kokoro"
+    },
+    {
+      "id": "riley_st3_roof_01",
+      "who": "riley",
+      "text": "Roof tiles. Great. Of course it's roof tiles.",
+      "speech_input": "Roof tiles. Great. Of course it's roof tiles.",
+      "phonemes": [
+        "ɹˈuf tˈIlz. ɡɹˈAt. ˌʌv kˈɔɹs ɪts ɹˈuf tˈIlz."
+      ],
+      "duration_s": 2.112,
+      "sha256": "1c2e45924e9785fb8fc0c7ca43c76949d429b0f4afde741e498f8fe57b87cef3",
+      "asset_path": "assets/audio/voice/riley_st3_roof_01.mp3",
+      "source": "kokoro"
+    },
+    {
+      "id": "riley_st3_glimpse_01",
+      "who": "riley",
+      "text": "There! On the far roof!",
+      "speech_input": "There! On the far roof!",
+      "phonemes": [
+        "ðˈɛɹ! ˌɔn ðə fˈɑɹ ɹˈuf!"
+      ],
+      "duration_s": 1.032,
+      "sha256": "1b07af6b3efdbc0d317ebdde2f062c1c62c52cdd18d533b4942805d11dc6ce93",
+      "asset_path": "assets/audio/voice/riley_st3_glimpse_01.mp3",
+      "source": "kokoro"
+    },
+    {
+      "id": "fade_intro_01",
+      "who": "MYRDDRAAL",
+      "text": "The boy who channels. Your sister's trail ends here.",
+      "direction": "[whispers] slow, cold, menacing",
+      "source": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "Branok",
+      "duration_s": 5.721,
+      "sha256": "05edd6bb8726bc1da22ea5d1df64503d74001ef80d3f85a1065ac72e7aaa5267",
+      "asset_path": "assets/audio/voice/fade_intro_01.mp3"
+    },
+    {
+      "id": "fade_mid_01",
+      "who": "MYRDDRAAL",
+      "text": "Fear me, boy.",
+      "direction": "[whispers] a hiss, dragging out \"fear\"",
+      "source": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "Branok",
+      "duration_s": 2.586,
+      "sha256": "0d3a7924b1c590f1da0f96c6261b0e765a97ddd00feebf96981ee31fba935063",
+      "asset_path": "assets/audio/voice/fade_mid_01.mp3"
+    },
+    {
+      "id": "fade_split_01",
+      "who": "MYRDDRAAL",
+      "text": "Which shadow is real?",
+      "direction": "[whispers] mocking, echoing, taunting",
+      "source": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "Branok",
+      "duration_s": 2.116,
+      "sha256": "b51c814acf5a0ff0a845edf3f59bf4519e991a819beca94611ee59c23566564d",
+      "asset_path": "assets/audio/voice/fade_split_01.mp3"
+    },
+    {
+      "id": "riley_counter_01",
+      "who": "riley",
+      "text": "That one!",
+      "speech_input": "That one!",
+      "phonemes": [
+        "ðˈæt wˈʌn!"
+      ],
+      "duration_s": 0.576,
+      "sha256": "919287bd2a6c0d5f3e6b72f2079128c4c754b8a55f8b5205df283d98a3df67d3",
+      "asset_path": "assets/audio/voice/riley_counter_01.mp3",
+      "source": "kokoro"
+    },
+    {
+      "id": "fade_defeat_01",
+      "who": "MYRDDRAAL",
+      "text": "The shadow... remembers...",
+      "direction": "[whispers] fading out, weakening, defeated",
+      "source": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "Branok",
+      "duration_s": 2.769,
+      "sha256": "3c1feec04ee40134b75b138c6ca8e55fccc2e5b3f1557fac8d0721ce69934446",
+      "asset_path": "assets/audio/voice/fade_defeat_01.mp3"
+    },
+    {
+      "id": "riley_st3_victory_01",
+      "who": "riley",
+      "text": "Remember this, then.",
+      "speech_input": "Remember this, then.",
+      "phonemes": [
+        "ɹəmˈɛmbəɹ ðˈɪs, ðˈɛn."
+      ],
+      "duration_s": 0.936,
+      "sha256": "13bc7204b6a5c16ffabadf44bc4e3c2e226519a99a01de12f936f5de70c3bea3",
+      "asset_path": "assets/audio/voice/riley_st3_victory_01.mp3",
+      "source": "kokoro"
+    },
+    {
+      "id": "riley_st3_clear_01",
+      "who": "riley",
+      "text": "Another ribbon. I'm coming, Twinkle Toes.",
+      "speech_input": "Another ribbon. I'm coming, Twinkle Toes.",
+      "phonemes": [
+        "ənˈʌðəɹ ɹˈɪbən. ˌIm kˈʌmɪŋ, twˈɪŋkᵊl tˈOz."
+      ],
+      "duration_s": 1.992,
+      "sha256": "97a1af5ee318e76265fd55b6834cfe0d9b056b9fd9da4c7e6a49e78a40f5a1f9",
+      "asset_path": "assets/audio/voice/riley_st3_clear_01.mp3",
+      "source": "kokoro"
+    }
+  ]
+}
