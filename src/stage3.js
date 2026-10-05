@@ -3,7 +3,8 @@ import { VW, VH, LANE_TOP, WORLD_W, clamp } from './config.js';
 import { sfx, preloadClips, EXTRA_VOICE } from './audio.js';
 import { queueCharPages } from './assets.js';
 import { STAGE3 } from './stages.js';
-import { Stage2Kit, MID_Y } from './stage2.js';
+import { MID_Y } from './stage2.js';
+import { Stage3Hazards } from './stage3-hazards.js';
 export const STORY3_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story3_panel_' + n, url: `assets/story/story3_panel_${n}.jpg` })));
 export const STAGE3_VOICES = Object.freeze(Object.keys(EXTRA_VOICE).filter(id => /^(st3_|cutthroat_|fade_|riley_st3|riley_escape|riley_counter)/.test(id)));  // empty until T8
 export const STAGE3_ATLASES = Object.freeze(['riley3', 'cutthroat', 'fade']);   // = STAGE_CHARS[3] minus ALL_CHARS
@@ -74,7 +75,7 @@ export function queueStage3(scene) {
   }
 }
 
-export class Stage3Kit extends Stage2Kit {
+export class Stage3Kit extends Stage3Hazards {
   constructor(s) {
     super(s);
     this.cfg = s.cache.json.get('lights3') || {}; this.plates = s.cache.json.get('plates3') || {};
@@ -170,8 +171,8 @@ export class Stage3Kit extends Stage2Kit {
     if (this.skyArrows.length) this.updateSky(dt, R);
     if (this.stars.length) this.updateStars(dt);
     if (this.sticks.length) this.updateSticks(dt);
+    this.updateHazards(dt);
   }
-  onZoneClear(i) {}
 }
 
 STAGE3.kit = Stage3Kit;
