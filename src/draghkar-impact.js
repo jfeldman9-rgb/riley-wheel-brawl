@@ -1,11 +1,3 @@
-// A facing active frame answers the lunge once, then the swoop punish window.
-export function counterKiss(boss, from) {
-  boss.takeHit({ dmg: 10, activeFrame: true }, from);
-  if (!boss.alive || boss.state === 'defeated') return;
-  boss.state = 'counter_down'; boss.st = 0; boss.counter = true;
-  boss.setKissCooldown();
-}
-
 // The pure boss core reports strikes by changing HP. Route scene strikes through
 // Riley's normal hit/death contract, preserving the boss's damage and push values.
 const STRIKES = new Set(['swoop_dive', 'claw', 'buffet']);

@@ -1,4 +1,3 @@
-import { counterKiss } from './draghkar-impact.js';
 export const DRAGHKAR = Object.freeze({
   hp: 560,
   phase2Threshold: 560 * 0.66,
@@ -304,7 +303,7 @@ export class Draghkar {
             this.state = 'kiss_recoil'; this.st = 0; this.setKissCooldown(); break;
           }
           const facingEachOther = (R.facing || 1) === -this.lungeDir;
-          if (R.attackFrame && facingEachOther) { counterKiss(this, R); break; }
+          if (R.attackFrame && facingEachOther) { this.takeHit({ dmg: 10, activeFrame: true }, R); if (this.alive) { this.state = 'counter_down'; this.st = 0; this.counter = true; this.setKissCooldown(); } break; }
           const attackingAway = R.attackFrame && !facingEachOther;
           const grabbable = (GRAB_OK.has(R.state) || attackingAway) &&
                             !R.grabbedBy && !this.held() &&
@@ -321,20 +320,12 @@ export class Draghkar {
         break;
       }
 
-      case 'kiss_recoil':
-        if (this.st >= D.kissRecoil) { this.state = 'grounded'; this.st = 0; }
-        break;
+      case 'kiss_recoil': if (this.st >= D.kissRecoil) { this.state = 'grounded'; this.st = 0; } break;
 
       case 'kiss_hold': {
         if (this.isPaused()) { this.st -= dt; break; }
         this.holdElapsed += dt; this.decayElapsed += dt;
-        if (this.holdElapsed >= D.kissHoldInterval) {
-          this.holdElapsed -= D.kissHoldInterval;
-          if (R) {
-            R.hp = Math.max(0, (R.hp || 100) - D.kissHoldDmg);
-            if (R.hp <= 0) { this.releaseGrab(); this.endKiss(); break; }
-          }
-        }
+        if (this.holdElapsed >= D.kissHoldInterval) { this.holdElapsed -= D.kissHoldInterval; if (R) { R.hp = Math.max(0, (R.hp || 100) - D.kissHoldDmg); if (R.hp <= 0) { this.releaseGrab(); this.endKiss(); break; } } }
         if (this.decayElapsed >= D.kissMashDecayInterval) {
           this.decayElapsed -= D.kissMashDecayInterval;
           if (this.mashCount > 0) this.mashCount = Math.max(0, this.mashCount - D.kissMashDecay);
@@ -347,21 +338,13 @@ export class Draghkar {
         break;
       }
 
-      case 'reels':
-        if (this.st >= D.kissReelDuration) { this.state = 'grounded'; this.st = 0; }
-        break;
+      case 'reels': if (this.st >= D.kissReelDuration) { this.state = 'grounded'; this.st = 0; } break;
 
-      case 'counter_down':
-        if (this.st >= D.counterDown) { this.state = 'getup'; this.st = 0; this.counter = false; }
-        break;
+      case 'counter_down': if (this.st >= D.counterDown) { this.state = 'getup'; this.st = 0; this.counter = false; } break;
 
-      case 'getup':
-        if (this.st >= 0.4) { this.state = 'grounded'; this.st = 0; }
-        break;
+      case 'getup': if (this.st >= 0.4) { this.state = 'grounded'; this.st = 0; } break;
 
-      case 'takeoff':
-        if (this.st >= 0.5) { this.state = 'perch'; this.st = 0; }
-        break;
+      case 'takeoff': if (this.st >= 0.5) { this.state = 'perch'; this.st = 0; } break;
     }
   }
 
