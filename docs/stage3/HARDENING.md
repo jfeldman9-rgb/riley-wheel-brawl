@@ -185,9 +185,9 @@ Three confirmed bugs were reproduced before their source fixes:
 
 | Fix | Commit | New regressions |
 | --- | --- | --- |
-| Include the sun in Stage 3's light budget and honor the renderer cap; prevent Balefire from causing Phaser to cull Riley's light | `109e1c7` | `stage3-light-budget-hardening.test.mjs` (2) |
-| Pause scene clocks on hidden/blur events, independently of manual pause; detach callbacks on shutdown and inherit background state on restart | `4d0cd31` | `stage3-background-clock-hardening.test.mjs` (4) |
-| Delegate held Cutthroat hits to the existing holder-only knee check; restore knee damage and lethal-knee wave completion | `5d524e4` | `stage3-held-knee-hardening.test.mjs` (2) |
+| Include the sun in Stage 3's light budget and honor the renderer cap; prevent Balefire from causing Phaser to cull Riley's light | `16bb813` | `stage3-light-budget-hardening.test.mjs` (2) |
+| Pause scene clocks on hidden/blur events, independently of manual pause; detach callbacks on shutdown and inherit background state on restart | `cab9ebd` | `stage3-background-clock-hardening.test.mjs` (4) |
+| Delegate held Cutthroat hits to the existing holder-only knee check; restore knee damage and lethal-knee wave completion | `75eb2e8` | `stage3-held-knee-hardening.test.mjs` (2) |
 
 All eight fix regressions fail against untouched `190d87b`. The light regressions
 execute the shipped Phaser light selector (including its distance-sort fallback),
@@ -224,3 +224,8 @@ network/push occurred. Rendering/device behavior remains outside headless eviden
 The supplied workdir's `.git` is read-only. Commits are on `rwb-2-stage3-ag` in
 `/workspace/ag/rwb-s3-sol`; edited files are mirrored into the supplied workdir.
 Neither `main` nor `rwb-w2` was changed.
+
+Pushed SHAs for this cycle, corrected from the pre-push hashes: sun budget
+`16bb813` (was `109e1c7`), hidden/blur clocks `cab9ebd` (was `4d0cd31`),
+holder-only knee `75eb2e8` (was `5d524e4`). The evidence note for the cycle
+is `150ae6e` (was `4385397`).
