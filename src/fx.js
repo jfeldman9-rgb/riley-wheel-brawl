@@ -53,6 +53,7 @@ export class FX {
     this.embers.emitParticleAt(x, y, this.quality >= 2 ? 20 : 40);
   }
   update(dt) {
+    dt = Number.isFinite(dt) && dt >= 0 ? dt : 0;
     this._dt = dt;
     this.trauma = Math.max(0, this.trauma - dt * 1.8);
     const L = this.hitLight; L.intensity = Math.max(0, L.intensity - dt * 16);
