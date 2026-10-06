@@ -290,6 +290,7 @@ export class Stage1 extends Phaser.Scene {
     this.inp.clear();
     if (next === this.paused) return;
     this.paused = next;
+    this.kit?.onPause?.(next);
     if (next) this.scene.pause(); else this.scene.resume();
     if (this.hud && this.hud.pauseLabel) this.hud.pauseLabel.setVisible(this.showPauseLabel());
   }

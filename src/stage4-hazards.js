@@ -160,7 +160,7 @@ export function createFog(deps = {}) {
     const hit = tendrils.find(t => (t.phase === 'chase' || t.phase === 'retract') && overlap(actor, t));
     // A knock only pays off when it actually meets fog. Leave the flag set until then.
     if (actor.knocked && hit) {
-      if (actor.type === 'cultist') actor.hp = Math.max(0, actor.hp - FOG.knockIntoDmg);
+      if (actor.type === 'cultist') { actor.hp = Math.max(0, actor.hp - FOG.knockIntoDmg); actor.fogBurned = 1; }
       actor.knocked = false;
     }
     if (!hit) { actor.fogContact = 0; actor.fogSlow = 0; return; }
@@ -168,10 +168,12 @@ export function createFog(deps = {}) {
     actor.fogContact = (actor.fogContact || 0) + 1;
     if (actor.fogContact % ticks(FOG.contactEvery) === 0) {
       actor.hp = Math.max(0, actor.hp - FOG.contactDmg);
+      if (actor.type === 'cultist') actor.fogBurned = 1;
       if ((actor.hp || 0) <= 0 && actor.alive !== false && actor.lives == null) fell(actor, FOG.contactDmg);
     }
     if (actor.fogContact >= ticks(FOG.gripTime)) {
       actor.hp = Math.max(0, actor.hp - FOG.gripDmg);
+      if (actor.type === 'cultist') actor.fogBurned = 1;
       fell(actor, FOG.gripDmg);
       actor.fogPend = true;
       actor.fogSawGetup = false;

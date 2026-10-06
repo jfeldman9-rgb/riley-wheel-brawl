@@ -50,7 +50,7 @@ export function audit() {
   const files = new Set(['index.html','lib/phaser.min.js','assets/fonts/press-start-2p.ttf']);
   // Stage 4 modules do not fit the leftover Stage 1 headroom (about 2 KB after Stage 3).
   // They are a separate source budget, the same way Stage 3 voices sit outside this gate.
-  const STAGE4_SRC = new Set(['stage4.js','stage4-def.js','stage4-hud.js','stage4-hazards.js','stage4-sfx.js','stage4-actors.js','stage4-arena.js','stage4-towers.js','stage4-view.js','stage4-art.js','stage4-art-bg.js','stage4-art-fog.js','stage4-art-cast.js','cultists.js','draghkar.js','bot-stage4.js']);
+  const STAGE4_SRC = new Set(['stage4.js','stage4-def.js','stage4-hud.js','stage4-hazards.js','stage4-sfx.js','stage4-actors.js','stage4-arena.js','stage4-towers.js','stage4-view.js','stage4-art.js','stage4-art-bg.js','stage4-art-fog.js','stage4-art-cast.js','stage4-voice.js','cultists.js','draghkar.js','bot-stage4.js']);
   const stage4SourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
     if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);
@@ -63,18 +63,23 @@ export function audit() {
   // them into this sum exceeds 25 MB, so they have their own budget below instead
   // of being dropped from the Stage 1 gate along with Stage 2.
   const stage3Voice = /^(st3_|cutthroat_|fade_|riley_st3_|riley_escape_|riley_counter_)/;
-  let countedVoiceBytes = 0, stage3VoiceBytes = 0, stage3VoiceCount = 0;
+  const stage4Voice = /^(st4_|draghkar_|cultist_|riley_fog_|riley_tower_|riley_bridge_|riley_light_|riley_st4_)/;
+  let countedVoiceBytes = 0, stage3VoiceBytes = 0, stage3VoiceCount = 0, stage4VoiceBytes = 0, stage4VoiceCount = 0;
   for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) {
     const path = `assets/audio/voice/${name}`, bytes = statSync(resolve(ROOT, path)).size;
     if (stage3Voice.test(name)) { stage3VoiceBytes += bytes; stage3VoiceCount++; }
+    else if (stage4Voice.test(name)) { stage4VoiceBytes += bytes; stage4VoiceCount++; }
     else { files.add(path); countedVoiceBytes += bytes; }
   }
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
   const stage3MusicFiles = ['assets/audio/music-stage3.mp3', 'assets/audio/music-boss3.mp3'];
   const stage3MusicBytes = stage3MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const stage4MusicFiles = ['assets/audio/music-stage4.mp3', 'assets/audio/music-boss4.mp3'];
+  const stage4MusicBytes = stage4MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const stage4SourceBytes = stage4SourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const stage4SourceBudget = 192 * 1024;
   const stage3VoiceBudget = 18 * 200 * 1024, stage3MusicBudget = 2 * 1_200_000;
+  const stage4VoiceBudget = 23 * 200 * 1024, stage4MusicBudget = 2 * 1_200_000;
   const rgbaBytes = images.reduce((n,x)=>n+x.rgbaBytes,0);
   const rileyAnimations = json('assets/chars/riley.anims.json').anims;
   // These are the shipped attack-animation mappings, not a claim that every
@@ -88,7 +93,7 @@ export function audit() {
   return { characters, preFight: { inventoryUpperBoundBytes:preFightUpperBoundBytes, budgetBytes:25_000_000,
       inventoryStatus:preFightUpperBoundBytes <= 25_000_000 ? 'PASS' : 'FAIL',
       countedVoiceBytes,
-      note:'Stage 1 and Stage 2 static inventory, including music-main and every voice those stages ship. Stage 3 voices and music are under stage3 (they are not loaded before the first fight, and they do not fit this 25 MB gate). Actual transfer/cold-load timing requires browser resource evidence.' },
+      note:'Stage 1 and Stage 2 static inventory, including music-main and every voice those stages ship. Stage 3 and Stage 4 voices and music are under stage3 and stage4 (they are not loaded before the first fight, and they do not fit this 25 MB gate). Actual transfer/cold-load timing requires browser resource evidence.' },
     stage3: {
       voices: { count: stage3VoiceCount, bytes: stage3VoiceBytes, budgetBytes: stage3VoiceBudget,
         status: stage3VoiceBytes <= stage3VoiceBudget ? 'PASS' : 'FAIL',
@@ -101,6 +106,12 @@ export function audit() {
       source: { files: stage4SourceFiles, bytes: stage4SourceBytes, budgetBytes: stage4SourceBudget,
         status: stage4SourceBytes <= stage4SourceBudget ? 'PASS' : 'FAIL',
         note: 'Stage 4 modules only. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
+      voices: { count: stage4VoiceCount, bytes: stage4VoiceBytes, budgetBytes: stage4VoiceBudget,
+        status: stage4VoiceBytes <= stage4VoiceBudget ? 'PASS' : 'FAIL',
+        note: 'Stage 4 voice lines only. Each line is capped at 200 KB; the total cap is 23 times that.' },
+      music: { files: stage4MusicFiles, bytes: stage4MusicBytes, budgetBytes: stage4MusicBudget,
+        status: stage4MusicBytes <= stage4MusicBudget ? 'PASS' : 'FAIL',
+        note: 'Two decoded loops, each under 1.2 MB. Not part of the Stage 1 pre-fight sum.' },
     },
     playerAttackDensity: { minimumFrames:5, attacks:playerAttacks,
       densityStatus:playerAttacks.every(a=>a.densityStatus==='PASS')?'PASS':'FAIL',

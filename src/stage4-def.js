@@ -1,6 +1,7 @@
 // Stage 4 table. Kept out of stages.js so the Stage 1 pre-fight inventory stays
 // inside its 25 MB gate; these bytes are reported under the Stage 4 source budget.
-import { sfx } from './audio.js';
+import { sfx, say } from './audio.js';
+import './stage4-voice.js';
 
 export const STAGE4_CHARS = Object.freeze(['riley', 'cutthroat', 'hound', 'loial', 'cultist', 'draghkar']);
 export const STAGE4_TEXTURES = Object.freeze(['bg4far', 'bg4mid', 'bg4mid2', 'bg4floor', 'bg4floor2', 'bg4floor3', 's4vent', 's4tip', 's4seg', 's4wall', 's4shaft', 's4tower', 's4rubble', 's4drag', 's4cult', 's4bolt', 's4fog', 'story4p1', 'story4p2', 'story4p3', 'draghkarPortrait', 'crate', 'planks', 'ribbon']);
@@ -38,15 +39,18 @@ export const STAGE4 = {
   onBossPhase: (scene, c, ph) => {
     const L = STAGE4.phaseLines[ph];
     if (L) { scene.caption?.(L.who, L.text); scene.fx.trauma = 0.5; scene.hud?.flashText(L.flash); }
+    if (ph === 3) say('draghkar_garden_01', scene.caption, false);
     if (ph === scene.bossDrop.phase && scene.powerDrops) scene.powerDrops.push({ kind: scene.bossDrop.kind, t: 0.6 });
   },
   bossDown: (scene) => {
+    scene.kit?.onDefeat?.();
     if (scene.kit) scene.kit.clearHazards();
     const cap = (who, text) => scene.caption?.(who, text);
     scene.time.delayedCall(900, () => cap('DRAGHKAR', 'The song breaks.'));
-    scene.time.delayedCall(3200, () => cap('RILEY', 'The trail goes underground. A Waygate.'));
-    scene.time.delayedCall(5600, () => cap('LOIAL', 'Riley, the Ways are dark. Nobody goes into the Ways.'));
-    scene.time.delayedCall(8000, () => cap('RILEY', 'Then show me how.'));
+    scene.time.delayedCall(900, () => say('riley_st4_victory_01', null));
+    scene.time.delayedCall(3200, () => say('st4_clear_01', scene.caption));
+    scene.time.delayedCall(5600, () => say('st4_clear_02', scene.caption));
+    scene.time.delayedCall(8000, () => say('st4_clear_03', scene.caption));
     scene.time.delayedCall(9200, () => { scene.ended = true; sfx.levelClear(); scene.hud.stageClear(scene.stats()); scene.music?.set('clear'); scene.time.delayedCall(1200, () => scene.clearShown = true); });
   },
 };

@@ -8,19 +8,20 @@ import { createFog } from './stage4-hazards.js';
 import { createTowers, TOWER } from './stage4-towers.js';
 import { createArena } from './stage4-arena.js';
 import { LAYOUT, createStage4View, moonAmbient } from './stage4-view.js';
-import { playStage4Sfx } from './stage4-sfx.js';
 import { updateFogBolts, cultistHoldsToken } from './cultists.js';
+import { preloadClips, say } from './audio.js';
+import { STAGE4_VOICES, bark, croon, sfxCue, fogOffId } from './stage4-voice.js';
 
 export const STORY4_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story4p' + n })));
 export const STORY4_SCRIPT = Object.freeze([
-  { who: 'NARRATOR', text: 'The Fade fled Caemlyn by night.', panel: 0 },
+  { who: 'NARRATOR', text: 'The Fade fled Caemlyn by night.', panel: 0, id: 'st4_story_01' },
   { who: 'NARRATOR', text: 'Its trail ran east, to a city no map still names.', panel: 0 },
-  { who: 'RILEY', text: 'Aridhol. Moiraine said never go in.', panel: 1 },
-  { who: 'RILEY', text: 'He went in.', panel: 1 },
-  { who: 'MORDETH', text: 'Stay... and be welcome... forever.', panel: 2 },
-  { who: 'NARRATOR', text: 'Riley walked in.', panel: 2 },
+  { who: 'RILEY', text: 'Aridhol. Moiraine said never go in.', panel: 1, id: 'st4_story_02' },
+  { who: 'RILEY', text: 'He went in.', panel: 1, id: 'st4_story_03' },
+  { who: 'MORDETH', text: 'Stay... and be welcome... forever.', panel: 2, id: 'st4_story_04' },
+  { who: 'NARRATOR', text: 'Riley walked in.', panel: 2, id: 'st4_story_05' },
 ]);
-export const STAGE4_VOICES = Object.freeze([]);
+export { STAGE4_VOICES };
 export { cultistHoldsToken };
 
 export function queueStage4(scene) {
@@ -67,7 +68,7 @@ export class Stage4Kit {
     s.fogBolts = [];
     if (q.get('nopower') === '1' || s.stageData?.noPower) s.noPower = true;
   }
-  start() { this.s.music?.set('stage'); }
+  start() { preloadClips(STAGE4_VOICES); this.s.music?.set('stage'); }
   world() {
     const s = this.s, z = s.zone, boss = s.boss;
     return {
@@ -75,7 +76,7 @@ export class Stage4Kit {
       lastWave: !!(z && !z.boss && s.wave >= (z.waves?.length || 1) - 1 && !(s.pending || []).length),
       exitX: z ? z.r - 40 : null, camX: s.camX, bands: VOLLEY_BANDS,
       holdWalls: !!(boss && boss.hp <= boss.maxHp * 0.15),
-      onTowerHit: R => this.towerHit(R), onTowerTell: () => { this.stats.towers++; this.cue('towerCrack'); },
+      onTowerHit: R => this.towerHit(R), onTowerTell: () => { this.stats.towers++; this.cue('towerCrack'); bark(this.s, 'tower', 'riley_tower_01'); },
       onWallTouch: () => { this.stats.zoneWall = 1; },
       onFogSwoop: () => { this.stats.fogSwoops++; },
     };
@@ -93,6 +94,7 @@ export class Stage4Kit {
     if (v) this.fog.tryEmit(v, this.world());
     this.stats.summons++;
     cult.summoned = at;
+    bark(this.s, 'summon', 'cultist_feed_01');
   }
   update(dt) {
     const s = this.s, R = s.riley;
@@ -120,6 +122,7 @@ export class Stage4Kit {
     this.meleeTips(R);
     this.emit(world);
     this.noteRiley(R);
+    this.hear(R);
     this.countPhases(before);
     this.view.sync(this);
     this.view.budget?.(s.camX || 0, s.lightsOn !== false);
@@ -152,7 +155,7 @@ export class Stage4Kit {
     for (const t of now) if (t.phase === 'light' && before.length) this.stats.lightRecoils += 0;
     for (const t of now) if (t.phase === 'light') this._lit = this._lit || new Set();
     if (!this._lit) this._lit = new Set();
-    for (const t of now) if (t.phase === 'light' && !this._lit.has(t.id)) { this._lit.add(t.id); this.stats.lightRecoils++; }
+    for (const t of now) if (t.phase === 'light' && !this._lit.has(t.id)) { this._lit.add(t.id); this.stats.lightRecoils++; bark(this.s, 'light', 'riley_light_01'); }
   }
   noteRiley(R) {
     if (R.state === 'down' && this._rst !== 'down') {
@@ -166,14 +169,36 @@ export class Stage4Kit {
     }
     this._rst = R.state;
   }
+  hear(R) {
+    const touch = (R.fogContact || 0) > 0;
+    if (touch && !this._fog) bark(this.s, 'fog', 'riley_fog_01');
+    this._fog = touch;
+    if (this._pend && !R.fogPend) bark(this.s, 'fogOff', fogOffId());
+    this._pend = !!R.fogPend;
+    for (const e of this.s.enemies) if (e.fogBurned) { e.fogBurned = 0; bark(this.s, 'burn', 'cultist_burn_01'); }
+  }
   noteBoss(b, prev) {
+    if (!this._met) { this._met = 1; say('draghkar_come_01', this.s.caption); }
     if (b.state === 'swoop_tell' && prev !== 'swoop_tell') { this.stats.swoops++; this.cue('screech'); }
     if (b.state === 'counter_down' && prev !== 'counter_down') this.stats.swoopCounters++;
-    if (b.state === 'croon' && prev !== 'croon') { this.stats.croons++; this.cue('croonChord'); }
+    if (b.state === 'croon' && prev !== 'croon') { this.stats.croons++; croon(true); }
+    if (prev === 'croon' && b.state !== 'croon') croon(false);
+    if (b.state === 'kiss_tell' && prev !== 'kiss_tell') { this.cue('croonChord'); bark(this.s, 'soul', 'draghkar_soul_01', true); }
     if (b.state === 'kiss_hold' && prev !== 'kiss_hold') this.stats.kisses++;
     if (prev === 'kiss_hold' && b.state === 'reels' && !this.stats.kissEscapes) this.stats.kissEscapes++;
+    if (b.state === 'defeated' && prev !== 'defeated') this.onDefeat();
   }
-  noteCult(c, prev) { if (c.state === 'chant' && prev !== 'chant') this.stats.chants++; }
+  noteCult(c, prev) { if (c.state === 'chant' && prev !== 'chant') { this.stats.chants++; bark(this.s, 'chant', 'cultist_call_01'); } }
+  onPause(paused) {
+    if (paused) croon(false);
+    else if (this.s.enemies?.some(e => e.type === 'draghkar' && e.state === 'croon')) croon(true);
+  }
+  onDefeat() {
+    if (this._shriek) return;
+    this._shriek = 1;
+    croon(false);
+    say('draghkar_shriek_01', this.s.caption);
+  }
   dropRibbon() {
     if (this.ribbonDropped) return;
     this.ribbonDropped = true;
@@ -186,7 +211,7 @@ export class Stage4Kit {
   collectRibbon() { this.ribbons++; this.stats.ribbon++; this.s.riley.score += 1000; this.s.hud?.flashText("TWINKLE TOES' RIBBON!"); this.s.hud?.ribbon?.(this.ribbons); }
   onZoneClear(i) {
     this.towers.clearRubble();
-    if (i === 2 && !this.stats.glimpses) { this.stats.glimpses++; this.view.glimpse(); this.s.hud?.flashText('THERE, ON THE BRIDGE!'); }
+    if (i === 2 && !this.stats.glimpses) { this.stats.glimpses++; this.view.glimpse(); this.s.hud?.flashText('THERE, ON THE BRIDGE!'); bark(this.s, 'bridge', 'riley_bridge_01'); }
   }
   clearHazards() {
     const boss = this.s.boss;
@@ -195,7 +220,7 @@ export class Stage4Kit {
     if (this.s.fogBolts) this.s.fogBolts.length = 0;
     if (boss) boss.gone = true;
   }
-  destroy() { this.clearHazards(); this.view?.destroy(); }
+  destroy() { croon(false); this.clearHazards(); this.view?.destroy(); }
   threats() {
     const wall = this.arena?.active ? { left: this.arena.left, right: this.arena.right } : null;
     return {
@@ -206,12 +231,7 @@ export class Stage4Kit {
       fogSwoop: this.arena?.swoop || null,
     };
   }
-  cue(name) {
-    try {
-      const ctx = this.s.game?.sound?.context, bus = ctx?.destination;
-      if (ctx && bus) playStage4Sfx(ctx, bus, name);
-    } catch { /* missing audio stays silent */ }
-  }
+  cue(name) { sfxCue(name); }
   koStars() {}
   telegraph() {}
   glint() {}

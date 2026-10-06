@@ -7,6 +7,7 @@ import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync, existsSync } 
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { STAGE4_CUES, playStage4Sfx } from '../src/stage4-sfx.js';
+import { MUSIC } from '../src/audio.js';
 
 const root = resolve(import.meta.dirname, '..');
 const audio = JSON.parse(readFileSync(resolve(root, 'tools/stage4/audio-manifest.json'), 'utf8'));
@@ -52,6 +53,9 @@ test('the voice manifest lists every Stage 4 line with speaker, text, file and e
     assert.ok(row.engine === 'kokoro' || row.engine === 'elevenlabs', row.id);
     assert.ok(!ids.has(row.id), row.id);
     ids.add(row.id);
+    const voice = statSync(resolve(root, row.file));
+    assert.ok(voice.size > 2048, row.file);
+    assert.ok(voice.size < 200 * 1024, row.file);
     if (row.speaker === 'RILEY' || row.speaker === 'LOIAL') assert.equal(row.engine, 'kokoro', row.id);
     if (['DRAGHKAR', 'CULTIST', 'NARRATOR', 'MORDETH'].includes(row.speaker)) assert.equal(row.engine, 'elevenlabs', row.id);
   }
@@ -161,10 +165,22 @@ test('the music script exits without writing loops when fluidsynth is missing', 
 
 const rendered = ['stage4', 'boss4'].map(key => music[key].target).filter(path => existsSync(resolve(root, path)));
 test('rendered stage 4 music is over 2 KB and loops', { skip: rendered.length === 2 ? false : 'fluidsynth and FluidR3_GM.sf2 are not installed, so music-stage4.mp3 and music-boss4.mp3 were not rendered. tools/stage4/compose_stage4.py exits without writing them. Loop points are checked only after a real render.' }, () => {
-  for (const path of rendered) assert.ok(statSync(resolve(root, path)).size > 2048, path);
+  const loops = JSON.parse(readFileSync(resolve(root, 'assets/audio/music-manifest.json'), 'utf8'));
+  const shipped = JSON.parse(readFileSync(resolve(root, 'tools/music/music-manifest.json'), 'utf8'));
+  for (const key of ['stage4', 'boss4']) {
+    const path = music[key].target;
+    const sz = statSync(resolve(root, path)).size;
+    assert.ok(sz > 2048, path);
+    assert.equal(loops[key].bytes, sz);
+    assert.equal(loops[key].loopStart, 0.25);
+    assert.ok(Math.abs(loops[key].loopEnd - (0.25 + loops[key].loopSeconds)) < 1e-9);
+    assert.equal(shipped[key].loopEnd, loops[key].loopEnd);
+    assert.ok(Math.abs(MUSIC[key].loopEnd - loops[key].loopEnd) < 1e-9);
+    assert.equal(MUSIC[key].loopStart, 0.25);
+  }
   execFileSync('python3', ['tools/music/check_loops.py', resolve(root, 'assets/audio')], { cwd: root });
 });
 
-test('stage 4 voice STT', { skip: 'Kokoro is not installed and ELEVENLABS_API_KEY is unset, so tts_stage4_lines.py wrote no voice files. There is nothing to recognize. STT is not reported as a pass.' }, () => {
-  assert.fail('STT should not run without voice files');
+test('stage 4 voice STT', { skip: 'STT scores live in stage4-voice-stt-check.json and are not part of this suite. That file is not a pass, and this check stays skipped on purpose.' }, () => {
+  assert.fail('STT is not a pass');
 });

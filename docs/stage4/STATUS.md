@@ -16,7 +16,7 @@ Placeholder (labelled `PLACEHOLDER ART`. Painted at boot from `src/stage4-art.js
 
 - A moonlit dead city: night gradient, a full moon with glow, two parallax ruin skylines, cracked flagstones. Mashadar banks, tapering tendrils with a bright tip, flaring vents, churning fog walls, moonshafts, stone towers with a dust frame, rubble.
 - Draghkar sheet (perch, flap, glide, land, claw, croon, kiss, reel, down, ash) and cultist sheet (walk, chant, bolt, shove, hurt, down, flee), plus the boss portrait and three story panels. Hitboxes, timing, and texture keys are unchanged. Backdrop and fighters use Light2D. At quality 2 and above the fog banks thin and tendrils draw five segments.
-- Music ids `stage4` / `boss4` are registered and silent. There are no new `EXTRA_VOICE` lines, so story captions are inline and Draghkar/cultist voices stay quiet if the files are missing.
+- Music `stage4` / `boss4` loop from `assets/audio/music-stage4.mp3` and `music-boss4.mp3` (loop [0.25, 40.25) s and [0.25, 30.726) s). The 23 Stage 4 voice lines play from `assets/audio/voice/` on the story, fog, tower, bridge, light, cultist, and Draghkar beats. The croon hum loops only while the croon is active.
 
 Final logic (not art): fog, cultists, Draghkar phases, kiss rules, towers, arena, HUD boss bar / croon arc / kiss hint, stage select name, bot, and the campaign.
 
@@ -38,5 +38,5 @@ Final logic (not art): fog, cultists, Draghkar phases, kiss rules, towers, arena
 
 ## Known issues
 
-- The pictures are procedural boot art, still under the `PLACEHOLDER ART` tag. Music and Draghkar/cultist voice files are still silent.
+- The pictures are procedural boot art, still under the `PLACEHOLDER ART` tag. The Stage 4 music and voice files are the rendered takes.
 - The bot is tuned to demonstrate every mechanic in one clear. A human player is not carried the same way; tells are the fairness, not the bot's spacing.
