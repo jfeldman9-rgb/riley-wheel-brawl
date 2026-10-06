@@ -120,6 +120,12 @@ def generate_placeholders(out_dir: Path):
         sh = R(silhouette[1] * scale)
         anchor_x = R(anchorX * fw)
         by = R(baseline * scale)
+        # Pack the opaque silhouette. sourceSize stays the full canvas so trim does not change on-screen size.
+        box_x0 = max(0, anchor_x - sw // 2)
+        box_y0 = max(0, by - sh)
+        box_x1 = min(fw, anchor_x - sw // 2 + sw)
+        box_y1 = min(fh, by - sh + sh)
+        cw, ch = box_x1 - box_x0, box_y1 - box_y0
 
         pages_dict = {}
         for sheet in c['sheets']:
@@ -153,10 +159,10 @@ def generate_placeholders(out_dir: Path):
                         })
 
             n = len(page_frames)
-            cols = min(n, (4096 + gap) // (fw + gap))
+            cols = min(n, (4096 + gap) // (cw + gap))
             rows = (n + cols - 1) // cols
-            W = cols * (fw + gap) - gap
-            H = rows * (fh + gap) - gap
+            W = cols * (cw + gap) - gap
+            H = rows * (ch + gap) - gap
 
             if not (W <= 4096 and H <= 4096):
                 sys.exit(f"Atlas page {page_name} exceeded 4096: {W}x{H}")
@@ -167,25 +173,22 @@ def generate_placeholders(out_dir: Path):
 
                 frames_json = {}
 
+                local_ax = anchor_x - box_x0
+                local_by = by - box_y0
                 for i, finfo in enumerate(page_frames):
                     col = i % cols
                     row = i // cols
-                    fx = col * (fw + gap)
-                    fy = row * (fh + gap)
+                    fx = col * (cw + gap)
+                    fy = row * (ch + gap)
 
-                    box_x0 = fx + anchor_x - sw // 2
-                    box_x1 = box_x0 + sw
-                    box_y1 = fy + by
-                    box_y0 = box_y1 - sh
+                    d.rectangle([fx, fy, fx + cw - 1, fy + ch - 1], fill=(110, 110, 124, 170))
+                    dashed(d, (fx, fy, fx + cw - 1, fy + ch - 1), (235, 235, 245), w=2, dash=6)
 
-                    d.rectangle([box_x0, box_y0, box_x1, box_y1], fill=(110, 110, 124, 170))
-                    dashed(d, (box_x0, box_y0, box_x1, box_y1), (235, 235, 245), w=2, dash=6)
+                    d.line([(fx, fy + local_by), (fx + cw, fy + local_by)], fill=(255, 90, 90), width=2)
+                    d.line([(fx + local_ax, fy), (fx + local_ax, fy + ch)], fill=(255, 90, 90), width=1)
 
-                    d.line([(fx, fy + by), (fx + fw, fy + by)], fill=(255, 90, 90), width=2)
-                    d.line([(fx + anchor_x, fy), (fx + anchor_x, fy + fh)], fill=(255, 90, 90), width=1)
-
-                    arrow_y = fy + by - 14
-                    ax = fx + anchor_x
+                    arrow_y = fy + local_by - 14
+                    ax = fx + local_ax
                     if native == -1:
                         d.line([(ax - 20, arrow_y), (ax + 20, arrow_y)], fill=(255, 90, 90), width=2)
                         d.polygon([(ax - 25, arrow_y), (ax - 15, arrow_y - 5), (ax - 15, arrow_y + 5)], fill=(255, 90, 90))
@@ -194,7 +197,7 @@ def generate_placeholders(out_dir: Path):
                         d.polygon([(ax + 25, arrow_y), (ax + 15, arrow_y - 5), (ax + 15, arrow_y + 5)], fill=(255, 90, 90))
 
                     lines = ["PLACEHOLDER", f"{key}_{finfo['anim_name']}", f"{finfo['frame_idx']:02d}  {finfo['hold']} ms"]
-                    target_w = sw - 8
+                    target_w = cw - 8
                     sz = 16
                     while sz > 8:
                         f_test = font(sz)
@@ -202,15 +205,13 @@ def generate_placeholders(out_dir: Path):
                             break
                         sz -= 1
 
-                    cx = (box_x0 + box_x1) / 2
-                    cy = (box_y0 + box_y1) / 2
-                    centred(d, cx, cy, lines, [sz, sz, sz], col=(235, 235, 245))
+                    centred(d, fx + cw / 2, fy + ch / 2, lines, [sz, sz, sz], col=(235, 235, 245))
 
                     frames_json[finfo['name']] = {
-                        "frame": {"x": fx, "y": fy, "w": fw, "h": fh},
+                        "frame": {"x": fx, "y": fy, "w": cw, "h": ch},
                         "rotated": False,
-                        "trimmed": False,
-                        "spriteSourceSize": {"x": 0, "y": 0, "w": fw, "h": fh},
+                        "trimmed": cw != fw or ch != fh,
+                        "spriteSourceSize": {"x": box_x0, "y": box_y0, "w": cw, "h": ch},
                         "sourceSize": {"w": fw, "h": fh}
                     }
 
@@ -287,14 +288,16 @@ def generate_placeholders(out_dir: Path):
         elif kind == 'mid':
             im = Image.new('RGBA', (w, h), (0, 0, 0, 0))
             d = ImageDraw.Draw(im)
-            d.rectangle([(0, 360), (w, h)], fill=(40, 44, 58, 255))
-            for y in range(360, h, 12):
-                d.line([(1086, y), (1086, min(y + 6, h))], fill=(235, 235, 245), width=2)
+            sky = 360 if h == 724 else R(360 * h / 724)
+            split = 1086 if w == 2172 else w // 2
+            d.rectangle([(0, sky), (w, h)], fill=(40, 44, 58, 255))
+            for y in range(sky, h, 12):
+                d.line([(split, y), (split, min(y + 6, h))], fill=(235, 235, 245), width=2)
             halves = img['halves']
-            cx_left = 1086 / 2
-            cy = (360 + h) / 2
+            cx_left = split / 2
+            cy = (sky + h) / 2
             centred(d, cx_left, cy, ["PLACEHOLDER", halves[0]], [24, 20], (235, 235, 245))
-            cx_right = 1086 + (w - 1086) / 2
+            cx_right = split + (w - split) / 2
             centred(d, cx_right, cy, ["PLACEHOLDER", halves[1]], [24, 20], (235, 235, 245))
             im.save(file_path, 'WEBP', lossless=True, quality=0, method=0)
 

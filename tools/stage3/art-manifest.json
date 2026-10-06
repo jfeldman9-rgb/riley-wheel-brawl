@@ -455,8 +455,8 @@
    "key": "far3_day",
    "file": "assets/bg3/bg3-far-day.jpg",
    "size": [
-    2172,
-    724
+    1086,
+    362
    ],
    "kind": "far"
   },
@@ -465,8 +465,8 @@
    "key": "far3_night",
    "file": "assets/bg3/bg3-far-night.jpg",
    "size": [
-    2172,
-    724
+    1086,
+    362
    ],
    "kind": "far"
   },
@@ -476,8 +476,8 @@
    "file": "assets/bg3/bg3-mid.webp",
    "normal": "assets/bg3/bg3-mid_n.webp",
    "size": [
-    2172,
-    724
+    1086,
+    362
    ],
    "kind": "mid",
    "halves": [
@@ -491,8 +491,8 @@
    "file": "assets/bg3/bg3-mid2.webp",
    "normal": "assets/bg3/bg3-mid2_n.webp",
    "size": [
-    2172,
-    724
+    1086,
+    362
    ],
    "kind": "mid",
    "halves": [
@@ -506,8 +506,8 @@
    "file": "assets/bg3/bg3-floor.jpg",
    "normal": "assets/bg3/bg3-floor_n.webp",
    "size": [
-    2172,
-    724
+    1086,
+    362
    ],
    "kind": "floor"
   },
@@ -517,8 +517,8 @@
    "file": "assets/bg3/bg3-floor2.jpg",
    "normal": "assets/bg3/bg3-floor2_n.webp",
    "size": [
-    2172,
-    724
+    1086,
+    362
    ],
    "kind": "floor"
   },
@@ -528,8 +528,8 @@
    "file": "assets/bg3/bg3-floor3.jpg",
    "normal": "assets/bg3/bg3-floor3_n.webp",
    "size": [
-    2172,
-    724
+    1086,
+    362
    ],
    "kind": "floor"
   },

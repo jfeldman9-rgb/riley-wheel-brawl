@@ -5,7 +5,7 @@ import { queueCharPages } from './assets.js';
 import { STAGE3 } from './stages.js';
 import { MID_Y } from './stage2.js';
 import { Stage3Hazards } from './stage3-hazards.js';
-import { budgetStage3Lights } from './stage3-lights.js';
+import { budgetStage3Lights, plateScale } from './stage3-lights.js';
 import { installStage3Suspension } from './stage3-suspension.js';
 export const STORY3_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story3_panel_' + n, url: `assets/story/story3_panel_${n}.jpg` })));
 export const STORY3_SCRIPT = Object.freeze([
@@ -94,7 +94,7 @@ export class Stage3Kit extends Stage3Hazards {
   claimMudJoke() { return false; }
   // ---------- build (never reads s.camX: it is stale on a restart; update() sets every camX-dependent value) ----------
   build() {
-    const s = this.s, P = this.plates, cfg = this.cfg, ms = P.midScale || 0.76, par = P.midParallax || 0.5;
+    const s = this.s, P = this.plates, cfg = this.cfg, design = P.midScale || 0.76, par = P.midParallax || 0.5;
     this.makeTextures();
     const fs = P.farScroll ?? 0.12, farImg = (k, d) => {
       const f = s.add.image(0, 0, k).setOrigin(0, 0).setScrollFactor(fs);
@@ -103,6 +103,7 @@ export class Stage3Kit extends Stage3Hazards {
     this.farDay = farImg('far3_day', -100); this.farNight = farImg('far3_night', -99).setAlpha(0);
     let x = P.midX0 || 0; s.midPlates = [];
     for (const k of ['mid3a', 'mid3b']) {
+      const ms = plateScale(design, s.textures.get(k).getSourceImage().width);
       const m = s.add.image(x, MID_Y, k).setOrigin(0, 1).setScrollFactor(par, 1).setScale(ms).setLighting(true).setDepth(-50);
       s.midPlates.push(m); s.backdropLit.push(m); x += m.displayWidth - (P.overlap || 0) * ms;
     }
@@ -117,7 +118,7 @@ export class Stage3Kit extends Stage3Hazards {
     s.fireCap = cfg.capOnScreen || 4;
     for (const [pi, px, py, I, radius, litAt] of cfg.torches || []) {
       const m = s.midPlates[pi]; if (!m) continue;
-      this.torchSpots.push({ wx: m.x + px * ms, wy: MID_Y - m.height * ms + py * ms, I, radius, litAt, par, L: null, age: 0 });
+      this.torchSpots.push({ wx: m.x + px * design, wy: MID_Y - m.height * plateScale(design, m.width) + py * design, I, radius, litAt, par, L: null, age: 0 });
     }
     const sun = cfg.sun;
     if (sun && this.tod.sunI > 0) this.sun = s.lights.addLight(sun.sx, sun.sy, sun.radius, hex(sun.color), sun.I * this.tod.sunI, 200);

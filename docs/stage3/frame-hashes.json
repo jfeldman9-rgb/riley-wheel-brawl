@@ -10,10 +10,10 @@
     "assets/chars/riley-1.webp": "b3cb6ca80b0f4758ba8cd599f361d7ca733bb23a94bef1142898d28f105c85f0",
     "assets/chars/spear-0.webp": "5e15676c6870adc703d6cef8bfbb53c37636eee1952fefdf9f108d94df82b18f",
     "assets/chars/zealot-0.webp": "cbca8e15d57710cce1ce4b8d111dc7561ed1e97a9e7d250777e0dc49dd68d2d7",
-    "assets/stage3/chars/cutthroat-0.webp": "e0d0143e253900b9809d4bacb3aa0c910f0f4e17b244326d6af9b50f6967a4c9",
-    "assets/stage3/chars/fade-0.webp": "29b8355b629c4b093eac932cd0db70b6f763e4ed151404d6d19df1bc57bc65cd",
-    "assets/stage3/chars/fade-1.webp": "209441e0ac4881ce2dd03e6d7588cd29a1602cb776e40be27b14d1d14cd21d0e",
-    "assets/stage3/chars/riley3-0.webp": "9f2c45404fae2ee0163ac6b554b1dd44f0c81bd4953768752cc467890ce0d4cd"
+    "assets/stage3/chars/cutthroat-0.webp": "24388b331a3bb63d7bdc3762df462a63c7e6a50bb2090f6f34ad336305d56e9d",
+    "assets/stage3/chars/fade-0.webp": "a373cc4cd7d21698d928c1173e130ce6c5a2f7953575178e07688a32e9b0020b",
+    "assets/stage3/chars/fade-1.webp": "ee4d765d8e5e049bf647a33ec78dbe760d63426967460cb2da123b066eaa181d",
+    "assets/stage3/chars/riley3-0.webp": "02b7e878ed73f49c982f68c93d002c6889fb2409ea340680583a057deee98069"
   },
   "frames": [
     {
@@ -2405,832 +2405,832 @@
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_dazed_00",
-      "hash": "46bc32f40abc5819caf11f4a71561c7d4e9e51e3b91a1306b78939c5aa2c8516",
-      "flip": "d4a300b4e6da07b1201c1cfb0cf040f33ca4652ab5f8af9470947562868371e7"
+      "hash": "21ed93070367944b0bf379653f35f6d7d1710f898c7dca7a382b2c174f2323aa",
+      "flip": "8c55c549b4b0d3966276457ed11638ab842e88780e5f9ffee6a0e2ff60630deb"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_flee_00",
-      "hash": "722f9710f4f9959ae558c9a1f3c87b03469261a4f8404a9800c623bdfa875421",
-      "flip": "232da0d0aa36f16cade8c48f8f3e0d1b15de75090bcfeb5af1c2984ba789fb0b"
+      "hash": "25c649cfdb6a9e097616a90cf84da921989da0b48f8b5980b7781410d2e313a4",
+      "flip": "97bc3782606835495bcc4c6389370ed75887b9efb7f89dbba0d48b403318ff61"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_flee_01",
-      "hash": "514afe597b0dc7b91a98bad8c010412f8551284bc0328790b0cece770d0fe8c3",
-      "flip": "6e17a1b90194f0c9b0ee0956c3ef7091c3766ad9d782c4ab6f360f2d4a6e471a"
+      "hash": "33cae8be450d6e71acac28fc1a36bba0fa5683e5d89492b425de5b5a51cef2e1",
+      "flip": "274b6a06606796752ace05268cc5ab3cab855e170b5c9e21d95f30392dc3cfca"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_flee_02",
-      "hash": "c122fb16f89a535d06252526e3a24a6a7c555dfe6f2a8cea991f99274a7f0ab9",
-      "flip": "93cd90c8118e4e185363daa32530730cddb802dac6b627c4bff1f59af8b8409d"
+      "hash": "860e99ec23a2c7a0f3f1154924f92b50f64f47b7a34d8f19ab1c995727112fdd",
+      "flip": "c4f2644d24612ef097cd1687df37514f6e9f28df5d3008b7ed210dfa1de39f67"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_flee_03",
-      "hash": "a40cf6b65097c032894b9c709aaa0e1e03a6050f2a6cda72b6297e458cef0d60",
-      "flip": "e08db1be3a9e97af4be2e35bc56d9c558d29dc37e5e320b043d580b742fc8e10"
+      "hash": "2bca27bafb695f793dd1f50a9e66e07a079e65583d6e60f2dd3902ed89f8a477",
+      "flip": "4def8687d8e7bab0a18622282eeb466520d16d3ea92cdfaefb7c52959007819c"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_getup_00",
-      "hash": "3288c8023b8d968441861ea89119d1c5252850614e40cc6fb0229c7c68f3719c",
-      "flip": "625d6e0a7c36c9c5faeaa7c3560a6895ce71d9d8762b9658e4563d0fe982b0e4"
+      "hash": "753cea2a7932c4c0608a28b84b7e410d81f6cb64daaa0da84f15b3a92326605d",
+      "flip": "a6086f484f426425bef679eddbe39c3a043bd67c8c5ae4f7e912e8e3e9b6101a"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_getup_01",
-      "hash": "b2cb72cb48df7ce9146c7b414daf33b4f57b2c4cbdeeea397bda9fc803eca8ed",
-      "flip": "525d697db26b7733bf2b267846540bf2a852c8000c0333c10f9e3fa262f9b4b2"
+      "hash": "87cd9eeecdb0aaadcd11c737d86972e79dd6aa90b3dd30cc5ce5e6989e022dee",
+      "flip": "208f4ce4cbcaeba12797b655e04a85db2c246ce3891d1c6f5d64907f8da54ae0"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_grabthrow_00",
-      "hash": "28da2439895e8f8bf3e827c78af2cdc2f3eb845adce458f12ebbe6de830aba94",
-      "flip": "edf9b2d49e901cd4119adb357a4e7468624564d3c25674051bcc30043bda81e1"
+      "hash": "fadc9fe87e5cc74d7b632edb1b3e7768a5b978bfed7da210185f0d1afa59d67e",
+      "flip": "dcddb09a25e80cf0bd26309d7cb0d4a5712eb7c1accdb183854ca6c8e596ed8e"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_grabthrow_01",
-      "hash": "3674641a8b9af1cd23a572e5fa318edba19e541efe74e1f004522094db3520bf",
-      "flip": "9bcd11531a117ca5c8091bab5d3b40601773ca991be2869e843a740efd678e3e"
+      "hash": "79e5f536c635671aab09f9a1d8d25705c2d1a24ecad695ddd27d4d1cb701b3ae",
+      "flip": "54403d8f2a8488531a0375783b5c7ccaee6f126d7f446efe9e11b20873a35d8f"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_hold_00",
-      "hash": "54b5fe560158068ffa6c41dde8d0952872a01e48e3762a0560c3c0476dc72fcc",
-      "flip": "29b4bb53a69a0cc3bd5ce5056ace4b73e217b2c73695d5bf498658f11b9b822f"
+      "hash": "16d423e2a733aeddab1c68df4875118a1b6247174e5a3944381b8dbb62ae75f9",
+      "flip": "6f135a6d1588c4c8dfe653ca84a4d97a74456d7d26bf9e4b0895b3f817094726"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_hold_01",
-      "hash": "3b8184119199498649204461f3daa1463e6c08ee293efaa3176e427822be9973",
-      "flip": "3ce1c2ff0067f06408d85236ac2503803256c7e5890fc547daac0754a47d40f7"
+      "hash": "65ba70adfcf0eadb6a0b0a8365172efe31ab56f8a93f8ac86f5f99f2dd5dd7e1",
+      "flip": "d43e954f601a5bd30f1c91d8e7a88935c27b3b4b01e828d9f4079095f9393e8f"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_hold_02",
-      "hash": "c5bf2c3205b1b56fec7099d0e90842bcbd12a1b489b23a5693a376d5eb90d7bf",
-      "flip": "6f22c858c82e9f9f5342d488362ebb290e271daffb99684d288f3fa3bd275558"
+      "hash": "4983496ef41887a9bb0c9913e3f40d52e642efc49eda9dc951d2b1341a32cc9b",
+      "flip": "83025be4334c4a4bb8e53a9e2f1bc2e7bfc6457dd362508000c95c957f01a585"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_hold_03",
-      "hash": "101ddc7bb8227d8afc15e5c7e2f9d04339057f0c89f503ac42dd2c22a4b00818",
-      "flip": "45a02da62187d04675e1a1c0ba9b655aae89efebfaff96d9bb9fe4fbe1b4acbd"
+      "hash": "b4eb49d1547f828b9306e09c8a7efe286a3df4e641402406b0f633032481bfe5",
+      "flip": "8a419a3d93b62506c7ff75f4caee5d861db2f85992bc367ab6b45ea664190584"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_hurt_00",
-      "hash": "b86d0ea07c41aff162e3c1291a720122ebaf216500e4e60c2f508bef7768ee63",
-      "flip": "b6ab1e89da01314a7b7657eeaf1b3cb31ffac5d249eb65423ac7cba946b7933e"
+      "hash": "53730ab6370d8365471102b162f6b729e8e713180ea2fb4f8bd2e028bf08a846",
+      "flip": "242560bcdc838077fc4242bb1c4f6cfa27cf930bc93e393bcf5241956cd7b5b0"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_hurt_01",
-      "hash": "f81eeded3173e79a9d551d21f5e731d2c086d85eec2f3454045f32fe21bcf13e",
-      "flip": "535e8b3e0900223a9d8ce972897752369691461f66cd3e8a1f6a483d88359ee4"
+      "hash": "f27d26c8e3ff9a3382a6d65d1acff5f31c2c7db0e506f013a7eb4e03ee7f9321",
+      "flip": "a2f223311df0bc9a6bb16ccd809cd710cffded6b82cc98a32b18e45a44db1d16"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_knockdown_00",
-      "hash": "eafef281ec34434880708b6ee2a03f37a6b8910bdf454936b18d958cb567f360",
-      "flip": "e25b0041c6304f0e49fdb32eb868592ba6af97d5c0e575c925aab302a767da2c"
+      "hash": "b95623f6603d2be4793986c2ff4e5729c6300021cb8c5489bfb64eeb7e92e2d6",
+      "flip": "f471c124b100f67345f970b6d07542a432ba3b1f94e19c066f921757cb8aea7c"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_knockdown_01",
-      "hash": "6a8040d8c35144f42a58f74759e87ca78c4c253dea5ddcd8c547fb19e68185fc",
-      "flip": "7241ba878cd6feda3adbdb4521c74d6fb435ae02f1cddfc66b9fb61e7255a863"
+      "hash": "4b4765e7a44ca87b265737e764aba07f30358e99a2c37bb80a496e292bf4911c",
+      "flip": "4d08843360025f2d745e947d2e8b9d518134af88e47897a361637e9bb6a9ceb3"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_knockdown_02",
-      "hash": "ab6802c3f87035fff2daaeedcbcc496c7686922f405ddf92cdb7b33737890b0c",
-      "flip": "2714a4abfacd0c822e9ca13e30eca10e31e1fcab0e6c329c1dc9d1638fb1b63a"
+      "hash": "62da5fb768444cd9fb34b3b6ea5e243be2a66dee3f10e7f4d4e5bdd0d3bc9446",
+      "flip": "dfcbe3617364fca815cde608e505b551a2d23ffd14fac7867e9c7ba81a9eb989"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_lunge_00",
-      "hash": "3f890879fa8fa2282045f875a68b78df47f65fcee0d1b0eb4b5640d7be22594c",
-      "flip": "101497bf0b77c416a2b1ce737e7c19ef1b603c1f8c8c0ba828a16400839252ec"
+      "hash": "2e9f45af11b70925c62aa8a1fc98377d073bff12452182a758e01a95adbc7d70",
+      "flip": "ac87d4333ac414df5df8e986d5e3a4d08c7f4fa03342b39c39dee7cc42696448"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_lunge_01",
-      "hash": "47c1d489505b818c59943317dd1e645abb6c8ba62de0ae2feb98630b94bc6264",
-      "flip": "61fa2bcbfafdcecd90a2569ed881cb87d5cfb5cafe2e85ed8d2e8780a3d31c3c"
+      "hash": "03b61b34d29a9fc57a89349136b8e5a7b40ae4f55a4d62a55e8bf1c5714277f8",
+      "flip": "5fff0397e54da6ffd3ae686e14cb9bc2a557d691819d7765c67b67412a624701"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_lunge_02",
-      "hash": "57d79ad8d4913608e24148896c042650b86853d431063bcd78eeeb0cb410aace",
-      "flip": "f0dd8a859997fe50dd1c7ffeff0014b36d1cc3b34ed90c89a8a42120ef6d9bd3"
+      "hash": "7e82560b380e9242ab02883dd91fc742e8ac18a73e6372a2d3bb9decfb79088a",
+      "flip": "fb72f32d669730f96a89a64b46a54ed10b06c355ef7e2b35b26b5febc1b08567"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_lunge_03",
-      "hash": "2de87f1fa794ce6da0f85b2e98327a256edc54c9967308cb484335bc4ba70e25",
-      "flip": "94486d9674be02d3fe70cbc7863ab4de4a6a54c7bdba5f2628b8ef6471cc765e"
+      "hash": "86653707458bf5a5a9e45971370518f44f7f79ddaa201f23d9e6b5ab9b8c659d",
+      "flip": "37e4005b31147d54ad8258c2ba29c253c9eb6e1490826733246059d43113b90d"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_lunge_04",
-      "hash": "b58c1959823f0b2d1714b3a20fff5071aac950859286c064b6f25d4dd65a795d",
-      "flip": "4f616c13ba5f5c2a707c116cb7ff1aa15272edcbde997b5414d07bec2fbba0ed"
+      "hash": "6bd38913e73532e223d53db00b892c321f58d6f79d5d3ad848488ca7815fd205",
+      "flip": "3bbc1a1b049fde7f25144e7dc1176590157f8c1d6b6e4fb4ffdf377ad6fa5db3"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_shoved_00",
-      "hash": "5f37b3e96bb569a5356e564d85136bd458ee38902c6974c9c95f10c794f9c362",
-      "flip": "214483452b84e738829021f9de76feaaadd5c94c3442b82ba173943748d8e1ed"
+      "hash": "19ae3c612558d03b23444db95678679db6ad5721d0b1f4f4eca8386e16c7c715",
+      "flip": "8610291a5ebd05c4bdd6543a35814eb19182e39f6891254e2a39a55cf67a0d12"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_shoved_01",
-      "hash": "c5e96182b02dc9fc176c097a03700dbb22882c1805246e5c6c831c5c0cf11bd0",
-      "flip": "ee4073b4936ec757a3bffd0ce1796c65cef0f513de20d104fc3552b7a076a8bf"
+      "hash": "914427eb9b8d109a2a185e2db94c4e1960e97aa2d36b38baff870cab62bebef4",
+      "flip": "bb1a278f0bd5471fc967a2cd240895c803265dc132c0f6157138f9c04327a210"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_slash_00",
-      "hash": "07d6c10f7bc37b83a6b7b6dae138684287bf0284004ac69186d397650b28e907",
-      "flip": "cf41496783b86e0ca8a594bf9e8cbaac91581093e35e5bf4fdef2724bc84b7ae"
+      "hash": "2234da85f2c0167ffbe18097619c110340430b1e5ced81afce764bfe0bacb917",
+      "flip": "171e37a5909f8fed3c10b602de54d4d029d6686bf9c64e7721676c33cdae191c"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_slash_01",
-      "hash": "0c0faf74578cd6af205e404eecd5936fed6cd0f4e3085f71bbb9be810c0a7b83",
-      "flip": "1a68c4bb41df96c2a0dea9bdc7cc655f7bc69cc472c8bcec3c34bd08e5218e93"
+      "hash": "0e217f884bc266d7610ed58f72dc47a57bf5f7bf9fd2dc54473b15c7486b6e31",
+      "flip": "6f62e31cc073427d438d8011106211dd94c2172117e1d5a3095e3867ced9e31e"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_slash_02",
-      "hash": "c72bb1f67e7bb9433467b007ea542d3670447fb85f5b8054dfa0804814baf89b",
-      "flip": "f3e6f8da2037250bd4918ebb1605f296a1f6ee560a228143b9dd3b19bd08c8e8"
+      "hash": "b1d51d82578ba459d9c22cbb9d9cc1a93659cd4224a93ee529a027aae8700fd8",
+      "flip": "498a2c0cb239d2b45785dc0fce058304e598f85230f1c0bea1b7916fff794080"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_slash_03",
-      "hash": "13d1d599bcf3feb7deb6c2f465b2d5bcf0cb63dcf408888aac7efd32caccfa19",
-      "flip": "73821d708312fde48256fca19be864cb21e08b93640a8fe4ef999d045cbbdb9f"
+      "hash": "3e01c51921583319d8a3c672cb4ba83708099a8c034a0ae4f6b24639ee7b41d6",
+      "flip": "ec4d17c0850d3cf9fc33af7e636c4dff5793f9f8a642f481b63c7937649eaad3"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_slash_04",
-      "hash": "1c1f2f3015cc1cb668436aa82ceef0697be5d806b0ad0602ff3bcc0a5fc387d7",
-      "flip": "643191bde23f4cec7566e0d884563fa41d760ac0b63fd80a68997e8535829a2b"
+      "hash": "c477661eb770772c6b56d0bc9135d39ddf4344437bdd26fe5cd7863df8268a79",
+      "flip": "da4bb057c159b6825d25cb7caa6bf7230dbfc464e6587bef4684e5f05a607819"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_stalk_00",
-      "hash": "49944b6d81fdf6e4c9b7b15bdac38ed7b760ff6c2059e87a34a6fa947190a2d4",
-      "flip": "e9f08faf99432c03b1d60ca0852a4091b5916f386de069b0a78d035b125c764f"
+      "hash": "bcbd9125c605076e260e28695de86fa548fbb8807c8beea5366cd142dbc15c80",
+      "flip": "e429ce839191c8f095c8324a0be773322d962f818bc77611bb8609a8d694fc2c"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_stalk_01",
-      "hash": "6528a155a499496c7516f6b0e3793abdedd3a1bc803490e40357c166f726d830",
-      "flip": "9c0f9e33d644e4ab922ad58b30d3cf7ae1e0587701396fd0606546d584bf0d09"
+      "hash": "6ce982124d6fe6a138f689c4292e834ce3237bb147ef81e871f9888b9d50f656",
+      "flip": "5d60e24c0c9c2562ce3c4128a01480eb525fbff5813563b3d6098552440c0604"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_stalk_02",
-      "hash": "5b5d659763e50add318d84586f20d939d272b2330a92124634d306aaa55d2afd",
-      "flip": "ea78cd7317d67c6f4ba8bf8550d38e26b9edb65e04058807c793716d70f69690"
+      "hash": "e9c57f6493207fdb5edd105171315eb7b61245574ba71207c1d947448991d202",
+      "flip": "09c51cd3536160a20b067082932a5d60244e5405e8ad00eb88cfdb3e1bb1c205"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_stalk_03",
-      "hash": "6ee6e7e587e2b42124e383d443239da3b29188515ec6f1b737e05813fcc01b41",
-      "flip": "93d3941f95bcaaed5ada60833e9c7b8e6c9097263a07fdc1f94d1ed9fc907f8e"
+      "hash": "218fe53acfc4e1de511ebeeab518d48f934913118da8a4819e34847877e6e670",
+      "flip": "3a2c264dec5a021e64904d662d0618f7c40819838cdedb3329dd8121f597cebe"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_walk_00",
-      "hash": "2d08f970f388a036434f69c1fc6c3e0ffc64807bee7e0e8c75707237c5e23c17",
-      "flip": "4d76d203b6a6d6c3bb0da9abc6596aa7bd4ceb9436e8176b1afd98800b55556b"
+      "hash": "66fbf86bb52b4a0f1c33a6ec75566e7738daf746bffdd60d6a07e513dcbff46b",
+      "flip": "705395a7c2c2c0ce7b952b90d978b7c99618998e1af477853c6d9bad8327fa42"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_walk_01",
-      "hash": "b4569d13352abc15e3398e729008bcc97971fd9edffe187ec29a440cb7f5b35a",
-      "flip": "aa32ec0fc49508f2fb3c0327589b2183c6dd24419e49de03d3a7bbeacab70ae5"
+      "hash": "de8b5c21cee294e016f68638cf42a8d00dac9ae4cda86bf58ab7afed9a56ae7d",
+      "flip": "0e612a29e8e2e4d05fba83966a4637928ac7a2197c9e4127a0247a6d8619f405"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_walk_02",
-      "hash": "9c4c0b8b536b146a8cba3838f577ddb40616b6c66832dc690ec4285c76e83536",
-      "flip": "d09bf0af5e9c9cb8fd440c96b633d7bb1e2e722ccaed8bb8ce75a6b611e7efcb"
+      "hash": "963846f88acf290447d95ee10598663b71b74e1d9b985b5a47ab5ff34ef1a18c",
+      "flip": "eaef32d27ab8dba0c7437a95215f7ae06e76668eb7cccceaa2b6394b3d4dff88"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_walk_03",
-      "hash": "bc008b6c624fa8af5676049701323d110a4161133e9186ebfddac4a5095df848",
-      "flip": "682f2710bb1a3b7dd9c8f0aa699e14107dbbb94d404969be23f668c7b7f94d1d"
+      "hash": "b724c1e4395a1b663269b151f5e362882506644b918724ff8faec2ec15d549f3",
+      "flip": "babc37f4e299e0ed17a19af8aa4ada63e93195f6ec0fadd258e486cf05b62e4c"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_walk_04",
-      "hash": "0596be9491589ad598021747f7ff401ec50735895e529fc9d09b6499b9a59d04",
-      "flip": "d0c607dd01107e0ac62f0449178b92f5d687f245e479accf3b9cc9c76c4ab4ca"
+      "hash": "47fa9d5194e42858044031277e4b9a4dd5f6a0541953a10136910be6600ca76b",
+      "flip": "517cc8e423ad4ec1d33a5531c2fd89a41c779bcde8f7ad9de916d00d30daf288"
     },
     {
       "char": "cutthroat",
       "stage": 3,
       "page": "cutthroat-0",
       "name": "cutthroat_walk_05",
-      "hash": "e8641d67dbb881778e746557901e7ae8935ef5c0e706b712989c3d8af93957c5",
-      "flip": "d43e065fa533f0af74b001a112955db2c40dd1c04f86e162c27dec98ac214f53"
+      "hash": "5ec9ee55ecdd16e4ce9f182b0b33e8a4d07d30a78d1ef5a19b9540c18a2dd958",
+      "flip": "1afaa63e82898cf18b6671f14683b05250fa751d1a49df2aec91b9d280e277c2"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_blinkin_00",
-      "hash": "a9fbe7fc3b0b809d66b5645bbdd0503bbee3700bb88992170cd340e77f5c618a",
-      "flip": "39fd5f386e7341f24c7d13f86863a5234b57745d25c687a63fd79727c83f4f62"
+      "hash": "c15e3743f03b324b58b2446d093cb4544e67ace63eaded8771c47eb850db8193",
+      "flip": "138d1006e0181aaa7a09f6818fd47fd81efa633d01cc64901e082ddcbcec443e"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_blinkin_01",
-      "hash": "008988220aa72012e35fbc384ae89afed91eca0cff501566883c06670f1f3d8e",
-      "flip": "3b697cf763f4a42d63de2b79e97e4f8a05adbd6dc0d0827757576df0e0d0aeb6"
+      "hash": "68440d48e14a2e07b08e9fb8d52264773de6bd9deb53f9d3134b2442347d4002",
+      "flip": "ed7db2fd19c65dc60eb332b0363cd21466f95a3030139fde312c7743dce854bc"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_blinkin_02",
-      "hash": "7aeb01a526b5aad3bbeecc8ad9e3bd2e0ca49a0521283cbe6df8e815f661e5d7",
-      "flip": "d0ab58d31c6e0ecf75a63cda894bacf89e3319eb641877821dec27466f66d06f"
+      "hash": "59519198630a13e47d52126eeee5e9005be9709dd3fbd8cb68fb221ffb8bd307",
+      "flip": "31a89be82f973a390115730dc55393470d7ca4cbdbb69a1771315c26614a7ccf"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_blinkin_03",
-      "hash": "ae150e3aaf17de6c4f271d43823a2f9f926418d7de083fbf94f96e49e8915d86",
-      "flip": "52e10530c09d61370314316ddc8546c37ed7341cc21a3ddfaa6c2b4d4b480c06"
+      "hash": "f75e479e5c76299b0187c088056d6827224cdebd3bf93d71105e51861ea0042d",
+      "flip": "03ac7d44645a35614e2916bca94df07f1fb04f5db0c71cdc96e0fcefc9e7c5d1"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_blinkout_00",
-      "hash": "f5b5fb821d9e42e1f3a48bd3c90e133a7e51c130df971f9903f360c37a324812",
-      "flip": "70460e7ab464f1db0fcd7cd0ae713c240bfdbb2adc316dc3ff1367c4e82d7c88"
+      "hash": "894ff1089ddc79deadf95ed9ae1e9a23df542339d574f16dab9c2c73e9adbc6a",
+      "flip": "e53c5a79f5cd73ce35525aca1b784ef7b76580d14287a09d83c1b0a6e824788f"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_blinkout_01",
-      "hash": "0e06efd47ff24ba5c500b0731dd8c50571cd8463368a7322154bf06a105f4a6d",
-      "flip": "53f118c36d94b2859aedee8260b692782be4dba614dff5810132b3b24c9c44a4"
+      "hash": "291cc2d5183ee0de2c29ab861b1928446a8ee35940b440f51555c1e98fd8f19e",
+      "flip": "3b9adc0ec195f136e3873f977f1484e147e012c19e2d83d6c824782ae40afd50"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_blinkout_02",
-      "hash": "9f67838ba86588c66cd0c1ffd951ae241afb815cf516061ce3e079518caf1aec",
-      "flip": "e2cffbdfb19edf0ca0a6ed7aad6a0b51d8321dafd8033ef1be7e1dfce0852334"
+      "hash": "260aab948e1194d323fc50b9aef4025708f7d6844cb6474e58cca55cf8e0d67f",
+      "flip": "1dfe334da9a3ae9cffcffde424c7379cad6ad6ca7a174bb1413a89c13148e564"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_blinkout_03",
-      "hash": "f41c4357a359db8a312c9bd26bc08f995d260651e9acbfa523f413a8c38384ab",
-      "flip": "0928d65949a648c6c0bbe769b57646e5f6ec4faf54f6483e280a8bcf6e816122"
+      "hash": "3d9cf73fc4b785362c63b5689741d3fc8a6882e0807849e6502ff686eaa83321",
+      "flip": "1021f89cb644b59d6ce9311c14fa1b316cda9622527b1ca748bc3d256e56de0f"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_hurt_00",
-      "hash": "8fb55f553ecbdce688b6b8a557847a8ca6ac3dff4a087508a2e13dc51df31b10",
-      "flip": "e2dcb679b9cf41874ef8822645df03b580b12fd9960fe3781e2110ee1a9dafcb"
+      "hash": "8cc55ea2bda94ebb6c13a2f51022fc92b97e3607f9ecc66825d03fbbae55dc5b",
+      "flip": "c9d84faeb133b9eff7ab36af40b166acbd5f67b4f05172626c648ad3af7ae9cd"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_hurt_01",
-      "hash": "e64bfa0ccb9616afd0ca100d6eb9823aa9952774a69245077cf24b025306ee67",
-      "flip": "345a1906e7337dbf18edae4c72b264c07f7678af308012b3de52439decb9cbe2"
+      "hash": "32dcf9455e12e918f49cc09cfd5ab11fe7b4ca8d7e7e21135ccbc3051c6abe21",
+      "flip": "6bb870a732d83fbb9b8b3b1be0a47d919e872f504b848108682859de2b46c9b5"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_intro_00",
-      "hash": "ae71ffad9ff0f5c9654f42bc949410ac8f26fe70f87f014326e1554fa0c083e1",
-      "flip": "5d68727360117783a313be555fd40f078cd542702f8a82a6904dfa7f13769ddf"
+      "hash": "d04c7673783f2392d0494e60c749f83e344e790f3e64d3872bb7f04e871309c2",
+      "flip": "bbfa3f9b9e1e5c26b453ab02d5c06d689d2dde6105c5837629c59c7bfa881d42"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_intro_01",
-      "hash": "f06aac5b3d34ebe41a69e5f54969dcb4921555c5c514ee2d8f8707df30c10acb",
-      "flip": "115ad5d9c86ef6c1018f15d524a83f37b06e4bc890249db59ff649b10c8b49f5"
+      "hash": "2621fd8b0b263cb871d18c346f88e8def935b4fc775501658c4823d0c1c5e81f",
+      "flip": "90bc2c41456e1a66e981bb07e753effbe8d6be5f10b01cbad8db2d04da3ea1af"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_intro_02",
-      "hash": "aacf7957dac68a5212f45468cc35933846b94ff2ea4e74127863b6b42329484f",
-      "flip": "8430825832cf8edc93736555da7e7b67fca4433099e107343980b1c49057dfd4"
+      "hash": "2bf58c62552a9149eb77278cf63bd0d09f34fcec9f23741ad8945cc8bd40570c",
+      "flip": "fb758c24beb610f3e3764f57d6124986482214faf77fa383b2e9068f3a54285a"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_intro_03",
-      "hash": "9c0da67667f14cceeb11e156f97869458b081cbe2a88d639e5b0e2419707674e",
-      "flip": "239953e2573832168a6db1ff94d55b95822af4920d9d6546684511f350fd459c"
+      "hash": "84d12a0b4a2906c91558b7ccb6d508d07ef3430e775883448bd1664b155697d4",
+      "flip": "4f3e086f41f918cdda9eb01c0f1e7da09b763b1b41e4780dce665a500a8c892c"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_knockdown_00",
-      "hash": "e7114568e1d5eaddc2b5ce948a3779889a59934598f6766fdc3560badabb4d3c",
-      "flip": "6284919f1797da617a5cc158e3db3b650729cbcc24f5245edccfbe63ddb8be8e"
+      "hash": "78e39da7dc03d29d74df8315716a010c3005bceb99b5befceaef9c1eb8c0895d",
+      "flip": "930d14bf60b5e5cfb1fd7e92f8f647368249f1efabb6e9d55a80993bef57dd6f"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_knockdown_01",
-      "hash": "6c8adcd77901dd28b8ccebebd9798f5b091a31c9f4a13627cddba7bcacff2cd6",
-      "flip": "21577d077c2b9b008600cf182e7fee61dcbf850f7873d319383c2bbc986e9c98"
+      "hash": "23723d433efc7b275296758e801a51e24725ec5fdce39de11328a34ee8c2366c",
+      "flip": "c38503b84be678cd860bd34d75d115629012f2069406d31dd44bf12c3bc2c5e7"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_knockdown_02",
-      "hash": "a1f7761ff063df7ce6813c2834730835e1bcb1f5fd5fbdeabd50779a85402ab9",
-      "flip": "380d240abe41a927017e572fd3ab27532a347de36defd99ba7879ee396888b92"
+      "hash": "b62b99c0c67e308f31ee796adfe202a66d84b1272df6f895c49f17d97423997a",
+      "flip": "c2791b4357372b8975033ddcc8bf50e8d4f9e29a26530c3acff41e1e5ed23d2d"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_lunge_00",
-      "hash": "515df53dadca6929c2b2b2e4eeaabc3e0092d600bcd408a6598f443e8cd23c20",
-      "flip": "240f867ef66503c41d66c3053072ec8cf454a474725602e3cc099f1a3c0225b3"
+      "hash": "e4afc1c68ed7715190f0e946da29fda913ebca33eb548603e4e5b93160ae8001",
+      "flip": "c5c1903b91197610d28d8bd9eac0dd3c3af782fddf2cbe2e64d6bfaea6a9a21b"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_lunge_01",
-      "hash": "857ad33ba28395836418f2d809ce81e00dfd4ad9019568be22b4ae5874f10714",
-      "flip": "c3c2a3e7f18ffbbb20f69ff09acacf38c2c920800744bcc206678fb005f8f9eb"
+      "hash": "5aaf142ac191936aa156c722865862e7cd2cb5a28ec1552087b65cb7835b6d71",
+      "flip": "7fbc05b6c1529cd3a182f73a4933140abe6130e7fe696864a0e10aee7277ece5"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_lunge_02",
-      "hash": "9fbfdca58c7d47d38cec60c9f18be83d53dd44f81592181f17618e48bbe5cf23",
-      "flip": "8323ab60ac7d7fd949f4f611f0f8bb44e307e8042f7a3b6e5c46543a5fac6248"
+      "hash": "6c52c010262fc80c1ccfadb523ec430e102a1a8bd6ba195799964b494936b587",
+      "flip": "fe41f430084a4e32738836b05ffbc0d5c9ce251cf119de55a4fd61aa663d4959"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_lunge_03",
-      "hash": "4057c4e3f83d620624b71140a3808a6041acbcbfc8fe015e41276e25f76267e3",
-      "flip": "f836ddf1e3cbacf3cac3238527fd119ab45bf74dc474051f2c43a44654f35d6e"
+      "hash": "7645af17c11109c80898274feba20e2938eecc592d1eb415087f7e5a4f6a05b3",
+      "flip": "00a549e2eee4176741aa0a58e9406f04730c7f5bd402f14cc10a7efafe82e1bc"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_lunge_04",
-      "hash": "224e1d6d88bfc1f7cfd0926f235ca9abf901260d78b845d351db9dbab20b98c2",
-      "flip": "a9d639258f4c60d2dae52806f0d18c6573b17d791c3a91f3906e43fbdbdbd9fb"
+      "hash": "620928c40c2979bea6667c8b005ad84cbd559f9b08b55dd1800a1d5e342c4893",
+      "flip": "6545f7710cd46cbcc824b1c3b11706c998ad760f5794f42a83da06d91533c5b8"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_slash_00",
-      "hash": "9f5ccc17aa2e6234d1973ea5ee0279b52ce4bae17d1e8cee94f028ac3a7af511",
-      "flip": "fe0421ae98a1f84f2328ec351ea171e4ef679196f507a8a9791f297694d22d74"
+      "hash": "f9e6a6520b6fe86f20e77d806f59e81196543bcf1f100f4f9974a3a47739e90f",
+      "flip": "a495b64cf378c712e506aebafe42e49492adba3e5ed7ac8121779de5a8dbe683"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_slash_01",
-      "hash": "157eca02c6d2f1714d4b0a1270ac2d621cd13f9ad32aa04e88366084ab7c7297",
-      "flip": "b45dfec63e62dbd09501306b29d548da63e6663e41a69d7c0460b1ea5f77e36c"
+      "hash": "e0f70874e0a1e075cf1730a32073d42d00e22e48a1672ca9dabff57dcc4b4742",
+      "flip": "fb3c72e0106627e9cdd67c363e8b640ff8fbc910bd0fc42120d14454fe85b9b6"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_slash_02",
-      "hash": "10422fd2e12cbabc202dd245b36c09029d5ef2d3c700e1ca0a0611b211110ff1",
-      "flip": "17b7fe8fefa7194170dbfceb88d153121fcaf53556ea1f0a7e56e745a5d412ef"
+      "hash": "d20d683c0a79c65b73e51a507d5013d101c0a0817764a0d787698de4dd7c32c4",
+      "flip": "2455e65f6e46aae2cef785e17093096df884574e3d894e5e03f7dd54de0c944d"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_slash_03",
-      "hash": "b2e8e2ac7c78eeb1d4aa4898e88985b2c45fd31839404bdec49a23796046c8ae",
-      "flip": "cb7145dcf30f116701ac18377dbae214af29111517d5c8933ea571ddd75e20d7"
+      "hash": "7cae09c1324c6a5dabd85bb1290f4a98ef6b41f74a50cf4550e354256ab301b5",
+      "flip": "00fc8f2cd7cf9262b8fe210730aaa951b3312a3a4c38711858b48fd69ce51c80"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_slash_04",
-      "hash": "0a682c3ec3c658a3c149e2e5aa19a0e4eee0e0826ed656f13e000f9b84ff4c2d",
-      "flip": "57f7031ac8c183ff18a3ac853433d8a3a3fbf0156b20ca7391fab26391d5bb3a"
+      "hash": "bdc186a16e0562cdbda352f67f22e9579d6819b9c1c11262d9dd2723e10be0a8",
+      "flip": "24716500f7fa06d0b5eeddf3883c0f365753c1b9d790b40f406348c9c6ba1d2b"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_slash_05",
-      "hash": "bf150847fe1ef40ce8fc20aff4a54859fcbcc043e2b2e2b8441e141ca457b178",
-      "flip": "58bc43ef915d75f42a560b0afb64ea04ee7eff9807d0d36378eeb337b04283b3"
+      "hash": "aac7e3d897193c4652084e76c29c249276984b792e76c6c16726cda0be35724a",
+      "flip": "5b353e0329eb159b47441f4975f780d3d6cf4f4ad30b706b935cc5d841a06c5a"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_walk_00",
-      "hash": "49e3543e1f7c539ec32388a91aed63c31abbad9a5df414bfa5681440aa6f7355",
-      "flip": "7c77bb13aef3e2aceb12b442f24667eb8eb54c64b2ea8eec5b1d657ca9900f88"
+      "hash": "c111e32be0d9e3d90e54d95c0b8d329ef8982f74ba06b5cc2e20079a2f10f3d2",
+      "flip": "b1f9190a5a2262c61ca0ecb4b71e7ecebae6e3f5493637023f23dc6609e97ea0"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_walk_01",
-      "hash": "fd4b0d20c450fcaf6368d2029759930d72546992310aafbd518442440c8f5365",
-      "flip": "4bf4a34dd859dbcde58544bde39416ef1d1445411ec5c9b6921daede7e2c3db8"
+      "hash": "264b77b703a500dfaa6894a8993b101ce6c836d1f4ec43f4208bcc2b14de16f9",
+      "flip": "9fcd119eb8cbb638713aa31d2215cf4f1dd4a0ae369b21e316ca4181424c5543"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_walk_02",
-      "hash": "fbaecaa36f61c712b8d1364f79bd79edc675d71b2fdb3dd4119a893faf9ff7b1",
-      "flip": "4c71fdca59a2a788bd670833070a08506926cce20ad73235f72b380ffc474789"
+      "hash": "e7a87f35a4c8ca2d117317d1cbd0bd3048586f6728edb0f4d3856b5fcd81c1fc",
+      "flip": "6b424802f840faf5678b4a7f3c74a715b72bf22fe6f3e2df00bcd7ce86b2126f"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-0",
       "name": "fade_walk_03",
-      "hash": "f9935a98fc5730710908ff3ae0ae695a6ec2a085b92cb4a44eba9e4f93afffda",
-      "flip": "4815fdb6ab0aa80c12f87c6d3c8ac2ddb58023a7fd192d6c028d6e8406d28d95"
+      "hash": "d7b6eec098e8219c23fe183312d8f5a438eac6fc42ed22a51d3aa2dcd9f2a9b9",
+      "flip": "30d2efdcc0315f2d804647b860b0b150a5cc6f56bb76e02804566d7c7b0404a4"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_defeated_00",
-      "hash": "41bc9009a72a37b46a1689a301f52fee7c1698f2e40f2a44628d8f161b33e9e9",
-      "flip": "6d21751b1a21f1644651c3eae6d50fefdf5458bbd6a926aec2b30ad556d3d428"
+      "hash": "87b56eb921ae560fc2c8827285b98bb9f85b39a2361b19199542b17162748e41",
+      "flip": "9d6d675e60de5b2e0fb4b727ac67cdf5134ff51a51db4d5102805635c11b0435"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_defeated_01",
-      "hash": "18b78f3ad098ae6246d26b75b05345e4ee4c3ccfef4389e87eb07bb7aa416143",
-      "flip": "e532c3833e75e19e7a0ab43151fbdd5373fb0825230f68a2acac040debf07dc0"
+      "hash": "653a6e506e7b0c6ef1821783c2cddf540a10696b255a988f40575c6fce784f97",
+      "flip": "0ba303b24a146ce014a89640c416b242efc82d486eeb6acb299133627984f6f7"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_defeated_02",
-      "hash": "7c87543b238e0f1324545990f0cfedade94f172cc87dee051f58fe2f446f67a8",
-      "flip": "c1553a116923e9b6dd128a9529006517f13ecc467e85113014a99c91a53e8e37"
+      "hash": "980bfb60403e94a60fe968a0e9ce6f0a40251fac387215d5f170c41ff41fd696",
+      "flip": "b00a49a28a7fd003586ad6fa39a40166a2bec263d67834ba216385ea2c0bf1c4"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_defeated_03",
-      "hash": "07a52801d58eeedd59f654f8c134e3fd278f5a5bc4e833a4079f7abe0aa5e19c",
-      "flip": "d41722a899d2e9836ac73762adaaa00bfce60c7dd0137c5415e5a3ef92337bbe"
+      "hash": "d52d409ba8fd2b49103ad8da99f352484014df795ba5d4d6f26bfdb523b0bd50",
+      "flip": "e30d783fd211608a17a5daf5d4404c4c2ecdf16e8b9e34b65f8d99b0d5b9e081"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_fear_00",
-      "hash": "86cd015dc0b1f8225b03eb442814d7091d0810eb385ca7f5a1eaf9002f3d530c",
-      "flip": "a32c3413d48af92839960b0f6a8fa35ca27b1f492e62e5b9720cd32976c43bc3"
+      "hash": "f18a997a60e385649c62db60fc9c46ba842e3f79315627f89892439e28909142",
+      "flip": "25d514302d41067728f85192a79de97164a6b010a22714c49a44909fd5909031"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_fear_01",
-      "hash": "5c4b9f4065661a31a70763412afbba1c28e674d44f1e4fcffb25f0565854b3da",
-      "flip": "c252075f87e91cbdeae78a6a9a2abac671346b5579063bd1629501c2ecfc9c80"
+      "hash": "1ffea90e8342fc369a1586248165bb3024c24cb0f038de52cd5c6cf3576c2894",
+      "flip": "dc2c1f541fc35aba31cfa324c45abc80c7d7883efab324d2fa25e9b41a9f7bae"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_fear_02",
-      "hash": "87fe948c79a313590c04c44b20f43ecb1263ba2c9cd9c3f5bf40e7f8850bd67a",
-      "flip": "4b5f0bb819804605edc008a0b31c1d7a3adfbf369fa0a14ed4483cbbbd5cbe98"
+      "hash": "ef26c8aa4080ba9c23ed521b5bfe9d0c01768f6c528a8d7892a3ba3a36035b28",
+      "flip": "221749a7aeb62b7cc7ec317aa241a554c9437d75689d7436100f774ca04de992"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_fear_03",
-      "hash": "daadb159af5f74f90502d0aa7ca1c224295aa515bb63c1d690d16180b42cae08",
-      "flip": "fecdd5d7b302c2505098d50db0b44653eabc5c16a2164392921887d453e9eb5a"
+      "hash": "9f3585f284692d31eebfa33e523390b573b38efee849ea7b3fc48f570c004f04",
+      "flip": "30ca2f5db09467a8dd8d587b2e12a926fa1e7e0a128f9d8c2bc8616b8bb378cc"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_fear_04",
-      "hash": "b2aa70dc178499ca7d24ee123f1f88f91f91ab5e7293f38cea3e0f78e47818e2",
-      "flip": "ea641e75b6d2c274031af531248e44617c6e06a3da7caf29bd6d19e182e7bfa5"
+      "hash": "457a587ebf968e337ed560ce6ec4ef97bf22d624a40e9af0c9efbd4046d3420a",
+      "flip": "595214d39ddaf27f4671a92c9048c26e8609ad10fc68208e2cc483153c7b8d07"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_getup_00",
-      "hash": "6066b2866c0dd2f3ba781e139d867e6d8723ed61fc5620ece9fccb8fc22e04bc",
-      "flip": "818b7243e77f9489ecb8708e993e06c9ad2f503754ea587773ff7ead766dc93a"
+      "hash": "4fd6f5f113160bfcd21c986208e0e833cd10ab06aa769cba88664208dda80f28",
+      "flip": "1fb4112464f49511ae4ef8bb2f7f7622a4b73edb0d8bd013c95f61a67a9652e7"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_getup_01",
-      "hash": "dbb3fb7b88b28da8f233af78eb49111a5d3c586125f5e329cc1a819cf18baf1f",
-      "flip": "45b4ff66abe6eefb895ef2abeddd4d79cd87c29aa431305f25af3fb634ae2d24"
+      "hash": "bc567c5667726aec57bfadd4157b7b4e51e6e6f75be650d980ba9722b83efa4c",
+      "flip": "874518aab8d467898a5096a348c7875bd92ace2cdc015696accc2da711ad7c4a"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_idle_00",
-      "hash": "c7a0dccd9a775cf3e1ee50802ffc169d01e18112192894baa0ad4136943b677c",
-      "flip": "ba51b56066f723e570bfb3d42b4be0b4f37286cf8526566941125a28efa12590"
+      "hash": "46965e84ef7c1039cf4f5d8d2adcbdbced96ec0c75f2ecde251f1079cb3c2b3b",
+      "flip": "52feb7d0505c69d50f955d56b1528eae0db965df5c9ca5e2792842d4b7b8acfe"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_idle_01",
-      "hash": "b5a333ebcf1b5f5d8a506302b1d7626027fc339c445da1416df930657ad3f773",
-      "flip": "f8a1713aa1b9806f6458fa4e9a35846681be4997405c7f22f1d0fa72ce60d0c3"
+      "hash": "10cf5c4f057ce12b49fcc42bc69e48ce298b8154884f3d432ac11caa3f8ed895",
+      "flip": "b2f622b3814ba33e05077cd87337a3b4b135481986d1f61a37f192c5f9992b5a"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_idle_02",
-      "hash": "487dae71534236b98a943d6611ec6e33f9614cf9a9314f382878f635207cb25a",
-      "flip": "46365721f719e4673bb7362f62acdfa9faafc0808ea57323722806444fc5cc76"
+      "hash": "62d892fedd6152af11255971062372f885b22cad363ee58eca496634dd281940",
+      "flip": "5bf113d83ad31a18572ff9fa3559af928549213129cbff0ab56cb8f4006e3480"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_idle_03",
-      "hash": "18777126bb3107d5f1d76d6220e69387a11a19cdf86e36bb4acf8d0be35f52a7",
-      "flip": "1b913350fb0c8f1c27cd3790f13c08f7442fd7dfd4bfd4e520fd76e7d9087c06"
+      "hash": "eec10a646a71e4ee68ee92b48f594ef72c18bec5a545d42c3763919aa478efb5",
+      "flip": "191fcb9da01ab411121de525c7779b23a2e68074ec5837b50b8b0a6e736f018d"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_point_00",
-      "hash": "3ab356eebc610f595db347e359e2eb4d5f69135836d61c2aebdc1119b36c2176",
-      "flip": "ad81f5b94b7470e7d113814b56c8e36c147292233095e3ee71cf224cb8f23e15"
+      "hash": "18d5529647f54d13755ecb75835caa8badb93bc1bbae98690a1afcd0b4baf579",
+      "flip": "fa25c3f4f86b4c5153c6c354fab84cf951b0dbbc8be8562e281c0c5ee0d14fa8"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_split_00",
-      "hash": "14700dac0c38d66d59c67a0dd759f68fc5b01dd1036c9b57eff8c28715bf705f",
-      "flip": "01347d94ed7346680c78de92159a7cd36049451bdf362e1694ae20ab213f3976"
+      "hash": "909183aeaf43300ad3ca6b124dd7ab1a3d06221b259217468fb135f5a482be38",
+      "flip": "eea15200c5903d9c1c937549caeebbb739bbe83167b9e82ff49d63d1857de025"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_split_01",
-      "hash": "0c503b8378c1fe27d4c1ccc710f4cf255d4a2289fd1d65ea181d9c6837b8afda",
-      "flip": "7d52158a98a1f36d2d198667f6acd156e1711fb364dfdbfa9f2039d16e3a6a7e"
+      "hash": "e9de9e02933ccbe8956ffbe8a7a03b61c0d40dbb9dbfae1a651caf5d8d4c2589",
+      "flip": "94b90faa8e5f7a549507923672d71e0701d7b9adf12e4072be78fe589bb3eba2"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_split_02",
-      "hash": "c37c9d0a06bcad8f9d3824d568bd3fe0f1e3847e6cb41c1af211242b71e63c04",
-      "flip": "27b0e6219f539b3971bc5d06e4530c4e0ac155d75cc8abbc6bc64ec6bd9a4175"
+      "hash": "7d3a70d7f610edf3794a7d4c860ab89f2b3637507fc52eea0db7fe8491704b3d",
+      "flip": "bdcc014d5f8e7dfbb99233f1d9a5166a263176ff55a8bfef7f18d843ca206029"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_split_03",
-      "hash": "755c5b933141a414e02a1fad508905bf8bd525bd1641d5f228e91aecd4bf34d6",
-      "flip": "60aeb61b99dbf9588c85b21fa7598938936ffe8c84e79907c30a7bee522b7ce4"
+      "hash": "43ae4f6f8f22f9c6fdf386ab2e1618f99b600e3c1a5358108783aec140ce9a40",
+      "flip": "b3aac2d2fb0530428eec47e7563cce9a1a3c76e4e4e1ea229cff5dc20b46e390"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_split_04",
-      "hash": "6ecc1e20a31885e94adf6f259006519ba6b9492b0ca6dcaad4d4bd945a3ab88c",
-      "flip": "79179cffd4265d18f88ffb107ca9812932ddd29ef90dbdce7764ca6990b12ba1"
+      "hash": "2c6fc22d50aab2967c2541dc68a7d8b9bd4c64da3107593da21e7bfd710872bb",
+      "flip": "3afc6d05832a744103c83f0d0857cc336667e08eb153953184a7772632b8fb5c"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_stagger_00",
-      "hash": "ee5b6b455d277fbfc4bb7d101fb4ff30adc2f3cc2ceccb12b90dd338884fb476",
-      "flip": "45cb142e76b65a166e4d076cf149367bf87a5d34a74d35cd706c5479c658aaea"
+      "hash": "39bc1e5f6fbed3e4862ff30daa4c8c1f57b8ace7fddd7fdd26b172122b2ae49f",
+      "flip": "357352482c57c72e1399ee890530a45bb354dc0c1d1cbc24337b4203d6c0e81f"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_stagger_01",
-      "hash": "9fefaf0b04ba34890647dee1a4bec591d0ca253ccf0b0dc5489679b8060c1d60",
-      "flip": "d510021339791167442c788478ea200f9a2c9818b55bcd9c8116457db4a3fa20"
+      "hash": "3da0c7dc78a637b1eda24308ceb8ee8ac03531b7f4ebec606830f02af2f66f7b",
+      "flip": "b9f253ef6b78211ed67010c45f84dbc3f3be3bee68bf1daf18008c1984eac8c0"
     },
     {
       "char": "fade",
       "stage": 3,
       "page": "fade-1",
       "name": "fade_stagger_02",
-      "hash": "ab97145a7c19a4fd78a945815f50661f3165a42b2e350525aaa780d3223bc796",
-      "flip": "2740f4d8b01746b78227cf5e06a6a513972428482442c04c9f4822214b8245be"
+      "hash": "0c8bcbe781e13a701fac7e2e907dbe02855902da41dd5e7901af79fa5832f401",
+      "flip": "25d4b048c31e297a69c2cc9bca891d412debf4f5efb9462668d2dc3306fdf56e"
     },
     {
       "char": "riley3",
       "stage": 3,
       "page": "riley3-0",
       "name": "riley3_escape_00",
-      "hash": "986ae7af61b450729d27b096823370a5ad12bc78132a8b43ab50dceb2fa8f0ca",
-      "flip": "b27dafc71903bf07a88cebde5be319434bb59bb8bf54fdb4ced7c10d48e437f3"
+      "hash": "ac9054e7ac9364c0f5d0d723ec99ba33db7576425c290729913849a74ded9805",
+      "flip": "457ab5f56005213bc4adb180d199fca48c90d644ab23ec4571daeda11efab111"
     },
     {
       "char": "riley3",
       "stage": 3,
       "page": "riley3-0",
       "name": "riley3_escape_01",
-      "hash": "48675d725c352be9bb7c0aab3baf857ab904d487116670c099355365d0302a09",
-      "flip": "98d24dc78f0404e8dd93dac60b2d4ff47c94bb5f146922055d156214d636ecd1"
+      "hash": "26377ed3ace686d30a270348dd8162c3c5ebce6b374a78b658b956c7d0bc74f6",
+      "flip": "33e5e2c08459ee7b8fda7cfcb19868947926fd91ac3fd3f9951df7826d0705a3"
     },
     {
       "char": "riley3",
       "stage": 3,
       "page": "riley3-0",
       "name": "riley3_escape_02",
-      "hash": "f9ae300d10052a8733dfaeec6315ed7c8650fa00daa606c10d8d8a681d7d84fe",
-      "flip": "9b24ffdb4a7ee7e7d824763900b118587cd3b9db4a3fad7ef830e4d7bd62c437"
+      "hash": "af55e7393320e69887aba509bd28ed565c17ed4310b73b07206828f0fa207650",
+      "flip": "9a560c87bb69d50feeb418fbe365c3942d3892e78c6baef8831c32413d696c6c"
     },
     {
       "char": "riley3",
       "stage": 3,
       "page": "riley3-0",
       "name": "riley3_escape_03",
-      "hash": "f97c6eb9874e56efd99040504b14d54e47025b6f44de59c8af5adec411394a01",
-      "flip": "263f83c5654431b68698d41e7bff459b997aedbd2f05a1e0bacf1303a00dcb01"
+      "hash": "a5ad4de263a26ddf29b05846f7920f202685444da2a16335e9481fe7cdd09daa",
+      "flip": "38719d94c401ec3105d49a8230a96901e2e06713028fb37b3c27a3f37c080d2e"
     },
     {
       "char": "riley3",
       "stage": 3,
       "page": "riley3-0",
       "name": "riley3_grabbed_00",
-      "hash": "9f6ffaeee44eeee150a2cfcb4ffc89227ab2b6ee6ffc08e6fae2f92be28f0e07",
-      "flip": "a2d9e5853c544bf035cb648f5a6b20f4ca35c5c7769bd9bd85135b1abc379c37"
+      "hash": "573acb401c186bee53b1c62399ef86f417f6b0747e3e9df2d08cd83276fff3ea",
+      "flip": "897ac6662373ec93554799161ce0575daec90faef001ccf55f49f16a609e7a81"
     },
     {
       "char": "riley3",
       "stage": 3,
       "page": "riley3-0",
       "name": "riley3_grabbed_01",
-      "hash": "92d4cc96c3be2660755c0aab2b7174b6d9a4ea5472841812d9188f504f893984",
-      "flip": "dcd254e141d373e2bae2096c26234243cdb7018cbf28858fbd4b54d6871f5943"
+      "hash": "e366672f2d82d8c94b874f39b70f90de7fb9f23b830dfc49d3d31a5c4314885f",
+      "flip": "c98c8d8375f895bb47f4ab69ac114d417e5f501167ddc10930cc15f02676443a"
     },
     {
       "char": "riley3",
       "stage": 3,
       "page": "riley3-0",
       "name": "riley3_grabbed_02",
-      "hash": "be7e6d2064606d06a87515b9846a88ddaaa3920183c872a90086ba268e631d18",
-      "flip": "2c0b9c1df32b5f269b7f34a65ab4bb278ba035f1347c29110450e3802fdcf9f3"
+      "hash": "7bd09ff45dcb31c135afe62ab24c94dd59e1007cd858309f5c99027cdbb300cd",
+      "flip": "bdeed074dac2d48e9025ea2ccd0d012ff2637f428c013fe4968f10b1fca63e9c"
     },
     {
       "char": "riley3",
       "stage": 3,
       "page": "riley3-0",
       "name": "riley3_grabbed_03",
-      "hash": "65c59aceb808009c5ae32b64e29492248b041b2c3550b78291f46063f152c062",
-      "flip": "83d1f5c5252ddd1836322b1937ddb1d203df7d216e8fff4156df7dd4dea10e39"
+      "hash": "3bf3f586580a88cc4d1a7cdc54dcfd8b3a01c0df909431f17835b6f11a5d0435",
+      "flip": "b483c29070acbc7295ce320cf454fc0c7d50100608b09792d6801413de967664"
     }
   ]
 }
