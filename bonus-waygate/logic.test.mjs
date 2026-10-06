@@ -178,9 +178,16 @@ test('the title does not depend on a fetchable image atlas', () => {
   assert.doesNotMatch(html, /location\.protocol === 'file:'/);
   assert.match(html, /rel="icon" href="data:image\/svg\+xml/);
   assert.doesNotMatch(game, /assets\/atlases\//);
+  assert.match(html, /boot-input\.js/);
+  assert.match(html, /id="stick"/);
+  assert.match(html, /id="tbA">KICK/);
+  assert.doesNotMatch(html, /touch-controls/);
+  assert.doesNotMatch(html, />ROLL</);
   assert.match(game, /pointerup/);
   assert.match(game, /touchend/);
-  assert.match(game, /onTitleKey/);
+  assert.match(game, /__waygateInput/);
+  assert.doesNotMatch(game, /onTitleKey/);
+  assert.doesNotMatch(game, /startDodge/);
 });
 
 test('Gray Man stays dangerous but a solid player drops him', () => {

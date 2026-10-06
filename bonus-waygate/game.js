@@ -5,7 +5,7 @@
   const W = 960, H = 540;
   const {
     FLOOR, WORLD, BRIDGE_START, BRIDGE_END, BRIDGE_SPAWN, BRIDGE_MID,
-    P_SPEED, JUMP_V, ROLL_DURATION, WAVE_TUNING, ARENA_START, ARENA_LEFT, ARENA_RIGHT,
+    P_SPEED, JUMP_V, WAVE_TUNING, ARENA_START, ARENA_LEFT, ARENA_RIGHT,
     BOSS_X, EXIT_X, PADS, CRUMBLE
   } = L;
   const WAVE_AT = [500, 1120, 1750];
@@ -13,6 +13,25 @@
   const $ = (s) => document.querySelector(s);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const fmtTime = L.fmtTime;
+  // Same speeds and saidin costs as src/riley.js and src/powers.js.
+  // On the bridge, a running takeoff stays at P_SPEED: the gaps were built for that
+  // arc, and the main game's 360 jump carry would fly past the landing pads.
+  const WALK_SPEED = 205;
+  const RUN_SPEED = 390;
+  const JUMP_WALK = 210;
+  const JUMP_RUN = 360;
+  const SPECIAL_COST = 34;
+  const BALEFIRE_COST = 100;
+  const BALEFIRE_INVULN = 1.5;
+  const HELP_TOUCH = 'Stick: move (push far to run)   KICK: attack   JUMP   FIRE: fireball   BALE: balefire   CALL: Loial';
+  const HELP_KEYS = 'WASD/Arrows move · Shift or double-tap: run · J/Z attack · K/Space jump · L/Q fireball · F balefire (full saidin) · R call Loial';
+  const HELP_PAUSE = 'P / Esc / Enter / Start or II to resume';
+  const HELP_TITLE = 'PRESS ENTER OR ATTACK';
+  const HELP_TITLE_TOUCH = 'TAP TO START';
+  const HELP_OVER = 'PRESS ATTACK TO CONTINUE';
+  const HELP_OVER_TOUCH = 'TAP KICK TO CONTINUE';
+  const HELP_CLEAR = 'PRESS ATTACK TO PLAY AGAIN';
+  const HELP_CLEAR_TOUCH = 'TAP KICK TO PLAY AGAIN';
 
   class WaygateScene extends Phaser.Scene {
     constructor() { super('waygate'); }
@@ -134,15 +153,8 @@
       $('#overlay').removeEventListener('click', this.overlayAction);
       $('#overlay').removeEventListener('pointerup', this.overlayAction);
       $('#overlay').removeEventListener('touchend', this.overlayAction);
-      document.removeEventListener('keydown', this.onTitleKey);
       $('#pause-toggle').removeEventListener('click', this.pauseClick);
-      document.removeEventListener('pointerdown', this.touchDetect);
-      document.removeEventListener('pointerup', this.touchRelease);
-      document.removeEventListener('pointercancel', this.touchRelease);
-      this.touchBindings?.forEach(({ el, down, up }) => {
-        el.removeEventListener('pointerdown', down); el.removeEventListener('pointerup', up);
-        el.removeEventListener('pointercancel', up); el.removeEventListener('lostpointercapture', up);
-      });
+      if (this.offTouch) this.offTouch();
     }
 
     registerAtlas(char, data) {
@@ -302,15 +314,18 @@
       this.heroShadow = this.add.ellipse(120, FLOOR - 53, 118, 24, 0x000000, 0.48).setDepth(800);
       this.hero = this.add.sprite(120, FLOOR - 56, 'rileyPage0', 'riley_idle_00').setOrigin(0.5, 610 / 640).setScale(0.56).setDepth(1000 + FLOOR);
       this.hero.play('riley_idle');
-      this.heroData = { x: 120, y: FLOOR - 56, z: 0, vz: 0, jumpVx: 0, hp: 100, focus: 60, lives: 3, score: 0, kills: 0, trollocKills: 0, falls: 0, invuln: 0, facing: 1, action: 'idle', actionT: 0, combo: 0, comboExpire: 0, hitDone: false, attackBuffer: 0, specialBuffer: 0, dodgeX: 0, dodgeY: 0, onBridge: false, falling: 0, checkpoint: 120, bridgeCheckpoint: BRIDGE_SPAWN, time: 0, started: false };
+      this.heroData = { x: 120, y: FLOOR - 56, z: 0, vz: 0, jumpVx: 0, hp: 100, focus: 60, lives: 3, score: 0, kills: 0, trollocKills: 0, falls: 0, invuln: 0, facing: 1, action: 'idle', actionT: 0, combo: 0, comboExpire: 0, hitDone: false, attackBuffer: 0, specialBuffer: 0, onBridge: false, falling: 0, checkpoint: 120, bridgeCheckpoint: BRIDGE_SPAWN, time: 0, started: false };
     }
 
     createInput() {
-      const kb = this.input.keyboard;
-      this.keys = kb.addKeys({ left: 'LEFT', right: 'RIGHT', up: 'UP', down: 'DOWN', a: 'A', d: 'D', w: 'W', s: 'S', attack: 'J', jump: 'K', dodge: 'SHIFT', special: 'L', pause: 'P', escape: 'ESC', restart: 'R', enter: 'ENTER' });
-      this.pressed = { attack: false, jump: false, dodge: false, special: false };
-      this.touchState = { left: false, right: false, up: false, down: false };
-      this.touchAction = { attack: false, jump: false, dodge: false, special: false };
+      const Input = window.WaygateInput;
+      if (!Input || !window.__waygateInput) throw new Error('Waygate input must be src/input.js');
+      this.inp = window.__waygateInput;
+      this.inp.clear();
+      this.fireballs = [];
+      this.beam = null;
+      const call = document.getElementById('tbL');
+      if (call) call.classList.add('off');
       this.overlayAction = (e) => {
         const action = e.target.closest?.('[data-action]')?.dataset.action;
         if (!action) return;
@@ -319,38 +334,16 @@
         else if (action === 'resume') this.resumeGame();
         else if (action === 'restart') this.scene.restart();
       };
-      this.onTitleKey = (e) => {
-        if (this.mode !== 'title') return;
-        if (e.key === 'Enter' || e.key === 'NumpadEnter' || e.key === 'j' || e.key === 'J') {
-          e.preventDefault();
-          this.begin();
-        }
+      this.pauseClick = () => {
+        if (this.mode === 'play') this.pauseGame('Combat paused. Choose when you are ready.');
+        else if (this.mode === 'paused') this.resumeGame();
       };
-      this.pauseClick = () => { if (this.mode === 'play') this.pauseGame('Combat paused. Choose when you are ready.'); else if (this.mode === 'paused') this.resumeGame(); };
-      this.touchDetect = (e) => { if (e.pointerType === 'touch') document.body.classList.add('has-touch'); };
-      this.touchRelease = (e) => { const id = e.target.closest('[data-hold],[data-press]'); if (!id) return; const key = id.dataset.hold || id.dataset.press; if (id.dataset.hold) this.touchState[key] = false; else this.touchAction[key] = false; id.classList.remove('down'); };
       const overlay = $('#overlay');
       overlay.addEventListener('click', this.overlayAction);
       overlay.addEventListener('pointerup', this.overlayAction);
       overlay.addEventListener('touchend', this.overlayAction, { passive: false });
-      document.addEventListener('keydown', this.onTitleKey);
       $('#pause-toggle').addEventListener('click', this.pauseClick);
-      document.addEventListener('pointerdown', this.touchDetect, { passive: true });
-      this.touchBindings = [];
-      document.querySelectorAll('[data-hold],[data-press]').forEach((el) => {
-        const down = (e) => {
-          e.preventDefault(); el.setPointerCapture?.(e.pointerId);
-          if (el.dataset.hold) this.touchState[el.dataset.hold] = true;
-          else this.touchAction[el.dataset.press] = true;
-          el.classList.add('down');
-        };
-        const up = (e) => this.touchRelease(e);
-        this.touchBindings.push({ el, down, up });
-        el.addEventListener('pointerdown', down);
-        el.addEventListener('pointerup', up);
-        el.addEventListener('pointercancel', up);
-        el.addEventListener('lostpointercapture', up);
-      });
+      this.offTouch = this.inp.on('touch', () => { if (this.mode === 'title') this.showPanel('title'); });
     }
 
     initRun() {
@@ -361,14 +354,14 @@
       if (this.bossSprite) { this.bossSprite.destroy(); this.bossShadow.destroy(); }
       this.bossShadow = this.add.ellipse(0, 0, 98, 24, 0x000000, 0.5).setDepth(900);
       this.bossSprite = this.add.image(this.boss.x, this.boss.y, 'grayman').setOrigin(0.5, 1).setDisplaySize(106, 240).setDepth(1100).setAlpha(0);
-      this.heroData.x = 120; this.heroData.y = FLOOR - 56; this.heroData.z = 0; this.heroData.vz = 0; this.heroData.jumpVx = 0; this.heroData.hp = 100; this.heroData.focus = 60; this.heroData.lives = 3; this.heroData.score = 0; this.heroData.kills = 0; this.heroData.trollocKills = 0; this.heroData.falls = 0; this.heroData.invuln = 0; this.heroData.facing = 1; this.heroData.action = 'idle'; this.heroData.actionT = 0; this.heroData.combo = 0; this.heroData.comboExpire = 0; this.heroData.hitDone = false; this.heroData.onBridge = false; this.heroData.falling = 0; this.heroData.checkpoint = 120; this.heroData.bridgeCheckpoint = BRIDGE_SPAWN; this.heroData.time = 0; this.heroData.started = false; this.heroData.attackBuffer = 0; this.heroData.specialBuffer = 0; this.heroData.dodgeX = 0; this.heroData.dodgeY = 0;
+      this.heroData.x = 120; this.heroData.y = FLOOR - 56; this.heroData.z = 0; this.heroData.vz = 0; this.heroData.jumpVx = 0; this.heroData.hp = 100; this.heroData.focus = 60; this.heroData.lives = 3; this.heroData.score = 0; this.heroData.kills = 0; this.heroData.trollocKills = 0; this.heroData.falls = 0; this.heroData.invuln = 0; this.heroData.facing = 1; this.heroData.action = 'idle'; this.heroData.actionT = 0; this.heroData.combo = 0; this.heroData.comboExpire = 0; this.heroData.hitDone = false; this.heroData.onBridge = false; this.heroData.falling = 0; this.heroData.checkpoint = 120; this.heroData.bridgeCheckpoint = BRIDGE_SPAWN; this.heroData.time = 0; this.heroData.started = false; this.heroData.attackBuffer = 0; this.heroData.specialBuffer = 0;
       this.hero.setPosition(120, FLOOR - 56).setFlipX(false).setAlpha(1).setTint(0xffffff).play('riley_idle');
       this.cameraOffset = 0; this.toast('THE WAYS SHIFT AROUND YOU', 2.2); this.refreshHud();
     }
 
     begin() {
       if (this.mode !== 'title') return;
-      this.mode = 'play'; this.heroData.started = true; this.startedAt = this.runElapsed; this.hidePanel();
+      this.mode = 'play'; this.heroData.started = true; this.startedAt = this.runElapsed; this.inp.flushPresses(); this.hidePanel();
       if (this.debugSkip === 'bridge') this.skipToBridge();
       else if (this.debugSkip === 'boss') this.skipToBoss();
       else this.toast('THREE WAVES. KEEP MOVING.', 2.6);
@@ -393,34 +386,29 @@
     showPanel(kind, extra = {}) {
       const overlay = $('#overlay'), box = $('#panel-content');
       overlay.hidden = false;
-      const controls = `<div class="control-grid"><div><b>Move</b> · WASD / Arrows</div><div><b>Attack</b> · J</div><div><b>Jump</b> · K</div><div><b>Dodge roll</b> · Shift</div><div><b>One Power</b> · L</div><div><b>Pause / resume</b> · Esc / P</div><div><b>Restart</b> · R</div></div>`;
-      if (kind === 'title') box.innerHTML = `<div class="eyebrow">RILEY WHEEL BRAWL · BONUS LEVEL</div><h1>WAYGATE<br>GAUNTLET</h1><p>Three Trolloc waves, a bridge that will not stay beneath your feet, and a Gray Man waiting in the dark.</p>${controls}<p class="fine">Every enemy attack has a tell. The Gray Man's red flash marks the strike lane; move away or jump over it.</p><div class="panel-actions"><button class="action" type="button" data-action="start">ENTER THE WAYS</button></div><p class="fine">A short, standalone, silent side-story level · about 2–3 minutes</p>`;
-      else if (kind === 'pause') box.innerHTML = `<div class="eyebrow">THE WAYS HOLD STILL</div><h2>PAUSED</h2><p>${extra.message || 'Take a breath. Your checkpoint and the enemy timers are safe.'}</p><div class="panel-actions"><button class="action" data-action="resume">RESUME</button><button class="action secondary" data-action="restart">RESTART BONUS</button></div><p class="fine">Esc / P resumes · R restarts · timers stay frozen while paused</p>`;
-      else if (kind === 'over') box.innerHTML = `<div class="eyebrow">THE SHADOWS CLOSE IN</div><h2>DEFEATED</h2><p>You are out of lives. The gauntlet is ready for another attempt.</p>${this.resultStats()}<p><b>Trollocs killed: ${this.heroData.trollocKills}</b></p><div class="panel-actions"><button class="action" data-action="restart">TRY AGAIN</button></div><p class="fine">Press R or Enter to restart.</p>`;
-      else if (kind === 'clear') box.innerHTML = `<div class="eyebrow">THE WAYGATE OPENS</div><h2>GAUNTLET CLEARED</h2><p>Riley steps out of the Ways with the Gray Man left behind. Trollocs killed: ${this.heroData.trollocKills}.</p>${this.resultStats()}<p><b>Rank ${extra.rank || this.rank()}</b></p><div class="panel-actions"><button class="action" data-action="restart">RUN IT AGAIN</button></div><p class="fine">Press R to restart. Score and time are local to this run.</p>`;
+      const touch = !!(this.inp && this.inp.isTouch);
+      const help = touch ? HELP_TOUCH : HELP_KEYS;
+      if (kind === 'title') box.innerHTML = `<div class="eyebrow">RILEY WHEEL BRAWL · BONUS LEVEL</div><h1>WAYGATE<br>GAUNTLET</h1><p>Three Trolloc waves, a bridge that will not stay beneath your feet, and a Gray Man waiting in the dark.</p><p>${help}</p><p class="fine">Every enemy attack has a tell. The Gray Man's red flash marks the strike lane; move away or jump over it. Loial is not in the Ways, so CALL does nothing.</p><div class="panel-actions"><button class="action" type="button" data-action="start">ENTER THE WAYS</button></div><p class="fine">${touch ? HELP_TITLE_TOUCH : HELP_TITLE}</p>`;
+      else if (kind === 'pause') box.innerHTML = `<div class="eyebrow">THE WAYS HOLD STILL</div><h2>PAUSED</h2><p>${extra.message || 'Take a breath. Your checkpoint and the enemy timers are safe.'}</p><div class="panel-actions"><button class="action" data-action="resume">RESUME</button><button class="action secondary" data-action="restart">RESTART BONUS</button></div><p class="fine">${HELP_PAUSE}</p>`;
+      else if (kind === 'over') box.innerHTML = `<div class="eyebrow">THE SHADOWS CLOSE IN</div><h2>DEFEATED</h2><p>You are out of lives. The gauntlet is ready for another attempt.</p>${this.resultStats()}<p><b>Trollocs killed: ${this.heroData.trollocKills}</b></p><div class="panel-actions"><button class="action" data-action="restart">TRY AGAIN</button></div><p class="fine">${touch ? HELP_OVER_TOUCH : HELP_OVER}</p>`;
+      else if (kind === 'clear') box.innerHTML = `<div class="eyebrow">THE WAYGATE OPENS</div><h2>GAUNTLET CLEARED</h2><p>Riley steps out of the Ways with the Gray Man left behind. Trollocs killed: ${this.heroData.trollocKills}.</p>${this.resultStats()}<p><b>Rank ${extra.rank || this.rank()}</b></p><div class="panel-actions"><button class="action" data-action="restart">RUN IT AGAIN</button></div><p class="fine">${touch ? HELP_CLEAR_TOUCH : HELP_CLEAR}</p>`;
     }
 
     resultStats() { return L.formatRunStats(this.heroData); }
     rank() { const h = this.heroData; return h.lives === 3 && h.falls === 0 && h.time < 135 ? 'A' : h.lives > 0 && h.falls < 3 ? 'B' : 'C'; }
     hidePanel() { $('#overlay').hidden = true; }
-    pauseGame(message) { if (this.mode !== 'play') return; this.mode = 'paused'; this.showPanel('pause', { message }); }
-    resumeGame() { if (this.mode !== 'paused') return; this.mode = 'play'; this.hidePanel(); this.clearInputs(); }
-    clearInputs() { for (const k in this.touchState) this.touchState[k] = false; for (const k in this.touchAction) this.touchAction[k] = false; document.querySelectorAll('.touch-key.down').forEach(x => x.classList.remove('down')); }
+    pauseGame(message) { if (this.mode !== 'play') return; this.mode = 'paused'; this.inp.clear(); this.showPanel('pause', { message }); }
+    resumeGame() { if (this.mode !== 'paused') return; this.mode = 'play'; this.hidePanel(); this.inp.clear(); }
 
     toast(text, duration = 1.8) { this.toastText = text; this.toastTime = duration; $('#toast').textContent = text; $('#toast').style.opacity = '1'; }
     triggerBanner(text, time = 2.1) { this.banner.setText(text).setAlpha(1); this.bannerTimer = time; }
 
     update(time, deltaMs) {
-      const k = this.keys;
-      const down = (obj) => Phaser.Input.Keyboard.JustDown(obj);
-      if (down(k.restart) && this.mode !== 'title') { this.scene.restart(); return; }
-      if (this.mode === 'title') { if (down(k.enter) || down(k.attack)) this.begin(); return; }
-      if (this.mode === 'paused') { if (down(k.pause) || down(k.escape) || down(k.enter)) this.resumeGame(); return; }
-      if (this.mode === 'over' || this.mode === 'clear') { if (down(k.enter)) this.scene.restart(); return; }
-      if (down(k.pause) || down(k.escape)) { this.pauseGame('Combat paused. Choose when you are ready.'); return; }
+      const dt = Math.min(0.04, deltaMs / 1000);
+      if (this.inp) this.inp.update(dt);
+      if (this.handleMenu()) return;
       if (this.mode !== 'play') return;
 
-      const dt = Math.min(0.04, deltaMs / 1000);
       if (this.hitstop > 0) {
         this.hitstop = Math.max(0, this.hitstop - dt);
         this.updateEffects(dt); this.refreshHud();
@@ -428,7 +416,9 @@
       }
       this.runElapsed += dt; this.heroData.time = this.runElapsed;
       this.exitGlowPulse += dt;
-      this.updateHero(dt, down);
+      this.updateHero(dt);
+      this.updateFireballs(dt);
+      this.updateBalefireFx(dt);
       this.updateWorldProgress(dt);
       this.updateEnemies(dt);
       if (this.boss.active && !this.boss.defeated) this.updateBoss(dt);
@@ -439,21 +429,30 @@
       this.refreshHud();
     }
 
-    getInput(down) {
-      const k = this.keys;
-      const axis = (positive, negative, touchPos, touchNeg) => (positive.isDown || this.touchState[touchPos] ? 1 : 0) - (negative.isDown || this.touchState[touchNeg] ? 1 : 0);
-      return {
-        x: axis(k.right, k.left, 'right', 'left') || axis(k.d, k.a, 'right', 'left'),
-        y: axis(k.down, k.up, 'down', 'up') || axis(k.s, k.w, 'down', 'up'),
-        attack: down(k.attack) || this.touchAction.attack,
-        jump: down(k.jump) || this.touchAction.jump,
-        dodge: down(k.dodge) || this.touchAction.dodge,
-        special: down(k.special) || this.touchAction.special
-      };
+    handleMenu() {
+      const inp = this.inp;
+      if (!inp) return true;
+      if (this.mode === 'title') {
+        if (inp.take('start') || inp.take('attack')) this.begin();
+        return true;
+      }
+      if (this.mode === 'over' || this.mode === 'clear') {
+        if (inp.take('attack') || inp.take('start')) this.scene.restart();
+        return true;
+      }
+      if (inp.take('pause') || inp.take('start')) {
+        if (this.mode === 'play') this.pauseGame('Combat paused. Choose when you are ready.');
+        else if (this.mode === 'paused') this.resumeGame();
+        return true;
+      }
+      return this.mode !== 'play';
     }
 
-    updateHero(dt, down) {
-      const p = this.heroData, I = this.getInput(down);
+    updateHero(dt) {
+      const p = this.heroData;
+      const inp = this.inp;
+      const I = { x: inp.x || 0, y: inp.y || 0, run: !!inp.run };
+      if (inp.take('assist')) this.callLoial();
       p.invuln = Math.max(0, p.invuln - dt);
       p.comboExpire = Math.max(0, p.comboExpire - dt);
       if (p.action === 'down') { p.deathTimer -= dt; if (p.deathTimer <= 0 && this.mode === 'play') this.respawnPlayer(); return; }
@@ -469,31 +468,19 @@
       let mx = I.x, my = inBridge ? 0 : I.y;
       // Held movement must not flip Riley off a swing. Facing locks toward the threat in startHeroAttack.
       p.facing = L.facingAfterMove(p, mx);
-      if (I.dodge) this.touchAction.dodge = false;
-      if (I.dodge && p.z <= 0 && ['idle', 'walk', 'hurt'].includes(p.action)) this.startDodge(mx, my);
-      if (p.action === 'dodge') {
-        p.actionT += dt; p.x += p.dodgeX * 525 * dt;
-        if (!inBridge) { p.y = clamp(p.y + p.dodgeY * 290 * dt, 314, FLOOR - 5); }
-        // Refresh i-frames to the time still left in the roll so a hit cannot land mid-roll.
-        p.invuln = Math.max(p.invuln, Math.max(0, ROLL_DURATION - p.actionT));
-        if (p.actionT >= ROLL_DURATION) { p.action = 'idle'; p.actionT = 0; this.hero.setScale(0.56).setRotation(0).play('riley_idle'); }
-        if (lockX) p.x = clamp(p.x, lockX[0], lockX[1]);
-        if (this.waveActive) p.x = Math.min(p.x, WAVE_AT[this.waveIndex] + 405);
-        p.x = clamp(p.x, 38, WORLD - 85);
-        if (inBridge && p.z <= 0 && this.isPit(p.x)) this.startBridgeFall();
-        return;
-      }
+      const running = !!(I.run && mx);
+      const speed = inBridge ? (running ? P_SPEED : WALK_SPEED) : (running ? RUN_SPEED : WALK_SPEED);
       const free = p.action === 'idle' || p.action === 'walk' || p.action === 'air';
       if (inBridge && p.action !== 'hurt' && (p.z > 0 || p.action === 'air')) {
         p.x += (p.jumpVx || 0) * dt;
       } else if (free && !inBridge) {
         const n = Math.hypot(mx, my) || 1; mx /= n; my /= n;
-        p.x += mx * P_SPEED * dt;
-        p.y += my * 168 * dt;
+        p.x += mx * speed * dt;
+        p.y += my * 125 * dt;
         p.y = clamp(p.y, 314, FLOOR - 5);
         if (mx) p.facing = L.facingAfterMove(p, mx);
       } else if (free && inBridge) {
-        p.x += mx * P_SPEED * dt;
+        p.x += mx * speed * dt;
       } else if (p.action === 'hurt') {
         p.x += (p.knock || 0) * dt; p.knock *= Math.pow(0.02, dt);
       } else if (p.action === 'attack' && p.actionT < 0.16) {
@@ -503,25 +490,28 @@
       if (this.waveActive) p.x = Math.min(p.x, WAVE_AT[this.waveIndex] + 405);
       p.x = clamp(p.x, 38, WORLD - 85);
 
-      if (I.jump && p.z <= 0 && !['hurt', 'special'].includes(p.action)) {
-        // Takeoff speed is locked for the arc so a running jump clears the gap even if the key flickers.
-        p.jumpVx = mx * P_SPEED;
+      const grounded = p.z <= 0 && (p.action === 'idle' || p.action === 'walk');
+      if (grounded && inp.take('power')) {
+        if (p.focus >= BALEFIRE_COST && this.canBalefire()) this.startBalefire();
+      } else if (grounded && inp.take('special')) {
+        if (p.focus >= SPECIAL_COST) this.startSpecial();
+      }
+      const wantJump = inp.take('jump');
+      if (wantJump && p.z <= 0 && (p.action === 'idle' || p.action === 'walk')) {
+        const jumpRun = !!(I.run && mx);
+        p.jumpVx = mx * (inBridge ? (jumpRun ? P_SPEED : JUMP_WALK) : (jumpRun ? JUMP_RUN : JUMP_WALK));
         p.vz = JUMP_V; p.action = 'air'; p.actionT = 0; p.jumpAttack = false; this.hero.play('riley_jump_rise', true);
       }
       const phase = L.stepVertical(p, dt);
       if (phase === 'landed') {
         if (p.action === 'air') { p.action = 'idle'; this.hero.play('riley_idle'); }
       } else if (phase === 'air' && p.z < 52 && p.vz < 80 && this.hero.anims.currentAnim?.key !== 'riley_jump_fall') this.hero.play('riley_jump_fall', true);
-      if (I.attack) { p.attackBuffer = Math.max(p.attackBuffer, p.action === 'attack' ? 0.34 : 0.18); this.touchAction.attack = false; }
+      const attackWin = p.action === 'attack' ? 0.3 : 0.18;
+      if (inp.take('attack', attackWin)) p.attackBuffer = Math.max(p.attackBuffer, p.action === 'attack' ? 0.34 : 0.18);
       if (p.attackBuffer > 0) p.attackBuffer = Math.max(0, p.attackBuffer - dt);
-      if (p.attackBuffer > 0 && !['attack', 'hurt', 'special'].includes(p.action)) {
+      if (p.attackBuffer > 0 && !['attack', 'hurt', 'special', 'balefire'].includes(p.action)) {
         p.attackBuffer = 0;
         this.startHeroAttack(false);
-      }
-      if (I.special && p.specialBuffer <= 0) p.specialBuffer = 0.18;
-      if (p.specialBuffer > 0) p.specialBuffer -= dt;
-      if (p.specialBuffer > 0 && p.focus >= 50 && !['hurt', 'special'].includes(p.action)) {
-        p.specialBuffer = 0; this.startSpecial();
       }
       if (p.action === 'attack') {
         p.actionT += dt;
@@ -536,8 +526,12 @@
         if (p.actionT >= endAt) { const wasFinisher = p.combo === 3; p.action = p.z > 0 ? 'air' : (mx || my ? 'walk' : 'idle'); if (wasFinisher || p.attackBuffer <= 0) p.combo = 0; this.hero.play(p.action === 'walk' ? 'riley_walk' : p.action === 'air' ? 'riley_jump_fall' : 'riley_idle'); }
       } else if (p.action === 'special') {
         p.actionT += dt;
-        if (!p.hitDone && p.actionT > 0.24) { p.hitDone = true; this.specialHit(); }
+        if (!p.hitDone && p.actionT > 0.2) { p.hitDone = true; this.spawnFireball(); }
         if (p.actionT > 0.58) { p.action = p.z > 0 ? 'air' : 'idle'; this.hero.play(p.action === 'air' ? 'riley_jump_fall' : 'riley_idle'); }
+      } else if (p.action === 'balefire') {
+        p.actionT += dt;
+        if (!p.hitDone && p.actionT >= 0.2) { p.hitDone = true; this.fireBalefire(); }
+        if (p.actionT > 0.7) { p.action = 'idle'; this.endBalefire(); this.hero.play('riley_idle'); }
       } else if (p.action === 'hurt') {
         p.actionT += dt;
         if (p.actionT > 0.36) { p.action = p.z > 0 ? 'air' : 'idle'; this.hero.play(p.action === 'air' ? 'riley_jump_fall' : 'riley_idle'); }
@@ -550,15 +544,6 @@
       if (inBridge && p.z <= 0 && this.isPit(p.x)) this.startBridgeFall();
       if (p.invuln > 0) this.hero.setAlpha(Math.floor(this.runElapsed * 16) % 2 ? 0.42 : 1); else if (p.falling <= 0) this.hero.setAlpha(1);
       if (p.action === 'hurt' && p.hp <= 0) this.playerDeath();
-    }
-
-    startDodge(mx, my) {
-      const p = this.heroData;
-      const rawX = mx || p.facing || 1, rawY = p.onBridge ? 0 : my;
-      const length = Math.hypot(rawX, rawY) || 1;
-      p.dodgeX = rawX / length; p.dodgeY = rawY / length; p.facing = p.dodgeX < 0 ? -1 : 1;
-      p.action = 'dodge'; p.actionT = 0; p.invuln = Math.max(p.invuln, ROLL_DURATION); p.combo = 0; p.attackBuffer = 0;
-      this.hero.setScale(0.62, 0.43).setRotation(-0.16 * p.dodgeX).play('riley_jump_fall', true);
     }
 
     faceNearestThreat() {
@@ -587,19 +572,127 @@
     }
 
     startSpecial() {
-      const p = this.heroData; p.focus -= 50; p.action = 'special'; p.actionT = 0; p.hitDone = false; p.attackDamage = 48;
-      this.hero.play('riley_cast', true); this.toast('ONE POWER · WAYFIRE', 0.8);
-      this.powerRing = this.add.ellipse(p.x + p.facing * 80, p.y - 66, 100, 100, 0x5ee6e3, 0.22).setStrokeStyle(4, 0x8bfff1, 0.85).setDepth(1500);
-      this.powerRingT = 0.4;
+      const p = this.heroData;
+      p.focus -= SPECIAL_COST;
+      p.action = 'special'; p.actionT = 0; p.hitDone = false;
+      this.hero.play('riley_cast', true);
     }
 
-    specialHit() {
+    spawnFireball() {
       const p = this.heroData;
-      if (this.powerRing) this.powerRing.setFillStyle(0x62fff0, 0.3).setStrokeStyle(6, 0xc5fff7, 0.95).setScale(3.1);
-      this.showSlash(p.x + p.facing * 112, p.y - 110, 0x71f9ef, true);
-      if (this.boss.active && !this.boss.defeated && this.boss.phase === 'recover' && Math.abs(this.boss.x - p.x) < 290 && Math.abs(this.boss.y - p.y) < 135) this.hitBoss(52, true);
-      const near = this.enemies.filter(e => e.hp > 0 && e.state !== 'dead' && Math.abs(e.x - p.x) < 275 && Math.abs(e.y - p.y) < 110);
-      near.forEach(e => this.hitEnemy(e, 48, { heavy: true, combo: 0 }));
+      const x = p.x + p.facing * 70;
+      const y = p.y - p.z - 120;
+      const orb = this.add.ellipse(x, y, 28, 28, 0xff9a40, 0.95).setDepth(4003);
+      const glow = this.add.ellipse(x, y, 52, 52, 0xff9a40, 0.35).setDepth(4002);
+      this.fireballs.push({ x, y, gy: p.y, dir: p.facing, orb, glow, dmg: 14, t: 0 });
+    }
+
+    updateFireballs(dt) {
+      const cam = this.cameras.main.scrollX;
+      for (const f of this.fireballs.slice()) {
+        f.t += dt;
+        f.x += f.dir * 680 * dt;
+        f.orb.setPosition(f.x, f.y);
+        f.glow.setPosition(f.x, f.y);
+        let hit = null;
+        for (const e of this.enemies) {
+          if (e.hp > 0 && e.state !== 'dead' && Math.abs(e.x - f.x) < 60 && Math.abs(e.y - f.gy) < 42) { hit = e; break; }
+        }
+        const boss = this.boss && this.boss.active && !this.boss.defeated && this.boss.phase === 'recover'
+          && Math.abs(this.boss.x - f.x) < 70 && Math.abs(this.boss.y - f.gy) < 80;
+        const off = f.x < cam - 200 || f.x > cam + W + 200 || f.t > 1.6;
+        if (hit || boss || off) {
+          if (hit) this.hitEnemy(hit, f.dmg, { heavy: true, launcher: true, combo: 0 });
+          if (boss) this.hitBoss(f.dmg, true);
+          f.orb.destroy(); f.glow.destroy();
+          this.fireballs.splice(this.fireballs.indexOf(f), 1);
+        }
+      }
+    }
+
+    // Loial is not in this level. Same as a stage with no Loial meta: refuse, spend nothing, don't throw.
+    callLoial() {
+      if (this.mode !== 'play') return false;
+      return false;
+    }
+
+    hasHittableFoe() {
+      const cam = this.cameras.main ? this.cameras.main.scrollX : 0;
+      if (this.enemies.some(e => e.hp > 0 && e.state !== 'dead' && e.x > cam - 60 && e.x < cam + W + 60)) return true;
+      return !!(this.boss && this.boss.active && !this.boss.defeated);
+    }
+
+    canBalefire() {
+      return this.mode === 'play' && !this.beam && this.hasHittableFoe();
+    }
+
+    startBalefire() {
+      const p = this.heroData;
+      p.focus -= BALEFIRE_COST;
+      p.invuln = Math.max(p.invuln, BALEFIRE_INVULN);
+      p.action = 'balefire'; p.actionT = 0; p.hitDone = false; p.jumpVx = 0;
+      this.hero.play('riley_cast', true);
+      this.toast('BALEFIRE', 0.8);
+    }
+
+    fireBalefire() {
+      const p = this.heroData;
+      const dir = p.facing || 1;
+      const cam = this.cameras.main.scrollX;
+      const x0 = p.x + dir * 40;
+      const edge = dir > 0 ? cam + W + 80 : cam - 80;
+      const len = Math.max(60, Math.abs(edge - x0));
+      const g = this.add.graphics().setDepth(1600);
+      this.beam = { t: 0, fade: 0, dir, x0, y: p.y - p.z - 110, len, g, struck: new Set(), bossHit: false };
+      this.balefireSweep();
+    }
+
+    balefireSweep() {
+      const B = this.beam, p = this.heroData;
+      if (!B || B.fade) return;
+      for (const e of this.enemies) {
+        if (B.struck.has(e) || e.hp <= 0 || e.state === 'dead') continue;
+        const ahead = (e.x - p.x) * B.dir;
+        if (ahead < -30 || ahead > B.len + 120) continue;
+        B.struck.add(e);
+        this.hitEnemy(e, e.maxHp + 10, { heavy: true, launcher: true, combo: 0, noMeter: true });
+      }
+      if (!B.bossHit && this.boss && this.boss.active && !this.boss.defeated && this.boss.phase === 'recover') {
+        const ahead = (this.boss.x - p.x) * B.dir;
+        if (ahead >= -30 && ahead <= B.len + 120) {
+          B.bossHit = true;
+          this.hitBoss(80, true, true);
+        }
+      }
+    }
+
+    endBalefire() {
+      if (this.beam && !this.beam.fade) this.beam.fade = 0.0001;
+    }
+
+    updateBalefireFx(dt) {
+      const B = this.beam;
+      if (!B) return;
+      B.t += dt;
+      if (!B.fade && B.t > 0.6) B.fade = 0.0001;
+      if (!B.fade) this.balefireSweep();
+      else B.fade += dt;
+      const k = B.fade ? Math.max(0, 1 - B.fade / 0.25) : Math.min(1, B.t / 0.06);
+      const x = B.dir > 0 ? B.x0 : B.x0 - B.len;
+      B.g.clear();
+      B.g.fillStyle(0x7cc4ff, 0.35 * k);
+      B.g.fillRect(x, B.y - 28, B.len, 56);
+      B.g.fillStyle(0xffffff, 0.9 * k);
+      B.g.fillRect(x, B.y - 6, B.len, 12);
+      if (B.fade && k <= 0) { B.g.destroy(); this.beam = null; }
+    }
+
+    clearPowers() {
+      if (this.fireballs) {
+        for (const f of this.fireballs) { f.orb.destroy(); f.glow.destroy(); }
+        this.fireballs.length = 0;
+      } else this.fireballs = [];
+      if (this.beam) { this.beam.g.destroy(); this.beam = null; }
     }
 
     showSlash(x, y, color, heavy = false) {
@@ -674,7 +767,7 @@
       this.enemies.forEach(e => { e.sprite.destroy(); e.shadow.destroy(); e.tell.destroy(); e.hpBar.destroy(); e.alert.destroy(); }); this.enemies.length = 0; this.attackTokenCount = 0;
       this.heroData.score += 300 + this.waveIndex * 100; this.heroData.hp = Math.min(100, this.heroData.hp + 12); this.heroData.focus = Math.min(100, this.heroData.focus + 15);
       this.heroData.checkpoint = WAVE_AT[this.waveIndex] + 140;
-      if (this.waveIndex === 2) { this.heroData.checkpoint = 2180; this.toast('THE BRIDGE IS BREAKING · KEEP MOVING', 3); this.triggerBanner('THE BRIDGE IS BREAKING', 2.2); }
+      if (this.waveIndex === 2) { this.heroData.checkpoint = 2180; this.toast('THE BRIDGE IS BREAKING · RUN AND JUMP THE GAPS', 3); this.triggerBanner('THE BRIDGE IS BREAKING', 2.2); }
       else { this.toast('WAVE CLEARED · A LITTLE BREATHING ROOM', 1.8); this.triggerBanner('WAVE CLEARED', 1.6); }
     }
 
@@ -741,6 +834,7 @@
 
     respawnPlayer() {
       const p = this.heroData;
+      this.clearPowers();
       p.x = p.checkpoint; p.y = FLOOR - 56; p.z = 0; p.vz = 0; p.jumpVx = 0; p.hp = 78; p.focus = Math.max(30, p.focus); p.invuln = 1.6; p.action = 'idle'; p.actionT = 0; p.knock = 0; p.attackBuffer = 0; p.specialBuffer = 0; p.falling = 0;
       this.hero.setPosition(p.x, FLOOR - 56).setAlpha(1).setTint(0xffffff).play('riley_idle');
       this.attackTokenCount = 0;
@@ -799,10 +893,11 @@
 
     hideBossTell() { this.warningMark.setVisible(false); this.warningText.setVisible(false); this.warningCross.setVisible(false); }
 
-    hitBoss(amount, heavy = false) {
+    hitBoss(amount, heavy = false, noMeter = false) {
       const b = this.boss; if (!b.active || b.defeated || b.phase !== 'recover') return;
       const dealt = amount * L.GRAY_MAN.punish;
-      b.hp = Math.max(0, b.hp - dealt); this.heroData.score += Math.round(dealt * 7); this.heroData.focus = clamp(this.heroData.focus + 5, 0, 100);
+      b.hp = Math.max(0, b.hp - dealt); this.heroData.score += Math.round(dealt * 7);
+      if (!noMeter) this.heroData.focus = clamp(this.heroData.focus + 5, 0, 100);
       this.bossSprite.setTint(0xffffff); b.flashTimer = 0.09; this.impactFeedback(heavy);
       if (b.hp <= 0) {
         b.defeated = true; b.active = false; b.phase = 'dead'; this.bossSprite.setAlpha(0.18); this.hideBossTell(); $('#boss-hud').style.display = 'none';
@@ -837,6 +932,7 @@
 
     respawnBridge() {
       const p = this.heroData;
+      this.clearPowers();
       p.x = p.bridgeCheckpoint || BRIDGE_SPAWN; p.y = FLOOR - 12; p.z = 0; p.vz = 0; p.jumpVx = 0; p.falling = 0; p.action = 'idle'; p.invuln = 1.05; p.attackBuffer = 0; p.specialBuffer = 0;
       this.planks = L.createPlanks(); this.drawBridge();
       this.hero.setPosition(p.x, FLOOR - 12).setAlpha(1).setTint(0xffffff).setScale(0.56).setRotation(0).play('riley_idle');
@@ -882,6 +978,11 @@
       }
       const names = ['THE WAYS · FIRST WAVE', 'THE WAYS · SECOND WAVE', 'THE WAYS · LAST WAVE'];
       $('#stage-name').textContent = this.boss.active ? 'THE WAYS · GRAY MAN' : this.heroData.x >= BRIDGE_START && this.heroData.x <= BRIDGE_END ? 'THE WAYS · FALLING BRIDGE' : this.boss.defeated ? 'THE WAYS · EXIT' : this.waveIndex >= 0 ? names[this.waveIndex] : 'THE WAYS · APPROACH';
+      const bale = document.getElementById('tbB');
+      const call = document.getElementById('tbL');
+      const ready = p.focus >= BALEFIRE_COST;
+      if (bale) { bale.classList.toggle('off', !ready); bale.classList.toggle('ready', ready); }
+      if (call) call.classList.add('off');
     }
 
     completeRun() {
@@ -899,7 +1000,7 @@
       backgroundColor: '#080a12',
       scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
       render: { antialias: true, pixelArt: false, powerPreference: 'high-performance' },
-      input: { activePointers: 4 },
+      input: { keyboard: false, activePointers: 4 },
       fps: { target: 60, forceSetTimeOut: false },
       scene: [WaygateScene]
     });
@@ -945,5 +1046,5 @@
     }
   }
 
-  bootWaygate();
+  window.bootWaygate = bootWaygate;
 })();

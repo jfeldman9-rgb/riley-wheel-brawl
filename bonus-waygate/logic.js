@@ -554,7 +554,8 @@
       enemy.timer = lethal ? 0.56 : 0.28;
     }
     hero.score = (hero.score || 0) + (lethal ? 180 : 35);
-    hero.focus = clamp((hero.focus || 0) + 8, 0, 100);
+    // Balefire spends the full meter and must not pay it back (same as the main game's noMeter hits).
+    if (!(options && options.noMeter)) hero.focus = clamp((hero.focus || 0) + 8, 0, 100);
     const counted = lethal ? registerTrollocKill(enemy, hero) : false;
     if (counted) hero.score += 120;
     return {

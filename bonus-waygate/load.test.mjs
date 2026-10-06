@@ -7,7 +7,8 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const root = path.dirname(fileURLToPath(import.meta.url));
+const bonus = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(bonus, '..');
 const chromeBin = ['google-chrome', 'google-chrome-stable', 'chromium', 'chromium-browser']
   .map((name) => {
     const found = ['/usr/bin/' + name, '/usr/local/bin/' + name].find((p) => fs.existsSync(p));
@@ -108,7 +109,7 @@ test('blocked image fetches still reach a tappable title and the run begins', { 
         requests.push(msg.params.request.url);
       }
     });
-    await cdp(ws, 'Page.navigate', { url: `http://127.0.0.1:${port}/index.html` }, sessionId);
+    await cdp(ws, 'Page.navigate', { url: `http://127.0.0.1:${port}/bonus-waygate/index.html` }, sessionId);
     let ready = null;
     for (let i = 0; i < 80; i++) {
       const result = await cdp(ws, 'Runtime.evaluate', {
@@ -126,7 +127,9 @@ test('blocked image fetches still reach a tappable title and the run begins', { 
             atlas: !!(window.WAYGATE_ATLAS_DATA && window.WAYGATE_ATLAS_DATA.riley0),
             rileyW: window.__WAYGATE_IMAGES && window.__WAYGATE_IMAGES.riley0 ? window.__WAYGATE_IMAGES.riley0.naturalWidth : 0,
             gruntW: window.__WAYGATE_IMAGES && window.__WAYGATE_IMAGES.grunt0 ? window.__WAYGATE_IMAGES.grunt0.naturalWidth : 0,
-            placeholders: scene && scene.placeholderKeys ? scene.placeholderKeys.size : -1
+            placeholders: scene && scene.placeholderKeys ? scene.placeholderKeys.size : -1,
+            input: typeof window.WaygateInput === 'function',
+            samePad: window.WAYGATE_PAD_MAP && window.__waygateInput && window.WAYGATE_PAD_MAP[2] === 'attack'
           };
         })()`,
         returnByValue: true
@@ -144,6 +147,11 @@ test('blocked image fetches still reach a tappable title and the run begins', { 
     assert.ok(ready.rileyW > 2 && ready.rileyW <= 4096, `riley atlas width ${ready.rileyW}`);
     assert.ok(ready.gruntW > 2 && ready.gruntW <= 4096, `grunt atlas width ${ready.gruntW}`);
     assert.equal(ready.placeholders, 0, JSON.stringify(ready));
+    assert.equal(ready.input, true, JSON.stringify(ready));
+    assert.equal(ready.samePad, true, JSON.stringify(ready));
+    assert.match(ready.text, /Shift or double-tap/);
+    assert.doesNotMatch(ready.text, /Dodge roll/);
+    assert.ok(requests.some((url) => url.includes('/src/input.js')), `input module was not requested: ${requests.join(', ')}`);
     const imageHits = requests.filter((url) => /\.(webp|png|jpe?g|gif|ico)(\?|$)/i.test(url) || url.includes('/atlases/'));
     assert.deepEqual(imageHits, [], `image fetches leaked: ${imageHits.join(', ')}`);
     const began = await cdp(ws, 'Runtime.evaluate', {

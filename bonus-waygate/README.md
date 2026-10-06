@@ -4,23 +4,35 @@ A self-contained, silent bonus level for **Riley Wheel Brawl**. It uses Phaser 3
 
 ## Run
 
-Open `index.html` directly in a modern browser, or serve this folder as a static site (for example, place `bonus-waygate/` beside the parent game's `assets/` folder and publish it as its own GitHub Pages path). Internet access is needed for the Phaser CDN script; game art and code are local to this folder.
+Serve the repository root so `boot-input.js` can import `../src/input.js` (the same module Stages 1–3 use). From the repo root:
+
+```
+python3 -m http.server 8080
+```
+
+Then open `http://127.0.0.1:8080/bonus-waygate/index.html`. Internet access is needed for the Phaser CDN script. Game art is inlined in this folder. Opening the file directly will not load the input module.
 
 ## Controls
 
-| Action | Keyboard | iPad / touch |
-|---|---|---|
-| Move | Arrow keys or WASD | Direction pad |
-| Attack | J | J · HIT |
-| Jump | K | K · JUMP |
-| Dodge / roll | Shift | ROLL |
-| Special (spend saidin) | L | L · ONE POWER |
-| Pause / resume | Esc or P | Pause button |
-| Restart | R | Pause menu → Restart |
+Same bindings as the main game (`src/input.js`). There is no dodge roll and R does not restart.
 
-Tap **J, J, J** with a short rhythm for Riley's three-hit combo. The third hit is a launcher: it knocks a Trolloc down and sends them flying, kill or not. Each impact keeps a short hitstop, a white enemy flash, and a hit spark; heavy launchers and One Power hits still shake the screen. If the nearest enemy is behind Riley, the swing turns and hits them — held movement does not flip the attack backward. **Shift / ROLL** is invulnerable for the whole roll, including through the Gray Man's strike lane. A hit also grants about 0.6 seconds of invulnerability.
+| Action | Keyboard | Gamepad | Touch |
+|---|---|---|---|
+| Move | WASD / arrows | Left stick and d-pad | Stick |
+| Run | Shift, or double-tap a direction | RB | Push the stick far |
+| Attack | E / J / Z | X | KICK |
+| Jump | Space / K / X | A | JUMP |
+| Fireball | Q / L / C | Y | FIRE |
+| Balefire | F / B (full saidin) | B | BALE |
+| Call Loial | R / V / U / I | LB | CALL |
+| Pause | Esc / P | | II |
+| Start | Enter | Start | |
 
-A red flash and marked floor position precede **every Gray Man strike**; move clear of the mark, roll, or jump. He still hits for the same damage, then recovers for a second — that window is when hits land, and they hit harder then. Trollocs telegraph their swings with an amber floor ring and warning mark. Only one Trolloc holds an attack token in Wave 1 and two in later waves; those are the ones that step in. Everyone else holds a ring on both flanks, and bodies are pushed apart so they cannot stack into one sprite. Trolloc health bars replace floating health text. The falling bridge is a timing challenge: a running jump clears every gap with landing room, cracked planks drop if you wait on them, and passing the midpoint saves a checkpoint so a fall does not send you back to the start. Falling costs health but does not consume a life. Death respawns at the current wave, bridge, or arena checkpoint, and pausing freezes combat timers. The end screen shows **Trollocs killed**. Tap **Enter the Ways**, or press Enter or J, to start.
+Loial is not in this level. CALL does what the stages do when Loial is unavailable: nothing, and it does not crash. Title starts on Enter or attack (TAP TO START on a touch device). Pause resumes on P, Esc, Enter, Start, or II. Game over and the clear screen continue on attack (TAP KICK).
+
+Tap attack with a short rhythm for Riley's three-hit combo. The third hit is a launcher. If the nearest enemy is behind Riley, the swing turns and hits them. A hit grants about 0.6 seconds of invulnerability. Balefire spends the full saidin meter and grants 1.5 seconds, the same as the stages. The fireball costs 34 saidin.
+
+A red flash and marked floor position precede **every Gray Man strike**; move clear of the mark or jump. He still hits for the same damage, then recovers for a second — that window is when hits land, and they hit harder then. There is no roll. Trollocs telegraph their swings with an amber floor ring and warning mark. Only one Trolloc holds an attack token in Wave 1 and two in later waves; those are the ones that step in. Everyone else holds a ring on both flanks, and bodies are pushed apart so they cannot stack into one sprite. Trolloc health bars replace floating health text. The falling bridge is a timing challenge: hold run and jump to clear every gap with landing room (that arc stays the one the bridge was built for). Cracked planks drop if you wait on them, and passing the midpoint saves a checkpoint so a fall does not send you back to the start. Falling costs health but does not consume a life. Death respawns at the current wave, bridge, or arena checkpoint, and pausing freezes combat timers. The end screen shows **Trollocs killed**. Tap **Enter the Ways**, or press Enter or attack, to start.
 
 ## Test shortcuts
 
@@ -33,8 +45,8 @@ Append one of these query parameters to `index.html` when play-testing. They sta
 
 ## Plugging it in later
 
-Keep this directory intact and link to `bonus-waygate/index.html` from the main game's bonus-level menu, or mount it as a separate route/iframe. Its Phaser scene, input, UI and assets are private to this folder; it does not import or alter the main game's modules. For deeper integration, port `WaygateScene` from `game.js` into the parent game's scene list and preserve its `WAYGATE_ASSET_META` frame metadata and `assets/atlases/` paths.
+Keep this directory intact and link to `bonus-waygate/index.html` from the main game's bonus-level menu, or mount it as a separate route/iframe. It imports `../src/input.js` and does not modify that file. For deeper integration, port `WaygateScene` from `game.js` into the parent game's scene list and preserve its `WAYGATE_ASSET_META` frame metadata. Character art is loaded from the inlined atlas, not from image files.
 
 ## Art and audio
 
-Riley and grunt Trolloc atlas pages are copied from the supplied public reference repository's `assets/chars/` folder and reused locally so this folder works independently. The controls were matched against [`src/input.js` on `rwb-w2`](https://github.com/jfeldman9-rgb/riley-wheel-brawl/tree/rwb-w2); the [live parent game](https://jfeldman9-rgb.github.io/riley-wheel-brawl/) is unchanged. The Gray Man, Waygate environment, effects and UI are drawn in code as simple placeholders. There is no music, sound effect, video, or generated audio.
+Riley and grunt Trolloc atlas pages are copied from the supplied public reference repository's `assets/chars/` folder and inlined so this folder does not fetch them. Controls come from [`src/input.js`](../src/input.js) on this branch. The Gray Man, Waygate environment, effects and UI are drawn in code as simple placeholders. There is no music, sound effect, video, or generated audio.

@@ -30,14 +30,32 @@
     .control-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:17px 0;text-align:left}.control-grid div{border:1px solid #8290aa3d;background:#111827aa;border-radius:7px;padding:8px 10px;font-size:12px;color:#bfc9d8}.control-grid b{color:#fff}
     .panel-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}.action{border:1px solid #a7eee2a8;background:linear-gradient(180deg,#247d7b,#135257);color:white;padding:12px 19px;border-radius:8px;font-weight:900;cursor:pointer;min-width:150px;letter-spacing:.04em}.action.secondary{border-color:#9ca9bf55;background:#182135}.action:hover{filter:brightness(1.16)}
     .fine{font-size:11px!important;color:#909bad!important}.result{display:flex;justify-content:center;gap:18px;margin:14px 0;flex-wrap:wrap}.result strong{display:block;font-size:20px;color:#fff}.result span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#aeb9cb}.result .kills strong{font-size:32px;color:#ffd7b0;text-shadow:0 0 16px #ff8a4a88}
-    #touch-controls{display:none;position:absolute;inset:auto 0 max(10px,env(safe-area-inset-bottom)) 0;padding:0 14px;justify-content:space-between;align-items:flex-end;z-index:5;pointer-events:none}
-    .pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,45px);gap:2px;pointer-events:auto}
-    .touch-key{border:1px solid #c6d4e06b;background:#0e1829b8;color:#f7fbff;border-radius:10px;font-weight:900;font-size:15px;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 2px 10px #0006}
-    .pad .up{grid-area:1/2}.pad .left{grid-area:2/1}.pad .down{grid-area:2/2}.pad .right{grid-area:2/3}
-    .actions{display:grid;grid-template-columns:repeat(2,58px);grid-template-rows:repeat(2,52px);gap:5px;pointer-events:auto}.actions button{font-size:12px}.actions .dodge{grid-area:1/1;background:#2b3d65bd;border-color:#a3c5ff85}.actions .attack{grid-area:1/2;background:#612d3dbd;border-color:#ff94a37a}.actions .jump{grid-area:2/1}.actions .special{grid-area:2/2;background:#164955c7;border-color:#76e6e177}
-    .touch-key:active,.touch-key.down{background:#73979baa;transform:scale(.96)}
     #loading{position:absolute;inset:0;display:grid;place-items:center;background:#080a12;color:#d6eee9;font:700 13px system-ui;z-index:10;letter-spacing:.12em}
-    @media(max-width:700px){#hud{padding:7px;gap:5px}.hud-card{padding:6px 7px}#hud-left{width:44%}#stage-name{font-size:9px}#hero-stats,#score-time{font-size:9px}#boss-hud{top:66px;width:46%}#pause-toggle{padding:7px;font-size:11px}.pad{grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,39px)}.actions{grid-template-columns:repeat(2,49px);grid-template-rows:repeat(2,46px)}.touch-key{border-radius:9px}}
+    body.touch #pause-toggle{display:none}
+    /* touch controls: only shown on touch devices (body.touch is set on the first real touch or a coarse pointer) */
+#touch{position:fixed;inset:0;pointer-events:none;display:none}
+body.touch #touch{display:block}
+#stick{position:absolute;left:calc(3vw + env(safe-area-inset-left,0px));bottom:calc(4vh + env(safe-area-inset-bottom,0px));width:min(30vh,200px);height:min(30vh,200px);border-radius:50%;border:2px solid rgba(255,255,255,.22);background:rgba(15,22,40,.28);pointer-events:auto}
+#knob{position:absolute;left:50%;top:50%;width:42%;height:42%;margin:-21% 0 0 -21%;border-radius:50%;background:rgba(200,215,255,.35);border:2px solid rgba(255,255,255,.4)}
+.tb{position:absolute;width:min(14vh,92px);height:min(14vh,92px);border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(20,30,50,.38);color:#fff;font:bold 13px system-ui;display:flex;align-items:center;justify-content:center;pointer-events:auto;letter-spacing:.05em}
+.tb.on{background:rgba(255,200,120,.45)}
+#tbA{right:calc(4vw + min(15vh,100px) + env(safe-area-inset-right,0px));bottom:calc(5vh + env(safe-area-inset-bottom,0px));border-color:rgba(255,120,110,.7)}
+#tbJ{right:calc(3vw + env(safe-area-inset-right,0px));bottom:calc(5vh + min(11vh,70px) + env(safe-area-inset-bottom,0px));border-color:rgba(120,180,255,.7)}
+#tbS{right:calc(4vw + min(15vh,100px) + env(safe-area-inset-right,0px));bottom:calc(6vh + min(16vh,108px) + env(safe-area-inset-bottom,0px));border-color:rgba(120,230,255,.7)}
+#tbP{right:calc(3vw + env(safe-area-inset-right,0px));top:calc(3vh + env(safe-area-inset-top,0px));width:52px;height:52px;font-size:16px}
+#tbB{right:calc(3vw + env(safe-area-inset-right,0px));bottom:calc(5vh + min(11vh,70px) + min(14vh,92px) + max(20px,4vh) + env(safe-area-inset-bottom,0px));width:max(48px,min(13vh,80px));height:max(48px,min(13vh,80px));font-size:12px;border-color:rgba(230,245,255,.8)}
+#tbL{right:calc(5vw + min(30vh,200px) + env(safe-area-inset-right,0px));bottom:calc(6vh + min(16vh,108px) + env(safe-area-inset-bottom,0px));width:max(44px,min(11vh,72px));height:max(44px,min(11vh,72px));font-size:12px;border-color:rgba(140,240,174,.8)}
+.tb.off{opacity:.35}
+.tb.ready{box-shadow:0 0 16px rgba(200,235,255,.9)}
+/* Upright phones: the 200px stick covers half the width, so shrink it; stack CALL above BALE in the right column
+   instead of beside FIRE (where it sat on the stick); move the Perf report opener to the top so it is clear of
+   the stick and KICK. Landscape layout is unchanged. */
+@media (orientation:portrait){
+#stick{width:min(38vw,30vh,200px);height:min(38vw,30vh,200px)}
+html body.touch #perf-open{top:max(12px,env(safe-area-inset-top));bottom:auto}
+#tbL{right:calc(3vw + env(safe-area-inset-right,0px));bottom:calc(5vh + min(11vh,70px) + min(14vh,92px) + max(20px,4vh) + max(48px,min(13vh,80px)) + max(16px,2.5vh) + env(safe-area-inset-bottom,0px))}
+}
+    @media(max-width:700px){#hud{padding:7px;gap:5px}.hud-card{padding:6px 7px}#hud-left{width:44%}#stage-name{font-size:9px}#hero-stats,#score-time{font-size:9px}#boss-hud{top:66px;width:46%}#pause-toggle{padding:7px;font-size:11px}}
   </style>
 </head>
 <body>
@@ -55,20 +73,8 @@
       <button id="pause-toggle" type="button" aria-label="Pause game">Ⅱ &nbsp; PAUSE</button>
     </header>
     <div id="toast" role="status" aria-live="polite"></div>
-    <div id="touch-controls" aria-label="Touch controls">
-      <div class="pad" aria-label="Movement">
-        <button class="touch-key up" data-hold="up" aria-label="Move up">▲</button>
-        <button class="touch-key left" data-hold="left" aria-label="Move left">◀</button>
-        <button class="touch-key down" data-hold="down" aria-label="Move down">▼</button>
-        <button class="touch-key right" data-hold="right" aria-label="Move right">▶</button>
-      </div>
-      <div class="actions" aria-label="Actions">
-        <button class="touch-key dodge" data-press="dodge" aria-label="Dodge roll Shift">ROLL</button>
-        <button class="touch-key attack" data-press="attack" aria-label="Attack J">J · HIT</button>
-        <button class="touch-key jump" data-press="jump" aria-label="Jump K">K · JUMP</button>
-        <button class="touch-key special" data-press="special" aria-label="Special L">L · ONE POWER</button>
-      </div>
-    </div>
+    <div id="touch"><div id="stick"><div id="knob"></div></div>
+<div class="tb" id="tbA">KICK</div><div class="tb" id="tbJ">JUMP</div><div class="tb" id="tbS">FIRE</div><div class="tb" id="tbP">II</div><div class="tb off" id="tbB">BALE</div><div class="tb" id="tbL">CALL</div></div>
     <section id="overlay" aria-live="polite">
       <div class="panel" id="panel-content"></div>
     </section>
@@ -78,5 +84,6 @@
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
   <script src="logic.js"></script>
   <script src="game.js"></script>
+  <script type="module" src="boot-input.js"></script>
 </body>
 </html>
