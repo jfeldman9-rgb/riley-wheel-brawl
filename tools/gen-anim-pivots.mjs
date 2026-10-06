@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
 export const OVERRIDES = Object.freeze({});
-export const PIVOT_KEYS = Object.freeze(['riley']);
+export const PIVOT_KEYS = Object.freeze(['riley', 'grunt', 'spear', 'hound', 'chief']);
 
 const root = new URL('../', import.meta.url);
 const readJSON = (path) => JSON.parse(readFileSync(new URL(path, root), 'utf8'));
