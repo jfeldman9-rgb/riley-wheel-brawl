@@ -48,6 +48,26 @@ export class Riley extends Fighter {
       case 'getup': if (this.done) { this.setState('idle', 'idle'); this.inv = 1.0; } return;
     }
   }
+  // Walk↔run keeps stride phase. Cadence is from planted-boot travel (Pass 1 brief):
+  // walk 41.6 src px/frame → 299 px/s vs 205, ts clamped to 0.85;
+  // run sole slide 26.2 src px/frame → 255 px/s vs 390, ts clamped to 1.20.
+  // From idle or any other state this matches the old setState(st, st) restart.
+  setLoco(st) {
+    const from = this.state;
+    const swap = (from === 'walk' || from === 'run') && (st === 'walk' || st === 'run') && from !== st;
+    if (!swap) { if (from !== st) this.setState(st, st); return; }
+    const a = this.sprite.anims, ca = a && a.currentAnim, fr = ca && ca.frames;
+    const n0 = fr ? fr.length : 0, ph = n0 ? (this.fi + 0.5) / n0 : 0;
+    const prevSt = this.st;
+    const ts = st === 'walk' ? 0.85 : 1.2;
+    this.setState(st, st, ts);
+    const na = a && a.currentAnim, nf = na && na.frames;
+    if (nf && nf.length) {
+      const tgt = nf[Math.floor(ph * nf.length) % nf.length];
+      if (tgt && a.setCurrentFrame) a.setCurrentFrame(tgt);
+    }
+    this.st = prevSt % 0.3;
+  }
   free(dt, inp) {
     const { x, y } = inp;
     if (inp.take('power') && this.saidin >= BALEFIRE.cost && this.scene.canBalefire?.()) return this.startBalefire();
@@ -68,7 +88,7 @@ export class Riley extends Fighter {
       const run = inp.run && x;
       const sp = run ? 390 : 205;
       this.x += x * sp * dt; this.y += y * 125 * dt;
-      const st = run ? 'run' : 'walk'; if (this.state !== st) this.setState(st, st);
+      const st = run ? 'run' : 'walk'; this.setLoco(st);
       if (this.st % 0.3 < dt) sfx.step();
       // walking into a dazed or open enemy grabs it
       if (x && !run) { const e = this.scene.grabCandidate(this); if (e) return this.startGrab(e); }
