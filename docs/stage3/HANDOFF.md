@@ -1,11 +1,11 @@
 # Stage 3 handoff
 
-Branch `rwb-2-stage3-ag`. The build below, including the softlock fixes, is
-`e7a224d1eb72a9616c6f426f96c6000e3ffbaea7`. This handoff file is the next commit
+Branch `rwb-2-stage3-ag`. The build below, including the playfeel pass, is
+`d80c175795f847c4ddaebff490b9bdbf31d108c9`. This handoff file is the next commit
 on the same branch. The frame-time record is still `7eadef3088dd77e7e6178cbf9f1bc738a5ae2dfb`
 and was not re-measured. Play it here:
 
-https://raw.githack.com/jfeldman9-rgb/riley-wheel-brawl/e7a224d1eb72a9616c6f426f96c6000e3ffbaea7/index.html?stage=3&s3=1
+https://raw.githack.com/jfeldman9-rgb/riley-wheel-brawl/d80c175795f847c4ddaebff490b9bdbf31d108c9/index.html?stage=3&s3=1
 
 Do not merge PR #20. It stays a draft into `rwb-w2`. `main` and `rwb-w2` were not touched.
 T14 (real art) and T17 (Stage 3 in the campaign) were not started. Stage 3 still requires `s3=1`.
@@ -40,11 +40,14 @@ seeds the pause from `document.hasFocus()` instead. The frame times were not re-
 
 ## Tests
 
-`node --test tests/*.test.mjs`: **731 pass, 0 fail** (731 tests). At `d2d7008`, before the
-softlock pass, the same command was **722/722**. At `150ae6e`, before T15/T16, it was **716/716**.
-The nine new tests are in `tests/stage3-softlock-hardening.test.mjs`. The six before that are the
-five in `tests/stage3-memory.test.mjs` and the one in `tests/stage3-voice-release.test.mjs`. No
-existing test was loosened, skipped or deleted.
+`node --test tests/*.test.mjs`: **743 pass, 0 fail** (743 tests). At `c49a51f`, before this
+playfeel pass, the same command was **731/731**. At `d2d7008`, before the softlock pass, it was
+**722/722**. At `150ae6e`, before T15/T16, it was **716/716**.
+The twelve new tests cover the fear ring and heartbeat, the brave and dispel arcs, the tile
+entry cue, no lunge into a live tile at 30/60/120 Hz, reaching a safe band from a hold, the
+mash tick, the 0.45 s coil glint, the 3-light priority order, and the perf-panel peak.
+The nine before those are in `tests/stage3-softlock-hardening.test.mjs`. No existing test was
+loosened, skipped or deleted.
 
 Stage 3 campaign: **9/9 seeds** clear (`Stage 3 campaign bot clears Caemlyn`, seeds 1, 2, 3, 4,
 5, 10, 20, 100, 97).
@@ -53,12 +56,12 @@ Stage 3 campaign: **9/9 seeds** clear (`Stage 3 campaign bot clears Caemlyn`, se
 
 Stage 1 golden sim: identical. `node tests/helpers/run-full-stage-simulations.mjs` diffed against
 `docs/stage1/evidence/full-stage-simulation.json` with `sourceSha256` and `baseGitCommit` removed
-prints nothing. The evidence file's hashes for `src/stage1.js` and `src/audio.js` were refreshed
-so the identity test matches the bytes. The combat records were not regenerated.
+prints nothing. The evidence file's hash for `src/audio.js` was refreshed again for the
+dread, shaken, and mash cues. The combat records were not regenerated.
 
-`node tools/audit-stage1.mjs` runs. Pre-fight inventory **PASS, 24,991,870 / 25,000,000** bytes.
-That is 1,968 bytes above the T15/T16 figure. The increase is the source added in the softlock
-pass and nothing else.
+`node tools/audit-stage1.mjs` runs. Pre-fight inventory **PASS, 24,997,643 / 25,000,000** bytes.
+That is 5,773 bytes above the softlock figure of 24,991,870. The increase is the source added
+in this playfeel pass and nothing else.
 Stage 3 voices PASS (813,463 / 3,686,400). Stage 3 music PASS (1,667,012). Player attack density
 PASS. Character art-density **FAIL** for Riley (104/150), grunt (23/40), spear (16/40) and hound
 (16/40). That failure is the pre-existing Stage 1 result. Chief and Loial stay
@@ -86,6 +89,36 @@ grab lock, `hurt` stays grabbable, and the fear numbers are the same.
 | SL-7 | A dead Riley stays down, including on the clear screen. A living knockdown still gets up after 0.9 s. |
 | SL-8 | A hit that interrupts the escape clears `lastGrabber`. |
 | SL-9 | `fadePortrait` is released with `arrow` and `ribbon` when the destination does not list it. It is not in `STAGE_TEXTURES[3]`. |
+
+## Playfeel
+
+`docs/stage3/PLAYFEEL-POLISH.md` is the brief from `64ff14d` on `docs-stage3-playfeel-polish`.
+That branch was not merged. The copy on this branch is byte-for-byte the same file.
+
+This pass adds tells. It does not change damage, mash math, tile timing, or the fear numbers.
+No screens were captured, so the tile-in-the-dark rim (T3) and the phase-3 Fade rim (F4) were
+left alone. The coil glint was lengthened anyway, because this pass asked for a tell that lasts
+the whole 0.45 s coil.
+
+| ID | What changed |
+| --- | --- |
+| F1 | A floor ring at the 220 px fear edge while `auraActive`. Alpha follows `auraK`. A dispel hides it, because `auraActive` is already false. The circle is clipped to the lane and is not squashed. |
+| F2 | A heartbeat while fear is at least 60% and still rising, gated at 350 ms. One sting each time `stats.shaken` increases. Calm and a meter under 60% stay silent. |
+| F3 | Brave is a white arc and dispel is amber. The magenta fill stays `0xff00ff` at 0.85. The backing ring alpha is 0.8. |
+| T1 | An amber cue sits on the side the tile will enter from, for the whole warning. It is destroyed with the tile and by `clearHazards`. |
+| T2 | A cutthroat does not start a lunge while a tile is warning or in the air. The frame the tile ends, he can lunge again. |
+| Hold | From a hold, throw and then walk reaches a safe band before the tile strikes, from every band. Speeds and damage were not retuned. |
+| G1 | One tick per counted mash, gated at 40 ms, and none outside a grab. The ring pops on a gain and shrinks on decay. `mashNeed` stays 6. |
+| G2 | The cutthroat coil glint and a warm floor flash last 0.45 s. Stage 2 zealots, and other Stage 3 enemies, keep the 0.15 s glint. |
+| L1 | The perf panel and the HUD perf line show lights as active/candidates/cap plus the peak. The peak stays on the reused budget object. |
+| L2 | Booms rank below patches and pickups. With the cap forced to 3, the hero, one dispel light, and the hit flash stay; the sun and wall fires drop. |
+| Token | The real Fade's scripted phase-3 lunge, and the punish for hitting a copy, wait for a free attack token. He cannot lunge on the same frame as both copies. |
+
+Not in this pass: T3, T4, F4, G3, and L3. `docs/stage3/perf.json` was not rewritten. T14 and T17 were not started.
+
+Sizes after this pass: `src/myrddraal.js` 15,502 / 16,384, `src/stage3-hazards.js` 8,082 / 8,192,
+`src/darkfriends.js` 9,145 / 9,216, `src/stage3.js` 12,271 / 12,288. New logic lives in
+`src/stage3-lights.js` (5,304, uncapped), `src/hud.js`, and `src/audio.js`.
 
 ## T1–T17
 
@@ -206,8 +239,9 @@ budgets separately so they do not consume the Stage 1 25 MB gate.
 
 **Docs.** `docs/stage3/**` (plan, builds, prompts, hardening, frame hashes, the softlock audit,
 this README, the perf record, this handoff). `docs/stage1/evidence/full-stage-simulation.json`
-hash refresh for `src/stage1.js` and `src/audio.js` in T15, and for `src/stage1.js` and
-`src/riley.js` after the softlock fixes. The sim body was not regenerated either time.
+hash refresh for `src/stage1.js` and `src/audio.js` in T15, for `src/stage1.js` and
+`src/riley.js` after the softlock fixes, and for `src/audio.js` again after the playfeel cues.
+The sim body was not regenerated.
 
 **From the rwb-w2 merge, not a Stage 3 mechanic.** Everything under `art-in/barn-fire/`,
 `assets/bg2/barn-*`, and `docs/stage2/` review-pass, barn-fire prompts and shots. Kept so this
@@ -240,3 +274,16 @@ branch contains the Stage 2 fixes already on `rwb-w2`.
 | Q4 | Is Basel Gill's Kokoro voice all right? The shipped Gill lines are ElevenLabs Grandfather Joe, not Kokoro `bm_george`. | Needs a listening pass. |
 | Q5 | Are the returning zealot and archer in Caemlyn all right? | They are in the zones. |
 | iPad | Does Stage 3 hold a steady frame on the iPad, and does `PLACEHOLDER ART` stay readable? | Unmeasured. Link above. |
+
+## Playtest questions for Jason
+
+From the playfeel brief. These are for a person at the keyboard, not for another code pass.
+
+1. Without looking at the arc, could you tell where the fear zone starts? Did the floor ring help or clutter?
+2. When you got shaken mid-combo, did you see or hear it coming? Is about 1.6 s of melee before a shake right?
+3. Is a fireball (34 meter) for 4 s of no fear worth it, or did you just walk out?
+4. Did you ever get grabbed straight out of a zealot or hound hit? Did it feel cheap or earned?
+5. Mash: did you ever mash hard and still get thrown? Buttons, directions, or both?
+6. Tiles: did you know which side they came from? Did you try jumping them? Was a tile ever on you while held?
+7. In the dark end of the rooftops and in the arena, could you see tiles, cutthroat glints, and which Fade is real?
+8. On the iPad: steady frames in the arena with the aura vignette and torches up?
