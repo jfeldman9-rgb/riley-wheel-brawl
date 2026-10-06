@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#080a12">
+  <title>Waygate Gauntlet — Riley Wheel Brawl</title>
+  <style>
+    :root{color-scheme:dark;--ink:#f0f3fb;--muted:#a1a9bd;--cyan:#72e7db;--red:#ff5266;--gold:#f1c976}
+    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080a12;color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none}
+    body{display:grid;place-items:center;background:radial-gradient(ellipse at 50% 35%,#151b2d,#080a12 70%)}
+    #game-wrap{position:relative;width:min(100vw,177.7778vh);height:min(100vh,56.25vw);max-width:100vw;max-height:100vh;overflow:hidden;background:#080a12;box-shadow:0 0 80px #000}
+    #game{position:absolute;inset:0}#game canvas{width:100%!important;height:100%!important;display:block;touch-action:none}
+    #hud{position:absolute;inset:0 0 auto 0;padding:12px 15px;display:flex;align-items:flex-start;gap:12px;pointer-events:none;background:linear-gradient(#080a12d9,transparent)}
+    .hud-card{border:1px solid #79849d55;background:#0b1020d9;border-radius:8px;padding:7px 10px;backdrop-filter:blur(4px);box-shadow:0 4px 16px #0005}
+    #hud-left{width:min(37%,330px)}#stage-name{font-size:11px;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase;font-weight:800}
+    #hero-stats{display:flex;align-items:center;gap:9px;margin-top:5px;font-size:11px;color:#e6e9f2}
+    .bar{height:8px;background:#263047;border-radius:5px;overflow:hidden;flex:1;min-width:65px}.bar>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#bc4056,#ff8e75);transition:width .14s}
+    #focus-fill{background:linear-gradient(90deg,#2798a7,#81f0d9)}#score-time{font-size:11px;line-height:1.55;color:#d8dfef;white-space:nowrap}
+    #boss-hud{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:min(38%,400px);display:none;text-align:center;pointer-events:none}
+    #boss-name{font:800 11px/1.4 system-ui;letter-spacing:.18em;text-transform:uppercase;color:#f6d8de;text-shadow:0 2px 12px #c51f42}
+    #boss-bar{height:10px;border:1px solid #bdb8c1;background:#1a1822;border-radius:7px;overflow:hidden;margin-top:4px}#boss-fill{height:100%;width:100%;background:linear-gradient(90deg,#64152c,#f05c67);transition:width .12s}
+    #pause-toggle{margin-left:auto;pointer-events:auto;border:1px solid #7f8aa4aa;background:#11182a;color:var(--ink);padding:8px 11px;border-radius:7px;font-weight:800;cursor:pointer;letter-spacing:.04em}
+    #toast{position:absolute;top:21%;left:50%;transform:translateX(-50%);padding:8px 14px;border-radius:6px;background:#080b14c9;border:1px solid #96a7c755;color:#e8f5fa;font:700 12px/1.3 system-ui;letter-spacing:.08em;text-align:center;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;text-shadow:0 0 12px #47ded2}
+    #overlay{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 42%,#080a12a8,#060811dc);padding:22px;z-index:8}
+    #overlay[hidden]{display:none}.panel{width:min(560px,94%);max-height:94%;overflow:auto;border:1px solid #93a7bf77;border-radius:14px;background:linear-gradient(145deg,#111b2cec,#090d17f4 70%);box-shadow:0 18px 80px #000b,0 0 38px #42d9d033;padding:clamp(18px,4vw,34px);text-align:center}
+    .eyebrow{color:var(--cyan);font-size:10px;font-weight:900;letter-spacing:.23em;text-transform:uppercase}.panel h1{font-size:clamp(28px,6vw,46px);line-height:1.02;letter-spacing:.045em;margin:11px 0 10px;text-shadow:0 0 26px #56ded1aa}
+    .panel h2{font-size:clamp(24px,5vw,34px);margin:10px 0}.panel p{color:#c0c9d9;font-size:14px;line-height:1.55;margin:9px auto;max-width:470px}
+    .control-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:17px 0;text-align:left}.control-grid div{border:1px solid #8290aa3d;background:#111827aa;border-radius:7px;padding:8px 10px;font-size:12px;color:#bfc9d8}.control-grid b{color:#fff}
+    .panel-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}.action{border:1px solid #a7eee2a8;background:linear-gradient(180deg,#247d7b,#135257);color:white;padding:12px 19px;border-radius:8px;font-weight:900;cursor:pointer;min-width:150px;letter-spacing:.04em}.action.secondary{border-color:#9ca9bf55;background:#182135}.action:hover{filter:brightness(1.16)}
+    .fine{font-size:11px!important;color:#909bad!important}.result{display:flex;justify-content:center;gap:22px;margin:14px 0}.result strong{display:block;font-size:20px;color:#fff}.result span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#aeb9cb}
+    #touch-controls{display:none;position:absolute;inset:auto 0 max(10px,env(safe-area-inset-bottom)) 0;padding:0 14px;justify-content:space-between;align-items:flex-end;z-index:5;pointer-events:none}
+    .pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,45px);gap:2px;pointer-events:auto}
+    .touch-key{border:1px solid #c6d4e06b;background:#0e1829b8;color:#f7fbff;border-radius:10px;font-weight:900;font-size:15px;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 2px 10px #0006}
+    .pad .up{grid-area:1/2}.pad .left{grid-area:2/1}.pad .down{grid-area:2/2}.pad .right{grid-area:2/3}
+    .actions{display:grid;grid-template-columns:repeat(2,58px);grid-template-rows:repeat(2,52px);gap:5px;pointer-events:auto}.actions button{font-size:12px}.actions .dodge{grid-area:1/1;background:#2b3d65bd;border-color:#a3c5ff85}.actions .attack{grid-area:1/2;background:#612d3dbd;border-color:#ff94a37a}.actions .jump{grid-area:2/1}.actions .special{grid-area:2/2;background:#164955c7;border-color:#76e6e177}
+    .touch-key:active,.touch-key.down{background:#73979baa;transform:scale(.96)}
+    #loading{position:absolute;inset:0;display:grid;place-items:center;background:#080a12;color:#d6eee9;font:700 13px system-ui;z-index:10;letter-spacing:.12em}
+    @media(max-width:700px){#hud{padding:7px;gap:5px}.hud-card{padding:6px 7px}#hud-left{width:44%}#stage-name{font-size:9px}#hero-stats,#score-time{font-size:9px}#boss-hud{top:66px;width:46%}#pause-toggle{padding:7px;font-size:11px}.pad{grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,39px)}.actions{grid-template-columns:repeat(2,49px);grid-template-rows:repeat(2,46px)}.touch-key{border-radius:9px}}
+  </style>
+</head>
+<body>
+  <main id="game-wrap" aria-label="Waygate Gauntlet game">
+    <div id="game"></div>
+    <div id="loading">OPENING THE WAYS…</div>
+    <header id="hud" hidden>
+      <div id="hud-left" class="hud-card">
+        <div id="stage-name">THE WAYS · APPROACH</div>
+        <div id="hero-stats"><span>RILEY</span><div class="bar"><i id="hp-fill"></i></div><span id="lives">♥ ♥ ♥</span></div>
+        <div id="hero-stats"><span>SAIDIN</span><div class="bar"><i id="focus-fill"></i></div><span id="focus-text">60</span></div>
+      </div>
+      <div id="score-time" class="hud-card"><div>SCORE <b id="score">000000</b></div><div>TIME <b id="clock">00:00</b></div></div>
+      <div id="boss-hud"><div id="boss-name">THE GRAY MAN</div><div id="boss-bar"><div id="boss-fill"></div></div></div>
+      <button id="pause-toggle" type="button" aria-label="Pause game">Ⅱ &nbsp; PAUSE</button>
+    </header>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <div id="touch-controls" aria-label="Touch controls">
+      <div class="pad" aria-label="Movement">
+        <button class="touch-key up" data-hold="up" aria-label="Move up">▲</button>
+        <button class="touch-key left" data-hold="left" aria-label="Move left">◀</button>
+        <button class="touch-key down" data-hold="down" aria-label="Move down">▼</button>
+        <button class="touch-key right" data-hold="right" aria-label="Move right">▶</button>
+      </div>
+      <div class="actions" aria-label="Actions">
+        <button class="touch-key dodge" data-press="dodge" aria-label="Dodge roll Shift">ROLL</button>
+        <button class="touch-key attack" data-press="attack" aria-label="Attack J">J · HIT</button>
+        <button class="touch-key jump" data-press="jump" aria-label="Jump K">K · JUMP</button>
+        <button class="touch-key special" data-press="special" aria-label="Special L">L · ONE POWER</button>
+      </div>
+    </div>
+    <section id="overlay" aria-live="polite">
+      <div class="panel" id="panel-content"></div>
+    </section>
+  </main>
+  <script src="assets/animation-data.js"></script>
+  <script>if (location.protocol === 'file:') document.write('<scr' + 'ipt src="assets/atlas-inline.js"></scr' + 'ipt>');</script>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
