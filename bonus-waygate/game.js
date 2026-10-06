@@ -241,10 +241,13 @@
       }
       // The lane stays brighter than the void so Riley and the Trollocs read.
       const lane = this.add.graphics().setDepth(3).setScrollFactor(1);
-      lane.fillStyle(0x121826, 1); lane.fillRect(0, 286, WORLD, 28);
-      lane.fillStyle(0x3e4c63, 1); lane.fillRect(0, 312, WORLD, FLOOR - 312 + 18);
-      lane.fillStyle(0xc9d7e6, 0.92); lane.fillRect(0, FLOOR - 2, WORLD, 5);
-      lane.fillStyle(0x2a3448, 0.45); lane.fillRect(0, 352, WORLD, 36);
+      lane.fillStyle(0x1a2436, 1); lane.fillRect(0, 278, WORLD, 30);
+      lane.fillStyle(0x5c6d86, 1); lane.fillRect(0, 308, WORLD, FLOOR - 308 + 16);
+      lane.fillStyle(0xe7eef6, 0.95); lane.fillRect(0, FLOOR - 3, WORLD, 6);
+      lane.fillStyle(0x3d4c64, 0.55); lane.fillRect(0, 348, WORLD, 40);
+      lane.fillStyle(0x070910, 1); lane.fillRect(0, FLOOR + 10, WORLD, H - FLOOR - 10);
+      lane.lineStyle(1, 0x243044, 0.45);
+      for (let x = 20; x < WORLD; x += 54) lane.lineBetween(x, FLOOR + 12, x - 22, H);
       lane.lineStyle(1, 0x121820, 0.4);
       for (let x = 0; x < WORLD; x += 92) lane.lineBetween(x, 318, x, FLOOR + 12);
       this.floorLane = lane;
@@ -293,70 +296,82 @@
       };
       paint(spec.void, (ctx, w, h) => {
         const sky = ctx.createLinearGradient(0, 0, 0, h);
-        sky.addColorStop(0, '#02030a');
-        sky.addColorStop(0.42, '#070b16');
-        sky.addColorStop(0.62, '#10182a');
-        sky.addColorStop(1, '#04060d');
+        sky.addColorStop(0, '#03040c');
+        sky.addColorStop(0.35, '#0a1020');
+        sky.addColorStop(0.58, '#162038');
+        sky.addColorStop(0.74, '#0c121c');
+        sky.addColorStop(1, '#07090f');
         ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
+        const haze = ctx.createLinearGradient(0, h * 0.42, 0, h * 0.7);
+        haze.addColorStop(0, 'rgba(40,70,110,0)');
+        haze.addColorStop(0.5, 'rgba(70,110,150,0.16)');
+        haze.addColorStop(1, 'rgba(20,30,50,0)');
+        ctx.fillStyle = haze; ctx.fillRect(0, 0, w, h);
         const r = rnd(0x574159);
-        for (let i = 0; i < 520; i++) {
-          const x = r() * w, y = r() * h * 0.78, a = 0.12 + r() * 0.62, s = r() < 0.07 ? 2 : 1;
-          const cool = r() > 0.82;
-          ctx.fillStyle = cool ? `rgba(140,220,210,${a})` : `rgba(210,214,230,${a})`;
+        for (let i = 0; i < 700; i++) {
+          const x = r() * w, y = r() * h * 0.82, a = 0.18 + r() * 0.7, s = r() < 0.06 ? 2.2 : 1;
+          const cool = r() > 0.8;
+          ctx.fillStyle = cool ? `rgba(150,230,220,${a})` : `rgba(220,226,240,${a})`;
           ctx.fillRect(x, y, s, s);
-          if (s > 1) { ctx.fillStyle = `rgba(230,240,255,${a * 0.4})`; ctx.fillRect(x - 2, y, 5, 1); ctx.fillRect(x, y - 2, 1, 5); }
+          if (s > 1) { ctx.fillStyle = `rgba(240,248,255,${a * 0.45})`; ctx.fillRect(x - 3, y, 7, 1); ctx.fillRect(x, y - 3, 1, 7); }
         }
-        ctx.globalAlpha = 0.18;
-        for (let i = 0; i < 9; i++) {
-          ctx.fillStyle = i % 2 ? '#1c2a44' : '#24344a';
-          ctx.fillRect(0, 30 + i * 26 + (i % 3) * 4, w, 1.5);
-        }
-        ctx.globalAlpha = 1;
       });
-      const span = (ctx, x, y, len, thick, tilt, broken) => {
+      const bridge = (ctx, x, y, len, thick, tilt, broken, marker) => {
         ctx.save();
         ctx.translate(x, y); ctx.rotate(tilt);
-        ctx.fillStyle = '#10161f';
+        ctx.fillStyle = '#121820';
         ctx.beginPath();
-        ctx.moveTo(6, thick - 2); ctx.lineTo(len - 8, thick + 2); ctx.lineTo(len - 28, thick + 26); ctx.lineTo(22, thick + 18); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = '#243044';
+        ctx.moveTo(8, thick); ctx.lineTo(len - 6, thick + 4); ctx.lineTo(len - 36, thick + 34); ctx.lineTo(28, thick + 26); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#121820';
+        for (let px = 24; px < len - 16; px += 46) {
+          ctx.fillRect(px, thick, 6, 22 + (px % 3) * 8);
+        }
+        ctx.fillStyle = '#35465e';
         ctx.fillRect(0, 0, len, thick);
-        ctx.fillStyle = '#5c6d84';
-        ctx.fillRect(0, 0, len, 3);
-        ctx.fillStyle = '#1a2330';
-        for (let px = 18; px < len - 10; px += 28) ctx.fillRect(px, 4, 2, thick - 6);
+        ctx.fillStyle = '#7d8ea6';
+        ctx.fillRect(0, 0, len, 4);
+        ctx.fillStyle = '#1c2838';
+        for (let px = 16; px < len - 8; px += 22) ctx.fillRect(px, 6, 2, thick - 8);
+        ctx.fillStyle = '#243246';
+        ctx.fillRect(0, thick - 5, len, 5);
         if (broken) {
           ctx.fillStyle = '#0c1018';
-          ctx.beginPath(); ctx.moveTo(len * 0.72, 0); ctx.lineTo(len + 6, thick * 0.35); ctx.lineTo(len * 0.8, thick); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(len * 0.62, -2); ctx.lineTo(len + 14, thick * 0.4); ctx.lineTo(len * 0.78, thick + 2); ctx.fill();
+          ctx.fillStyle = '#2a384c';
+          ctx.beginPath(); ctx.moveTo(len * 0.7, thick); ctx.lineTo(len * 0.7 + 18, thick + 28); ctx.lineTo(len * 0.7 - 10, thick + 16); ctx.fill();
         }
-        ctx.fillStyle = '#2c3b50';
+        ctx.fillStyle = '#3e516c';
         ctx.beginPath();
-        ctx.moveTo(len * 0.18, thick); ctx.lineTo(len * 0.18 + 36, thick + 34); ctx.lineTo(len * 0.18 + 78, thick + 34); ctx.lineTo(len * 0.18 + 48, thick); ctx.fill();
+        ctx.moveTo(len * 0.22, thick); ctx.lineTo(len * 0.22 + 28, thick + 40); ctx.lineTo(len * 0.22 + 70, thick + 40); ctx.lineTo(len * 0.22 + 46, thick); ctx.fill();
+        ctx.fillStyle = '#8ea0b8';
+        ctx.fillRect(len * 0.22 + 28, thick + 40, 42, 3);
+        if (marker) {
+          ctx.fillStyle = '#1a2433';
+          ctx.fillRect(len * 0.48, -52, 12, 52);
+          ctx.fillStyle = '#d8fff8';
+          ctx.beginPath(); ctx.moveTo(len * 0.48 + 6, -66); ctx.lineTo(len * 0.48 + 16, -50); ctx.lineTo(len * 0.48 + 6, -34); ctx.lineTo(len * 0.48 - 4, -50); ctx.fill();
+          ctx.fillStyle = 'rgba(125,255,240,0.35)';
+          ctx.beginPath(); ctx.arc(len * 0.48 + 6, -50, 16, 0, Math.PI * 2); ctx.fill();
+        }
         ctx.restore();
       };
       paint(spec.islands, (ctx, w, h) => {
         ctx.clearRect(0, 0, w, h);
-        const spots = [[80, 150, 340, 22, -0.04, true], [520, 210, 420, 26, 0.03, false], [1040, 120, 300, 20, -0.06, true], [1420, 240, 460, 28, 0.02, false], [1760, 160, 240, 18, -0.03, true]];
-        for (const s of spots) span(ctx, s[0], s[1], s[2], s[3], s[4], s[5]);
-        ctx.fillStyle = '#1a2433';
-        ctx.fillRect(1680, 78, 16, 70);
-        ctx.fillStyle = '#7dfff0';
-        ctx.globalAlpha = 0.85;
-        ctx.beginPath(); ctx.moveTo(1688, 70); ctx.lineTo(1698, 86); ctx.lineTo(1688, 102); ctx.lineTo(1678, 86); ctx.fill();
-        ctx.globalAlpha = 1;
+        const r = rnd(0x15a7);
+        for (let x = -40; x < w; x += 250) {
+          const len = 180 + r() * 150;
+          const y = 70 + r() * 120;
+          bridge(ctx, x, y, len, 16 + r() * 8, (r() - 0.5) * 0.08, r() > 0.45, r() > 0.62);
+        }
       });
       paint(spec.ramps, (ctx, w, h) => {
         ctx.clearRect(0, 0, w, h);
-        span(ctx, 40, 150, 520, 36, -0.02, true);
-        span(ctx, 640, 210, 460, 32, 0.04, true);
-        span(ctx, 1120, 120, 420, 30, -0.05, false);
-        ctx.fillStyle = '#18202c';
-        ctx.fillRect(980, 70, 22, 110);
-        ctx.fillStyle = 'rgba(125,255,240,0.75)';
-        ctx.beginPath(); ctx.moveTo(991, 58); ctx.lineTo(1006, 80); ctx.lineTo(991, 102); ctx.lineTo(976, 80); ctx.fill();
-        ctx.fillStyle = '#121820';
-        ctx.fillRect(1180, 148, 18, 48);
-        ctx.fillRect(1210, 160, 14, 36);
+        const r = rnd(0xc0de);
+        for (let x = -80; x < w; x += 340) {
+          const len = 240 + r() * 180;
+          const y = 150 + r() * 90;
+          bridge(ctx, x, y, len, 26 + r() * 8, (r() - 0.5) * 0.05, r() > 0.35, r() > 0.55);
+        }
       });
       paint(spec.leaf, (ctx, w, h) => {
         ctx.clearRect(0, 0, w, h);
@@ -449,7 +464,7 @@
           g.lineBetween(a + 12, y + 16, b - 10, y + 6);
         }
       };
-      for (const [a, b] of PADS) slab(a, b, 0x46556c, 0xd5e2ef, false);
+      for (const [a, b] of PADS) slab(a, b, 0x61748e, 0xe4eef8, false);
       g.fillStyle(0x7dfff0, 0.95); g.fillRect(BRIDGE_MID - 18, FLOOR - 14, 36, 5);
       for (let i = 0; i < CRUMBLE.length; i++) {
         const [a, b] = CRUMBLE[i];
@@ -502,15 +517,15 @@
       if (!g) return;
       g.clear();
       const breathe = 0.55 + 0.45 * Math.sin(t * 1.3);
-      g.fillStyle(0xb9dcff, 0.05 * breathe);
-      g.fillRect(0, 0, 42, H);
-      g.fillRect(W - 42, 0, 42, H);
+      g.fillStyle(0xb9dcff, 0.1 * breathe);
+      g.fillRect(0, 0, 58, H);
+      g.fillRect(W - 58, 0, 58, H);
       for (let i = 0; i < 16; i++) {
         const y = (i * 36 + Math.sin(t * 0.7 + i) * 24 + t * 18) % (H + 40) - 20;
-        const reach = 18 + 46 * (0.5 + 0.5 * Math.sin(t * 1.8 + i * 0.6));
-        g.fillStyle(0xd7eeff, 0.035 + 0.04 * breathe);
-        g.fillEllipse(reach * 0.35, y, reach, 10);
-        g.fillEllipse(W - reach * 0.35, y + 12, reach * 0.9, 9);
+        const reach = 26 + 64 * (0.5 + 0.5 * Math.sin(t * 1.8 + i * 0.6));
+        g.fillStyle(0xd7eeff, 0.07 + 0.08 * breathe);
+        g.fillEllipse(reach * 0.35, y, reach, 12);
+        g.fillEllipse(W - reach * 0.35, y + 12, reach * 0.9, 11);
       }
     }
 
