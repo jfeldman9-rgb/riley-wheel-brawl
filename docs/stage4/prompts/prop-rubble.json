@@ -1,0 +1,21 @@
+{
+  "id": "prop-rubble",
+  "file": "prop-rubble.png",
+  "tool": "image-generation",
+  "backupTool": "gemini",
+  "size": [
+    768,
+    512
+  ],
+  "frames": 2,
+  "cols": 2,
+  "rows": 1,
+  "opaque": false,
+  "riley": false,
+  "normal": false,
+  "houseStyle": "spike-art/HOUSE_STYLE.txt",
+  "attach": [
+    "spike-art/HOUSE_STYLE.txt"
+  ],
+  "prompt": "Use case: stylized-concept. Production art for Riley Wheel Brawl 2.0, Stage 4, Shadar Logoth. Asset prop-rubble.png. Canvas exactly 768\u00d7512. Exactly 2 frames in a 2\u00d71 grid. Each cell is 384\u00d7512. Clear gaps, no overlap, no borders. Frames, in reading order: 1. cracked block 2. broken open. Genuinely transparent background, real alpha. No painted backdrop, floor shadow, or checkerboard. HOUSE STYLE, identical to spike-art/HOUSE_STYLE.txt: HOUSE STYLE (Riley Wheel Brawl 2.0), identical for every image:\n- Hand-drawn HD 2D fighting-game sprite art in the spirit of Streets of Rage 4: confident dark-brown/near-black ink outlines (thicker on the outer silhouette, thinner inside), clean cel shading with 2-3 tone steps plus subtle painterly gradients. NOT pixel art, NOT 3D render, NOT photo-real, NOT chibi.\n- Lighting baked lightly: soft key light from the upper LEFT, gentle cool rim on the right edge. Keep shading moderate (the game adds real-time light on top).\n- Rich but grounded colors. Strong readable silhouette.\n- Side view (profile / slight 3/4), character faces RIGHT, full body head to boots, whole figure inside the frame with margin.\n- Genuinely TRANSPARENT background (real alpha). No ground shadow, no floor, no text, no labels, no borders, no frame numbers. Breakable rubble, two states side by side in 384\u00d7512 cells. Frame 1: a cracked black-stone block still in one piece (crate-like, three hits). Frame 2: the same block broken open, no gore, a gap where a pickup could sit. One lane wide, not a wall. No text, letters, numbers, watermarks, frame labels, or borders in the finished image. No gore: Shadowspawn become ash; human cultists are knocked out or flee."
+}
