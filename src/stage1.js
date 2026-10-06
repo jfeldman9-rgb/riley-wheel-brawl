@@ -118,6 +118,7 @@ export class Stage1 extends Phaser.Scene {
     this.powers = new Powers(this);
     this.heroLight = this.lights.addLight(0, 0, 440, 0xd8e2ff, 1.0, 150);
     this.heroLightX = this.riley.x + this.riley.facing * 30;
+    this.heroLight.x = this.heroLightX;
     if (this.kit) for (const [x, y] of STAGE2.crates) this.addBarrel(x, y, 'crate', 'planks');
     else for (const [x, y] of BARRELS) this.addBarrel(x, y);
     if (!this.kit) this.snowFront = this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: -20, lifespan: 6000, speedY: { min: 80, max: 130 }, speedX: { min: -50, max: -10 }, scale: { min: 0.5, max: 0.9 }, alpha: { min: 0.5, max: 0.9 }, frequency: 80 }).setDepth(5000).setScrollFactor(0);
@@ -640,6 +641,7 @@ export class Stage1 extends Phaser.Scene {
       context: { mode: this.bot ? 'demo' : 'manual', zone: this.zoneI + 1, wave: this.wave + 1, bossPhase: this.boss && this.boss.phase || null, godMode: this.god, timeScale: this.timeScale },
     });
     let dt = Math.min(deltaMs, 50) / 1000;
+    const renderDt = Number.isFinite(dt) && dt >= 0 ? dt : 0;
     if (this.bot) this.bot.update(dt);
     for (const L of this.fires) L.intensity = this.lightsOn ? L.baseI * (0.82 + 0.18 * Math.sin(time * 0.009 + L.seed) * Math.sin(time * 0.023 + L.seed * 3)) : 0;
     this.fx.update(dt);
@@ -682,7 +684,9 @@ export class Stage1 extends Phaser.Scene {
     if (this.started) this.updateZones(dt);
     R.sync(); for (const e of this.enemies) e.sync();
     this.updateCamera(dt);
-    this.heroLightX += (R.x + R.facing * 30 - this.heroLightX) * (1 - Math.exp(-dt * 12)); this.heroLight.x = this.heroLightX; this.heroLight.y = R.y - 300 - R.z; this.heroLight.intensity = this.lightsOn ? 1.0 : 0;
+    const lightX = R.x + (Number.isFinite(R.facing) ? R.facing : 0) * 30;
+    if (!Number.isFinite(this.heroLightX)) this.heroLightX = lightX;
+    this.heroLightX += (lightX - this.heroLightX) * (1 - Math.exp(-renderDt * 12)); this.heroLight.x = this.heroLightX; this.heroLight.y = R.y - 300 - R.z; this.heroLight.intensity = this.lightsOn ? 1.0 : 0;
     this.game.governor(dt);
   }
   updateCamera(dt) {
@@ -697,7 +701,8 @@ export class Stage1 extends Phaser.Scene {
     else { this.bounds.l = this.camX; this.bounds.r = Math.min(WORLD_W, this.camX + VW + (this.zone ? 0 : 0)); }
     const [sx, sy] = this.fx.shakeOffset();
     // Device-pixel scroll only. camX / bounds / camMax stay fractional. rs lives on game.rs (the governor updates that, not this.rs).
-    const rs = (this.game && this.game.rs) || this.rs || 1;
+    const gameRS = this.game && this.game.rs;
+    const rs = Number.isFinite(gameRS) && gameRS > 0 ? gameRS : Number.isFinite(this.rs) && this.rs > 0 ? this.rs : 1;
     this.cameras.main.setScroll(Math.round((this.camX + sx) * rs) / rs, Math.round(sy * rs) / rs);
     placeMoon(this.moon, this.camX + sx); placeFires(this.fires, this.camX + sx, this.fireCap || FIRE_LIGHT_CAP);
     this.kit?.applyLightBudget?.();
