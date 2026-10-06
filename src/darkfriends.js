@@ -147,6 +147,7 @@ export class Cutthroat extends Whitecloak {
     this.scene.kit?.dropMarker?.(this);
   }
   takeHit(h, from) {
+    if (this.state === 'held') return super.takeHit(h, from);
     if (!this.canBeHit) return false;
     if (this.state === 'holding') this.releaseHold('break');
     if (this.state === 'lunge' && from === this.scene.riley) {
