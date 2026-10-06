@@ -178,3 +178,49 @@ are also mirrored into the supplied checkout. Neither main nor rwb-w2 was change
 Jason chose these over the 2.5 s brave window. `fear.brave` is **1.2 s**. Aura radius is **220** (Fade pref is 210). The fear arc fill is bright magenta `0xff00ff` at alpha **0.85**. A living copy in `lunge` counts as calm, so a phase-3 copy lunge does not fill the meter.
 
 Brave 1.2 plus fill 1.4 and a 0.7 s stun is about 27%. `fear.fill` is **1.6** so the steady cycle is 2.8 s and the stun duty is 0.7 / 2.8 = **25%**. `shaken` stays 0.7. Cast remains in `NO_FEAR`, and the meter still decays while calm. `myrddraal.js` is **15,395 ≤ 16,384**.
+
+## Stage 3 hardening pass (Sol), starting at `190d87b`, Oct 5 2026
+
+Three confirmed bugs were reproduced before their source fixes:
+
+| Fix | Commit | New regressions |
+| --- | --- | --- |
+| Include the sun in Stage 3's light budget and honor the renderer cap; prevent Balefire from causing Phaser to cull Riley's light | `109e1c7` | `stage3-light-budget-hardening.test.mjs` (2) |
+| Pause scene clocks on hidden/blur events, independently of manual pause; detach callbacks on shutdown and inherit background state on restart | `4d0cd31` | `stage3-background-clock-hardening.test.mjs` (4) |
+| Delegate held Cutthroat hits to the existing holder-only knee check; restore knee damage and lethal-knee wave completion | `5d524e4` | `stage3-held-knee-hardening.test.mjs` (2) |
+
+All eight fix regressions fail against untouched `190d87b`. The light regressions
+execute the shipped Phaser light selector (including its distance-sort fallback),
+and the background regressions execute its hidden/blur handlers. Small Stage 3
+helpers keep the capped files within their limits; Stage 1/2 behavior is unchanged.
+
+Another 34 tests in `stage3-terminal-transition-review.test.mjs` pass on both
+`190d87b` and the fixed sources. Camera movement with Riley holding/being held,
+cast interruption before/after release through knockdown, death, respawn and
+continue, and boss death during active Balefire in seven states needed no further
+fix. Live grabs already prevent zone completion; their timeouts release input.
+Casts reject cutthroat grabs; Balefire normally rejects damage during its existing
+invulnerability. The interruption tests also stress exhausted invulnerability.
+A sunk Fade is intentionally unhittable; a beam still active on emergence kills
+normally. Victory fires once, and beam, pool, copies, fear, timers and tweens retire.
+
+Verification: **716/716 tests pass** (original 674 plus 42), with no failures,
+skips, cancellations or TODOs. The full `node --test tests/*.test.mjs` passes all
+78 files; each file also ran directly to count individual tests under this Node 20
+sandbox. The existing `/tmp/rwb-spawn-transport.cjs` preload was used for captured
+child-process `EPERM`, without changing tests or helpers. Stage 1's prescribed diff
+prints nothing excluding only `sourceSha256`/`baseGitCommit`; Stage 2 is byte-identical
+to `/workspace/ag/baselines-190d87b/s2.base.json`. `node tools/audit-stage1.mjs`
+runs successfully: all statuses match baseline, including its existing art-density
+failures. Inventory remains PASS at **24,988,168 / 25,000,000 bytes**.
+
+Final sizes: `myrddraal.js` **15,395 / 16,384**, `stage3-hazards.js`
+**8,169 / 8,192**, `darkfriends.js` **9,120 / 9,216**, `stage3.js`
+**12,057 / 12,288** bytes. Nemotron's brave **1.2 s**, fill **1.6 s**, radius
+**220**, magenta arc **0xff00ff / 0.85**, and calm/copy-lunge wording are untouched.
+No existing tests were modified, no art or campaign availability changed, and no
+network/push occurred. Rendering/device behavior remains outside headless evidence.
+
+The supplied workdir's `.git` is read-only. Commits are on `rwb-2-stage3-ag` in
+`/workspace/ag/rwb-s3-sol`; edited files are mirrored into the supplied workdir.
+Neither `main` nor `rwb-w2` was changed.
