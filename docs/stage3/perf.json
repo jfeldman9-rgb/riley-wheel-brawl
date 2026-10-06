@@ -1,0 +1,44 @@
+{
+ "measured": true,
+ "method": "This VM, not a device. Headless Chrome 148.0.7778.96 at 1280x720, SwiftShader software GL (ANGLE, Vulkan 1.3.0, SwiftShader Device Subzero). The governor starts software at quality 4; these runs ended at quality 5 because frame time stayed over 21 ms. Demo bot, story=0. over33 means frames longer than 33.4 ms. avgFps and avgFightFps are the mean of each rep last-120-frame fps, the same fields as docs/stage2/perf.json. Not comparable to that file: different machine. Stage 1 and Stage 2 were not re-timed here.",
+ "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+ "software": true,
+ "viewport": "1280x720",
+ "branch": "rwb-2-stage3-ag",
+ "results": [
+  {
+   "scenario": "S3-B stage start",
+   "label": "stage3",
+   "avgFps": 19.86,
+   "avgFightFps": 19.63,
+   "avgFightOver33pct": 85.5,
+   "avgAllOver33pct": 83.27,
+   "avgFightFrames": 626.67
+  },
+  {
+   "scenario": "S3-A boss arena",
+   "label": "stage3",
+   "avgFps": 20.83,
+   "avgFightFps": 20.83,
+   "avgFightOver33pct": 84.93,
+   "avgAllOver33pct": 85.7,
+   "avgFightFrames": 438.0
+  },
+  {
+   "scenario": "S3-R rooftops",
+   "label": "stage3",
+   "avgFps": 20.88,
+   "avgFightFps": 19.89,
+   "avgFightOver33pct": 85.03,
+   "avgAllOver33pct": 85.0,
+   "avgFightFrames": 491.33
+  }
+ ],
+ "ipad": "UNMEASURED: for Jason. Open the githack link with ?stage=3&s3=1, play through to the boss, and note stutter plus the PLACEHOLDER ART tag.",
+ "notes": [
+  "S3-B is ?stage=3&s3=1&demo=1&story=0 sampled for 45 s.",
+  "S3-A adds &skip=boss and samples 30 s.",
+  "S3-R resets the meter when rooftop zone 2 locks, then samples 30 s. Rep 2 had reached zone 3 by the end of that window.",
+  "Headless Chrome does not focus Phaser, so the capture dispatches one window focus event. That is the production blur-resume path, and it keeps the hidden-tab pause from freezing the clock."
+ ]
+}
