@@ -4,6 +4,7 @@ import { sfx, say } from './audio.js';
 import { VOLLEY_BANDS } from './stages.js';
 import { Stage2Kit, MID_Y } from './stage2.js';
 import { FADE } from './myrddraal.js';
+import { stage3Threats } from './stage3-lights.js';
 
 export const TILES = Object.freeze({
   zone: 2, warn: 0.9, speed: 900, every: Object.freeze([3.0, 4.2]),
@@ -216,14 +217,5 @@ export class Stage3Hazards extends Stage2Kit {
     this.tileT = TILES.every[0];
   }
 
-  threats() {
-    return {
-      ...super.threats(),
-      tiles: this.tiles,
-      drops: this.drops,
-      pools: this.pools,
-      copies: this.copies,
-      aura: !!this.s.boss?.auraActive,
-    };
-  }
+  threats() { return stage3Threats(this); }
 }
