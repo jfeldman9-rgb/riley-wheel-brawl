@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { stage3Simulation, arena, placeC, withSeed } from './helpers/stage3-harness.mjs';
 import { Stage3Kit } from '../src/stage3.js';
+import { budgetStage3Lights, stageLightLine } from '../src/stage3-lights.js';
 
 // Run the shipped Phaser selector: a headless light count alone misses its
 // distance culling when an unbudgeted sun pushes the renderer over maxLights.
@@ -63,3 +64,48 @@ for (const cap of [10, 6]) test(`Balefire preserves Riley's renderer light with 
     assert.ok(select().has(s.heroLight), 'light pool recovers after effect cleanup');
   } finally { h.destroy(); }
 }));
+
+test('a 3-light cap keeps the hero, one dispel light and the hit flash, and booms sit below patches', () => {
+  const lamp = (intensity = 1) => ({ intensity, visible: true, setVisible(v) { this.visible = v; } });
+  const hero = lamp(), bolt = lamp(), hit = lamp(), patch = lamp(), pickup = lamp(), boom = lamp(), wall = lamp(), sun = lamp();
+  const lights = [hero, bolt, hit, patch, pickup, boom, wall, sun];
+  const restore = () => { for (const L of lights) L.visible = true; };
+  let cap = 3;
+  const s = {
+    stageNo: 3,
+    heroLight: hero,
+    powers: { bolts: [{ L: bolt }] },
+    fireballs: [],
+    fx: { hitLight: hit, booms: [{ L: boom }] },
+    patches: [{ L: patch }],
+    pickups: [{ L: pickup }],
+    fires: [wall],
+    lights: { getMaxVisibleLights: () => cap },
+  };
+  const kit = { s, torches: [], sun };
+  s.kit = kit;
+  const visible = () => lights.filter(L => L.visible);
+  restore();
+  budgetStage3Lights(kit);
+  assert.deepEqual(visible(), [hero, bolt, hit]);
+  assert.equal(kit.lightBudget.active, 3);
+  assert.equal(kit.lightBudget.candidates, 8);
+  assert.equal(kit.lightBudget.cap, 3);
+  assert.equal(kit.lightBudget.peak, 8);
+  cap = 6;
+  restore();
+  budgetStage3Lights(kit);
+  assert.deepEqual(visible(), [hero, bolt, hit, patch, pickup, boom]);
+  assert.equal(wall.visible, false);
+  assert.equal(sun.visible, false);
+  assert.ok(kit.lightBudget.peak >= kit.lightBudget.candidates);
+  boom.intensity = wall.intensity = sun.intensity = 0;
+  restore();
+  budgetStage3Lights(kit);
+  assert.equal(kit.lightBudget.candidates, 5);
+  assert.equal(kit.lightBudget.peak, 8);
+  assert.equal(boom.visible, false);
+  assert.equal(wall.visible, false);
+  assert.equal(sun.visible, false);
+  assert.equal(stageLightLine(s), 'L 5/5/6 pk 8');
+});

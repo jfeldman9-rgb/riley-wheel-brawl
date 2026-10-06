@@ -1,5 +1,8 @@
 // HUD scene: portrait + health + saidin, enemy/boss bars, combo counter, captions, GO arrow, title/clear cards, perf readout.
-import { VW, VH, clamp, q } from './config.js';
+import { VW, VH, LANE_TOP, LANE_BOT, clamp, q } from './config.js';
+import { FADE } from './myrddraal.js';
+import { sfx } from './audio.js';
+import { stageLightLine } from './stage3-lights.js';
 import { perf, displayMs } from './perf.js';
 import { installPerfPanel } from './perf-panel.js';
 import { POWERS, ART } from './powers.js';
@@ -54,9 +57,47 @@ export function mashRing(R, out = {}) {
   out.fill = clamp01(R.grabbedBy.mashN / MASH_NEED); return out;
 }
 
+// The meter-allocation harness strips imports, so a missing FADE falls back to the locked seconds.
+function fearSeconds(key) {
+  return typeof FADE === 'undefined' ? (key === 'brave' ? 1.2 : 4) : FADE.fear[key];
+}
+
 export function fearArc(s, out = {}) {
   if (!s || s.stageNo !== 3 || !s.boss || !s.boss.alive || s.boss.state === 'defeated' || s.boss.phase < 2 || !s.boss.auraOn) return null;
-  out.fill = clamp01(s.boss.fear || 0); return out;
+  out.fill = clamp01(s.boss.fear || 0);
+  const brave = clamp01((s.boss.braveT || 0) / fearSeconds('brave'));
+  const dispel = clamp01((s.boss.dispelT || 0) / fearSeconds('dispel'));
+  if (brave > 0) out.brave = brave; else delete out.brave;
+  if (dispel > 0) out.dispel = dispel; else delete out.dispel;
+  return out;
+}
+
+/** Floor ring at the fear radius. Hidden unless the aura is active, so a dispel hides it. */
+export function auraRing(boss) {
+  if (!boss?.auraActive) return null;
+  const radius = typeof FADE === 'undefined' ? 220 : FADE.fear.radius;
+  return { x: boss.x, y: boss.y, radius, alpha: clamp01(boss.auraK || 0), color: 0xff00ff };
+}
+
+function strokeFearRing(g, cx, cy, ring) {
+  const top = typeof LANE_TOP === 'undefined' ? 572 : LANE_TOP;
+  const bot = typeof LANE_BOT === 'undefined' ? 690 : LANE_BOT;
+  const r = ring.radius;
+  const lo = Math.max(-1, (top - cy) / r), hi = Math.min(1, (bot - cy) / r);
+  if (hi <= lo) return;
+  const a0 = Math.asin(lo), a1 = Math.asin(hi);
+  g.lineStyle?.(3, ring.color, ring.alpha);
+  g.beginPath?.(); g.arc?.(cx, cy, r, a0, a1, false); g.strokePath?.();
+  g.beginPath?.(); g.arc?.(cx, cy, r, Math.PI - a1, Math.PI - a0, false); g.strokePath?.();
+}
+
+function noteMash(s) {
+  const R = s?.riley, held = R?.state === 'grabbed' && R.grabbedBy;
+  if (!held) { s._mashN = undefined; s._mashPop = 0; return; }
+  const n = R.grabbedBy.mashN || 0;
+  if (s._mashN !== undefined && n > s._mashN) { s._mashPop = 1; sfx.mash(); }
+  else if (s._mashN !== undefined && n < s._mashN) s._mashPop = -1;
+  s._mashN = n;
 }
 
 const stage3Plates = s => s?.stageNo && s.stageNo !== 3 ? null : s?.cache?.json?.get?.('plates3');
@@ -64,14 +105,24 @@ export const placeholderArt = (s, plates = stage3Plates(s)) => Object.values(s?.
 
 // Drawing consumes each fill immediately, so both meters can reuse one result.
 const METER_FILL = {};
+function strokeWindow(g, x, y, radius, color, alpha, fill) {
+  g.lineStyle?.(2, color, alpha);
+  g.beginPath?.();
+  g.arc?.(x, y, radius, -Math.PI / 2, -Math.PI / 2 + fill * Math.PI * 2, false);
+  g.strokePath?.();
+}
+
 export function drawStage3Meters(s, g) {
   if (!s || !s.riley || !g) return;
+  noteMash(s);
   const R = s.riley;
   const mr = mashRing(R, METER_FILL);
   if (mr) {
     const mx = R.x - (s.camX || 0);
     const my = R.y - (R.z || 0) - 300;
-    const rad = 22;
+    const pop = s._mashPop || 0;
+    s._mashPop = 0;
+    const rad = 22 + (pop > 0 ? 6 : pop < 0 ? -4 : 0);
     g.lineStyle?.(3, 0x141018, 0.85);
     g.strokeCircle?.(mx, my, rad);
     if (mr.fill > 0) {
@@ -86,7 +137,7 @@ export function drawStage3Meters(s, g) {
     const fx = R.x - (s.camX || 0);
     const fy = R.y + 8;
     const rad = 28;
-    g.lineStyle?.(2, 0x280c38, 0.5);
+    g.lineStyle?.(2, 0x280c38, 0.8);
     g.strokeCircle?.(fx, fy, rad);
     if (fa.fill > 0) {
       g.lineStyle?.(2, 0xff00ff, 0.85);
@@ -94,7 +145,11 @@ export function drawStage3Meters(s, g) {
       g.arc?.(fx, fy, rad, -Math.PI / 2, -Math.PI / 2 + fa.fill * Math.PI * 2, false);
       g.strokePath?.();
     }
+    if (fa.dispel > 0) strokeWindow(g, fx, fy, 36, 0xff9a48, 0.9, fa.dispel);
+    if (fa.brave > 0) strokeWindow(g, fx, fy, 32, 0xffffff, 0.95, fa.brave);
   }
+  const ring = auraRing(s.boss);
+  if (ring && ring.alpha > 0) strokeFearRing(g, ring.x - (s.camX || 0), ring.y, ring);
 }
 export class HUD extends Phaser.Scene {
   constructor() { super('hud'); }
@@ -371,7 +426,7 @@ export class HUD extends Phaser.Scene {
     if (this.capT > 0) { this.capT -= dt; const a = Math.min(1, this.capT * 3); this.capWho.setAlpha(a); this.capText.setAlpha(a); this.capBg.setAlpha(a); }
     if ((this.pt = (this.pt || 0) + 1) % 20 === 0) {
       const p = perf.update();
-      if (this.showPerf && p) { const f = p.fight; this.perfT.setText(`${p.fps.toFixed(1)} fps  p95 ${displayMs(p.p95)}ms  >33.4ms ${p.over33_4}/${p.frames}` + (f ? `\nFight p95 ${displayMs(f.p95)}ms ${p.gate.status === 'PASS' ? '≤16.7' : '>16.7'} · >33.4ms ${f.over33_4}/${f.frames}` : '\nFight: no samples') + `  | RS ${this.game.rs} q${s.fx.quality}`).setAlpha(1); }
+      if (this.showPerf && p) { const f = p.fight; const lights = stageLightLine(s); this.perfT.setText(`${p.fps.toFixed(1)} fps  p95 ${displayMs(p.p95)}ms  >33.4ms ${p.over33_4}/${p.frames}` + (f ? `\nFight p95 ${displayMs(f.p95)}ms ${p.gate.status === 'PASS' ? '≤16.7' : '>16.7'} · >33.4ms ${f.over33_4}/${f.frames}` : '\nFight: no samples') + `  | RS ${this.game.rs} q${s.fx.quality}` + (lights ? `  ${lights}` : '')).setAlpha(1); }
       else this.perfT.setAlpha(0);
     }
   }

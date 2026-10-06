@@ -5,7 +5,7 @@ import { queueCharPages } from './assets.js';
 import { STAGE3 } from './stages.js';
 import { MID_Y } from './stage2.js';
 import { Stage3Hazards } from './stage3-hazards.js';
-import { budgetStage3Lights, plateScale } from './stage3-lights.js';
+import { budgetStage3Lights, plateScale, playFearCues, coilTell } from './stage3-lights.js';
 import { installStage3Suspension } from './stage3-suspension.js';
 export const STORY3_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story3_panel_' + n, url: `assets/story/story3_panel_${n}.jpg` })));
 export const STORY3_SCRIPT = Object.freeze([
@@ -91,6 +91,7 @@ export class Stage3Kit extends Stage3Hazards {
   get ambient() { return timeOfDay(this.s.camX || 0, this.keys).ambient; }
   get ambientUnlit() { return hex(this.cfg.ambientUnlit) || 0x5a6482; }
   applyLightBudget() { budgetStage3Lights(this); }
+  telegraph(z) { coilTell(this, z); }
   claimMudJoke() { return false; }
   // ---------- build (never reads s.camX: it is stale on a restart; update() sets every camX-dependent value) ----------
   build() {
@@ -180,6 +181,7 @@ export class Stage3Kit extends Stage3Hazards {
     if (this.stars.length) this.updateStars(dt);
     if (this.sticks.length) this.updateSticks(dt);
     this.updateHazards(dt);
+    playFearCues(this);
   }
 }
 

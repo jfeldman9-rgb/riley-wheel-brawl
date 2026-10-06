@@ -4,7 +4,7 @@ import { sfx, say } from './audio.js';
 import { VOLLEY_BANDS } from './stages.js';
 import { Stage2Kit, MID_Y } from './stage2.js';
 import { FADE } from './myrddraal.js';
-import { stage3Threats, armRoofTiles, stepRoofTiles, roofTileDrawn, dropRoofTiles } from './stage3-lights.js';
+import { stage3Threats, armRoofTiles, stepRoofTiles, roofTileDrawn, dropRoofTiles, armTileCue, stepTileCue } from './stage3-lights.js';
 
 export const TILES = Object.freeze({
   zone: 2, warn: 0.9, speed: 900, every: Object.freeze([3.0, 4.2]),
@@ -37,6 +37,7 @@ export class Stage3Hazards extends Stage2Kit {
     });
     const dir = pick([-1, 1]);
     this.tiles.push({ bands, markers, t: 0, dir, x: null, img: null, hit: new Set(), frame: 0, dustT: 0 });
+    armTileCue(this, this.tiles.at(-1));
     sfx.tileRattle?.();
     this.hint('tiles', 'ROOF TILES! CHANGE LANES!');
     if (!this.roofSaid) { this.roofSaid = true; say('riley_st3_roof_01', s.caption, false); }
@@ -61,6 +62,7 @@ export class Stage3Hazards extends Stage2Kit {
         m.setPosition(s.camX + VW / 2, m.y);
         m.setAlpha(0.32 + 0.28 * Math.abs(Math.sin(k.t * 9)));
       }
+      stepTileCue(k, s);
       if (k.t >= TILES.warn) {
         if (!k.img) armRoofTiles(this, k, s);
         k.x += k.dir * TILES.speed * Math.min(dt, k.t - TILES.warn);

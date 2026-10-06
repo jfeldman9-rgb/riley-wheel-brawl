@@ -1,5 +1,6 @@
 // A local-only, keyboard/touch-accessible capture UI. It never uploads reports.
 import { perf, displayMs } from './perf.js';
+import { stageLightLine } from './stage3-lights.js';
 
 const SHIELDED_EVENTS = ['pointerdown', 'pointerup', 'pointermove', 'mousedown', 'mouseup',
   'touchstart', 'touchmove', 'touchend', 'touchcancel', 'click', 'dblclick', 'keyup'];
@@ -31,6 +32,7 @@ export function reportSummary(report) {
     `Renderer: ${m.renderer || 'not available yet'}`,
     m.softwareRenderer ? 'SOFTWARE RENDERER: not physical-device acceptance evidence.' : 'Physical-device acceptance remains unverified; capture both required devices.',
     'Timing displays round upward to 0.001 ms. JSON retains exact values.');
+  if (report.lights) rows.push(report.lights);
   return rows.join('\n');
 }
 
@@ -56,7 +58,10 @@ export function installPerfPanel({ game, getStage }) {
   const on = (el, type, fn, options) => { el.addEventListener(type, fn, options); listeners.push(() => el.removeEventListener(type, fn, options)); };
   const render = () => {
     currentReport = perf.report();
-    const coverage = getStage()?.bot?.coverage;
+    const stage = getStage();
+    const coverage = stage?.bot?.coverage;
+    const lights = stageLightLine(stage);
+    if (lights) currentReport.lights = lights;
     currentReport.observations = { bossCoverage: coverage ? JSON.parse(JSON.stringify(coverage)) : null };
     output.value = JSON.stringify(currentReport, null, 2);
     summary.textContent = reportSummary(currentReport);

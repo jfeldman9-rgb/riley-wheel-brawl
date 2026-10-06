@@ -236,6 +236,9 @@ export const sfx = {
   // Stage 2 (Baerlon) cues
   clang() { if (!gate('clang', 70)) return; tone({ f0: vary(1250), f1: 880, dur: 0.11, vol: 0.14, type: 'square' }); tone({ f0: vary(1870), dur: 0.22, vol: 0.09, type: 'triangle' }); noise({ f0: 5200, f1: 2000, dur: 0.08, vol: 0.18, filter: 'highpass' }); },
   glint() { if (!gate('glint', 200)) return; tone({ f0: 2600, f1: 3400, dur: 0.16, vol: 0.06, type: 'sine' }); tone({ f0: 3900, dur: 0.1, delay: 0.06, vol: 0.04, type: 'sine' }); },
+  dread() { if (!gate('dread', 350)) return; tone({ f0: 55, f1: 40, dur: 0.18, vol: 0.22, type: 'sine' }); tone({ f0: 82, f1: 48, dur: 0.12, vol: 0.08, type: 'triangle', delay: 0.08 }); },
+  shaken() { if (!gate('shaken', 200)) return; tone({ f0: 520, f1: 90, dur: 0.2, vol: 0.28, type: 'sawtooth' }); noise({ f0: 1800, f1: 200, dur: 0.16, vol: 0.2, filter: 'bandpass' }); },
+  mash() { if (!gate('mash', 40)) return; tone({ f0: 880, f1: 660, dur: 0.04, vol: 0.08, type: 'square' }); },
   bowDraw() { if (!gate('bow', 150)) return; noise({ f0: 700, f1: 1700, dur: 0.3, vol: 0.07, filter: 'bandpass', q: 3, attack: 0.2 }); },
   twang() { if (!gate('twang', 60)) return; tone({ f0: vary(190), f1: 120, dur: 0.14, vol: 0.16, type: 'triangle' }); noise({ f0: 3200, f1: 900, dur: 0.12, vol: 0.12, filter: 'bandpass', q: 1.5 }); },
   warcry() { if (!gate('warcry', 400)) return; for (let i = 0; i < 2; i++) tone({ f0: vary(200 + i * 70), f1: 150, dur: 0.55, vol: 0.12, type: 'sawtooth', delay: i * 0.04 }); noise({ f0: 900, f1: 400, dur: 0.5, vol: 0.14, attack: 0.08 }); duck(0.5, 0.3, 0.5); },

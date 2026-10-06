@@ -4,7 +4,7 @@ import { stage3Simulation, arena, placeC, withSeed } from './helpers/stage3-harn
 
 const { HUD, MASH_NEED, mashRing, fearArc, drawStage3Meters } = await import('../src/hud.js');
 const { CUTTHROAT } = await import('../src/darkfriends.js');
-const { Myrddraal } = await import('../src/myrddraal.js');
+const { Myrddraal, FADE } = await import('../src/myrddraal.js');
 
 test('mash ring shows only while Riley is grabbed and each press fills it by one sixth', () => withSeed(1, () => {
   const h = stage3Simulation({ mode: '' });
@@ -281,3 +281,36 @@ test("the ribbon counter and clear card carry Stage 3's ribbon", () => withSeed(
     h.destroy();
   }
 }));
+
+test('fear arc reports brave and dispel windows without changing the magenta fill', () => {
+  const boss = { alive: true, phase: 2, auraOn: true, state: 'approach', fear: 0.5, braveT: FADE.fear.brave / 2, dispelT: FADE.fear.dispel };
+  const s = { stageNo: 3, camX: 0, riley: { x: 400, y: 630, state: 'idle' }, boss };
+  const arc = fearArc(s);
+  assert.ok(arc.brave > 0 && arc.brave <= 1 && arc.dispel > 0 && arc.dispel <= 1);
+  assert.equal(arc.brave, 0.5);
+  assert.equal(arc.dispel, 1);
+  assert.equal(arc.fill, 0.5);
+  boss.braveT = FADE.fear.brave * 4;
+  boss.dispelT = FADE.fear.dispel * 4;
+  assert.equal(fearArc(s).brave, 1);
+  assert.equal(fearArc(s).dispel, 1);
+  boss.braveT = 0;
+  boss.dispelT = 0;
+  boss.fear = 0.33;
+  assert.deepEqual(fearArc(s), { fill: 0.33 });
+  boss.fear = 0.5;
+  boss.braveT = FADE.fear.brave / 2;
+  boss.dispelT = FADE.fear.dispel / 2;
+  const g = {
+    calls: [],
+    lineStyle(...args) { this.calls.push(args); return this; },
+    strokeCircle() { return this; },
+    beginPath() { return this; },
+    arc() { return this; },
+    strokePath() { return this; },
+  };
+  drawStage3Meters(s, g);
+  assert.ok(g.calls.some(args => args[1] === 0xff00ff && Math.abs(args[2] - 0.85) < 1e-9), 'magenta fill stays 0xff00ff at 0.85');
+  assert.ok(g.calls.some(args => args[1] === 0xffffff), 'brave window is a white arc');
+  assert.ok(g.calls.some(args => args[1] === 0xff9a48), 'dispel window is an amber arc');
+});

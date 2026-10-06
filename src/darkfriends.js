@@ -59,7 +59,7 @@ export class Cutthroat extends Whitecloak {
     const adx = Math.abs(R.x - this.x), ady = Math.abs(R.y - this.y);
     if (this.cool <= 0 && this.grabCool <= 0 && R.alive && !R.grabbedBy && R.state !== 'down' &&
         adx >= CUTTHROAT.lungeRange[0] && adx <= CUTTHROAT.lungeRange[1] &&
-        ady < CUTTHROAT.lungeLane && !s.grabBusy(this) && s.attackTokens() < s.maxTokens) {
+        ady < CUTTHROAT.lungeLane && !s.grabBusy(this) && s.attackTokens() < s.maxTokens && !s.kit?.tiles?.length) {
       return this.startLunge();
     }
     this.stalking = this.cool > 0 || s.attackTokens() >= s.maxTokens;
