@@ -32,7 +32,7 @@ export class Fighter {
     const cam = this.scene.bounds; this.x = clamp(this.x, cam.l + 40, cam.r - 40);
   }
   sync() {
-    const s = this.sprite; s.x = this.x + (this.shudder ? (Math.random() * 2 - 1) * 4 : 0); s.y = this.y - this.z; s.setDepth(1000 + this.y);
+    const s = this.sprite; s.x = this.x + (this.shudder ? (Math.random() * 2 - 1) * 2 : 0); s.y = this.y - this.z; s.setDepth(1000 + this.y);
     const k = Math.max(0.35, 1 - this.z / 500);
     // Keep a fading corpse's shadow in sync. Live Riley's invulnerability blink
     // must not make his ground shadow flicker with the sprite.

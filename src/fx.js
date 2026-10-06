@@ -3,6 +3,7 @@ import { HITSTOP, SHAKE, VW } from './config.js';
 export class FX {
   constructor(scene) {
     this.s = scene; this.hitstop = 0; this.trauma = 0; this.slowmo = 0; this.lightsOn = true; this.quality = 0;
+    this._sx = 0; this._sy = 0; this._dt = 1 / 60; this._out = [0, 0];
     this.makeTextures();
     const add = scene.add;
     const sp = (amin, amax) => { const e = add.particles(0, 0, 'streak', { emitting: false, lifespan: { min: 110, max: 240 }, speed: { min: 360, max: 860 }, angle: { min: amin, max: amax }, rotate: { onEmit: (p) => Math.atan2(p.velocityY, p.velocityX) * 57.3, onUpdate: (p) => Math.atan2(p.velocityY, p.velocityX) * 57.3 }, scale: { start: 1.0, end: 0.1 }, blendMode: 'ADD', tint: [0xfff2c0, 0xffc060, 0xffffff] }).setDepth(4000); return e; };
@@ -52,6 +53,7 @@ export class FX {
     this.embers.emitParticleAt(x, y, this.quality >= 2 ? 20 : 40);
   }
   update(dt) {
+    this._dt = dt;
     this.trauma = Math.max(0, this.trauma - dt * 1.8);
     const L = this.hitLight; L.intensity = Math.max(0, L.intensity - dt * 16);
     if (this.flashT > 0) { this.flashT -= dt; this.flash.setAlpha(Math.max(0, this.flashT * 8)); if (this.flashT <= 0) this.flash.setVisible(false); }
@@ -60,5 +62,14 @@ export class FX {
       if (b.t > 0.45) { this.s.lights.removeLight(b.L); this.booms.splice(this.booms.indexOf(b), 1); }
     }
   }
-  shakeOffset() { const sh = this.trauma * this.trauma; return [(Math.random() * 2 - 1) * 18 * sh, (Math.random() * 2 - 1) * 12 * sh]; }
+  shakeOffset() {
+    const sh = this.trauma * this.trauma;
+    const rx = (Math.random() * 2 - 1) * 10 * sh, ry = (Math.random() * 2 - 1) * 5 * sh;
+    if (this.trauma === 0) this._sx = this._sy = 0;
+    else {
+      const k = 1 - Math.exp(-this._dt * 60);
+      this._sx += (rx - this._sx) * k; this._sy += (ry - this._sy) * k;
+    }
+    this._out[0] = this._sx; this._out[1] = this._sy; return this._out;
+  }
 }
