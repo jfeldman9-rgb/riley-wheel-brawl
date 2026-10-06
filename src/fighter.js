@@ -1,5 +1,6 @@
 // Base fighter: position on the ground plane (x, y = depth lane) plus height z for jumps and launches.
 import { LANE_TOP, LANE_BOT, WORLD_W, clamp } from './config.js';
+import { ANIM_PIVOT_X } from './anim-pivot.js';
 export class Fighter {
   constructor(scene, def, x, y) {
     this.scene = scene; this.def = def; this.meta = scene.metas[def.key];
@@ -15,6 +16,7 @@ export class Fighter {
     const key = this.def.prefix + name; if (!this.scene.anims.exists(key)) { console.warn('missing anim', key); return; }
     if (!restart && this.cur === key) { this.sprite.anims.timeScale = ts; return; }
     this.cur = key; this.sprite.play(key); this.sprite.anims.timeScale = ts;
+    const px = ANIM_PIVOT_X[key]; if (this.sprite.setOrigin) this.sprite.setOrigin(px ?? this.def.anchorX, this.meta.baseline / this.meta.canvas[1]);
   }
   /** index of the current frame inside the current animation */
   get fi() { const c = this.sprite.anims.currentFrame; return c ? c.index - 1 : 0; }
