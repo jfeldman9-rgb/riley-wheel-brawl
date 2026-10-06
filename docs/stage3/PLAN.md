@@ -5,6 +5,17 @@ Baseline: `node --test tests/*.test.mjs` = **322/322 passing** at `ae700b1`.*
 
 This is a plan only. It contains no game code; code snippets below are specifications for the builders.
 
+## Changed since this plan was written
+
+The sections below now match the code. These are the numbers that moved, and the extras the original tables did not list. Prompt text in §4.2 is unchanged.
+
+- **Fear.** Radius **300 → 220** px. Fill **1.4 → 1.6** s. `brave` is **1.2** s (a calm window after a shake; the original table had no brave time). The HUD fear arc is magenta **`0xff00ff` at alpha 0.85**, drawn under Riley while the aura is on in phase ≥ 2. A living copy in `lunge` counts as calm, so a phase-3 copy lunge does not fill the meter. `NO_FEAR` also includes `cast` and `balefire`. Other fear fields now in code: `rampIn` 0.5, `rampOut` 0.3, `pulse` 0.03, `auraFrame` 3, `hurtMs` 340. `shaken` stays 0.7, dispel 4 s, dispel range 400, vignette 0.35–0.75, torch dim 0.7.
+- **Blink and split extras** the T6 list omitted: blink `behind` 110, `edge` 70; split `spread` [280, 460], `order` [0.8, 1.6, 2.4], `relunge` [2.4, 3.2]; `wake` 0.8, `melt` 1.2. Lunge speed 760, thrust 12 heavy knockdown kb 380. Counter stagger 1.4 and ×1.5, reduction 0.6, and `wrongHitPunish` 0.3 are unchanged.
+- **Time of day.** The dusk key at x 3300 is **`0x3a3a52`** (the plan said `0x3a3a58`). The night key is **x 3900**, not x 4000. Afternoon `0x8a7a62` and sunset `0x7a5a52` are unchanged. `farMix` / `sunI` at those keys: 0/1, 0.2/0.6, 0.75/0.1, 1/0.
+- **Light budget.** The sun is a candidate. `budgetStage3Lights` counts it after Riley's light and hides lights past `maxLights` (10), so Balefire cannot make Phaser drop Riley's light. The fear aura still adds no light.
+- **Resident placeholders (T15).** Character pages are silhouette-trimmed; `sourceSize` is still the design canvas, so on-screen size is unchanged. The seven backdrop plates in `art-manifest.json` are **1086×362** (half of 2172×724) and `plateScale` draws them at the 2172 design width. Real-art prompts still ask for 2172×724. Pages plus plates, RGBA8 base level, are about **99 MB**, under the 110 MB cap.
+- **Cutthroat.** 34 HP, lunge 620 px/s, coil 0.45 s, mash 6, decay 0.5 s, hold 2.4 s, shove 1.2 s at ×1.3 still match. Chips are capped at **3** (2 damage each, every 0.6 s) before the throw at 2.4 s.
+
 ---
 
 ## 0. Ground rules (apply to every task)
@@ -119,9 +130,10 @@ Theatrical villain: eyeless, pale, a black cloak that hangs unnaturally still. I
    - **Counter:** hit it during `blinkin` frames 2–3 and it **staggers** for 1.4 s, taking ×1.5 damage
      (`COUNTER!`).
 2. **Fear aura (66–33%)**
-   - It raises its hand (`fear`, 5 frames). From then on it radiates an aura with a radius of 300 px.
-   - While Riley stands inside the aura, a fear meter fills over 1.4 s. When the meter is full, Riley is **shaken**
-     for 0.7 s, using his existing `hurt` frames (no new art).
+   - It raises its hand (`fear`, 5 frames). The aura turns on at frame 3 (`auraFrame`) and radiates **220 px**.
+   - While Riley stands inside the aura, a fear meter fills over **1.6 s**. When the meter is full, Riley is **shaken**
+     for 0.7 s (`hurtMs` 340), using his existing `hurt` frames (no new art). After the shake, `brave` (1.2 s) keeps
+     the meter calm. A living copy that is lunging also counts as calm. The HUD arc is magenta `0xff00ff` at alpha 0.85.
    - The camera vignette deepens from 0.35 to 0.75 strength, and the garden torches dim to 70% radius. This is the
      "screen edges dim" from LEVELS.md.
    - **Light beats shadow:** any fire or light power that lands within 400 px clears the aura for 4 s and snaps the
@@ -155,8 +167,8 @@ timeOfDay(camX) -> { t: 0..1, ambient, farMix, sunI, torchK }
 - **`ambient`** lerps between the keyframes in `assets/bg3/lights.json` (`timeKeys`). For example:
   - x 0: `0x8a7a62` (warm afternoon)
   - x 2400: `0x7a5a52` (sunset)
-  - x 3300: `0x3a3a58` (dusk)
-  - x 4000: `0x262c48` (night)
+  - x 3300: `0x3a3a52` (dusk)
+  - x 3900: `0x262c48` (night)
 - **`farMix`** cross-fades `bg3-far-day` into `bg3-far-night`. Both are separately painted plates; there is no
   recolouring.
 - **`sunI`** fades a large warm "sun" light, low on the upper left, from its full intensity down to 0. It is a
@@ -244,8 +256,8 @@ schedule) by reference. Its numbers do not move.
 
 - The fear aura **dims existing lights**; it never adds lights.
 - Shadow pools and copies are unlit sprites.
-- The sun light is off at night (`sunI` = 0, and it is removed when it reaches 0).
-- A test asserts this worst case (T7).
+- The sun light is off at night (`sunI` = 0). While it is on, it is the last candidate in `budgetStage3Lights`, after Riley's light, so a full cap hides the sun before it hides the hero light.
+- A test asserts this worst case (T7), and `stage3-light-budget-hardening.test.mjs` covers the sun and Balefire.
 
 ---
 
@@ -462,11 +474,13 @@ Parallel lanes after T2: **A** (T3 → T7), **B** (T4 → T5), **C** (T6), **D**
   - `TYPES.fade`: `def D('fade', 0.56, 0.5, 440, 180)`, speed 110, pref 210, cool [0.9, 1.5], score 7000,
     `boss: true`, atk slash with active [2, 4], 12 dmg, `medium`. The second hit is a knockdown, like Byar.
   - `FADE` constants (§1.4):
-    - **blink:** every [4, 6] (P2 [6, 8]), poolWarn 0.6, counterFrames [2, 3]
-    - **fear:** radius 300, fill 1.4, shaken 0.7, dispel 4, dispelRange 400, vig [0.35, 0.75], torchDim 0.7
-    - **split:** copies 2, every [8, 10], wrongHitPunish 0.3
+    - **blink:** every [4, 6] (P2 [6, 8]), poolWarn 0.6, counterFrames [2, 3], behind 110, edge 70
+    - **fear:** radius 220, fill 1.6, shaken 0.7, dispel 4, dispelRange 400, vig [0.35, 0.75], torchDim 0.7, rampIn 0.5, rampOut 0.3, pulse 0.03, auraFrame 3, hurtMs 340, brave 1.2. HUD arc `0xff00ff` alpha 0.85. A copy in `lunge` is calm.
+    - **split:** copies 2, every [8, 10], wrongHitPunish 0.3, spread [280, 460], order [0.8, 1.6, 2.4], relunge [2.4, 3.2]
     - **counter:** stagger 1.4, ×1.5
-    - **reduction:** 0.6
+    - **reduction:** 0.6, wake 0.8, melt 1.2
+    - **lunge:** speed 760, range [220, 420], lane 30, chance 0.5; hit 12 heavy knockdown kb 400; copy hit 8 medium kb 220
+    - **thrust:** 12 heavy knockdown, kb 380
   - `class Myrddraal extends Enemy` (it does **not** extend Whitecloak, because it has no KO/flee).
   - `class FadeCopy extends Enemy`: hp 1, no shadow, `isCopy`. It is not counted in waves, and `bossDown` removes
     every copy.
@@ -482,7 +496,7 @@ Parallel lanes after T2: **A** (T3 → T7), **B** (T4 → T5), **C** (T6), **D**
    - A hit on `blinkin` frame 2 or 3 sets `stagger` and the ×1.5 multiplier applies.
    - A hit outside those frames takes ×0.6.
 3. **Fear**
-   - Riley inside 300 px for 1.4 s becomes shaken (hurt, 0.7 s). Outside, the meter decays.
+   - Riley inside 220 px for 1.6 s becomes shaken (hurt, 0.7 s). `brave` (1.2 s) and a lunging copy keep the meter calm. Outside, the meter decays.
    - Fireball, lightning, fire shield and Balefire within 400 px each clear the aura for 4 s.
    - The vignette strength goes up, and returns to 0.35 when cleared.
    - With `?flash=0` or `prefers-reduced-motion`, the vignette changes without pulsing.
@@ -589,7 +603,7 @@ Parallel lanes after T2: **A** (T3 → T7), **B** (T4 → T5), **C** (T6), **D**
   Stage 2 strings are unchanged.
 - **Grab prompt:** a small in-world mash ring over Riley's head that fills with escape progress. It uses existing UI
   shapes; no new art.
-- **Fear meter:** a thin dark arc under Riley that fills while he is inside the aura.
+- **Fear meter:** a thin arc under Riley, magenta `0xff00ff` at alpha 0.85, that fills while he is inside the aura (phase ≥ 2, aura on).
 - One-time hints, Stage 2 style (`kit.hint`):
   - `GRABBED! MASH TO BREAK FREE`
   - `FEAR AURA! FIRE OR LIGHTNING DRIVES IT BACK`
