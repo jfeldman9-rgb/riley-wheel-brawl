@@ -146,14 +146,24 @@ function titleHUD() {
 
 test('touch stage-select arrows have centred 120×100 targets, including edges outside the glyph', () => {
   const { hud, pressed, tap } = titleHUD();
-  for (const [arrow, stage] of [[hud.titleArrowR, 2], [hud.titleArrowL, 1]]) {
+  const right = hud.titleArrowR, left = hud.titleArrowL;
+  for (const arrow of [right, left]) {
     assert.equal(arrow.input.hitArea.width, 120); assert.equal(arrow.input.hitArea.height, 100);
-    for (const [dx, dy] of [[-59, -49], [59, 49], [-59, 49], [59, -49], [0, 0]]) {
-      assert.deepEqual(tap(arrow.x + dx, arrow.y + dy), [arrow], 'expanded touch target catches the tap');
-      assert.equal(hud.stage.titleSel, stage); assert.equal(hud.titleStageT.text, STAGE_NAMES[stage]);
-      assert.equal(pressed.length, 0, 'stage selection never emits Start, even on repeated/clamped taps');
-    }
   }
+  const corners = [[-59, -49], [59, 49], [-59, 49], [59, -49], [0, 0]];
+  const expectRight = [2, 3, 4, 4, 4];
+  corners.forEach(([dx, dy], i) => {
+    assert.deepEqual(tap(right.x + dx, right.y + dy), [right], 'expanded touch target catches the tap');
+    assert.equal(hud.stage.titleSel, expectRight[i]); assert.equal(hud.titleStageT.text, STAGE_NAMES[expectRight[i]]);
+    assert.equal(pressed.length, 0, 'stage selection never emits Start, even on repeated/clamped taps');
+  });
+  assert.equal(hud.titleArrowR.alpha, 0.25); assert.equal(hud.titleArrowL.alpha, 1);
+  const expectLeft = [3, 2, 1, 1, 1];
+  corners.forEach(([dx, dy], i) => {
+    assert.deepEqual(tap(left.x + dx, left.y + dy), [left]);
+    assert.equal(hud.stage.titleSel, expectLeft[i]); assert.equal(hud.titleStageT.text, STAGE_NAMES[expectLeft[i]]);
+    assert.equal(pressed.length, 0);
+  });
   assert.equal(hud.titleArrowL.alpha, 0.25); assert.equal(hud.titleArrowR.alpha, 1);
   assert.deepEqual(tap(0, 110), []); assert.deepEqual(pressed, ['start'], 'the start prompt still starts normally');
   hud.stage.started = true; tap(0, 110); assert.deepEqual(pressed, ['start'], 'battlefield taps do not emit Start');

@@ -1,0 +1,14 @@
+{
+ "id": "cutthroat-d",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "cutthroat-master",
+  "trolloc master"
+ ],
+ "output": "cutthroat-d.png",
+ "prompts": [
+  "Create cutthroat-d.png, a production animation sprite sheet for Riley Wheel Brawl 2.0. Use the attached cutthroat-master.png as the LOCKED character and style reference; reproduce that exact man, face, hood, charcoal cloak, brown jerkin, oxblood shirt, belt pouches, sheathed knife and black leather cosh in every drawing. Do not copy any background.\nOUTPUT: 1536x1024 landscape PNG, genuinely transparent background, real alpha, no shadows/floor/text/labels/borders/frame numbers. Exactly EIGHT full-body figures in TWO rows of FOUR, read left to right. Equal cells 384x512, generous separation, nothing clipped. Same scale, common boot baseline at y=490 (top) and y=1000 (bottom). Every figure faces LEFT. All eight are independently drawn, never copied or mirrored. Draw ONLY the cutthroat; there is NO second person in any cell.\nSTYLE: hand-drawn HD 2D fighting-game art in the spirit of Streets of Rage 4, near-black outlines thick outside thin inside, clean 2-3 step cel shading, light upper left, cool right rim. Not pixel art, 3D or chibi. Kid-friendly, no blood. Exactly two arms, two legs, five-finger hands.\nCELLS 1-4, HOLDING FROM BEHIND (4-frame loop): he is standing close behind an INVISIBLE taller person, both arms wrapped forward around the invisible person's upper chest and arms at the height of his own shoulders, hands clasped together in front, his head peeking past the invisible person's shoulder on the far side, cosh tucked in his belt. 1: firm clamp, smug grin. 2: shifting his grip, leaning back to pull. 3: straining, gritted teeth, feet braced wide as the invisible person struggles. 4: re-clamping tighter, eyes narrowed.\nCELLS 5-6, GRAB THROW: 5: twisting his hips and heaving his clasped arms up and over to his left, as if hurling the invisible person to the ground in front of him. 6: follow-through, bent forward, arms down and open, panting smugly.\nCELLS 7-8, SHOVED: 7: knocked backwards by an elbow to the stomach, doubled over, stumbling back to the right, arms flung wide. 8: off balance with his arms windmilling, wide-eyed, open to attack."
+ ]
+}

@@ -1,0 +1,256 @@
+{
+ "key": "cutthroat",
+ "canvas": [
+  900,
+  600
+ ],
+ "baseline": 570,
+ "scale": 0.62,
+ "pages": [
+  "cutthroat-0"
+ ],
+ "placeholder": true,
+ "dir": "assets/stage3/chars",
+ "anims": [
+  {
+   "name": "cutthroat_walk",
+   "frames": [
+    "cutthroat_walk_00",
+    "cutthroat_walk_01",
+    "cutthroat_walk_02",
+    "cutthroat_walk_03",
+    "cutthroat_walk_04",
+    "cutthroat_walk_05"
+   ],
+   "holds": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_hurt",
+   "frames": [
+    "cutthroat_hurt_00",
+    "cutthroat_hurt_01"
+   ],
+   "holds": [
+    90,
+    160
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_slash",
+   "frames": [
+    "cutthroat_slash_00",
+    "cutthroat_slash_01",
+    "cutthroat_slash_02",
+    "cutthroat_slash_03",
+    "cutthroat_slash_04"
+   ],
+   "holds": [
+    120,
+    220,
+    100,
+    180,
+    200
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_knockdown",
+   "frames": [
+    "cutthroat_knockdown_00",
+    "cutthroat_knockdown_01",
+    "cutthroat_knockdown_02"
+   ],
+   "holds": [
+    120,
+    180,
+    400
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_lunge",
+   "frames": [
+    "cutthroat_lunge_00",
+    "cutthroat_lunge_01",
+    "cutthroat_lunge_02",
+    "cutthroat_lunge_03",
+    "cutthroat_lunge_04"
+   ],
+   "holds": [
+    450,
+    90,
+    120,
+    160,
+    260
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_getup",
+   "frames": [
+    "cutthroat_getup_00",
+    "cutthroat_getup_01"
+   ],
+   "holds": [
+    200,
+    220
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_dazed",
+   "frames": [
+    "cutthroat_dazed_00"
+   ],
+   "holds": [
+    400
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_hold",
+   "frames": [
+    "cutthroat_hold_00",
+    "cutthroat_hold_01",
+    "cutthroat_hold_02",
+    "cutthroat_hold_03"
+   ],
+   "holds": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_grabthrow",
+   "frames": [
+    "cutthroat_grabthrow_00",
+    "cutthroat_grabthrow_01"
+   ],
+   "holds": [
+    180,
+    300
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_shoved",
+   "frames": [
+    "cutthroat_shoved_00",
+    "cutthroat_shoved_01"
+   ],
+   "holds": [
+    160,
+    400
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_stalk",
+   "frames": [
+    "cutthroat_stalk_00",
+    "cutthroat_stalk_01",
+    "cutthroat_stalk_02",
+    "cutthroat_stalk_03"
+   ],
+   "holds": [
+    140,
+    140,
+    140,
+    140
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "cutthroat_flee",
+   "frames": [
+    "cutthroat_flee_00",
+    "cutthroat_flee_01",
+    "cutthroat_flee_02",
+    "cutthroat_flee_03"
+   ],
+   "holds": [
+    90,
+    90,
+    90,
+    90
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ ]
+}

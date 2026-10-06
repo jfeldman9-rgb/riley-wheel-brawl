@@ -1,0 +1,457 @@
+{
+ "version": 1,
+ "facingFlips": [],
+ "entries": [
+  {
+   "id": "cutthroat-master",
+   "files": [],
+   "sha256": {},
+   "sourceOnly": true,
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/cutthroat-master.json"
+  },
+  {
+   "id": "cutthroat-a",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "24388b331a3bb63d7bdc3762df462a63c7e6a50bb2090f6f34ad336305d56e9d",
+    "assets/stage3/chars/cutthroat-0_n.webp": "01074e4d1b9bd5003b53fca323bde0a3ffe2b8148cb893d9fa1ea75fe6df748e",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "fcf53d40c48e7b77501e24533452150813f3621882f8af35656bff321aea7cb7",
+    "assets/stage3/chars/cutthroat-0.json": "775611fb11817eea1baa37a775df32801df3334a9a00649e24adf5922b195d1a",
+    "assets/stage3/chars/cutthroat.anims.json": "6ef026c15e821a0d97125aa1ea4b846907acdf5d5f4c1023fda55a4ce904bfc0"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/cutthroat-a.json"
+  },
+  {
+   "id": "cutthroat-b",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "24388b331a3bb63d7bdc3762df462a63c7e6a50bb2090f6f34ad336305d56e9d",
+    "assets/stage3/chars/cutthroat-0_n.webp": "01074e4d1b9bd5003b53fca323bde0a3ffe2b8148cb893d9fa1ea75fe6df748e",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "fcf53d40c48e7b77501e24533452150813f3621882f8af35656bff321aea7cb7",
+    "assets/stage3/chars/cutthroat-0.json": "775611fb11817eea1baa37a775df32801df3334a9a00649e24adf5922b195d1a",
+    "assets/stage3/chars/cutthroat.anims.json": "6ef026c15e821a0d97125aa1ea4b846907acdf5d5f4c1023fda55a4ce904bfc0"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/cutthroat-b.json"
+  },
+  {
+   "id": "cutthroat-c",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "24388b331a3bb63d7bdc3762df462a63c7e6a50bb2090f6f34ad336305d56e9d",
+    "assets/stage3/chars/cutthroat-0_n.webp": "01074e4d1b9bd5003b53fca323bde0a3ffe2b8148cb893d9fa1ea75fe6df748e",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "fcf53d40c48e7b77501e24533452150813f3621882f8af35656bff321aea7cb7",
+    "assets/stage3/chars/cutthroat-0.json": "775611fb11817eea1baa37a775df32801df3334a9a00649e24adf5922b195d1a",
+    "assets/stage3/chars/cutthroat.anims.json": "6ef026c15e821a0d97125aa1ea4b846907acdf5d5f4c1023fda55a4ce904bfc0"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/cutthroat-c.json"
+  },
+  {
+   "id": "cutthroat-d",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "24388b331a3bb63d7bdc3762df462a63c7e6a50bb2090f6f34ad336305d56e9d",
+    "assets/stage3/chars/cutthroat-0_n.webp": "01074e4d1b9bd5003b53fca323bde0a3ffe2b8148cb893d9fa1ea75fe6df748e",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "fcf53d40c48e7b77501e24533452150813f3621882f8af35656bff321aea7cb7",
+    "assets/stage3/chars/cutthroat-0.json": "775611fb11817eea1baa37a775df32801df3334a9a00649e24adf5922b195d1a",
+    "assets/stage3/chars/cutthroat.anims.json": "6ef026c15e821a0d97125aa1ea4b846907acdf5d5f4c1023fda55a4ce904bfc0"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/cutthroat-d.json"
+  },
+  {
+   "id": "cutthroat-e",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "24388b331a3bb63d7bdc3762df462a63c7e6a50bb2090f6f34ad336305d56e9d",
+    "assets/stage3/chars/cutthroat-0_n.webp": "01074e4d1b9bd5003b53fca323bde0a3ffe2b8148cb893d9fa1ea75fe6df748e",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "fcf53d40c48e7b77501e24533452150813f3621882f8af35656bff321aea7cb7",
+    "assets/stage3/chars/cutthroat-0.json": "775611fb11817eea1baa37a775df32801df3334a9a00649e24adf5922b195d1a",
+    "assets/stage3/chars/cutthroat.anims.json": "6ef026c15e821a0d97125aa1ea4b846907acdf5d5f4c1023fda55a4ce904bfc0"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/cutthroat-e.json"
+  },
+  {
+   "id": "riley-s3a",
+   "char": "riley3",
+   "files": [
+    "assets/stage3/chars/riley3-0.webp",
+    "assets/stage3/chars/riley3-0_n.webp",
+    "assets/stage3/chars/riley3-0_nl.webp",
+    "assets/stage3/chars/riley3-0.json",
+    "assets/stage3/chars/riley3.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/riley3-0.webp": "02b7e878ed73f49c982f68c93d002c6889fb2409ea340680583a057deee98069",
+    "assets/stage3/chars/riley3-0_n.webp": "b0a0b1436d3556a0f4bb7a2b71a9860205d7507d99af2b8a40cb1f93eaf0ded8",
+    "assets/stage3/chars/riley3-0_nl.webp": "8cb682a0b7abd365f433b3fc3fd23fa7f49e2c69a9fdf79349bbfcdcb17c8f9c",
+    "assets/stage3/chars/riley3-0.json": "1145d08a418db0a44375a8f2f57bc757ff042cca4fa6137f424c8c7daa4e2d97",
+    "assets/stage3/chars/riley3.anims.json": "c9820cbe8ec4a44af9ff94f703fd69eccb1d3adff2260c98aae099980324eaba"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/riley-s3a.json"
+  },
+  {
+   "id": "fade-master",
+   "files": [],
+   "sha256": {},
+   "sourceOnly": true,
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fade-master.json"
+  },
+  {
+   "id": "fade-a",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-0.webp",
+    "assets/stage3/chars/fade-0_n.webp",
+    "assets/stage3/chars/fade-0_nl.webp",
+    "assets/stage3/chars/fade-0.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-0.webp": "a373cc4cd7d21698d928c1173e130ce6c5a2f7953575178e07688a32e9b0020b",
+    "assets/stage3/chars/fade-0_n.webp": "2a9d91297c8c79fc92683ac33132e65e4d9ace6fdaaa9a07c14734dda04fb32b",
+    "assets/stage3/chars/fade-0_nl.webp": "6d0055376a90c8dbd56e861084adc0bbb84a9de82da01cdd023cc8a23bf8f6d8",
+    "assets/stage3/chars/fade-0.json": "3df3a9f8c0a098a7cc37185362552e4ad8d9ea65e53c8f9631e830311f9f4cf6",
+    "assets/stage3/chars/fade.anims.json": "281f5a583a8b78a20ab02648a10d5e8e4665262d9ca34f8522c305d8604a1ea6"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fade-a.json"
+  },
+  {
+   "id": "fade-b",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-0.webp",
+    "assets/stage3/chars/fade-0_n.webp",
+    "assets/stage3/chars/fade-0_nl.webp",
+    "assets/stage3/chars/fade-0.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-0.webp": "a373cc4cd7d21698d928c1173e130ce6c5a2f7953575178e07688a32e9b0020b",
+    "assets/stage3/chars/fade-0_n.webp": "2a9d91297c8c79fc92683ac33132e65e4d9ace6fdaaa9a07c14734dda04fb32b",
+    "assets/stage3/chars/fade-0_nl.webp": "6d0055376a90c8dbd56e861084adc0bbb84a9de82da01cdd023cc8a23bf8f6d8",
+    "assets/stage3/chars/fade-0.json": "3df3a9f8c0a098a7cc37185362552e4ad8d9ea65e53c8f9631e830311f9f4cf6",
+    "assets/stage3/chars/fade.anims.json": "281f5a583a8b78a20ab02648a10d5e8e4665262d9ca34f8522c305d8604a1ea6"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fade-b.json"
+  },
+  {
+   "id": "fade-c",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-0.webp",
+    "assets/stage3/chars/fade-0_n.webp",
+    "assets/stage3/chars/fade-0_nl.webp",
+    "assets/stage3/chars/fade-0.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-0.webp": "a373cc4cd7d21698d928c1173e130ce6c5a2f7953575178e07688a32e9b0020b",
+    "assets/stage3/chars/fade-0_n.webp": "2a9d91297c8c79fc92683ac33132e65e4d9ace6fdaaa9a07c14734dda04fb32b",
+    "assets/stage3/chars/fade-0_nl.webp": "6d0055376a90c8dbd56e861084adc0bbb84a9de82da01cdd023cc8a23bf8f6d8",
+    "assets/stage3/chars/fade-0.json": "3df3a9f8c0a098a7cc37185362552e4ad8d9ea65e53c8f9631e830311f9f4cf6",
+    "assets/stage3/chars/fade.anims.json": "281f5a583a8b78a20ab02648a10d5e8e4665262d9ca34f8522c305d8604a1ea6"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fade-c.json"
+  },
+  {
+   "id": "fade-d",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-0.webp",
+    "assets/stage3/chars/fade-0_n.webp",
+    "assets/stage3/chars/fade-0_nl.webp",
+    "assets/stage3/chars/fade-0.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-0.webp": "a373cc4cd7d21698d928c1173e130ce6c5a2f7953575178e07688a32e9b0020b",
+    "assets/stage3/chars/fade-0_n.webp": "2a9d91297c8c79fc92683ac33132e65e4d9ace6fdaaa9a07c14734dda04fb32b",
+    "assets/stage3/chars/fade-0_nl.webp": "6d0055376a90c8dbd56e861084adc0bbb84a9de82da01cdd023cc8a23bf8f6d8",
+    "assets/stage3/chars/fade-0.json": "3df3a9f8c0a098a7cc37185362552e4ad8d9ea65e53c8f9631e830311f9f4cf6",
+    "assets/stage3/chars/fade.anims.json": "281f5a583a8b78a20ab02648a10d5e8e4665262d9ca34f8522c305d8604a1ea6"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fade-d.json"
+  },
+  {
+   "id": "fade-e",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-1.webp",
+    "assets/stage3/chars/fade-1_n.webp",
+    "assets/stage3/chars/fade-1_nl.webp",
+    "assets/stage3/chars/fade-1.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-1.webp": "ee4d765d8e5e049bf647a33ec78dbe760d63426967460cb2da123b066eaa181d",
+    "assets/stage3/chars/fade-1_n.webp": "85c92dcab3b37d56fa2c6a9b47bcebd4c9efdee1c75b60d9626de12af6474c05",
+    "assets/stage3/chars/fade-1_nl.webp": "c4fc97fb4ef9edd876d0b723c5ad41475821cedf212ba7e4e8a3e36aa5624e94",
+    "assets/stage3/chars/fade-1.json": "f45765c99712b1dfd97f520c621dc114b39c71124bbda2156eb0fd657f654d9b",
+    "assets/stage3/chars/fade.anims.json": "281f5a583a8b78a20ab02648a10d5e8e4665262d9ca34f8522c305d8604a1ea6"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fade-e.json"
+  },
+  {
+   "id": "fade-f",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-1.webp",
+    "assets/stage3/chars/fade-1_n.webp",
+    "assets/stage3/chars/fade-1_nl.webp",
+    "assets/stage3/chars/fade-1.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-1.webp": "ee4d765d8e5e049bf647a33ec78dbe760d63426967460cb2da123b066eaa181d",
+    "assets/stage3/chars/fade-1_n.webp": "85c92dcab3b37d56fa2c6a9b47bcebd4c9efdee1c75b60d9626de12af6474c05",
+    "assets/stage3/chars/fade-1_nl.webp": "c4fc97fb4ef9edd876d0b723c5ad41475821cedf212ba7e4e8a3e36aa5624e94",
+    "assets/stage3/chars/fade-1.json": "f45765c99712b1dfd97f520c621dc114b39c71124bbda2156eb0fd657f654d9b",
+    "assets/stage3/chars/fade.anims.json": "281f5a583a8b78a20ab02648a10d5e8e4665262d9ca34f8522c305d8604a1ea6"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fade-f.json"
+  },
+  {
+   "id": "fade-g",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-1.webp",
+    "assets/stage3/chars/fade-1_n.webp",
+    "assets/stage3/chars/fade-1_nl.webp",
+    "assets/stage3/chars/fade-1.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-1.webp": "ee4d765d8e5e049bf647a33ec78dbe760d63426967460cb2da123b066eaa181d",
+    "assets/stage3/chars/fade-1_n.webp": "85c92dcab3b37d56fa2c6a9b47bcebd4c9efdee1c75b60d9626de12af6474c05",
+    "assets/stage3/chars/fade-1_nl.webp": "c4fc97fb4ef9edd876d0b723c5ad41475821cedf212ba7e4e8a3e36aa5624e94",
+    "assets/stage3/chars/fade-1.json": "f45765c99712b1dfd97f520c621dc114b39c71124bbda2156eb0fd657f654d9b",
+    "assets/stage3/chars/fade.anims.json": "281f5a583a8b78a20ab02648a10d5e8e4665262d9ca34f8522c305d8604a1ea6"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fade-g.json"
+  },
+  {
+   "id": "fade-portrait",
+   "files": [
+    "assets/stage3/ui/fade-portrait.webp"
+   ],
+   "sha256": {
+    "assets/stage3/ui/fade-portrait.webp": "8eeb2a64521002c47fa4f8d93f655df0b7acf136e62c4ab3c2b887576c201c80"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fade-portrait.json"
+  },
+  {
+   "id": "bg3-far-day",
+   "files": [
+    "assets/bg3/bg3-far-day.jpg"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-far-day.jpg": "f59f07f5a02b511cf862d87c3a4514afe04169d6eabc618b9b59e1a6d7e2a3c7"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/bg3-far-day.json"
+  },
+  {
+   "id": "bg3-far-night",
+   "files": [
+    "assets/bg3/bg3-far-night.jpg"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-far-night.jpg": "097164365b809d344afd71f93c1768783c811b69bcc17e413347438cdd64710d"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/bg3-far-night.json"
+  },
+  {
+   "id": "bg3-mid",
+   "files": [
+    "assets/bg3/bg3-mid.webp",
+    "assets/bg3/bg3-mid_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-mid.webp": "3251ef043329726f473011c15cd1c8a523a0b52a782de3b97244ee7092918dc7",
+    "assets/bg3/bg3-mid_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/bg3-mid.json"
+  },
+  {
+   "id": "bg3-mid2",
+   "files": [
+    "assets/bg3/bg3-mid2.webp",
+    "assets/bg3/bg3-mid2_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-mid2.webp": "65e64984142f0dffa212d8724ff2995dd76d9f87bcc6bfad0ded64b706226f7b",
+    "assets/bg3/bg3-mid2_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/bg3-mid2.json"
+  },
+  {
+   "id": "bg3-floor",
+   "files": [
+    "assets/bg3/bg3-floor.jpg",
+    "assets/bg3/bg3-floor_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-floor.jpg": "3437fcb9f368cc33e42ea6cfb41ebf61b6ce2fa08668ae7753b959072e07f099",
+    "assets/bg3/bg3-floor_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/bg3-floor.json"
+  },
+  {
+   "id": "bg3-floor2",
+   "files": [
+    "assets/bg3/bg3-floor2.jpg",
+    "assets/bg3/bg3-floor2_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-floor2.jpg": "d4430eb20b5a10db9146a86abf5f05fc33c882dcb7ace782618d4284e71dde07",
+    "assets/bg3/bg3-floor2_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/bg3-floor2.json"
+  },
+  {
+   "id": "bg3-floor3",
+   "files": [
+    "assets/bg3/bg3-floor3.jpg",
+    "assets/bg3/bg3-floor3_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-floor3.jpg": "24323da3ae175174b2d46860997c4b958285fda12fb8bb05cc0646d938a1975a",
+    "assets/bg3/bg3-floor3_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/bg3-floor3.json"
+  },
+  {
+   "id": "prop-rooftiles",
+   "files": [
+    "assets/stage3/props/prop-rooftiles.webp"
+   ],
+   "sha256": {
+    "assets/stage3/props/prop-rooftiles.webp": "caa0077194d81a48449010ebb832d287e5ebecb59e45d045354d583626c0b007"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/prop-rooftiles.json"
+  },
+  {
+   "id": "fx-shadowpool",
+   "files": [
+    "assets/stage3/props/fx-shadowpool.webp"
+   ],
+   "sha256": {
+    "assets/stage3/props/fx-shadowpool.webp": "c8aa4b149105f703893c010fcefbbe8efc90d9a7916107340ee00c00bb79c28a"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fx-shadowpool.json"
+  },
+  {
+   "id": "fx-shadowburst",
+   "files": [
+    "assets/stage3/props/fx-shadowburst.webp"
+   ],
+   "sha256": {
+    "assets/stage3/props/fx-shadowburst.webp": "2f6eceb020133e7897960060b58bb5c971161e4065d5ca755de429e544b9e4fa"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fx-shadowburst.json"
+  },
+  {
+   "id": "fx-fade-far",
+   "files": [
+    "assets/stage3/props/fx-fade-far.webp"
+   ],
+   "sha256": {
+    "assets/stage3/props/fx-fade-far.webp": "d8e7762a2ce65c1edcf2b6b766bcd8b22da8d611d5d6f7ebcda8c9fa2ac3b833"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/fx-fade-far.json"
+  },
+  {
+   "id": "story3-1",
+   "files": [
+    "assets/story/story3_panel_1.jpg"
+   ],
+   "sha256": {
+    "assets/story/story3_panel_1.jpg": "1bcc61737af2b96b961e22597dbdd2ff9711ddaa7ca2cf7ec9be653842578498"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/story3-1.json"
+  },
+  {
+   "id": "story3-2",
+   "files": [
+    "assets/story/story3_panel_2.jpg"
+   ],
+   "sha256": {
+    "assets/story/story3_panel_2.jpg": "9be369b86b13c75780420603333f54f29465a067c552c575b3f3c0ca9f0d7c14"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/story3-2.json"
+  },
+  {
+   "id": "story3-3",
+   "files": [
+    "assets/story/story3_panel_3.jpg"
+   ],
+   "sha256": {
+    "assets/story/story3_panel_3.jpg": "cef1a22de0a07dc4b46240fbdab69d32e2155e1908ecdf664fc4a40852b76a64"
+   },
+   "placeholder": true,
+   "prompt": "docs/stage3/prompts/story3-3.json"
+  }
+ ]
+}

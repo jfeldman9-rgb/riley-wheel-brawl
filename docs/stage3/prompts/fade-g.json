@@ -1,0 +1,14 @@
+{
+ "id": "fade-g",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "fade-master",
+  "trolloc master"
+ ],
+ "output": "fade-g.png",
+ "prompts": [
+  "Create fade-g.png, a production animation sprite sheet for Riley Wheel Brawl 2.0. Use the attached fade-master.png as the LOCKED character and style reference; reproduce that exact Myrddraal (eyeless pale grey face, close-cropped black hair, black snake-scale armour, perfectly still long black cloak, black-bladed curved sword with a cold blue-white edge) in every drawing. Do not copy any background.\nOUTPUT: 1536x1024 landscape PNG, genuinely transparent background, real alpha, no floor/text/labels/borders/frame numbers. Exactly EIGHT full-body figures in TWO rows of FOUR, read left to right. Equal cells 384x512, generous separation, nothing clipped. Same scale, common boot baseline at y=490 (top) and y=1000 (bottom). Every figure faces LEFT. All eight are independently drawn, never copied or mirrored.\nSTYLE: hand-drawn HD 2D fighting-game art in the spirit of Streets of Rage 4, near-black outlines thick outside thin inside, clean 2-3 step cel shading, light upper left, cool right rim. Painted shadow smoke and ash with clean outlines, not blur. Not pixel art, 3D or chibi. Spooky but kid-friendly, NO blood, no wounds, no gore.\nTOP ROW, IDLE (4-frame loop): tall and still, sword low and angled forward, the cloak hanging perfectly motionless; only the head tilts slowly as if listening without eyes: 1: head level. 2: head tilting left. 3: head level, a slight smile. 4: head tilting right, fingers flexing on the hilt.\nBOTTOM ROW, DEFEATED, MELTING BACK INTO SHADOW (4 frames): 5: staggering, dropping to one knee, the sword point resting on the ground, head bowed. 6: kneeling, its edges starting to come apart into curling inky black smoke and a few grey ash flakes. 7: half dissolved, the lower body gone into smoke, its head turned back over its shoulder with a last cold smile. 8: only a thinning swirl of black smoke and falling ash where it knelt, the black sword fading too."
+ ]
+}

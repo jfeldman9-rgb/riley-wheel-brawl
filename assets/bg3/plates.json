@@ -1,0 +1,25 @@
+{
+ "note": "Stage 3 plates. floors: contiguous [from,to) world-x segments.",
+ "overlap": 0,
+ "midScale": 0.76,
+ "midParallax": 0.5,
+ "midX0": -60,
+ "farScroll": 0.12,
+ "floors": [
+  {
+   "key": "floor3a",
+   "from": 0,
+   "to": 2540
+  },
+  {
+   "key": "floor3b",
+   "from": 2540,
+   "to": 3880
+  },
+  {
+   "key": "floor3c",
+   "from": 3880,
+   "to": 5200
+  }
+ ]
+}

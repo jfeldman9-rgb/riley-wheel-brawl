@@ -1,9 +1,9 @@
-// Audio carried over from 1.2: the recorded music track, the approved Kokoro voice lines for Stage 1,
-// and the procedural WebAudio SFX (same synth recipes as 1.2's audio.js, with a few new cues).
 let ctx = null, master, music, sfxBus, voiceBus, duckG, comp, noiseBuf;
 let muted = false, musicOn = true, musicEl = null, musicSrc = null;
 const clips = Object.create(null), gates = Object.create(null), oneShots = new Map();
 let voiceSrc = null, voiceRequest = 0, voicePending = false;
+let loopSrc = null, loopToken = 0, loopId = null;
+const moreVoice = Object.create(null);
 let audioHidden = false, audioEpoch = 0;
 const audioTimers = new Set();
 export const VOICE = {
@@ -65,6 +65,25 @@ export const EXTRA_VOICE = {
   byar_defeat_01: ['JARET BYAR', 'This is not over, Darkfriend! The Light will find you!'],
   riley_st2_victory_01: ['RILEY', "I'm NOT a Darkfriend! ...And your barn is on fire!"],
   riley_st2_clear_01: ['RILEY', 'The trail keeps going. Hang on, Twinkle Toes. I am coming.'],
+  // Stage 3: Caemlyn and the Myrddraal (Kokoro TTS for Riley/narrator; ElevenLabs eleven_v4 for Gill, cutthroat, Myrddraal)
+  st3_story_01: ['NARRATOR', 'The trail led south, to Caemlyn, the great white city of the Queen.'],
+  st3_story_02: ['BASEL GILL', 'A man with no eyes, on my rooftops, at dusk. He carried a little bundle. Blue ribbon on it.'],
+  st3_story_03: ['RILEY', "Twinkle Toes' ribbon. He's here."],
+  st3_story_04: ['BASEL GILL', 'There are Darkfriends in the market too, lad. Watch your back.'],
+  st3_story_05: ['RILEY', 'I always do.'],
+  st3_story_06: ['NARRATOR', 'As the sun went down over the palace, Riley went up onto the roofs.'],
+  cutthroat_intro_01: ['CUTTHROAT', "That's the one the Lady wants. Take him quiet."],
+  cutthroat_grab_01: ['CUTTHROAT', 'Gotcha!'],
+  riley_escape_01: ['RILEY', 'Off me!'],
+  riley_st3_roof_01: ['RILEY', "Roof tiles. Great. Of course it's roof tiles."],
+  riley_st3_glimpse_01: ['RILEY', 'There! On the far roof!'],
+  fade_intro_01: ['MYRDDRAAL', "The boy who channels. Your sister's trail ends here."],
+  fade_mid_01: ['MYRDDRAAL', 'Fear me, boy.'],
+  fade_split_01: ['MYRDDRAAL', 'Which shadow is real?'],
+  riley_counter_01: ['RILEY', 'That one!'],
+  fade_defeat_01: ['MYRDDRAAL', 'The shadow... remembers...'],
+  riley_st3_victory_01: ['RILEY', 'Remember this, then.'],
+  riley_st3_clear_01: ['RILEY', "Another ribbon. I'm coming, Twinkle Toes."],
 };
 function init() {
   if (ctx) return;
@@ -157,7 +176,7 @@ function resetDuck() {
 }
 /** Cancel scene-owned speech and one-shots; keep cached clips, music and user preferences. */
 export function stopSceneAudio() {
-  voiceRequest++; voicePending = false;
+  voiceRequest++; voicePending = false; stopLoop();
   for (const source of oneShots.keys()) stopSource(source);
   for (const name of Object.keys(gates)) delete gates[name];
   resetDuck();
@@ -217,6 +236,9 @@ export const sfx = {
   // Stage 2 (Baerlon) cues
   clang() { if (!gate('clang', 70)) return; tone({ f0: vary(1250), f1: 880, dur: 0.11, vol: 0.14, type: 'square' }); tone({ f0: vary(1870), dur: 0.22, vol: 0.09, type: 'triangle' }); noise({ f0: 5200, f1: 2000, dur: 0.08, vol: 0.18, filter: 'highpass' }); },
   glint() { if (!gate('glint', 200)) return; tone({ f0: 2600, f1: 3400, dur: 0.16, vol: 0.06, type: 'sine' }); tone({ f0: 3900, dur: 0.1, delay: 0.06, vol: 0.04, type: 'sine' }); },
+  dread() { if (!gate('dread', 350)) return; tone({ f0: 55, f1: 40, dur: 0.18, vol: 0.22, type: 'sine' }); tone({ f0: 82, f1: 48, dur: 0.12, vol: 0.08, type: 'triangle', delay: 0.08 }); },
+  shaken() { if (!gate('shaken', 200)) return; tone({ f0: 520, f1: 90, dur: 0.2, vol: 0.28, type: 'sawtooth' }); noise({ f0: 1800, f1: 200, dur: 0.16, vol: 0.2, filter: 'bandpass' }); },
+  mash() { if (!gate('mash', 40)) return; tone({ f0: 880, f1: 660, dur: 0.04, vol: 0.08, type: 'square' }); },
   bowDraw() { if (!gate('bow', 150)) return; noise({ f0: 700, f1: 1700, dur: 0.3, vol: 0.07, filter: 'bandpass', q: 3, attack: 0.2 }); },
   twang() { if (!gate('twang', 60)) return; tone({ f0: vary(190), f1: 120, dur: 0.14, vol: 0.16, type: 'triangle' }); noise({ f0: 3200, f1: 900, dur: 0.12, vol: 0.12, filter: 'bandpass', q: 1.5 }); },
   warcry() { if (!gate('warcry', 400)) return; for (let i = 0; i < 2; i++) tone({ f0: vary(200 + i * 70), f1: 150, dur: 0.55, vol: 0.12, type: 'sawtooth', delay: i * 0.04 }); noise({ f0: 900, f1: 400, dur: 0.5, vol: 0.14, attack: 0.08 }); duck(0.5, 0.3, 0.5); },
@@ -226,20 +248,23 @@ export const sfx = {
   flame() { if (!gate('flame', 150)) return; noise({ f0: 350, f1: 1900, dur: 0.55, vol: 0.28, filter: 'bandpass', attack: 0.08 }); tone({ f0: 90, f1: 60, dur: 0.4, vol: 0.2, type: 'sine' }); },
   creak() { if (!gate('creak', 400)) return; tone({ f0: vary(140, 0.15), f1: 95, dur: 0.6, vol: 0.1, type: 'sawtooth', attack: 0.15 }); noise({ f0: 600, f1: 300, dur: 0.5, vol: 0.08, filter: 'bandpass', q: 4 }); },
   impact() { if (!gate('impact', 120)) return; tone({ f0: 70, f1: 30, dur: 0.5, vol: 0.6, type: 'sine' }); noise({ f0: 2400, f1: 160, dur: 0.35, vol: 0.45 }); duck(0.35, 0.15, 0.5); },
+  // Stage 3 (Caemlyn) cues
+  hiss() { if (!gate('hiss', 100)) return; noise({ f0: 4500, f1: 1200, dur: 0.35, vol: 0.15, filter: 'bandpass', q: 2 }); tone({ f0: vary(320), f1: 160, dur: 0.25, vol: 0.08, type: 'sine' }); },
+  shadowWhoosh() { if (!gate('shadowWhoosh', 100)) return; noise({ f0: 800, f1: 120, dur: 0.4, vol: 0.22, attack: 0.06 }); tone({ f0: vary(90, 0.1), f1: 45, dur: 0.35, vol: 0.2, type: 'sine' }); },
+  tileRattle() { if (!gate('tileRattle', 150)) return; for (let i = 0; i < 3; i++) { tone({ f0: vary(440 + i * 80), f1: 220, dur: 0.08, vol: 0.12, type: 'triangle', delay: i * 0.05 }); noise({ f0: 2200, f1: 800, dur: 0.07, vol: 0.1, delay: i * 0.05 }); } },
+  torchIgnite() { if (!gate('torchIgnite', 120)) return; noise({ f0: 280, f1: 1800, dur: 0.45, vol: 0.25, filter: 'bandpass', attack: 0.05 }); tone({ f0: vary(120), f1: 75, dur: 0.3, vol: 0.18, type: 'sine' }); },
 };
 let musicWanted = false, unlocked = false;
-// ---------- music tracks (sources and licences: assets/audio/AUDIO_PROVENANCE.md) ----------
-// stage1 is Jason's 1.1 theme, streamed through an <audio> element (too long to hold decoded on an iPad); its
-// loop region is [31.103 s, 159.103 s) and the element jumps back exactly 128 s inside the baked crossfade.
-// The other tracks are short original loops decoded once and looped sample-accurately with loopStart/loopEnd
-// (each file carries 0.25 s of overlap on both sides of its loop). gain: per-track balance against the stage1
-// theme, which the SFX mix was tuned to (track loudness: title -17, boss -15.2, stage2 -16 LUFS vs stage1 -15.7).
 export const MUSIC = {
   stage1: { url: 'assets/audio/music-main.mp3', stream: true, loopStart: 31.103, loopEnd: 159.103, gain: 1 },
   title: { url: 'assets/audio/music-title.mp3', loopStart: 0.25, loopEnd: 45.964286, gain: 1 },
   boss1: { url: 'assets/audio/music-boss1.mp3', loopStart: 0.25, loopEnd: 38.65, gain: 0.94 },
   stage2: { url: 'assets/audio/music-stage2.mp3', loopStart: 0.25, loopEnd: 64.865374, gain: 1 },
   boss2: { url: 'assets/audio/music-boss2.mp3', loopStart: 0.25, loopEnd: 55.902177, gain: 0.94 },
+  stage3: { url: 'assets/audio/music-stage3.mp3', loopStart: 0.25, loopEnd: 64.865374, gain: 1 },
+  boss3: { url: 'assets/audio/music-boss3.mp3', loopStart: 0.25, loopEnd: 53.583333, gain: 0.94 },
+  stage4: { url: 'assets/audio/music-stage4.mp3', loopStart: 0.25, loopEnd: 40.25, gain: 1 },
+  boss4: { url: 'assets/audio/music-boss4.mp3', loopStart: 0.25, loopEnd: 30.726190476190474, gain: 0.94 },
 };
 const tracks = Object.create(null), musicBytes = Object.create(null);
 let currentTrack = null, wantedTrack = 'stage1';
@@ -336,7 +361,11 @@ export function playTrack(id, opts = {}) {
   currentTrack = id; if (id === null) return;
   const T = trackNode(id);
   if (T.stopTimer) { T.stopTimer.cancel(); T.stopTimer = null; }
-  if (opts.restart && prev !== id) { T.pos = T.M.loopStart || 0; if (T.el) T.el.currentTime = 0; }
+  if (opts.restart) {
+    if (T.src) { try { T.src.stop(); } catch (e) { } T.src.disconnect(); T.src = null; }
+    T.playing = false; T.pos = T.M.loopStart || 0;
+    if (T.el) T.el.currentTime = 0;
+  }
   if (T.M.stream) {
     const el = streamEl(T); el.muted = muted;
     if (T.fallback) { el.volume = 0.34 * T.M.gain; } else fadeGain(T.gain.gain, T.M.gain, prev && prev !== id ? fade : 0);
@@ -354,6 +383,9 @@ function resumeMusic() {
   if (audioHidden) return;
   // Include an outgoing streamed track if a crossfade was in progress at hide.
   for (const T of Object.values(tracks)) if (T.playing && T.el && T.el.paused !== false) T.el.play().catch(() => {});
+  // A failed fetch/decode leaves the selection intact; retry it on recovery.
+  const T = tracks[currentTrack];
+  if (T && !T.M.stream && !T.playing && !T.loading) playTrack(T.id, { fade: 0.4 });
   if (!currentTrack && wantedTrack !== null) playMusic();
 }
 export function audioUnlocked() { return unlocked; }
@@ -407,10 +439,15 @@ function loadClip(id) {
 }
 export function preloadVoices() { Object.keys(VOICE).forEach(loadClip); }
 /** on-demand preload for EXTRA_VOICE lines (power pickups and the Twix cutscene) */
-export function preloadClips(ids) { for (const id of ids) if (Object.hasOwn(EXTRA_VOICE, id)) loadClip(id); }
+export function preloadClips(ids) { for (const id of ids) if (Object.hasOwn(EXTRA_VOICE, id) || moreVoice[id]) loadClip(id); }
+export function registerLines(map) { for (const id in map) moreVoice[id] = map[id]; }
+export function withSfx(fn) { init(); if (ctx && sfxBus) fn(ctx, sfxBus); }
+/** Drop decoded lines the next stage does not play. Shared VOICE clips stay cached. */
+export function releaseClips(ids) { if (ids) for (const id of ids) delete clips[id]; }
+export function residentClipIds() { return Object.keys(clips); }
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
 export function say(id, onCaption, interrupt = true) {
-  const cap = Object.hasOwn(VOICE, id) ? VOICE[id] : Object.hasOwn(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : null;
+  const cap = Object.hasOwn(VOICE, id) ? VOICE[id] : Object.hasOwn(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : moreVoice[id] || null;
   if (!cap) return;
   if (!interrupt && (voiceSrc || voicePending)) return cap;
   const request = ++voiceRequest, shouldPlay = !muted;
@@ -426,4 +463,19 @@ export function say(id, onCaption, interrupt = true) {
     duck(0.45, buf.duration, 0.4);
   });
   return cap;
+}
+export function playLoop(id) {
+  if (loopId === id) return;
+  stopLoop();
+  const token = loopToken; loopId = id; init();
+  if (!ctx || muted) { loopId = null; return; }
+  loadClip(id).then(buf => {
+    if (token !== loopToken || !buf || muted || !ctx) return;
+    const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.connect(voiceBus); trackSource(s); loopSrc = s; s.start();
+  });
+}
+export function stopLoop() {
+  loopToken++; loopId = null;
+  if (!loopSrc) return;
+  const s = loopSrc; loopSrc = null; stopSource(s);
 }

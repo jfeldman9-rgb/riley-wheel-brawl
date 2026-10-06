@@ -46,5 +46,53 @@
   "peakDbfs": -1.9,
   "bytes": 787060,
   "doc": "\"Child of the Light\" - Stage 2 boss (Jaret Byar). D minor, zealous and martial: military snare, minor fanfare,\nstring tremolo, choir, timpani. 32 bars @ 138 bpm."
+ },
+ "stage3": {
+  "file": "music-stage3.mp3",
+  "bpm": 104,
+  "bars": 28,
+  "loopStart": 0.25,
+  "loopEnd": 64.86537414965986,
+  "loopSeconds": 64.61537414965986,
+  "lufs": -16.0,
+  "peakDbfs": -3.5,
+  "bytes": 912500,
+  "doc": "\"Caemlyn at Dusk\" - Stage 3. Warm city afternoon turning to dusk: nylon guitar, strings, flute and oboe,\n    walking cello, light tambourine. 28 bars @ 104 bpm."
+ },
+ "boss3": {
+  "file": "music-boss3.mp3",
+  "bpm": 126,
+  "bars": 28,
+  "loopStart": 0.25,
+  "loopEnd": 53.583333333333336,
+  "loopSeconds": 53.333333333333336,
+  "lufs": -15.2,
+  "peakDbfs": -1.9,
+  "bytes": 754512,
+  "doc": "\"Shadow in the Garden\" - Stage 3 boss (The Myrddraal). D minor, cold, low strings and choir,\n    sparse percussion. 28 bars @ 126 bpm."
+ },
+ "stage4": {
+  "file": "music-stage4.mp3",
+  "bpm": 96,
+  "bars": 16,
+  "loopStart": 0.25,
+  "loopEnd": 40.25,
+  "loopSeconds": 40.0,
+  "lufs": -16.0,
+  "peakDbfs": -5.6,
+  "bytes": 567997,
+  "doc": "\"Shadar Logoth\" - Stage 4. E phrygian, hollow and slow. 16 bars @ 96 bpm."
+ },
+ "boss4": {
+  "file": "music-boss4.mp3",
+  "bpm": 126,
+  "bars": 16,
+  "loopStart": 0.25,
+  "loopEnd": 30.726190476190474,
+  "loopSeconds": 30.476190476190474,
+  "lufs": -15.2,
+  "peakDbfs": -2.0,
+  "bytes": 434512,
+  "doc": "\"The Draghkar's Croon\" - Stage 4 boss. A minor pulse under a high line. 16 bars @ 126 bpm."
  }
 }

@@ -1,3 +1,4 @@
+import './helpers/install-location.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { shieldPerfControls, reportSummary, installPerfPanel } from '../src/perf-panel.js';
@@ -108,6 +109,33 @@ test('panel pauses safely, exports observed coverage, closes to playable canvas 
     panel = installPerfPanel({ game, getStage: () => stage });
     click('perf-open'); assert.equal(calls.length, 7, 'new HUD creates exactly one opener listener');
     panel.destroy(); assert.deepEqual([...reasons], ['manual']); assert.deepEqual(perf.suspended, []);
+  } finally {
+    panel?.destroy(); perf.reset();
+    if (oldDocument === undefined) delete globalThis.document; else globalThis.document = oldDocument;
+  }
+});
+
+test('the perf panel shows the stage 3 light budget and its peak', () => {
+  const oldDocument = globalThis.document, { doc, nodes } = panelDOM();
+  globalThis.document = doc;
+  const stage = {
+    stageNo: 3,
+    kit: { lightBudget: { active: 4, candidates: 7, cap: 10, peak: 9 } },
+    setPauseReason() {},
+  };
+  const game = { canvas: nodes.get('canvas'), inp: { clear() {} } };
+  let panel;
+  try {
+    perf.reset();
+    panel = installPerfPanel({ game, getStage: () => stage });
+    nodes.get('perf-open').dispatchEvent(new Event('click'));
+    assert.match(nodes.get('perf-summary').textContent, /L 4\/7\/10 pk 9/);
+    assert.equal(JSON.parse(nodes.get('perf-json').value).lights, 'L 4/7/10 pk 9');
+    panel.destroy();
+    panel = installPerfPanel({ game, getStage: () => ({ stageNo: 1, setPauseReason() {} }) });
+    nodes.get('perf-open').dispatchEvent(new Event('click'));
+    assert.doesNotMatch(nodes.get('perf-summary').textContent, /L \d+\//);
+    assert.equal(JSON.parse(nodes.get('perf-json').value).lights, undefined);
   } finally {
     panel?.destroy(); perf.reset();
     if (oldDocument === undefined) delete globalThis.document; else globalThis.document = oldDocument;

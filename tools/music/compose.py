@@ -226,7 +226,85 @@ def boss2():
     humanize(tp, 0.008, 5, 7); humanize(hn, 0.01, 5, 8)
     return s
 
-TRACKS = {'title': (title, -17.0), 'boss1': (boss1, -15.2), 'stage2': (stage2, -16.0), 'boss2': (boss2, -15.2)}
+def stage3():
+    """"Caemlyn at Dusk" - Stage 3. Warm city afternoon turning to dusk: nylon guitar, strings, flute and oboe,
+    walking cello, light tambourine. 28 bars @ 104 bpm."""
+    s = Score(104, 28)
+    gtr = s.part('nylon', P['nylon'], vol=96, pan=40, rev=60)
+    cel = s.part('cello', P['cello'], vol=90, pan=75, rev=50)
+    pad = s.part('slowstr', P['slowstr'], vol=78, pan=64, rev=75)
+    fl = s.part('flute', P['flute'], vol=84, pan=45, rev=70)
+    ob = s.part('oboe', P['oboe'], vol=80, pan=70, rev=70)
+    hp = s.part('harp', P['harp'], vol=74, pan=32, rev=80)
+    dr = s.part('drums', None, ch=9, vol=88, rev=40)
+    plan = ['G2', 'G2', 'D2', 'D2', 'E2', 'E2', 'C2', 'D2', 'G2', 'G2', 'B1', 'C2', 'A1', 'D2'] * 2
+    tri = {
+        'G2': ['G3', 'B3', 'D4'], 'D2': ['F#3', 'A3', 'D4'], 'E2': ['G3', 'B3', 'E4'],
+        'C2': ['G3', 'C4', 'E4'], 'B1': ['F#3', 'B3', 'D4'], 'A1': ['E3', 'A3', 'C#4']
+    }
+    for bar, r in enumerate(plan):
+        b0 = bar * 4; R = n(r); t3 = [n(x) for x in tri[r]]
+        for k, p in enumerate([t3[0], t3[1], t3[2], t3[1], t3[2] + 12, t3[2], t3[1], t3[0]]):
+            add(gtr, b0 + k * 0.5, 0.45, p, 88 if k in (0, 4) else 74)
+        add(cel, b0, 1.8, R, 88); add(cel, b0 + 2, 1.8, R + 7 if bar % 2 else R, 80)
+        chord(pad, b0, 3.95, t3, 56 if bar < 14 else 68)
+        add(dr, b0, 0.3, K['kick'], 80); add(dr, b0 + 2, 0.3, K['rim'], 65)
+        for e in range(4): add(dr, b0 + e + 0.5, 0.1, K['tamb'], 50 if e % 2 else 62)
+        if bar % 7 == 6: chord(hp, b0, 3.8, [x + 12 for x in t3], 70)
+        if bar % 14 == 13: add(dr, b0, 2.5, K['cymroll'], 45)
+    m_fl = ('D5 - - - G5 - F#5 - E5 - D5 - E5 - - - '
+            'B5 - - - A5 - G5 - F#5 - - - . . . . '
+            'G5 - - - A5 - B5 - C6 - B5 - A5 - G5 - '
+            'F#5 - - - D5 - - - G5 - - - . . . . ')
+    seq(fl, 16, m_fl, 0.5, 92)
+    seq(fl, 32, m_fl.replace('G5 - - - . . . .', 'B5 - - - - - - -', 1), 0.5, 88)
+    seq(ob, 48, 'E5 - - - G5 - F#5 - E5 - D5 - C5 - - - B4 - - - A4 - - - G4 - - - - - - -', 0.5, 84)
+    seq(ob, 72, m_fl, 0.5, 78, transpose=-12)
+    seq(fl, 72, m_fl, 0.5, 94)
+    seq(fl, 88, m_fl, 0.5, 98)
+    for t in (gtr, fl, ob, cel): humanize(t, 0.01, 5, len(t['name']))
+    return s
+
+def boss3():
+    """"Shadow in the Garden" - Stage 3 boss (The Myrddraal). D minor, cold, low strings and choir,
+    sparse percussion. 28 bars @ 126 bpm."""
+    s = Score(126, 28)
+    st = s.part('tremolo', P['trem'], vol=92, pan=54, rev=75)
+    cb = s.part('contrabass', P['contrabass'], vol=104, pan=64, rev=40)
+    cel = s.part('cello', P['cello'], vol=94, pan=72, rev=50)
+    ch = s.part('choir', P['choir'], vol=88, pan=64, rev=85)
+    ob = s.part('oboe', P['oboe'], vol=84, pan=40, rev=70)
+    tim = s.part('timpani', P['timpani'], vol=96, pan=60, rev=55)
+    dr = s.part('drums', None, ch=9, vol=92, rev=45)
+    plan = ['D2', 'D2', 'Bb1', 'A1', 'D2', 'D2', 'G1', 'C#2',
+            'D2', 'D2', 'Bb1', 'A1', 'D2', 'F2', 'G1', 'A1',
+            'D2', 'D2', 'Bb1', 'C2', 'D2', 'D2', 'G1', 'A1',
+            'Bb1', 'A1', 'D2', 'D2']
+    tri = {
+        'D2': ['D4', 'F4', 'A4'], 'Bb1': ['D4', 'F4', 'Bb4'], 'A1': ['C#4', 'E4', 'A4'],
+        'G1': ['D4', 'G4', 'Bb4'], 'C#2': ['C#4', 'E4', 'A#4'], 'F2': ['C4', 'F4', 'A4'],
+        'C2': ['C4', 'E4', 'G4']
+    }
+    for bar, r in enumerate(plan):
+        b0 = bar * 4; R = n(r); t3 = [n(x) for x in tri[r]]
+        chord(st, b0, 3.95, [x - 12 for x in t3], 70 if bar < 16 else 84)
+        add(cb, b0, 1.8, R, 102); add(cb, b0 + 2, 1.8, R, 92)
+        add(cel, b0 + 1, 0.8, R + 12, 78); add(cel, b0 + 3, 0.8, R + 19 if bar % 2 else R + 12, 74)
+        if bar >= 8: chord(ch, b0, 3.9, t3, 68 if bar < 16 else 82)
+        if bar % 4 == 0: add(tim, b0, 1.2, R + 12, 106)
+        if bar % 4 == 2: add(tim, b0 + 2, 0.8, R + 19, 88)
+        if bar % 7 == 0: add(dr, b0, 3.0, K['cymroll'], 65)
+        if bar % 2 == 1: add(dr, b0 + 2, 0.4, K['tomF'], 72)
+    mel = ('D5 - - - F5 - E5 - D5 - C#5 - D5 - - - '
+           'A5 - - - G5 - F5 - E5 - - - . . . . '
+           'Bb5 - - - A5 - G5 - F5 - E5 - D5 - C#5 - '
+           'D5! - - - - - - - . . . . . . . . ')
+    seq(ob, 32, mel, 0.5, 90)
+    seq(ob, 64, mel, 0.5, 96)
+    humanize(st, 0.008, 5, 2); humanize(cb, 0.008, 5, 3); humanize(ob, 0.01, 6, 4)
+    return s
+
+TRACKS = {'title': (title, -17.0), 'boss1': (boss1, -15.2), 'stage2': (stage2, -16.0), 'boss2': (boss2, -15.2), 'stage3': (stage3, -16.0), 'boss3': (boss3, -15.2)}
 
 def render(score, path_wav):
     mid = path_wav.replace('.wav', '.mid'); score.midi(3).writeFile(open(mid, 'wb'))

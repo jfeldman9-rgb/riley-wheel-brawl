@@ -1,0 +1,24 @@
+{
+  "id": "riley-s4a",
+  "file": "riley-s4a.png",
+  "tool": "image-generation",
+  "backupTool": "gemini",
+  "size": [
+    1536,
+    1024
+  ],
+  "frames": 8,
+  "cols": 4,
+  "rows": 2,
+  "opaque": false,
+  "riley": true,
+  "normal": false,
+  "houseStyle": "spike-art/HOUSE_STYLE.txt",
+  "attach": [
+    "spike/gen/riley/master-side.png",
+    "riley.jpg",
+    "spike-art/RILEY_SPEC.txt",
+    "spike-art/HOUSE_STYLE.txt"
+  ],
+  "prompt": "Use case: stylized-concept. Production art for Riley Wheel Brawl 2.0, Stage 4, Shadar Logoth. Asset riley-s4a.png. Canvas exactly 1536\u00d71024. Exactly 8 frames in a 4\u00d72 grid. Each cell is 384\u00d7512. Clear gaps, no overlap, no borders. Frames, in reading order: 1. kissed held 2. kissed slump 3. kissed strain 4. kissed awake 5. break windup 6. break headbutt 7. break shove 8. break free. Genuinely transparent background, real alpha. No painted backdrop, floor shadow, or checkerboard. Faces RIGHT, as specified for the riley4 atlas. HOUSE STYLE, identical to spike-art/HOUSE_STYLE.txt: HOUSE STYLE (Riley Wheel Brawl 2.0), identical for every image:\n- Hand-drawn HD 2D fighting-game sprite art in the spirit of Streets of Rage 4: confident dark-brown/near-black ink outlines (thicker on the outer silhouette, thinner inside), clean cel shading with 2-3 tone steps plus subtle painterly gradients. NOT pixel art, NOT 3D render, NOT photo-real, NOT chibi.\n- Lighting baked lightly: soft key light from the upper LEFT, gentle cool rim on the right edge. Keep shading moderate (the game adds real-time light on top).\n- Rich but grounded colors. Strong readable silhouette.\n- Side view (profile / slight 3/4), character faces RIGHT, full body head to boots, whole figure inside the frame with margin.\n- Genuinely TRANSPARENT background (real alpha). No ground shadow, no floor, no text, no labels, no borders, no frame numbers. Riley Stage 4 sheet riley-s4a for the new riley4 atlas. Faces RIGHT. Top row four kissed frames (frontal hold, awake, not a child). Bottom row four break frames (headbutt shove that frees him). Whole figure in each 384\u00d7512 cell. ON-MODEL RILEY: Riley is 16, very muscular, short dark hair, thin blue-framed glasses, sleeveless black Asha'man coat; never a kid. Attach the Riley master + riley.jpg. Follow spike-art/RILEY_SPEC.txt. Attach the Riley master (spike/gen/riley/master-side.png) and riley.jpg. No text, letters, numbers, watermarks, frame labels, or borders in the finished image. No gore: Shadowspawn become ash; human cultists are knocked out or flee."
+}

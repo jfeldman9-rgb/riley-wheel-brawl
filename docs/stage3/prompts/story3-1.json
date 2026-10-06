@@ -1,0 +1,16 @@
+{
+ "id": "story3-1",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "riley master",
+  "riley.jpg",
+  "bg3-far-day.png",
+  "assets/story/story_panel_1.jpg"
+ ],
+ "output": "story3_panel_1.png",
+ "prompts": [
+  "Create story3_panel_1.png, a 1280x720 opaque cinematic story panel for Riley Wheel Brawl 2.0, in the same painted style as the attached story_panel_1.jpg: hand-drawn HD 2D illustration, confident dark ink outlines, cel shading with painterly gradients, Streets of Rage 4 meets Wheel of Time. No text, letters, logos or speech bubbles.\nRILEY (must match exactly): 16 years old and VERY muscular, huge bare biceps and shoulders, athletic adult-teen proportions about 7.5 heads tall, NEVER a child; friendly youthful clean-shaven face from riley.jpg, short dark brown hair with a short straight fringe, THIN BLUE-FRAMED RECTANGULAR GLASSES; SLEEVELESS BLACK ASHA'MAN COAT with a high collar and a small silver sword pin, skirts to the knees, black fingerless gloves, black trousers and boots.\nScene: GOLDEN LATE AFTERNOON. Riley seen from behind at three-quarters on the left third of the frame, standing on the road at the foot of the huge pale grey-white walls and great open gate of CAEMLYN, looking up; red-and-white banners with a white lion hang from the gate towers; the gold domes of the Royal Palace glow on the hill beyond. Warm honey light, long shadows. A few distant townsfolk as tiny simple silhouettes far away at the gate. Kid-friendly."
+ ]
+}

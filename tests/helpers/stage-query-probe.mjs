@@ -15,7 +15,13 @@ const queued = [], removed = [];
 const p = Object.assign(new Stage1(), {
   sys: { settings: { data: undefined } }, game: { canvas: null },
   load: new Proxy({}, { get: (t, k) => k === 'on' || k === 'setCORS' ? () => {} : key => { queued.push(typeof key === 'object' ? key.key : String(key)); } }),
-  textures: { exists: k => resident.has(k), remove: key => { resident.delete(key); removed.push(key); } }, anims: { exists: () => false, remove() {} }, cache: { json: { get: k => /\.A$/.test(k) ? meta(k.slice(0, -2)) : undefined } },   // as if both stages had been loaded
+  textures: { exists: k => resident.has(k), remove: key => { resident.delete(key); removed.push(key); } }, anims: { exists: () => false, remove() {} },
+  // Stages 1 and 2 are cached, as if the player had just played one of them. Stages 3 and 4 are not resident.
+  cache: { json: { get: k => {
+    if (!/\.A$/.test(k)) return undefined;
+    const base = k.slice(0, -2);
+    return STAGE_CHARS[1].includes(base) || STAGE_CHARS[2].includes(base) ? meta(base) : undefined;
+  } } },
 });
 p.preload();
 const out = withSeed(1, () => {

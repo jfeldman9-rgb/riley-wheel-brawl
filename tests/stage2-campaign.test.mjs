@@ -64,7 +64,7 @@ for (const seed of FULL_STAGE_SEEDS) {
       assert.equal(resources.timers, 0); assert.equal(resources.tweens, 0);
       assert.equal(resources.lights, h.baseline.lights + s.pickups.length + s.kit.barn.lights.length, 'only lanterns, the burning barn and uncollected pickups stay lit');
       assert.equal(h.observations.hud.filter(e => e.method === 'stageClear').length, 1);
-      assert.equal(s.clearShown, true); s.inp.press('attack'); assert.deepEqual(h.observations.restartData, [{ stage: 1 }]);
+      assert.equal(s.clearShown, true); s.inp.press('attack'); assert.deepEqual(h.observations.restartData, [{ stage: 3, fromStage2: true, autostart: true }]);
     } finally { h.destroy(); }
   }));
 }

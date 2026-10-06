@@ -1,0 +1,11 @@
+{
+ "id": "fx-fade-far",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [],
+ "output": "fx-fade-far.png",
+ "prompts": [
+  "Create fx-fade-far.png for Riley Wheel Brawl 2.0. OUTPUT: exactly 1024x256 PNG, genuinely transparent background, real alpha, no text/borders. FOUR equal cells of 256x256 in one row, left to right: a SMALL DISTANT figure of a Myrddraal (tall thin figure in a long black cloak, pale face, no detail needed at this distance) LEAPING ACROSS ROOFTOPS to the LEFT, carrying under one arm a small wrapped cloth BUNDLE tied with a bright BLUE RIBBON (only a bundle; no child, no face, no limbs visible from the bundle). 1: crouched on a roof edge ready to jump, 2: leaping, cloak streaming behind, 3: at the top of the leap, the blue ribbon fluttering, 4: landing on one knee. The figure fills about 60% of each cell height. Seen side-on, as a far-background figure: simplified detail, cool dusk colours, a warm orange rim from the setting sun. Hand-drawn HD 2D game art in the spirit of Streets of Rage 4. Kid-friendly."
+ ]
+}

@@ -55,3 +55,17 @@ than decoded, because 159 s of decoded stereo PCM is about 56 MB, too much for a
 ## Voices
 
 See `VOICE_PROVENANCE.md` (Kokoro-82M, Apache-2.0).
+
+## Stage 3 Music
+
+Original loops rendered via `tools/music/compose.py` using FluidSynth + FluidR3_GM SoundFont:
+- `music-stage3.mp3`: "Caemlyn at Dusk" (Stage 3). Warm afternoon city ambiance turning to dusk (nylon guitar, strings, flute, oboe, walking cello, light tambourine). 28 bars @ 104 bpm, target -16.0 LUFS.
+- `music-boss3.mp3`: "Shadow in the Garden" (Stage 3 boss: The Myrddraal). Cold, low strings and choir, sparse percussion, oboe melody. 28 bars @ 126 bpm, target -15.2 LUFS.
+Both tracks are under 1.2 MB, verified seamless by `tools/music/check_loops.py` with loopStart at 0.25 s.
+
+## Stage 4 Music
+
+Original loops rendered the same way (FluidSynth + FluidR3_GM), looped in `src/audio.js`:
+- `music-stage4.mp3`: "Shadar Logoth". E phrygian, hollow and slow. 16 bars @ 96 bpm, -16.0 LUFS, loop [0.250, 40.250) s.
+- `music-boss4.mp3`: "The Draghkar's Croon". A minor pulse under a high line. 16 bars @ 126 bpm, -15.2 LUFS, loop [0.250, 30.726) s.
+Both are under 1.2 MB. Loop points are in `tools/music/music-manifest.json`. Stage 4 voice lines are in `assets/audio/stage4-voice-manifest.json`.

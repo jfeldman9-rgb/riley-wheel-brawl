@@ -1,0 +1,11 @@
+{
+ "id": "fx-shadowpool",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [],
+ "output": "fx-shadowpool.png",
+ "prompts": [
+  "Create fx-shadowpool.png for Riley Wheel Brawl 2.0. OUTPUT: exactly 1024x256 PNG, genuinely transparent background, real alpha, no text/borders. FOUR equal cells of 256x256 in one row, left to right: a magical pool of inky black-purple SHADOW on the ground, seen from a low side-on game camera so it is a flat wide ELLIPSE about 4 times wider than tall, centred low in each cell. 1: a small dark spot with a few curling wisps. 2: spreading wider. 3: full-size ellipse with a swirling inky surface and a faint violet rim. 4: full-size and churning, thin black tendrils curling up from the rim. Painted with clean outlines and cel-shaded tones, NOT a blur or airbrush. Hand-drawn HD 2D game art in the spirit of Streets of Rage 4. Spooky but kid-friendly."
+ ]
+}

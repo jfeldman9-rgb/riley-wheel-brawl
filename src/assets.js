@@ -12,11 +12,12 @@ export function queueCharJson(scene) {
 export function queueCharPages(scene, keys = CHARS) {
   for (const k of keys) {
     const m = scene.cache.json.get(k + '.A'); if (!m) continue;
+    const dir = m.dir || 'assets/chars';
     for (const p of m.pages) {
       // Textures survive a scene restart. Phaser skips their cached images but
       // would still fetch uncached atlas JSON and create a partial MultiFile.
-      if (!scene.textures.exists(p)) scene.load.atlas({ key: p, textureURL: `assets/chars/${p}.webp`, normalMap: `assets/chars/${p}_n.webp`, atlasURL: `assets/chars/${p}.json` });
-      if (!scene.textures.exists(p + '_nl')) scene.load.image(p + '_nl', `assets/chars/${p}_nl.webp`);
+      if (!scene.textures.exists(p)) scene.load.atlas({ key: p, textureURL: `${dir}/${p}.webp`, normalMap: `${dir}/${p}_n.webp`, atlasURL: `${dir}/${p}.json` });
+      if (!scene.textures.exists(p + '_nl')) scene.load.image(p + '_nl', `${dir}/${p}_nl.webp`);
     }
   }
 }
