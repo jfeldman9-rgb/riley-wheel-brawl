@@ -117,6 +117,7 @@ export class Stage1 extends Phaser.Scene {
     this.riley = new Riley(this, 180, 630);
     this.powers = new Powers(this);
     this.heroLight = this.lights.addLight(0, 0, 440, 0xd8e2ff, 1.0, 150);
+    this.heroLightX = this.riley.x + this.riley.facing * 30;
     if (this.kit) for (const [x, y] of STAGE2.crates) this.addBarrel(x, y, 'crate', 'planks');
     else for (const [x, y] of BARRELS) this.addBarrel(x, y);
     if (!this.kit) this.snowFront = this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: -20, lifespan: 6000, speedY: { min: 80, max: 130 }, speedX: { min: -50, max: -10 }, scale: { min: 0.5, max: 0.9 }, alpha: { min: 0.5, max: 0.9 }, frequency: 80 }).setDepth(5000).setScrollFactor(0);
@@ -681,7 +682,7 @@ export class Stage1 extends Phaser.Scene {
     if (this.started) this.updateZones(dt);
     R.sync(); for (const e of this.enemies) e.sync();
     this.updateCamera(dt);
-    this.heroLight.x = R.x - 90; this.heroLight.y = R.y - 300 - R.z; this.heroLight.intensity = this.lightsOn ? 1.0 : 0;
+    this.heroLightX += (R.x + R.facing * 30 - this.heroLightX) * (1 - Math.exp(-dt * 12)); this.heroLight.x = this.heroLightX; this.heroLight.y = R.y - 300 - R.z; this.heroLight.intensity = this.lightsOn ? 1.0 : 0;
     this.game.governor(dt);
   }
   updateCamera(dt) {

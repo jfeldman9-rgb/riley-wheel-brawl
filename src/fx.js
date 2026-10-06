@@ -42,8 +42,8 @@ export class FX {
     this.trauma = Math.min(1, this.trauma + SHAKE[kind]);
     const n = { light: 9, medium: 14, heavy: 24, finisher: 34 }[kind] >> (this.quality >= 2 ? 1 : 0);
     (dir > 0 ? this.sparksR : this.sparksL).emitParticleAt(x, y, n); this.dots.emitParticleAt(x, y, n >> 1);
-    this.flash.setPosition(x, y).setVisible(true).setScale(kind === 'light' ? 0.7 : kind === 'medium' ? 1.0 : 1.5).setAlpha(0.85);
-    this.flashT = 0.08 + HITSTOP[kind] / 60;
+    this.flash.setPosition(x, y).setVisible(true).setScale(kind === 'light' ? 0.55 : kind === 'medium' ? 0.8 : 1.15).setAlpha(0.7);
+    this.flashT = 0.06 + HITSTOP[kind] / 120;
     if (kind === 'finisher') this.slowmo = 0.26; else if (kind === 'heavy') this.slowmo = Math.max(this.slowmo, 0.1);
     const L = this.hitLight; L.x = x; L.y = y; L.intensity = kind === 'light' ? 1.2 : kind === 'medium' ? 1.6 : 2.1; L.radius = kind === 'light' ? 200 : 330;
   }
@@ -56,7 +56,7 @@ export class FX {
     this._dt = dt;
     this.trauma = Math.max(0, this.trauma - dt * 1.8);
     const L = this.hitLight; L.intensity = Math.max(0, L.intensity - dt * 16);
-    if (this.flashT > 0) { this.flashT -= dt; this.flash.setAlpha(Math.max(0, this.flashT * 8)); if (this.flashT <= 0) this.flash.setVisible(false); }
+    if (this.flashT > 0) { this.flashT -= dt; this.flash.setAlpha(Math.max(0, Math.min(0.7, this.flashT * 8))); if (this.flashT <= 0) this.flash.setVisible(false); }
     for (const b of this.booms.slice()) {
       b.t += dt; b.L.radius = b.rad + b.t * 900; b.L.intensity = Math.max(0, b.power * (1 - b.t / 0.45));
       if (b.t > 0.45) { this.s.lights.removeLight(b.L); this.booms.splice(this.booms.indexOf(b), 1); }
