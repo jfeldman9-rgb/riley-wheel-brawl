@@ -6,6 +6,7 @@ import { STAGE3 } from './stages.js';
 import { MID_Y } from './stage2.js';
 import { Stage3Hazards } from './stage3-hazards.js';
 import { budgetStage3Lights } from './stage3-lights.js';
+import { installStage3Suspension } from './stage3-suspension.js';
 export const STORY3_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story3_panel_' + n, url: `assets/story/story3_panel_${n}.jpg` })));
 export const STORY3_SCRIPT = Object.freeze([
   ['st3_story_01', 0, 3.58], ['st3_story_02', 1, 7.89], ['st3_story_03', 1, 1.54], ['st3_story_04', 1, 3.87], ['st3_story_05', 1, 0.72], ['st3_story_06', 2, 3.41],
@@ -125,10 +126,11 @@ export class Stage3Kit extends Stage3Hazards {
     s.snowFront = s.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: { min: 0, max: VH }, lifespan: 5000, speedY: { min: -10, max: 20 }, speedX: { min: -30, max: -5 }, scale: { min: 0.3, max: 0.6 }, alpha: { start: 0.45, end: 0 }, frequency: front.frequency || 70 }).setDepth(5000).setScrollFactor(0);
     this.emitters.push({ em: this.motes, base: day.frequency || 60, thin: day.thin || 200 });
   }
-  start() { preloadClips(STAGE3_VOICES); }
+  start() { this.suspendCleanup ||= installStage3Suspension(this.s); preloadClips(STAGE3_VOICES); }
   destroy() {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.suspendCleanup?.();
     const s = this.s;
     for (const e of s.enemies || []) { e.releaseHold?.('break'); e.clearAbilities?.(); }
     if (s.vignette) s.vignette.strength = 0.35;
