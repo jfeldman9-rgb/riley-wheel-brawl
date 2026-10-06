@@ -16,7 +16,11 @@ export class Fighter {
     const key = this.def.prefix + name; if (!this.scene.anims.exists(key)) { console.warn('missing anim', key); return; }
     if (!restart && this.cur === key) { this.sprite.anims.timeScale = ts; return; }
     this.cur = key; this.sprite.play(key); this.sprite.anims.timeScale = ts;
-    const px = ANIM_PIVOT_X[key]; if (this.sprite.setOrigin) this.sprite.setOrigin(px ?? this.def.anchorX, this.meta.baseline / this.meta.canvas[1]);
+    const px = ANIM_PIVOT_X[key] ?? this.def.anchorX, m = this.meta;
+    const py = m && m.canvas && m.canvas[1] > 0 ? m.baseline / m.canvas[1] : NaN;
+    if (this.sprite.setOrigin) this.sprite.setOrigin(
+      Number.isFinite(px) ? px : Number.isFinite(this.sprite.originX) ? this.sprite.originX : 0.5,
+      Number.isFinite(py) ? py : Number.isFinite(this.sprite.originY) ? this.sprite.originY : 1);
   }
   /** index of the current frame inside the current animation */
   get fi() { const c = this.sprite.anims.currentFrame; return c ? c.index - 1 : 0; }
