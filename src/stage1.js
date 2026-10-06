@@ -695,7 +695,9 @@ export class Stage1 extends Phaser.Scene {
     if (this.locked && this.zone) { this.bounds.l = Math.max(this.camX, this.zone.l); this.bounds.r = Math.min(this.camX + VW, this.zone.r); }
     else { this.bounds.l = this.camX; this.bounds.r = Math.min(WORLD_W, this.camX + VW + (this.zone ? 0 : 0)); }
     const [sx, sy] = this.fx.shakeOffset();
-    this.cameras.main.setScroll(this.camX + sx, sy);
+    // Device-pixel scroll only. camX / bounds / camMax stay fractional. rs lives on game.rs (the governor updates that, not this.rs).
+    const rs = (this.game && this.game.rs) || this.rs || 1;
+    this.cameras.main.setScroll(Math.round((this.camX + sx) * rs) / rs, Math.round(sy * rs) / rs);
     placeMoon(this.moon, this.camX + sx); placeFires(this.fires, this.camX + sx, this.fireCap || FIRE_LIGHT_CAP);
     this.kit?.applyLightBudget?.();
   }
