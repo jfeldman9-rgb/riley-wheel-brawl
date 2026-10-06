@@ -18,9 +18,9 @@ Open `index.html` directly in a modern browser, or serve this folder as a static
 | Pause / resume | Esc or P | Pause button |
 | Restart | R | Pause menu → Restart |
 
-Tap **J, J, J** with a short rhythm for Riley's three-hit combo; the third hit launches a Trolloc. Each impact has a short hitstop, a white enemy flash and knockback; heavy launchers and One Power hits shake the screen. Riley automatically faces the nearest threat when starting an idle attack. **Shift / ROLL** is a brief invulnerable escape, and Riley also gets 0.6 seconds of invulnerability after a hit.
+Tap **J, J, J** with a short rhythm for Riley's three-hit combo. The third hit is a launcher: it knocks a Trolloc down and sends them flying, kill or not. Each impact keeps a short hitstop, a white enemy flash, and a hit spark; heavy launchers and One Power hits still shake the screen. If the nearest enemy is behind Riley, the swing turns and hits them — held movement does not flip the attack backward. **Shift / ROLL** is invulnerable for the whole roll, including through the Gray Man's strike lane. A hit also grants about 0.6 seconds of invulnerability.
 
-A red flash and marked floor position precede **every Gray Man strike**; move clear of the mark or jump. Trollocs telegraph their swings with an amber floor ring and warning mark. Only one Trolloc attacks during Wave 1 and no more than two hold an attack token in later waves; the rest maintain separated waiting/circling positions. Trolloc health bars replace floating health text. The bridge checkpoint can be retried indefinitely; falling costs health but does not consume a life. Death respawns at the current wave/arena checkpoint, and pausing freezes combat timers.
+A red flash and marked floor position precede **every Gray Man strike**; move clear of the mark, roll, or jump. Trollocs telegraph their swings with an amber floor ring and warning mark. Only one Trolloc holds an attack token in Wave 1 and two in later waves; the rest circle at mid range and steer apart instead of stacking on Riley. Trolloc health bars replace floating health text. The falling bridge is a timing challenge: a running jump clears every gap with landing room, cracked planks drop if you wait on them, and passing the midpoint saves a checkpoint so a fall does not send you back to the start. Falling costs health but does not consume a life. Death respawns at the current wave, bridge, or arena checkpoint, and pausing freezes combat timers. The end screen shows **Trollocs killed**.
 
 ## Test shortcuts
 
@@ -28,7 +28,7 @@ Append one of these query parameters to `index.html` when play-testing. They sta
 
 | URL ending | Starts at |
 |---|---|
-| `?skip=bridge` | Falling-bridge checkpoint |
+| `?skip=bridge` | Falling-bridge checkpoint (the entrance, not the mid-bridge mark) |
 | `?skip=boss` | Gray Man arena |
 
 ## Plugging it in later

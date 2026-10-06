@@ -28,7 +28,7 @@
     .panel h2{font-size:clamp(24px,5vw,34px);margin:10px 0}.panel p{color:#c0c9d9;font-size:14px;line-height:1.55;margin:9px auto;max-width:470px}
     .control-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:17px 0;text-align:left}.control-grid div{border:1px solid #8290aa3d;background:#111827aa;border-radius:7px;padding:8px 10px;font-size:12px;color:#bfc9d8}.control-grid b{color:#fff}
     .panel-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}.action{border:1px solid #a7eee2a8;background:linear-gradient(180deg,#247d7b,#135257);color:white;padding:12px 19px;border-radius:8px;font-weight:900;cursor:pointer;min-width:150px;letter-spacing:.04em}.action.secondary{border-color:#9ca9bf55;background:#182135}.action:hover{filter:brightness(1.16)}
-    .fine{font-size:11px!important;color:#909bad!important}.result{display:flex;justify-content:center;gap:22px;margin:14px 0}.result strong{display:block;font-size:20px;color:#fff}.result span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#aeb9cb}
+    .fine{font-size:11px!important;color:#909bad!important}.result{display:flex;justify-content:center;gap:18px;margin:14px 0;flex-wrap:wrap}.result strong{display:block;font-size:20px;color:#fff}.result span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#aeb9cb}.result .kills strong{font-size:32px;color:#ffd7b0;text-shadow:0 0 16px #ff8a4a88}
     #touch-controls{display:none;position:absolute;inset:auto 0 max(10px,env(safe-area-inset-bottom)) 0;padding:0 14px;justify-content:space-between;align-items:flex-end;z-index:5;pointer-events:none}
     .pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,45px);gap:2px;pointer-events:auto}
     .touch-key{border:1px solid #c6d4e06b;background:#0e1829b8;color:#f7fbff;border-radius:10px;font-weight:900;font-size:15px;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 2px 10px #0006}
@@ -49,7 +49,7 @@
         <div id="hero-stats"><span>RILEY</span><div class="bar"><i id="hp-fill"></i></div><span id="lives">♥ ♥ ♥</span></div>
         <div id="hero-stats"><span>SAIDIN</span><div class="bar"><i id="focus-fill"></i></div><span id="focus-text">60</span></div>
       </div>
-      <div id="score-time" class="hud-card"><div>SCORE <b id="score">000000</b></div><div>TIME <b id="clock">00:00</b></div></div>
+      <div id="score-time" class="hud-card"><div>SCORE <b id="score">000000</b></div><div>KILLS <b id="kills">0</b></div><div>TIME <b id="clock">00:00</b></div></div>
       <div id="boss-hud"><div id="boss-name">THE GRAY MAN</div><div id="boss-bar"><div id="boss-fill"></div></div></div>
       <button id="pause-toggle" type="button" aria-label="Pause game">Ⅱ &nbsp; PAUSE</button>
     </header>
@@ -75,6 +75,7 @@
   <script src="assets/animation-data.js"></script>
   <script>if (location.protocol === 'file:') document.write('<scr' + 'ipt src="assets/atlas-inline.js"></scr' + 'ipt>');</script>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+  <script src="logic.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

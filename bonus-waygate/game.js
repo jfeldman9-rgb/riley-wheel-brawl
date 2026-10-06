@@ -1,21 +1,18 @@
 (function () {
   'use strict';
 
-  const W = 960, H = 540, WORLD = 4520;
-  const FLOOR = 420, BRIDGE_START = 2220, BRIDGE_END = 3270;
-  const GAPS = [[2380, 2485], [2645, 2750], [2910, 3015], [3150, 3200]];
-  const CRUMBLE = [[2305, 2380], [2550, 2645], [2820, 2910], [3070, 3150]];
+  const L = window.WaygateLogic;
+  const W = 960, H = 540;
+  const {
+    FLOOR, WORLD, BRIDGE_START, BRIDGE_END, BRIDGE_SPAWN, BRIDGE_MID,
+    P_SPEED, JUMP_V, ROLL_DURATION, WAVE_TUNING, ARENA_START, ARENA_LEFT, ARENA_RIGHT,
+    BOSS_X, EXIT_X, PADS, CRUMBLE
+  } = L;
   const WAVE_AT = [500, 1120, 1750];
   const WAVE_COUNTS = [3, 4, 5];
-  const WAVE_TUNING = [
-    { hp: 52, hpStep: 4, damage: 12, tokens: 1, windup: 0.88, speed: 72 },
-    { hp: 72, hpStep: 6, damage: 16, tokens: 2, windup: 0.76, speed: 84 },
-    { hp: 86, hpStep: 7, damage: 19, tokens: 2, windup: 0.68, speed: 96 }
-  ];
-  const P_SPEED = 245, GRAVITY = 1550, JUMP_V = 610;
   const $ = (s) => document.querySelector(s);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const fmtTime = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  const fmtTime = L.fmtTime;
 
   class WaygateScene extends Phaser.Scene {
     constructor() { super('waygate'); }
@@ -136,19 +133,21 @@
       g.setScrollFactor(1); g.setDepth(0);
 
       // Waygates in the distance: animated-feeling rings built entirely from shapes.
-      for (const [x, tint] of [[-120, 0x44c4bd], [2140, 0x7798df], [4250, 0x80ead9]]) this.drawWaygate(x, tint);
+      for (const [x, tint] of [[-120, 0x44c4bd], [2140, 0x7798df], [EXIT_X - 16, 0x80ead9]]) this.drawWaygate(x, tint);
       this.bridgeGraphic = this.add.graphics().setDepth(4);
       this.drawBridge();
 
       // Static falling mist bands, set behind the fighters.
       this.mist = [];
-      for (let i = 0; i < 7; i++) {
+      const mistCount = Math.max(7, Math.ceil(WORLD / 640));
+      for (let i = 0; i < mistCount; i++) {
         const m = this.add.ellipse(280 + i * 640, 295 + (i % 2) * 35, 360, 100, 0x69758d, 0.055).setDepth(2);
         this.mist.push({ obj: m, home: m.x, seed: i * 1.7 });
       }
       // Exit gate is cold until the assassin is defeated.
-      this.exitGlow = this.add.ellipse(4300, 320, 90, 154, 0x57ddd0, 0.08).setStrokeStyle(5, 0x62ded1, 0.35).setDepth(3);
-      this.exitLabel = this.add.text(4300, 230, 'WAYGATE', { fontFamily: 'monospace', fontSize: '12px', color: '#a1e7dc', fontStyle: 'bold', align: 'center' }).setOrigin(0.5).setDepth(5);
+      this.exitGlow = this.add.ellipse(EXIT_X, 320, 90, 154, 0x57ddd0, 0.08).setStrokeStyle(5, 0x62ded1, 0.35).setDepth(3);
+      this.exitLabel = this.add.text(EXIT_X, 230, 'WAYGATE', { fontFamily: 'monospace', fontSize: '12px', color: '#a1e7dc', fontStyle: 'bold', align: 'center' }).setOrigin(0.5).setDepth(5);
+      this.checkpointMark = this.add.text(BRIDGE_MID, FLOOR - 48, 'CHECKPOINT', { fontFamily: 'monospace', fontSize: '11px', color: '#9ee7dc', fontStyle: 'bold' }).setOrigin(0.5).setDepth(6).setAlpha(0.8);
       this.exitGlow.setAlpha(0.18); this.exitLabel.setAlpha(0.52);
     }
 
@@ -170,13 +169,13 @@
       for (let x = BRIDGE_START; x < BRIDGE_END; x += 42) {
         g.lineStyle(1, 0x29414b, 0.24); g.lineBetween(x, 435, x - 12, 540);
       }
-      const segments = [[BRIDGE_START, 2305], [2485, 2550], [2750, 2820], [3015, 3070], [3200, BRIDGE_END]];
-      for (const [a, b] of segments) {
+      for (const [a, b] of PADS) {
         g.fillStyle(0x25303a, 1); g.fillRect(a, FLOOR - 8, b - a, 18);
         g.fillStyle(0x66717b, 0.62); g.fillRect(a, FLOOR - 10, b - a, 3);
         g.lineStyle(1, 0x9aa8ad, 0.23);
         for (let x = a + 26; x < b; x += 44) g.lineBetween(x, FLOOR - 7, x - 11, FLOOR + 8);
       }
+      g.fillStyle(0x7dfff0, 0.9); g.fillRect(BRIDGE_MID - 18, FLOOR - 12, 36, 4);
       for (let i = 0; i < CRUMBLE.length; i++) {
         const [a, b] = CRUMBLE[i];
         if (this.planks && this.planks[i].collapsed) continue;
@@ -187,8 +186,8 @@
         for (let x = a + 20; x < b - 8; x += 30) g.lineBetween(x, FLOOR - 8, x - 9, FLOOR + 7);
         if (broken) { g.lineStyle(2, 0xff5867, 0.9); g.lineBetween(a + 8, FLOOR - 7, b - 8, FLOOR + 7); }
       }
-      // Visible gap lips.
-      for (const [a, b] of GAPS) { g.fillStyle(0x0e121b, 1); g.fillRect(a, FLOOR - 13, b - a, 15); g.fillStyle(0x47505a, 0.65); g.fillRect(a, FLOOR - 13, 7, 3); g.fillRect(b - 7, FLOOR - 13, 7, 3); }
+      // Visible gap lips. Lethal width is GAPS; the landing pad past each lip is the margin.
+      for (const [a, b] of L.GAPS) { g.fillStyle(0x0e121b, 1); g.fillRect(a, FLOOR - 13, b - a, 15); g.fillStyle(0x47505a, 0.65); g.fillRect(a, FLOOR - 13, 7, 3); g.fillRect(b - 7, FLOOR - 13, 7, 3); }
       g.setDepth(4);
     }
 
@@ -207,7 +206,7 @@
       this.heroShadow = this.add.ellipse(120, FLOOR - 53, 118, 24, 0x000000, 0.48).setDepth(800);
       this.hero = this.add.sprite(120, FLOOR - 56, 'rileyPage0', 'riley_idle_00').setOrigin(0.5, 610 / 640).setScale(0.56).setDepth(1000 + FLOOR);
       this.hero.play('riley_idle');
-      this.heroData = { x: 120, y: FLOOR - 56, z: 0, vz: 0, hp: 100, focus: 60, lives: 3, score: 0, kills: 0, trollocKills: 0, falls: 0, invuln: 0, facing: 1, action: 'idle', actionT: 0, combo: 0, comboExpire: 0, hitDone: false, attackBuffer: 0, specialBuffer: 0, dodgeX: 0, dodgeY: 0, onBridge: false, falling: 0, checkpoint: 120, time: 0, started: false };
+      this.heroData = { x: 120, y: FLOOR - 56, z: 0, vz: 0, jumpVx: 0, hp: 100, focus: 60, lives: 3, score: 0, kills: 0, trollocKills: 0, falls: 0, invuln: 0, facing: 1, action: 'idle', actionT: 0, combo: 0, comboExpire: 0, hitDone: false, attackBuffer: 0, specialBuffer: 0, dodgeX: 0, dodgeY: 0, onBridge: false, falling: 0, checkpoint: 120, bridgeCheckpoint: BRIDGE_SPAWN, time: 0, started: false };
     }
 
     createInput() {
@@ -241,14 +240,14 @@
     }
 
     initRun() {
-      this.mode = 'title'; this.runElapsed = 0; this.waveIndex = -1; this.waveActive = false; this.enemies = []; this.attackTokenCount = 0; this.maxAttackTokens = 1; this.hitstop = 0; this.debugSkip = new URLSearchParams(window.location.search).get('skip') || ''; this.planks = CRUMBLE.map(() => ({ timer: 0, collapsed: false }));
+      this.mode = 'title'; this.runElapsed = 0; this.waveIndex = -1; this.waveActive = false; this.enemies = []; this.waveSize = 0; this.attackTokenCount = 0; this.maxAttackTokens = 1; this.hitstop = 0; this.debugSkip = new URLSearchParams(window.location.search).get('skip') || ''; this.planks = L.createPlanks(); this.enemyBounds = { minX: 110, maxX: WORLD - 120, minY: L.LANE_MIN_Y, maxY: L.LANE_MAX_Y };
       this.bridgeGraphic?.destroy();
       this.bridgeGraphic = this.add.graphics().setDepth(4); this.drawBridge();
-      this.boss = { active: false, defeated: false, hp: 330, maxHp: 330, x: 3650, y: 346, phase: 'stalk', timer: 1.2, targetX: 0, targetY: 0, strikes: 0, flashTimer: 0, phaseTwo: false };
+      this.boss = { active: false, defeated: false, hp: 330, maxHp: 330, x: BOSS_X, y: 346, phase: 'stalk', timer: 1.2, targetX: 0, targetY: 0, strikes: 0, flashTimer: 0, phaseTwo: false };
       if (this.bossSprite) { this.bossSprite.destroy(); this.bossShadow.destroy(); }
       this.bossShadow = this.add.ellipse(0, 0, 98, 24, 0x000000, 0.5).setDepth(900);
       this.bossSprite = this.add.image(this.boss.x, this.boss.y, 'grayman').setOrigin(0.5, 1).setDisplaySize(106, 240).setDepth(1100).setAlpha(0);
-      this.heroData.x = 120; this.heroData.y = FLOOR - 56; this.heroData.z = 0; this.heroData.vz = 0; this.heroData.hp = 100; this.heroData.focus = 60; this.heroData.lives = 3; this.heroData.score = 0; this.heroData.kills = 0; this.heroData.trollocKills = 0; this.heroData.falls = 0; this.heroData.invuln = 0; this.heroData.facing = 1; this.heroData.action = 'idle'; this.heroData.actionT = 0; this.heroData.combo = 0; this.heroData.comboExpire = 0; this.heroData.hitDone = false; this.heroData.onBridge = false; this.heroData.falling = 0; this.heroData.checkpoint = 120; this.heroData.time = 0; this.heroData.started = false; this.heroData.attackBuffer = 0; this.heroData.specialBuffer = 0; this.heroData.dodgeX = 0; this.heroData.dodgeY = 0;
+      this.heroData.x = 120; this.heroData.y = FLOOR - 56; this.heroData.z = 0; this.heroData.vz = 0; this.heroData.jumpVx = 0; this.heroData.hp = 100; this.heroData.focus = 60; this.heroData.lives = 3; this.heroData.score = 0; this.heroData.kills = 0; this.heroData.trollocKills = 0; this.heroData.falls = 0; this.heroData.invuln = 0; this.heroData.facing = 1; this.heroData.action = 'idle'; this.heroData.actionT = 0; this.heroData.combo = 0; this.heroData.comboExpire = 0; this.heroData.hitDone = false; this.heroData.onBridge = false; this.heroData.falling = 0; this.heroData.checkpoint = 120; this.heroData.bridgeCheckpoint = BRIDGE_SPAWN; this.heroData.time = 0; this.heroData.started = false; this.heroData.attackBuffer = 0; this.heroData.specialBuffer = 0; this.heroData.dodgeX = 0; this.heroData.dodgeY = 0;
       this.hero.setPosition(120, FLOOR - 56).setFlipX(false).setAlpha(1).setTint(0xffffff).play('riley_idle');
       this.cameraOffset = 0; this.toast('THE WAYS SHIFT AROUND YOU', 2.2); this.refreshHud();
     }
@@ -264,7 +263,7 @@
     skipToBridge() {
       const p = this.heroData;
       this.waveIndex = 2; this.waveActive = false; this.maxAttackTokens = 2;
-      p.x = 2228; p.y = FLOOR - 12; p.checkpoint = 2228; p.focus = 100;
+      p.x = BRIDGE_SPAWN; p.y = FLOOR - 12; p.checkpoint = BRIDGE_SPAWN; p.bridgeCheckpoint = BRIDGE_SPAWN; p.focus = 100; p.jumpVx = 0;
       this.hero.setPosition(p.x, p.y).play('riley_idle');
       this.toast('DEBUG · FALLING BRIDGE CHECKPOINT', 2); this.triggerBanner('DEBUG SKIP · FALLING BRIDGE', 1.8);
     }
@@ -272,7 +271,7 @@
     skipToBoss() {
       const p = this.heroData;
       this.waveIndex = 2; this.waveActive = false; this.maxAttackTokens = 2;
-      p.x = 3400; p.y = 346; p.focus = 100; p.checkpoint = 3400;
+      p.x = ARENA_START + 40; p.y = 346; p.focus = 100; p.checkpoint = ARENA_START; p.jumpVx = 0;
       this.hero.setPosition(p.x, p.y).play('riley_idle');
       this.startBoss(); this.toast('DEBUG · GRAY MAN ARENA', 2); this.triggerBanner('DEBUG SKIP · GRAY MAN', 1.8);
     }
@@ -283,11 +282,11 @@
       const controls = `<div class="control-grid"><div><b>Move</b> · WASD / Arrows</div><div><b>Attack</b> · J</div><div><b>Jump</b> · K</div><div><b>Dodge roll</b> · Shift</div><div><b>One Power</b> · L</div><div><b>Pause / resume</b> · Esc / P</div><div><b>Restart</b> · R</div></div>`;
       if (kind === 'title') box.innerHTML = `<div class="eyebrow">RILEY WHEEL BRAWL · BONUS LEVEL</div><h1>WAYGATE<br>GAUNTLET</h1><p>Three Trolloc waves, a bridge that will not stay beneath your feet, and a Gray Man waiting in the dark.</p>${controls}<p class="fine">Every enemy attack has a tell. The Gray Man's red flash marks the strike lane; move away or jump over it.</p><div class="panel-actions"><button class="action" data-action="start">ENTER THE WAYS</button></div><p class="fine">A short, standalone, silent side-story level · about 2–3 minutes</p>`;
       else if (kind === 'pause') box.innerHTML = `<div class="eyebrow">THE WAYS HOLD STILL</div><h2>PAUSED</h2><p>${extra.message || 'Take a breath. Your checkpoint and the enemy timers are safe.'}</p><div class="panel-actions"><button class="action" data-action="resume">RESUME</button><button class="action secondary" data-action="restart">RESTART BONUS</button></div><p class="fine">Esc / P resumes · R restarts · timers stay frozen while paused</p>`;
-      else if (kind === 'over') box.innerHTML = `<div class="eyebrow">THE SHADOWS CLOSE IN</div><h2>DEFEATED</h2><p>You are out of lives. The gauntlet is ready for another attempt.</p>${this.resultStats()}<div class="panel-actions"><button class="action" data-action="restart">TRY AGAIN</button></div><p class="fine">Press R or Enter to restart.</p>`;
-      else if (kind === 'clear') box.innerHTML = `<div class="eyebrow">THE WAYGATE OPENS</div><h2>GAUNTLET CLEARED</h2><p>Riley steps out of the Ways with the Gray Man left behind.</p><div class="result"><div><strong>${fmtTime(this.heroData.time)}</strong><span>Time</span></div><div><strong>${this.heroData.trollocKills}</strong><span>Trollocs</span></div><div><strong>${this.heroData.falls}</strong><span>Falls</span></div><div><strong>${this.heroData.lives}</strong><span>Lives left</span></div></div><p><b>Score ${String(this.heroData.score).padStart(6, '0')} · Rank ${extra.rank || this.rank()}</b></p><div class="panel-actions"><button class="action" data-action="restart">RUN IT AGAIN</button></div><p class="fine">Press R to restart. Score and time are local to this run.</p>`;
+      else if (kind === 'over') box.innerHTML = `<div class="eyebrow">THE SHADOWS CLOSE IN</div><h2>DEFEATED</h2><p>You are out of lives. The gauntlet is ready for another attempt.</p>${this.resultStats()}<p><b>Trollocs killed: ${this.heroData.trollocKills}</b></p><div class="panel-actions"><button class="action" data-action="restart">TRY AGAIN</button></div><p class="fine">Press R or Enter to restart.</p>`;
+      else if (kind === 'clear') box.innerHTML = `<div class="eyebrow">THE WAYGATE OPENS</div><h2>GAUNTLET CLEARED</h2><p>Riley steps out of the Ways with the Gray Man left behind. Trollocs killed: ${this.heroData.trollocKills}.</p>${this.resultStats()}<p><b>Rank ${extra.rank || this.rank()}</b></p><div class="panel-actions"><button class="action" data-action="restart">RUN IT AGAIN</button></div><p class="fine">Press R to restart. Score and time are local to this run.</p>`;
     }
 
-    resultStats() { return `<div class="result"><div><strong>${fmtTime(this.heroData.time)}</strong><span>Time</span></div><div><strong>${String(this.heroData.score).padStart(6, '0')}</strong><span>Score</span></div><div><strong>${this.heroData.trollocKills}</strong><span>Trollocs</span></div></div>`; }
+    resultStats() { return L.formatRunStats(this.heroData); }
     rank() { const h = this.heroData; return h.lives === 3 && h.falls === 0 && h.time < 135 ? 'A' : h.lives > 0 && h.falls < 3 ? 'B' : 'C'; }
     hidePanel() { $('#overlay').hidden = true; }
     pauseGame(message) { if (this.mode !== 'play') return; this.mode = 'paused'; this.showPanel('pause', { message }); }
@@ -352,30 +351,33 @@
       const inBridge = p.x >= BRIDGE_START && p.x <= BRIDGE_END;
       p.onBridge = inBridge;
       if (inBridge) p.y = FLOOR - 12;
-      const lockX = this.boss.active && !this.boss.defeated ? [3300, 4030] : null;
+      const lockX = this.boss.active && !this.boss.defeated ? [ARENA_LEFT, ARENA_RIGHT] : null;
       let mx = I.x, my = inBridge ? 0 : I.y;
-      if (mx && !inBridge) p.facing = Math.sign(mx);
-      else if (mx && inBridge) p.facing = Math.sign(mx);
+      // Held movement must not flip Riley off a swing. Facing locks toward the threat in startHeroAttack.
+      p.facing = L.facingAfterMove(p, mx);
       if (I.dodge) this.touchAction.dodge = false;
       if (I.dodge && p.z <= 0 && ['idle', 'walk', 'hurt'].includes(p.action)) this.startDodge(mx, my);
       if (p.action === 'dodge') {
         p.actionT += dt; p.x += p.dodgeX * 525 * dt;
         if (!inBridge) { p.y = clamp(p.y + p.dodgeY * 290 * dt, 314, FLOOR - 5); }
-        p.invuln = Math.max(p.invuln, 0.18);
-        if (p.actionT >= 0.34) { p.action = 'idle'; p.actionT = 0; this.hero.setScale(0.56).setRotation(0).play('riley_idle'); }
+        // Refresh i-frames to the time still left in the roll so a hit cannot land mid-roll.
+        p.invuln = Math.max(p.invuln, Math.max(0, ROLL_DURATION - p.actionT));
+        if (p.actionT >= ROLL_DURATION) { p.action = 'idle'; p.actionT = 0; this.hero.setScale(0.56).setRotation(0).play('riley_idle'); }
         if (lockX) p.x = clamp(p.x, lockX[0], lockX[1]);
         if (this.waveActive) p.x = Math.min(p.x, WAVE_AT[this.waveIndex] + 405);
         p.x = clamp(p.x, 38, WORLD - 85);
-        if (inBridge && this.isPit(p.x)) this.startBridgeFall();
+        if (inBridge && p.z <= 0 && this.isPit(p.x)) this.startBridgeFall();
         return;
       }
       const free = p.action === 'idle' || p.action === 'walk' || p.action === 'air';
-      if (free && !inBridge) {
+      if (inBridge && p.action !== 'hurt' && (p.z > 0 || p.action === 'air')) {
+        p.x += (p.jumpVx || 0) * dt;
+      } else if (free && !inBridge) {
         const n = Math.hypot(mx, my) || 1; mx /= n; my /= n;
         p.x += mx * P_SPEED * dt;
         p.y += my * 168 * dt;
         p.y = clamp(p.y, 314, FLOOR - 5);
-        if (mx) p.facing = Math.sign(mx);
+        if (mx) p.facing = L.facingAfterMove(p, mx);
       } else if (free && inBridge) {
         p.x += mx * P_SPEED * dt;
       } else if (p.action === 'hurt') {
@@ -388,15 +390,14 @@
       p.x = clamp(p.x, 38, WORLD - 85);
 
       if (I.jump && p.z <= 0 && !['hurt', 'special'].includes(p.action)) {
+        // Takeoff speed is locked for the arc so a running jump clears the gap even if the key flickers.
+        p.jumpVx = mx * P_SPEED;
         p.vz = JUMP_V; p.action = 'air'; p.actionT = 0; p.jumpAttack = false; this.hero.play('riley_jump_rise', true);
       }
-      if (p.z > 0 || p.vz > 0) {
-        p.z += p.vz * dt; p.vz -= GRAVITY * dt;
-        if (p.z <= 0) {
-          p.z = 0; p.vz = 0;
-          if (p.action === 'air') { p.action = 'idle'; this.hero.play('riley_idle'); }
-        } else if (p.z < 52 && p.vz < 80 && this.hero.anims.currentAnim?.key !== 'riley_jump_fall') this.hero.play('riley_jump_fall', true);
-      }
+      const phase = L.stepVertical(p, dt);
+      if (phase === 'landed') {
+        if (p.action === 'air') { p.action = 'idle'; this.hero.play('riley_idle'); }
+      } else if (phase === 'air' && p.z < 52 && p.vz < 80 && this.hero.anims.currentAnim?.key !== 'riley_jump_fall') this.hero.play('riley_jump_fall', true);
       if (I.attack) { p.attackBuffer = Math.max(p.attackBuffer, p.action === 'attack' ? 0.34 : 0.18); this.touchAction.attack = false; }
       if (p.attackBuffer > 0) p.attackBuffer = Math.max(0, p.attackBuffer - dt);
       if (p.attackBuffer > 0 && !['attack', 'hurt', 'special'].includes(p.action)) {
@@ -412,7 +413,11 @@
         p.actionT += dt;
         const hitAt = p.combo === 3 ? 0.18 : 0.14;
         if (!p.hitDone && p.actionT >= hitAt) { p.hitDone = true; this.heroAttackHit(); }
-        if (p.combo < 3 && p.attackBuffer > 0 && p.actionT >= 0.24) { p.attackBuffer = 0; this.startHeroAttack(true); return; }
+        if (p.combo < 3 && p.attackBuffer > 0 && p.actionT >= 0.24) {
+          p.attackBuffer = 0; this.startHeroAttack(true);
+          if (inBridge && p.z <= 0 && this.isPit(p.x)) this.startBridgeFall();
+          return;
+        }
         const endAt = p.combo === 3 ? 0.56 : 0.44;
         if (p.actionT >= endAt) { const wasFinisher = p.combo === 3; p.action = p.z > 0 ? 'air' : (mx || my ? 'walk' : 'idle'); if (wasFinisher || p.attackBuffer <= 0) p.combo = 0; this.hero.play(p.action === 'walk' ? 'riley_walk' : p.action === 'air' ? 'riley_jump_fall' : 'riley_idle'); }
       } else if (p.action === 'special') {
@@ -438,34 +443,33 @@
       const rawX = mx || p.facing || 1, rawY = p.onBridge ? 0 : my;
       const length = Math.hypot(rawX, rawY) || 1;
       p.dodgeX = rawX / length; p.dodgeY = rawY / length; p.facing = p.dodgeX < 0 ? -1 : 1;
-      p.action = 'dodge'; p.actionT = 0; p.invuln = Math.max(p.invuln, 0.48); p.combo = 0; p.attackBuffer = 0;
+      p.action = 'dodge'; p.actionT = 0; p.invuln = Math.max(p.invuln, ROLL_DURATION); p.combo = 0; p.attackBuffer = 0;
       this.hero.setScale(0.62, 0.43).setRotation(-0.16 * p.dodgeX).play('riley_jump_fall', true);
     }
 
     faceNearestThreat() {
       const p = this.heroData;
-      const targets = this.enemies.filter(e => e.hp > 0 && e.state !== 'dead' && Math.abs(e.y - p.y) < 110).map(e => ({ x: e.x, y: e.y }));
-      if (this.boss.active && !this.boss.defeated && Math.abs(this.boss.y - p.y) < 125) targets.push(this.boss);
-      targets.sort((a, b) => Math.abs(a.x - p.x) - Math.abs(b.x - p.x));
-      if (targets[0] && Math.abs(targets[0].x - p.x) < 360) p.facing = Math.sign(targets[0].x - p.x) || p.facing;
+      p.facing = L.facingTowardThreat(p, this.enemies, this.boss && this.boss.active ? this.boss : null);
     }
 
     startHeroAttack(chain) {
       const p = this.heroData;
+      this.faceNearestThreat();
       if (p.z > 24) { p.combo = 0; p.action = 'attack'; p.actionT = 0; p.hitDone = false; p.attackDamage = 38; this.hero.play('riley_airkick', true); return; }
-      if (!chain) { p.combo = 0; this.faceNearestThreat(); }
+      if (!chain) p.combo = 0;
       p.combo = Math.min(3, p.combo + 1); p.comboExpire = 0.58; p.action = 'attack'; p.actionT = 0; p.hitDone = false;
       p.attackDamage = [0, 25, 32, 54][p.combo]; this.hero.play(`riley_combo${p.combo}`, true);
     }
 
     heroAttackHit() {
       const p = this.heroData;
-      this.showSlash(p.x + p.facing * 80, p.y - p.z - 115, 0x9ff8ee);
+      const strike = L.targetsHitByAttack(p, this.enemies, this.boss && this.boss.active ? this.boss : null);
+      p.facing = strike.facing;
       const heavy = p.combo === 3 || p.z > 24;
+      this.showSlash(p.x + p.facing * 80, p.y - p.z - 115, 0x9ff8ee, heavy);
       if (this.boss.active && !this.boss.defeated && this.boss.phase === 'recover' && Math.abs(this.boss.x - p.x) < 190 && Math.abs(this.boss.y - p.y) < 112) { this.hitBoss(p.attackDamage, heavy); return; }
-      const candidates = this.enemies.filter(e => e.hp > 0 && e.state !== 'dead' && Math.abs(e.y - p.y) < 72 && (e.x - p.x) * p.facing > -28 && (e.x - p.x) * p.facing < 150).sort((a,b)=>Math.abs(a.x-p.x)-Math.abs(b.x-p.x));
       const limit = heavy ? 2 : 1;
-      for (const e of candidates.slice(0, limit)) this.hitEnemy(e, p.attackDamage, { heavy, launcher: p.combo === 3, knockback: heavy ? 310 : 170 });
+      for (const e of strike.hits.slice(0, limit)) this.hitEnemy(e, p.attackDamage, { heavy, launcher: p.combo === 3, combo: p.combo });
     }
 
     startSpecial() {
@@ -478,15 +482,25 @@
     specialHit() {
       const p = this.heroData;
       if (this.powerRing) this.powerRing.setFillStyle(0x62fff0, 0.3).setStrokeStyle(6, 0xc5fff7, 0.95).setScale(3.1);
-      this.showSlash(p.x + p.facing * 112, p.y - 110, 0x71f9ef);
+      this.showSlash(p.x + p.facing * 112, p.y - 110, 0x71f9ef, true);
       if (this.boss.active && !this.boss.defeated && this.boss.phase === 'recover' && Math.abs(this.boss.x - p.x) < 290 && Math.abs(this.boss.y - p.y) < 135) this.hitBoss(52, true);
       const near = this.enemies.filter(e => e.hp > 0 && e.state !== 'dead' && Math.abs(e.x - p.x) < 275 && Math.abs(e.y - p.y) < 110);
-      near.forEach(e => this.hitEnemy(e, 48, { heavy: true, knockback: 260 }));
+      near.forEach(e => this.hitEnemy(e, 48, { heavy: true, combo: 0 }));
     }
 
-    showSlash(x, y, color) {
-      this.hitFx.clear(); this.hitFx.lineStyle(12, color, 0.9); this.hitFx.beginPath(); this.hitFx.arc(x, y, 47, -1.05, 1.05, false); this.hitFx.strokePath();
-      this.hitFx.lineStyle(3, 0xffffff, 0.75); this.hitFx.beginPath(); this.hitFx.arc(x + 3, y, 57, -0.82, 0.82, false); this.hitFx.strokePath(); this.hitFx.setVisible(true); this.hitFxTimer = 0.12;
+    showSlash(x, y, color, heavy = false) {
+      this.hitFx.clear();
+      this.hitFx.lineStyle(12, color, 0.9); this.hitFx.beginPath(); this.hitFx.arc(x, y, 47, -1.05, 1.05, false); this.hitFx.strokePath();
+      this.hitFx.lineStyle(3, 0xffffff, 0.75); this.hitFx.beginPath(); this.hitFx.arc(x + 3, y, 57, -0.82, 0.82, false); this.hitFx.strokePath();
+      this.hitFx.fillStyle(0xffffff, 0.95); this.hitFx.fillCircle(x, y, heavy ? 8 : 4);
+      const rays = heavy ? 8 : 6;
+      const len = heavy ? 30 : 16;
+      for (let i = 0; i < rays; i++) {
+        const a = (i / rays) * Math.PI * 2 + 0.2;
+        this.hitFx.lineStyle(heavy ? 3 : 2, 0xfff1c4, 0.92);
+        this.hitFx.lineBetween(x, y, x + Math.cos(a) * len, y + Math.sin(a) * len);
+      }
+      this.hitFx.setVisible(true); this.hitFxTimer = heavy ? 0.14 : 0.11;
     }
 
     impactFeedback(heavy) {
@@ -496,25 +510,25 @@
 
     hitEnemy(e, amount, options = {}) {
       if (!e || e.hp <= 0 || e.state === 'dead') return;
-      const p = this.heroData, lethal = e.hp - amount <= 0;
-      this.releaseAttackToken(e); e.hp = Math.max(0, e.hp - amount); e.flashTimer = 0.11; e.barTimer = 1.4;
-      e.knock = Math.sign(e.x - p.x || p.facing) * (options.knockback || 170); e.alert.setVisible(false); e.tell.setVisible(false);
-      if (options.launcher && !lethal) { e.state = 'launched'; e.z = 0; e.vz = 430; e.timer = 0.62; e.sprite.play('grunt_knockdown', true); }
-      else { e.state = lethal ? 'dead' : 'hurt'; e.timer = lethal ? 0.52 : 0.28; e.sprite.play(lethal ? 'grunt_knockdown' : 'grunt_hurt', true); }
+      this.releaseAttackToken(e);
+      const result = L.applyHeroHit(e, this.heroData, amount, options);
+      if (!result) return;
+      e.flashTimer = 0.12; e.barTimer = 1.4;
+      e.alert.setVisible(false); e.tell.setVisible(false);
+      e.sprite.play(result.launcher || result.lethal ? 'grunt_knockdown' : 'grunt_hurt', true);
       e.sprite.setTint(0xffffff);
-      p.score += lethal ? 180 : 35; p.focus = clamp(p.focus + 8, 0, 100); this.impactFeedback(!!options.heavy || lethal);
-      if (lethal && !e.counted) { e.counted = true; p.trollocKills++; p.kills = p.trollocKills; p.score += 120; }
+      this.impactFeedback(!!result.heavy);
     }
 
     updateWorldProgress() {
       const p = this.heroData;
       if (!this.waveActive && this.waveIndex < 2 && p.x >= WAVE_AT[this.waveIndex + 1]) this.startWave(this.waveIndex + 1);
       if (this.waveActive && this.enemies.every(e => e.hp <= 0)) this.completeWave();
-      if (!this.boss.active && !this.boss.defeated && p.x > 3370) this.startBoss();
+      if (!this.boss.active && !this.boss.defeated && p.x > ARENA_START) this.startBoss();
       if (this.boss.defeated) {
         this.exitGlow.setAlpha(0.24 + 0.18 * (0.5 + 0.5 * Math.sin(this.exitGlowPulse * 3)));
         this.exitLabel.setAlpha(0.65 + 0.3 * Math.sin(this.exitGlowPulse * 3));
-        if (p.x > 4320) this.completeRun();
+        if (p.x > EXIT_X + 24) this.completeRun();
       }
     }
 
@@ -522,7 +536,8 @@
       this.waveIndex = index; this.waveActive = true;
       const p = this.heroData; p.checkpoint = Math.max(100, WAVE_AT[index] - 110);
       const count = WAVE_COUNTS[index], tune = WAVE_TUNING[index];
-      this.maxAttackTokens = tune.tokens; this.attackTokenCount = 0;
+      this.waveSize = count;
+      this.maxAttackTokens = L.tokenCap(index); this.attackTokenCount = 0;
       for (let i = 0; i < count; i++) {
         const x = WAVE_AT[index] + 155 + i * 84 + (i % 2) * 26;
         const y = 331 + (i % 3) * 38;
@@ -548,29 +563,8 @@
       else { this.toast('WAVE CLEARED · A LITTLE BREATHING ROOM', 1.8); this.triggerBanner('WAVE CLEARED', 1.6); }
     }
 
-    claimAttackToken(e) {
-      if (e.hasToken || this.attackTokenCount >= this.maxAttackTokens) return false;
-      e.hasToken = true; this.attackTokenCount++;
-      return true;
-    }
-
     releaseAttackToken(e) {
-      if (!e?.hasToken) return;
-      e.hasToken = false; this.attackTokenCount = Math.max(0, this.attackTokenCount - 1);
-    }
-
-    separateEnemies() {
-      const live = this.enemies.filter(e => e.hp > 0 && !['dead', 'launched'].includes(e.state));
-      for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) {
-        const a = live[i], b = live[j]; let dx = b.x - a.x, dy = b.y - a.y;
-        if (Math.abs(dx) > 105 || Math.abs(dy) > 72) continue;
-        let distance = Math.hypot(dx / 92, dy / 56);
-        if (distance >= 1) continue;
-        if (distance < 0.001) { dx = (j % 2 ? 1 : -1) * 18; dy = (j % 3 - 1) * 18; distance = Math.hypot(dx / 92, dy / 56); }
-        const push = (1 - distance) * 0.5, nx = (dx / 92) / distance, ny = (dy / 56) / distance;
-        a.x -= nx * 92 * push; b.x += nx * 92 * push;
-        a.y = clamp(a.y - ny * 56 * push, 321, FLOOR - 8); b.y = clamp(b.y + ny * 56 * push, 321, FLOOR - 8);
-      }
+      L.releaseToken(this, e);
     }
 
     drawEnemyHealthBar(e) {
@@ -585,59 +579,41 @@
     }
 
     updateEnemies(dt) {
-      const p = this.heroData, lanes = [-64, -28, 26, 62, 0];
+      const p = this.heroData;
+      const ctxBase = { dt, time: this.runElapsed, player: p, tokenBag: this, bounds: this.enemyBounds, rng: Math.random, waveSize: this.waveSize || this.enemies.length };
       for (const e of this.enemies) {
-        if (e.state === 'dead') {
-          this.releaseAttackToken(e); e.timer -= dt; e.sprite.setAlpha(clamp(e.timer / 0.52, 0, 1));
-          if (e.flashTimer > 0) { e.flashTimer -= dt; e.sprite.setTint(0xffffff); } else e.sprite.setTint(0xd2a29a);
-          if (e.timer <= 0) { e.hp = 0; e.sprite.setVisible(false); e.shadow.setVisible(false); e.alert.setVisible(false); e.tell.setVisible(false); e.hpBar.clear(); }
-          continue;
-        }
-        if (e.hp <= 0) continue;
-        e.cooldown -= dt;
+        const events = L.stepEnemy(e, ctxBase);
         if (e.flashTimer > 0) { e.flashTimer -= dt; e.sprite.setTint(0xffffff); }
-        if (e.knock) { e.x += e.knock * dt; e.knock *= Math.pow(0.022, dt); }
-        if (e.state === 'launched') {
-          e.timer -= dt; e.z += e.vz * dt; e.vz -= 1220 * dt;
-          if (e.z <= 0 && e.vz < 0) { e.z = 0; e.vz = 0; e.state = 'hurt'; e.timer = 0.25; e.sprite.play('grunt_hurt', true); }
+        else if (e.state === 'dead') e.sprite.setTint(0xd2a29a);
+        else if (e.state === 'hurt' || e.state === 'launched') e.sprite.setTint(0xff7777);
+        else e.sprite.setTint(0xffffff);
+        if (events.anim) e.sprite.play(events.anim, true);
+        if (e.state === 'dead') {
+          e.sprite.setAlpha(clamp(e.timer / 0.74, 0, 1));
+          if (e.timer <= 0) {
+            e.hp = 0; e.sprite.setVisible(false); e.shadow.setVisible(false); e.alert.setVisible(false); e.tell.setVisible(false); e.hpBar.clear();
+          }
           continue;
         }
-        if (e.state === 'hurt') {
-          this.releaseAttackToken(e); e.timer -= dt;
-          if (e.flashTimer <= 0) e.sprite.setTint(0xff7777);
-          if (e.timer <= 0) { e.state = 'circle'; e.sprite.setTint(0xffffff); e.sprite.play('grunt_walk'); }
-        } else if (e.state === 'windup') {
-          e.timer -= dt; const pulse = 0.58 + 0.42 * Math.sin(this.runElapsed * 25);
-          e.alert.setVisible(true).setAlpha(pulse); e.tell.setPosition(e.targetX, e.targetY + 3).setVisible(true).setAlpha(pulse).setScale(0.88 + 0.12 * Math.sin(this.runElapsed * 21));
-          if (e.timer <= 0) { e.state = 'strike'; e.timer = 0.23; e.hitDone = false; e.sprite.play('grunt_attack', true); }
-        } else if (e.state === 'strike') {
-          e.timer -= dt; e.x += Math.sign(e.targetX - e.x) * 95 * dt;
-          if (!e.hitDone && e.timer < 0.12) {
-            e.hitDone = true;
-            if (Math.abs(p.x - e.targetX) < 93 && Math.abs(p.y - e.targetY) < 64 && p.z < 28) this.hurtHero(e.attackDamage, Math.sign(p.x - e.x) * 205);
-          }
-          if (e.timer <= 0) { e.state = 'circle'; e.cooldown = 1.18 + Math.random() * 0.38; this.releaseAttackToken(e); e.alert.setVisible(false); e.tell.setVisible(false); e.sprite.play('grunt_walk'); }
-        } else {
+        if (e.state === 'windup') {
+          const pulse = 0.58 + 0.42 * Math.sin(this.runElapsed * 25);
+          e.alert.setVisible(true).setAlpha(pulse);
+          e.tell.setPosition(e.targetX, e.targetY + 3).setVisible(true).setAlpha(pulse).setScale(0.88 + 0.12 * Math.sin(this.runElapsed * 21));
+        } else if (e.state !== 'strike') {
           e.alert.setVisible(false); e.tell.setVisible(false);
-          const side = e.x === p.x ? (e.slot % 2 ? 1 : -1) : Math.sign(e.x - p.x);
-          const orbit = this.runElapsed * 1.4 + e.slot * 1.73, ring = 134 + (e.slot % 2) * 18;
-          const targetX = p.x + side * ring + Math.cos(orbit) * 14;
-          const targetY = clamp(p.y + lanes[e.slot % lanes.length] + Math.sin(orbit * 1.7) * 13, 321, FLOOR - 8);
-          e.x += clamp(targetX - e.x, -e.speed * dt, e.speed * dt);
-          e.y += clamp(targetY - e.y, -e.speed * 0.72 * dt, e.speed * 0.72 * dt);
-          const inRange = Math.abs(p.x - e.x) < 152 && Math.abs(p.y - e.y) < 66;
-          if (inRange && e.cooldown <= 0 && !p.falling && this.claimAttackToken(e)) {
-            e.state = 'windup'; e.timer = e.windup; e.targetX = p.x; e.targetY = p.y; e.sprite.play('grunt_attack', true);
-          } else if (e.sprite.anims.currentAnim?.key !== 'grunt_walk') e.sprite.play('grunt_walk');
         }
-        e.x = clamp(e.x, 110, WORLD - 120); e.y = clamp(e.y, 321, FLOOR - 8);
+        if (events.hit) this.hurtHero(events.hit.damage, events.hit.knock);
       }
-      this.separateEnemies();
+      L.separateEnemies(this.enemies, dt);
+      for (const e of this.enemies) {
+        e.x = clamp(e.x, this.enemyBounds.minX, this.enemyBounds.maxX);
+        e.y = clamp(e.y, this.enemyBounds.minY, this.enemyBounds.maxY);
+      }
     }
 
     hurtHero(amount, knock) {
       const p = this.heroData;
-      if (p.invuln > 0 || p.falling > 0 || this.mode !== 'play') return;
+      if (L.isInvulnerable(p) || p.falling > 0 || this.mode !== 'play') return;
       p.hp -= amount; p.invuln = 0.62; p.action = 'hurt'; p.actionT = 0; p.knock = knock || -140; this.hero.play('riley_hurt', true); this.hero.setTint(0xff8f8f);
       this.cameras.main.shake(70, 0.0045);
       if (p.hp <= 0) this.playerDeath();
@@ -654,7 +630,7 @@
 
     respawnPlayer() {
       const p = this.heroData;
-      p.x = p.checkpoint; p.y = FLOOR - 56; p.z = 0; p.vz = 0; p.hp = 78; p.focus = Math.max(30, p.focus); p.invuln = 1.6; p.action = 'idle'; p.actionT = 0; p.knock = 0; p.attackBuffer = 0; p.specialBuffer = 0; p.falling = 0;
+      p.x = p.checkpoint; p.y = FLOOR - 56; p.z = 0; p.vz = 0; p.jumpVx = 0; p.hp = 78; p.focus = Math.max(30, p.focus); p.invuln = 1.6; p.action = 'idle'; p.actionT = 0; p.knock = 0; p.attackBuffer = 0; p.specialBuffer = 0; p.falling = 0;
       this.hero.setPosition(p.x, FLOOR - 56).setAlpha(1).setTint(0xffffff).play('riley_idle');
       this.attackTokenCount = 0;
       this.enemies.forEach(e => { if (e.hp > 0) { e.hasToken = false; e.state = 'circle'; e.timer = 0; e.cooldown = 1.2; e.z = 0; e.vz = 0; e.alert.setVisible(false); e.tell.setVisible(false); e.sprite.setAlpha(1).setTint(0xffffff).play('grunt_walk'); } });
@@ -663,8 +639,8 @@
     }
 
     startBoss() {
-      const p = this.heroData; this.boss.active = true; this.boss.phase = 'stalk'; this.boss.timer = 1.4; this.boss.x = 3710; this.boss.y = 345;
-      p.checkpoint = 3400; p.x = Math.min(p.x, 3650); this.bossSprite.setPosition(this.boss.x, this.boss.y).setAlpha(0.72);
+      const p = this.heroData; this.boss.active = true; this.boss.phase = 'stalk'; this.boss.timer = 1.4; this.boss.x = BOSS_X; this.boss.y = 345;
+      p.checkpoint = ARENA_START; p.x = Math.min(p.x, ARENA_START + 80); this.bossSprite.setPosition(this.boss.x, this.boss.y).setAlpha(0.72);
       $('#boss-hud').style.display = 'block'; this.toast('THE GRAY MAN · WATCH FOR THE RED FLASH', 3); this.triggerBanner('THE GRAY MAN · WAIT FOR THE RED TELL', 2.8);
     }
 
@@ -692,15 +668,15 @@
         if (b.timer <= 0) {
           b.phase = 'strike'; b.timer = 0.27;
           const side = b.x < b.targetX ? -1 : 1;
-          b.x = clamp(b.targetX + side * 115, 3305, 4010); b.y = b.targetY;
+          b.x = clamp(b.targetX + side * 115, ARENA_LEFT + 8, ARENA_RIGHT - 24); b.y = b.targetY;
           this.bossSprite.setPosition(b.x, b.y).setAlpha(1).setTint(0xff4c5b).setRotation(-side * 0.08);
         }
       } else if (b.phase === 'strike') {
         b.timer -= dt;
         if (b.timer <= 0) {
-          if (Math.abs(p.x - b.targetX) < 116 && Math.abs(p.y - b.targetY) < 76 && p.z < 30) this.hurtHero(b.phaseTwo ? 28 : 22, Math.sign(p.x - b.x) * 270);
+          if (L.grayManStrikeConnects(p, b.targetX, b.targetY)) this.hurtHero(b.phaseTwo ? 28 : 22, Math.sign(p.x - b.x) * 270);
           this.hideBossTell(); b.phase = 'recover'; b.timer = 0.95;
-          b.x = clamp(b.targetX + (b.x < b.targetX ? -90 : 90), 3305, 4010);
+          b.x = clamp(b.targetX + (b.x < b.targetX ? -90 : 90), ARENA_LEFT + 8, ARENA_RIGHT - 24);
           this.bossSprite.setPosition(b.x, b.y).setAlpha(1).clearTint().setRotation(0);
         }
       } else if (b.phase === 'recover') {
@@ -726,21 +702,20 @@
 
     updateBridge(dt) {
       if (!this.planks) return;
-      let redraw = false;
-      this.planks.forEach((plank, i) => {
-        const [a, b] = CRUMBLE[i], p = this.heroData;
-        if (!plank.collapsed && plank.timer === 0 && p.x >= a && p.x <= b && p.z <= 0 && p.onBridge) { plank.timer = 1.22; redraw = true; this.toast('BRIDGE PLANKS CRACKING · JUMP', 1); }
-        if (plank.timer > 0) {
-          plank.timer -= dt;
-          if (plank.timer <= 0) { plank.collapsed = true; redraw = true; }
-        }
-      });
-      if (redraw) this.drawBridge();
+      const p = this.heroData;
+      const step = L.stepPlanks(this.planks, p, dt);
+      if (step.started.length) this.toast('PLANKS CRACKING · JUMP BEFORE THEY DROP', 1);
+      if (step.changed) this.drawBridge();
+      const next = L.advanceBridgeCheckpoint(p.bridgeCheckpoint, p.x, p.z, this.isPit(p.x));
+      if (next !== p.bridgeCheckpoint) {
+        p.bridgeCheckpoint = next;
+        p.checkpoint = next;
+        this.toast('MID-BRIDGE CHECKPOINT', 1.5);
+      }
     }
 
     isPit(x) {
-      if (GAPS.some(([a,b]) => x > a && x < b)) return true;
-      return CRUMBLE.some(([a,b], i) => this.planks[i]?.collapsed && x > a && x < b);
+      return L.isPit(x, this.planks);
     }
 
     startBridgeFall() {
@@ -749,10 +724,11 @@
     }
 
     respawnBridge() {
-      const p = this.heroData; p.x = 2228; p.y = FLOOR - 12; p.z = 0; p.vz = 0; p.falling = 0; p.action = 'idle'; p.invuln = 1.05; p.attackBuffer = 0; p.specialBuffer = 0;
-      this.planks = CRUMBLE.map(() => ({ timer: 0, collapsed: false })); this.drawBridge();
-      this.hero.setPosition(p.x, FLOOR - 12).setAlpha(1).setTint(0xffffff).play('riley_idle');
-      this.toast('BRIDGE RESET · CHECKPOINT RESTORED', 1.7);
+      const p = this.heroData;
+      p.x = p.bridgeCheckpoint || BRIDGE_SPAWN; p.y = FLOOR - 12; p.z = 0; p.vz = 0; p.jumpVx = 0; p.falling = 0; p.action = 'idle'; p.invuln = 1.05; p.attackBuffer = 0; p.specialBuffer = 0;
+      this.planks = L.createPlanks(); this.drawBridge();
+      this.hero.setPosition(p.x, FLOOR - 12).setAlpha(1).setTint(0xffffff).setScale(0.56).setRotation(0).play('riley_idle');
+      this.toast(p.x >= BRIDGE_MID - 4 ? 'MID-BRIDGE CHECKPOINT' : 'BRIDGE RESET · CHECKPOINT RESTORED', 1.7);
     }
 
     updateMotes(dt) {
@@ -787,6 +763,7 @@
       $('#focus-text').textContent = Math.round(p.focus);
       $('#lives').textContent = '♥ '.repeat(Math.max(0, p.lives)).trim() || '—';
       $('#score').textContent = String(p.score).padStart(6, '0');
+      const killsEl = $('#kills'); if (killsEl) killsEl.textContent = String(p.trollocKills | 0);
       $('#clock').textContent = fmtTime(p.time);
       if (this.boss.active && !this.boss.defeated) {
         $('#boss-hud').style.display = 'block'; $('#boss-fill').style.width = `${Math.max(0, this.boss.hp / this.boss.maxHp * 100)}%`;
