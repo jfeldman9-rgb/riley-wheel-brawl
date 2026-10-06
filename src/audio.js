@@ -1,9 +1,9 @@
-// Audio carried over from 1.2: the recorded music track, the approved Kokoro voice lines for Stage 1,
-// and the procedural WebAudio SFX (same synth recipes as 1.2's audio.js, with a few new cues).
 let ctx = null, master, music, sfxBus, voiceBus, duckG, comp, noiseBuf;
 let muted = false, musicOn = true, musicEl = null, musicSrc = null;
 const clips = Object.create(null), gates = Object.create(null), oneShots = new Map();
 let voiceSrc = null, voiceRequest = 0, voicePending = false;
+let loopSrc = null, loopToken = 0, loopId = null;
+const moreVoice = Object.create(null);
 let audioHidden = false, audioEpoch = 0;
 const audioTimers = new Set();
 export const VOICE = {
@@ -176,7 +176,7 @@ function resetDuck() {
 }
 /** Cancel scene-owned speech and one-shots; keep cached clips, music and user preferences. */
 export function stopSceneAudio() {
-  voiceRequest++; voicePending = false;
+  voiceRequest++; voicePending = false; stopLoop();
   for (const source of oneShots.keys()) stopSource(source);
   for (const name of Object.keys(gates)) delete gates[name];
   resetDuck();
@@ -255,12 +255,6 @@ export const sfx = {
   torchIgnite() { if (!gate('torchIgnite', 120)) return; noise({ f0: 280, f1: 1800, dur: 0.45, vol: 0.25, filter: 'bandpass', attack: 0.05 }); tone({ f0: vary(120), f1: 75, dur: 0.3, vol: 0.18, type: 'sine' }); },
 };
 let musicWanted = false, unlocked = false;
-// ---------- music tracks (sources and licences: assets/audio/AUDIO_PROVENANCE.md) ----------
-// stage1 is Jason's 1.1 theme, streamed through an <audio> element (too long to hold decoded on an iPad); its
-// loop region is [31.103 s, 159.103 s) and the element jumps back exactly 128 s inside the baked crossfade.
-// The other tracks are short original loops decoded once and looped sample-accurately with loopStart/loopEnd
-// (each file carries 0.25 s of overlap on both sides of its loop). gain: per-track balance against the stage1
-// theme, which the SFX mix was tuned to (track loudness: title -17, boss1/boss2/boss3 -15.2, stage2/stage3 -16 LUFS vs stage1 -15.7).
 export const MUSIC = {
   stage1: { url: 'assets/audio/music-main.mp3', stream: true, loopStart: 31.103, loopEnd: 159.103, gain: 1 },
   title: { url: 'assets/audio/music-title.mp3', loopStart: 0.25, loopEnd: 45.964286, gain: 1 },
@@ -269,6 +263,8 @@ export const MUSIC = {
   boss2: { url: 'assets/audio/music-boss2.mp3', loopStart: 0.25, loopEnd: 55.902177, gain: 0.94 },
   stage3: { url: 'assets/audio/music-stage3.mp3', loopStart: 0.25, loopEnd: 64.865374, gain: 1 },
   boss3: { url: 'assets/audio/music-boss3.mp3', loopStart: 0.25, loopEnd: 53.583333, gain: 0.94 },
+  stage4: { url: 'assets/audio/music-stage4.mp3', loopStart: 0.25, loopEnd: 40.25, gain: 1 },
+  boss4: { url: 'assets/audio/music-boss4.mp3', loopStart: 0.25, loopEnd: 30.726190476190474, gain: 0.94 },
 };
 const tracks = Object.create(null), musicBytes = Object.create(null);
 let currentTrack = null, wantedTrack = 'stage1';
@@ -443,13 +439,15 @@ function loadClip(id) {
 }
 export function preloadVoices() { Object.keys(VOICE).forEach(loadClip); }
 /** on-demand preload for EXTRA_VOICE lines (power pickups and the Twix cutscene) */
-export function preloadClips(ids) { for (const id of ids) if (Object.hasOwn(EXTRA_VOICE, id)) loadClip(id); }
+export function preloadClips(ids) { for (const id of ids) if (Object.hasOwn(EXTRA_VOICE, id) || moreVoice[id]) loadClip(id); }
+export function registerLines(map) { for (const id in map) moreVoice[id] = map[id]; }
+export function withSfx(fn) { init(); if (ctx && sfxBus) fn(ctx, sfxBus); }
 /** Drop decoded lines the next stage does not play. Shared VOICE clips stay cached. */
 export function releaseClips(ids) { if (ids) for (const id of ids) delete clips[id]; }
 export function residentClipIds() { return Object.keys(clips); }
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
 export function say(id, onCaption, interrupt = true) {
-  const cap = Object.hasOwn(VOICE, id) ? VOICE[id] : Object.hasOwn(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : null;
+  const cap = Object.hasOwn(VOICE, id) ? VOICE[id] : Object.hasOwn(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : moreVoice[id] || null;
   if (!cap) return;
   if (!interrupt && (voiceSrc || voicePending)) return cap;
   const request = ++voiceRequest, shouldPlay = !muted;
@@ -465,4 +463,19 @@ export function say(id, onCaption, interrupt = true) {
     duck(0.45, buf.duration, 0.4);
   });
   return cap;
+}
+export function playLoop(id) {
+  if (loopId === id) return;
+  stopLoop();
+  const token = loopToken; loopId = id; init();
+  if (!ctx || muted) { loopId = null; return; }
+  loadClip(id).then(buf => {
+    if (token !== loopToken || !buf || muted || !ctx) return;
+    const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.connect(voiceBus); trackSource(s); loopSrc = s; s.start();
+  });
+}
+export function stopLoop() {
+  loopToken++; loopId = null;
+  if (!loopSrc) return;
+  const s = loopSrc; loopSrc = null; stopSource(s);
 }

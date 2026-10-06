@@ -1,31 +1,29 @@
-// Stage table and unified registry. Stage 1 (Emond's Field), Stage 2 (Baerlon and the Whitecloaks),
-// and Stage 3 (Caemlyn and the Myrddraal) are registered here in STAGES[n].
+// Stage table and unified registry. Stages 1–4 register in STAGES[n].
 import { DROPS, BOSS_DROP } from './powers.js';
 import { sfx, say } from './audio.js';
 import { LANE_TOP, LANE_BOT } from './config.js';
+import { STAGE4, STAGE4_CHARS, STAGE4_TEXTURES } from './stage4-def.js';
 export const STAGE_COUNT = 2;
 
-/**
- * Returns true if stage n is enabled given URL query params q.
- * Stages 1 and 2 are always enabled; Stage 3 requires s3=1.
- */
+/** Stage 1 and 2 always; stage 4 iff s4=1; s4=1 implies stage 3. */
 export function stageEnabled(n, q) {
   if (n === 1 || n === 2) return true;
-  if (n === 3) return !!(q && q.get && q.get('s3') === '1');
+  const s4 = !!(q && q.get && q.get('s4') === '1');
+  if (n === 4) return s4;
+  if (n === 3) return s4 || !!(q && q.get && q.get('s3') === '1');
   return false;
 }
 
-/**
- * Maximum stage available given URL query params q.
- * Returns 3 if s3=1 is set, otherwise 2.
- */
+/** 4 if s4=1, else 3 if s3=1, else 2. */
 export function maxStage(q) {
+  if (stageEnabled(4, q)) return 4;
   return stageEnabled(3, q) ? 3 : 2;
 }
 
-/** ?stage=2 (or ?stage=3&s3=1); anything else is Stage 1 */
+/** ?stage=2, ?stage=3&s3=1, or ?stage=4&s4=1; else Stage 1 */
 export function stageFromQuery(q) {
   const n = q && q.get ? +q.get('stage') : 0;
+  if (n === 4 && stageEnabled(4, q)) return 4;
   if (n === 3 && stageEnabled(3, q)) return 3;
   if (n === 2) return 2;
   return 1;
@@ -34,6 +32,7 @@ export function stageFromQuery(q) {
 /** scene data (restart({ stage })) wins over the URL */
 export function resolveStage(data, q) {
   if (data && (data.stage === 1 || data.stage === 2)) return data.stage;
+  if (data && data.stage === 4 && stageEnabled(4, q)) return 4;
   if (data && data.stage === 3 && stageEnabled(3, q)) return 3;
   return stageFromQuery(q);
 }
@@ -43,6 +42,7 @@ export const STAGE_CHARS = Object.freeze({
   1: Object.freeze(['riley', 'grunt', 'spear', 'hound', 'chief', 'loial']),
   2: Object.freeze(['riley', 'zealot', 'archer', 'hound', 'byar', 'loial']),
   3: Object.freeze(['riley', 'riley3', 'cutthroat', 'zealot', 'archer', 'hound', 'fade', 'loial']),
+  4: STAGE4_CHARS,
 });
 
 // Textures that each stage owns, plus textures shared between stages.
@@ -51,6 +51,7 @@ export const STAGE_TEXTURES = Object.freeze({
   1: Object.freeze(['far', 'mid0', 'mid1', 'floor', 'floor2', 'cart', 'barrel', 'staves']),
   2: Object.freeze(['far2', 'mid2a', 'mid2b', 'floor2a', 'floor2b', 'crate', 'planks', 'beam2', 'arrow', 'torch', 'ribbon', 'barnburn2', 'barnflame_roof', 'barnflame_eave', 'barnflame_door', 'story_panel_1', 'story_panel_2', 'story_panel_3']),
   3: Object.freeze(['far3_day', 'far3_night', 'mid3a', 'mid3b', 'floor3a', 'floor3b', 'floor3c', 'crate', 'planks', 'rooftiles', 'shadowpool', 'shadowburst', 'fade_far', 'story3_panel_1', 'story3_panel_2', 'story3_panel_3']),
+  4: STAGE4_TEXTURES,
   shared: SHARED_TEXTURES,
 });
 
@@ -209,7 +210,7 @@ export const STAGE3 = {
   textures: STAGE_TEXTURES[3],
   music: Object.freeze({ stage: 'stage3', boss: 'boss3' }),
   kit: null,
-  next: () => ({ stage: 1 }),
+  next: q => (stageEnabled(4, q) ? { stage: 4, fromStage3: true, autostart: true } : { stage: 1 }),
   onBossPhase: (scene, c, ph) => {
     const L = STAGE3.phaseLines[ph];
     if (L) { say(L.say, scene.caption); scene.fx.trauma = 0.5; scene.hud.flashText(L.flash); }
@@ -224,9 +225,13 @@ export const STAGE3 = {
   },
 };
 
+STAGE4.chars = STAGE4_CHARS;
+STAGE4.textures = STAGE4_TEXTURES;
+export { STAGE4 };
 export const STAGES = Object.freeze({
   1: STAGE1,
   2: STAGE2,
   3: STAGE3,
+  4: STAGE4,
 });
 
