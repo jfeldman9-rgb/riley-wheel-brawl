@@ -28,6 +28,8 @@ export class Riley extends Fighter {
   get busy() { return !['idle', 'walk', 'run'].includes(this.state); }
   get vulnerable() { return this.inv <= 0 && this.alive && !this.scene.victoryPending && !this.scene.ended && !['down', 'getup', 'dead'].includes(this.state); }
   update(dt, inp) {
+    const swinging = this.atk && ['combo1', 'combo2', 'combo3', 'back', 'runkick', 'airkick', 'knee'].includes(this.state);
+    this.attackFrame = !!(swinging && this.atk.active.includes(this.fi));
     this.st += dt; if (this.inv > 0) this.inv -= dt; if (this.comboT > 0 && (this.comboT -= dt) <= 0) this.combo = 0;
     this.sprite.setAlpha(this.inv > 0 && this.state !== 'down' && this.state !== 'getup' && this.state !== 'balefire' ? (Math.floor(this.st * 20) % 2 ? 0.45 : 1) : 1);
     // The assist call works in any state (as in 1.1); the stage decides whether Loial is available.
@@ -70,8 +72,9 @@ export class Riley extends Fighter {
     if (x || y) {
       if (x) this.face(x);
       const run = inp.run && x;
-      const sp = run ? 390 : 205;
-      this.x += x * sp * dt; this.y += y * 125 * dt;
+      const pace = 1 - (this.fogSlow || 0);
+      const sp = (run ? 390 : 205) * pace;
+      this.x += x * sp * dt; this.y += y * 125 * pace * dt;
       const st = run ? 'run' : 'walk'; if (this.state !== st) this.setState(st, st);
       if (this.st % 0.3 < dt) sfx.step();
       // walking into a dazed or open enemy grabs it
@@ -158,11 +161,16 @@ export class Riley extends Fighter {
     this.lastGrabber = c; this.atk = null; this.next = false; this.kicked = false; this.vx = 0;
     this.mashDir = (this.scene.inp?.x || 0) + 3 * (this.scene.inp?.y || 0);   // nine distinct directions; neutral is 0
     this.setState('grabbed', 'grabbed');
+    if (c?.type === 'draghkar' && this.scene.anims?.exists?.('riley4_kissed')) this.sprite.play('riley4_kissed');
   }
   /** T4 contract: the hold ended. 'escape' plays the break-free; 'throw'/'break' only leave the grabbed pose
    *  (the throw's hit, a hazard's hit or Loial decide what happens next) */
   leaveGrabbed(how) {
-    if (how === 'escape') { this.shoveFx = false; this.vx = 0; return this.setState('escape', 'escape'); }
+    if (how === 'escape') {
+      this.shoveFx = false; this.vx = 0; this.setState('escape', 'escape');
+      if (this.lastGrabber?.type === 'draghkar' && this.scene.anims?.exists?.('riley4_break')) this.sprite.play('riley4_break');
+      return;
+    }
     this.lastGrabber = null;
     if (this.state === 'grabbed') this.setState('idle', 'idle');
   }

@@ -44,7 +44,7 @@ function applyLevel(st, lv) {
   while (level < lv) {
     level++; st.fx.quality = level;
     if (level === 1) { st.setBloom(false); removedBloom = true; }
-    if (level === 2) { st.snowFront.frequency = 240; st.kit?.setQuality(level); }
+    if (level === 2) { if (st.snowFront) st.snowFront.frequency = 240; st.kit?.setQuality(level); }
     if (level === 3 && game.rs > 1) game.setRS(Math.max(1, game.rs - 0.5));
     if (level === 4) { st.setBackdropLit(false); }
     if (level === 5 && game.rs > 1) game.setRS(1);

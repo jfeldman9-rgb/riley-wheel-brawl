@@ -1,5 +1,3 @@
-// Draghkar boss core (Stage 4 prep). Pure logic, no Phaser, no Stage 3 import.
-
 export const DRAGHKAR = Object.freeze({
   hp: 560,
   phase2Threshold: 560 * 0.66,
@@ -87,24 +85,24 @@ export class Draghkar {
       const old = this.phase; this.phase = ph;
       if (ph === 2 && old < 2 && !this.p2AddsSpawned) {
         this.p2AddsSpawned = true; this.kissCooldown = 1.0;
-        this.deps.dropSaangreal?.(); this.scene.dropSaangreal?.();
-        this.deps.spawnCultists?.(2); this.scene.spawnCultists?.(2);
+        this.call('dropSaangreal');
+        this.call('spawnCultists', 2);
       }
-      this.deps.onBossPhase?.(this, ph); this.scene.onBossPhase?.(this, ph);
+      this.call('onBossPhase', this, ph);
     }
   }
 
   releaseGrab() {
     const R = this.target;
     if (R && R.grabbedBy === this) R.grabbedBy = null;
-    if (this.scene) this.scene.grabBusy = false;
+    this.held(false);
     if (R && R.state === 'grabbed') R.state = 'idle';
     this.mashCount = this.holdElapsed = this.decayElapsed = 0;
   }
 
   defeat() {
     this.alive = false; this.releaseGrab(); this.state = 'defeated'; this.st = 0;
-    this.deps.onBossDefeat?.(this); this.scene.onBossDefeat?.(this);
+    this.call('onBossDefeat', this);
   }
 
   takeHit(h = {}, from) {
@@ -120,7 +118,7 @@ export class Draghkar {
         this.state = 'counter_down'; this.st = 0; this.counter = true;
         this.hp = Math.max(0, this.hp - dmg * D.counterVuln);
         this.checkPhase();
-        this.deps.onCounter?.(this); this.scene.onCounter?.(this);
+        this.call('onCounter', this);
         if (this.hp <= 0) this.defeat();
         return true;
       }
@@ -139,12 +137,13 @@ export class Draghkar {
   startSwoop(band = 1, dir = null) {
     if (!this.alive) return false;
     this.state = 'swoop_tell'; this.st = 0; this.targetBand = band;
-    const R = this.target;
-    this.swoopDir = dir !== null ? dir : (R ? (R.x > 640 ? -1 : 1) : 1);
-    this.x = this.swoopDir > 0 ? -100 : 1380;
+    const R = this.target, L = this.deps.left ?? -100, Rt = this.deps.right ?? 1380;
+    this.swoopL = L; this.swoopR = Rt;
+    this.swoopDir = dir !== null ? dir : (R ? (R.x > (this.deps.midX ?? 640) ? -1 : 1) : 1);
+    this.x = this.swoopDir > 0 ? L : Rt;
     this.screech = this.floorShadow = this.laneBandArrow = true;
     this.hitRileyThisMove = false;
-    this.deps.onSwoopTell?.(this); this.scene.onSwoopTell?.(this);
+    this.call('onSwoopTell', this);
     return true;
   }
 
@@ -177,7 +176,7 @@ export class Draghkar {
   startKiss() {
     if (!this.alive || this.phase < 2) return false;
     if (this.kissCooldown > 0 || this.kissLockout > 0 || !this.kissBetweenAction) return false;
-    if (this.scene.grabBusy || (this.target && this.target.grabbedBy)) return false;
+    if (this.held() || (this.target && this.target.grabbedBy)) return false;
     const R = this.target;
     if (R && (R.state === 'down' || R.state === 'getup' || R.alive === false)) return false;
 
@@ -191,7 +190,7 @@ export class Draghkar {
     this.mashCount++;
     if (this.mashCount >= D.kissMashTarget) {
       this.releaseGrab(); this.state = 'reels'; this.st = 0; this.setKissCooldown();
-      this.deps.onRileyEscape?.(this, this.target); this.scene.onRileyEscape?.(this, this.target);
+      this.call('onRileyEscape', this, this.target);
       return true;
     }
     return false;
@@ -205,6 +204,12 @@ export class Draghkar {
   }
 
   isPaused() { return !!(this.scene.paused || this.deps.isPaused?.()); }
+  call(name, a, b) { const fn = this.deps[name] || this.scene?.[name]; if (typeof fn === 'function') fn(a, b); }
+  held(v) {
+    const s = this.scene; if (!s) return false;
+    if (typeof s.grabBusy === 'function') { if (arguments.length) s._kissBusy = !!v; return !!s._kissBusy; }
+    if (arguments.length) s.grabBusy = !!v; return !!s.grabBusy;
+  }
 
   substep(dt) {
     if (!this.alive) return;
@@ -237,7 +242,7 @@ export class Draghkar {
         const spd = D.swoopSpeed * (this.hp <= D.phase3EnrageThreshold ? 1.3 : 1.0);
         this.x += this.swoopDir * spd * dt;
 
-        if (R && !this.hitRileyThisMove && Math.abs(this.x - R.x) < 50 && Math.abs(this.y - (R.y ?? 600)) < 40) {
+        if (!this.deps.sceneHits && R && !this.hitRileyThisMove && Math.abs(this.x - R.x) < 50 && Math.abs(this.y - (R.y ?? 600)) < 40) {
           const facingOncoming = Math.sign(this.x - R.x) === (R.facing || 1);
           if (R.attackFrame && facingOncoming) { this.takeHit({ dmg: 10, activeFrame: true }, R); return; }
           for (const f of this.scene.fireballs || []) {
@@ -250,15 +255,16 @@ export class Draghkar {
           R.state = 'down';
         }
 
-        const done = (this.swoopDir > 0 && this.x > 1380) || (this.swoopDir < 0 && this.x < -100);
+        const edgeL = this.swoopL ?? -100, edgeR = this.swoopR ?? 1380;
+        const done = (this.swoopDir > 0 && this.x > edgeR) || (this.swoopDir < 0 && this.x < edgeL);
         if (done || this.st > 1.8) {
           this.swoopCount++; this.kissBetweenAction = true;
           if (this.swoopCount < this.swoopQuota) {
             this.startSwoop(this.targetBand === 1 ? 0 : 1, -this.swoopDir);
           } else {
             this.state = 'land_recovery'; this.st = 0;
-            this.x = Math.max(100, Math.min(1180, R ? R.x + (this.swoopDir > 0 ? -200 : 200) : 640));
-            this.y = 600;
+            this.x = Math.max(edgeL + 200, Math.min(edgeR - 200, R ? R.x + (this.swoopDir > 0 ? -200 : 200) : (this.deps.midX ?? 640)));
+            this.y = this.deps.bandY == null ? 600 : this.deps.bandY;
           }
         }
         break;
@@ -272,10 +278,10 @@ export class Draghkar {
         this.landedTimer += dt;
         if (R) this.facing = Math.sign(R.x - this.x) || this.facing || 1;
         if (this.phase >= 2 && this.kissCooldown <= 0 && this.kissLockout <= 0 && this.kissBetweenAction) {
-          if (!this.scene.grabBusy && (!R || !R.grabbedBy)) { this.startKiss(); break; }
+          if (!this.held() && (!R || !R.grabbedBy)) { this.startKiss(); break; }
         }
-        if (this.phase >= 2 && this.hp > D.phase3EnrageThreshold && Math.random() < 0.02) {
-          this.startCroon(); break;
+        if (this.phase >= 2 && this.hp > D.phase3EnrageThreshold && (this.croonIn = (this.croonIn ?? 3) - dt) <= 0) {
+          this.croonIn = 8; this.startCroon(); break;
         }
         if (R && Math.abs(R.x - this.x) < 180) {
           if (this.st > 1.0 && Math.random() < 0.5) { this.startClaw(); break; }
@@ -339,13 +345,13 @@ export class Draghkar {
           }
           const attackingAway = R.attackFrame && !facingEachOther;
           const grabbable = (GRAB_OK.has(R.state) || attackingAway) &&
-                            !R.grabbedBy && !this.scene.grabBusy &&
+                            !R.grabbedBy && !this.held() &&
                             R.state !== 'down' && R.state !== 'getup';
           if (grabbable) {
             if (R.held) { R.held.released?.(); R.held = null; }
             this.state = 'kiss_hold'; this.st = this.holdElapsed = this.decayElapsed = this.mashCount = 0;
-            R.grabbedBy = this; R.state = 'grabbed'; this.scene.grabBusy = true;
-            this.deps.onRileyGrabbed?.(this, R); this.scene.onRileyGrabbed?.(this, R);
+            R.grabbedBy = this; R.state = 'grabbed'; this.held(true);
+            this.call('onRileyGrabbed', this, R);
             break;
           }
         }

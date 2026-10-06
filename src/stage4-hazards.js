@@ -120,8 +120,9 @@ export function createFog(deps = {}) {
   function steer(t, world) {
     const R = world.riley;
     let nx = t.tip.x, ny = t.tip.y;
-    if (R) {
-      const dx = R.x - nx, dy = R.y - ny, len = hypot(dx, dy);
+    const goal = t.vent.fixed || (R ? { x: R.x, y: R.y } : null);
+    if (goal) {
+      const dx = goal.x - nx, dy = goal.y - ny, len = hypot(dx, dy);
       if (len > 1e-6) { nx += dx / len * SPEED; ny += dy / len * SPEED; }
     }
     const vx = nx - t.vent.x, vy = ny - t.vent.y, reach = hypot(vx, vy);
@@ -137,6 +138,16 @@ export function createFog(deps = {}) {
   function overlap(actor, t) {
     const ar = actor.r || FOG.actorR;
     return hypot(actor.x - t.tip.x, actor.y - t.tip.y) < FOG.tipR + ar;
+  }
+  function fell(actor, dmg) {
+    if ((actor.hp || 0) <= 0 && actor.alive !== false && actor.lives == null) {
+      if (typeof actor.die === 'function') actor.die(1, { dmg, down: true, kb: 220, launch: 220 });
+      else if (typeof actor.defeat === 'function') actor.defeat(null);
+      else { actor.alive = false; actor.state = 'down'; }
+      return;
+    }
+    if (typeof actor.setState === 'function') actor.setState('down', 'knockdown');
+    else actor.state = 'down';
   }
   function touch(actor) {
     if (!actor || actor.alive === false) return;
@@ -155,10 +166,13 @@ export function createFog(deps = {}) {
     if (!hit) { actor.fogContact = 0; actor.fogSlow = 0; return; }
     actor.fogSlow = FOG.slow;
     actor.fogContact = (actor.fogContact || 0) + 1;
-    if (actor.fogContact % ticks(FOG.contactEvery) === 0) actor.hp = Math.max(0, actor.hp - FOG.contactDmg);
+    if (actor.fogContact % ticks(FOG.contactEvery) === 0) {
+      actor.hp = Math.max(0, actor.hp - FOG.contactDmg);
+      if ((actor.hp || 0) <= 0 && actor.alive !== false && actor.lives == null) fell(actor, FOG.contactDmg);
+    }
     if (actor.fogContact >= ticks(FOG.gripTime)) {
       actor.hp = Math.max(0, actor.hp - FOG.gripDmg);
-      actor.state = 'down';
+      fell(actor, FOG.gripDmg);
       actor.fogPend = true;
       actor.fogSawGetup = false;
       actor.fogContact = 0;
@@ -230,7 +244,7 @@ export function createFog(deps = {}) {
     vents, tendrils, moonshafts,
     addVent(spec) {
       if (dead) return null;
-      const v = { id: spec.id || 'vent' + seq++, x: spec.x, y: spec.y, zone: spec.zone || 0, phase: 'idle', ticks: 0, tendril: null };
+      const v = { id: spec.id || 'vent' + seq++, x: spec.x, y: spec.y, zone: spec.zone || 0, phase: 'idle', ticks: 0, tendril: null, fixed: spec.fixed || null };
       vents.push(v);
       return v;
     },
@@ -252,6 +266,7 @@ export function createFog(deps = {}) {
       return true;
     },
     live(zone) { return tendrils.filter(t => t.zone === zone).length; },
+    keepZone(zone) { for (const t of tendrils.slice()) if (t.zone !== zone) remove(t); },
     step(dt, world) {
       if (dead || !world) return;
       observe(world.riley);
