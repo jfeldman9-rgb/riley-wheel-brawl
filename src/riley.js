@@ -54,10 +54,7 @@ export class Riley extends Fighter {
       case 'getup': if (this.done) { this.setState('idle', 'idle'); this.inv = 1.0; } return;
     }
   }
-  // Walk↔run keeps stride phase. Cadence is from planted-boot travel (Pass 1 brief):
-  // walk 41.6 src px/frame → 299 px/s vs 205, ts clamped to 0.85;
-  // run sole slide 26.2 src px/frame → 255 px/s vs 390, ts clamped to 1.20.
-  // From idle or any other state this matches the old setState(st, st) restart.
+  // Walk↔run keeps stride phase. Other states restart the clip.
   setLoco(st) {
     const from = this.state;
     const swap = (from === 'walk' || from === 'run') && (st === 'walk' || st === 'run') && from !== st;

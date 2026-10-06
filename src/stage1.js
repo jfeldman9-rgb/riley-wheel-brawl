@@ -1,4 +1,3 @@
-// Stage 1: Emond's Field on Winternight. Waves, camera locks, breakables, fireball light, the Chieftain fight.
 import { VW, VH, LANE_TOP, LANE_BOT, WORLD_W, q, clamp, rand, pick, DEBUG } from './config.js';
 import { perf } from './perf.js';
 import { FX } from './fx.js';
@@ -23,24 +22,14 @@ import { MusicDirector } from './music.js';
 
 export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS, ...MYRDDRAAL, ...STAGE4_ACTORS });
 
-// Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
 const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
 
 const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
-// fire spots measured on the plates (plate px): [plateIndex, x, y, intensity, radius]
 const FIRES = [[0, 244, 382, 2.4, 700], [0, 2036, 446, 2.4, 700], [0, 1156, 573, 1.1, 420]];
-// Zones: camera locks and waves. side R/L = enter from right/left edge; t = delay (s) after the wave starts
 const ZONES = STAGES[1].zones;
-// Moon: screen-fixed at x=VW*0.85, but as an ordinary world-space light. Phaser 4.2.1 LightsManager.getLights
-// culls raw light x/y against camera.worldView before scroll factors apply, so a scrollFactorX=0 light was
-// dropped once the camera passed x~2600 (zone 3 and the boss arena). placeMoon() keeps world x = scrollX + MOON_X
-// (shake included), which projects to the same screen x and stays inside every camera's worldView.
 export const MOON_X = VW * 0.85, MOON_Y = 60;
 export function addMoon(lights) { return lights.addLight(MOON_X, MOON_Y, 1500, 0xa8c0ff, 1.25, 260); }
 export function placeMoon(moon, scrollX) { if (moon) moon.x = scrollX + MOON_X; }
-// Fires sit on the mid plates (parallax 0.4) but are world-space lights for the same culling reason as the moon:
-// world x = baseX + (1 - 0.4) * scrollX projects to the parallax screen position baseX - 0.4 * scrollX. Only the
-// FIRE_LIGHT_CAP on-screen fires nearest the screen centre stay active, which bounds per-frame lighting cost.
 export const FIRE_PARALLAX = 0.4, FIRE_LIGHT_CAP = 4;
 export function placeFires(fires, scrollX, cap = FIRE_LIGHT_CAP) {
   if (!fires) return;
@@ -103,7 +92,6 @@ export class Stage1 extends Phaser.Scene {
     window.__rwbStartup?.watchLoader(this.load);
     this.load.setCORS('anonymous');
     const stageNo = resolveStage(this.sys && this.sys.settings && this.sys.settings.data, q);
-    // Only one stage's backdrop and enemy atlases stay resident (iPad memory): drop the other stage's first.
     this.releaseStage(stageNo);
     if (!document.getElementById('boot') && this.game.canvas && this.game.canvas.parentNode && this.loadedStage !== undefined) {
       const b = document.createElement('div'); b.id = 'boot'; b.className = 'boot-reload'; document.body.appendChild(b);
@@ -130,8 +118,6 @@ export class Stage1 extends Phaser.Scene {
       const chars = (STAGE_CHARS[from] || []).filter(k => !toChars.has(k));
       releaseChars(this, chars);
     }
-    // Stage 3 re-queues Stage 2 props and the Fade portrait, which are not in its texture list.
-    // Drop them when the destination does not use them, and drop the kit's canvases on Stage 1.
     for (const k of ['arrow', 'ribbon', 'fadePortrait']) if (!toTextures.has(k) && this.textures.exists(k)) this.textures.remove(k);
     if (toStage === 1) for (const k of ['raindrop', 'lanemark', 'guardmark', 'landing', 'ring']) if (this.textures.exists(k)) this.textures.remove(k);
     if (toStage !== 2) releaseClips(STAGE2_VOICES);
@@ -190,7 +176,6 @@ export class Stage1 extends Phaser.Scene {
     const removePress = this.inp.on('press', a => this.onPress(a));
     this.events.once('shutdown', () => {
       removeKey(); removePress(); this.inp.clear();
-      // Retired story objects must never finish against a reused scene instance.
       if (this.cutscene) {
         this.cutscene.done = true;
         this.cutscene.onLine = this.cutscene.onEnd = () => {};
@@ -204,8 +189,6 @@ export class Stage1 extends Phaser.Scene {
       perf.reset();
     });
     this.god = !!q.get('god');
-    // ?skip=boss starts at the Chieftain arena (testing / quick device checks)
-    // Bounds follow the skipped camera too; the post-physics arena clamp otherwise pins Riley to the left wall.
     if (q.get('skip') === 'boss') { const k = this.stageDef.skipBoss; this.zoneI = k.zoneI; this.riley.x = k.x; this.camX = this.camMax = k.camX; this.bounds = { l: this.camX, r: this.camX + VW }; }
     if (q.get('demo')) { this.bot = new Bot(this); }
     if (q.get('demo') || q.get('autostart') || sd.autostart) this.time.delayedCall(300, () => this.start());
@@ -216,7 +199,6 @@ export class Stage1 extends Phaser.Scene {
   buildBackdrop() {
     const far = this.add.image(0, 0, 'far').setOrigin(0, 0).setScrollFactor(0.12);
     far.setScale(Math.max(VH * 0.8 / far.height, (VW + (WORLD_W - VW) * 0.12) / far.width)).setTint(0xb8c4e0).setDepth(-100);
-    // two mid plates side by side (parallax 0.4); their seam is hidden by an overlap
     let x = 0; this.midPlates = [];
     for (const k of ['mid0', 'mid1']) {
       if (!this.textures.exists(k)) continue;
@@ -251,18 +233,13 @@ export class Stage1 extends Phaser.Scene {
     if (!on && this.bloom) { cam.filters.internal.remove(this.bloom); this.bloom = null; }
     if (on && !this.bloom) { const pf = this.bloom = cam.filters.internal.addParallelFilters(); pf.top.addThreshold(0.62, 1); pf.top.addBlur(1, 2, 2, 1.2); pf.blend.blendMode = Phaser.BlendModes.ADD; pf.blend.amount = 0.5; }
   }
-  // when the backdrop drops to unlit (software/slow GPUs) the painted plates show at full value, so lift the sprite ambient to keep fighters readable against them
   setBackdropLit(on) { for (const o of this.backdropLit || []) o.setLighting(on); this.backdropIsLit = on; const ambient = on ? this.kit?.ambient : this.kit?.ambientUnlit; this.ambient = Number.isFinite(ambient) ? ambient : on ? 0x39425f : 0x5a6482; if (this.lightsOn !== false) this.lights.setAmbientColor(this.ambient); }
   dropVignette() { if (this.vignette) { this.cameras.main.filters.external.remove(this.vignette); this.vignette = null; } }
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
   // ---------- flow ----------
   onPress(a) {
-    // A press proves the window has focus. Clear a blur pause before the cutscene
-    // and manual branches so a missing focus event cannot freeze the story or the fight.
-    // A focus-only Start does not also toggle the manual pause.
     const blurOnly = this.pauseReasons.size === 1 && this.pauseReasons.has('window-blur');
     if (this.pauseReasons.has('window-blur')) this.setPauseReason('window-blur', false);
-    // The Twix cutscene owns every press while it is up: Start/pause skips it, attack/jump/fireball advance a line.
     if (this.cutscene) {
       for (const reason of this.pauseReasons) if (reason !== 'cutscene') {
         if (reason === 'manual' && (a === 'pause' || a === 'start')) this.setPauseReason('manual', false);
@@ -277,11 +254,9 @@ export class Stage1 extends Phaser.Scene {
     }
     if (this.paused) { this.inp.clear(); return; }
     unlock();
-    // Title stage select: left/right pick the stage (when Stage 2 is offered); any other press starts.
     if (!this.started && !this.ended && (a === 'left' || a === 'right' || a === 'up' || a === 'down')) { if (a === 'left' || a === 'right') this.selectStage(a === 'left' ? -1 : 1); return; }
     if (!this.started && !this.ended) return this.start();
     if (this.gameOver && (a === 'attack' || a === 'start')) return this.continueGame();
-    // Stage 1 clear continues into the Baerlon story beat and Stage 2; Stage 2 clear returns to the title.
     if (this.ended && this.clearShown && (a === 'attack' || a === 'start')) return this.scene.restart(this.stageDef.next(q));
   }
   setPauseReason(reason, paused) {
@@ -393,9 +368,6 @@ export class Stage1 extends Phaser.Scene {
   }
   bossDown(c) {
     if (this.victoryPending || this.ended) return;
-    // Commit the victory before delayed adds or in-flight hazards can end the run.
-    // A last projectile may win after game-over's timer: victory takes terminal
-    // precedence in either ordering, without restoring health or spare lives.
     this.victoryPending = true; this.powers?.clearAll(); if (this.powerDrops) this.powerDrops = [];
     if (this.gameOver) { this.gameOver = false; stopSceneAudio(); this.hud.hideGameOver(); }
     this.fx.slowmo = 1.2; this.fx.hitstop = 0.25; sfx.impact();
@@ -443,8 +415,6 @@ export class Stage1 extends Phaser.Scene {
   }
   dustLater(f, t) { this.time.delayedCall(t * 1000, () => { this.fx.thump(f.x - f.facing * 40, f.y, true); sfx.thud(); }); }
   spawnFireball(R) {
-    // An active angreal / sa'angreal throws three bigger fireballs in parallel lanes (1.1). Only the middle one
-    // carries a light: the scene light budget (maxLights 10) is shared with the fires, moon, Riley and impacts.
     const B = this.powers?.boost && POWERS[this.powers.boost.kind], lanes = B ? B.lanes : [0];
     for (const off of lanes) {
       const x = R.x + R.facing * (120 - Math.abs(off) * 0.9), y = R.y - 150 + off, big = B ? 1.15 : 1;   // outer lanes trail: reads as three
@@ -474,7 +444,6 @@ export class Stage1 extends Phaser.Scene {
   // ---------- balefire (restored from 1.1) ----------
   makeBeamTexture() {
     if (this.textures.exists('beam')) return;
-    // vertical profile: transparent edge -> blue-white -> white-hot core -> blue-white -> transparent
     const g = this.make.graphics({ x: 0, y: 0 }, false), H = 64;
     for (let y = 0; y < H; y++) { const d = Math.abs(y - (H - 1) / 2) / (H / 2); const a = Math.max(0, 1 - d * d); g.fillStyle(d < 0.28 ? 0xffffff : d < 0.6 ? 0xd8f0ff : 0x7cc4ff, a); g.fillRect(0, y, 8, 1); }
     g.generateTexture('beam', 8, H); g.destroy();
@@ -490,9 +459,7 @@ export class Stage1 extends Phaser.Scene {
     const glow = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 120).setTint(0x7cc0ff).setAlpha(0.6).setBlendMode('ADD').setDepth(depth);
     const core = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 40).setBlendMode('ADD').setDepth(depth + 1);
     const hot = this.add.image(x0, y, 'beam').setOrigin(ox, 0.5).setDisplaySize(len, 16).setBlendMode('ADD').setDepth(depth + 1);
-    // Small muzzle flare just ahead of the palms: a big additive flare washed Riley's black coat out to grey-brown.
     const flare = this.add.image(x0 + dir * 18, y, 'glow').setTint(0xdff4ff).setScale(FLARE_SCALE).setBlendMode('ADD').setDepth(depth + 2);
-    // Lights ride the beam AHEAD of Riley so they light the foes and ground without washing out his own black coat.
     const lights = [Math.max(300, len * 0.4), len * 0.82].map(d => this.lights.addLight(x0 + dir * d, y + 40, 380, 0xd6ecff, BEAM_LIGHT, 110));
     this.beam = { t: 0, fade: 0, dir, x0, y, len, glow, core, hot, flare, lights, struck: new Set() };
     this.fx.trauma = Math.min(1, this.fx.trauma + 0.8); this.fx.hitstop = Math.max(this.fx.hitstop, 0.06);
@@ -703,8 +670,6 @@ export class Stage1 extends Phaser.Scene {
   wallHit(x) { this.fx.debris.emitParticleAt(x, LANE_TOP - 40, 14); this.fx.snowPuff.emitParticleAt(x, LANE_TOP, 14); }
   // ---------- main loop ----------
   update(time, deltaMs) {
-    // Phaser still installs update() when create() exits early after a loader
-    // failure. Keep that failed or uninitialized scene inert behind recovery UI.
     if (window.__rwbStartup?.failed || !this.riley || !this.enemies || !this.fx) return;
     perf.tick(performance.now(), {
       active: this.started && !this.gameOver && !this.ended && !this.paused,
@@ -731,8 +696,6 @@ export class Stage1 extends Phaser.Scene {
       e.update(dt); const wasEntering = e.entering;
       if (e.entering && e.x > this.bounds.l + 60 && e.x < this.bounds.r - 60) e.entering = false;
       if (e.entering) {
-        // Admit actors into the arena before normal slots/attacks. Chasing a
-        // wall-hugging player can stop outside the stricter 60px entry margin.
         const dir = Math.sign((this.bounds.l + this.bounds.r) / 2 - e.x);
         if (e.alive) e.face(dir);
         e.x += dir * e.T.speed * dt;
@@ -746,8 +709,6 @@ export class Stage1 extends Phaser.Scene {
     for (const e of this.enemies) if (e.alive && !e.entering && e.state !== 'held' && e.state !== 'holding' && e.state !== 'dropin' && R.state !== 'down' && Math.abs(e.y - R.y) < 18 && R.z < 40 && e.z < 40) {
       const dx = R.x - e.x, min = 62; if (Math.abs(dx) < min) R.x = e.x + Math.sign(dx || -R.facing) * min;
     }
-    // Separation runs after physics; a wall-pinned enemy must not push Riley
-    // back outside the arena bounds that physics already enforced.
     R.x = clamp(R.x, this.bounds.l + 40, this.bounds.r - 40);
     this.enemies = this.enemies.filter(e => { if (e.gone) { e.destroy(); return false; } return true; });
     this.updateFireballs(dt); this.updateCarts(dt); this.updatePowerDrops(dt); this.updatePickups(dt); this.powers?.update(dt); this.updateBalefire(dt); this.updateLoial(dt);
@@ -771,7 +732,6 @@ export class Stage1 extends Phaser.Scene {
     if (this.locked && this.zone) { this.bounds.l = Math.max(this.camX, this.zone.l); this.bounds.r = Math.min(this.camX + VW, this.zone.r); }
     else { this.bounds.l = this.camX; this.bounds.r = Math.min(WORLD_W, this.camX + VW + (this.zone ? 0 : 0)); }
     const [sx, sy] = this.fx.shakeOffset();
-    // Device-pixel scroll only. camX / bounds / camMax stay fractional. rs lives on game.rs (the governor updates that, not this.rs).
     const gameRS = this.game && this.game.rs;
     const rs = Number.isFinite(gameRS) && gameRS > 0 ? gameRS : Number.isFinite(this.rs) && this.rs > 0 ? this.rs : 1;
     this.cameras.main.setScroll(Math.round((this.camX + sx) * rs) / rs, Math.round(sy * rs) / rs);
