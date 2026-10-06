@@ -1,0 +1,21 @@
+{
+  "id": "draghkar-master",
+  "file": "draghkar-master.png",
+  "tool": "image-generation",
+  "backupTool": "gemini",
+  "size": [
+    1024,
+    1536
+  ],
+  "frames": 1,
+  "cols": 1,
+  "rows": 1,
+  "opaque": false,
+  "riley": false,
+  "normal": false,
+  "houseStyle": "spike-art/HOUSE_STYLE.txt",
+  "attach": [
+    "spike-art/HOUSE_STYLE.txt"
+  ],
+  "prompt": "Use case: stylized-concept. Production art for Riley Wheel Brawl 2.0, Stage 4, Shadar Logoth. Asset draghkar-master.png. Canvas exactly 1024\u00d71536. Single image, not a sprite sheet. Genuinely transparent background, real alpha. No painted backdrop, floor shadow, or checkerboard. Native facing is LEFT, matching Stage 2 enemies; the game mirrors the sprite to turn. HOUSE STYLE, identical to spike-art/HOUSE_STYLE.txt: HOUSE STYLE (Riley Wheel Brawl 2.0), identical for every image:\n- Hand-drawn HD 2D fighting-game sprite art in the spirit of Streets of Rage 4: confident dark-brown/near-black ink outlines (thicker on the outer silhouette, thinner inside), clean cel shading with 2-3 tone steps plus subtle painterly gradients. NOT pixel art, NOT 3D render, NOT photo-real, NOT chibi.\n- Lighting baked lightly: soft key light from the upper LEFT, gentle cool rim on the right edge. Keep shading moderate (the game adds real-time light on top).\n- Rich but grounded colors. Strong readable silhouette.\n- Side view (profile / slight 3/4), character faces RIGHT, full body head to boots, whole figure inside the frame with margin.\n- Genuinely TRANSPARENT background (real alpha). No ground shadow, no floor, no text, no labels, no borders, no frame numbers. Draghkar master, full body, faces LEFT. Pale, gaunt, bat-winged, beautiful-wrong face, no gore. Wings fit in the frame with margin. Transparent background. This master locks every Draghkar sheet. Large silhouette, still the house ink-and-cel style, not a photoreal creature. No text, letters, numbers, watermarks, frame labels, or borders in the finished image. No gore: Shadowspawn become ash; human cultists are knocked out or flee."
+}
