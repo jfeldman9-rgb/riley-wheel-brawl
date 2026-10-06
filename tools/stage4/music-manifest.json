@@ -1,0 +1,21 @@
+{
+  "rendered": false,
+  "render": "python3 tools/stage4/compose_stage4.py OUT_DIR",
+  "note": "Loop points are written into OUT_DIR/music-manifest.json by compose_stage4.py. This file is the plan. It is not a rendered loop.",
+  "stage4": {
+    "file": "music-stage4.mp3",
+    "title": "Shadar Logoth",
+    "bpm": 96,
+    "bars": 16,
+    "target": "assets/audio/music-stage4.mp3",
+    "doc": "Stage 4 exploration. E phrygian, hollow and slow: low strings, harp, and a thin flute. 16 bars at 96 bpm."
+  },
+  "boss4": {
+    "file": "music-boss4.mp3",
+    "title": "The Draghkar's Croon",
+    "bpm": 126,
+    "bars": 16,
+    "target": "assets/audio/music-boss4.mp3",
+    "doc": "Stage 4 boss. A minor pulse under a high crooning line, choir, and a dry drum. 16 bars at 126 bpm."
+  }
+}

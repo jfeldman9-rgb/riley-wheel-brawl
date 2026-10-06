@@ -1,11 +1,10 @@
-// ?demo=1: a simple autopilot for Riley so the slice can be captured and perf-measured hands-free.
 import { rand, q, LANE_TOP, LANE_BOT } from './config.js';
 import { VOLLEY_BANDS } from './stages.js';
+import { stage4Bot } from './bot-stage4.js';
 export class Bot {
   constructor(scene, { mode = q.get('demo') } = {}) {
     this.s = scene; this.t = 0; this.next = 0; this.plan = null;
     this.bossCoverage = mode === 'boss-coverage';
-    // Observations only: this mode never writes fighter HP, positions, phases or attacks.
     this.coverage = { phases: [], attacks: [], wallStun: false, summonedHounds: 0, carts: 0, complete: false };
     this.seenHounds = new Set(); this.seenCarts = new Set();
   }
@@ -13,8 +12,7 @@ export class Bot {
     const s = this.s, R = s.riley, inp = s.inp; this.t += dt;
     if (!s.started || !R.alive || s.ended || s.gameOver) { inp.demo = { x: 0, y: 0 }; return; }
     if (this.bossCoverage) return this.updateBossCoverage();
-    if (s.stageNo === 3 && this.evadeStage3()) return;
-    // Stage 2 hazards (lane volleys, arrows, charges, the parry bait, torches, falling beams). Stage 1 never enters here.
+    if (s.stageNo > 2 && this.evadeLate()) return;
     if (s.kit && this.evadeStage2()) return;
     const foes = s.enemies.filter(e => e.alive && !e.entering);
     // Only pickups inside the arena are reachable; a power that has landed nearby is worth a detour mid-fight.
@@ -72,7 +70,7 @@ export class Bot {
     }
     return false;
   }
-  /** step out of tile bands / shadow pools, dispel fear, target the real Myrddraal, or mash out of holds */
+  evadeLate() { return this.s.stageNo === 4 ? stage4Bot(this) : this.evadeStage3(); }
   evadeStage3() {
     const s = this.s, R = s.riley, inp = s.inp, k = s.kit, go = (x, y) => { inp.demo = { x, y, run: false }; return true; };
     if (R.state === 'grabbed') {

@@ -16,9 +16,12 @@ import { DARKFRIENDS, CUTTHROAT } from './darkfriends.js';
 import { MYRDDRAAL } from './myrddraal.js';
 import { Stage2Kit, queueStage2, STORY_PANELS, STORY_SCRIPT, STAGE2_VOICES } from './stage2.js';
 import { queueStage3, STORY3_SCRIPT, STORY3_PANELS, STAGE3_VOICES } from './stage3.js';
+import { queueStage4, STORY4_SCRIPT, STORY4_PANELS, STAGE4_VOICES } from './stage4.js';
+import { STAGE4_ACTORS } from './stage4-actors.js';
+import { cultistHoldsToken } from './cultists.js';
 import { MusicDirector } from './music.js';
 
-export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS, ...MYRDDRAAL });
+export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS, ...MYRDDRAAL, ...STAGE4_ACTORS });
 
 // Balefire beam light intensity: bright enough to light nearby figures white-blue without washing them out.
 const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
@@ -70,10 +73,12 @@ function queueStage2All(scene) {
 }
 
 function queueStage3All(scene) { queueStage3(scene); queuePowerArt(scene, { twix: false }); }
+function queueStage4All(scene) { queueStage4(scene); queuePowerArt(scene, { twix: false }); }
 
 STAGES[1].queue = queueStage1;
 STAGES[2].queue = queueStage2All;
 STAGES[3].queue = queueStage3All;
+STAGES[4].queue = queueStage4All;
 
 STAGES[1].start = scene => {
   scene.music?.set('stage');
@@ -85,6 +90,9 @@ STAGES[2].start = scene => {
 };
 STAGES[3].start = scene => {
   scene.startStage3();
+};
+STAGES[4].start = scene => {
+  scene.startStage4();
 };
 
 export class Stage1 extends Phaser.Scene {
@@ -112,6 +120,7 @@ export class Stage1 extends Phaser.Scene {
     const toTextures = new Set(STAGE_TEXTURES[toStage] || []);
     const activeStages = [1, 2];
     if (stageEnabled(3, q) || toStage === 3 || fromStage === 3) activeStages.push(3);
+    if (stageEnabled(4, q) || toStage === 4 || fromStage === 4) activeStages.push(4);
     const fromStages = fromStage ? [fromStage] : activeStages.filter(n => n !== toStage);
     for (const from of fromStages) {
       const tex = from === 1 ? [...(STAGE_TEXTURES[1] || []), ...TWIX_ART_KEYS] : (STAGE_TEXTURES[from] || []);
@@ -127,6 +136,7 @@ export class Stage1 extends Phaser.Scene {
     if (toStage === 1) for (const k of ['raindrop', 'lanemark', 'guardmark', 'landing', 'ring']) if (this.textures.exists(k)) this.textures.remove(k);
     if (toStage !== 2) releaseClips(STAGE2_VOICES);
     if (toStage !== 3) releaseClips(STAGE3_VOICES);
+    if (toStage !== 4) releaseClips(STAGE4_VOICES);
   }
   create(data) {
     if (window.__rwbStartup?.failed) return;
@@ -242,7 +252,7 @@ export class Stage1 extends Phaser.Scene {
     if (on && !this.bloom) { const pf = this.bloom = cam.filters.internal.addParallelFilters(); pf.top.addThreshold(0.62, 1); pf.top.addBlur(1, 2, 2, 1.2); pf.blend.blendMode = Phaser.BlendModes.ADD; pf.blend.amount = 0.5; }
   }
   // when the backdrop drops to unlit (software/slow GPUs) the painted plates show at full value, so lift the sprite ambient to keep fighters readable against them
-  setBackdropLit(on) { for (const o of this.backdropLit || []) o.setLighting(on); this.backdropIsLit = on; this.ambient = this.kit ? (on ? this.kit.ambient : this.kit.ambientUnlit) : on ? 0x39425f : 0x5a6482; if (this.lightsOn !== false) this.lights.setAmbientColor(this.ambient); }
+  setBackdropLit(on) { for (const o of this.backdropLit || []) o.setLighting(on); this.backdropIsLit = on; const ambient = on ? this.kit?.ambient : this.kit?.ambientUnlit; this.ambient = Number.isFinite(ambient) ? ambient : on ? 0x39425f : 0x5a6482; if (this.lightsOn !== false) this.lights.setAmbientColor(this.ambient); }
   dropVignette() { if (this.vignette) { this.cameras.main.filters.external.remove(this.vignette); this.vignette = null; } }
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
   // ---------- flow ----------
@@ -281,6 +291,7 @@ export class Stage1 extends Phaser.Scene {
     this.inp.clear();
     if (next === this.paused) return;
     this.paused = next;
+    this.kit?.onPause?.(next);
     if (next) this.scene.pause(); else this.scene.resume();
     if (this.hud && this.hud.pauseLabel) this.hud.pauseLabel.setVisible(this.showPauseLabel());
   }
@@ -311,22 +322,27 @@ export class Stage1 extends Phaser.Scene {
     if (q.get('story') === '0' || this.stageData.story === false) { this.music?.set('stage'); return; }
     this.startCutscene(STORY3_SCRIPT, STORY3_PANELS, how => { this.storyResult = how; this.music?.set('stage'); });
   }
-  attackTokens() {
-    if (this.enemies.some(e => e.alive && e.state === 'holding')) return this.maxTokens;
-    return this.enemies.filter(e => e.alive && (e.state === 'attack' || e.state === 'sweep' || e.state === 'charge' || e.state === 'lunge' || e.state === 'holding')).length;
+  startStage4() {
+    this.kit.start();
+    if (q.get('story') === '0' || this.stageData.story === false) { this.music?.set('stage'); return; }
+    this.startCutscene(STORY4_SCRIPT, STORY4_PANELS, how => { this.storyResult = how; this.music?.set('stage'); });
   }
-  grabBusy(e) { return this.enemies.some(o => o !== e && o.alive && (o.state === 'lunge' || o.state === 'holding')); }
+  attackTokens() {
+    if (this.enemies.some(e => e.alive && (e.state === 'holding' || e.state === 'kiss_hold' || e.state === 'kiss_tell' || e.state === 'kiss_lunge'))) return this.maxTokens;
+    return this.enemies.filter(e => e.alive && (e.state === 'attack' || e.state === 'sweep' || e.state === 'charge' || e.state === 'lunge' || e.state === 'holding' || e.state === 'kiss_tell' || e.state === 'kiss_lunge' || cultistHoldsToken(e))).length;
+  }
+  grabBusy(e) { return this.enemies.some(o => o !== e && o.alive && (o.state === 'lunge' || o.state === 'holding' || o.state === 'kiss_hold' || o.state === 'kiss_lunge' || o.state === 'kiss_tell')); }
   separation(e) { let f = 0; for (const o of this.enemies) if (o !== e && o.alive) { const dx = e.x - o.x, dy = e.y - o.y; if (Math.abs(dx) < 90 && Math.abs(dy) < 30) f += Math.sign(dx || (e.id - o.id)) * 60; } return f; }
   spawn(type, side) {
     if (side === 'T' && ENEMY_CLASSES[type]?.prototype.dropIn) {
       const z = this.zone, b = this.bounds, R = this.riley, d = CUTTHROAT.dropSpread;
       const x = clamp(R.x + rand(-d, d), Math.max(z.l, b.l) + 90, Math.min(z.r, b.r) - 90), y = rand(LANE_TOP + 15, LANE_BOT - 10);
-      const e = new ENEMY_CLASSES[type](this, x, y); e.entering = false; e.dropIn(); this.enemies.push(e); return e;
+      const e = new ENEMY_CLASSES[type](this, x, y); e.entering = false; e.dropIn(); if (!this.enemies.includes(e)) this.enemies.push(e); return e;
     }
     if (side === 'T') side = 'R';
     const z = this.zone, x = side === 'R' ? z.r + 120 : z.l - 120, y = rand(LANE_TOP + 15, LANE_BOT - 10);
     const W = ENEMY_CLASSES[type];
-    const e = type === 'chief' ? new Chieftain(this, x, y) : W ? new W(this, x, y) : new Enemy(this, type, x, y); e.entering = true; this.enemies.push(e); return e;
+    const e = type === 'chief' ? new Chieftain(this, x, y) : W ? new W(this, x, y) : new Enemy(this, type, x, y); e.entering = true; if (!this.enemies.includes(e)) this.enemies.push(e); return e;
   }
   updateZones(dt) {
     const R = this.riley;
