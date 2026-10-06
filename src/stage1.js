@@ -123,9 +123,9 @@ export class Stage1 extends Phaser.Scene {
       const chars = (STAGE_CHARS[from] || []).filter(k => !toChars.has(k));
       releaseChars(this, chars);
     }
-    // Stage 3 re-queues Stage 2 props that are not in its texture list. Drop them
-    // when the destination does not use them, and drop the kit's canvases on Stage 1.
-    for (const k of ['arrow', 'ribbon']) if (!toTextures.has(k) && this.textures.exists(k)) this.textures.remove(k);
+    // Stage 3 re-queues Stage 2 props and the Fade portrait, which are not in its texture list.
+    // Drop them when the destination does not use them, and drop the kit's canvases on Stage 1.
+    for (const k of ['arrow', 'ribbon', 'fadePortrait']) if (!toTextures.has(k) && this.textures.exists(k)) this.textures.remove(k);
     if (toStage === 1) for (const k of ['raindrop', 'lanemark', 'guardmark', 'landing', 'ring']) if (this.textures.exists(k)) this.textures.remove(k);
     if (toStage !== 2) releaseClips(STAGE2_VOICES);
     if (toStage !== 3) releaseClips(STAGE3_VOICES);
@@ -246,6 +246,11 @@ export class Stage1 extends Phaser.Scene {
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
   // ---------- flow ----------
   onPress(a) {
+    // A press proves the window has focus. Clear a blur pause before the cutscene
+    // and manual branches so a missing focus event cannot freeze the story or the fight.
+    // A focus-only Start does not also toggle the manual pause.
+    const blurOnly = this.pauseReasons.size === 1 && this.pauseReasons.has('window-blur');
+    if (this.pauseReasons.has('window-blur')) this.setPauseReason('window-blur', false);
     // The Twix cutscene owns every press while it is up: Start/pause skips it, attack/jump/fireball advance a line.
     if (this.cutscene) {
       for (const reason of this.pauseReasons) if (reason !== 'cutscene') {
@@ -255,6 +260,7 @@ export class Stage1 extends Phaser.Scene {
       this.cutscene.press(a); return;
     }
     if (a === 'pause' || (a === 'start' && this.started && !this.ended && !this.gameOver)) {
+      if (blurOnly) return;
       if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) this.setPauseReason('manual', !this.pauseReasons.has('manual'));
       return;
     }
@@ -728,7 +734,7 @@ export class Stage1 extends Phaser.Scene {
     this.enemies = this.enemies.filter(e => { if (e.gone) { e.destroy(); return false; } return true; });
     this.updateFireballs(dt); this.updateCarts(dt); this.updatePowerDrops(dt); this.updatePickups(dt); this.powers?.update(dt); this.updateBalefire(dt); this.updateLoial(dt);
     if (this.kit) this.kit.update(dt);
-    if (this.started) this.updateZones(dt);
+    if (this.started && !this.gameOver) this.updateZones(dt);
     R.sync(); for (const e of this.enemies) e.sync();
     this.updateCamera(dt);
     this.heroLight.x = R.x - 90; this.heroLight.y = R.y - 300 - R.z; this.heroLight.intensity = this.lightsOn ? 1.0 : 0;

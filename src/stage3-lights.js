@@ -1,5 +1,7 @@
 // Stage 3 owns a sun in addition to the inherited combat lights. Budget every
 // candidate before Phaser's distance selector so it cannot drop Riley's light.
+import { VW } from './config.js';
+import { VOLLEY_BANDS } from './stages.js';
 export function budgetStage3Lights(kit) {
   const s = kit.s, active = kit._budgetLights || (kit._budgetLights = []), seen = kit._budgetSeen || (kit._budgetSeen = new Set());
   active.length = 0; seen.clear();
@@ -32,4 +34,32 @@ export function stage3Threats(kit) {
   t.tiles = kit.tiles; t.drops = kit.drops; t.pools = kit.pools; t.copies = kit.copies;
   t.aura = !!kit.s.boss?.auraActive;
   return t;
+}
+
+/** One rooftile sprite per marked band, all sharing x and frame. k.img stays the first. */
+export function armRoofTiles(kit, k, s) {
+  k.x = k.dir > 0 ? s.camX - 120 : s.camX + VW + 120;
+  const imgs = k.imgs = [];
+  for (const b of k.bands) {
+    const [y0, y1] = VOLLEY_BANDS[b];
+    const im = kit.img('rooftiles', k.x, (y0 + y1) / 2, 1000 + y1).setScale(0.5).setLighting(true);
+    im.flipX = k.dir > 0; im.band = b; imgs.push(im);
+  }
+  k.img = imgs[0] || null;
+}
+
+export function stepRoofTiles(k, frame) {
+  k.frame = frame;
+  for (const im of k.imgs || []) { im.setPosition(k.x, im.y); im.setFrame?.(frame); }
+}
+
+/** A marked band with no sprite cannot hit. */
+export function roofTileDrawn(k, band) {
+  for (const im of k.imgs || []) if (im.band === band) return true;
+  return false;
+}
+
+export function dropRoofTiles(k) {
+  for (const im of k.imgs || []) im.destroy();
+  k.imgs = null;
 }

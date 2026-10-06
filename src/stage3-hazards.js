@@ -4,7 +4,7 @@ import { sfx, say } from './audio.js';
 import { VOLLEY_BANDS } from './stages.js';
 import { Stage2Kit, MID_Y } from './stage2.js';
 import { FADE } from './myrddraal.js';
-import { stage3Threats } from './stage3-lights.js';
+import { stage3Threats, armRoofTiles, stepRoofTiles, roofTileDrawn, dropRoofTiles } from './stage3-lights.js';
 
 export const TILES = Object.freeze({
   zone: 2, warn: 0.9, speed: 900, every: Object.freeze([3.0, 4.2]),
@@ -45,7 +45,9 @@ export class Stage3Hazards extends Stage2Kit {
 
   updateTiles(dt) {
     const s = this.s;
-    if (s.zoneI === TILES.zone && s.zone && s.locked && s.wave >= 0 && !s.victoryPending && !s.ended && this.tiles.length === 0) {
+    // A hold freezes the next warning. An already-launched tile can still break the hold.
+    // Game over freezes new warnings so the continue screen is the fight Riley left.
+    if (!s.riley?.grabbedBy && !s.gameOver && s.zoneI === TILES.zone && s.zone && s.locked && s.wave >= 0 && !s.victoryPending && !s.ended && this.tiles.length === 0) {
       if ((this.tileT -= dt) <= 0) {
         this.startTile();
         this.tileT = rand(TILES.every[0], TILES.every[1]);
@@ -60,23 +62,14 @@ export class Stage3Hazards extends Stage2Kit {
         m.setAlpha(0.32 + 0.28 * Math.abs(Math.sin(k.t * 9)));
       }
       if (k.t >= TILES.warn) {
-        if (!k.img) {
-          const x = k.dir > 0 ? s.camX - 120 : s.camX + VW + 120;
-          const [y0, y1] = VOLLEY_BANDS[k.bands[0]];
-          k.img = this.img('rooftiles', x, (y0 + y1) / 2, 1000 + y1).setScale(0.5).setLighting(true);
-          k.img.flipX = k.dir > 0;
-          k.x = x;
-        }
+        if (!k.img) armRoofTiles(this, k, s);
         k.x += k.dir * TILES.speed * Math.min(dt, k.t - TILES.warn);
-        k.img.setPosition(k.x, k.img.y);
-        const f = Math.floor((k.t - TILES.warn) * 8) % 4;
-        k.frame = f;
-        k.img.setFrame?.(f);
+        stepRoofTiles(k, Math.floor((k.t - TILES.warn) * 8) % 4);
         if ((k.dustT += dt) >= 0.05) {
           k.dustT = 0;
           s.fx?.dust?.emitParticleAt(k.x, k.img.y, 1);
         }
-        if (R?.alive && k.bands.includes(this.bandOf(R.y)) && Math.abs(R.x - k.x) < TILES.hitDx && (R.z || 0) < TILES.hitZ && !k.hit.has(R)) {
+        if (R?.alive && roofTileDrawn(k, this.bandOf(R.y)) && Math.abs(R.x - k.x) < TILES.hitDx && (R.z || 0) < TILES.hitZ && !k.hit.has(R)) {
           k.hit.add(R);
           if (R.takeHit({ dmg: TILES.dmg, kind: 'heavy', kb: 300 * k.dir, down: true }, { x: k.x - k.dir })) {
             this.stats.tileHits++;
@@ -84,7 +77,7 @@ export class Stage3Hazards extends Stage2Kit {
           }
         }
         for (const e of s.enemies || []) {
-          if (e.canBeHit && k.bands.includes(this.bandOf(e.y)) && Math.abs(e.x - k.x) < TILES.hitDx && (e.z || 0) < TILES.hitZ && !k.hit.has(e)) {
+          if (e.canBeHit && roofTileDrawn(k, this.bandOf(e.y)) && Math.abs(e.x - k.x) < TILES.hitDx && (e.z || 0) < TILES.hitZ && !k.hit.has(e)) {
             k.hit.add(e);
             if (e.takeHit({ dmg: TILES.enemyDmg, kind: 'heavy', kb: 300 * k.dir, launch: 200, down: true }, { x: k.x - k.dir })) {
               this.stats.tileEnemyHits++;
@@ -93,7 +86,7 @@ export class Stage3Hazards extends Stage2Kit {
         }
         const done = k.dir > 0 ? k.x > s.camX + VW + 140 : k.x < s.camX - 140;
         if (done) {
-          k.img.destroy();
+          dropRoofTiles(k);
           for (const m of k.markers) m.destroy();
           this.tiles.splice(i--, 1);
         }
@@ -207,7 +200,7 @@ export class Stage3Hazards extends Stage2Kit {
 
   clearHazards() {
     super.clearHazards();
-    for (const k of this.tiles) { for (const m of k.markers) m.destroy(); k.img?.destroy(); }
+    for (const k of this.tiles) { for (const m of k.markers) m.destroy(); dropRoofTiles(k); }
     for (const p of this.pools) { if (p.pool) p.pool.fx = null; p.img?.destroy(); }
     for (const c of this.copies) c.em?.destroy();
     for (const b of this.bursts) b.img?.destroy();

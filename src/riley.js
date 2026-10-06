@@ -48,7 +48,7 @@ export class Riley extends Fighter {
       case 'grabbed': return this.grabbed(dt, inp);
       case 'escape': return this.escape(dt);
       case 'hurt': if (this.done) this.setState('idle', 'idle'); return;
-      case 'down': if (this.st > (this.alive ? 0.9 : 99) && this.z <= 0) { this.setState('getup', 'getup'); this.inv = 1.2; } return;
+      case 'down': if (!this.alive) return; if (this.st > 0.9 && this.z <= 0) { this.setState('getup', 'getup'); this.inv = 1.2; } return;
       case 'getup': if (this.done) { this.setState('idle', 'idle'); this.inv = 1.0; } return;
     }
   }
@@ -183,7 +183,9 @@ export class Riley extends Fighter {
       this.scene.fx.impact('medium', this.x + dir * 50, this.y - 150, dir); this.scene.fx.hitstop = 0; sfx.hit(false);
       say('riley_escape_01', this.scene.caption, false);   // silent until T8 adds the line (audio.js:327-328)
     }
-    if (this.done) { this.setState('idle', 'idle'); if (c && c.alive) this.face(Math.sign(c.x - this.x)); this.lastGrabber = null; }
+    // 0.45 s matches the cutthroat lunge window: a coil already in the air cannot
+    // chain-grab the frame the escape ends, and a new coil is still a full tell.
+    if (this.done) { this.setState('idle', 'idle'); if (c && c.alive) this.face(Math.sign(c.x - this.x)); this.lastGrabber = null; this.inv = Math.max(this.inv, 0.45); }
   }
   /** called by the scene when an enemy strike connects */
   takeHit(h, from) {
@@ -196,7 +198,7 @@ export class Riley extends Fighter {
     const dir = Math.sign(this.x - from.x) || 1; this.face(-dir);
     if (this.hp <= 0) { this.alive = false; this.down(dir, h); this.scene.rileyDied(); return true; }
     if (h.down || this.hurtStreak >= 3) { this.down(dir, h); this.hurtStreak = 0; if (Math.random() < 0.5) say(Math.random() < 0.5 ? 'riley_bighit_01' : 'riley_bighit_02', this.scene.caption, false); }
-    else { this.setState('hurt', 'hurt'); this.vx = dir * (h.kb || 140); sfx.hurt(); }
+    else { this.lastGrabber = null; this.setState('hurt', 'hurt'); this.vx = dir * (h.kb || 140); sfx.hurt(); }
     this.scene.time.delayedCall(900, () => { this.hurtStreak = Math.max(0, this.hurtStreak - 1); });
     return true;
   }

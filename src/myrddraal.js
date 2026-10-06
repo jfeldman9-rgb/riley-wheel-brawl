@@ -244,7 +244,7 @@ export class Myrddraal extends Enemy {
     } else this.dispelT = max(0, this.dispelT - dt);
     this.braveT = max(0, this.braveT - dt);
     const copyLunge = this.copies.some(c => c.alive && c.state === 'lunge');
-    const calm = this.braveT > 0 || copyLunge || NO_FEAR.includes(R.state);
+    const calm = this.braveT > 0 || copyLunge || R.inv > 0 || NO_FEAR.includes(R.state);
     const inside = !calm && this.auraActive && R.alive && hypot(R.x - this.x, R.y - this.y) <= fear.radius;
     this.fear = inside ? clamp(max(0, this.fear - protectedT / fear.fill) + (dt - protectedT) / fear.fill, 0, 1) : clamp(this.fear - dt / fear.fill, 0, 1);
     if (this.fear >= 1 && R.vulnerable && R.z <= 0 && !R.grabbedBy && !NO_FEAR.includes(R.state)) {
@@ -284,7 +284,7 @@ export class FadeCopy extends Enemy {
   think(dt) {
     if (this.entering) return;
     const R = this.target, s = this.scene;
-    if (this.lungeAt <= 0 && s.attackTokens() < s.maxTokens) { this.startLunge(); this.lungeAt = rand(...split.relunge); return; }
+    if (this.lungeAt <= 0 && R.alive && !s.gameOver && s.attackTokens() < s.maxTokens) { this.startLunge(); this.lungeAt = rand(...split.relunge); return; }
     const sl = this.slot(), dx = sl.x - this.x, dy = sl.y - this.y;
     this.face(sign(R.x - this.x));
     const tx = dx + ((this.cool > 0 || s.attackTokens() >= s.maxTokens) ? sl.side * 70 : 0);
