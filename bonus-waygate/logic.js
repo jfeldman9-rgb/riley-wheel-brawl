@@ -244,8 +244,16 @@
       const dist = Math.hypot(e.x - player.x, e.y - player.y);
       const ring = Math.hypot(orbit.x, orbit.y);
       if (dist < ring - 2) {
-        e.x = player.x + orbit.x;
-        e.y = clamp(player.y + orbit.y, bounds.minY, bounds.maxY);
+        // Slide a flank that would hang off the arena back inside, one body
+        // apart, so the wall clamp cannot pile the left (or right) ring.
+        const index = Math.floor((e.slot || 0) / 2);
+        let x = player.x + orbit.x;
+        const y = clamp(player.y + orbit.y, bounds.minY, bounds.maxY);
+        const inset = (index + 1) * (MIN_SEPARATION + 8);
+        if (x < bounds.minX) x = bounds.minX + inset;
+        if (x > bounds.maxX) x = bounds.maxX - inset;
+        e.x = x;
+        e.y = y;
       }
     }
   }
@@ -260,11 +268,14 @@
     };
     for (let n = 0; n < 3; n++) {
       holdWaitingRing(enemies, ctx || {});
+      settle();
       separateEnemies(enemies);
       settle();
     }
-    // The ring snap is not allowed to restack bodies. Separation is the last move.
+    // Clamp before the last push. A ring that hangs off the left edge would
+    // otherwise separate out of bounds and then stack again on the wall.
     holdWaitingRing(enemies, ctx || {});
+    settle();
     separateEnemies(enemies);
     settle();
   }
