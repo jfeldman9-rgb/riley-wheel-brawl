@@ -24,6 +24,27 @@
   const MID_RANGE = 172;
   const TOKEN_CAPS = [1, 2, 2];
   const ATTACK_HIT = { behind: 28, ahead: 150, y: 72 };
+  // Grunt art at the in-game scale is about 168px across. The lane is too
+  // shallow to unstack them vertically, so separation is a hard X push.
+  const BODY_W = 168;
+  const BODY_H = 168;
+  const MAX_PAIR_OVERLAP = 0.25;
+  const MIN_SEPARATION = BODY_W * (1 - MAX_PAIR_OVERLAP);
+  const MELEE_RANGE = 112;
+  const ATTACK_STANDOFF = 86;
+  const RING_RANGE = ATTACK_STANDOFF + MIN_SEPARATION + 28;
+  // Far flank slots sit past the inner ring. They still have to be allowed to take
+  // a token, or a Trolloc parked on the outer ring never walks in.
+  const GRAY_MAN = {
+    hp: 220,
+    damage: 22,
+    damageFast: 28,
+    tell: 0.88,
+    tellFast: 0.66,
+    strike: 0.27,
+    recover: 1,
+    punish: 1.3
+  };
 
   const WAVE_TUNING = [
     { hp: 52, hpStep: 4, damage: 12, tokens: 1, windup: 0.88, speed: 72 },
@@ -160,55 +181,92 @@
   function releaseToken(bag, enemy) {
     if (!enemy || !enemy.hasToken) return;
     enemy.hasToken = false;
+    enemy.attackSide = 0;
     bag.attackTokenCount = Math.max(0, bag.attackTokenCount - 1);
   }
 
   function orbitOffset(slot, count, time) {
     const n = Math.max(1, count);
-    // The fight lane is too shallow for a round circle, so waiting Trollocs mill on both
-    // flanks at mid range and drift. X never collapses onto Riley.
+    // Waiting Trollocs hold both flanks outside the attackers. Spacing is
+    // wide enough that equal-height bodies overlap by less than a quarter.
     const flank = Math.ceil(n / 2);
     const index = Math.floor(slot / 2);
     const side = slot % 2 === 0 ? -1 : 1;
-    const phase = time * 0.7 + slot * 1.4;
-    const along = MID_RANGE + index * 108 + Math.cos(phase) * 12;
-    const y = (index - (flank - 1) / 2) * 28 + Math.sin(phase) * 10;
+    const phase = time * 0.35 + slot * 1.4;
+    const along = RING_RANGE + index * (MIN_SEPARATION + 18) + Math.cos(phase) * 4;
+    const y = (index - (flank - 1) / 2) * 22 + Math.sin(phase) * 4;
     return { x: side * along, y };
   }
 
-  function separateEnemies(enemies, dt) {
-    const live = enemies.filter(e => e.hp > 0 && e.state !== 'dead' && e.state !== 'launched');
-    const radius = 84;
-    const force = 380;
-    for (let pass = 0; pass < 2; pass++) {
-      const acc = live.map(() => ({ x: 0, y: 0 }));
+  function spriteOverlap(a, b) {
+    const ow = Math.max(0, BODY_W - Math.abs(a.x - b.x));
+    const oh = Math.max(0, BODY_H - Math.abs(a.y - b.y));
+    return (ow * oh) / (BODY_W * BODY_H);
+  }
+
+  function separateEnemies(enemies) {
+    const live = enemies.filter(e => e && e.hp > 0 && e.state !== 'dead');
+    for (let pass = 0; pass < 10; pass++) {
+      let moved = false;
       for (let i = 0; i < live.length; i++) {
         for (let j = i + 1; j < live.length; j++) {
-          let dx = live[j].x - live[i].x;
-          let dy = live[j].y - live[i].y;
-          let dist = Math.hypot(dx, dy);
-          if (dist < 0.001) {
-            dx = (j % 2 ? 1 : -1);
-            dy = 0.4;
-            dist = Math.hypot(dx, dy);
-          }
-          if (dist >= radius) continue;
-          const push = ((radius - dist) / radius) * force * dt;
-          const nx = dx / dist;
-          const ny = dy / dist;
-          const wi = live[i].state === 'windup' || live[i].state === 'strike' ? 0.2 : 1;
-          const wj = live[j].state === 'windup' || live[j].state === 'strike' ? 0.2 : 1;
-          acc[i].x -= nx * push * wi;
-          acc[i].y -= ny * push * wi;
-          acc[j].x += nx * push * wj;
-          acc[j].y += ny * push * wj;
+          const a = live[i];
+          const b = live[j];
+          if (spriteOverlap(a, b) <= MAX_PAIR_OVERLAP) continue;
+          let dx = b.x - a.x;
+          const dy = b.y - a.y;
+          if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) dx = (j % 2 ? 1 : -1);
+          const overlapH = Math.max(1, BODY_H - Math.abs(dy));
+          const maxOverlapW = MAX_PAIR_OVERLAP * BODY_W * BODY_H / overlapH;
+          const need = BODY_W - maxOverlapW + 3;
+          const deficit = Math.max(3, need - Math.abs(dx));
+          const sx = Math.sign(dx) || 1;
+          const push = deficit / 2;
+          a.x -= sx * push;
+          b.x += sx * push;
+          moved = true;
         }
       }
-      for (let i = 0; i < live.length; i++) {
-        live[i].x += acc[i].x;
-        live[i].y += acc[i].y;
+      if (!moved) break;
+    }
+  }
+
+  function holdWaitingRing(enemies, ctx) {
+    const player = ctx && ctx.player;
+    const bounds = ctx && ctx.bounds;
+    if (!player || !bounds) return;
+    const waveSize = ctx.waveSize || enemies.length || 1;
+    const time = ctx.time || 0;
+    for (const e of enemies) {
+      if (!e || e.hp <= 0 || e.hasToken) continue;
+      if (e.state === 'dead' || e.state === 'launched' || e.state === 'hurt' || e.state === 'windup' || e.state === 'strike') continue;
+      const orbit = orbitOffset(e.slot || 0, waveSize, time);
+      const dist = Math.hypot(e.x - player.x, e.y - player.y);
+      const ring = Math.hypot(orbit.x, orbit.y);
+      if (dist < ring - 2) {
+        e.x = player.x + orbit.x;
+        e.y = clamp(player.y + orbit.y, bounds.minY, bounds.maxY);
       }
     }
+  }
+
+  function resolveCrowd(enemies, ctx) {
+    const bounds = ctx && ctx.bounds;
+    const settle = () => {
+      if (!bounds) return;
+      for (const e of enemies) {
+        if (e && e.hp > 0) clampEnemy(e, bounds);
+      }
+    };
+    for (let n = 0; n < 3; n++) {
+      holdWaitingRing(enemies, ctx || {});
+      separateEnemies(enemies);
+      settle();
+    }
+    // The ring snap is not allowed to restack bodies. Separation is the last move.
+    holdWaitingRing(enemies, ctx || {});
+    separateEnemies(enemies);
+    settle();
   }
 
   function clampEnemy(e, bounds) {
@@ -301,17 +359,20 @@
 
     const orbit = orbitOffset(e.slot, waveSize, ctx.time || 0);
     const dist = Math.hypot(p.x - e.x, (p.y - e.y) * 1.15);
-    if (!e.hasToken && e.cooldown <= 0 && !(p.falling > 0) && dist < 260 && dist > 40) {
-      claimToken(bag, e);
-      if (e.hasToken) e.tokenTimer = 2.5;
+    if (!e.hasToken && e.cooldown <= 0 && !(p.falling > 0) && dist < 760 && dist > 40) {
+      if (claimToken(bag, e)) {
+        // Long enough to walk in from the outer flank. Wave 1 speed is the slow one.
+        e.tokenTimer = 8;
+        e.attackSide = bag.attackTokenCount % 2 === 1 ? -1 : 1;
+      }
     }
     let tx = p.x + orbit.x;
     let ty = clamp(p.y + orbit.y, bounds.minY, bounds.maxY);
     if (e.hasToken) {
-      e.tokenTimer = (e.tokenTimer || 2.5) - dt;
-      const side = e.slot % 2 === 0 ? -1 : 1;
-      tx = p.x + side * 62;
-      ty = clamp(p.y + (side < 0 ? -22 : 26), bounds.minY, bounds.maxY);
+      e.tokenTimer = (e.tokenTimer || 8) - dt;
+      const side = e.attackSide === 1 || e.attackSide === -1 ? e.attackSide : (e.slot % 2 === 0 ? -1 : 1);
+      tx = p.x + side * ATTACK_STANDOFF;
+      ty = clamp(p.y + side * 16, bounds.minY, bounds.maxY);
       const melee = Math.abs(p.x - e.x) < 96 && Math.abs(p.y - e.y) < 60;
       if (melee) {
         e.state = 'windup';
@@ -350,18 +411,51 @@
     }
     const rng = options.rng || (() => 0.2);
     let maxTokens = 0;
+    let maxOverlap = 0;
+    let maxMelee = 0;
+    let sawLeft = false;
+    let sawRight = false;
+    const engaged = new Set();
     const steps = Math.round((options.seconds || 4.5) / dt);
+    const crowdCtx = { player, bounds, waveSize: count, time: 0 };
     for (let s = 0; s < steps; s++) {
       const time = s * dt;
+      crowdCtx.time = time;
       for (const e of enemies) stepEnemy(e, { dt, time, player, tokenBag: bag, bounds, rng, waveSize: count });
-      separateEnemies(enemies, dt);
-      for (const e of enemies) clampEnemy(e, bounds);
+      resolveCrowd(enemies, crowdCtx);
       if (bag.attackTokenCount > bag.maxAttackTokens) {
         throw new Error(`token cap exceeded: ${bag.attackTokenCount} > ${bag.maxAttackTokens}`);
       }
       maxTokens = Math.max(maxTokens, bag.attackTokenCount);
+      const live = enemies.filter(e => e.hp > 0 && e.state !== 'dead');
+      let melee = 0;
+      for (const e of live) {
+        const away = Math.hypot(e.x - player.x, e.y - player.y);
+        if (away < MELEE_RANGE) melee += 1;
+        if (e.hasToken || away < MELEE_RANGE || e.state === 'windup' || e.state === 'strike') engaged.add(e);
+        if (!e.hasToken && e.x < player.x - 80) sawLeft = true;
+        if (!e.hasToken && e.x > player.x + 80) sawRight = true;
+      }
+      maxMelee = Math.max(maxMelee, melee);
+      for (let i = 0; i < live.length; i++) {
+        for (let j = i + 1; j < live.length; j++) {
+          maxOverlap = Math.max(maxOverlap, spriteOverlap(live[i], live[j]));
+        }
+      }
     }
-    return { enemies, maxTokens, cap: bag.maxAttackTokens, player };
+    return {
+      enemies, maxTokens, cap: bag.maxAttackTokens, player,
+      maxOverlap, maxMelee, engaged: engaged.size, flanks: { left: sawLeft, right: sawRight }
+    };
+  }
+
+  function grayManSolidSeconds() {
+    // Pace from the c03c85e playtest: a practiced player burned almost all of
+    // a 330 HP Gray Man and still lost the last life. That sponge ran well
+    // past a minute and a half of boss time. The punish multiplier is the
+    // extra damage landing during the recovery window.
+    const referenceDps = (330 * 0.9) / 120;
+    return GRAY_MAN.hp / (referenceDps * GRAY_MAN.punish);
   }
 
   function isInvulnerable(p) {
@@ -479,9 +573,11 @@
     BRIDGE_START, BRIDGE_END, BRIDGE_SPAWN, BRIDGE_MID, GAPS, CRUMBLE, PADS,
     ARENA_START, ARENA_LEFT, ARENA_RIGHT, BOSS_X, EXIT_X, WORLD,
     GAP_W, CRUMBLE_W, LANE_MIN_Y, LANE_MAX_Y, MID_RANGE, WAVE_TUNING, ATTACK_HIT,
-    clamp, fmtTime, stepVertical, runningJumpReach, createPlanks, isPit, stablePadAt,
+    BODY_W, BODY_H, MAX_PAIR_OVERLAP, MIN_SEPARATION, MELEE_RANGE, ATTACK_STANDOFF, RING_RANGE,
+    GRAY_MAN, clamp, fmtTime, stepVertical, runningJumpReach, createPlanks, isPit, stablePadAt,
     stepPlanks, advanceBridgeCheckpoint, tokenCap, claimToken, releaseToken,
-    orbitOffset, separateEnemies, stepEnemy, simulateCrowd, isInvulnerable,
+    orbitOffset, spriteOverlap, separateEnemies, holdWaitingRing, resolveCrowd,
+    stepEnemy, simulateCrowd, grayManSolidSeconds, isInvulnerable,
     grayManStrikeConnects, nearestThreat, facingTowardThreat, facingAfterMove,
     targetsHitByAttack, knockProfile, knockTravel, registerTrollocKill, applyHeroHit,
     formatRunStats

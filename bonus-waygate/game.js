@@ -18,19 +18,30 @@
     constructor() { super('waygate'); }
 
     preload() {
-      // Native Image loading also works when index.html is opened as file://; XHR does not.
-      this.load.imageLoadType = 'HTMLImageElement';
-      const inline = window.WAYGATE_ATLAS_DATA || {};
-      this.load.image('rileyPage0', inline.riley0 || 'assets/atlases/riley-0.webp');
-      this.load.image('rileyPage1', inline.riley1 || 'assets/atlases/riley-1.webp');
-      this.load.image('gruntPage0', inline.grunt0 || 'assets/atlases/grunt-0.webp');
+      // Character art is already decoded from inline data URLs, or it is missing.
+      // This loader must not request an image: a blocked atlas 403s and WebGL
+      // throws on the cross-origin texture, which leaves the loading screen up.
     }
 
     create() {
-      this.registerAtlas('riley', window.WAYGATE_ASSET_META.riley);
-      this.registerAtlas('grunt', window.WAYGATE_ASSET_META.grunt);
-      this.registerAnimations('riley', window.WAYGATE_ASSET_META.riley);
-      this.registerAnimations('grunt', window.WAYGATE_ASSET_META.grunt);
+      this.placeholderKeys = new Set();
+      try {
+        this.installCharacterTextures();
+        this.registerAtlas('riley', window.WAYGATE_ASSET_META.riley);
+        this.registerAtlas('grunt', window.WAYGATE_ASSET_META.grunt);
+        this.registerAnimations('riley', window.WAYGATE_ASSET_META.riley);
+        this.registerAnimations('grunt', window.WAYGATE_ASSET_META.grunt);
+      } catch (err) {
+        console.error('Waygate textures failed', err);
+        this.paintPlaceholder('rileyPage0', 'riley');
+        this.paintPlaceholder('gruntPage0', 'grunt');
+        try {
+          this.registerAtlas('riley', window.WAYGATE_ASSET_META.riley);
+          this.registerAtlas('grunt', window.WAYGATE_ASSET_META.grunt);
+          this.registerAnimations('riley', window.WAYGATE_ASSET_META.riley);
+          this.registerAnimations('grunt', window.WAYGATE_ASSET_META.grunt);
+        } catch (err2) { console.error(err2); }
+      }
       this.createGrayManTexture();
       this.drawWorld();
       this.createHudObjects();
@@ -45,15 +56,85 @@
       window.addEventListener('blur', this.onBlur = () => { if (this.mode === 'play') this.pauseGame('Game paused — the tab lost focus.'); });
       document.addEventListener('visibilitychange', this.onVisibility = () => { if (document.hidden && this.mode === 'play') this.pauseGame('Game paused — the tab is hidden.'); });
       this.showPanel('title');
-      $('#loading').style.display = 'none';
+      const loading = $('#loading');
+      if (loading) loading.style.display = 'none';
       $('#hud').hidden = false;
       this.refreshHud();
+      window.__waygateReady = true;
+    }
+
+    installCharacterTextures() {
+      const images = window.__WAYGATE_IMAGES || {};
+      const meta = window.WAYGATE_ASSET_META || {};
+      const jobs = [
+        ['riley0', 'rileyPage0', 'riley'],
+        ['riley1', 'rileyPage1', 'riley'],
+        ['grunt0', 'gruntPage0', 'grunt']
+      ];
+      for (const [srcKey, texKey, who] of jobs) {
+        const data = meta[who];
+        const pages = new Set();
+        if (data) for (const frame of Object.values(data.frames)) pages.add(frame.page);
+        const pageIndex = Number(String(srcKey).replace(/\D/g, ''));
+        if (!pages.has(pageIndex)) continue;
+        const img = images[srcKey];
+        const w = img && (img.naturalWidth || img.width);
+        const h = img && (img.naturalHeight || img.height);
+        if (img && w > 2 && h > 2 && w <= 4096 && h <= 4096) {
+          try {
+            if (!this.textures.exists(texKey)) this.textures.addImage(texKey, img);
+            continue;
+          } catch (err) { console.error(err); }
+        }
+        this.paintPlaceholder(texKey, who);
+      }
+      if (!this.textures.exists('rileyPage0')) this.paintPlaceholder('rileyPage0', 'riley');
+      if (!this.textures.exists('gruntPage0')) this.paintPlaceholder('gruntPage0', 'grunt');
+    }
+
+    paintPlaceholder(key, who) {
+      if (this.textures.exists(key)) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = 180;
+      canvas.height = 240;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, 180, 240);
+      if (who === 'grunt') {
+        ctx.fillStyle = '#3a241c';
+        ctx.beginPath(); ctx.ellipse(90, 148, 50, 72, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#6b4a32';
+        ctx.beginPath(); ctx.ellipse(90, 74, 36, 32, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#e6d2b0';
+        ctx.beginPath(); ctx.moveTo(58, 68); ctx.lineTo(36, 24); ctx.lineTo(78, 56); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(122, 68); ctx.lineTo(144, 24); ctx.lineTo(102, 56); ctx.fill();
+        ctx.fillStyle = '#8d2a2a';
+        ctx.fillRect(60, 168, 24, 50);
+        ctx.fillRect(98, 168, 24, 50);
+      } else {
+        ctx.fillStyle = '#1c1f2a';
+        ctx.fillRect(66, 86, 48, 92);
+        ctx.fillStyle = '#c9b59a';
+        ctx.beginPath(); ctx.ellipse(90, 60, 22, 26, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#2e3548';
+        ctx.fillRect(44, 98, 24, 66);
+        ctx.fillRect(112, 98, 24, 66);
+        ctx.fillStyle = '#11141c';
+        ctx.fillRect(70, 174, 16, 50);
+        ctx.fillRect(94, 174, 16, 50);
+      }
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.beginPath(); ctx.ellipse(90, 228, 42, 8, 0, 0, Math.PI * 2); ctx.fill();
+      this.textures.addCanvas(key, canvas);
+      this.placeholderKeys.add(key);
     }
 
     onShutdown() {
       window.removeEventListener('blur', this.onBlur);
       document.removeEventListener('visibilitychange', this.onVisibility);
-      $('#overlay').removeEventListener('click', this.overlayClick);
+      $('#overlay').removeEventListener('click', this.overlayAction);
+      $('#overlay').removeEventListener('pointerup', this.overlayAction);
+      $('#overlay').removeEventListener('touchend', this.overlayAction);
+      document.removeEventListener('keydown', this.onTitleKey);
       $('#pause-toggle').removeEventListener('click', this.pauseClick);
       document.removeEventListener('pointerdown', this.touchDetect);
       document.removeEventListener('pointerup', this.touchRelease);
@@ -67,13 +148,22 @@
     registerAtlas(char, data) {
       const pageCount = char === 'riley' ? 2 : 1;
       for (let p = 0; p < pageCount; p++) {
-        const texture = this.textures.get(`${char}Page${p}`);
-        if (!texture) continue;
+        const key = `${char}Page${p}`;
+        if (!this.textures.exists(key)) continue;
+        const texture = this.textures.get(key);
+        const src = texture.getSourceImage();
+        const placeholder = this.placeholderKeys && this.placeholderKeys.has(key);
         for (const [name, f] of Object.entries(data.frames)) {
           if (f.page !== p || texture.has(name)) continue;
-          const r = f.rect, off = f.offset, sz = f.size;
-          const frame = texture.add(name, 0, r.x, r.y, r.w, r.h);
-          frame.setTrim(sz.w, sz.h, off.x, off.y, off.w, off.h);
+          const r = f.rect;
+          const tooBig = !src || r.x + r.w > src.width + 0.5 || r.y + r.h > src.height + 0.5;
+          if (placeholder || tooBig) {
+            texture.add(name, 0, 0, 0, src.width, src.height);
+          } else {
+            const off = f.offset, sz = f.size;
+            const frame = texture.add(name, 0, r.x, r.y, r.w, r.h);
+            frame.setTrim(sz.w, sz.h, off.x, off.y, off.w, off.h);
+          }
         }
       }
     }
@@ -81,10 +171,16 @@
     registerAnimations(char, data) {
       for (const a of data.anims) {
         if (this.anims.exists(a.name)) continue;
-        const frames = a.frames.map((name, i) => ({
-          key: `${char}Page${data.frames[name].page}`, frame: name,
-          duration: a.holds[i] || 100
-        }));
+        const frames = [];
+        for (let i = 0; i < a.frames.length; i++) {
+          const name = a.frames[i];
+          const meta = data.frames[name];
+          if (!meta) continue;
+          const key = `${char}Page${meta.page}`;
+          if (!this.textures.exists(key) || !this.textures.get(key).has(name)) continue;
+          frames.push({ key, frame: name, duration: a.holds[i] || 100 });
+        }
+        if (!frames.length) continue;
         this.anims.create({ key: a.name, frames, repeat: a.loop ? -1 : 0 });
       }
     }
@@ -215,11 +311,29 @@
       this.pressed = { attack: false, jump: false, dodge: false, special: false };
       this.touchState = { left: false, right: false, up: false, down: false };
       this.touchAction = { attack: false, jump: false, dodge: false, special: false };
-      this.overlayClick = (e) => { const action = e.target.closest('[data-action]')?.dataset.action; if (!action) return; if (action === 'start') this.begin(); if (action === 'resume') this.resumeGame(); if (action === 'restart') this.scene.restart(); };
+      this.overlayAction = (e) => {
+        const action = e.target.closest?.('[data-action]')?.dataset.action;
+        if (!action) return;
+        if (e.cancelable && e.type !== 'click') e.preventDefault();
+        if (action === 'start') this.begin();
+        else if (action === 'resume') this.resumeGame();
+        else if (action === 'restart') this.scene.restart();
+      };
+      this.onTitleKey = (e) => {
+        if (this.mode !== 'title') return;
+        if (e.key === 'Enter' || e.key === 'NumpadEnter' || e.key === 'j' || e.key === 'J') {
+          e.preventDefault();
+          this.begin();
+        }
+      };
       this.pauseClick = () => { if (this.mode === 'play') this.pauseGame('Combat paused. Choose when you are ready.'); else if (this.mode === 'paused') this.resumeGame(); };
       this.touchDetect = (e) => { if (e.pointerType === 'touch') document.body.classList.add('has-touch'); };
       this.touchRelease = (e) => { const id = e.target.closest('[data-hold],[data-press]'); if (!id) return; const key = id.dataset.hold || id.dataset.press; if (id.dataset.hold) this.touchState[key] = false; else this.touchAction[key] = false; id.classList.remove('down'); };
-      $('#overlay').addEventListener('click', this.overlayClick);
+      const overlay = $('#overlay');
+      overlay.addEventListener('click', this.overlayAction);
+      overlay.addEventListener('pointerup', this.overlayAction);
+      overlay.addEventListener('touchend', this.overlayAction, { passive: false });
+      document.addEventListener('keydown', this.onTitleKey);
       $('#pause-toggle').addEventListener('click', this.pauseClick);
       document.addEventListener('pointerdown', this.touchDetect, { passive: true });
       this.touchBindings = [];
@@ -243,7 +357,7 @@
       this.mode = 'title'; this.runElapsed = 0; this.waveIndex = -1; this.waveActive = false; this.enemies = []; this.waveSize = 0; this.attackTokenCount = 0; this.maxAttackTokens = 1; this.hitstop = 0; this.debugSkip = new URLSearchParams(window.location.search).get('skip') || ''; this.planks = L.createPlanks(); this.enemyBounds = { minX: 110, maxX: WORLD - 120, minY: L.LANE_MIN_Y, maxY: L.LANE_MAX_Y };
       this.bridgeGraphic?.destroy();
       this.bridgeGraphic = this.add.graphics().setDepth(4); this.drawBridge();
-      this.boss = { active: false, defeated: false, hp: 330, maxHp: 330, x: BOSS_X, y: 346, phase: 'stalk', timer: 1.2, targetX: 0, targetY: 0, strikes: 0, flashTimer: 0, phaseTwo: false };
+      this.boss = { active: false, defeated: false, hp: L.GRAY_MAN.hp, maxHp: L.GRAY_MAN.hp, x: BOSS_X, y: 346, phase: 'stalk', timer: 1.2, targetX: 0, targetY: 0, strikes: 0, flashTimer: 0, phaseTwo: false };
       if (this.bossSprite) { this.bossSprite.destroy(); this.bossShadow.destroy(); }
       this.bossShadow = this.add.ellipse(0, 0, 98, 24, 0x000000, 0.5).setDepth(900);
       this.bossSprite = this.add.image(this.boss.x, this.boss.y, 'grayman').setOrigin(0.5, 1).setDisplaySize(106, 240).setDepth(1100).setAlpha(0);
@@ -280,7 +394,7 @@
       const overlay = $('#overlay'), box = $('#panel-content');
       overlay.hidden = false;
       const controls = `<div class="control-grid"><div><b>Move</b> · WASD / Arrows</div><div><b>Attack</b> · J</div><div><b>Jump</b> · K</div><div><b>Dodge roll</b> · Shift</div><div><b>One Power</b> · L</div><div><b>Pause / resume</b> · Esc / P</div><div><b>Restart</b> · R</div></div>`;
-      if (kind === 'title') box.innerHTML = `<div class="eyebrow">RILEY WHEEL BRAWL · BONUS LEVEL</div><h1>WAYGATE<br>GAUNTLET</h1><p>Three Trolloc waves, a bridge that will not stay beneath your feet, and a Gray Man waiting in the dark.</p>${controls}<p class="fine">Every enemy attack has a tell. The Gray Man's red flash marks the strike lane; move away or jump over it.</p><div class="panel-actions"><button class="action" data-action="start">ENTER THE WAYS</button></div><p class="fine">A short, standalone, silent side-story level · about 2–3 minutes</p>`;
+      if (kind === 'title') box.innerHTML = `<div class="eyebrow">RILEY WHEEL BRAWL · BONUS LEVEL</div><h1>WAYGATE<br>GAUNTLET</h1><p>Three Trolloc waves, a bridge that will not stay beneath your feet, and a Gray Man waiting in the dark.</p>${controls}<p class="fine">Every enemy attack has a tell. The Gray Man's red flash marks the strike lane; move away or jump over it.</p><div class="panel-actions"><button class="action" type="button" data-action="start">ENTER THE WAYS</button></div><p class="fine">A short, standalone, silent side-story level · about 2–3 minutes</p>`;
       else if (kind === 'pause') box.innerHTML = `<div class="eyebrow">THE WAYS HOLD STILL</div><h2>PAUSED</h2><p>${extra.message || 'Take a breath. Your checkpoint and the enemy timers are safe.'}</p><div class="panel-actions"><button class="action" data-action="resume">RESUME</button><button class="action secondary" data-action="restart">RESTART BONUS</button></div><p class="fine">Esc / P resumes · R restarts · timers stay frozen while paused</p>`;
       else if (kind === 'over') box.innerHTML = `<div class="eyebrow">THE SHADOWS CLOSE IN</div><h2>DEFEATED</h2><p>You are out of lives. The gauntlet is ready for another attempt.</p>${this.resultStats()}<p><b>Trollocs killed: ${this.heroData.trollocKills}</b></p><div class="panel-actions"><button class="action" data-action="restart">TRY AGAIN</button></div><p class="fine">Press R or Enter to restart.</p>`;
       else if (kind === 'clear') box.innerHTML = `<div class="eyebrow">THE WAYGATE OPENS</div><h2>GAUNTLET CLEARED</h2><p>Riley steps out of the Ways with the Gray Man left behind. Trollocs killed: ${this.heroData.trollocKills}.</p>${this.resultStats()}<p><b>Rank ${extra.rank || this.rank()}</b></p><div class="panel-actions"><button class="action" data-action="restart">RUN IT AGAIN</button></div><p class="fine">Press R to restart. Score and time are local to this run.</p>`;
@@ -539,8 +653,9 @@
       this.waveSize = count;
       this.maxAttackTokens = L.tokenCap(index); this.attackTokenCount = 0;
       for (let i = 0; i < count; i++) {
-        const x = WAVE_AT[index] + 155 + i * 84 + (i % 2) * 26;
-        const y = 331 + (i % 3) * 38;
+        const orbit = L.orbitOffset(i, count, this.runElapsed || 0);
+        const x = p.x + orbit.x;
+        const y = clamp(p.y + orbit.y, this.enemyBounds.minY, this.enemyBounds.maxY);
         const sprite = this.add.sprite(x, y, 'gruntPage0', 'grunt_walk_00').setOrigin(0.5, 790 / 820).setScale(0.39 + (i % 2) * 0.015).setDepth(1000 + y);
         sprite.play('grunt_walk'); if (i % 3 === 1) sprite.setTint(0xd8dbe6);
         const shadow = this.add.ellipse(x, y + 3, 105, 22, 0x000000, 0.45).setDepth(800 + y);
@@ -604,11 +719,7 @@
         }
         if (events.hit) this.hurtHero(events.hit.damage, events.hit.knock);
       }
-      L.separateEnemies(this.enemies, dt);
-      for (const e of this.enemies) {
-        e.x = clamp(e.x, this.enemyBounds.minX, this.enemyBounds.maxX);
-        e.y = clamp(e.y, this.enemyBounds.minY, this.enemyBounds.maxY);
-      }
+      L.resolveCrowd(this.enemies, { player: p, waveSize: this.waveSize || this.enemies.length, time: this.runElapsed, bounds: this.enemyBounds, dt });
     }
 
     hurtHero(amount, knock) {
@@ -653,7 +764,7 @@
         b.y = clamp(b.y, 326, FLOOR - 55);
         this.bossSprite.setAlpha(0.38 + 0.12 * Math.sin(this.runElapsed * 11)).clearTint();
         if (b.timer <= 0) {
-          b.phase = 'tell'; b.timer = b.phaseTwo ? 0.66 : 0.88; b.targetX = p.x; b.targetY = p.y; b.strikes++;
+          b.phase = 'tell'; b.timer = b.phaseTwo ? L.GRAY_MAN.tellFast : L.GRAY_MAN.tell; b.targetX = p.x; b.targetY = p.y; b.strikes++;
           this.warningMark.setPosition(b.targetX, b.targetY - 5).setVisible(true);
           this.warningText.setPosition(b.targetX, b.targetY - 68).setVisible(true);
           this.warningCross.setVisible(true);
@@ -666,7 +777,7 @@
         this.warningCross.clear().lineStyle(4, 0xff4058, 0.92).lineBetween(b.targetX - 46, b.targetY - 4, b.targetX + 46, b.targetY - 4).lineBetween(b.targetX, b.targetY - 40, b.targetX, b.targetY + 32);
         this.bossSprite.setPosition(b.x, b.y).setAlpha(Math.sin(this.runElapsed * 46) > 0 ? 0.9 : 0.24).setTint(0xff344f);
         if (b.timer <= 0) {
-          b.phase = 'strike'; b.timer = 0.27;
+          b.phase = 'strike'; b.timer = L.GRAY_MAN.strike;
           const side = b.x < b.targetX ? -1 : 1;
           b.x = clamp(b.targetX + side * 115, ARENA_LEFT + 8, ARENA_RIGHT - 24); b.y = b.targetY;
           this.bossSprite.setPosition(b.x, b.y).setAlpha(1).setTint(0xff4c5b).setRotation(-side * 0.08);
@@ -674,8 +785,8 @@
       } else if (b.phase === 'strike') {
         b.timer -= dt;
         if (b.timer <= 0) {
-          if (L.grayManStrikeConnects(p, b.targetX, b.targetY)) this.hurtHero(b.phaseTwo ? 28 : 22, Math.sign(p.x - b.x) * 270);
-          this.hideBossTell(); b.phase = 'recover'; b.timer = 0.95;
+          if (L.grayManStrikeConnects(p, b.targetX, b.targetY)) this.hurtHero(b.phaseTwo ? L.GRAY_MAN.damageFast : L.GRAY_MAN.damage, Math.sign(p.x - b.x) * 270);
+          this.hideBossTell(); b.phase = 'recover'; b.timer = L.GRAY_MAN.recover;
           b.x = clamp(b.targetX + (b.x < b.targetX ? -90 : 90), ARENA_LEFT + 8, ARENA_RIGHT - 24);
           this.bossSprite.setPosition(b.x, b.y).setAlpha(1).clearTint().setRotation(0);
         }
@@ -690,7 +801,8 @@
 
     hitBoss(amount, heavy = false) {
       const b = this.boss; if (!b.active || b.defeated || b.phase !== 'recover') return;
-      b.hp = Math.max(0, b.hp - amount); this.heroData.score += amount * 7; this.heroData.focus = clamp(this.heroData.focus + 5, 0, 100);
+      const dealt = amount * L.GRAY_MAN.punish;
+      b.hp = Math.max(0, b.hp - dealt); this.heroData.score += Math.round(dealt * 7); this.heroData.focus = clamp(this.heroData.focus + 5, 0, 100);
       this.bossSprite.setTint(0xffffff); b.flashTimer = 0.09; this.impactFeedback(heavy);
       if (b.hp <= 0) {
         b.defeated = true; b.active = false; b.phase = 'dead'; this.bossSprite.setAlpha(0.18); this.hideBossTell(); $('#boss-hud').style.display = 'none';
@@ -778,17 +890,60 @@
     }
   }
 
-  const game = new Phaser.Game({
-    type: Phaser.AUTO,
-    parent: 'game',
-    width: W,
-    height: H,
-    backgroundColor: '#080a12',
-    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-    render: { antialias: true, pixelArt: false, powerPreference: 'high-performance' },
-    input: { activePointers: 4 },
-    fps: { target: 60, forceSetTimeOut: false },
-    scene: [WaygateScene]
-  });
-  window.__waygateGame = game;
+  function startGame() {
+    const game = new Phaser.Game({
+      type: Phaser.AUTO,
+      parent: 'game',
+      width: W,
+      height: H,
+      backgroundColor: '#080a12',
+      scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+      render: { antialias: true, pixelArt: false, powerPreference: 'high-performance' },
+      input: { activePointers: 4 },
+      fps: { target: 60, forceSetTimeOut: false },
+      scene: [WaygateScene]
+    });
+    window.__waygateGame = game;
+  }
+
+  function pagesInUse() {
+    const meta = window.WAYGATE_ASSET_META || {};
+    const want = new Set();
+    for (const [who, data] of Object.entries(meta)) {
+      if (!data || !data.frames) continue;
+      for (const frame of Object.values(data.frames)) want.add(who + frame.page);
+    }
+    return want;
+  }
+
+  function bootWaygate() {
+    const inline = window.WAYGATE_ATLAS_DATA || {};
+    const want = pagesInUse();
+    window.__WAYGATE_IMAGES = {};
+    const keys = Object.keys(inline).filter((key) => want.has(key) && typeof inline[key] === 'string' && inline[key].indexOf('data:image/') === 0);
+    if (!keys.length) { startGame(); return; }
+    let pending = keys.length;
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      clearTimeout(timer);
+      startGame();
+    };
+    const timer = setTimeout(start, 5000);
+    for (const key of keys) {
+      const img = new Image();
+      const done = () => { if (--pending <= 0) start(); };
+      img.onload = () => {
+        const w = img.naturalWidth || img.width;
+        const h = img.naturalHeight || img.height;
+        if (w > 2 && h > 2 && w <= 4096 && h <= 4096) window.__WAYGATE_IMAGES[key] = img;
+        done();
+      };
+      img.onerror = done;
+      img.src = inline[key];
+    }
+  }
+
+  bootWaygate();
 })();

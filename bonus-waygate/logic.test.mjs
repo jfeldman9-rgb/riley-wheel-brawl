@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { createRequire } from 'node:module';
 
 const L = createRequire(import.meta.url)('./logic.js');
@@ -121,26 +122,76 @@ test('attack tokens hold at 1 then 2, and waiting Trollocs spread around Riley',
 
   const wave1 = L.simulateCrowd({ waveIndex: 0, count: 3, seconds: 4.8 });
   assert.equal(wave1.maxTokens, 1);
-  const wave3 = L.simulateCrowd({ waveIndex: 2, count: 5, seconds: 4.8 });
+  const wave3 = L.simulateCrowd({ waveIndex: 2, count: 5, seconds: 8 });
   assert.equal(wave3.maxTokens, 2);
   assert.ok(wave3.maxTokens <= wave3.cap);
+  assert.ok(wave3.maxOverlap <= L.MAX_PAIR_OVERLAP + 1e-6, `wave 3 max overlap ${(wave3.maxOverlap * 100).toFixed(1)}%`);
+  assert.ok(wave3.maxMelee <= wave3.cap + 1, `wave 3 had ${wave3.maxMelee} Trollocs in melee, cap is ${wave3.cap}`);
+  assert.equal(wave3.flanks.left, true);
+  assert.equal(wave3.flanks.right, true);
+  const longWave = L.simulateCrowd({ waveIndex: 2, count: 5, seconds: 14 });
+  assert.equal(longWave.engaged, 5, 'every wave 3 Trolloc has to be able to step in');
+  assert.ok(longWave.maxOverlap <= L.MAX_PAIR_OVERLAP + 1e-6);
+  assert.ok(longWave.maxMelee <= longWave.cap + 1);
   const waiting = L.simulateCrowd({ waveIndex: 2, count: 5, seconds: 3.6, initialCooldown: 9 });
   const xs = waiting.enemies.map(e => e.x);
   assert.ok(Math.max(...xs) - Math.min(...xs) > 180, `Trollocs still clumped, x span ${Math.max(...xs) - Math.min(...xs)}`);
+  assert.equal(waiting.maxMelee, 0);
+  assert.ok(waiting.maxOverlap <= L.MAX_PAIR_OVERLAP + 1e-6);
   for (const e of waiting.enemies) {
     assert.equal(e.hasToken, false);
     assert.equal(e.state, 'circle');
     const dist = Math.hypot(e.x - waiting.player.x, e.y - waiting.player.y);
-    assert.ok(dist > 140, `waiting Trolloc stood at ${dist.toFixed(0)}px instead of mid range`);
+    assert.ok(dist > L.MELEE_RANGE, `waiting Trolloc stood at ${dist.toFixed(0)}px instead of the flank ring`);
   }
   assert.ok(xs.some(x => x < waiting.player.x - 40) && xs.some(x => x > waiting.player.x + 40), 'the ring should wrap both sides of Riley');
-  let closest = Infinity;
-  for (let i = 0; i < waiting.enemies.length; i++) {
-    for (let j = i + 1; j < waiting.enemies.length; j++) {
-      closest = Math.min(closest, Math.hypot(waiting.enemies[i].x - waiting.enemies[j].x, waiting.enemies[i].y - waiting.enemies[j].y));
+});
+
+test('a stacked wave 3 is pushed apart before anyone can pile on Riley', () => {
+  const player = { x: 640, y: 364 };
+  const bounds = { minX: 80, maxX: 2200, minY: L.LANE_MIN_Y, maxY: L.LANE_MAX_Y };
+  const enemies = [0, 1, 2, 3, 4].map((i) => ({
+    x: player.x + 4, y: player.y, hp: 80, state: 'circle', slot: i, hasToken: false
+  }));
+  L.resolveCrowd(enemies, { player, bounds, waveSize: 5, time: 0 });
+  let maxOverlap = 0;
+  let melee = 0;
+  let left = false;
+  let right = false;
+  for (let i = 0; i < enemies.length; i++) {
+    if (Math.hypot(enemies[i].x - player.x, enemies[i].y - player.y) < L.MELEE_RANGE) melee += 1;
+    if (enemies[i].x < player.x - 80) left = true;
+    if (enemies[i].x > player.x + 80) right = true;
+    for (let j = i + 1; j < enemies.length; j++) {
+      maxOverlap = Math.max(maxOverlap, L.spriteOverlap(enemies[i], enemies[j]));
     }
   }
-  assert.ok(closest > 70, `waiting Trollocs overlapped, closest ${closest.toFixed(0)}px`);
+  assert.ok(maxOverlap <= L.MAX_PAIR_OVERLAP + 1e-6, `clump overlap ${(maxOverlap * 100).toFixed(1)}%`);
+  assert.equal(melee, 0);
+  assert.equal(left && right, true);
+});
+
+test('the title does not depend on a fetchable image atlas', () => {
+  const html = fs.readFileSync(new URL('./index.html', import.meta.url), 'utf8');
+  const game = fs.readFileSync(new URL('./game.js', import.meta.url), 'utf8');
+  assert.match(html, /src="assets\/atlas-inline\.js"/);
+  assert.doesNotMatch(html, /location\.protocol === 'file:'/);
+  assert.match(html, /rel="icon" href="data:image\/svg\+xml/);
+  assert.doesNotMatch(game, /assets\/atlases\//);
+  assert.match(game, /pointerup/);
+  assert.match(game, /touchend/);
+  assert.match(game, /onTitleKey/);
+});
+
+test('Gray Man stays dangerous but a solid player drops him', () => {
+  const g = L.GRAY_MAN;
+  assert.equal(g.damage, 22);
+  assert.equal(g.damageFast, 28);
+  assert.equal(g.recover, 1);
+  assert.equal(g.punish, 1.3);
+  assert.ok(g.hp < 330 && g.hp >= 180, `hp ${g.hp} should be a cut, not a delete`);
+  const seconds = L.grayManSolidSeconds();
+  assert.ok(seconds >= 60 && seconds <= 90, `solid Gray Man fight ${seconds.toFixed(1)}s`);
 });
 
 test('roll i-frames cover the whole roll, including the Gray Man strike lane', () => {

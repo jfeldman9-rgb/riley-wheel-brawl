@@ -1,6 +1,6 @@
 # Waygate Gauntlet
 
-A self-contained, silent bonus level for **Riley Wheel Brawl**. It uses Phaser 3 from jsDelivr and carries its own character atlases and animation metadata. A small inline atlas fallback avoids browsers' local-file XHR restrictions when opening `index.html` directly; static hosting uses the bundled relative atlas files. No files in the parent game are changed.
+A self-contained, silent bonus level for **Riley Wheel Brawl**. It uses Phaser 3 from jsDelivr and carries its own character atlases and animation metadata. The atlases are inlined as data URLs in `assets/atlas-inline.js`, so the level does not fetch image files (those 403 on some static hosts and stall the loading screen). If a texture fails, the fight still reaches the title using placeholder shapes. No files in the parent game are changed.
 
 ## Run
 
@@ -20,7 +20,7 @@ Open `index.html` directly in a modern browser, or serve this folder as a static
 
 Tap **J, J, J** with a short rhythm for Riley's three-hit combo. The third hit is a launcher: it knocks a Trolloc down and sends them flying, kill or not. Each impact keeps a short hitstop, a white enemy flash, and a hit spark; heavy launchers and One Power hits still shake the screen. If the nearest enemy is behind Riley, the swing turns and hits them — held movement does not flip the attack backward. **Shift / ROLL** is invulnerable for the whole roll, including through the Gray Man's strike lane. A hit also grants about 0.6 seconds of invulnerability.
 
-A red flash and marked floor position precede **every Gray Man strike**; move clear of the mark, roll, or jump. Trollocs telegraph their swings with an amber floor ring and warning mark. Only one Trolloc holds an attack token in Wave 1 and two in later waves; the rest circle at mid range and steer apart instead of stacking on Riley. Trolloc health bars replace floating health text. The falling bridge is a timing challenge: a running jump clears every gap with landing room, cracked planks drop if you wait on them, and passing the midpoint saves a checkpoint so a fall does not send you back to the start. Falling costs health but does not consume a life. Death respawns at the current wave, bridge, or arena checkpoint, and pausing freezes combat timers. The end screen shows **Trollocs killed**.
+A red flash and marked floor position precede **every Gray Man strike**; move clear of the mark, roll, or jump. He still hits for the same damage, then recovers for a second — that window is when hits land, and they hit harder then. Trollocs telegraph their swings with an amber floor ring and warning mark. Only one Trolloc holds an attack token in Wave 1 and two in later waves; those are the ones that step in. Everyone else holds a ring on both flanks, and bodies are pushed apart so they cannot stack into one sprite. Trolloc health bars replace floating health text. The falling bridge is a timing challenge: a running jump clears every gap with landing room, cracked planks drop if you wait on them, and passing the midpoint saves a checkpoint so a fall does not send you back to the start. Falling costs health but does not consume a life. Death respawns at the current wave, bridge, or arena checkpoint, and pausing freezes combat timers. The end screen shows **Trollocs killed**. Tap **Enter the Ways**, or press Enter or J, to start.
 
 ## Test shortcuts
 
