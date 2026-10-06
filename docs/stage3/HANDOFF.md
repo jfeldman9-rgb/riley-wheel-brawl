@@ -1,10 +1,11 @@
 # Stage 3 handoff
 
-Branch `rwb-2-stage3-ag`. The build below, including the frame-time record, is
-`7eadef3088dd77e7e6178cbf9f1bc738a5ae2dfb`. This handoff file is the next commit
-on the same branch. Play it here:
+Branch `rwb-2-stage3-ag`. The build below, including the softlock fixes, is
+`e7a224d1eb72a9616c6f426f96c6000e3ffbaea7`. This handoff file is the next commit
+on the same branch. The frame-time record is still `7eadef3088dd77e7e6178cbf9f1bc738a5ae2dfb`
+and was not re-measured. Play it here:
 
-https://raw.githack.com/jfeldman9-rgb/riley-wheel-brawl/7eadef3088dd77e7e6178cbf9f1bc738a5ae2dfb/index.html?stage=3&s3=1
+https://raw.githack.com/jfeldman9-rgb/riley-wheel-brawl/e7a224d1eb72a9616c6f426f96c6000e3ffbaea7/index.html?stage=3&s3=1
 
 Do not merge PR #20. It stays a draft into `rwb-w2`. `main` and `rwb-w2` were not touched.
 T14 (real art) and T17 (Stage 3 in the campaign) were not started. Stage 3 still requires `s3=1`.
@@ -33,16 +34,17 @@ the roofs. Per-rep lines are in `docs/stage3/perf-runs.log`.
 **iPad: UNMEASURED, for Jason.** Open the githack link with `?stage=3&s3=1`, play to the boss,
 and note stutter and the `PLACEHOLDER ART` tag.
 
-Headless Chrome does not focus Phaser, so the capture dispatched one `window` focus event.
-That is the production path that clears the blur pause. Without it the hidden-tab freeze holds
-the clock and there is nothing to measure.
+Headless Chrome does not focus Phaser, so that capture dispatched one `window` focus event.
+At the time, `game.hasFocus` stayed false until that event (SL-1). The softlock fix below
+seeds the pause from `document.hasFocus()` instead. The frame times were not re-run after it.
 
 ## Tests
 
-`node --test tests/*.test.mjs`: **722 pass, 0 fail** (722 tests). At `150ae6e`, before this
-T15/T16 pass, the same command was **716/716**. The six new tests are the five in
-`tests/stage3-memory.test.mjs` and the one in `tests/stage3-voice-release.test.mjs`. No existing
-test was loosened, skipped or deleted.
+`node --test tests/*.test.mjs`: **731 pass, 0 fail** (731 tests). At `d2d7008`, before the
+softlock pass, the same command was **722/722**. At `150ae6e`, before T15/T16, it was **716/716**.
+The nine new tests are in `tests/stage3-softlock-hardening.test.mjs`. The six before that are the
+five in `tests/stage3-memory.test.mjs` and the one in `tests/stage3-voice-release.test.mjs`. No
+existing test was loosened, skipped or deleted.
 
 Stage 3 campaign: **9/9 seeds** clear (`Stage 3 campaign bot clears Caemlyn`, seeds 1, 2, 3, 4,
 5, 10, 20, 100, 97).
@@ -54,7 +56,9 @@ Stage 1 golden sim: identical. `node tests/helpers/run-full-stage-simulations.mj
 prints nothing. The evidence file's hashes for `src/stage1.js` and `src/audio.js` were refreshed
 so the identity test matches the bytes. The combat records were not regenerated.
 
-`node tools/audit-stage1.mjs` runs. Pre-fight inventory **PASS, 24,989,902 / 25,000,000** bytes.
+`node tools/audit-stage1.mjs` runs. Pre-fight inventory **PASS, 24,991,870 / 25,000,000** bytes.
+That is 1,968 bytes above the T15/T16 figure. The increase is the source added in the softlock
+pass and nothing else.
 Stage 3 voices PASS (813,463 / 3,686,400). Stage 3 music PASS (1,667,012). Player attack density
 PASS. Character art-density **FAIL** for Riley (104/150), grunt (23/40), spear (16/40) and hound
 (16/40). That failure is the pre-existing Stage 1 result. Chief and Loial stay
@@ -62,6 +66,26 @@ PASS. Character art-density **FAIL** for Riley (104/150), grunt (23/40), spear (
 
 Stage 2 fingerprint: identical. sha256 of the prescribed `/tmp/s2.json` is
 `516270d17880cb263a1a88608272e38aff987ab37513bd5acc51f78541df4115`.
+
+## Softlocks
+
+`docs/stage3/SOFTLOCK-AUDIT.md` is the read-only review from `74b2675` on
+`docs-stage3-softlock-audit`, written against `a749402`. That branch was not merged. The file
+is copied as written, including its old line numbers. Regressions are in
+`tests/stage3-softlock-hardening.test.mjs`. Teen/adult difficulty is unchanged: no scene-wide
+grab lock, `hurt` stays grabbable, and the fear numbers are the same.
+
+| ID | Fix |
+| --- | --- |
+| SL-1 | Blur is seeded from `document.hasFocus()` when that function exists, otherwise from `game.hasFocus !== false`. Any press clears `window-blur` before the story and pause branches. A focus-only Start does not also toggle manual. The test does not pre-set `hasFocus = true`. |
+| SL-2 | The next roof warning does not count down while a cutthroat holds Riley. A tile already in the air, including one started with `startTile()`, can still break the hold. |
+| SL-3 | Each marked band gets its own rooftile sprite. A marked band with no sprite cannot hit. `k.img` is still the first sprite. |
+| SL-4 | When the escape animation finishes, Riley gets 0.45 s of i-frames, the length of the cutthroat lunge window. A coil already traveling cannot chain-grab. A new coil is still a full tell. |
+| SL-5 | `updateZones` and the tile countdown wait while `gameOver` is set. Fade copies do not lunge at a dead Riley. |
+| SL-6 | `inv > 0` counts as calm, so the fear meter decays during i-frames and does not shake the frame they end. |
+| SL-7 | A dead Riley stays down, including on the clear screen. A living knockdown still gets up after 0.9 s. |
+| SL-8 | A hit that interrupts the escape clears `lastGrabber`. |
+| SL-9 | `fadePortrait` is released with `arrow` and `ribbon` when the destination does not list it. It is not in `STAGE_TEXTURES[3]`. |
 
 ## T1–T17
 
@@ -112,14 +136,15 @@ the post-start baseline.
 
 Resident Stage 3 GPU estimate, RGBA8 base level, colour + `_n` + `_nl` for every Stage 3 page,
 plus the plates: **99.18 MB**, under 110 MB. Switching 1→3→2→3→1 leaves only the destination
-stage's art. Boot portraits, including the Fade portrait, stay loaded on purpose.
+stage's art. Boot portraits stay loaded. The Fade portrait is queued for Stage 3 and released
+on the way out (SL-9).
 
 Fear tuning was not changed. Brave 1.2 s, fill 1.6 s, radius 220, magenta arc `0xff00ff` at
 alpha 0.85, and a lunging copy counts as calm.
 
-Sizes after the fixes: `src/myrddraal.js` 15,395 / 16,384, `src/stage3-hazards.js` 8,060 / 8,192,
-`src/darkfriends.js` 9,120 / 9,216, `src/stage3.js` 12,185 / 12,288. The new helper is
-`src/stage3-lights.js` (2,059, uncapped).
+Sizes after the softlock fixes: `src/myrddraal.js` 15,434 / 16,384, `src/stage3-hazards.js` 7,991 / 8,192,
+`src/darkfriends.js` 9,120 / 9,216, `src/stage3.js` 12,185 / 12,288. The helper is
+`src/stage3-lights.js` (3,036, uncapped). It now also draws one roof sprite per marked band.
 
 ## Art list
 
@@ -179,9 +204,10 @@ voice mp3s named in `assets/audio/VOICE_PROVENANCE.md`.
 `tools/music/music-manifest.json`. `tools/audit-stage1.mjs` reports Stage 3 voice and music
 budgets separately so they do not consume the Stage 1 25 MB gate.
 
-**Docs.** `docs/stage3/**` (plan, builds, prompts, hardening, frame hashes, this README, the perf
-record, this handoff). `docs/stage1/evidence/full-stage-simulation.json` hash refresh for
-`src/stage1.js` and `src/audio.js` only.
+**Docs.** `docs/stage3/**` (plan, builds, prompts, hardening, frame hashes, the softlock audit,
+this README, the perf record, this handoff). `docs/stage1/evidence/full-stage-simulation.json`
+hash refresh for `src/stage1.js` and `src/audio.js` in T15, and for `src/stage1.js` and
+`src/riley.js` after the softlock fixes. The sim body was not regenerated either time.
 
 **From the rwb-w2 merge, not a Stage 3 mechanic.** Everything under `art-in/barn-fire/`,
 `assets/bg2/barn-*`, and `docs/stage2/` review-pass, barn-fire prompts and shots. Kept so this
@@ -198,8 +224,8 @@ branch contains the Stage 2 fixes already on `rwb-w2`.
   combat positions do not move.
 - `placeFires` still builds a ranked array every frame. It is the shared Stage 1/2 path and was
   left alone so those fingerprints stay put.
-- Voice clips for a stage reload the next time that stage starts. Portraits, including
-  `fadePortrait`, stay resident, same as the other boot portraits.
+- Voice clips for a stage reload the next time that stage starts. Boot portraits stay resident.
+  `fadePortrait` is released with the other Stage 3 leftovers when the destination does not list it.
 - ElevenLabs takes for Gill, the cutthroat and the Myrddraal are not loudness-matched to the
   Kokoro −16 LUFS lines.
 - The fear vignette and the software frame times have not been looked at on a device.

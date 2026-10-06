@@ -26,8 +26,8 @@ waits on Jason.
 
 Only one stage's backdrop and enemy atlases stay in memory. Switching stages releases the other stage's art,
 decoded voice clips, and the procedural kit textures (`arrow`, `ribbon`, rain and lane marks). Riley, the hounds,
-Loial, the crate and the planks are shared where the destination stage uses them. Boot portraits, including the
-Fade portrait, stay loaded.
+Loial, the crate and the planks are shared where the destination stage uses them. Boot portraits stay loaded.
+The Fade portrait is queued for Stage 3 and released when you leave.
 
 ## Layout (4 zones, world 5200 px)
 
