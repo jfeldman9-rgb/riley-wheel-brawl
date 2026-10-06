@@ -18,7 +18,7 @@ export function stage4Bot(bot) {
   const urgent = bossNow && ['swoop_tell', 'swoop_dive', 'kiss_tell', 'kiss_lunge', 'croon', 'perch', 'takeoff'].includes(bossNow.state);
   if (!urgent && R.busy && !['hurt'].includes(R.state)) return go(bot, 0, 0);
   for (const tw of th.towers || []) {
-    if (Math.abs(R.x - tw.x) < (tw.width || 360) / 2 + 40) {
+    if (tw.along ? tw.band && R.y >= tw.band[0] && R.y <= tw.band[1] : Math.abs(R.x - tw.x) < (tw.width || 360) / 2 + 40) {
       const y = tw.safeY != null ? Math.sign(tw.safeY - R.y) : (R.y > 630 ? -1 : 1);
       const x = Math.abs(R.x - tw.x) < 30 ? 1 : 0;
       return go(bot, x, y || 1, true);

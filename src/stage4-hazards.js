@@ -76,7 +76,7 @@ export function safeStripWidth(tendrils, moonshafts, riley) {
 export function createFog(deps = {}) {
   const lightNear = typeof deps.lightNear === 'function' ? deps.lightNear : () => false;
   const vents = [], tendrils = [], moonshafts = [];
-  let dead = false, seq = 1;
+  let dead = false, seq = 1, accum = 0;
   const cap = zone => zone === 0 ? FOG.capZone0 : FOG.capOther;
   const load = zone => vents.filter(v => v.zone === zone && v.phase === 'tell').length
     + tendrils.filter(t => t.zone === zone).length;
@@ -140,6 +140,7 @@ export function createFog(deps = {}) {
     return hypot(actor.x - t.tip.x, actor.y - t.tip.y) < FOG.tipR + ar;
   }
   function fell(actor, dmg) {
+    actor.grabbedBy?.releaseHold?.('break');
     if ((actor.hp || 0) <= 0 && actor.alive !== false && actor.lives == null) {
       if (typeof actor.die === 'function') actor.die(1, { dmg, down: true, kb: 220, launch: 220 });
       else if (typeof actor.defeat === 'function') actor.defeat(null);
@@ -160,13 +161,18 @@ export function createFog(deps = {}) {
     const hit = tendrils.find(t => (t.phase === 'chase' || t.phase === 'retract') && overlap(actor, t));
     // A knock only pays off when it actually meets fog. Leave the flag set until then.
     if (actor.knocked && hit) {
-      if (actor.type === 'cultist') { actor.hp = Math.max(0, actor.hp - FOG.knockIntoDmg); actor.fogBurned = 1; }
+      if (actor.type === 'cultist') {
+        if (actor.state === 'chant') actor.takeHit?.({ dmg: 0, hazard: true });
+        actor.hp = Math.max(0, actor.hp - FOG.knockIntoDmg); actor.fogBurned = 1;
+        if (actor.hp <= 0) { fell(actor, FOG.knockIntoDmg); return; }
+      }
       actor.knocked = false;
     }
     if (!hit) { actor.fogContact = 0; actor.fogSlow = 0; return; }
     actor.fogSlow = FOG.slow;
     actor.fogContact = (actor.fogContact || 0) + 1;
     if (actor.fogContact % ticks(FOG.contactEvery) === 0) {
+      if (actor.state === 'chant') actor.takeHit?.({ dmg: 0, hazard: true });
       actor.hp = Math.max(0, actor.hp - FOG.contactDmg);
       if (actor.type === 'cultist') actor.fogBurned = 1;
       if ((actor.hp || 0) <= 0 && actor.alive !== false && actor.lives == null) fell(actor, FOG.contactDmg);
@@ -255,7 +261,7 @@ export function createFog(deps = {}) {
       for (const m of list || []) moonshafts.push({ x: m.x, y: m.y, r: m.r });
     },
     tryEmit(vent, world) {
-      if (dead || !allowed(vent, world)) return null;
+      if (dead || frozen(world) || !allowed(vent, world)) return null;
       vent.phase = 'tell';
       vent.ticks = ticks(FOG.tell);
       return vent;
@@ -269,8 +275,13 @@ export function createFog(deps = {}) {
     },
     live(zone) { return tendrils.filter(t => t.zone === zone).length; },
     keepZone(zone) { for (const t of tendrils.slice()) if (t.zone !== zone) remove(t); },
+    clearZone(zone) {
+      for (const t of tendrils.slice()) if (t.zone === zone) remove(t);
+      for (let i = vents.length - 1; i >= 0; i--) if (vents[i].zone === zone) vents.splice(i, 1);
+    },
     step(dt, world) {
-      if (dead || !world) return;
+      if (dead || !world || !Number.isFinite(dt) || dt <= 0) return;
+      dt = Math.min(dt, 60);
       observe(world.riley);
       for (const e of world.enemies || []) observe(e);
       if (frozen(world)) {
@@ -278,8 +289,10 @@ export function createFog(deps = {}) {
         for (const e of world.enemies || []) e.fogSlow = 0;
         return;
       }
-      const n = Math.max(0, Math.round((dt || 0) * HZ));
-      for (let i = 0; i < n; i++) substep(world);
+      accum += dt * HZ;
+      const n = Math.floor(accum + 1e-6);
+      accum -= n;
+      for (let i = 0; i < n && !frozen(world); i++) substep(world);
     },
     dispose() {
       vents.length = 0;

@@ -51,6 +51,7 @@ export function audit() {
   // Stage 4 modules do not fit the leftover Stage 1 headroom (about 2 KB after Stage 3).
   // They are a separate source budget, the same way Stage 3 voices sit outside this gate.
   const STAGE4_SRC = new Set(['stage4.js','stage4-def.js','stage4-hud.js','stage4-hazards.js','stage4-sfx.js','stage4-actors.js','stage4-arena.js','stage4-towers.js','stage4-view.js','stage4-art.js','stage4-art-bg.js','stage4-art-fog.js','stage4-art-cast.js','stage4-voice.js','cultists.js','draghkar.js','bot-stage4.js']);
+  for (const name of ['stage4-lifecycle.js', 'stage4-time.js', 'stage4-lighting.js', 'draghkar-impact.js']) STAGE4_SRC.add(name);
   const stage4SourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
     if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);

@@ -48,7 +48,7 @@ export const DRAGHKAR = Object.freeze({
 
 const D = DRAGHKAR, HZ = D.hz, DT_SUB = 1 / HZ;
 const AIRBORNE = new Set(['perch', 'swoop_tell', 'swoop_dive', 'takeoff', 'intro']);
-const GRAB_OK = new Set(['idle', 'walk', 'approach', 'run', 'wait', 'guard', 'stagger', 'hurt']);
+const GRAB_OK = new Set(['idle', 'walk', 'approach', 'run', 'wait', 'guard', 'stagger', 'hurt', 'land']);
 
 export class Draghkar {
   constructor(scene = {}, x = 640, y = 600, deps = {}) {
@@ -94,9 +94,11 @@ export class Draghkar {
 
   releaseGrab() {
     const R = this.target;
-    if (R && R.grabbedBy === this) R.grabbedBy = null;
-    this.held(false);
-    if (R && R.state === 'grabbed') R.state = 'idle';
+    if (R && R.grabbedBy === this) {
+      R.grabbedBy = null; this.held(false);
+      R.leaveGrabbed?.('break');
+      if (R.state === 'grabbed') R.state = 'idle';
+    }
     this.mashCount = this.holdElapsed = this.decayElapsed = 0;
   }
 
@@ -207,7 +209,7 @@ export class Draghkar {
   call(name, a, b) { const fn = this.deps[name] || this.scene?.[name]; if (typeof fn === 'function') fn(a, b); }
   held(v) {
     const s = this.scene; if (!s) return false;
-    if (typeof s.grabBusy === 'function') { if (arguments.length) s._kissBusy = !!v; return !!s._kissBusy; }
+    if (typeof s.grabBusy === 'function') { if (arguments.length) s._kissBusy = !!v; return !!s._kissBusy || s.grabBusy(this); }
     if (arguments.length) s.grabBusy = !!v; return !!s.grabBusy;
   }
 
@@ -348,7 +350,7 @@ export class Draghkar {
                             !R.grabbedBy && !this.held() &&
                             R.state !== 'down' && R.state !== 'getup';
           if (grabbable) {
-            if (R.held) { R.held.released?.(); R.held = null; }
+            if (R.held) { (R.held.release || R.held.released)?.call(R.held); R.held = null; }
             this.state = 'kiss_hold'; this.st = this.holdElapsed = this.decayElapsed = this.mashCount = 0;
             R.grabbedBy = this; R.state = 'grabbed'; this.held(true);
             this.call('onRileyGrabbed', this, R);
@@ -405,7 +407,7 @@ export class Draghkar {
 
   update(dt = 0) {
     if (!this.alive && this.state === 'defeated') return;
-    this.accum = (this.accum || 0) + (dt || 0);
+    this.accum += Number.isFinite(dt) && dt > 0 ? Math.min(dt, 60) : 0;
     const steps = Math.floor(this.accum * HZ + 1e-4);
     for (let i = 0; i < steps; i++) this.substep(DT_SUB);
     this.accum -= steps * DT_SUB;

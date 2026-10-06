@@ -5,10 +5,11 @@ import { paintCast } from './stage4-art-cast.js';
 export { dragFrame, cultFrame } from './stage4-art-cast.js';
 
 export function canPaint(scene) {
-  return !!(scene?.textures && !scene.textures.exists('bg4far') && typeof document !== 'undefined' && document.createElement);
+  return !!(scene?.textures && typeof document !== 'undefined' && document.createElement);
 }
 
 export function tex(scene, key, w, h, draw) {
+  if (scene.textures.exists(key)) return;
   const c = document.createElement('canvas');
   c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
@@ -16,6 +17,7 @@ export function tex(scene, key, w, h, draw) {
 }
 
 export function sheet(scene, key, n, fw, fh, draw) {
+  if (scene.textures.exists(key)) return;
   const c = document.createElement('canvas');
   c.width = fw * n; c.height = fh;
   const g = c.getContext('2d');

@@ -11,6 +11,9 @@ import { LAYOUT, createStage4View, moonAmbient } from './stage4-view.js';
 import { updateFogBolts, cultistHoldsToken } from './cultists.js';
 import { preloadClips, say } from './audio.js';
 import { STAGE4_VOICES, bark, croon, sfxCue, fogOffId } from './stage4-voice.js';
+import { clearStage4Hazards, clearStage4Zone, installStage4SceneHooks, installStage4RileyHook, restoreStage4Hooks } from './stage4-lifecycle.js';
+import { stage4Delta } from './stage4-time.js';
+import { stage4LightBudget } from './stage4-lighting.js';
 
 export const STORY4_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story4p' + n })));
 export const STORY4_SCRIPT = Object.freeze([
@@ -41,6 +44,9 @@ export class Stage4Kit {
   constructor(s) { this.s = s; this.ribbons = 0; this.ribbonDropped = false; this.stats = { tendrils: 0, meleeRecoils: 0, lightRecoils: 0, towers: 0, towerHits: 0, zoneWall: 0, swoops: 0, swoopCounters: 0, croons: 0, croonCancels: 0, kisses: 0, kissEscapes: 0, walls: 0, rubble: 0, chants: 0, ribbon: 0, glimpses: 0, hints: 0, summons: 0, fogSwoops: 0 }; this._rst = ''; this._zone = -2; this._wave = -2; }
   get ambient() { return moonAmbient(this.s.camX || 0, this.keys); }
   get ambientUnlit() { return 0x5a6482; }
+  // The view reads fx.quality live; sync immediately when the governor changes it.
+  setQuality(level) { this.s.fx.quality = level; this.view?.sync(this); }
+  applyLightBudget() { stage4LightBudget(this); }
   layout() {
     const raw = this.s.cache?.json?.get?.('lights4');
     if (!raw) return LAYOUT;
@@ -52,6 +58,7 @@ export class Stage4Kit {
   }
   build() {
     const s = this.s;
+    installStage4SceneHooks(this);
     this.view = createStage4View(s);
     this.view.buildBackdrop();
     const lay = this.layout();
@@ -68,7 +75,7 @@ export class Stage4Kit {
     s.fogBolts = [];
     if (q.get('nopower') === '1' || s.stageData?.noPower) s.noPower = true;
   }
-  start() { preloadClips(STAGE4_VOICES); this.s.music?.set('stage'); }
+  start() { installStage4RileyHook(this); preloadClips(STAGE4_VOICES); this.s.music?.set('stage'); }
   world() {
     const s = this.s, z = s.zone, boss = s.boss;
     return {
@@ -97,6 +104,8 @@ export class Stage4Kit {
     bark(this.s, 'summon', 'cultist_feed_01');
   }
   update(dt) {
+    dt = stage4Delta(dt);
+    if (!dt || this.s.paused || this.s.cutscene) return;
     const s = this.s, R = s.riley;
     if (!R) return;
     if (s.zoneI !== this._zone) {
@@ -127,10 +136,12 @@ export class Stage4Kit {
     this.view.sync(this);
     this.view.budget?.(s.camX || 0, s.lightsOn !== false);
     this.view.moveMoon(s.camX || 0);
-    if (s.lightsOn !== false) s.lights?.setAmbientColor?.(this.ambient);
+    s.ambient = s.backdropIsLit === false ? this.ambientUnlit : this.ambient;
+    if (s.lightsOn !== false) s.lights?.setAmbientColor?.(s.ambient);
   }
   emit(world) {
     const z = this.s.zoneI;
+    if (this.clearedZones?.has(z)) return;
     for (const v of this.fog.vents) if (v.zone === z && v.phase === 'idle') {
       if (this.fog.tryEmit(v, world)) { this.stats.tendrils++; this.cue('fogGurgle'); }
     }
@@ -191,7 +202,7 @@ export class Stage4Kit {
   noteCult(c, prev) { if (c.state === 'chant' && prev !== 'chant') { this.stats.chants++; bark(this.s, 'chant', 'cultist_call_01'); } }
   onPause(paused) {
     if (paused) croon(false);
-    else if (this.s.enemies?.some(e => e.type === 'draghkar' && e.state === 'croon')) croon(true);
+    else if (this.s.enemies?.some(e => e.alive && e.type === 'draghkar' && e.state === 'croon')) croon(true);
   }
   onDefeat() {
     if (this._shriek) return;
@@ -210,17 +221,13 @@ export class Stage4Kit {
   }
   collectRibbon() { this.ribbons++; this.stats.ribbon++; this.s.riley.score += 1000; this.s.hud?.flashText("TWINKLE TOES' RIBBON!"); this.s.hud?.ribbon?.(this.ribbons); }
   onZoneClear(i) {
-    this.towers.clearRubble();
+    clearStage4Zone(this, i);
     if (i === 2 && !this.stats.glimpses) { this.stats.glimpses++; this.view.glimpse(); this.s.hud?.flashText('THERE, ON THE BRIDGE!'); bark(this.s, 'bridge', 'riley_bridge_01'); }
   }
   clearHazards() {
-    const boss = this.s.boss;
-    if (boss?.releaseHold) boss.releaseHold();
-    this.fog?.dispose(); this.towers?.dispose(); this.arena?.dispose();
-    if (this.s.fogBolts) this.s.fogBolts.length = 0;
-    if (boss) boss.gone = true;
+    clearStage4Hazards(this);
   }
-  destroy() { croon(false); this.clearHazards(); this.view?.destroy(); }
+  destroy() { croon(false); this.clearHazards(); this.view?.destroy(); restoreStage4Hooks(this); }
   threats() {
     const wall = this.arena?.active ? { left: this.arena.left, right: this.arena.right } : null;
     return {

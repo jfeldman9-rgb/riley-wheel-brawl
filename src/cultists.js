@@ -32,6 +32,8 @@ export function clearStage4Cultists(scene) {
 }
 
 export function updateFogBolts(scene, dt) {
+  if (!Number.isFinite(dt) || dt <= 0 || scene.paused || scene.cutscene) return;
+  dt = Math.min(dt, 60);
   const bolts = scene.fogBolts;
   if (!bolts) return;
   const R = scene.riley;
@@ -95,6 +97,7 @@ export class Cultist {
     return this.scene.fogBolts.length + winding < CULTIST.maxBolts;
   }
   startBolt() {
+    if (this.scene.attackTokens?.() >= this.scene.maxTokens) return false;
     if (!this.alive || !READY.has(this.state) || !this.boltRoom()) return false;
     this.state = 'bolt';
     this.st = 0;
@@ -113,6 +116,7 @@ export class Cultist {
     });
   }
   startChant() {
+    if (this.scene.attackTokens?.() >= this.scene.maxTokens) return false;
     if (!this.alive || !READY.has(this.state) || casterBusy(this.scene, this)) return false;
     this.state = 'chant';
     this.st = 0;
@@ -132,7 +136,7 @@ export class Cultist {
   startShove() {
     if (!this.alive || this.shoveCool > 0 || !READY.has(this.state)) return false;
     const R = this.target;
-    if (!R) return false;
+    if (!R || R.grabbedBy || R.alive === false || ['down', 'getup'].includes(R.state)) return false;
     const dir = Math.sign(R.x - this.x) || this.facing || 1;
     this.facing = dir;
     this.state = 'shove';
@@ -148,8 +152,7 @@ export class Cultist {
     if (this.hp <= 0) { this.defeat(from); return true; }
     if (this.state === 'chant') {
       this.chanted = false;
-      if (h.kind === 'heavy' || h.down) this.knockdown(from);
-      else { this.state = 'dazed'; this.st = 0; }
+      this.state = 'dazed'; this.st = 0;
       return true;
     }
     if (h.kind === 'heavy' || h.down || ++this.hitsTaken >= CULTIST.poise) { this.knockdown(from); return true; }
@@ -181,7 +184,8 @@ export class Cultist {
     this.x += Math.sign(want - this.x) * Math.min(Math.abs(want - this.x), CULTIST.speed * dt);
   }
   update(dt) {
-    if (this.gone) return;
+    if (this.gone || !Number.isFinite(dt) || dt <= 0 || this.scene.paused || this.scene.cutscene) return;
+    dt = Math.min(dt, 60);
     this.shoveCool = Math.max(0, this.shoveCool - dt);
     this.boltCool = Math.max(0, this.boltCool - dt);
     switch (this.state) {

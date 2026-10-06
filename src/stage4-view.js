@@ -1,6 +1,7 @@
 // Shadar Logoth view. Art is painted at boot; this places it and keeps the fog readable.
 import { VW, VH, LANE_TOP, WORLD_W } from './config.js';
 import { paintStage4Art } from './stage4-art.js';
+const EMPTY = [];
 
 export const LAYOUT = Object.freeze({
   moonKeys: Object.freeze([{ x: 0, ambient: 0x2a3348 }, { x: 2000, ambient: 0x1e2c44 }, { x: 3900, ambient: 0x121828 }]),
@@ -25,11 +26,13 @@ export function moonAmbient(camX, keys = LAYOUT.moonKeys) {
 
 export function createStage4View(scene) {
   const pools = { tip: [], seg: [], vent: [], wall: [], shaft: [], tower: [], rubble: [], bolt: [], label: [] };
+  const poolList = Object.values(pools), specs = [];
   const live = new Set();
   const texts = new Map();
   function take(kind, key) {
     const pool = pools[kind];
-    let s = pool.find(o => !o._on);
+    let s;
+    for (const o of pool) if (!o._on) { s = o; break; }
     if (!s) {
       s = scene.add.image(0, 0, key);
       s.setDepth?.(1200);
@@ -46,6 +49,21 @@ export function createStage4View(scene) {
       texts.set(text, t);
     }
     t.setPosition?.(x, y); t._on = true;
+  }
+  function placeWall(x, y, flip, now) {
+    const s = take('wall', 's4wall');
+    s.setPosition?.(x, y);
+    s.setOrigin?.(0.5, 0.86);
+    s.setDisplaySize?.(90, 560);
+    s.setAlpha?.(0.78);
+    s.setFrame?.((now * 3 | 0) % 2);
+    s.setFlipX?.(!!flip);
+    s.setBlendMode?.('ADD');
+    s.setDepth?.(860);
+  }
+  function hasX(list, x) {
+    for (const item of list) if (Math.abs(item.x - x) < 1) return true;
+    return false;
   }
   return {
     buildBackdrop() {
@@ -81,23 +99,29 @@ export function createStage4View(scene) {
       this.shaftLights = this.shaftLights || [];
     },
     budget(cam, on) {
-      const specs = (this.shaftSpecs || []).filter(m => m.x > cam - 80 && m.x < cam + VW + 80).slice(0, 2);
-      for (const L of this.shaftLights.slice()) {
-        if (!specs.some(m => Math.abs(m.x - L.x) < 1)) {
+      specs.length = 0;
+      for (const m of this.shaftSpecs || EMPTY) {
+        if (m.x > cam - 80 && m.x < cam + VW + 80) specs.push(m);
+        if (specs.length === 2) break;
+      }
+      for (let i = this.shaftLights.length - 1; i >= 0; i--) {
+        const L = this.shaftLights[i];
+        if (!hasX(specs, L.x)) {
           scene.lights?.removeLight?.(L);
           this.shaftLights.splice(this.shaftLights.indexOf(L), 1);
         }
       }
       for (const m of specs) {
-        if (this.shaftLights.some(L => Math.abs(L.x - m.x) < 1)) continue;
+        if (hasX(this.shaftLights, m.x)) continue;
         const L = scene.lights?.addLight?.(m.x, m.y - 80, m.r * 3, 0xfff2b0, on ? 1.15 : 0, 70);
         if (L) this.shaftLights.push(L);
       }
+      for (const L of this.shaftLights) L.intensity = on ? 1.15 : 0;
     },
     sync(kit) {
       const now = (scene.time?.now || 0) / 1000;
       const thin = (scene.fx?.quality || 0) >= 2;
-      for (let i = 0; i < (this.banks || []).length; i++) {
+      for (let i = 0; i < (this.banks || EMPTY).length; i++) {
         const b = this.banks[i];
         b.x = 160 + i * 620 + Math.sin(now * 0.28 + i) * 34;
         b.setVisible?.(!thin || i % 2 === 0);
@@ -119,7 +143,7 @@ export function createStage4View(scene) {
         const q = thin ? 5 : 8;
         const pulse = 1 + Math.sin(now * 10) * 0.16;
         for (const t of fog.tendrils) {
-          const segs = t.segments || [];
+          const segs = t.segments || EMPTY;
           const n = Math.min(q, segs.length);
           for (let i = 0; i < n; i++) {
             const p = segs[Math.floor(i * (segs.length - 1) / Math.max(1, n - 1))];
@@ -134,7 +158,7 @@ export function createStage4View(scene) {
           }
         }
       }
-      for (const m of kit.shafts || []) {
+      for (const m of kit.shafts || EMPTY) {
         const s = take('shaft', 's4shaft');
         s.setOrigin?.(0.5, 1);
         s.setPosition?.(m.x, m.y + 30);
@@ -143,7 +167,7 @@ export function createStage4View(scene) {
         s.setBlendMode?.('ADD');
         s.setDepth?.(-8);
       }
-      for (const tw of kit.towers?.towers || []) {
+      for (const tw of kit.towers?.towers || EMPTY) {
         const s = take('tower', 's4tower');
         s.setOrigin?.(0.5, 1);
         s.setPosition?.(tw.x, tw.harmless ? 430 : (tw.y || 640) + 6);
@@ -152,31 +176,20 @@ export function createStage4View(scene) {
         s.setRotation?.(tw.harmless ? 0 : Math.min(0.4, (tw.t || 0) * 0.22));
         s.setDepth?.(980);
       }
-      for (const r of kit.towers?.rubble || []) {
+      for (const r of kit.towers?.rubble || EMPTY) {
         const s = take('rubble', 's4rubble');
         s.setOrigin?.(0.5, 0.8);
         s.setPosition?.(r.x, r.y);
         s.setDepth?.(1000 + r.y);
       }
-      const placeWall = (x, y, flip) => {
-        const s = take('wall', 's4wall');
-        s.setPosition?.(x, y);
-        s.setOrigin?.(0.5, 0.86);
-        s.setDisplaySize?.(90, 560);
-        s.setAlpha?.(0.78);
-        s.setFrame?.((now * 3 | 0) % 2);
-        s.setFlipX?.(!!flip);
-        s.setBlendMode?.('ADD');
-        s.setDepth?.(860);
-      };
       const wall = kit.towers?.zoneWall;
-      if (wall) placeWall(wall.x, 640, false);
+      if (wall) placeWall(wall.x, 640, false, now);
       const arena = kit.arena;
       if (arena?.active) {
-        placeWall(arena.left, 650, false);
-        placeWall(arena.right, 650, true);
+        placeWall(arena.left, 650, false, now);
+        placeWall(arena.right, 650, true, now);
       }
-      for (const bolt of scene.fogBolts || []) {
+      for (const bolt of scene.fogBolts || EMPTY) {
         for (let i = 2; i >= 0; i--) {
           const s = take('bolt', 's4bolt');
           s.setPosition?.(bolt.x - (bolt.vx || 0) * 0.04 * i, bolt.y);
@@ -189,7 +202,7 @@ export function createStage4View(scene) {
       const g = this.marks;
       g?.clear?.();
       if (g?.fillStyle) {
-        for (const tw of kit.towers?.towers || []) {
+        for (const tw of kit.towers?.towers || EMPTY) {
           if (tw.phase !== 'tell' || tw.harmless) continue;
           g.fillStyle(0x000000, 0.4);
           g.fillEllipse?.(tw.x, (tw.y || 640) + 4, 78, 16);
@@ -216,7 +229,7 @@ export function createStage4View(scene) {
         g.lineStyle(2, 0xf0d878, 0.8);
         g.strokeCircle?.(boss.x, boss.y - 170, 46);
       }
-      for (const pool of Object.values(pools)) for (const s of pool) if (!s._on && s.setVisible) s.setVisible(false);
+      for (const pool of poolList) for (const s of pool) if (!s._on && s.setVisible) s.setVisible(false);
       for (const t of texts.values()) if (!t._on) t.setVisible?.(false); else t.setVisible?.(true);
       for (const t of texts.values()) t._on = false;
     },

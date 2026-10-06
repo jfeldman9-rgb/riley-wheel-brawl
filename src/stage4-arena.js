@@ -1,4 +1,5 @@
 // Phase-3 Mashadar walls. Width never drops under 640, even on a huge dt. No Phaser.
+import { stage4Delta } from './stage4-time.js';
 
 export function createArena(opts = {}) {
   const startL = opts.left ?? 3920, startR = opts.right ?? 5200, minW = 640, speed = 40;
@@ -10,8 +11,9 @@ export function createArena(opts = {}) {
     get active() { return !dead; },
     get swoop() { return swoop; },
     step(dt, world = {}) {
-      if (dead) return;
-      const stepDt = Math.max(0, dt || 0);
+      if (dead || world.paused || world.story) return;
+      const stepDt = stage4Delta(dt);
+      if (!stepDt) return;
       if (!world.holdWalls) {
         const move = speed * stepDt;
         if (pauseL <= 0 && right - (left + move) >= minW) left += move;
@@ -27,8 +29,8 @@ export function createArena(opts = {}) {
       const R = world.riley;
       if (R && !world.story && !world.paused) {
         const dmg = 3 * stepDt / 0.5;
-        if (R.x < left) { R.hp -= dmg; R.x += 200 * stepDt; }
-        else if (R.x > right) { R.hp -= dmg; R.x -= 200 * stepDt; }
+        if (R.x < left) { R.grabbedBy?.releaseHold?.('break'); R.hp -= dmg; R.x += 200 * stepDt; }
+        else if (R.x > right) { R.grabbedBy?.releaseHold?.('break'); R.hp -= dmg; R.x -= 200 * stepDt; }
       }
       if (!swoop && (acc -= stepDt) <= 0) {
         acc = world.holdWalls ? 6.15 : 8;

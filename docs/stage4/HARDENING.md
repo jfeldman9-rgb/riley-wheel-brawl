@@ -23,3 +23,11 @@ With no bot, Riley is placed on the first street trigger and left alone for 120 
 ## What these sweeps do not claim
 
 They do not measure GPU frame time, audio output, or a physical gamepad. Lights are logical handles. A Stage 2 fingerprint file is not in this workspace; Stage 2 is checked by its existing tests in the full `node --test` run.
+
+## Hardening cycle (Codex Sol)
+
+Fixed the software-WebGL governor crash and unlit ambient, kiss ownership and synchronous exits, airborne/landing eligibility, exclusive caster tokens, actor strike/death routing, fog fractional-frame timing and freezes, lethal fog impulses, zone-clear teardown, tower band collision and bot avoidance, croon light checks and loop exits, partial texture reuse, view scratch allocations, and transient light budgeting. Tuned combat and hazard values are unchanged. Stage 4 hooks are restored on shutdown and stage switches.
+
+Added 92 regression tests in new files; all pre-existing tests and helpers remain byte-identical. Stage 1 combat payload diff and Stage 2 fingerprint cmp are empty; both campaigns remain 9/9. All size caps and the audit pass. The full suite retains only the expected Stage 1 source hash mismatch and eight subprocess EPERM failures reproduced before editing. Browser rendering and iPad verification remain the owner's checks.
+
+Open finding: a facing attack can counter the kiss lunge repeatedly across substeps, and the actor promotes attack windup to a counter frame. Tested one-hit exits regressed the required campaign results and were backed out to preserve the no-tuning and 9/9 guardrails. This remains unfixed and needs a separate follow-up; these results do not claim that counter path is hardened.

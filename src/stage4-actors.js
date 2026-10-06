@@ -1,8 +1,12 @@
 // Scene actors for the pure Cultist and Draghkar cores. Sprites are optional.
 import { LANE_TOP, LANE_BOT, clamp } from './config.js';
 import { Cultist } from './cultists.js';
-import { Draghkar } from './draghkar.js';
+import { Draghkar, DRAGHKAR } from './draghkar.js';
 import { cultFrame, dragFrame } from './stage4-art-cast.js';
+import { stage4Delta } from './stage4-time.js';
+import { lightNear } from './myrddraal.js';
+import { croon } from './stage4-voice.js';
+import { beginDraghkarStrike, finishDraghkarStrike, finishDraghkarKiss } from './draghkar-impact.js';
 
 const ATK = new Set(['combo1', 'combo2', 'combo3', 'back', 'runkick', 'airkick', 'knee']);
 
@@ -37,6 +41,8 @@ function paint(e, frameOf, scale) {
   e.shadow?.setAlpha?.(ash ? 0 : 0.55);
 }
 function slide(e, dt, freeX) {
+  dt = stage4Delta(dt);
+  if (!dt || e.scene.paused || e.scene.cutscene) return;
   if (e.vx) { e.x += e.vx * dt; e.vx *= Math.pow(0.004, dt); if (Math.abs(e.vx) < 6) e.vx = 0; }
   e.y = clamp(e.y, LANE_TOP, LANE_BOT);
   if (!freeX && e.scene.bounds) e.x = clamp(e.x, e.scene.bounds.l + 40, e.scene.bounds.r - 40);
@@ -58,7 +64,7 @@ export class CultistActor extends Cultist {
   }
   physics(dt) { slide(this, dt, this.state === 'flee'); }
   sync() { paint(this, cultFrame, 1.2); }
-  destroy() { this.sprite?.destroy?.(); this.shadow?.destroy?.(); this.gone = true; }
+  destroy() { this.sprite?.destroy?.(); this.shadow?.destroy?.(); this.alive = false; this.state = 'gone'; this.gone = true; }
   die() { this.alive = false; this.gone = true; this.state = 'ko'; }
 }
 
@@ -66,6 +72,7 @@ export class DraghkarActor extends Draghkar {
   constructor(scene, x, y) {
     const b = scene.bounds || { l: 0, r: 1280 };
     super(scene, x, y, {
+      lightNear,
       left: b.l - 80, right: b.r + 80, midX: (b.l + b.r) / 2,
       bandY: clamp(scene.riley?.y || 630, LANE_TOP, LANE_BOT),
       onBossDefeat(boss) {
@@ -84,6 +91,10 @@ export class DraghkarActor extends Draghkar {
   get mashNeed() { return 8; }
   get canBeHit() { return this.alive && !['ash', 'defeated', 'perch'].includes(this.state); }
   face(dir) { aim(this, dir); }
+  startKiss() {
+    if (this.scene.attackTokens?.() > 0) return false;
+    return super.startKiss();
+  }
   startSwoop(band, dir) {
     const b = this.scene.bounds || { l: 0, r: 1280 };
     this.deps.left = b.l - 80; this.deps.right = b.r + 80; this.deps.midX = (b.l + b.r) / 2;
@@ -101,6 +112,7 @@ export class DraghkarActor extends Draghkar {
   mash() {
     const ok = super.mash();
     if (ok) {
+      if (this.target) this.target.lastGrabber = this;
       this.target?.leaveGrabbed?.('escape');
       if (this.scene.kit) this.scene.kit.stats.kissEscapes++;
     }
@@ -108,6 +120,7 @@ export class DraghkarActor extends Draghkar {
   }
   cancelCroon() {
     const ok = super.cancelCroon();
+    if (ok) croon(false);
     if (ok && this.scene.kit) this.scene.kit.stats.croonCancels++;
     return ok;
   }
@@ -115,7 +128,22 @@ export class DraghkarActor extends Draghkar {
     if (this.state === 'kiss_hold') this.takeHit({ hazard: true, dmg: 0 });
     else this.releaseGrab();
   }
+  substep(dt) {
+    const R = this.target;
+    if (this.state === 'kiss_lunge' && R && R.z > 0) {
+      this.st += dt; this.x += this.lungeDir * DRAGHKAR.kissSpeed * dt;
+      if (this.st >= DRAGHKAR.kissMaxDuration) { this.state = 'grounded'; this.st = 0; this.setKissCooldown(); }
+      return;
+    }
+    const strike = beginDraghkarStrike(this);
+    const kissing = this.state === 'kiss_hold';
+    super.substep(dt);
+    finishDraghkarStrike(this, strike);
+    if (kissing) finishDraghkarKiss(this);
+  }
   update(dt) {
+    dt = stage4Delta(dt);
+    if (!dt || this.scene.paused || this.scene.cutscene) return;
     const powers = this.scene.powers;
     this.scene.fireShieldActive = !!(powers && powers.active && powers.active('fireshield'));
     if (this.entering) return;
@@ -130,6 +158,7 @@ export class DraghkarActor extends Draghkar {
   }
   physics(dt) { slide(this, dt, this.state === 'swoop_tell' || this.state === 'swoop_dive'); }
   sync() { paint(this, dragFrame, 1.62); }
+  dispose() { croon(false); super.dispose(); }
   destroy() { this.sprite?.destroy?.(); this.shadow?.destroy?.(); this.dispose(); }
   die() { if (this.alive) this.defeat(); this.gone = true; }
 }
