@@ -38,7 +38,7 @@ function titleHUD() {
   return { hud, pressed, tap };
 }
 
-test('flag on: title select clamps at 3 and reports [2, 3, 2] for right, right, right, left', () => withSeed(1, () => {
+test('title select offers stages 1–4 and clamps at 4; s3=1 does not change that', () => withSeed(1, () => {
   q.set('s3', '1');
   try {
     const h = stage1Simulation({ mode: '' }), s = h.s;
@@ -48,10 +48,12 @@ test('flag on: title select clamps at 3 and reports [2, 3, 2] for right, right, 
       s.selectStage(1);
       assert.equal(s.titleSel, 3);
       s.selectStage(1);
-      assert.equal(s.titleSel, 3);
+      assert.equal(s.titleSel, 4);
+      s.selectStage(1);
+      assert.equal(s.titleSel, 4);
       s.selectStage(-1);
-      assert.equal(s.titleSel, 2);
-      assert.deepEqual(h.observations.hud.filter(e => e.method === 'titleSelect').map(e => e.args[0]), [2, 3, 2]);
+      assert.equal(s.titleSel, 3);
+      assert.deepEqual(h.observations.hud.filter(e => e.method === 'titleSelect').map(e => e.args[0]), [2, 3, 4, 3]);
       assert.equal(s.music.state, 'title');
     } finally {
       h.destroy();
@@ -61,8 +63,9 @@ test('flag on: title select clamps at 3 and reports [2, 3, 2] for right, right, 
   }
 }));
 
-test('flag off: title select still clamps at 2 and never names Stage 3', () => withSeed(1, () => {
+test('no flag: title select reaches Stage 3 and Stage 4 and dims the right arrow at 4', () => withSeed(1, () => {
   assert.equal(q.get('s3'), null);
+  assert.equal(q.get('s4'), null);
   const h = stage1Simulation({ mode: '' }), s = h.s;
   try {
     s.selectStage(-1);
@@ -70,14 +73,16 @@ test('flag off: title select still clamps at 2 and never names Stage 3', () => w
     s.selectStage(1);
     assert.equal(s.titleSel, 2);
     s.selectStage(1);
-    assert.equal(s.titleSel, 2);
-    s.selectStage(-1);
-    assert.equal(s.titleSel, 1);
+    assert.equal(s.titleSel, 3);
     s.selectStage(1);
-    assert.equal(s.titleSel, 2);
+    assert.equal(s.titleSel, 4);
+    s.selectStage(1);
+    assert.equal(s.titleSel, 4);
+    s.selectStage(-1);
+    assert.equal(s.titleSel, 3);
     const selectCalls = h.observations.hud.filter(e => e.method === 'titleSelect').map(e => e.args[0]);
-    assert.deepEqual(selectCalls, [2, 1, 2]);
-    assert.ok(!selectCalls.includes(3), 'no titleSelect(3) call');
+    assert.deepEqual(selectCalls, [2, 3, 4, 3]);
+    assert.ok(selectCalls.includes(3) && selectCalls.includes(4));
   } finally {
     h.destroy();
   }
@@ -85,56 +90,64 @@ test('flag off: title select still clamps at 2 and never names Stage 3', () => w
   const { hud } = titleHUD();
   hud.stage.selectStage(1);
   assert.equal(hud.stage.titleSel, 2);
-  assert.equal(hud.titleArrowR.alpha, 0.25);
+  assert.equal(hud.titleArrowR.alpha, 1);
   assert.equal(hud.titleStageT.text, STAGE_NAMES[2]);
-  assert.notEqual(hud.titleStageT.text, STAGE_NAMES[3]);
   hud.stage.selectStage(1);
-  assert.equal(hud.stage.titleSel, 2);
+  assert.equal(hud.stage.titleSel, 3);
+  assert.equal(hud.titleStageT.text, STAGE_NAMES[3]);
+  assert.equal(hud.titleArrowR.alpha, 1);
+  assert.equal(hud.titleArrowL.alpha, 1);
+  hud.stage.selectStage(1);
+  assert.equal(hud.stage.titleSel, 4);
+  assert.equal(hud.titleStageT.text, STAGE_NAMES[4]);
+  assert.equal(hud.titleArrowR.alpha, 0.25);
+  assert.equal(hud.titleArrowL.alpha, 1);
+  hud.stage.selectStage(1);
+  assert.equal(hud.stage.titleSel, 4);
   assert.equal(hud.titleArrowR.alpha, 0.25);
   assert.notEqual(hud.titleStageT.text, STAGE_NAMES[3]);
 }));
 
-test('flag on: the 120×100 arrow targets select STAGE 3 · CAEMLYN and dim the right arrow at 3', () => {
-  q.set('s3', '1');
-  try {
-    const { hud, pressed, tap } = titleHUD();
-    const arrow = hud.titleArrowR;
-    assert.equal(arrow.input.hitArea.width, 120);
-    assert.equal(arrow.input.hitArea.height, 100);
+test('the 120×100 arrow targets reach Stage 4 and dim the right arrow there', () => {
+  const { hud, pressed, tap } = titleHUD();
+  const arrow = hud.titleArrowR;
+  assert.equal(arrow.input.hitArea.width, 120);
+  assert.equal(arrow.input.hitArea.height, 100);
 
-    tap(arrow.x, arrow.y);
-    assert.equal(hud.stage.titleSel, 2);
-    assert.equal(hud.titleArrowR.alpha, 1);
+  tap(arrow.x, arrow.y);
+  assert.equal(hud.stage.titleSel, 2);
+  assert.equal(hud.titleArrowR.alpha, 1);
 
-    for (const [dx, dy] of [[-59, -49], [59, 49], [-59, 49], [59, -49], [0, 0]]) {
-      assert.deepEqual(tap(arrow.x + dx, arrow.y + dy), [arrow], 'expanded touch target catches the tap');
-      assert.equal(hud.stage.titleSel, 3);
-      assert.equal(hud.titleStageT.text, STAGE_NAMES[3]);
-      assert.equal(hud.titleArrowR.alpha, 0.25);
-      assert.equal(hud.titleArrowL.alpha, 1);
-      assert.equal(pressed.length, 0, 'stage selection never emits Start, even on repeated/clamped taps');
-    }
-  } finally {
-    q.delete('s3');
+  tap(arrow.x, arrow.y);
+  assert.equal(hud.stage.titleSel, 3);
+  assert.equal(hud.titleStageT.text, STAGE_NAMES[3]);
+  assert.equal(hud.titleArrowR.alpha, 1);
+
+  for (const [dx, dy] of [[-59, -49], [59, 49], [-59, 49], [59, -49], [0, 0]]) {
+    assert.deepEqual(tap(arrow.x + dx, arrow.y + dy), [arrow], 'expanded touch target catches the tap');
+    assert.equal(pressed.length, 0, 'stage selection never emits Start, even on repeated/clamped taps');
   }
+  assert.equal(hud.stage.titleSel, 4);
+  assert.equal(hud.titleStageT.text, STAGE_NAMES[4]);
+  assert.equal(hud.titleArrowR.alpha, 0.25);
+  assert.equal(hud.titleArrowL.alpha, 1);
+  tap(arrow.x, arrow.y);
+  assert.equal(hud.stage.titleSel, 4);
+  assert.equal(pressed.length, 0);
 });
 
 test('starting with Stage 3 selected restarts into { stage: 3, autostart: true } and loads Caemlyn', () => withSeed(1, () => {
-  q.set('s3', '1');
+  assert.equal(q.get('s3'), null);
+  const h = stage1Simulation({ mode: '' }), s = h.s;
   try {
-    const h = stage1Simulation({ mode: '' }), s = h.s;
-    try {
-      s.selectStage(1);
-      s.selectStage(1);
-      assert.equal(s.titleSel, 3);
-      h.step();
-      assert.deepEqual(h.observations.restartData, [{ stage: 3, autostart: true }]);
-      assert.equal(STAGES[3].loading, 'Loading Caemlyn…');
-    } finally {
-      h.destroy();
-    }
+    s.selectStage(1);
+    s.selectStage(1);
+    assert.equal(s.titleSel, 3);
+    h.step();
+    assert.deepEqual(h.observations.restartData, [{ stage: 3, autostart: true }]);
+    assert.equal(STAGES[3].loading, 'Loading Caemlyn…');
   } finally {
-    q.delete('s3');
+    h.destroy();
   }
 }));
 
@@ -164,7 +177,14 @@ test('?stage=3&s3=1 queues only Caemlyn art, releases Stage 2\'s own art and bui
   assert.equal(r.stageNo, 3);
 
   const r2 = probe3('?stage=3');
-  assert.equal(r2.stageNo, 1);
+  assert.equal(r2.stageNo, 3);
+  assert.equal(r2.zones, 4);
+  assert.equal(r2.boss, true);
+  for (const k of ['far3_day', 'mid3a', 'cutthroat.A']) assert.ok(r2.queued.includes(k), `no-flag queued includes ${k}`);
+  const bare = probe3('?s3=1');
+  assert.equal(bare.stageNo, 1, 'a bare s3 flag does not leave Stage 1');
+  const bare4 = probe3('?s4=1');
+  assert.equal(bare4.stageNo, 1, 'a bare s4 flag does not leave Stage 1');
 });
 
 test('the Stage 3 story beat plays six lines on three panels; Attack advances and Start skips', () => withSeed(1, () => {
@@ -235,57 +255,80 @@ test('story=0 skips the Stage 3 story beat entirely', () => withSeed(1, () => {
   }
 }));
 
-test('flag on, clearing Stage 2 restarts into Stage 3; flag off it still returns to Stage 1', () => withSeed(1, () => {
-  // Flag on:
-  q.set('s3', '1');
-  q.set('story', '0');
-  try {
-    const h = stage1Simulation({ stage: 2 }), s = h.s;
+test('clearing Stage 2 restarts into Stage 3 with or without s3=1', () => withSeed(1, () => {
+  for (const flag of [true, false]) {
+    if (flag) q.set('s3', '1'); else q.delete('s3');
+    q.set('story', '0');
     try {
-      while (!s.started) h.step();
-      s.ended = s.clearShown = true;
-      const promptOn = clearPrompt(s.stageNo, false, s.stageDef.next(q)?.stage);
-      assert.ok(promptOn.includes('CONTINUE TO STAGE 3'), `promptOn: ${promptOn}`);
-      s.onPress('attack');
-      assert.deepEqual(h.observations.restartData.at(-1), { stage: 3, fromStage2: true, autostart: true });
+      const h = stage1Simulation({ stage: 2 }), s = h.s;
+      try {
+        while (!s.started) h.step();
+        s.ended = s.clearShown = true;
+        const prompt = clearPrompt(s.stageNo, false, s.stageDef.next(q)?.stage);
+        assert.ok(prompt.includes('CONTINUE TO STAGE 3'), `prompt: ${prompt}`);
+        s.onPress('attack');
+        assert.deepEqual(h.observations.restartData.at(-1), { stage: 3, fromStage2: true, autostart: true });
+      } finally {
+        h.destroy();
+      }
     } finally {
-      h.destroy();
+      q.delete('s3');
+      q.delete('story');
     }
-  } finally {
-    q.delete('s3');
-    q.delete('story');
-  }
-
-  // Flag off:
-  q.delete('s3');
-  q.set('story', '0');
-  try {
-    const h = stage1Simulation({ stage: 2 }), s = h.s;
-    try {
-      while (!s.started) h.step();
-      s.ended = s.clearShown = true;
-      const promptOff = clearPrompt(s.stageNo, false, s.stageDef.next(q)?.stage);
-      assert.ok(promptOff.includes('RETURN TO THE TITLE'), `promptOff: ${promptOff}`);
-      s.onPress('attack');
-      assert.deepEqual(h.observations.restartData.at(-1), { stage: 1 });
-    } finally {
-      h.destroy();
-    }
-  } finally {
-    q.delete('story');
   }
 }));
 
-test('clearing Stage 3 returns to the title with { stage: 1 }', () => withSeed(1, () => {
-  const h = stage3Simulation(), s = h.s;
+test('clearing Stage 3 continues to Stage 4 with or without s4=1', () => withSeed(1, () => {
+  for (const flag of [false, true]) {
+    if (flag) q.set('s4', '1'); else q.delete('s4');
+    const h = stage3Simulation(), s = h.s;
+    try {
+      s.ended = s.clearShown = true;
+      const prompt = clearPrompt(s.stageNo, false, s.stageDef.next(q)?.stage);
+      assert.ok(prompt.includes('CONTINUE TO STAGE 4'), `prompt: ${prompt}`);
+      s.onPress('attack');
+      assert.deepEqual(h.observations.restartData.at(-1), { stage: 4, fromStage3: true, autostart: true });
+    } finally {
+      h.destroy();
+      q.delete('s4');
+    }
+  }
+}));
+
+test('no-flag campaign goes Stage 1 → 2 → 3 → 4, then Stage 4 returns to the title', () => withSeed(1, () => {
+  assert.equal(q.get('s3'), null);
+  assert.equal(q.get('s4'), null);
+  q.set('story', '0');
+  const want = [
+    { from: 1, restart: { stage: 2, fromStage1: true, autostart: true }, prompt: 'CONTINUE TO STAGE 2' },
+    { from: 2, restart: { stage: 3, fromStage2: true, autostart: true }, prompt: 'CONTINUE TO STAGE 3' },
+    { from: 3, restart: { stage: 4, fromStage3: true, autostart: true }, prompt: 'CONTINUE TO STAGE 4' },
+    { from: 4, restart: { stage: 1 }, prompt: 'RETURN TO THE TITLE' },
+  ];
   try {
-    s.ended = s.clearShown = true;
-    const prompt = clearPrompt(s.stageNo, false, s.stageDef.next(q)?.stage);
-    assert.ok(prompt.includes('RETURN TO THE TITLE'), `prompt: ${prompt}`);
-    s.onPress('attack');
-    assert.deepEqual(h.observations.restartData.at(-1), { stage: 1 });
+    const h = stage1Simulation({ mode: '1', stage: 1, followRestart: true }), s = h.s;
+    try {
+      for (const step of want) {
+        for (let i = 0; i < 120 && !s.started; i++) h.step();
+        assert.equal(s.stageNo, step.from, `arrived at stage ${step.from}`);
+        assert.equal(s.started, true);
+        assert.equal(q.get('s3'), null);
+        assert.equal(q.get('s4'), null);
+        s.ended = true;
+        s.clearShown = true;
+        const prompt = clearPrompt(s.stageNo, false, s.stageDef.next(q)?.stage);
+        assert.ok(prompt.includes(step.prompt), prompt);
+        s.onPress('attack');
+        assert.deepEqual(h.observations.restartData.at(-1), step.restart);
+        h.step();
+      }
+      assert.equal(s.stageNo, 1);
+      assert.equal(s.kit, null);
+    } finally {
+      h.destroy();
+    }
   } finally {
-    h.destroy();
+    q.delete('story');
   }
 }));
 

@@ -5,22 +5,19 @@ import { LANE_TOP, LANE_BOT } from './config.js';
 import { STAGE4, STAGE4_CHARS, STAGE4_TEXTURES } from './stage4-def.js';
 export const STAGE_COUNT = 2;
 
-/** Stage 1 and 2 always; stage 4 iff s4=1; s4=1 implies stage 3. */
+/** Stages 1–4 are always playable. ?s3=1 and ?s4=1 stay valid and change nothing. */
 export function stageEnabled(n, q) {
-  if (n === 1 || n === 2) return true;
-  const s4 = !!(q && q.get && q.get('s4') === '1');
-  if (n === 4) return s4;
-  if (n === 3) return s4 || !!(q && q.get && q.get('s3') === '1');
-  return false;
+  void q;
+  return n === 1 || n === 2 || n === 3 || n === 4;
 }
 
-/** 4 if s4=1, else 3 if s3=1, else 2. */
+/** Title select offers every shipped stage. */
 export function maxStage(q) {
   if (stageEnabled(4, q)) return 4;
   return stageEnabled(3, q) ? 3 : 2;
 }
 
-/** ?stage=2, ?stage=3&s3=1, or ?stage=4&s4=1; else Stage 1 */
+/** ?stage=2, ?stage=3, or ?stage=4; anything else is Stage 1. */
 export function stageFromQuery(q) {
   const n = q && q.get ? +q.get('stage') : 0;
   if (n === 4 && stageEnabled(4, q)) return 4;

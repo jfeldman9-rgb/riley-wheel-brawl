@@ -28,7 +28,7 @@ const p = Object.assign(new Stage1(), {
         if (!/\.A$/.test(k)) return undefined;
         const base = k.slice(0, -2);
         if (STAGE3_ATLASES.includes(base)) return undefined;
-        return meta(base);
+        try { return meta(base); } catch { return undefined; }
       }
     }
   },

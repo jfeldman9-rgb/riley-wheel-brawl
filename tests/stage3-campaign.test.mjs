@@ -92,7 +92,7 @@ for (const seed of FULL_STAGE_SEEDS) {
 
       assert.equal(h.observations.hud.filter(e => e.method === 'stageClear').length, 1, result);
       s.inp.press('attack');
-      assert.deepEqual(h.observations.restartData, [{ stage: 1 }], result);
+      assert.deepEqual(h.observations.restartData, [{ stage: 4, fromStage3: true, autostart: true }], result);
     } finally {
       h.destroy();
     }
