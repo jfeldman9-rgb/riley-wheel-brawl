@@ -21,16 +21,19 @@ function roundToStep(value) {
 }
 
 /** Frozen-ready map of anim key → originX. `keys` defaults to PIVOT_KEYS. */
-export function generatePivots(keys = PIVOT_KEYS) {
+export function generatePivots(keys = PIVOT_KEYS, read = readJSON) {
   const map = {};
   const counts = {};
   for (const key of keys) {
-    const meta = readJSON(`assets/chars/${key}.anims.json`);
-    const pages = meta.pages.map((page) => readJSON(`assets/chars/${page}.json`));
+    const meta = read(`assets/chars/${key}.anims.json`);
+    const pages = meta.pages.map((page) => read(`assets/chars/${page}.json`));
     for (const anim of meta.anims) {
+      if (!anim.frames?.length) throw new Error(`${anim.name}: no pivot frames`);
       const ratios = anim.frames.map((frame, i) => {
-        const data = pages[anim.pages[i]].frames[frame];
-        const trim = data.spriteSourceSize;
+        const data = pages[anim.pages?.[i]]?.frames?.[frame];
+        const trim = data?.spriteSourceSize, width = data?.sourceSize?.w;
+        if (!trim || !Number.isFinite(trim.x) || !Number.isFinite(trim.w) || trim.w < 0 || !Number.isFinite(width) || width <= 0)
+          throw new Error(`${anim.name}: invalid pivot geometry for frame ${frame} (page ${anim.pages?.[i]})`);
         return (trim.x + trim.w / 2) / data.sourceSize.w;
       });
       map[anim.name] = Object.prototype.hasOwnProperty.call(OVERRIDES, anim.name)
