@@ -119,6 +119,7 @@ export class Stage1 extends Phaser.Scene {
     this.heroLight = this.lights.addLight(0, 0, 440, 0xd8e2ff, 1.0, 150);
     this.heroLightX = this.riley.x + this.riley.facing * 30;
     this.heroLight.x = this.heroLightX;
+    this.heroLight.y = this.riley.y - 300 - this.riley.z;
     if (this.kit) for (const [x, y] of STAGE2.crates) this.addBarrel(x, y, 'crate', 'planks');
     else for (const [x, y] of BARRELS) this.addBarrel(x, y);
     if (!this.kit) this.snowFront = this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: -20, lifespan: 6000, speedY: { min: 80, max: 130 }, speedX: { min: -50, max: -10 }, scale: { min: 0.5, max: 0.9 }, alpha: { min: 0.5, max: 0.9 }, frequency: 80 }).setDepth(5000).setScrollFactor(0);
@@ -341,7 +342,7 @@ export class Stage1 extends Phaser.Scene {
       else { this.gameOver = true; sfx.gameOver(); this.hud.gameOver(); this.music?.set('gameover'); }
     });
   }
-  continueGame() { const R = this.riley; this.gameOver = false; R.lives = 3; R.score = Math.floor(R.score / 2); R.respawn(); this.hud.hideGameOver(); this.music?.resumeFight(); }
+  continueGame() { const R = this.riley; this.gameOver = false; R.lives = 3; R.score = Math.floor(R.score / 2); R.respawn(); this.heroLightX = R.x + (Number.isFinite(R.facing) ? R.facing : 0) * 30; this.hud.hideGameOver(); this.music?.resumeFight(); }
   // ---------- combat ----------
   /** check an attack's active frame against the other team */
   resolveAttack(att, a) {
@@ -640,8 +641,8 @@ export class Stage1 extends Phaser.Scene {
       inFight: this.enemies.some(e => e.alive && !e.entering),
       context: { mode: this.bot ? 'demo' : 'manual', zone: this.zoneI + 1, wave: this.wave + 1, bossPhase: this.boss && this.boss.phase || null, godMode: this.god, timeScale: this.timeScale },
     });
-    let dt = Math.min(deltaMs, 50) / 1000;
-    const renderDt = Number.isFinite(dt) && dt >= 0 ? dt : 0;
+    let dt = Number.isFinite(deltaMs) && deltaMs >= 0 ? Math.min(deltaMs, 50) / 1000 : 0;
+    const renderDt = dt;
     if (this.bot) this.bot.update(dt);
     for (const L of this.fires) L.intensity = this.lightsOn ? L.baseI * (0.82 + 0.18 * Math.sin(time * 0.009 + L.seed) * Math.sin(time * 0.023 + L.seed * 3)) : 0;
     this.fx.update(dt);
