@@ -134,12 +134,12 @@ export class Myrddraal extends Enemy {
     if (this.entering) return;
     if (!this.introDone) return this.setState('intro', 'intro');
     const R = this.target, s = this.scene;
-    if (this.forceLungeT > 0 && R.alive) return this.startLunge();
+    if (this.forceLungeT > 0 && R.alive && s.attackTokens() < s.maxTokens) return this.startLunge();
     if (this.cool <= 0 && R.alive && R.state !== 'down') {
       if (this.pendingFear) return this.startFear();
       if (this.pendingSplit) return this.startSplit();
       if (this.nextBlink <= 0 && !this.copies.length) return this.startBlink();
-      if (this.phase === 3 && this.lungeAt <= 0) return this.startLunge();
+      if (this.phase === 3 && this.lungeAt <= 0 && s.attackTokens() < s.maxTokens) return this.startLunge();
       const adx = abs(R.x - this.x);
       if (adx >= lunge.range[0] && adx <= lunge.range[1] &&
         abs(R.y - this.y) < lunge.lane && s.attackTokens() < s.maxTokens && Math.random() < lunge.chance) {
