@@ -441,6 +441,9 @@ function loadClip(id) {
 export function preloadVoices() { Object.keys(VOICE).forEach(loadClip); }
 /** on-demand preload for EXTRA_VOICE lines (power pickups and the Twix cutscene) */
 export function preloadClips(ids) { for (const id of ids) if (Object.hasOwn(EXTRA_VOICE, id)) loadClip(id); }
+/** Drop decoded lines the next stage does not play. Shared VOICE clips stay cached. */
+export function releaseClips(ids) { if (ids) for (const id of ids) delete clips[id]; }
+export function residentClipIds() { return Object.keys(clips); }
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
 export function say(id, onCaption, interrupt = true) {
   const cap = Object.hasOwn(VOICE, id) ? VOICE[id] : Object.hasOwn(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : null;

@@ -5,7 +5,7 @@ import { FX } from './fx.js';
 import { Riley, BALEFIRE } from './riley.js';
 import { Enemy, Chieftain, TYPES } from './enemies.js';
 import { queueCharPages, makeCharAnims, patchFlippedNormals, releaseChars } from './assets.js';
-import { sfx, say, playMusic, playTrack, audioUnlocked, preloadVoices, preloadClips, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
+import { sfx, say, playMusic, playTrack, audioUnlocked, preloadVoices, preloadClips, releaseClips, unlock, toggleMusic, toggleMute, stopSceneAudio } from './audio.js';
 import { Bot } from './bot.js';
 import { Loial } from './loial.js';
 import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK, TWIX_DROP_Z, TWIX_ART_KEYS, queuePowerArt, makePowerAnims, iconKey } from './powers.js';
@@ -14,8 +14,8 @@ import { STAGES, STAGE1, stageEnabled, maxStage, stageFromQuery, resolveStage, S
 import { WHITECLOAKS } from './whitecloaks.js';
 import { DARKFRIENDS, CUTTHROAT } from './darkfriends.js';
 import { MYRDDRAAL } from './myrddraal.js';
-import { Stage2Kit, queueStage2, STORY_PANELS, STORY_SCRIPT } from './stage2.js';
-import { queueStage3, STORY3_SCRIPT, STORY3_PANELS } from './stage3.js';
+import { Stage2Kit, queueStage2, STORY_PANELS, STORY_SCRIPT, STAGE2_VOICES } from './stage2.js';
+import { queueStage3, STORY3_SCRIPT, STORY3_PANELS, STAGE3_VOICES } from './stage3.js';
 import { MusicDirector } from './music.js';
 
 export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS, ...MYRDDRAAL });
@@ -123,6 +123,12 @@ export class Stage1 extends Phaser.Scene {
       const chars = (STAGE_CHARS[from] || []).filter(k => !toChars.has(k));
       releaseChars(this, chars);
     }
+    // Stage 3 re-queues Stage 2 props that are not in its texture list. Drop them
+    // when the destination does not use them, and drop the kit's canvases on Stage 1.
+    for (const k of ['arrow', 'ribbon']) if (!toTextures.has(k) && this.textures.exists(k)) this.textures.remove(k);
+    if (toStage === 1) for (const k of ['raindrop', 'lanemark', 'guardmark', 'landing', 'ring']) if (this.textures.exists(k)) this.textures.remove(k);
+    if (toStage !== 2) releaseClips(STAGE2_VOICES);
+    if (toStage !== 3) releaseClips(STAGE3_VOICES);
   }
   create(data) {
     if (window.__rwbStartup?.failed) return;
