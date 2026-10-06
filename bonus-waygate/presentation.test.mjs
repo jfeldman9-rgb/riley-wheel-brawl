@@ -84,6 +84,14 @@ test('the Waygate scene wires those cues and layers through the stage audio modu
   assert.match(html, /presentation\.js/);
   assert.match(boot, /from\s+['"]\.\.\/src\/audio\.js['"]/);
   assert.match(boot, /from\s+['"]\.\.\/src\/music\.js['"]/);
+  assert.match(boot, /import\(\s*['"]\.\.\/src\/fx\.js['"]\s*\)/);
+  assert.match(game, /new window\.WaygateFX/);
+  assert.match(game, /setBlendMode\('ADD'\)/);
+  assert.match(game, /'ember'/);
+  assert.match(game, /fx\.boom/);
+  assert.match(game, /dmg: 14/);
+  assert.match(game, /680 \* dt/);
+  assert.match(game, /riley_cast/);
   assert.match(boot, /assets\/audio\//);
   assert.match(boot, /\.\.\/'\s*\+\s*url/);
   assert.match(game, /backdropLayers/);

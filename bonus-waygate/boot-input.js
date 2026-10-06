@@ -22,4 +22,18 @@ if (typeof document !== 'undefined' && document.getElementById && document.getEl
 if (typeof document !== 'undefined' && document.getElementById && document.getElementById('stick')) {
   root.__waygateInput = root.__waygateInput || new Input();
 }
-if (typeof root.bootWaygate === 'function') root.bootWaygate();
+
+// src/fx.js pulls src/config.js, which reads `location` at import time. Load it
+// only in the browser, and only before the scene boots, so node tests stay hermetic.
+async function startWaygate() {
+  if (typeof document !== 'undefined' && document.getElementById && document.getElementById('game')) {
+    try {
+      const fx = await import('../src/fx.js');
+      root.WaygateFX = fx.FX;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  if (typeof root.bootWaygate === 'function') root.bootWaygate();
+}
+startWaygate();

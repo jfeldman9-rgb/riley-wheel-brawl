@@ -569,6 +569,7 @@
       this.heroShadow = this.add.ellipse(120, FLOOR - 53, 118, 24, 0x000000, 0.48).setDepth(800);
       this.hero = this.add.sprite(120, FLOOR - 56, 'rileyPage0', 'riley_idle_00').setOrigin(0.5, 610 / 640).setScale(0.56).setDepth(1000 + FLOOR);
       this.hero.play('riley_idle');
+      this.installFireLook();
       this.heroData = { x: 120, y: FLOOR - 56, z: 0, vz: 0, jumpVx: 0, hp: 100, focus: 60, lives: 3, score: 0, kills: 0, trollocKills: 0, falls: 0, invuln: 0, facing: 1, action: 'idle', actionT: 0, combo: 0, comboExpire: 0, hitDone: false, attackBuffer: 0, specialBuffer: 0, onBridge: false, falling: 0, checkpoint: 120, bridgeCheckpoint: BRIDGE_SPAWN, time: 0, started: false };
     }
 
@@ -670,6 +671,7 @@
       if (this.handleMenu()) return;
       if (this.mode !== 'play') return;
 
+      if (this.fx) this.fx.update(dt);
       if (this.hitstop > 0) {
         this.hitstop = Math.max(0, this.hitstop - dt);
         this.updateEffects(dt); this.refreshHud();
@@ -841,16 +843,53 @@
       const p = this.heroData;
       p.focus -= SPECIAL_COST;
       p.action = 'special'; p.actionT = 0; p.hitDone = false;
+      // Same cast pose the stages play. The ball leaves on the release frame (~200ms, frame 2).
       this.hero.play('riley_cast', true);
+    }
+
+    installFireLook() {
+      try {
+        this.lights.enable().setAmbientColor(0xffffff);
+        if (window.WaygateFX && !this.fx) this.fx = new window.WaygateFX(this);
+      } catch (err) {
+        console.error('Waygate fire look', err);
+      }
+      this.ensureFireTextures();
+    }
+
+    // The stage FX helper paints these. Kept here only if that helper could not run.
+    ensureFireTextures() {
+      if (this.textures.exists('glow') && this.textures.exists('core') && this.textures.exists('ember')) return;
+      const radial = (key, size, stops) => {
+        if (this.textures.exists(key)) return;
+        const c = this.textures.createCanvas(key, size, size), x = c.getContext(), g = x.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+        stops.forEach(([o, col]) => g.addColorStop(o, col));
+        x.fillStyle = g; x.fillRect(0, 0, size, size); c.refresh();
+      };
+      radial('glow', 128, [[0, 'rgba(255,255,255,1)'], [0.25, 'rgba(255,220,140,.9)'], [0.6, 'rgba(255,120,30,.35)'], [1, 'rgba(255,80,0,0)']]);
+      radial('core', 64, [[0, 'rgba(255,255,240,1)'], [0.5, 'rgba(255,200,90,1)'], [1, 'rgba(255,90,10,0)']]);
+      radial('ember', 12, [[0, 'rgba(255,240,200,1)'], [0.6, 'rgba(255,140,40,.8)'], [1, 'rgba(255,60,0,0)']]);
     }
 
     spawnFireball() {
       const p = this.heroData;
+      // Same travel, hitbox, and damage as before. The drawing matches stage1's spawnFireball.
       const x = p.x + p.facing * 70;
       const y = p.y - p.z - 120;
-      const orb = this.add.ellipse(x, y, 28, 28, 0xff9a40, 0.95).setDepth(4003);
-      const glow = this.add.ellipse(x, y, 52, 52, 0xff9a40, 0.35).setDepth(4002);
-      this.fireballs.push({ x, y, gy: p.y, dir: p.facing, orb, glow, dmg: 14, t: 0 });
+      this.ensureFireTextures();
+      const core = this.add.image(x, y, 'core').setBlendMode('ADD').setScale(0.9).setDepth(4003);
+      const glow = this.add.image(x, y, 'glow').setBlendMode('ADD').setScale(1.4).setAlpha(0.8).setDepth(4003);
+      let light = null;
+      try { light = this.lights.addLight(x, y, 420, 0xff9a40, 3.0, 70); } catch (err) { light = null; }
+      const trail = this.add.particles(0, 0, 'ember', {
+        follow: core, lifespan: 480, speed: { min: 10, max: 70 },
+        scale: { start: 1.3, end: 0 }, frequency: this.fx && this.fx.quality >= 2 ? 30 : 14, blendMode: 'ADD'
+      }).setDepth(4002);
+      if (this.fx && this.fx.flash) {
+        this.fx.flash.setPosition(x, y).setVisible(true).setScale(1.2).setAlpha(0.9);
+        this.fx.flashT = 0.12;
+      }
+      this.fireballs.push({ x, y, gy: p.y, dir: p.facing, core, glow, light, trail, t: 0, dmg: 14, big: 1 });
       this.cue('fireball');
     }
 
@@ -859,8 +898,10 @@
       for (const f of this.fireballs.slice()) {
         f.t += dt;
         f.x += f.dir * 680 * dt;
-        f.orb.setPosition(f.x, f.y);
-        f.glow.setPosition(f.x, f.y);
+        const wob = Math.sin(f.t * 40) * 0.08, big = f.big || 1;
+        f.core.setPosition(f.x, f.y).setScale((0.9 + wob) * big);
+        f.glow.setPosition(f.x, f.y).setScale((1.4 + wob * 2) * big);
+        if (f.light) { f.light.x = f.x; f.light.y = f.y; f.light.intensity = 2.8 + Math.sin(f.t * 33) * 0.4; }
         let hit = null;
         for (const e of this.enemies) {
           if (e.hp > 0 && e.state !== 'dead' && Math.abs(e.x - f.x) < 60 && Math.abs(e.y - f.gy) < 42) { hit = e; break; }
@@ -871,10 +912,31 @@
         if (hit || boss || off) {
           if (hit) this.hitEnemy(hit, f.dmg, { heavy: true, launcher: true, combo: 0 });
           if (boss) this.hitBoss(f.dmg, true);
-          if (hit || boss) this.cue('boom');
-          f.orb.destroy(); f.glow.destroy();
+          if (hit || boss) {
+            if (this.fx) {
+              this.fx.impact('heavy', f.x, f.y, f.dir || 1);
+              this.fx.boom(f.x, f.y);
+            }
+            this.cue('boom');
+          }
+          this.releaseFireball(f);
           this.fireballs.splice(this.fireballs.indexOf(f), 1);
         }
+      }
+    }
+
+    releaseFireball(f) {
+      if (f.light) {
+        try { this.lights.removeLight(f.light); } catch (err) { /* light already gone */ }
+        f.light = null;
+      }
+      if (f.core) { f.core.destroy(); f.core = null; }
+      if (f.glow) { f.glow.destroy(); f.glow = null; }
+      if (f.trail) {
+        const trail = f.trail;
+        f.trail = null;
+        trail.stop();
+        this.time.delayedCall(600, () => { if (trail.scene) trail.destroy(); });
       }
     }
 
@@ -958,7 +1020,7 @@
 
     clearPowers() {
       if (this.fireballs) {
-        for (const f of this.fireballs) { f.orb.destroy(); f.glow.destroy(); }
+        for (const f of this.fireballs) this.releaseFireball(f);
         this.fireballs.length = 0;
       } else this.fireballs = [];
       if (this.beam) { this.beam.g.destroy(); this.beam = null; }
@@ -1315,7 +1377,7 @@
       height: H,
       backgroundColor: '#080a12',
       scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-      render: { antialias: true, pixelArt: false, powerPreference: 'high-performance' },
+      render: { antialias: true, pixelArt: false, powerPreference: 'high-performance', maxLights: 10 },
       input: { keyboard: false, activePointers: 4 },
       fps: { target: 60, forceSetTimeOut: false },
       scene: [WaygateScene]
