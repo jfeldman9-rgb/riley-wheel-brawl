@@ -33,7 +33,7 @@ export function clearStage4Cultists(scene) {
 
 export function updateFogBolts(scene, dt) {
   if (!Number.isFinite(dt) || dt <= 0 || scene.paused || scene.cutscene) return;
-  dt = Math.min(dt, 60);
+  dt = Math.min(dt, 10);
   const bolts = scene.fogBolts;
   if (!bolts) return;
   const R = scene.riley;
@@ -185,7 +185,7 @@ export class Cultist {
   }
   update(dt) {
     if (this.gone || !Number.isFinite(dt) || dt <= 0 || this.scene.paused || this.scene.cutscene) return;
-    dt = Math.min(dt, 60);
+    dt = Math.min(dt, 10);
     this.shoveCool = Math.max(0, this.shoveCool - dt);
     this.boltCool = Math.max(0, this.boltCool - dt);
     switch (this.state) {

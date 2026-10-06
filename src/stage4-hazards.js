@@ -281,7 +281,7 @@ export function createFog(deps = {}) {
     },
     step(dt, world) {
       if (dead || !world || !Number.isFinite(dt) || dt <= 0) return;
-      dt = Math.min(dt, 60);
+      dt = Math.min(dt, 10);
       observe(world.riley);
       for (const e of world.enemies || []) observe(e);
       if (frozen(world)) {

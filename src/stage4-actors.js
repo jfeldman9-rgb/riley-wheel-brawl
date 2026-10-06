@@ -148,10 +148,7 @@ export class DraghkarActor extends Draghkar {
     this.scene.fireShieldActive = !!(powers && powers.active && powers.active('fireshield'));
     if (this.entering) return;
     const R = this.scene.riley, prev = this.state;
-    if (R && (this.state === 'swoop_dive' || this.state === 'kiss_lunge') && swing(R)) {
-      const oncoming = this.state === 'swoop_dive' ? Math.sign(this.x - R.x) === (R.facing || 1) : (R.facing || 1) === -this.facing;
-      if (oncoming) R.attackFrame = true;
-    }
+    if (R && this.state === 'swoop_dive' && swing(R) && Math.sign(this.x - R.x) === (R.facing || 1)) R.attackFrame = true;
     super.update(dt);
     this.z = ['perch', 'swoop_tell', 'swoop_dive'].includes(this.state) ? 120 : (this.z === 120 ? 0 : this.z || 0);
     this.scene.kit?.noteBoss?.(this, prev);

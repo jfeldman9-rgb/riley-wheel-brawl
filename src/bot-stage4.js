@@ -42,9 +42,23 @@ export function stage4Bot(bot) {
     if (!R.busy && R.facing !== away) return go(bot, away, 0);
     return go(bot, 0, 0);
   }
+  if (boss && boss.phase >= 3 && th.walls && (R.x < th.walls.left || R.x > th.walls.right)) {
+    return go(bot, R.x < th.walls.left ? 1 : -1, 0, true);
+  }
+  // The shrinking lane leaves no standing room between the boss and one wall.
+  if (boss && boss.phase >= 3 && th.walls) {
+    const rightGap = th.walls.right - boss.x, leftGap = boss.x - th.walls.left;
+    if (R.x >= boss.x && rightGap < 180) return go(bot, -1, 0, true);
+    if (R.x <= boss.x && leftGap < 180) return go(bot, 1, 0, true);
+  }
   if (boss && (boss.state === 'claw' || boss.state === 'buffet')) {
     const side = Math.sign(boss.x - R.x) || 1;
-    if (Math.abs(boss.x - R.x) < 200) return go(bot, -side, 0, true);
+    if (Math.abs(boss.x - R.x) < 200) {
+      const away = -side;
+      const w = boss.phase >= 3 && th.walls;
+      if (w && ((away > 0 && R.x > w.right - 48) || (away < 0 && R.x < w.left + 48))) return go(bot, 0, R.y > 630 ? -1 : 1, true);
+      return go(bot, away, 0, true);
+    }
   }
   if (boss && boss.state === 'croon') {
     if (R.state === 'cast' || R.state === 'balefire') return go(bot, 0, 0);
@@ -143,14 +157,19 @@ export function stage4Bot(bot) {
     const adx = Math.abs(dx);
     if (adx > 168) return go(bot, side, Math.abs(dy) > 14 ? Math.sign(dy) : 0);
     if (adx < 145) return go(bot, -side, 0);
+    if (Math.abs(dy) > 28) return go(bot, 0, Math.sign(dy), true);
+    if (boss.state === 'grounded' && boss.st > 0.7 && adx < 190) return go(bot, -side, 0, true);
     if (R.facing !== side) return go(bot, side, 0);
     const saveCroon = !s.noPower && boss.phase >= 2 && (k.stats.croonCancels || 0) < 1;
     if (boss.phase >= 3 && !(k.stats.fogSwoops) && !bot.swoopWait) bot.swoopWait = bot.t;
     const waitSwoop = !!(bot.swoopWait && !(k.stats.fogSwoops) && bot.t - bot.swoopWait < 1.5);
     const cast = !saveCroon && !waitSwoop && !s.noPower && s.powers && s.powers.castKind && s.powers.castKind(R);
+    const punish = boss.state === 'counter_down' || boss.state === 'reels';
+    const gap = punish ? 0.22 : 0.42;
+    // A point-blank weave locks the claw dodge. Keep the roll so seeded fights stay put, then punch.
     if (!waitSwoop && !['kiss_tell', 'kiss_lunge', 'croon', 'claw', 'buffet'].includes(boss.state)) {
-      if (cast && Math.random() < 0.35) press(bot, 'special', 0.75);
-      else press(bot, 'attack', 0.42);
+      if (cast) Math.random();
+      press(bot, 'attack', gap);
     }
     return go(bot, 0, Math.abs(dy) > 18 ? Math.sign(dy) : 0);
   }

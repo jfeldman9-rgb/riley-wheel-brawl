@@ -32,7 +32,7 @@ function hook(kit, object, key, wrap) {
   const replacement = wrap(original);
   object[key] = replacement;
   (kit.hooks || (kit.hooks = [])).push(() => {
-    if (object[key] !== replacement) return;
+    if (object[key] !== replacement) kit.hookMiss = (kit.hookMiss || 0) + 1;
     if (own) object[key] = original; else delete object[key];
   });
 }

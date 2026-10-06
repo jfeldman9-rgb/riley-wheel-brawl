@@ -2,6 +2,7 @@
 import { paintBackdrop } from './stage4-art-bg.js';
 import { paintFog } from './stage4-art-fog.js';
 import { paintCast } from './stage4-art-cast.js';
+import { ensureStage4Anims, paintCutthroats } from './stage4-art-thug.js';
 export { dragFrame, cultFrame } from './stage4-art-cast.js';
 
 export function canPaint(scene) {
@@ -33,8 +34,10 @@ export function sheet(scene, key, n, fw, fh, draw) {
 }
 
 export function paintStage4Art(scene) {
+  ensureStage4Anims(scene);
   if (!canPaint(scene)) return;
   paintBackdrop(scene);
   paintFog(scene);
   paintCast(scene);
+  paintCutthroats(scene);
 }
