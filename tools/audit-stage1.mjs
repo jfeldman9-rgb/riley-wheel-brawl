@@ -51,8 +51,21 @@ export function audit() {
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) files.add(`src/${name}`);
   for (const group of ['chars','bg','props','ui','powers']) for (const name of readdirSync(resolve(ROOT,'assets',group))) if (!name.endsWith('.md')) files.add(`assets/${group}/${name}`);
   files.add('assets/audio/music-main.mp3');
-  for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) files.add(`assets/audio/voice/${name}`);
+  // Stage 1's 25 MB gate counts every voice Stage 1 and Stage 2 ship (rwb-w2 counted
+  // the whole voice folder). Stage 3 lines are preloaded only with s3=1. Folding
+  // them into this sum exceeds 25 MB, so they have their own budget below instead
+  // of being dropped from the Stage 1 gate along with Stage 2.
+  const stage3Voice = /^(st3_|cutthroat_|fade_|riley_st3_|riley_escape_|riley_counter_)/;
+  let countedVoiceBytes = 0, stage3VoiceBytes = 0, stage3VoiceCount = 0;
+  for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) {
+    const path = `assets/audio/voice/${name}`, bytes = statSync(resolve(ROOT, path)).size;
+    if (stage3Voice.test(name)) { stage3VoiceBytes += bytes; stage3VoiceCount++; }
+    else { files.add(path); countedVoiceBytes += bytes; }
+  }
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
+  const stage3MusicFiles = ['assets/audio/music-stage3.mp3', 'assets/audio/music-boss3.mp3'];
+  const stage3MusicBytes = stage3MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const stage3VoiceBudget = 18 * 200 * 1024, stage3MusicBudget = 2 * 1_200_000;
   const rgbaBytes = images.reduce((n,x)=>n+x.rgbaBytes,0);
   const rileyAnimations = json('assets/chars/riley.anims.json').anims;
   // These are the shipped attack-animation mappings, not a claim that every
@@ -65,7 +78,16 @@ export function audit() {
   });
   return { characters, preFight: { inventoryUpperBoundBytes:preFightUpperBoundBytes, budgetBytes:25_000_000,
       inventoryStatus:preFightUpperBoundBytes <= 25_000_000 ? 'PASS' : 'FAIL',
-      note:'Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence.' },
+      countedVoiceBytes,
+      note:'Stage 1 and Stage 2 static inventory, including music-main and every voice those stages ship. Stage 3 voices and music are under stage3 (they are not loaded before the first fight, and they do not fit this 25 MB gate). Actual transfer/cold-load timing requires browser resource evidence.' },
+    stage3: {
+      voices: { count: stage3VoiceCount, bytes: stage3VoiceBytes, budgetBytes: stage3VoiceBudget,
+        status: stage3VoiceBytes <= stage3VoiceBudget ? 'PASS' : 'FAIL',
+        note: 'STAGE3_VOICES only. Each line is capped at 200 KB; the total cap is 18 times that.' },
+      music: { files: stage3MusicFiles, bytes: stage3MusicBytes, budgetBytes: stage3MusicBudget,
+        status: stage3MusicBytes <= stage3MusicBudget ? 'PASS' : 'FAIL',
+        note: 'Two decoded loops, each under 1.2 MB. Not part of the Stage 1 pre-fight sum.' },
+    },
     playerAttackDensity: { minimumFrames:5, attacks:playerAttacks,
       densityStatus:playerAttacks.every(a=>a.densityStatus==='PASS')?'PASS':'FAIL',
       note:'Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Balefire (8) is a special, not in this list; candidate artwork outside game assets is excluded.' },

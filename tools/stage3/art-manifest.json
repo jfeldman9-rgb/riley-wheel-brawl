@@ -1,0 +1,846 @@
+{
+ "version": 1,
+ "font": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+ "gap": 2,
+ "chars": [
+  {
+   "key": "cutthroat",
+   "prefix": "cutthroat_",
+   "native": -1,
+   "canvas": [
+    900,
+    600
+   ],
+   "baseline": 570,
+   "scale": 0.62,
+   "anchorX": 0.5,
+   "silhouette": [
+    250,
+    430
+   ],
+   "dir": "assets/stage3/chars",
+   "sheets": [
+    {
+     "id": "cutthroat-a",
+     "page": 0,
+     "anims": [
+      [
+       "walk",
+       [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+       ],
+       true
+      ],
+      [
+       "hurt",
+       [
+        90,
+        160
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "cutthroat-b",
+     "page": 0,
+     "anims": [
+      [
+       "slash",
+       [
+        120,
+        220,
+        100,
+        180,
+        200
+       ],
+       false
+      ],
+      [
+       "knockdown",
+       [
+        120,
+        180,
+        400
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "cutthroat-c",
+     "page": 0,
+     "anims": [
+      [
+       "lunge",
+       [
+        450,
+        90,
+        120,
+        160,
+        260
+       ],
+       false
+      ],
+      [
+       "getup",
+       [
+        200,
+        220
+       ],
+       false
+      ],
+      [
+       "dazed",
+       [
+        400
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "cutthroat-d",
+     "page": 0,
+     "anims": [
+      [
+       "hold",
+       [
+        200,
+        200,
+        200,
+        200
+       ],
+       true
+      ],
+      [
+       "grabthrow",
+       [
+        180,
+        300
+       ],
+       false
+      ],
+      [
+       "shoved",
+       [
+        160,
+        400
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "cutthroat-e",
+     "page": 0,
+     "anims": [
+      [
+       "stalk",
+       [
+        140,
+        140,
+        140,
+        140
+       ],
+       true
+      ],
+      [
+       "flee",
+       [
+        90,
+        90,
+        90,
+        90
+       ],
+       true
+      ]
+     ]
+    }
+   ],
+   "notes": {
+    "slash": {
+     "active": [
+      2
+     ]
+    },
+    "lunge": {
+     "telegraph": 0
+    }
+   }
+  },
+  {
+   "key": "riley3",
+   "prefix": "riley_",
+   "native": 1,
+   "canvas": [
+    960,
+    640
+   ],
+   "baseline": 610,
+   "scale": 0.85,
+   "anchorX": 0.45,
+   "silhouette": [
+    270,
+    500
+   ],
+   "dir": "assets/stage3/chars",
+   "sheets": [
+    {
+     "id": "riley-s3a",
+     "page": 0,
+     "anims": [
+      [
+       "grabbed",
+       [
+        130,
+        130,
+        130,
+        130
+       ],
+       true
+      ],
+      [
+       "escape",
+       [
+        120,
+        90,
+        160,
+        200
+       ],
+       false
+      ]
+     ]
+    }
+   ],
+   "notes": {
+    "escape": {
+     "hit": 1
+    }
+   }
+  },
+  {
+   "key": "fade",
+   "prefix": "fade_",
+   "native": -1,
+   "canvas": [
+    1100,
+    700
+   ],
+   "baseline": 670,
+   "scale": 0.6,
+   "anchorX": 0.5,
+   "silhouette": [
+    280,
+    560
+   ],
+   "dir": "assets/stage3/chars",
+   "sheets": [
+    {
+     "id": "fade-a",
+     "page": 0,
+     "anims": [
+      [
+       "walk",
+       [
+        160,
+        160,
+        160,
+        160
+       ],
+       true
+      ],
+      [
+       "intro",
+       [
+        220,
+        220,
+        220,
+        220
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "fade-b",
+     "page": 0,
+     "anims": [
+      [
+       "slash",
+       [
+        120,
+        240,
+        100,
+        140,
+        100,
+        260
+       ],
+       false
+      ],
+      [
+       "hurt",
+       [
+        90,
+        160
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "fade-c",
+     "page": 0,
+     "anims": [
+      [
+       "lunge",
+       [
+        380,
+        90,
+        120,
+        200,
+        260
+       ],
+       false
+      ],
+      [
+       "knockdown",
+       [
+        120,
+        200,
+        450
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "fade-d",
+     "page": 0,
+     "anims": [
+      [
+       "blinkout",
+       [
+        100,
+        100,
+        100,
+        100
+       ],
+       false
+      ],
+      [
+       "blinkin",
+       [
+        100,
+        110,
+        120,
+        160
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "fade-e",
+     "page": 1,
+     "anims": [
+      [
+       "fear",
+       [
+        160,
+        200,
+        260,
+        300,
+        240
+       ],
+       false
+      ],
+      [
+       "stagger",
+       [
+        140,
+        300,
+        400
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "fade-f",
+     "page": 1,
+     "anims": [
+      [
+       "split",
+       [
+        160,
+        160,
+        160,
+        160,
+        160
+       ],
+       false
+      ],
+      [
+       "getup",
+       [
+        220,
+        240
+       ],
+       false
+      ],
+      [
+       "point",
+       [
+        600
+       ],
+       false
+      ]
+     ]
+    },
+    {
+     "id": "fade-g",
+     "page": 1,
+     "anims": [
+      [
+       "idle",
+       [
+        180,
+        180,
+        180,
+        180
+       ],
+       true
+      ],
+      [
+       "defeated",
+       [
+        400,
+        400,
+        500,
+        600
+       ],
+       false
+      ]
+     ]
+    }
+   ],
+   "notes": {
+    "slash": {
+     "active": [
+      2,
+      4
+     ]
+    },
+    "lunge": {
+     "glint": 0
+    },
+    "blinkin": {
+     "counter": [
+      2,
+      3
+     ]
+    }
+   }
+  }
+ ],
+ "images": [
+  {
+   "id": "bg3-far-day",
+   "key": "far3_day",
+   "file": "assets/bg3/bg3-far-day.jpg",
+   "size": [
+    1086,
+    362
+   ],
+   "kind": "far"
+  },
+  {
+   "id": "bg3-far-night",
+   "key": "far3_night",
+   "file": "assets/bg3/bg3-far-night.jpg",
+   "size": [
+    1086,
+    362
+   ],
+   "kind": "far"
+  },
+  {
+   "id": "bg3-mid",
+   "key": "mid3a",
+   "file": "assets/bg3/bg3-mid.webp",
+   "normal": "assets/bg3/bg3-mid_n.webp",
+   "size": [
+    1086,
+    362
+   ],
+   "kind": "mid",
+   "halves": [
+    "NEW CITY MARKET STREET (zone 0)",
+    "QUEEN'S BLESSING INN YARD (zone 1)"
+   ]
+  },
+  {
+   "id": "bg3-mid2",
+   "key": "mid3b",
+   "file": "assets/bg3/bg3-mid2.webp",
+   "normal": "assets/bg3/bg3-mid2_n.webp",
+   "size": [
+    1086,
+    362
+   ],
+   "kind": "mid",
+   "halves": [
+    "ROOFTOPS AT SUNSET (zone 2)",
+    "PALACE GARDEN AT NIGHT (zone 3)"
+   ]
+  },
+  {
+   "id": "bg3-floor",
+   "key": "floor3a",
+   "file": "assets/bg3/bg3-floor.jpg",
+   "normal": "assets/bg3/bg3-floor_n.webp",
+   "size": [
+    1086,
+    362
+   ],
+   "kind": "floor"
+  },
+  {
+   "id": "bg3-floor2",
+   "key": "floor3b",
+   "file": "assets/bg3/bg3-floor2.jpg",
+   "normal": "assets/bg3/bg3-floor2_n.webp",
+   "size": [
+    1086,
+    362
+   ],
+   "kind": "floor"
+  },
+  {
+   "id": "bg3-floor3",
+   "key": "floor3c",
+   "file": "assets/bg3/bg3-floor3.jpg",
+   "normal": "assets/bg3/bg3-floor3_n.webp",
+   "size": [
+    1086,
+    362
+   ],
+   "kind": "floor"
+  },
+  {
+   "id": "prop-rooftiles",
+   "key": "rooftiles",
+   "file": "assets/stage3/props/prop-rooftiles.webp",
+   "size": [
+    1024,
+    256
+   ],
+   "frames": 4,
+   "kind": "strip"
+  },
+  {
+   "id": "fx-shadowpool",
+   "key": "shadowpool",
+   "file": "assets/stage3/props/fx-shadowpool.webp",
+   "size": [
+    1024,
+    256
+   ],
+   "frames": 4,
+   "kind": "strip"
+  },
+  {
+   "id": "fx-shadowburst",
+   "key": "shadowburst",
+   "file": "assets/stage3/props/fx-shadowburst.webp",
+   "size": [
+    1536,
+    256
+   ],
+   "frames": 6,
+   "kind": "strip"
+  },
+  {
+   "id": "fx-fade-far",
+   "key": "fade_far",
+   "file": "assets/stage3/props/fx-fade-far.webp",
+   "size": [
+    1024,
+    256
+   ],
+   "frames": 4,
+   "kind": "strip"
+  },
+  {
+   "id": "fade-portrait",
+   "key": "fadePortrait",
+   "file": "assets/stage3/ui/fade-portrait.webp",
+   "size": [
+    256,
+    256
+   ],
+   "kind": "portrait"
+  },
+  {
+   "id": "story3-1",
+   "key": "story3_panel_1",
+   "file": "assets/story/story3_panel_1.jpg",
+   "size": [
+    1280,
+    720
+   ],
+   "kind": "panel",
+   "caption": "Riley at the gates of Caemlyn, golden afternoon"
+  },
+  {
+   "id": "story3-2",
+   "key": "story3_panel_2",
+   "file": "assets/story/story3_panel_2.jpg",
+   "size": [
+    1280,
+    720
+   ],
+   "kind": "panel",
+   "caption": "Basel Gill whispers; Riley holds the blue ribbon"
+  },
+  {
+   "id": "story3-3",
+   "key": "story3_panel_3",
+   "file": "assets/story/story3_panel_3.jpg",
+   "size": [
+    1280,
+    720
+   ],
+   "kind": "panel",
+   "caption": "Sunset rooftops; a far cloaked figure with a bundle"
+  }
+ ],
+ "masters": [
+  {
+   "id": "cutthroat-master",
+   "size": [
+    1024,
+    1536
+   ]
+  },
+  {
+   "id": "fade-master",
+   "size": [
+    1024,
+    1536
+   ]
+  }
+ ],
+ "prompts": {
+  "cutthroat-master": {
+   "attach": [
+    "trolloc master",
+    "riley master"
+   ],
+   "output": "cutthroat-master.png"
+  },
+  "cutthroat-a": {
+   "attach": [
+    "cutthroat-master",
+    "trolloc master"
+   ],
+   "output": "cutthroat-a.png"
+  },
+  "cutthroat-b": {
+   "attach": [
+    "cutthroat-master",
+    "trolloc master"
+   ],
+   "output": "cutthroat-b.png"
+  },
+  "cutthroat-c": {
+   "attach": [
+    "cutthroat-master",
+    "trolloc master"
+   ],
+   "output": "cutthroat-c.png"
+  },
+  "cutthroat-d": {
+   "attach": [
+    "cutthroat-master",
+    "trolloc master"
+   ],
+   "output": "cutthroat-d.png"
+  },
+  "cutthroat-e": {
+   "attach": [
+    "cutthroat-master",
+    "trolloc master"
+   ],
+   "output": "cutthroat-e.png"
+  },
+  "riley-s3a": {
+   "attach": [
+    "riley master",
+    "riley.jpg",
+    "assets/chars/riley-0.webp"
+   ],
+   "output": "riley-s3a.png"
+  },
+  "fade-master": {
+   "attach": [
+    "trolloc master",
+    "riley master"
+   ],
+   "output": "fade-master.png"
+  },
+  "fade-a": {
+   "attach": [
+    "fade-master",
+    "trolloc master"
+   ],
+   "output": "fade-a.png"
+  },
+  "fade-b": {
+   "attach": [
+    "fade-master",
+    "trolloc master"
+   ],
+   "output": "fade-b.png"
+  },
+  "fade-c": {
+   "attach": [
+    "fade-master",
+    "trolloc master"
+   ],
+   "output": "fade-c.png"
+  },
+  "fade-d": {
+   "attach": [
+    "fade-master",
+    "trolloc master"
+   ],
+   "output": "fade-d.png"
+  },
+  "fade-e": {
+   "attach": [
+    "fade-master",
+    "trolloc master"
+   ],
+   "output": "fade-e.png"
+  },
+  "fade-f": {
+   "attach": [
+    "fade-master",
+    "trolloc master"
+   ],
+   "output": "fade-f.png"
+  },
+  "fade-g": {
+   "attach": [
+    "fade-master",
+    "trolloc master"
+   ],
+   "output": "fade-g.png"
+  },
+  "fade-portrait": {
+   "attach": [
+    "fade-master",
+    "assets/ui/byar-portrait.webp",
+    "assets/ui/riley-portrait.webp"
+   ],
+   "output": "fade-portrait.png"
+  },
+  "bg3-far-day": {
+   "attach": [
+    "assets/bg2/bg2-far.jpg",
+    "assets/bg/bg-far.jpg"
+   ],
+   "output": "bg3-far-day.png"
+  },
+  "bg3-far-night": {
+   "attach": [
+    "bg3-far-day.png"
+   ],
+   "output": "bg3-far-night.png"
+  },
+  "bg3-mid": {
+   "attach": [
+    "assets/bg2/bg2-mid.webp",
+    "bg3-far-day.png"
+   ],
+   "output": "bg3-mid.png"
+  },
+  "bg3-mid2": {
+   "attach": [
+    "assets/bg2/bg2-mid2.webp",
+    "bg3-far-night.png"
+   ],
+   "output": "bg3-mid2.png"
+  },
+  "bg3-floor": {
+   "attach": [
+    "assets/bg2/bg2-floor.jpg"
+   ],
+   "output": "bg3-floor.png"
+  },
+  "bg3-floor2": {
+   "attach": [
+    "assets/bg2/bg2-floor.jpg"
+   ],
+   "output": "bg3-floor2.png"
+  },
+  "bg3-floor3": {
+   "attach": [
+    "assets/bg2/bg2-floor.jpg"
+   ],
+   "output": "bg3-floor3.png"
+  },
+  "prop-rooftiles": {
+   "attach": [],
+   "output": "prop-rooftiles.png"
+  },
+  "fx-shadowpool": {
+   "attach": [],
+   "output": "fx-shadowpool.png"
+  },
+  "fx-shadowburst": {
+   "attach": [],
+   "output": "fx-shadowburst.png"
+  },
+  "fx-fade-far": {
+   "attach": [],
+   "output": "fx-fade-far.png"
+  },
+  "story3-1": {
+   "attach": [
+    "riley master",
+    "riley.jpg",
+    "bg3-far-day.png",
+    "assets/story/story_panel_1.jpg"
+   ],
+   "output": "story3_panel_1.png"
+  },
+  "story3-2": {
+   "attach": [
+    "riley master",
+    "riley.jpg",
+    "bg3-far-day.png",
+    "assets/story/story_panel_1.jpg",
+    "bg3-mid.png"
+   ],
+   "output": "story3_panel_2.png"
+  },
+  "story3-3": {
+   "attach": [
+    "riley master",
+    "riley.jpg",
+    "bg3-far-day.png",
+    "assets/story/story_panel_1.jpg",
+    "bg3-mid2.png"
+   ],
+   "output": "story3_panel_3.png"
+  }
+ }
+}

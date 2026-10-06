@@ -1,0 +1,14 @@
+{
+ "id": "bg3-mid",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "assets/bg2/bg2-mid.webp",
+  "bg3-far-day.png"
+ ],
+ "output": "bg3-mid.png",
+ "prompts": [
+  "Use case: stylized-concept. Production parallax MID background plate for Riley Wheel Brawl 2.0, a 2D side-scrolling Wheel of Time beat-em-up. Generate a single exact 2172x724 pixel, 3:1 panoramic image with a genuinely TRANSPARENT SKY (real alpha above the rooflines); everything else opaque. The references are STYLE, SCALE AND CAMERA references only: match bg2-mid's fine dark ink contours, hand-painted HD cel shading, building scale (doorways about 150 px tall), the fixed side-on camera, and the street ground line along the bottom edge. Never pixel art or 3D.\nLocation: the NEW CITY of CAEMLYN in GOLDEN LATE AFTERNOON, warm honey sunlight from the upper left. LEFT HALF (x 0-1086): a busy-looking but EMPTY market street of pale stone and timber-framed houses with red tile roofs, closed wooden shutters, colourful striped market awnings and empty stalls, flower boxes, a stone water trough, the edge of the great pale grey-white city wall with a round tower at far left. RIGHT HALF (x 1086-2172): THE QUEEN'S BLESSING inn, a large prosperous three-storey stone-and-timber inn with a wide arched doorway, warm lit windows, and a hanging painted signboard showing a kneeling man before a queen with red-gold hair and a crown (pictorial only, NO letters); a cobbled inn yard with a stable arch and barrels at the far right. Unlit iron lanterns on wall brackets every 250-350 px at about y=520-580 (the game adds the light). No people, no animals, no text, letters, numbers, logos or watermarks."
+ ]
+}

@@ -1,0 +1,17 @@
+{
+ "id": "story3-3",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "riley master",
+  "riley.jpg",
+  "bg3-far-day.png",
+  "assets/story/story_panel_1.jpg",
+  "bg3-mid2.png"
+ ],
+ "output": "story3_panel_3.png",
+ "prompts": [
+  "Create story3_panel_3.png, a 1280x720 opaque cinematic story panel for Riley Wheel Brawl 2.0, in the same painted style as the attached story_panel_1.jpg: hand-drawn HD 2D illustration, confident dark ink outlines, cel shading with painterly gradients. No text, letters, logos or speech bubbles.\nRILEY (must match exactly): 16 years old and VERY muscular, huge bare biceps and shoulders, NEVER a child; friendly youthful clean-shaven face from riley.jpg, short dark brown hair with a short straight fringe, THIN BLUE-FRAMED RECTANGULAR GLASSES; SLEEVELESS BLACK ASHA'MAN COAT with a high collar and a small silver sword pin, black fingerless gloves, black trousers and boots.\nScene: SUNSET over the red-tiled ROOFTOPS of Caemlyn, a deep orange-pink sky with purple clouds, the palace domes silhouetted. Riley, in the foreground on the right, crouches on a roof ridge beside a chimney in a ready stance, a small flame flickering in his raised open palm (channelling saidin), looking left into the distance. Far away on the left, on a distant roof, a tiny tall dark cloaked figure is leaping away, a small wrapped bundle with a bright blue ribbon under its arm (only a bundle; no child shown). Kid-friendly, dramatic."
+ ]
+}

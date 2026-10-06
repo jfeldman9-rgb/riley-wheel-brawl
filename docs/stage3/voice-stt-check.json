@@ -1,0 +1,110 @@
+[
+  {
+    "id": "st3_story_01",
+    "text": "The trail led south, to Caemlyn, the great white city of the Queen.",
+    "heard": "The trail led south to Camelin, the great white city of the Queen.",
+    "word_match": 0.923
+  },
+  {
+    "id": "st3_story_02",
+    "text": "A man with no eyes, on my rooftops, at dusk. He carried a little bundle. Blue ribbon on it.",
+    "heard": "A man with no eyes on my rooftops at dusk. He carried a little bundle, blue ribbon on it.",
+    "word_match": 1.0
+  },
+  {
+    "id": "st3_story_03",
+    "text": "Twinkle Toes' ribbon. He's here.",
+    "heard": "Twinkle Toe's ribbon, he's here.",
+    "word_match": 1.0
+  },
+  {
+    "id": "st3_story_04",
+    "text": "There are Darkfriends in the market too, lad. Watch your back.",
+    "heard": "There are dark friends in the market too, lad. Watch your back.",
+    "word_match": 0.87
+  },
+  {
+    "id": "st3_story_05",
+    "text": "I always do.",
+    "heard": "I always do.",
+    "word_match": 1.0
+  },
+  {
+    "id": "st3_story_06",
+    "text": "As the sun went down over the palace, Riley went up onto the roofs.",
+    "heard": "As the sun went down over the palace, Riley went up onto the roofs.",
+    "word_match": 1.0
+  },
+  {
+    "id": "cutthroat_intro_01",
+    "text": "That's the one the Lady wants. Take him quiet.",
+    "heard": "That's the one the lady wants. Take him quiet.",
+    "word_match": 1.0
+  },
+  {
+    "id": "cutthroat_grab_01",
+    "text": "Gotcha!",
+    "heard": "Gotcha!",
+    "word_match": 1.0
+  },
+  {
+    "id": "riley_escape_01",
+    "text": "Off me!",
+    "heard": "off me.",
+    "word_match": 1.0
+  },
+  {
+    "id": "riley_st3_roof_01",
+    "text": "Roof tiles. Great. Of course it's roof tiles.",
+    "heard": "roof tiles great of course it's roof tiles",
+    "word_match": 1.0
+  },
+  {
+    "id": "riley_st3_glimpse_01",
+    "text": "There! On the far roof!",
+    "heard": "there on the far roof.",
+    "word_match": 1.0
+  },
+  {
+    "id": "fade_intro_01",
+    "text": "The boy who channels. Your sister's trail ends here.",
+    "heard": "The Boy Who Channels. Your sister's trail ends here.",
+    "word_match": 1.0
+  },
+  {
+    "id": "fade_mid_01",
+    "text": "Fear me, boy.",
+    "heard": "Fear me, boy.",
+    "word_match": 1.0
+  },
+  {
+    "id": "fade_split_01",
+    "text": "Which shadow is real?",
+    "heard": "Which shadow is real?",
+    "word_match": 1.0
+  },
+  {
+    "id": "riley_counter_01",
+    "text": "That one!",
+    "heard": "that one.",
+    "word_match": 1.0
+  },
+  {
+    "id": "fade_defeat_01",
+    "text": "The shadow... remembers...",
+    "heard": "Shadow...remembers.",
+    "word_match": 0.8
+  },
+  {
+    "id": "riley_st3_victory_01",
+    "text": "Remember this, then.",
+    "heard": "Remember this then.",
+    "word_match": 1.0
+  },
+  {
+    "id": "riley_st3_clear_01",
+    "text": "Another ribbon. I'm coming, Twinkle Toes.",
+    "heard": "Another ribbon I'm coming, twinkle toes.",
+    "word_match": 1.0
+  }
+]

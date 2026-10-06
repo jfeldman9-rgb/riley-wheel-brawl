@@ -1,0 +1,11 @@
+{
+ "id": "fx-shadowburst",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [],
+ "output": "fx-shadowburst.png",
+ "prompts": [
+  "Create fx-shadowburst.png for Riley Wheel Brawl 2.0. OUTPUT: exactly 1536x256 PNG, genuinely transparent background, real alpha, no text/borders. SIX equal cells of 256x256 in one row, left to right, an animation of a BURST OF INKY BLACK SHADOW SMOKE (when a shadow copy is struck and pops): 1: a tight dark core with a violet flash at the centre, 2: billowing outward, 3: a full round cloud of curling black-purple smoke puffs, 4: breaking apart into separate curls, 5: thin wisps drifting outward and upward, 6: a few last fading wisps. Painted smoke with clean dark outlines and 2-3 cel-shaded purple-black tones, NOT a blur or airbrush. Hand-drawn HD 2D game art in the spirit of Streets of Rage 4. Kid-friendly."
+ ]
+}

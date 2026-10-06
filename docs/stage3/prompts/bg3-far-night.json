@@ -1,0 +1,13 @@
+{
+ "id": "bg3-far-night",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "bg3-far-day.png"
+ ],
+ "output": "bg3-far-night.png",
+ "prompts": [
+  "Use case: stylized-concept. Production parallax background plate for Riley Wheel Brawl 2.0. Generate a single exact 2172x724 pixel, 3:1 panoramic image, FULLY OPAQUE. The attached bg3-far-day.png is the EXACT COMPOSITION reference: repaint the SAME view of Caemlyn (same skyline, same towers, domes, outer wall and roofs in the same positions and sizes) as a NEW painting at NIGHT, in the same hand-painted HD cel-shaded style with fine dark ink contours, Streets of Rage 4-like painted game art, never pixel art or 3D.\nNight: deep indigo and blue-violet sky with a few stars and thin silver clouds, a soft cool moon glow high on the right (no moon disc). The palace domes and towers are lit from below by warm orange torchlight and lit windows; small warm torch points along the top of the outer wall; warm lit windows scattered across the New City roofs; cool moonlit rims on the stone. No people, no animals, no text, letters, numbers, logos or watermarks. Keep the same horizon height and flat horizontal bands."
+ ]
+}

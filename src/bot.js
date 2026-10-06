@@ -13,6 +13,7 @@ export class Bot {
     const s = this.s, R = s.riley, inp = s.inp; this.t += dt;
     if (!s.started || !R.alive || s.ended || s.gameOver) { inp.demo = { x: 0, y: 0 }; return; }
     if (this.bossCoverage) return this.updateBossCoverage();
+    if (s.stageNo === 3 && this.evadeStage3()) return;
     // Stage 2 hazards (lane volleys, arrows, charges, the parry bait, torches, falling beams). Stage 1 never enters here.
     if (s.kit && this.evadeStage2()) return;
     const foes = s.enemies.filter(e => e.alive && !e.entering);
@@ -68,6 +69,58 @@ export class Bot {
         return go(Math.abs(dx) < 250 ? side : Math.abs(dx) > 320 ? -side : 0, 0);
       }
       if (e.type === 'byar' && (e.state === 'rush' || e.state === 'rushup') && Math.abs(R.y - e.y) < 40) return go(0, away(e.y));
+    }
+    return false;
+  }
+  /** step out of tile bands / shadow pools, dispel fear, target the real Myrddraal, or mash out of holds */
+  evadeStage3() {
+    const s = this.s, R = s.riley, inp = s.inp, k = s.kit, go = (x, y) => { inp.demo = { x, y, run: false }; return true; };
+    if (R.state === 'grabbed') {
+      if (this.t >= (this.mashT || 0)) { inp.press('attack'); this.mashT = this.t + 0.12; }
+      return go(0, 0);
+    }
+    if ((k.stats.grabs || 0) < 1) for (const e of s.enemies) if (e.type === 'cutthroat' && e.state === 'lunge') return go(0, 0);
+    const t = k.threats();
+    for (const tile of t.tiles) {
+      const cur = k.bandOf(R.y);
+      let best = -1, bestDist = 1e9, mid = 0;
+      for (let i = 0; i < 3; i++) if (!tile.bands.includes(i)) {
+        const m = (VOLLEY_BANDS[i][0] + VOLLEY_BANDS[i][1]) / 2, d = Math.abs(R.y - m);
+        if (d < bestDist) { bestDist = d; best = i; mid = m; }
+      }
+      if (best !== -1) {
+        let near = tile.bands.includes(cur);
+        if (!near) for (const b of tile.bands) {
+          const [y0, y1] = VOLLEY_BANDS[b];
+          if (R.y >= y0 - 6 && R.y <= y1 + 6) { near = true; break; }
+        }
+        if (near) return go(0, Math.sign(mid - R.y) || 1);
+      }
+    }
+    for (const p of t.pools) {
+      const pool = p.pool;
+      if (pool && Math.abs(R.x - pool.x) < 70 && Math.abs(R.y - pool.y) < 30) {
+        return go(0, R.y === pool.y ? (R.y - LANE_TOP > LANE_BOT - R.y ? -1 : 1) : Math.sign(R.y - pool.y));
+      }
+    }
+    const boss = s.boss;
+    if (boss?.alive && boss.auraOn && boss.fear > 0.5 && !(boss.copies?.length && (k.stats.copiesPopped || 0) < 1)) {
+      const cast = s.powers ? s.powers.castKind(R) : (R.saidin >= 34 ? 'fireball' : null);
+      if (cast) {
+        const dx = boss.x - R.x, dy = boss.y - R.y, side = Math.sign(dx) || 1, range = boss.dispelRange || 400;
+        inp.demo = { x: R.facing !== side ? side : Math.abs(dx) > range - 40 ? side : 0, y: Math.abs(dy) > 10 ? Math.sign(dy) : 0, run: false };
+        if (Math.abs(dy) < 14 && Math.abs(dx) <= range && R.facing === side && this.t >= this.next && !R.busy) {
+          inp.press('special'); this.next = this.t + 0.9;
+        }
+        return true;
+      }
+    }
+    if (boss?.alive && boss.pendingSplit && boss.inParry?.()) return go(0, 0);
+    if (boss?.alive && !boss.entering && boss.copies?.length) {
+      if ((k.stats.copiesPopped || 0) < 1 && (boss.inParry?.() || boss.cool <= 0.2)) {
+        return go(0, boss.y < (LANE_TOP + LANE_BOT) / 2 ? 1 : -1);
+      }
+      this.fight(boss); return true;
     }
     return false;
   }

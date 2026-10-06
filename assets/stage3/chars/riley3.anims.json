@@ -1,0 +1,60 @@
+{
+ "key": "riley3",
+ "canvas": [
+  960,
+  640
+ ],
+ "baseline": 610,
+ "scale": 0.85,
+ "pages": [
+  "riley3-0"
+ ],
+ "placeholder": true,
+ "dir": "assets/stage3/chars",
+ "anims": [
+  {
+   "name": "riley_grabbed",
+   "frames": [
+    "riley3_grabbed_00",
+    "riley3_grabbed_01",
+    "riley3_grabbed_02",
+    "riley3_grabbed_03"
+   ],
+   "holds": [
+    130,
+    130,
+    130,
+    130
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "riley_escape",
+   "frames": [
+    "riley3_escape_00",
+    "riley3_escape_01",
+    "riley3_escape_02",
+    "riley3_escape_03"
+   ],
+   "holds": [
+    120,
+    90,
+    160,
+    200
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ ]
+}

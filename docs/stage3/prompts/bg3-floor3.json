@@ -1,0 +1,13 @@
+{
+ "id": "bg3-floor3",
+ "tool": "chatgpt",
+ "fallback": "gemini",
+ "tries": 0,
+ "attach": [
+  "assets/bg2/bg2-floor.jpg"
+ ],
+ "output": "bg3-floor3.png",
+ "prompts": [
+  "Use case: stylized-concept. Production FLOOR texture for Riley Wheel Brawl 2.0, a 2D side-scrolling beat-em-up. Generate a single exact 2172x724 pixel image, FULLY OPAQUE, seen from the same low three-quarter side-on camera as the reference bg2-floor.jpg (a walkable ground band seen at an angle, rows receding toward the top). It must TILE SEAMLESSLY HORIZONTALLY (left and right edges match). Hand-painted HD cel shading with fine dark ink contours, Streets of Rage 4-like painted game art, never pixel art or 3D. No people, objects, text, letters or logos.\nA ROYAL GARDEN PATH at night: crushed white gravel path with clipped grass edges and a few small white stone borders, cool blue moonlight with soft warm torch-glow patches."
+ ]
+}

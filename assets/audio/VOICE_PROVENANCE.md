@@ -72,3 +72,31 @@ chain as above. Text, speech input, phonemes, durations and hashes are in `stage
   spacing ("dark friend" vs "Darkfriend") or invented names: Myrddraal was heard as "emerald" and Byar as "Bayar".
   "Kneel" was heard as "Neil", which is the same sound. The one-word bark "Loose!" was heard as "Looser". None of
   these has been reviewed by ear.
+
+## Stage 3: Caemlyn and the Myrddraal (ElevenLabs + Kokoro)
+
+18 lines recorded in `stage3-voice-manifest.json`.
+
+### ElevenLabs takes (`eleven_v4`)
+Recorded by Jason via ElevenLabs `eleven_v4`. Copied byte-for-byte from `/workspace/rwb-voice/stage3-eleven/` into `assets/audio/voice/`. Fade slow-down and reverb processing are skipped because Branok's takes are already whispered and menacing.
+- Basel Gill (`st3_story_02`, `st3_story_04`): voice **Grandfather Joe**
+  - `st3_story_02`: "[nervous] hushed, worried, leaning in to tell a secret"
+  - `st3_story_04`: "[concerned] fatherly warning"
+- Cutthroat (`cutthroat_intro_01`, `cutthroat_grab_01`): voice **Eastend Steve**
+  - `cutthroat_intro_01`: "[whispers] low, sneering, to his partner"
+  - `cutthroat_grab_01`: "[shouting] triumphant, grabbing someone"
+- The Myrddraal (`fade_intro_01`, `fade_mid_01`, `fade_split_01`, `fade_defeat_01`): voice **Branok**
+  - `fade_intro_01`: "[whispers] slow, cold, menacing"
+  - `fade_mid_01`: "[whispers] a hiss, dragging out \"fear\""
+  - `fade_split_01`: "[whispers] mocking, echoing, taunting"
+  - `fade_defeat_01`: "[whispers] fading out, weakening, defeated"
+
+### Kokoro TTS lines
+10 lines generated locally via `tools/tts-stage3-lines.py` with Kokoro 0.9.4 / Kokoro-82M v1.0.
+Reuses the exact approved Stage 2 casts for Riley and Narrator:
+- Riley: 80% am_puck + 20% am_fenrir, speed 1.04, pitch 1.02.
+  - `st3_story_03`, `st3_story_05`, `riley_escape_01`, `riley_st3_roof_01`, `riley_st3_glimpse_01`, `riley_counter_01`, `riley_st3_victory_01`, `riley_st3_clear_01`.
+- Narrator: bm_fable, speed 0.95, pitch 0.97.
+  - `st3_story_01`, `st3_story_06`.
+- Pronunciation hint: Caemlyn (`kˈeɪmlɪn`).
+- Checks: all 18 lines scored >= 0.8 on faster-whisper small.en (`docs/stage3/voice-stt-check.json`).

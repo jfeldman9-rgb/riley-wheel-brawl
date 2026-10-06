@@ -1,0 +1,335 @@
+{
+ "key": "fade",
+ "canvas": [
+  1100,
+  700
+ ],
+ "baseline": 670,
+ "scale": 0.6,
+ "pages": [
+  "fade-0",
+  "fade-1"
+ ],
+ "placeholder": true,
+ "dir": "assets/stage3/chars",
+ "anims": [
+  {
+   "name": "fade_walk",
+   "frames": [
+    "fade_walk_00",
+    "fade_walk_01",
+    "fade_walk_02",
+    "fade_walk_03"
+   ],
+   "holds": [
+    160,
+    160,
+    160,
+    160
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "fade_intro",
+   "frames": [
+    "fade_intro_00",
+    "fade_intro_01",
+    "fade_intro_02",
+    "fade_intro_03"
+   ],
+   "holds": [
+    220,
+    220,
+    220,
+    220
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "fade_slash",
+   "frames": [
+    "fade_slash_00",
+    "fade_slash_01",
+    "fade_slash_02",
+    "fade_slash_03",
+    "fade_slash_04",
+    "fade_slash_05"
+   ],
+   "holds": [
+    120,
+    240,
+    100,
+    140,
+    100,
+    260
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "fade_hurt",
+   "frames": [
+    "fade_hurt_00",
+    "fade_hurt_01"
+   ],
+   "holds": [
+    90,
+    160
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "fade_lunge",
+   "frames": [
+    "fade_lunge_00",
+    "fade_lunge_01",
+    "fade_lunge_02",
+    "fade_lunge_03",
+    "fade_lunge_04"
+   ],
+   "holds": [
+    380,
+    90,
+    120,
+    200,
+    260
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "fade_knockdown",
+   "frames": [
+    "fade_knockdown_00",
+    "fade_knockdown_01",
+    "fade_knockdown_02"
+   ],
+   "holds": [
+    120,
+    200,
+    450
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "fade_blinkout",
+   "frames": [
+    "fade_blinkout_00",
+    "fade_blinkout_01",
+    "fade_blinkout_02",
+    "fade_blinkout_03"
+   ],
+   "holds": [
+    100,
+    100,
+    100,
+    100
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "fade_blinkin",
+   "frames": [
+    "fade_blinkin_00",
+    "fade_blinkin_01",
+    "fade_blinkin_02",
+    "fade_blinkin_03"
+   ],
+   "holds": [
+    100,
+    110,
+    120,
+    160
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "fade_fear",
+   "frames": [
+    "fade_fear_00",
+    "fade_fear_01",
+    "fade_fear_02",
+    "fade_fear_03",
+    "fade_fear_04"
+   ],
+   "holds": [
+    160,
+    200,
+    260,
+    300,
+    240
+   ],
+   "loop": false,
+   "pages": [
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fade_stagger",
+   "frames": [
+    "fade_stagger_00",
+    "fade_stagger_01",
+    "fade_stagger_02"
+   ],
+   "holds": [
+    140,
+    300,
+    400
+   ],
+   "loop": false,
+   "pages": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fade_split",
+   "frames": [
+    "fade_split_00",
+    "fade_split_01",
+    "fade_split_02",
+    "fade_split_03",
+    "fade_split_04"
+   ],
+   "holds": [
+    160,
+    160,
+    160,
+    160,
+    160
+   ],
+   "loop": false,
+   "pages": [
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fade_getup",
+   "frames": [
+    "fade_getup_00",
+    "fade_getup_01"
+   ],
+   "holds": [
+    220,
+    240
+   ],
+   "loop": false,
+   "pages": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fade_point",
+   "frames": [
+    "fade_point_00"
+   ],
+   "holds": [
+    600
+   ],
+   "loop": false,
+   "pages": [
+    1
+   ]
+  },
+  {
+   "name": "fade_idle",
+   "frames": [
+    "fade_idle_00",
+    "fade_idle_01",
+    "fade_idle_02",
+    "fade_idle_03"
+   ],
+   "holds": [
+    180,
+    180,
+    180,
+    180
+   ],
+   "loop": true,
+   "pages": [
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fade_defeated",
+   "frames": [
+    "fade_defeated_00",
+    "fade_defeated_01",
+    "fade_defeated_02",
+    "fade_defeated_03"
+   ],
+   "holds": [
+    400,
+    400,
+    500,
+    600
+   ],
+   "loop": false,
+   "pages": [
+    1,
+    1,
+    1,
+    1
+   ]
+  }
+ ]
+}
