@@ -5,10 +5,9 @@
   const W = 960, H = 540;
   const {
     FLOOR, WORLD, BRIDGE_START, BRIDGE_END, BRIDGE_SPAWN, BRIDGE_MID,
-    P_SPEED, JUMP_V, WAVE_TUNING, ARENA_START, ARENA_LEFT, ARENA_RIGHT,
-    BOSS_X, EXIT_X, PADS, CRUMBLE
+    P_SPEED, JUMP_V, WAVE_TUNING, ARENA_START,
+    BOSS_X, EXIT_X, PADS, CRUMBLE, WAVE_AT, VIEW_W
   } = L;
-  const WAVE_AT = [500, 1120, 1750];
   const WAVE_COUNTS = [3, 4, 5];
   const $ = (s) => document.querySelector(s);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -69,7 +68,7 @@
       this.initRun();
       this.cameras.main.setBounds(0, 0, WORLD, H);
       this.cameras.main.startFollow(this.hero, true, 0.085, 0.06, -160, 0);
-      this.cameras.main.setDeadzone(360, 0);
+      this._camLock = 'roam';
       this.cameras.main.setBackgroundColor('#080a12');
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.onShutdown, this);
       window.addEventListener('blur', this.onBlur = () => { if (this.mode === 'play') this.pauseGame('Game paused — the tab lost focus.'); });
@@ -604,7 +603,9 @@
     }
 
     initRun() {
-      this.mode = 'title'; this.runElapsed = 0; this.waveIndex = -1; this.waveActive = false; this.enemies = []; this.waveSize = 0; this.attackTokenCount = 0; this.maxAttackTokens = 1; this.hitstop = 0; this.debugSkip = new URLSearchParams(window.location.search).get('skip') || ''; this.planks = L.createPlanks(); this.enemyBounds = { minX: 110, maxX: WORLD - 120, minY: L.LANE_MIN_Y, maxY: L.LANE_MAX_Y };
+      this.mode = 'title'; this.runElapsed = 0; this.waveIndex = -1; this.waveActive = false; this.fightArena = null; this.enemies = []; this.waveSize = 0; this.attackTokenCount = 0; this.maxAttackTokens = 1; this.hitstop = 0; this.debugSkip = new URLSearchParams(window.location.search).get('skip') || ''; this.planks = L.createPlanks();
+      const roam = L.roamBounds();
+      this.enemyBounds = { minX: roam.minX, maxX: roam.maxX, minY: L.LANE_MIN_Y, maxY: L.LANE_MAX_Y };
       this.bridgeGraphic?.destroy();
       this.bridgeGraphic = this.add.graphics().setDepth(4); this.drawBridge();
       this.boss = { active: false, defeated: false, hp: L.GRAY_MAN.hp, maxHp: L.GRAY_MAN.hp, x: BOSS_X, y: 346, phase: 'stalk', timer: 1.2, targetX: 0, targetY: 0, strikes: 0, flashTimer: 0, phaseTwo: false };
@@ -676,10 +677,12 @@
       }
       this.runElapsed += dt; this.heroData.time = this.runElapsed;
       this.exitGlowPulse += dt;
+      this.applyFightBounds();
       this.updateHero(dt);
       this.updateFireballs(dt);
       this.updateBalefireFx(dt);
       this.updateWorldProgress(dt);
+      this.applyFightBounds();
       this.updateEnemies(dt);
       if (this.boss.active && !this.boss.defeated) this.updateBoss(dt);
       this.updateBridge(dt);
@@ -724,7 +727,6 @@
       const inBridge = p.x >= BRIDGE_START && p.x <= BRIDGE_END;
       p.onBridge = inBridge;
       if (inBridge) p.y = FLOOR - 12;
-      const lockX = this.boss.active && !this.boss.defeated ? [ARENA_LEFT, ARENA_RIGHT] : null;
       let mx = I.x, my = inBridge ? 0 : I.y;
       // Held movement must not flip Riley off a swing. Facing locks toward the threat in startHeroAttack.
       p.facing = L.facingAfterMove(p, mx);
@@ -746,9 +748,8 @@
       } else if (p.action === 'attack' && p.actionT < 0.16) {
         p.x += p.facing * 34 * dt;
       }
-      if (lockX) p.x = clamp(p.x, lockX[0], lockX[1]);
-      if (this.waveActive) p.x = Math.min(p.x, WAVE_AT[this.waveIndex] + 405);
-      p.x = clamp(p.x, 38, WORLD - 85);
+      const limits = this.fightLimits();
+      p.x = clamp(p.x, limits.minX, limits.maxX);
 
       const grounded = p.z <= 0 && (p.action === 'idle' || p.action === 'walk');
       if (grounded && inp.take('power')) {
@@ -1009,15 +1010,42 @@
       }
     }
 
+    fightLimits() {
+      if (this.waveActive && this.fightArena) return this.fightArena;
+      if (this.boss && this.boss.active && !this.boss.defeated && this.fightArena) return this.fightArena;
+      return L.roamBounds();
+    }
+
+    applyFightBounds() {
+      const arena = (this.waveActive || (this.boss && this.boss.active && !this.boss.defeated)) ? this.fightArena : null;
+      const roam = L.roamBounds();
+      this.enemyBounds.minX = arena ? arena.minX : roam.minX;
+      this.enemyBounds.maxX = arena ? arena.maxX : roam.maxX;
+      const cam = this.cameras && this.cameras.main;
+      if (!cam) return;
+      if (arena) {
+        if (this._camLock !== arena.viewLeft) {
+          cam.setBounds(arena.viewLeft, 0, VIEW_W, H);
+          this._camLock = arena.viewLeft;
+        }
+      } else if (this._camLock !== 'roam') {
+        cam.setBounds(0, 0, WORLD, H);
+        this._camLock = 'roam';
+      }
+    }
+
     startWave(index) {
       this.waveIndex = index; this.waveActive = true;
       const p = this.heroData; p.checkpoint = Math.max(100, WAVE_AT[index] - 110);
+      this.fightArena = L.waveArena(index, p.x);
+      this.applyFightBounds();
+      p.x = clamp(p.x, this.fightArena.minX, this.fightArena.maxX);
       const count = WAVE_COUNTS[index], tune = WAVE_TUNING[index];
       this.waveSize = count;
       this.maxAttackTokens = L.tokenCap(index); this.attackTokenCount = 0;
       for (let i = 0; i < count; i++) {
         const orbit = L.orbitOffset(i, count, this.runElapsed || 0);
-        const x = p.x + orbit.x;
+        const x = clamp(p.x + orbit.x, this.fightArena.minX, this.fightArena.maxX);
         const y = clamp(p.y + orbit.y, this.enemyBounds.minY, this.enemyBounds.maxY);
         const sprite = this.add.sprite(x, y, 'gruntPage0', 'grunt_walk_00').setOrigin(0.5, 790 / 820).setScale(0.39 + (i % 2) * 0.015).setDepth(1000 + y);
         sprite.play('grunt_walk'); if (i % 3 === 1) sprite.setTint(0xd8dbe6);
@@ -1035,6 +1063,8 @@
 
     completeWave() {
       this.waveActive = false;
+      this.fightArena = null;
+      this.applyFightBounds();
       this.enemies.forEach(e => { e.sprite.destroy(); e.shadow.destroy(); e.tell.destroy(); e.hpBar.destroy(); e.alert.destroy(); }); this.enemies.length = 0; this.attackTokenCount = 0;
       this.heroData.score += 300 + this.waveIndex * 100; this.heroData.hp = Math.min(100, this.heroData.hp + 12); this.heroData.focus = Math.min(100, this.heroData.focus + 15);
       this.heroData.checkpoint = WAVE_AT[this.waveIndex] + 140;
@@ -1118,8 +1148,12 @@
     }
 
     startBoss() {
-      const p = this.heroData; this.boss.active = true; this.boss.phase = 'stalk'; this.boss.timer = 1.4; this.boss.x = BOSS_X; this.boss.y = 345;
-      p.checkpoint = ARENA_START; p.x = Math.min(p.x, ARENA_START + 80); this.bossSprite.setPosition(this.boss.x, this.boss.y).setAlpha(0.72);
+      const p = this.heroData;
+      this.fightArena = L.bossArena();
+      this.boss.active = true; this.boss.phase = 'stalk'; this.boss.timer = 1.4; this.boss.y = 345;
+      this.applyFightBounds();
+      this.boss.x = clamp(BOSS_X, this.fightArena.minX, this.fightArena.maxX);
+      p.checkpoint = ARENA_START; p.x = clamp(Math.min(p.x, ARENA_START + 80), this.fightArena.minX, this.fightArena.maxX); this.bossSprite.setPosition(this.boss.x, this.boss.y).setAlpha(0.72);
       $('#boss-hud').style.display = 'block'; this.toast('THE GRAY MAN · WATCH FOR THE RED FLASH', 3); this.triggerBanner('THE GRAY MAN · WAIT FOR THE RED TELL', 2.8);
       this.startMusic('boss');
     }
@@ -1150,7 +1184,7 @@
           b.phase = 'strike'; b.timer = L.GRAY_MAN.strike;
           this.cue('strike');
           const side = b.x < b.targetX ? -1 : 1;
-          b.x = clamp(b.targetX + side * 115, ARENA_LEFT + 8, ARENA_RIGHT - 24); b.y = b.targetY;
+          b.x = clamp(b.targetX + side * 115, this.fightArena.minX, this.fightArena.maxX); b.y = b.targetY;
           this.bossSprite.setPosition(b.x, b.y).setAlpha(1).setTint(0xff4c5b).setRotation(-side * 0.08);
         }
       } else if (b.phase === 'strike') {
@@ -1158,13 +1192,14 @@
         if (b.timer <= 0) {
           if (L.grayManStrikeConnects(p, b.targetX, b.targetY)) this.hurtHero(b.phaseTwo ? L.GRAY_MAN.damageFast : L.GRAY_MAN.damage, Math.sign(p.x - b.x) * 270);
           this.hideBossTell(); b.phase = 'recover'; b.timer = L.GRAY_MAN.recover;
-          b.x = clamp(b.targetX + (b.x < b.targetX ? -90 : 90), ARENA_LEFT + 8, ARENA_RIGHT - 24);
+          b.x = clamp(b.targetX + (b.x < b.targetX ? -90 : 90), this.fightArena.minX, this.fightArena.maxX);
           this.bossSprite.setPosition(b.x, b.y).setAlpha(1).clearTint().setRotation(0);
         }
       } else if (b.phase === 'recover') {
         if (b.flashTimer > 0) { b.flashTimer -= dt; this.bossSprite.setAlpha(0.95).setTint(0xaffff0); } else this.bossSprite.setAlpha(0.95).clearTint();
         if (b.timer <= 0) { b.phase = 'stalk'; b.timer = b.phaseTwo ? 0.56 + Math.random() * 0.26 : 0.88 + Math.random() * 0.34; this.bossSprite.setAlpha(0.42); }
       }
+      if (this.fightArena) b.x = clamp(b.x, this.fightArena.minX, this.fightArena.maxX);
       this.bossShadow.setPosition(b.x, b.y + 5); this.bossShadow.setDepth(800 + b.y); this.bossSprite.setDepth(1100 + b.y);
     }
 
@@ -1178,7 +1213,7 @@
       this.bossSprite.setTint(0xffffff); b.flashTimer = 0.09; this.impactFeedback(heavy);
       this.cue('hit', !!heavy);
       if (b.hp <= 0) {
-        b.defeated = true; b.active = false; b.phase = 'dead'; this.bossSprite.setAlpha(0.18); this.hideBossTell(); $('#boss-hud').style.display = 'none';
+        b.defeated = true; b.active = false; b.phase = 'dead'; this.fightArena = null; this.applyFightBounds(); this.bossSprite.setAlpha(0.18); this.hideBossTell(); $('#boss-hud').style.display = 'none';
         this.heroData.score += 1600; this.toast('THE GRAY MAN IS GONE · EXIT OPEN', 3); this.triggerBanner('THE GRAY MAN FALLS · THE WAYGATE IS OPEN', 2.8);
         this.cue('death');
         this.startMusic('stage');

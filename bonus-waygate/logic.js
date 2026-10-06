@@ -91,6 +91,11 @@
   const BOSS_X = ARENA_START + 250;
   const EXIT_X = ARENA_RIGHT + 240;
   const WORLD = EXIT_X + 200;
+  // One visible screen. A locked wave is exactly this wide, so the right edge
+  // Riley can walk to is the right edge the camera is showing.
+  const VIEW_W = 960;
+  const EDGE_MARGIN = 40;
+  const WAVE_AT = [500, 1120, 1750];
 
   function stepVertical(hero, dt) {
     if (hero.z > 0 || hero.vz > 0) {
@@ -285,7 +290,66 @@
     e.y = clamp(e.y, bounds.minY, bounds.maxY);
   }
 
+  // Slide the one-screen view so it contains the anchor and stops at the ceiling
+  // (the next wave trigger, the bridge, or the Waygate). Walkable x is inset by
+  // EDGE_MARGIN so a sprite centered on its origin can stand at the screen edge.
+  function fightArena(anchorX, ceiling) {
+    let viewLeft = Math.max(0, anchorX - 200);
+    let viewRight = viewLeft + VIEW_W;
+    if (ceiling != null && viewRight > ceiling) {
+      viewRight = ceiling;
+      viewLeft = Math.max(0, viewRight - VIEW_W);
+    }
+    const walkMax = () => viewLeft + (viewRight - viewLeft) - EDGE_MARGIN;
+    if (anchorX > walkMax()) {
+      const limit = ceiling != null ? ceiling : anchorX + EDGE_MARGIN;
+      viewRight = Math.min(limit, anchorX + EDGE_MARGIN);
+      viewLeft = Math.max(0, viewRight - VIEW_W);
+      if (ceiling == null) viewRight = viewLeft + VIEW_W;
+    }
+    if (viewRight - viewLeft > VIEW_W) viewRight = viewLeft + VIEW_W;
+    return {
+      viewLeft,
+      viewRight,
+      minX: viewLeft + EDGE_MARGIN,
+      maxX: viewRight - EDGE_MARGIN
+    };
+  }
+
+  function waveArena(index, playerX) {
+    const ceiling = index >= WAVE_AT.length - 1 ? BRIDGE_START : WAVE_AT[index + 1];
+    return fightArena(playerX, ceiling);
+  }
+
+  function bossArena() {
+    return fightArena(ARENA_START + 200, EXIT_X - 16);
+  }
+
+  function roamBounds() {
+    return { minX: EDGE_MARGIN, maxX: WORLD - EDGE_MARGIN, viewLeft: 0, viewRight: WORLD };
+  }
+
+  // Same x limits for Riley and anything that can stand in the fight. Outward
+  // knock dies on the wall so a launch cannot park a body past his reach.
+  function containFighter(e, bounds) {
+    if (!e || !bounds) return;
+    if (bounds.minX != null && bounds.maxX != null) {
+      e.x = clamp(e.x, bounds.minX, bounds.maxX);
+      if (e.knock) {
+        if (e.x <= bounds.minX && e.knock < 0) e.knock = 0;
+        if (e.x >= bounds.maxX && e.knock > 0) e.knock = 0;
+      }
+    }
+    if (bounds.minY != null && bounds.maxY != null) e.y = clamp(e.y, bounds.minY, bounds.maxY);
+  }
+
   function stepEnemy(e, ctx) {
+    const events = stepEnemyMotion(e, ctx);
+    if (e && ctx && ctx.bounds) containFighter(e, ctx.bounds);
+    return events;
+  }
+
+  function stepEnemyMotion(e, ctx) {
     const dt = ctx.dt;
     const p = ctx.player;
     const bag = ctx.tokenBag;
@@ -584,12 +648,14 @@
     FLOOR, P_SPEED, GRAVITY, JUMP_V, LANDING_MARGIN, CRUMBLE_WARN, ROLL_DURATION,
     BRIDGE_START, BRIDGE_END, BRIDGE_SPAWN, BRIDGE_MID, GAPS, CRUMBLE, PADS,
     ARENA_START, ARENA_LEFT, ARENA_RIGHT, BOSS_X, EXIT_X, WORLD,
+    VIEW_W, EDGE_MARGIN, WAVE_AT,
     GAP_W, CRUMBLE_W, LANE_MIN_Y, LANE_MAX_Y, MID_RANGE, WAVE_TUNING, ATTACK_HIT,
     BODY_W, BODY_H, MAX_PAIR_OVERLAP, MIN_SEPARATION, MELEE_RANGE, ATTACK_STANDOFF, RING_RANGE,
     GRAY_MAN, clamp, fmtTime, stepVertical, runningJumpReach, createPlanks, isPit, stablePadAt,
     stepPlanks, advanceBridgeCheckpoint, tokenCap, claimToken, releaseToken,
     orbitOffset, spriteOverlap, separateEnemies, holdWaitingRing, resolveCrowd,
     stepEnemy, simulateCrowd, grayManSolidSeconds, isInvulnerable,
+    fightArena, waveArena, bossArena, roamBounds, containFighter,
     grayManStrikeConnects, nearestThreat, facingTowardThreat, facingAfterMove,
     targetsHitByAttack, knockProfile, knockTravel, registerTrollocKill, applyHeroHit,
     formatRunStats
