@@ -12,9 +12,10 @@ Playable Shadar Logoth on `rwb-2-stage4`, entered with `?s4=1&stage=4`. `?god=1`
 
 ## Placeholder vs final
 
-Placeholder (labelled procedural textures from `src/stage4-view.js`, plus `assets/bg4/lights.json` for moon keys, shafts, and vents):
+Placeholder (labelled `PLACEHOLDER ART`. Painted at boot from `src/stage4-art.js`, `src/stage4-art-bg.js`, `src/stage4-art-fog.js`, and `src/stage4-art-cast.js`. Not final art):
 
-- Far/mid/floor plates, fog tip (bright `#d8ff6a`), segments, vents, walls, moonshafts, towers, rubble, Draghkar and cultist blocks, story panels, portrait.
+- A moonlit dead city: night gradient, a full moon with glow, two parallax ruin skylines, cracked flagstones. Mashadar banks, tapering tendrils with a bright tip, flaring vents, churning fog walls, moonshafts, stone towers with a dust frame, rubble.
+- Draghkar sheet (perch, flap, glide, land, claw, croon, kiss, reel, down, ash) and cultist sheet (walk, chant, bolt, shove, hurt, down, flee), plus the boss portrait and three story panels. Hitboxes, timing, and texture keys are unchanged. Backdrop and fighters use Light2D. At quality 2 and above the fog banks thin and tendrils draw five segments.
 - Music ids `stage4` / `boss4` are registered and silent. There are no new `EXTRA_VOICE` lines, so story captions are inline and Draghkar/cultist voices stay quiet if the files are missing.
 
 Final logic (not art): fog, cultists, Draghkar phases, kiss rules, towers, arena, HUD boss bar / croon arc / kiss hint, stage select name, bot, and the campaign.
@@ -33,9 +34,9 @@ Final logic (not art): fog, cultists, Draghkar phases, kiss rules, towers, arena
 - `scene.grabBusy` stays a method. The kiss stores its flag on `_kissBusy`.
 - Riley's `riley4_kissed` / `riley4_break` clips play only when those animations exist. Otherwise the existing grabbed and escape clips play.
 - No Stage 2 fingerprint baseline is checked in on this machine. Stage 2 is covered by its existing tests.
-- Stage 4 source does not fit the leftover Stage 1 pre-fight headroom (about 2 KB after Stage 3). `tools/audit-stage1.mjs` reports those modules under `stage4.source` (96 KB cap) instead of the 25 MB gate, the same split Stage 3 voices already use. They are still imported by the stage 1 scene, so a cold load does download them; the split is so the existing 25 MB test can stay unchanged.
+- Stage 4 source does not fit the leftover Stage 1 pre-fight headroom (about 2 KB after Stage 3). `tools/audit-stage1.mjs` reports those modules under `stage4.source` (192 KB cap) instead of the 25 MB gate, the same split Stage 3 voices already use. The illustrated boot art lives in that budget. The modules are still imported by the stage 1 scene, so a cold load does download them; the split is so the existing 25 MB test can stay unchanged.
 
 ## Known issues
 
-- Art, music, and Draghkar/cultist voice files are still placeholders or silent.
+- The pictures are procedural boot art, still under the `PLACEHOLDER ART` tag. Music and Draghkar/cultist voice files are still silent.
 - The bot is tuned to demonstrate every mechanic in one clear. A human player is not carried the same way; tells are the fairness, not the bot's spacing.

@@ -142,13 +142,20 @@ test('the TTS script exits without writing voice files when the engines are miss
 
 test('the music script exits without writing loops when fluidsynth is missing', () => {
   const dir = mkdtempSync(join(tmpdir(), 's4-music-'));
+  const hide = mkdtempSync(join(tmpdir(), 's4-nofs-'));
+  // Invoke Python by absolute path and give it a PATH that cannot see the host
+  // fluidsynth, so this still checks the missing-tool exit on machines that have it.
+  const py = execFileSync('python3', ['-c', 'import sys; print(sys.executable)'], { cwd: root, encoding: 'utf8' }).trim();
   try {
-    const result = spawnSync('python3', ['tools/stage4/compose_stage4.py', dir], { cwd: root, encoding: 'utf8' });
+    const result = spawnSync(py, ['tools/stage4/compose_stage4.py', dir], {
+      cwd: root, encoding: 'utf8', env: { ...process.env, PATH: hide },
+    });
     assert.notEqual(result.status, 0);
     assert.match(`${result.stdout}\n${result.stderr}`, /No music files were written/);
     assert.equal(readdirSync(dir).filter(name => name.endsWith('.mp3')).length, 0);
   } finally {
     rmSync(dir, { recursive: true, force: true });
+    rmSync(hide, { recursive: true, force: true });
   }
 });
 

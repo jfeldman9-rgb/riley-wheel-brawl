@@ -50,7 +50,7 @@ export function audit() {
   const files = new Set(['index.html','lib/phaser.min.js','assets/fonts/press-start-2p.ttf']);
   // Stage 4 modules do not fit the leftover Stage 1 headroom (about 2 KB after Stage 3).
   // They are a separate source budget, the same way Stage 3 voices sit outside this gate.
-  const STAGE4_SRC = new Set(['stage4.js','stage4-def.js','stage4-hud.js','stage4-hazards.js','stage4-sfx.js','stage4-actors.js','stage4-arena.js','stage4-towers.js','stage4-view.js','cultists.js','draghkar.js','bot-stage4.js']);
+  const STAGE4_SRC = new Set(['stage4.js','stage4-def.js','stage4-hud.js','stage4-hazards.js','stage4-sfx.js','stage4-actors.js','stage4-arena.js','stage4-towers.js','stage4-view.js','stage4-art.js','stage4-art-bg.js','stage4-art-fog.js','stage4-art-cast.js','cultists.js','draghkar.js','bot-stage4.js']);
   const stage4SourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
     if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);
@@ -73,7 +73,7 @@ export function audit() {
   const stage3MusicFiles = ['assets/audio/music-stage3.mp3', 'assets/audio/music-boss3.mp3'];
   const stage3MusicBytes = stage3MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const stage4SourceBytes = stage4SourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
-  const stage4SourceBudget = 96 * 1024;
+  const stage4SourceBudget = 192 * 1024;
   const stage3VoiceBudget = 18 * 200 * 1024, stage3MusicBudget = 2 * 1_200_000;
   const rgbaBytes = images.reduce((n,x)=>n+x.rgbaBytes,0);
   const rileyAnimations = json('assets/chars/riley.anims.json').anims;
