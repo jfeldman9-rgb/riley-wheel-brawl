@@ -1,5 +1,6 @@
 // Base fighter: position on the ground plane (x, y = depth lane) plus height z for jumps and launches.
 import { LANE_TOP, LANE_BOT, WORLD_W, clamp } from './config.js';
+import { ANIM_PIVOT_X } from './anim-pivot.js';
 export class Fighter {
   constructor(scene, def, x, y) {
     this.scene = scene; this.def = def; this.meta = scene.metas[def.key];
@@ -15,6 +16,11 @@ export class Fighter {
     const key = this.def.prefix + name; if (!this.scene.anims.exists(key)) { console.warn('missing anim', key); return; }
     if (!restart && this.cur === key) { this.sprite.anims.timeScale = ts; return; }
     this.cur = key; this.sprite.play(key); this.sprite.anims.timeScale = ts;
+    const px = ANIM_PIVOT_X[key] ?? this.def.anchorX, m = this.meta;
+    const py = m && m.canvas && m.canvas[1] > 0 ? m.baseline / m.canvas[1] : NaN;
+    if (this.sprite.setOrigin) this.sprite.setOrigin(
+      Number.isFinite(px) ? px : Number.isFinite(this.sprite.originX) ? this.sprite.originX : 0.5,
+      Number.isFinite(py) ? py : Number.isFinite(this.sprite.originY) ? this.sprite.originY : 1);
   }
   /** index of the current frame inside the current animation */
   get fi() { const c = this.sprite.anims.currentFrame; return c ? c.index - 1 : 0; }
@@ -30,7 +36,7 @@ export class Fighter {
     const cam = this.scene.bounds; this.x = clamp(this.x, cam.l + 40, cam.r - 40);
   }
   sync() {
-    const s = this.sprite; s.x = this.x + (this.shudder ? (Math.random() * 2 - 1) * 4 : 0); s.y = this.y - this.z; s.setDepth(1000 + this.y);
+    const s = this.sprite; s.x = this.x + (this.shudder ? (Math.random() * 2 - 1) * 2 : 0); s.y = this.y - this.z; s.setDepth(1000 + this.y);
     const k = Math.max(0.35, 1 - this.z / 500);
     // Keep a fading corpse's shadow in sync. Live Riley's invulnerability blink
     // must not make his ground shadow flicker with the sprite.
