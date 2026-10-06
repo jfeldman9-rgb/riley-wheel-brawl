@@ -1,6 +1,6 @@
 # Waygate Gauntlet
 
-A self-contained, silent bonus level for **Riley Wheel Brawl**. It uses Phaser 3 from jsDelivr and carries its own character atlases and animation metadata. The atlases are inlined as data URLs in `assets/atlas-inline.js`, so the level does not fetch image files (those 403 on some static hosts and stall the loading screen). If a texture fails, the fight still reaches the title using placeholder shapes. No files in the parent game are changed.
+A self-contained bonus level for **Riley Wheel Brawl**. It uses Phaser 3 from jsDelivr and carries its own character atlases and animation metadata. The atlases are inlined as data URLs in `assets/atlas-inline.js`, so the level does not fetch image files (those 403 on some static hosts and stall the loading screen). If a texture fails, the fight still reaches the title using placeholder shapes. No files in the parent game are changed.
 
 ## Run
 
@@ -49,4 +49,4 @@ Keep this directory intact and link to `bonus-waygate/index.html` from the main 
 
 ## Art and audio
 
-Riley and grunt Trolloc atlas pages are copied from the supplied public reference repository's `assets/chars/` folder and inlined so this folder does not fetch them. Controls come from [`src/input.js`](../src/input.js) on this branch. The Gray Man, Waygate environment, effects and UI are drawn in code as simple placeholders. There is no music, sound effect, video, or generated audio.
+Riley and grunt Trolloc atlas pages are copied from the supplied public reference repository's `assets/chars/` folder and inlined so this folder does not fetch them. Controls come from [`src/input.js`](../src/input.js) on this branch. Hits, jumps, the bridge, and the Gray Man's red flash use the stage sound effects in [`src/audio.js`](../src/audio.js). Music is the stage director in [`src/music.js`](../src/music.js): the tense Stage 2 loop for the waves and the bridge, and that stage's boss loop for the Gray Man. Mute and music are M and N, the same keys as the stages, and a hidden tab suspends the audio. There are no new voice lines. The Ways backdrop is drawn in code (void, distant bridges, Machin Shin at the edges, a bridge with thickness, a Guiding stone, and the Waygate leaf). Painted replacements are prompted in `ART-PROMPTS.md`.

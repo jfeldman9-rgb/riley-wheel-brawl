@@ -75,6 +75,16 @@
       window.addEventListener('blur', this.onBlur = () => { if (this.mode === 'play') this.pauseGame('Game paused — the tab lost focus.'); });
       document.addEventListener('visibilitychange', this.onVisibility = () => { if (document.hidden && this.mode === 'play') this.pauseGame('Game paused — the tab is hidden.'); });
       this.showPanel('title');
+      this.onAudioKey = (e) => {
+        const audio = window.WaygateAudio;
+        if (!audio) return;
+        if (e.code !== 'KeyM' && e.code !== 'KeyN') return;
+        this.unlockAudio();
+        if (e.code === 'KeyM' && audio.toggleMusic) audio.toggleMusic();
+        else if (e.code === 'KeyN' && audio.toggleMute) audio.toggleMute();
+      };
+      window.addEventListener('keydown', this.onAudioKey);
+      this.startMusic('title');
       const loading = $('#loading');
       if (loading) loading.style.display = 'none';
       $('#hud').hidden = false;
@@ -149,6 +159,7 @@
 
     onShutdown() {
       window.removeEventListener('blur', this.onBlur);
+      window.removeEventListener('keydown', this.onAudioKey);
       document.removeEventListener('visibilitychange', this.onVisibility);
       $('#overlay').removeEventListener('click', this.overlayAction);
       $('#overlay').removeEventListener('pointerup', this.overlayAction);
@@ -215,88 +226,318 @@
     }
 
     drawWorld() {
-      const g = this.add.graphics().setDepth(0);
-      // Shadow-veiled stone corridor, with long receding seams and broken sigils.
-      g.fillStyle(0x0a0c14, 1); g.fillRect(0, 0, WORLD, H);
-      g.fillStyle(0x111525, 1); g.fillRect(0, 276, WORLD, 144);
-      g.fillStyle(0x202638, 0.9); g.fillRect(0, FLOOR, WORLD, 4);
-      g.fillStyle(0x141a28, 1); g.fillRect(0, FLOOR + 4, WORLD, H - FLOOR - 4);
-      g.lineStyle(1, 0x4a5366, 0.24);
-      for (let x = 0; x <= WORLD; x += 120) { g.lineBetween(x, FLOOR + 8, x + 34, H); g.lineBetween(x, 418, x + 110, 418); }
-      for (let x = 45; x < WORLD; x += 220) {
-        g.lineStyle(2, 0x69708a, 0.22); g.strokeCircle(x, 385 + (x % 3) * 8, 11);
-        g.lineStyle(1, 0x69708a, 0.25); g.lineBetween(x - 12, 385, x + 12, 385); g.lineBetween(x, 373, x, 397);
+      this.paintWaysTextures();
+      const plan = (window.WaygatePresentation && window.WaygatePresentation.BACKDROP_LAYERS) || [];
+      this.backdropLayers = [];
+      for (const spec of plan) {
+        if (spec.texture && this.textures.exists(spec.texture)) {
+          const obj = this.add.tileSprite(0, 0, W, H, spec.texture).setOrigin(0, 0).setScrollFactor(0).setDepth(spec.depth);
+          this.backdropLayers.push({ name: spec.name, scrollFactor: spec.scrollFactor, obj });
+        } else if (spec.name === 'machin') {
+          const obj = this.add.graphics().setScrollFactor(0).setDepth(spec.depth);
+          this.machinShin = obj;
+          this.backdropLayers.push({ name: spec.name, scrollFactor: spec.scrollFactor, obj });
+        }
       }
-      // Far wall pilasters and cold, drifting shadow pools.
-      for (let x = 150; x < WORLD; x += 410) {
-        g.fillStyle(0x131827, 0.75); g.fillRect(x, 100, 46, 322);
-        g.fillStyle(0x283047, 0.42); g.fillRect(x + 5, 105, 4, 300);
-        g.fillStyle(0x29344a, 0.13); g.fillEllipse(x + 180, 288, 310, 170);
-      }
-      // Floating, faint motes, deterministic for stable screenshots.
-      for (let i = 0; i < 150; i++) {
-        const x = (i * 173 + 71) % WORLD, y = 35 + ((i * 97) % 300), a = 0.12 + ((i * 7) % 8) / 30;
-        g.fillStyle(i % 3 ? 0x829ab5 : 0x73c4bd, a); g.fillCircle(x, y, i % 9 === 0 ? 2 : 1);
-      }
-      g.setScrollFactor(1); g.setDepth(0);
+      // The lane stays brighter than the void so Riley and the Trollocs read.
+      const lane = this.add.graphics().setDepth(3).setScrollFactor(1);
+      lane.fillStyle(0x121826, 1); lane.fillRect(0, 286, WORLD, 28);
+      lane.fillStyle(0x3e4c63, 1); lane.fillRect(0, 312, WORLD, FLOOR - 312 + 18);
+      lane.fillStyle(0xc9d7e6, 0.92); lane.fillRect(0, FLOOR - 2, WORLD, 5);
+      lane.fillStyle(0x2a3448, 0.45); lane.fillRect(0, 352, WORLD, 36);
+      lane.lineStyle(1, 0x121820, 0.4);
+      for (let x = 0; x < WORLD; x += 92) lane.lineBetween(x, 318, x, FLOOR + 12);
+      this.floorLane = lane;
 
-      // Waygates in the distance: animated-feeling rings built entirely from shapes.
       for (const [x, tint] of [[-120, 0x44c4bd], [2140, 0x7798df], [EXIT_X - 16, 0x80ead9]]) this.drawWaygate(x, tint);
       this.bridgeGraphic = this.add.graphics().setDepth(4);
       this.drawBridge();
+      this.drawGuidingStone();
+      this.drawWaygateLeaf();
 
-      // Static falling mist bands, set behind the fighters.
       this.mist = [];
       const mistCount = Math.max(7, Math.ceil(WORLD / 640));
       for (let i = 0; i < mistCount; i++) {
-        const m = this.add.ellipse(280 + i * 640, 295 + (i % 2) * 35, 360, 100, 0x69758d, 0.055).setDepth(2);
+        const m = this.add.ellipse(280 + i * 640, 250 + (i % 2) * 28, 420, 70, 0x8ea4c4, 0.045).setDepth(2.4);
         this.mist.push({ obj: m, home: m.x, seed: i * 1.7 });
       }
-      // Exit gate is cold until the assassin is defeated.
-      this.exitGlow = this.add.ellipse(EXIT_X, 320, 90, 154, 0x57ddd0, 0.08).setStrokeStyle(5, 0x62ded1, 0.35).setDepth(3);
-      this.exitLabel = this.add.text(EXIT_X, 230, 'WAYGATE', { fontFamily: 'monospace', fontSize: '12px', color: '#a1e7dc', fontStyle: 'bold', align: 'center' }).setOrigin(0.5).setDepth(5);
+      this.exitGlow = this.add.ellipse(EXIT_X, 300, 70, 120, 0x57ddd0, 0.08).setStrokeStyle(4, 0x62ded1, 0.28).setDepth(4.2);
+      this.exitLabel = this.add.text(EXIT_X, 168, 'WAYGATE', { fontFamily: 'monospace', fontSize: '12px', color: '#a1e7dc', fontStyle: 'bold', align: 'center' }).setOrigin(0.5).setDepth(5);
       this.checkpointMark = this.add.text(BRIDGE_MID, FLOOR - 48, 'CHECKPOINT', { fontFamily: 'monospace', fontSize: '11px', color: '#9ee7dc', fontStyle: 'bold' }).setOrigin(0.5).setDepth(6).setAlpha(0.8);
-      this.exitGlow.setAlpha(0.18); this.exitLabel.setAlpha(0.52);
+      this.exitGlow.setAlpha(0.16); this.exitLabel.setAlpha(0.52);
+    }
+
+    paintWaysTextures() {
+      const spec = (window.WaygatePresentation && window.WaygatePresentation.TEXTURES) || {
+        void: { key: 'ways-void', w: 2048, h: 540 },
+        islands: { key: 'ways-islands', w: 2048, h: 480 },
+        ramps: { key: 'ways-ramps', w: 1600, h: 400 },
+        leaf: { key: 'ways-leaf', w: 256, h: 320 },
+        stone: { key: 'ways-stone', w: 160, h: 280 }
+      };
+      const paint = (desc, draw) => {
+        if (this.textures.exists(desc.key)) return;
+        const canvas = document.createElement('canvas');
+        canvas.width = desc.w; canvas.height = desc.h;
+        draw(canvas.getContext('2d'), desc.w, desc.h);
+        this.textures.addCanvas(desc.key, canvas);
+      };
+      const rnd = (seed) => {
+        let a = seed >>> 0;
+        return () => {
+          a = (a + 0x6D2B79F5) >>> 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      };
+      paint(spec.void, (ctx, w, h) => {
+        const sky = ctx.createLinearGradient(0, 0, 0, h);
+        sky.addColorStop(0, '#02030a');
+        sky.addColorStop(0.42, '#070b16');
+        sky.addColorStop(0.62, '#10182a');
+        sky.addColorStop(1, '#04060d');
+        ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
+        const r = rnd(0x574159);
+        for (let i = 0; i < 520; i++) {
+          const x = r() * w, y = r() * h * 0.78, a = 0.12 + r() * 0.62, s = r() < 0.07 ? 2 : 1;
+          const cool = r() > 0.82;
+          ctx.fillStyle = cool ? `rgba(140,220,210,${a})` : `rgba(210,214,230,${a})`;
+          ctx.fillRect(x, y, s, s);
+          if (s > 1) { ctx.fillStyle = `rgba(230,240,255,${a * 0.4})`; ctx.fillRect(x - 2, y, 5, 1); ctx.fillRect(x, y - 2, 1, 5); }
+        }
+        ctx.globalAlpha = 0.18;
+        for (let i = 0; i < 9; i++) {
+          ctx.fillStyle = i % 2 ? '#1c2a44' : '#24344a';
+          ctx.fillRect(0, 30 + i * 26 + (i % 3) * 4, w, 1.5);
+        }
+        ctx.globalAlpha = 1;
+      });
+      const span = (ctx, x, y, len, thick, tilt, broken) => {
+        ctx.save();
+        ctx.translate(x, y); ctx.rotate(tilt);
+        ctx.fillStyle = '#10161f';
+        ctx.beginPath();
+        ctx.moveTo(6, thick - 2); ctx.lineTo(len - 8, thick + 2); ctx.lineTo(len - 28, thick + 26); ctx.lineTo(22, thick + 18); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#243044';
+        ctx.fillRect(0, 0, len, thick);
+        ctx.fillStyle = '#5c6d84';
+        ctx.fillRect(0, 0, len, 3);
+        ctx.fillStyle = '#1a2330';
+        for (let px = 18; px < len - 10; px += 28) ctx.fillRect(px, 4, 2, thick - 6);
+        if (broken) {
+          ctx.fillStyle = '#0c1018';
+          ctx.beginPath(); ctx.moveTo(len * 0.72, 0); ctx.lineTo(len + 6, thick * 0.35); ctx.lineTo(len * 0.8, thick); ctx.fill();
+        }
+        ctx.fillStyle = '#2c3b50';
+        ctx.beginPath();
+        ctx.moveTo(len * 0.18, thick); ctx.lineTo(len * 0.18 + 36, thick + 34); ctx.lineTo(len * 0.18 + 78, thick + 34); ctx.lineTo(len * 0.18 + 48, thick); ctx.fill();
+        ctx.restore();
+      };
+      paint(spec.islands, (ctx, w, h) => {
+        ctx.clearRect(0, 0, w, h);
+        const spots = [[80, 150, 340, 22, -0.04, true], [520, 210, 420, 26, 0.03, false], [1040, 120, 300, 20, -0.06, true], [1420, 240, 460, 28, 0.02, false], [1760, 160, 240, 18, -0.03, true]];
+        for (const s of spots) span(ctx, s[0], s[1], s[2], s[3], s[4], s[5]);
+        ctx.fillStyle = '#1a2433';
+        ctx.fillRect(1680, 78, 16, 70);
+        ctx.fillStyle = '#7dfff0';
+        ctx.globalAlpha = 0.85;
+        ctx.beginPath(); ctx.moveTo(1688, 70); ctx.lineTo(1698, 86); ctx.lineTo(1688, 102); ctx.lineTo(1678, 86); ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+      paint(spec.ramps, (ctx, w, h) => {
+        ctx.clearRect(0, 0, w, h);
+        span(ctx, 40, 150, 520, 36, -0.02, true);
+        span(ctx, 640, 210, 460, 32, 0.04, true);
+        span(ctx, 1120, 120, 420, 30, -0.05, false);
+        ctx.fillStyle = '#18202c';
+        ctx.fillRect(980, 70, 22, 110);
+        ctx.fillStyle = 'rgba(125,255,240,0.75)';
+        ctx.beginPath(); ctx.moveTo(991, 58); ctx.lineTo(1006, 80); ctx.lineTo(991, 102); ctx.lineTo(976, 80); ctx.fill();
+        ctx.fillStyle = '#121820';
+        ctx.fillRect(1180, 148, 18, 48);
+        ctx.fillRect(1210, 160, 14, 36);
+      });
+      paint(spec.leaf, (ctx, w, h) => {
+        ctx.clearRect(0, 0, w, h);
+        const cx = w / 2, cy = h / 2 + 10;
+        const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, 120);
+        glow.addColorStop(0, 'rgba(190,255,245,0.95)');
+        glow.addColorStop(0.45, 'rgba(80,210,196,0.35)');
+        glow.addColorStop(1, 'rgba(80,210,196,0)');
+        ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(cx, cy, 120, 0, Math.PI * 2); ctx.fill();
+        for (let i = 0; i < 3; i++) {
+          ctx.save();
+          ctx.translate(cx, cy); ctx.rotate(i * Math.PI * 2 / 3 - Math.PI / 2);
+          ctx.fillStyle = i === 0 ? '#d9fff8' : '#7dfff0';
+          ctx.beginPath();
+          ctx.moveTo(0, 8);
+          ctx.bezierCurveTo(36, -10, 28, -78, 0, -96);
+          ctx.bezierCurveTo(-28, -78, -36, -10, 0, 8);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -84); ctx.stroke();
+          ctx.restore();
+        }
+        ctx.fillStyle = '#f4fffd';
+        ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill();
+      });
+      paint(spec.stone, (ctx, w, h) => {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#1a222e';
+        ctx.beginPath();
+        ctx.moveTo(w / 2, 18); ctx.lineTo(w * 0.72, h - 28); ctx.lineTo(w * 0.28, h - 28); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#3d4c62';
+        ctx.beginPath();
+        ctx.moveTo(w / 2, 28); ctx.lineTo(w * 0.62, 120); ctx.lineTo(w / 2, h - 36); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#10161f';
+        ctx.fillRect(w * 0.22, h - 28, w * 0.56, 16);
+        const g = ctx.createRadialGradient(w / 2, 78, 4, w / 2, 78, 36);
+        g.addColorStop(0, 'rgba(210,255,248,0.95)');
+        g.addColorStop(1, 'rgba(125,255,240,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(w / 2, 78, 36, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#e7fffb';
+        ctx.beginPath(); ctx.moveTo(w / 2, 58); ctx.lineTo(w / 2 + 14, 78); ctx.lineTo(w / 2, 98); ctx.lineTo(w / 2 - 14, 78); ctx.fill();
+      });
     }
 
     drawWaygate(x, tint) {
-      const g = this.add.graphics().setDepth(1);
-      g.fillStyle(0x101623, 0.85); g.fillRect(x - 125, 200, 250, 220);
-      g.fillStyle(0x242b39, 0.9); g.fillRect(x - 124, 192, 26, 232); g.fillRect(x + 98, 192, 26, 232);
-      g.fillStyle(tint, 0.08); g.fillEllipse(x, 276, 174, 284);
-      g.lineStyle(9, tint, 0.2); g.strokeEllipse(x, 277, 160, 262);
-      g.lineStyle(4, tint, 0.46); g.strokeEllipse(x, 277, 140, 244);
-      g.lineStyle(2, 0xb5fff6, 0.22); g.strokeEllipse(x, 277, 124, 226);
-      for (let i = 0; i < 7; i++) { const py = 228 + i * 27; g.fillStyle(tint, 0.4 - i * 0.035); g.fillCircle(x + (i % 2 ? 46 : -46), py, 2); }
+      const g = this.add.graphics().setDepth(2.2);
+      g.lineStyle(10, tint, 0.16); g.strokeEllipse(x, 268, 150, 250);
+      g.lineStyle(3, tint, 0.4); g.strokeEllipse(x, 268, 128, 228);
+      g.lineStyle(1.5, 0xd8fff8, 0.28); g.strokeEllipse(x, 268, 108, 204);
+      g.fillStyle(tint, 0.05); g.fillEllipse(x, 268, 100, 190);
+    }
+
+    drawGuidingStone() {
+      if (!this.textures.exists('ways-stone')) return;
+      const x = BRIDGE_MID + 72;
+      this.guidingGlow = this.add.ellipse(x, FLOOR - 78, 70, 90, 0x7dfff0, 0.22).setDepth(4.5);
+      this.guidingStone = this.add.image(x, FLOOR + 6, 'ways-stone').setOrigin(0.5, 1).setDisplaySize(54, 96).setDepth(5);
+    }
+
+    drawWaygateLeaf() {
+      if (!this.textures.exists('ways-leaf')) return;
+      this.waygateLeaf = this.add.image(EXIT_X, 318, 'ways-leaf').setOrigin(0.5, 0.55).setDisplaySize(120, 150).setDepth(4.6).setAlpha(0.34);
     }
 
     drawBridge() {
       const g = this.bridgeGraphic; g.clear();
-      // A void trench beneath the shifting suspended path.
-      g.fillStyle(0x02040a, 1); g.fillRect(BRIDGE_START, 425, BRIDGE_END - BRIDGE_START, H - 425);
-      for (let x = BRIDGE_START; x < BRIDGE_END; x += 42) {
-        g.lineStyle(1, 0x29414b, 0.24); g.lineBetween(x, 435, x - 12, 540);
+      g.fillStyle(0x010208, 1);
+      g.fillRect(BRIDGE_START - 30, FLOOR + 6, BRIDGE_END - BRIDGE_START + 60, H - FLOOR);
+      g.lineStyle(2, 0x1c2c3a, 0.45);
+      for (let x = BRIDGE_START; x < BRIDGE_END; x += 34) {
+        g.lineBetween(x, FLOOR + 8, x - 22, H - 4);
+        g.lineBetween(x + 6, FLOOR + 14, x - 4, FLOOR + 64);
       }
-      for (const [a, b] of PADS) {
-        g.fillStyle(0x25303a, 1); g.fillRect(a, FLOOR - 8, b - a, 18);
-        g.fillStyle(0x66717b, 0.62); g.fillRect(a, FLOOR - 10, b - a, 3);
-        g.lineStyle(1, 0x9aa8ad, 0.23);
-        for (let x = a + 26; x < b; x += 44) g.lineBetween(x, FLOOR - 7, x - 11, FLOOR + 8);
-      }
-      g.fillStyle(0x7dfff0, 0.9); g.fillRect(BRIDGE_MID - 18, FLOOR - 12, 36, 4);
+      const slab = (a, b, body, lip, broken) => {
+        const y = FLOOR - 12;
+        g.fillStyle(broken ? 0x2a1618 : 0x121820, 1);
+        g.fillRect(a + 6, y + 16, Math.max(4, b - a - 12), 18);
+        g.fillTriangle(a, y + 16, a + 14, y + 36, a + 26, y + 16);
+        g.fillTriangle(b, y + 16, b - 14, y + 36, b - 26, y + 16);
+        g.fillStyle(body, 1);
+        g.fillRect(a, y, b - a, 22);
+        g.fillStyle(lip, broken ? 0.95 : 0.82);
+        g.fillRect(a, y, b - a, 4);
+        g.lineStyle(1, 0x0c1018, 0.75);
+        for (let x = a + 14; x < b - 6; x += 20) g.lineBetween(x, y + 5, x - 7, y + 20);
+        if (broken) {
+          g.lineStyle(2, 0xff6572, 0.9);
+          g.lineBetween(a + 6, y + 7, b - 8, y + 16);
+          g.lineBetween(a + 12, y + 16, b - 10, y + 6);
+        }
+      };
+      for (const [a, b] of PADS) slab(a, b, 0x46556c, 0xd5e2ef, false);
+      g.fillStyle(0x7dfff0, 0.95); g.fillRect(BRIDGE_MID - 18, FLOOR - 14, 36, 5);
       for (let i = 0; i < CRUMBLE.length; i++) {
         const [a, b] = CRUMBLE[i];
-        if (this.planks && this.planks[i].collapsed) continue;
+        if (this.planks && this.planks[i].collapsed) {
+          g.fillStyle(0x010208, 1);
+          g.fillRect(a, 280, b - a, H - 280);
+          continue;
+        }
         const broken = this.planks && this.planks[i].timer > 0;
-        g.fillStyle(broken ? 0x58373c : 0x37414a, 1); g.fillRect(a, FLOOR - 11, b - a, 21);
-        g.fillStyle(broken ? 0xff5661 : 0x849195, broken ? 0.92 : 0.5); g.fillRect(a + 3, FLOOR - 11, b - a - 6, 3);
-        g.lineStyle(2, broken ? 0xff5561 : 0x11171f, broken ? 0.8 : 0.9);
-        for (let x = a + 20; x < b - 8; x += 30) g.lineBetween(x, FLOOR - 8, x - 9, FLOOR + 7);
-        if (broken) { g.lineStyle(2, 0xff5867, 0.9); g.lineBetween(a + 8, FLOOR - 7, b - 8, FLOOR + 7); }
+        slab(a, b, broken ? 0x6a3c44 : 0x556278, broken ? 0xff8b94 : 0xb7c6d6, !!broken);
       }
-      // Visible gap lips. Lethal width is GAPS; the landing pad past each lip is the margin.
-      for (const [a, b] of L.GAPS) { g.fillStyle(0x0e121b, 1); g.fillRect(a, FLOOR - 13, b - a, 15); g.fillStyle(0x47505a, 0.65); g.fillRect(a, FLOOR - 13, 7, 3); g.fillRect(b - 7, FLOOR - 13, 7, 3); }
+      for (const [a, b] of L.GAPS) {
+        g.fillStyle(0x010208, 1);
+        g.fillRect(a, 280, b - a, H - 280);
+        g.fillStyle(0x6a7888, 1);
+        g.fillRect(a - 8, FLOOR - 14, 10, 10);
+        g.fillRect(b - 2, FLOOR - 14, 10, 10);
+        g.fillStyle(0x1a222c, 1);
+        g.fillTriangle(a - 8, FLOOR - 4, a + 2, FLOOR - 4, a - 2, FLOOR + 18);
+        g.fillTriangle(b + 8, FLOOR - 4, b - 2, FLOOR - 4, b + 2, FLOOR + 18);
+      }
       g.setDepth(4);
+    }
+
+    updateBackdrop(dt) {
+      this.backdropTime = (this.backdropTime || 0) + dt;
+      const cam = this.cameras && this.cameras.main ? this.cameras.main.scrollX : 0;
+      if (this.backdropLayers) {
+        for (const layer of this.backdropLayers) {
+          if (layer.obj && layer.scrollFactor && layer.obj.tilePositionX !== undefined) {
+            layer.obj.tilePositionX = cam * layer.scrollFactor;
+          }
+        }
+      }
+      this.drawMachinShin(this.backdropTime);
+      if (this.mist) {
+        for (const m of this.mist) {
+          m.obj.x = m.home + Math.sin(this.backdropTime * 0.33 + m.seed) * 48;
+          m.obj.y = 248 + Math.sin(this.backdropTime * 0.6 + m.seed) * 14;
+        }
+      }
+      const open = !!(this.boss && this.boss.defeated);
+      const pulse = 0.5 + 0.5 * Math.sin(this.backdropTime * (open ? 3 : 1.15));
+      if (this.waygateLeaf) this.waygateLeaf.setAlpha(open ? 0.72 + 0.28 * pulse : 0.26 + 0.14 * pulse);
+      if (this.guidingGlow) this.guidingGlow.setAlpha(0.16 + 0.18 * Math.sin(this.backdropTime * 2.4));
+    }
+
+    drawMachinShin(t) {
+      const g = this.machinShin;
+      if (!g) return;
+      g.clear();
+      const breathe = 0.55 + 0.45 * Math.sin(t * 1.3);
+      g.fillStyle(0xb9dcff, 0.05 * breathe);
+      g.fillRect(0, 0, 42, H);
+      g.fillRect(W - 42, 0, 42, H);
+      for (let i = 0; i < 16; i++) {
+        const y = (i * 36 + Math.sin(t * 0.7 + i) * 24 + t * 18) % (H + 40) - 20;
+        const reach = 18 + 46 * (0.5 + 0.5 * Math.sin(t * 1.8 + i * 0.6));
+        g.fillStyle(0xd7eeff, 0.035 + 0.04 * breathe);
+        g.fillEllipse(reach * 0.35, y, reach, 10);
+        g.fillEllipse(W - reach * 0.35, y + 12, reach * 0.9, 9);
+      }
+    }
+
+    unlockAudio() {
+      const audio = window.WaygateAudio;
+      if (!audio || !audio.unlock) return;
+      try { audio.unlock(); } catch (err) { /* a missing AudioContext must not stop the fight */ }
+    }
+
+    cue(name, arg) {
+      const audio = window.WaygateAudio;
+      const present = window.WaygatePresentation;
+      if (!audio || !audio.sfx || !present || !present.playCue) return;
+      try { present.playCue(audio.sfx, name, arg); } catch (err) { /* synth failure stays out of the fight */ }
+    }
+
+    startMusic(state) {
+      const audio = window.WaygateAudio;
+      const Director = window.WaygateMusic;
+      const present = window.WaygatePresentation;
+      if (!audio || !audio.playTrack || !Director || !present) return;
+      if (!this.music) {
+        this.music = new Director((id, opts) => {
+          try { audio.playTrack(id, opts || {}); } catch (err) { /* missing track fails soft */ }
+        }, present.MUSIC_STAGE);
+      }
+      try { this.music.set(state); } catch (err) { /* director rejects an unknown state */ }
     }
 
     createHudObjects() {
@@ -327,6 +568,7 @@
       const call = document.getElementById('tbL');
       if (call) call.classList.add('off');
       this.overlayAction = (e) => {
+        this.unlockAudio();
         const action = e.target.closest?.('[data-action]')?.dataset.action;
         if (!action) return;
         if (e.cancelable && e.type !== 'click') e.preventDefault();
@@ -361,7 +603,9 @@
 
     begin() {
       if (this.mode !== 'title') return;
+      this.unlockAudio();
       this.mode = 'play'; this.heroData.started = true; this.startedAt = this.runElapsed; this.inp.flushPresses(); this.hidePanel();
+      this.startMusic('stage');
       if (this.debugSkip === 'bridge') this.skipToBridge();
       else if (this.debugSkip === 'boss') this.skipToBoss();
       else this.toast('THREE WAVES. KEEP MOVING.', 2.6);
@@ -406,6 +650,7 @@
     update(time, deltaMs) {
       const dt = Math.min(0.04, deltaMs / 1000);
       if (this.inp) this.inp.update(dt);
+      this.updateBackdrop(dt);
       if (this.handleMenu()) return;
       if (this.mode !== 'play') return;
 
@@ -501,10 +746,11 @@
         const jumpRun = !!(I.run && mx);
         p.jumpVx = mx * (inBridge ? (jumpRun ? P_SPEED : JUMP_WALK) : (jumpRun ? JUMP_RUN : JUMP_WALK));
         p.vz = JUMP_V; p.action = 'air'; p.actionT = 0; p.jumpAttack = false; this.hero.play('riley_jump_rise', true);
+        this.cue('jump');
       }
       const phase = L.stepVertical(p, dt);
       if (phase === 'landed') {
-        if (p.action === 'air') { p.action = 'idle'; this.hero.play('riley_idle'); }
+        if (p.action === 'air') { p.action = 'idle'; this.hero.play('riley_idle'); this.cue('land'); }
       } else if (phase === 'air' && p.z < 52 && p.vz < 80 && this.hero.anims.currentAnim?.key !== 'riley_jump_fall') this.hero.play('riley_jump_fall', true);
       const attackWin = p.action === 'attack' ? 0.3 : 0.18;
       if (inp.take('attack', attackWin)) p.attackBuffer = Math.max(p.attackBuffer, p.action === 'attack' ? 0.34 : 0.18);
@@ -540,6 +786,7 @@
         const moving = !!(mx || my);
         const wanted = moving ? 'riley_walk' : 'riley_idle';
         if (this.hero.anims.currentAnim?.key !== wanted) this.hero.play(wanted);
+        if (moving && p.z <= 0) this.cue('step');
       }
       if (inBridge && p.z <= 0 && this.isPit(p.x)) this.startBridgeFall();
       if (p.invuln > 0) this.hero.setAlpha(Math.floor(this.runElapsed * 16) % 2 ? 0.42 : 1); else if (p.falling <= 0) this.hero.setAlpha(1);
@@ -554,10 +801,11 @@
     startHeroAttack(chain) {
       const p = this.heroData;
       this.faceNearestThreat();
-      if (p.z > 24) { p.combo = 0; p.action = 'attack'; p.actionT = 0; p.hitDone = false; p.attackDamage = 38; this.hero.play('riley_airkick', true); return; }
+      if (p.z > 24) { p.combo = 0; p.action = 'attack'; p.actionT = 0; p.hitDone = false; p.attackDamage = 38; this.hero.play('riley_airkick', true); this.cue('kick'); return; }
       if (!chain) p.combo = 0;
       p.combo = Math.min(3, p.combo + 1); p.comboExpire = 0.58; p.action = 'attack'; p.actionT = 0; p.hitDone = false;
       p.attackDamage = [0, 25, 32, 54][p.combo]; this.hero.play(`riley_combo${p.combo}`, true);
+      this.cue('kick');
     }
 
     heroAttackHit() {
@@ -568,7 +816,9 @@
       this.showSlash(p.x + p.facing * 80, p.y - p.z - 115, 0x9ff8ee, heavy);
       if (this.boss.active && !this.boss.defeated && this.boss.phase === 'recover' && Math.abs(this.boss.x - p.x) < 190 && Math.abs(this.boss.y - p.y) < 112) { this.hitBoss(p.attackDamage, heavy); return; }
       const limit = heavy ? 2 : 1;
-      for (const e of strike.hits.slice(0, limit)) this.hitEnemy(e, p.attackDamage, { heavy, launcher: p.combo === 3, combo: p.combo });
+      const hits = strike.hits.slice(0, limit);
+      if (!hits.length) this.cue('whiff');
+      for (const e of hits) this.hitEnemy(e, p.attackDamage, { heavy, launcher: p.combo === 3, combo: p.combo });
     }
 
     startSpecial() {
@@ -585,6 +835,7 @@
       const orb = this.add.ellipse(x, y, 28, 28, 0xff9a40, 0.95).setDepth(4003);
       const glow = this.add.ellipse(x, y, 52, 52, 0xff9a40, 0.35).setDepth(4002);
       this.fireballs.push({ x, y, gy: p.y, dir: p.facing, orb, glow, dmg: 14, t: 0 });
+      this.cue('fireball');
     }
 
     updateFireballs(dt) {
@@ -604,6 +855,7 @@
         if (hit || boss || off) {
           if (hit) this.hitEnemy(hit, f.dmg, { heavy: true, launcher: true, combo: 0 });
           if (boss) this.hitBoss(f.dmg, true);
+          if (hit || boss) this.cue('boom');
           f.orb.destroy(); f.glow.destroy();
           this.fireballs.splice(this.fireballs.indexOf(f), 1);
         }
@@ -644,6 +896,7 @@
       const len = Math.max(60, Math.abs(edge - x0));
       const g = this.add.graphics().setDepth(1600);
       this.beam = { t: 0, fade: 0, dir, x0, y: p.y - p.z - 110, len, g, struck: new Set(), bossHit: false };
+      this.cue('balefire');
       this.balefireSweep();
     }
 
@@ -725,6 +978,8 @@
       e.sprite.play(result.launcher || result.lethal ? 'grunt_knockdown' : 'grunt_hurt', true);
       e.sprite.setTint(0xffffff);
       this.impactFeedback(!!result.heavy);
+      this.cue('hit', !!result.heavy);
+      if (result.lethal) this.cue('death');
     }
 
     updateWorldProgress() {
@@ -760,6 +1015,7 @@
       }
       this.toast(`WAVE ${index + 1} · ${count} TROLLOCS`, 2.2);
       this.triggerBanner(`WAVE ${index + 1} · KEEP THEM IN FRONT`, 1.9);
+      this.cue('wave');
     }
 
     completeWave() {
@@ -790,7 +1046,9 @@
       const p = this.heroData;
       const ctxBase = { dt, time: this.runElapsed, player: p, tokenBag: this, bounds: this.enemyBounds, rng: Math.random, waveSize: this.waveSize || this.enemies.length };
       for (const e of this.enemies) {
+        const was = e.state;
         const events = L.stepEnemy(e, ctxBase);
+        if (was !== 'windup' && e.state === 'windup') this.cue('grunt');
         if (e.flashTimer > 0) { e.flashTimer -= dt; e.sprite.setTint(0xffffff); }
         else if (e.state === 'dead') e.sprite.setTint(0xd2a29a);
         else if (e.state === 'hurt' || e.state === 'launched') e.sprite.setTint(0xff7777);
@@ -819,6 +1077,7 @@
       const p = this.heroData;
       if (L.isInvulnerable(p) || p.falling > 0 || this.mode !== 'play') return;
       p.hp -= amount; p.invuln = 0.62; p.action = 'hurt'; p.actionT = 0; p.knock = knock || -140; this.hero.play('riley_hurt', true); this.hero.setTint(0xff8f8f);
+      this.cue('hurt');
       this.cameras.main.shake(70, 0.0045);
       if (p.hp <= 0) this.playerDeath();
     }
@@ -827,7 +1086,7 @@
       const p = this.heroData;
       if (p.action === 'down') return;
       p.lives--; p.action = 'down'; p.actionT = 0; p.hp = 0; this.hero.play('riley_knockdown', true); p.deathTimer = 0.45;
-      if (p.lives <= 0) { this.mode = 'over'; this.showPanel('over'); return; }
+      if (p.lives <= 0) { this.mode = 'over'; this.cue('gameover'); this.startMusic('gameover'); this.showPanel('over'); return; }
       this.toast('DOWN · BACK TO THE CHECKPOINT', 1.6);
       p.deathTimer = 0.45;
     }
@@ -847,6 +1106,7 @@
       const p = this.heroData; this.boss.active = true; this.boss.phase = 'stalk'; this.boss.timer = 1.4; this.boss.x = BOSS_X; this.boss.y = 345;
       p.checkpoint = ARENA_START; p.x = Math.min(p.x, ARENA_START + 80); this.bossSprite.setPosition(this.boss.x, this.boss.y).setAlpha(0.72);
       $('#boss-hud').style.display = 'block'; this.toast('THE GRAY MAN · WATCH FOR THE RED FLASH', 3); this.triggerBanner('THE GRAY MAN · WAIT FOR THE RED TELL', 2.8);
+      this.startMusic('boss');
     }
 
     updateBoss(dt) {
@@ -863,6 +1123,7 @@
           this.warningText.setPosition(b.targetX, b.targetY - 68).setVisible(true);
           this.warningCross.setVisible(true);
           this.toast('RED FLASH · MOVE CLEAR OR JUMP', 0.85);
+          this.cue('tell');
         }
       } else if (b.phase === 'tell') {
         const pulse = 0.42 + 0.55 * (0.5 + 0.5 * Math.sin(this.runElapsed * 35));
@@ -872,6 +1133,7 @@
         this.bossSprite.setPosition(b.x, b.y).setAlpha(Math.sin(this.runElapsed * 46) > 0 ? 0.9 : 0.24).setTint(0xff344f);
         if (b.timer <= 0) {
           b.phase = 'strike'; b.timer = L.GRAY_MAN.strike;
+          this.cue('strike');
           const side = b.x < b.targetX ? -1 : 1;
           b.x = clamp(b.targetX + side * 115, ARENA_LEFT + 8, ARENA_RIGHT - 24); b.y = b.targetY;
           this.bossSprite.setPosition(b.x, b.y).setAlpha(1).setTint(0xff4c5b).setRotation(-side * 0.08);
@@ -899,9 +1161,12 @@
       b.hp = Math.max(0, b.hp - dealt); this.heroData.score += Math.round(dealt * 7);
       if (!noMeter) this.heroData.focus = clamp(this.heroData.focus + 5, 0, 100);
       this.bossSprite.setTint(0xffffff); b.flashTimer = 0.09; this.impactFeedback(heavy);
+      this.cue('hit', !!heavy);
       if (b.hp <= 0) {
         b.defeated = true; b.active = false; b.phase = 'dead'; this.bossSprite.setAlpha(0.18); this.hideBossTell(); $('#boss-hud').style.display = 'none';
         this.heroData.score += 1600; this.toast('THE GRAY MAN IS GONE · EXIT OPEN', 3); this.triggerBanner('THE GRAY MAN FALLS · THE WAYGATE IS OPEN', 2.8);
+        this.cue('death');
+        this.startMusic('stage');
       } else if (b.hp <= b.maxHp * 0.36 && !b.phaseTwo) {
         b.phaseTwo = true; this.toast('THE ASSASSIN MOVES FASTER', 1.5); b.timer = Math.max(0.36, b.timer - 0.2);
       }
@@ -911,13 +1176,14 @@
       if (!this.planks) return;
       const p = this.heroData;
       const step = L.stepPlanks(this.planks, p, dt);
-      if (step.started.length) this.toast('PLANKS CRACKING · JUMP BEFORE THEY DROP', 1);
+      if (step.started.length) { this.toast('PLANKS CRACKING · JUMP BEFORE THEY DROP', 1); this.cue('crack'); }
       if (step.changed) this.drawBridge();
       const next = L.advanceBridgeCheckpoint(p.bridgeCheckpoint, p.x, p.z, this.isPit(p.x));
       if (next !== p.bridgeCheckpoint) {
         p.bridgeCheckpoint = next;
         p.checkpoint = next;
         this.toast('MID-BRIDGE CHECKPOINT', 1.5);
+        this.cue('checkpoint');
       }
     }
 
@@ -928,6 +1194,7 @@
     startBridgeFall() {
       const p = this.heroData; if (p.falling > 0) return;
       p.falling = 0.72; p.action = 'fall'; p.falls++; p.hp = Math.max(1, p.hp - 16); p.invuln = 0; this.hero.play('riley_jump_fall', true); this.toast('FALL · BRIDGE CHECKPOINT', 1.1);
+      this.cue('fall');
     }
 
     respawnBridge() {
@@ -940,7 +1207,6 @@
     }
 
     updateMotes(dt) {
-      this.mist.forEach(m => { m.obj.x = m.home + Math.sin(this.runElapsed * 0.33 + m.seed) * 48; m.obj.y = 290 + Math.sin(this.runElapsed * 0.6 + m.seed) * 17; });
       if (this.bannerTimer > 0) { this.bannerTimer -= dt; this.banner.setAlpha(this.bannerTimer < 0.4 ? this.bannerTimer / 0.4 : 1); }
       if (this.toastTime > 0) { this.toastTime -= dt; if (this.toastTime <= 0) $('#toast').style.opacity = '0'; }
       if (this.powerRingT > 0) { this.powerRingT -= dt; if (this.powerRing) { this.powerRing.setPosition(this.heroData.x + this.heroData.facing * (90 + (0.4 - this.powerRingT) * 130), this.heroData.y - 70).setScale(0.8 + (0.4 - this.powerRingT) * 5).setAlpha(clamp(this.powerRingT * 3, 0, 0.9)); } if (this.powerRingT <= 0 && this.powerRing) { this.powerRing.destroy(); this.powerRing = null; } }
@@ -987,7 +1253,7 @@
 
     completeRun() {
       if (this.mode !== 'play') return;
-      this.mode = 'clear'; this.heroData.score += Math.max(0, 1800 - Math.floor(this.runElapsed * 5)); this.showPanel('clear', { rank: this.rank() });
+      this.mode = 'clear'; this.heroData.score += Math.max(0, 1800 - Math.floor(this.runElapsed * 5)); this.cue('clear'); this.startMusic('victory'); this.showPanel('clear', { rank: this.rank() });
     }
   }
 
@@ -1005,6 +1271,14 @@
       scene: [WaygateScene]
     });
     window.__waygateGame = game;
+    const audio = window.WaygateAudio;
+    if (audio && audio.installAudioLifecycle && !window.__waygateAudioLife) {
+      try { window.__waygateAudioLife = audio.installAudioLifecycle(game); } catch (err) { /* hidden-tab hook is optional if the context is missing */ }
+    }
+    const arm = () => { if (audio && audio.unlock) { try { audio.unlock(); } catch (err) { /* gesture unlock can fail before a context exists */ } } };
+    window.addEventListener('pointerdown', arm, { capture: true, passive: true });
+    window.addEventListener('touchend', arm, { capture: true, passive: true });
+    window.addEventListener('keydown', arm, { capture: true });
   }
 
   function pagesInUse() {
