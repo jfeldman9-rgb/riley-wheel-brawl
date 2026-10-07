@@ -42,11 +42,41 @@ const mark = (g, size = 7, y = 8) => {
   g.strokeStyle = 'rgba(0,0,0,0.88)'; g.strokeText('PLACEHOLDER', 2, y);
   g.fillStyle = '#ffe7a8'; g.fillText('PLACEHOLDER', 2, y);
 };
-const man = (g, w, h, fill, name) => {
-  g.fillStyle = fill; g.fillRect(w * 0.35, h * 0.34, w * 0.3, h * 0.4);
-  g.beginPath(); g.arc(w / 2, h * 0.24, w * 0.12, 0, 7); g.fill();
-  g.fillStyle = '#fff'; g.font = 'bold 14px sans-serif'; g.fillText(name, 8, h - 16); g.fillText('PLACEHOLDER', 8, 18);
-};
+function greenMan(g, w, h, i) {
+  const G = h * 0.96, cx = w * 0.5;
+  const ink = '#06140c', bark = '#2f6a34', dark = '#17381c', leaf = '#8fce4e', face = '#d5ecc0';
+  const fall = i === 2, oak = i === 3, seize = i === 1;
+  const hy = (fall ? 62 : 18) + (seize ? 4 : oak ? 6 : 0);
+  for (const [dx, dy, rx] of [[-22, 8, 16], [0, 0, 20], [22, 6, 16], [-10, 16, 12], [12, 14, 12]]) {
+    ell(g, cx + dx, hy + dy, rx, rx * 0.85, dx === 0 ? leaf : dark);
+  }
+  ell(g, cx, hy + 12, 10, 12, face);
+  g.fillStyle = ink; g.fillRect(cx - 5, hy + 10, 2.4, 3); g.fillRect(cx + 2.6, hy + 10, 2.4, 3);
+  ell(g, cx, hy + 20, 8, 5, leaf);
+  const sh = hy + 34, hip = sh + 46;
+  poly(g, [cx - 18, sh, cx + 18, sh + 2, cx + 14, hip, cx - 14, hip + 2], ink);
+  poly(g, [cx - 14, sh + 4, cx + 14, sh + 6, cx + 10, hip - 2, cx - 10, hip], bark);
+  g.strokeStyle = '#d6f08a'; g.lineWidth = 2; g.beginPath();
+  g.moveTo(cx - 2, sh + 8); g.quadraticCurveTo(cx + 8, sh + 24, cx - 1, hip - 6); g.stroke();
+  if (seize) {
+    limb(g, cx - 8, sh + 8, cx - 30, sh + 28, cx - 16, hip + 18, 5, dark, ink);
+    limb(g, cx + 8, sh + 8, cx + 32, sh + 22, cx + 18, hip + 14, 5, dark, ink);
+  } else if (fall) {
+    limb(g, cx - 6, sh + 8, cx - 28, hip - 4, cx - 16, G - 10, 5, dark, ink);
+    limb(g, cx + 6, sh + 8, cx + 24, hip - 8, cx + 12, G - 8, 5, dark, ink);
+  } else if (oak) {
+    limb(g, cx - 6, sh, cx - 28, sh - 16, cx - 40, sh - 30, 4.4, dark, ink);
+    limb(g, cx + 6, sh, cx + 26, sh - 12, cx + 40, sh - 26, 4.4, dark, ink);
+    ell(g, cx - 42, sh - 34, 11, 9, leaf); ell(g, cx + 42, sh - 30, 11, 9, leaf);
+  } else {
+    limb(g, cx - 8, sh + 4, cx - 26, sh - 10, cx - 16, hy + 6, 5, dark, ink);
+    limb(g, cx + 8, sh + 4, cx + 28, sh - 6, cx + 16, hy + 10, 5, dark, ink);
+  }
+  if (fall) { ell(g, cx, G - 8, 30, 11, ink); ell(g, cx, G - 10, 26, 8, bark); return; }
+  limb(g, cx - 6, hip, cx - 16, hip + 26, cx - 20, G - 2, 6.2, dark, ink);
+  limb(g, cx + 6, hip, cx + 16, hip + 24, cx + 22, G - 2, 6.2, dark, ink);
+  ell(g, cx - 20, G - 2, 11, 4, ink); ell(g, cx + 22, G - 2, 11, 4, ink);
+}
 
 function spines(g, x, y, n, tall, lean, bone, ink) {
   for (let i = 0; i < n; i++) {
@@ -350,7 +380,7 @@ export function paintCast(scene) {
   sheet(scene, 's5pod', 5, 80, 80, (g, i) => pod(g, 80, 80, i));
   sheet(scene, 's5agin', 7, 120, 180, (g, i) => agin(g, 120, 180, i));
   sheet(scene, 's5balt', 8, 110, 170, (g, i) => balt(g, 110, 170, i));
-  sheet(scene, 's5green', 4, 120, 180, (g, i, w, h) => man(g, w, h, '#2a6a30', 'GREEN'));
+  sheet(scene, 's5green', 4, 120, 180, (g, i, w, h) => greenMan(g, w, h, i));
   tex(scene, 'aginorPortrait', 256, 256, portrait);
   const panel = (g, w, h, title) => { g.fillStyle = '#140c0a'; g.fillRect(0, 0, w, h); g.fillStyle = '#ffb070'; g.font = 'bold 32px sans-serif'; g.fillText(title, 40, 80); g.fillStyle = '#fff'; g.font = '16px sans-serif'; g.fillText('PLACEHOLDER ART', 40, 120); };
   tex(scene, 'story5p1', 640, 360, (g, w, h) => panel(g, w, h, 'THE WAYGATE'));

@@ -27,6 +27,9 @@ function paint(e, frame, scale) {
   e.shadow?.setPosition?.(e.x, e.y + 2); e.shadow?.setAlpha?.(ash ? 0 : 0.55);
 }
 function spots(scene, key) { return scene.kit?.lay?.[key] || LAYOUT5[key] || []; }
+// Render scale only. Riley's walk frame is about 260px tall; these drawn bodies land near 1.27× that.
+const AGIN_SCALE = 2;
+const BALT_SCALE = 2.35;
 
 export class StalkerActor extends Stalker {
   constructor(scene, x, y) {
@@ -85,7 +88,7 @@ export class AginorActor extends Aginor {
     this.y = clamp(this.y, LANE_TOP, LANE_BOT);
     this.scene.kit?.noteBoss?.(this, prev);
   }
-  sync() { paint(this, aginFrame, 1.35); }
+  sync() { paint(this, aginFrame, AGIN_SCALE); this.shadow?.setScale?.(1.55, 0.42); }
   destroy() { super.destroy(); this.sprite?.destroy?.(); this.shadow?.destroy?.(); }
   die() { if (this.state !== 'dead') this.burn(); this.gone = true; }
 }
@@ -103,7 +106,15 @@ export class BalthamelActor extends Balthamel {
     if ((this.z || 0) > 0 || this.vz) { this.z = Math.max(0, (this.z || 0) + (this.vz || 0) * dt - 1300 * dt * dt); this.vz = this.z ? (this.vz || 0) - 2600 * dt : 0; }
     this.scene.kit?.noteBalth?.(this, prev);
   }
-  sync() { paint(this, baltFrame, 1.25); }
+  sync() {
+    paint(this, baltFrame, BALT_SCALE);
+    this.shadow?.setScale?.(1.45, 0.4);
+    if (this.state !== 'holding' || !this.sprite) return;
+    const face = this.facing < 0 ? -1 : 1;
+    this.sprite.x = this.x + face * 16;
+    const y = Math.max(this.y, this.target?.y || 0);
+    this.sprite.setDepth?.(1000 + y + 8);
+  }
   destroy() { super.destroy(); this.sprite?.destroy?.(); this.shadow?.destroy?.(); }
   die() { this.fall(); this.gone = true; this.alive = false; }
 }

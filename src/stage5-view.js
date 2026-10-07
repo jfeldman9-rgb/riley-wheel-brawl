@@ -1,6 +1,6 @@
 // Blight backdrop. Procedural art, one sun, and the Eye / oak lights.
-import { VW, VH, LANE_TOP, WORLD_W } from './config.js';
-import { paintStage5Art } from './stage5-art.js';
+import { VW, VH, LANE_TOP, LANE_BOT, WORLD_W } from './config.js';
+import { paintStage5Art, greenFrame } from './stage5-art.js';
 import { LAYOUT5 } from './stage5-def.js';
 import { createStage5Effects } from './stage5-effects.js';
 
@@ -17,7 +17,7 @@ function img(scene, x, y, key) {
 export function createStage5View(scene) {
   let haze = [];
   const owned = [];
-  let effects, glimpseTimer, glimpse;
+  let effects, glimpseTimer, glimpse, green;
   const view = {
     sun: null, eye: null, oakLight: null, flare: null, quality: 5,
     buildBackdrop() {
@@ -50,6 +50,24 @@ export function createStage5View(scene) {
     sync(kit) {
       if (!effects) effects = createStage5Effects(scene);
       effects.sync(kit);
+      const beat = kit?.arena;
+      const showGreen = !!(beat?.green && beat.frozen);
+      if (!showGreen) green?.setVisible?.(false);
+      else {
+        if (!green && scene.add?.sprite) {
+          green = scene.add.sprite(beat.centre, 630, 's5green', 0);
+          green.setOrigin?.(0.5, 0.96); green.setScale?.(2.75); green.setLighting?.(true);
+          owned.push(green);
+        }
+        if (green) {
+          const face = (scene.riley?.x ?? beat.centre) >= beat.centre ? -1 : 1;
+          green.setVisible?.(true);
+          green.setPosition?.(beat.centre + face * 72, 630);
+          green.setFlipX?.(face < 0);
+          green.setFrame?.(greenFrame(beat.green.state));
+          green.setDepth?.(1000 + LANE_BOT + 24);
+        }
+      }
       const q = kit?.s?.fx?.quality ?? 5;
       view.quality = q;
       const show = q < 2 ? haze.length : Math.ceil(haze.length / 2);
@@ -78,7 +96,7 @@ export function createStage5View(scene) {
       glimpseTimer = scene.time?.delayedCall?.(2400, () => { g?.destroy?.(); glimpse = glimpseTimer = null; });
     },
     destroy() {
-      glimpseTimer?.remove?.(); glimpse?.destroy?.(); effects?.destroy();
+      glimpseTimer?.remove?.(); glimpse?.destroy?.(); green = null; effects?.destroy();
       for (const p of [...owned, ...haze]) p.destroy?.();
       for (const L of new Set([view.sun, view.eye, view.oakLight, view.flare])) if (L) scene.lights?.removeLight?.(L);
       scene.backdropLit = (scene.backdropLit || []).filter(p => !owned.includes(p));
