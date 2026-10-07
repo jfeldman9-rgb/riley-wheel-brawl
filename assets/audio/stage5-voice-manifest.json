@@ -1,4 +1,26 @@
 {
-  "present": [],
+  "present": [
+    "st5_story_01",
+    "st5_story_02",
+    "st5_story_03",
+    "st5_story_04",
+    "st5_story_05",
+    "st5_clear_01",
+    "st5_clear_02",
+    "st5_clear_03",
+    "riley_st5_stalk_01",
+    "riley_st5_tree_01",
+    "riley_st5_ring_01",
+    "riley_st5_free_01",
+    "riley_st5_greenman_01",
+    "riley_st5_victory_01",
+    "aginor_intro_01",
+    "aginor_drain_01",
+    "aginor_surge_01",
+    "aginor_burn_01",
+    "balthamel_laugh_01",
+    "greenman_arrive_01",
+    "greenman_fall_01"
+  ],
   "note": "present is the ids whose mp3 is in assets/audio/voice/. The stage 5 audio test requires this list to match the files on disk. An id left out is a caption and is not fetched. Add the id in the same change as its mp3."
 }
