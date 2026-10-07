@@ -1,0 +1,195 @@
+{
+ "elevenlabs_takes": {
+  "st5_story_01": {
+   "generation_id": "rFpaB8pXhyoFYP0HXNem",
+   "prompt": "[gravely] Loy-ahl led him through the Ways. In the dark, a wind whispered Rye-lee's name.",
+   "credits": 88.99999999999999,
+   "model": "eleven_v4",
+   "dur": 6.08,
+   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+   "voice_name": "George - Warm, Captivating Storyteller"
+  },
+  "st5_story_04": {
+   "generation_id": "bnN19E82HoVk599YyihD",
+   "prompt": "[quietly] Past the hills, something old was waiting.",
+   "credits": 52.0,
+   "model": "eleven_v4",
+   "dur": 3.28,
+   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+   "voice_name": "George - Warm, Captivating Storyteller"
+  },
+  "aginor_intro_01": {
+   "generation_id": "Ifuoce8cLKgyyaok6VxA",
+   "prompt": "[old, hungry, amused] A channeler. [slowly] Untrained. [menacing] Delicious.",
+   "credits": 76.0,
+   "model": "eleven_v4",
+   "dur": 4.88,
+   "voice_id": "ttNi9wVM8M97tsxE7PFZ",
+   "voice_name": "Victor - The Cunning Villain"
+  },
+  "aginor_drain_01": {
+   "generation_id": "lJSk06cwPeJKBEhk2gar",
+   "prompt": "[contemptuous, bored] Your strength is wasted on you.",
+   "credits": 53.0,
+   "model": "eleven_v4",
+   "dur": 2.4,
+   "voice_id": "ttNi9wVM8M97tsxE7PFZ",
+   "voice_name": "Victor - The Cunning Villain"
+  },
+  "aginor_surge_01": {
+   "generation_id": "Jp2HNlw5WmF28zH2eRAA",
+   "prompt": "[greedy, breathless] The Eye... [gasps] so much... [shouting] more!",
+   "credits": 67.0,
+   "model": "eleven_v4",
+   "dur": 3.84,
+   "voice_id": "ttNi9wVM8M97tsxE7PFZ",
+   "voice_name": "Victor - The Cunning Villain"
+  },
+  "aginor_burn_01": {
+   "generation_id": "eXpMmKjTDRkqrWTs4Lad",
+   "prompt": "[screaming in agony] Aaaaaaarrrrrgh!",
+   "credits": 36.0,
+   "model": "eleven_v4",
+   "dur": 2.32,
+   "voice_id": "ttNi9wVM8M97tsxE7PFZ",
+   "voice_name": "Victor - The Cunning Villain"
+  },
+  "balthamel_laugh_01": {
+   "generation_id": "k7UrqaMX715dGQSp8T5P",
+   "prompt": "[dry raspy laugh] Heh heh heh... hhhh.",
+   "credits": 38.0,
+   "model": "eleven_v4",
+   "dur": 2.88,
+   "voice_id": "M5E055lOUxMi0kJpGyE9",
+   "voice_name": "Gravel Midnight"
+  },
+  "greenman_arrive_01": {
+   "generation_id": "wab5BYut5oDSplRjRIio",
+   "prompt": "[deep, old, protective] You will not touch my garden.",
+   "credits": 53.0,
+   "model": "eleven_v4",
+   "dur": 2.72,
+   "voice_id": "6sFKzaJr574YWVu4UuJF",
+   "voice_name": "Cornelius - Wise Sage"
+  },
+  "greenman_fall_01": {
+   "generation_id": "pSqE1tdWm4Xg3oxqAYdk",
+   "prompt": "[weakly, fading, kind] Grow... [softly] again...",
+   "credits": 48.0,
+   "model": "eleven_v4",
+   "dur": 2.32,
+   "voice_id": "6sFKzaJr574YWVu4UuJF",
+   "voice_name": "Cornelius - Wise Sage"
+  }
+ },
+ "kokoro": "tools/stage5/render_kokoro_stage5.py (Stage 4 casts, tools/stage4 to_mp3 chain)",
+ "elevenlabs_processing": "loudnorm I=-16 TP=-2 LRA=7 + alimiter 0.75, mono 44.1 kHz 128 kbps",
+ "stt_check_whisper_medium_en": {
+  "st5_story_01": {
+   "text": "Loial led him through the Ways. In the dark, a wind whispered Riley's name.",
+   "heard": "Loyal led him through the ways. In the dark, a wind whispered Riley's name.",
+   "word_match": 0.929
+  },
+  "st5_story_02": {
+   "text": "The trail runs north. Into the Blight.",
+   "heard": "The trail runs north into the blight.",
+   "word_match": 1.0
+  },
+  "st5_story_03": {
+   "text": "Nothing grows right here, Riley. Not even the trees.",
+   "heard": "Nothing grows right here, Riley. Not even the trees.",
+   "word_match": 1.0
+  },
+  "st5_story_04": {
+   "text": "Past the hills, something old was waiting.",
+   "heard": "Past the hills, something old was waiting.",
+   "word_match": 1.0
+  },
+  "st5_story_05": {
+   "text": "Good. I'm in a mood.",
+   "heard": "Good, I'm in a mood.",
+   "word_match": 1.0
+  },
+  "st5_clear_01": {
+   "text": "She's not here. The Fade went south.",
+   "heard": "She's not here, the Fade went south.",
+   "word_match": 1.0
+  },
+  "st5_clear_02": {
+   "text": "South is Tarwin's Gap. Every Trolloc in the Blight is going there.",
+   "heard": "South is Tarwin's Gap. Every Trollark in the Blight is going there.",
+   "word_match": 0.917
+  },
+  "st5_clear_03": {
+   "text": "Then so am I.",
+   "heard": "then so am I.",
+   "word_match": 1.0
+  },
+  "riley_st5_stalk_01": {
+   "text": "Something's in the grass.",
+   "heard": "Some things in the grass.",
+   "word_match": 0.667
+  },
+  "riley_st5_tree_01": {
+   "text": "The trees are moving!",
+   "heard": "The trees are moving.",
+   "word_match": 1.0
+  },
+  "riley_st5_ring_01": {
+   "text": "Jump it!",
+   "heard": "Jump it!",
+   "word_match": 1.0
+  },
+  "riley_st5_free_01": {
+   "text": "Get your hands off me, corpse.",
+   "heard": "Get your hands off me, corpse.",
+   "word_match": 1.0
+  },
+  "riley_st5_greenman_01": {
+   "text": "No! Not him!",
+   "heard": "No, not him.",
+   "word_match": 1.0
+  },
+  "riley_st5_victory_01": {
+   "text": "Burn, then.",
+   "heard": "Burn then.",
+   "word_match": 1.0
+  },
+  "aginor_intro_01": {
+   "text": "A channeler. Untrained. Delicious.",
+   "heard": "A channeler, untrained, delicious.",
+   "word_match": 1.0
+  },
+  "aginor_drain_01": {
+   "text": "Your strength is wasted on you.",
+   "heard": "Your strength is wasted on you.",
+   "word_match": 1.0
+  },
+  "aginor_surge_01": {
+   "text": "The Eye... so much... more!",
+   "heard": "The Eye..., so much more!",
+   "word_match": 1.0,
+   "model": "small.en (medium.en heard nothing)"
+  },
+  "aginor_burn_01": {
+   "text": "(scream)",
+   "heard": "",
+   "word_match": 0.0
+  },
+  "balthamel_laugh_01": {
+   "text": "(dry laugh)",
+   "heard": "",
+   "word_match": 0.0
+  },
+  "greenman_arrive_01": {
+   "text": "You will not touch my garden.",
+   "heard": "You will not touch my garden.",
+   "word_match": 1.0
+  },
+  "greenman_fall_01": {
+   "text": "Grow... again...",
+   "heard": "grow again.",
+   "word_match": 1.0
+  }
+ }
+}

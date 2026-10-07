@@ -7,6 +7,7 @@ import { TILE_BANDS, TILES } from '../src/stage3-hazards.js';
 import { STAGE3 } from '../src/stages.js';
 import { STAGE3_VOICES } from '../src/stage3.js';
 import { STAGE4_VOICES } from '../src/stage4-voice.js';
+import { STAGE5_VOICES } from '../src/stage5-voice.js';
 import { VH, VW } from '../src/config.js';
 import { audit } from '../tools/audit-stage1.mjs';
 
@@ -98,7 +99,8 @@ test('Stage 1 pre-fight budget keeps Stage 2 voices and Stage 3 has its own cap'
   const voices = readdirSync('assets/audio/voice').filter(name => name.endsWith('.mp3'));
   const stage3Names = voices.filter(name => STAGE3_VOICE.test(name));
   const stage4Names = voices.filter(name => STAGE4_VOICE.test(name));
-  const earlier = voices.filter(name => !STAGE3_VOICE.test(name) && !STAGE4_VOICE.test(name));
+  const stage5Set = new Set(STAGE5_VOICES.map(id => `${id}.mp3`));
+  const earlier = voices.filter(name => !STAGE3_VOICE.test(name) && !STAGE4_VOICE.test(name) && !stage5Set.has(name));
   const sum = names => names.reduce((n, name) => n + statSync(`assets/audio/voice/${name}`).size, 0);
   assert.deepEqual(stage3Names.map(name => name.replace(/\.mp3$/, '')).sort(), [...STAGE3_VOICES].sort());
   assert.ok(earlier.some(name => name.startsWith('byar_')), 'Stage 2 voices are still in the tree');
