@@ -33,8 +33,10 @@ for (const stage of [1, 2, 3, 4]) test(`real governor levels 0..5 and restart wi
   s.lights.setAmbientColor = color => { assert.ok(Number.isFinite(color), 'ambient must be finite'); colors.push(color); };
   try {
     const game = await boot(s);
+    const rsAt = [game.rs, game.rs, game.rs, Math.max(1, game.rs - 0.5), Math.max(1, game.rs - 0.5), 1];
     for (let level = 0; level <= 5; level++) {
-      if (level) { perf.lastSampleMs = 2001; game.governor(1 / 60); }
+      // A tier needs a sustained slow window (frames count at most 100 ms each), not one 2 s hitch.
+      if (level) for (let i = 0; i < 34; i++) { perf.lastSampleMs = 60; game.governor(1 / 60); }
       assert.equal(perf.quality, level);
       s.setBackdropLit(level < 4);
       if (s.kit) s.kit.update(1 / 60);
@@ -43,6 +45,7 @@ for (const stage of [1, 2, 3, 4]) test(`real governor levels 0..5 and restart wi
       s.scene.restart({ stage }); h.step(); s.started = true;
       perf.lastSampleMs = 0; game.governor(1 / 60);
       assert.equal(perf.quality, level);
+      assert.equal(game.rs, rsAt[level], 'a restart keeps the tier scale');
       s.setBackdropLit(level < 4); assert.ok(Number.isFinite(s.ambient));
     }
   } finally { window.__game.events.emit('destroy'); h.destroy(); q.delete('q'); }
