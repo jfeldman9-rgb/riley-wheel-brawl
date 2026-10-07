@@ -30,6 +30,8 @@ test('the boss bar, croon arc and kiss hint read the Draghkar fight', () => {
   assert.equal(bossLabel({ stageNo: 3, stageDef: { boss: { name: 'THE MYRDDRAAL', portrait: 'fadePortrait' } } }).name, 'THE MYRDDRAAL');
   assert.ok(Math.abs(croonArc(s).fill - 0.5) < 1e-6);
   assert.equal(kissHint(s), 'MASH ATTACK');
-  assert.equal(placeholderArt(s), true);
+  // Stage 4 sets ph4 only under ?debug while code-drawn art is on screen, so the owner never sees the tag
+  assert.equal(placeholderArt(s), false);
+  assert.equal(placeholderArt({ ...s, ph4: true }), true);
   assert.equal(croonArc({ stageNo: 3, boss: s.boss }), null);
 });

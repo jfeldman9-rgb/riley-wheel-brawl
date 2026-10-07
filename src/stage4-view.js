@@ -1,4 +1,4 @@
-// Shadar Logoth view. Art is painted at boot; this places it and keeps the fog readable.
+// Shadar Logoth view. Places the painted plates (or the boot-painted fallback) and keeps the fog readable.
 import { VW, VH, LANE_TOP, WORLD_W } from './config.js';
 import { paintStage4Art } from './stage4-art.js';
 const EMPTY = [];
@@ -17,6 +17,18 @@ export const LAYOUT = Object.freeze({
 });
 
 export function ensureStage4Textures(scene) { paintStage4Art(scene); }
+
+// Painted plates (assets/bg4, queued by queueStage4) load under the procedural keys; tex() skips a key that
+// loaded, so a failed file falls back to the painter. PLATES places the painted set; see tools/stage4/process_bg4_art.py.
+export const PLATES = Object.freeze({ midY: 590, par: 0.29, overlap: 140, lip: 40, seams: Object.freeze([1800, 3600]), feather: 280, moon: Object.freeze([756, 269]) });
+const FLOOR_KEYS = ['bg4floor', 'bg4floor2', 'bg4floor3'];
+export function painted(scene, key) {
+  try { const src = scene?.textures?.exists?.(key) && scene.textures.get(key)?.source?.[0]; return !!src && !src.isCanvas && src.width > 0; } catch { return false; }
+}
+/** Visible Stage 4 art that is still drawn by code (cultist and Draghkar sheets, any plate that fell back). */
+export function stage4Placeholder(scene) {
+  return ['s4cult', 's4drag', 'draghkarPortrait', 'bg4far', 'bg4mid', 'bg4mid2', ...FLOOR_KEYS, 'story4p1', 'story4p2', 'story4p3'].some(k => scene?.textures?.exists?.(k) && !painted(scene, k));
+}
 
 export function moonAmbient(camX, keys = LAYOUT.moonKeys) {
   let a = keys[0];
@@ -68,28 +80,48 @@ export function createStage4View(scene) {
   return {
     buildBackdrop() {
       ensureStage4Textures(scene);
-      const far = scene.add.image(0, 0, 'bg4far').setOrigin?.(0, 0).setScrollFactor?.(0).setDepth?.(-100);
-      far?.setDisplaySize?.(VW, LANE_TOP + 30);
+      const P = PLATES, lit = o => { o?.setLighting?.(true); if (o) scene.backdropLit.push(o); return o; };
       scene.backdropLit = scene.backdropLit || [];
-      for (let x = -40; x < WORLD_W; x += 500) {
-        const mid = scene.add.image(x, LANE_TOP + 8, (x / 500) % 2 ? 'bg4mid2' : 'bg4mid').setOrigin?.(0, 1).setScrollFactor?.(0.38).setDepth?.(-50);
-        mid?.setLighting?.(true);
-        if (mid) scene.backdropLit.push(mid);
+      this.paintedFar = painted(scene, 'bg4far');
+      const far = scene.add.image(0, 0, 'bg4far').setOrigin?.(0, 0).setScrollFactor?.(0).setDepth?.(-100);
+      if (this.paintedFar) far?.setScale?.(VW / (far.width || VW)); else far?.setDisplaySize?.(VW, LANE_TOP + 30);
+      if (painted(scene, 'bg4mid') && painted(scene, 'bg4mid2')) {
+        // Gate and plaza, then Tower Row and Mordeth's court, at native size; bg4mid's faded right edge overlaps bg4mid2.
+        let x = 0;
+        for (const k of ['bg4mid', 'bg4mid2']) {
+          const mid = lit(scene.add.image(x, P.midY, k).setOrigin?.(0, 1).setScrollFactor?.(P.par).setDepth?.(-50));
+          x += (mid?.width || 0) - P.overlap;
+        }
+      } else {
+        for (let x = -40; x < WORLD_W; x += 500) {
+          lit(scene.add.image(x, LANE_TOP + 8, (x / 500) % 2 ? 'bg4mid2' : 'bg4mid').setOrigin?.(0, 1).setScrollFactor?.(0.38).setDepth?.(-50));
+        }
       }
-      const fh = VH - LANE_TOP + 40;
-      const floors = [
-        scene.add.tileSprite?.(0, LANE_TOP - 20, 1800, fh, 'bg4floor'),
-        scene.add.tileSprite?.(1800, LANE_TOP - 20, 1800, fh, 'bg4floor2'),
-        scene.add.tileSprite?.(3600, LANE_TOP - 20, WORLD_W, fh, 'bg4floor3'),
-      ];
-      for (const f of floors) { f?.setOrigin?.(0, 0).setDepth?.(-40).setLighting?.(true); if (f) scene.backdropLit.push(f); }
+      const fh = VH - LANE_TOP + 40, fy = LANE_TOP - 20;
+      if (FLOOR_KEYS.every(k => painted(scene, k))) {
+        const ends = [0, ...P.seams, WORLD_W];
+        FLOOR_KEYS.forEach((key, i) => {
+          const from = ends[i], w = ends[i + 1] - from + (i < 2 ? 200 : 0), ts = fh / (scene.textures.get(key).source[0].height || fh);
+          const tile = (x, y, tw, th, ty = 0) => lit(scene.add.tileSprite?.(x, y, tw, th, key)?.setOrigin?.(0, 0).setTileScale?.(ts).setTilePosition?.(0, ty).setDepth?.(-40 + i));
+          tile(from, fy, w, fh);
+          // soft top edge over the plate's painted ground, and a feathered hand-off from the previous floor
+          tile(from, fy - P.lip, w, P.lip, -P.lip / ts)?.setAlpha?.(0, 0, 1, 1);
+          if (i > 0) tile(from - P.feather, fy, P.feather, fh)?.setTilePosition?.(-P.feather / ts, 0).setAlpha?.(0, 1, 0, 1);
+        });
+      } else {
+        for (const [x, w, key] of [[0, 1800, 'bg4floor'], [1800, 1800, 'bg4floor2'], [3600, WORLD_W, 'bg4floor3']]) {
+          lit(scene.add.tileSprite?.(x, fy, w, fh, key)?.setOrigin?.(0, 0).setDepth?.(-40));
+        }
+      }
       this.banks = [];
       for (let x = 160; x < WORLD_W; x += 620) {
         const b = scene.add.image(x, 675, 's4fog');
         b.setDepth?.(-16); b.setAlpha?.(0.7); b.setScale?.(2.4, 1.35); b.setBlendMode?.('ADD');
         this.banks.push(b);
       }
-      this.moon = scene.lights?.addLight?.(VW * 0.85, 90, 640, 0xf0e6c8, 1.05, 80);
+      // the moon light sits on the painted moon when the far plate loaded
+      this.moonAt = this.paintedFar ? PLATES.moon : [VW * 0.85, 90];
+      this.moon = scene.lights?.addLight?.(this.moonAt[0], this.moonAt[1], 640, 0xf0e6c8, 1.05, 80);
       this.shaftLights = [];
       if (scene.add.graphics) this.marks = scene.add.graphics().setDepth?.(1400);
     },
@@ -239,7 +271,7 @@ export function createStage4View(scene) {
       this._glimpse = g;
       label(3400, 500, 'THERE, ON THE BRIDGE');
     },
-    moveMoon(camX) { if (this.moon) this.moon.x = camX + VW * 0.85; },
+    moveMoon(camX) { if (this.moon) this.moon.x = camX + (this.moonAt?.[0] ?? VW * 0.85); },
     destroy() {
       for (const pool of Object.values(pools)) for (const s of pool) s.destroy?.();
       this._glimpse?.destroy?.();
