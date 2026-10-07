@@ -75,7 +75,7 @@ function tower(g, w, h, dust) {
   g.beginPath();
   g.ellipse(w / 2, h - 8, 28, 6, 0, 0, 6.3);
   g.fill();
-  g.fillStyle = '#3e4f6a';
+  g.fillStyle = '#334259';
   g.beginPath();
   g.moveTo(34, h - 16);
   g.lineTo(40, 70);
@@ -88,9 +88,9 @@ function tower(g, w, h, dust) {
   g.lineTo(90, h - 16);
   g.closePath();
   g.fill();
-  g.fillStyle = '#33435c';
+  g.fillStyle = '#2a384d';
   g.fillRect(44, 56, 30, h - 78);
-  g.fillStyle = '#566a8a';
+  g.fillStyle = '#475a77';
   g.fillRect(46, 56, 8, h - 80);
   g.strokeStyle = '#1e2a3c';
   g.lineWidth = 1;
@@ -109,7 +109,7 @@ function tower(g, w, h, dust) {
   g.fillStyle = 'rgba(160,255,140,0.35)';
   g.fillRect(66, 112, 4, 6);
   if (dust) {
-    g.fillStyle = 'rgba(150,166,192,0.8)';
+    g.fillStyle = 'rgba(132,148,174,0.8)';
     for (let i = 0; i < 18; i++) {
       const x = 28 + (i * 11) % 62;
       const y = 16 + (i * 23) % (h - 36);
