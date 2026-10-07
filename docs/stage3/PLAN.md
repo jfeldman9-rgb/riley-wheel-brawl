@@ -41,6 +41,9 @@ The sections below now match the code. These are the numbers that moved, and the
      sprite to face the other way is fine.
    - Real art comes only from ChatGPT images (preferred) or Gemini. Never Grok for stills. No paid usage. No Seedance
      or Manus.
+   - **Owner exception (2026-10-07):** the owner approved recoloured reskins of existing sheets as stand-ins for
+     `cutthroat`, `fade`, `riley3` and the Fade portrait, and Grok stills for the bg3 plates. See
+     `docs/stage3/ART-NEEDED.md`. Nothing else is covered by this exception.
 6. **Riley stays on-model:** 16, very muscular, short dark hair, thin blue-framed glasses, sleeveless black Asha'man
    coat. Never a kid.
 7. **Kid-safe:** no gore.

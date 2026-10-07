@@ -2,7 +2,7 @@
  "id": "fade-portrait",
  "tool": "chatgpt",
  "fallback": "gemini",
- "tries": 0,
+ "tries": 1,
  "attach": [
   "fade-master",
   "assets/ui/byar-portrait.webp",
@@ -11,5 +11,7 @@
  "output": "fade-portrait.png",
  "prompts": [
   "Create fade-portrait.png, a square 1024x1024 head-and-shoulders HUD boss portrait for Riley Wheel Brawl 2.0. Reference 1 fade-master.png is the LOCKED character design: precisely preserve the Myrddraal's smooth pale grey-white EYELESS face (smooth skin where eyes should be, no sockets, no gore), thin bloodless lips, close-cropped black hair, black snake-scale armour at the neck and the high black cloak collar. References 2 and 3 are style and head-scale/framing references only.\nHead turned three-quarters toward the LEFT, face centred so the whole face sits safely inside a centred circular crop; head fills most of the square, a little margin above the hair, shoulders cropped at the bottom. A cold, thin, knowing smile. Background: a dark plum-to-black radial gradient, opaque, no text.\nHand-drawn HD 2D fighting-game illustration in the spirit of Streets of Rage 4: near-black outlines, clean 2-3 step cel shading with subtle painterly gradients, key light upper left, cold blue rim on the right. Not pixel art, not 3D, not photo-real. Spooky but kid-friendly."
- ]
+ ],
+ "generatedWith": "reskin of assets/ui/byar-portrait via tools/stage3/reskin_chars.py (no image generation)",
+ "rejections": []
 }
