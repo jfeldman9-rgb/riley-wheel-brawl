@@ -110,7 +110,8 @@ export function createStage4View(scene) {
         });
       } else {
         for (const [x, w, key] of [[0, 1800, 'bg4floor'], [1800, 1800, 'bg4floor2'], [3600, WORLD_W, 'bg4floor3']]) {
-          lit(scene.add.tileSprite?.(x, fy, w, fh, key)?.setOrigin?.(0, 0).setDepth?.(-40));
+          const t = lit(scene.add.tileSprite?.(x, fy, w, fh, key)?.setOrigin?.(0, 0).setDepth?.(-40));
+          if (painted(scene, key)) t?.setTileScale?.(fh / scene.textures.get(key).source[0].height);
         }
       }
       this.banks = [];

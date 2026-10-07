@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import './helpers/stage4-harness.mjs';
 
 const { queueStage4 } = await import('../src/stage4.js');
@@ -96,4 +97,17 @@ test('the placeholder check reports code-drawn art only', () => {
   assert.equal(stage4Placeholder(s), true);
   s.textures.exists = k => !['s4cult', 's4drag', 'draghkarPortrait'].includes(k);
   assert.equal(stage4Placeholder(s), false);
+});
+
+test('ART_STATUS records every painted Stage 4 file with a matching hash and grokbot-image provenance', () => {
+  const status = JSON.parse(readFileSync(new URL('../assets/bg4/ART_STATUS.json', import.meta.url)));
+  const painted = status.entries.filter(e => !e.placeholder);
+  assert.deepEqual(painted.map(e => e.files[0]).sort(), Object.values(PLATE_FILES).sort());
+  for (const e of painted) {
+    const file = e.files[0];
+    assert.equal(createHash('sha256').update(readFileSync(new URL('../' + file, import.meta.url))).digest('hex'), e.sha256[file], file);
+    assert.equal(e.source, 'grokbot-image');
+    assert.ok(existsSync(new URL('../' + e.art.sourceFile, import.meta.url)), e.art.sourceFile);
+  }
+  assert.deepEqual(status.entries.filter(e => e.placeholder).map(e => e.key).sort(), ['draghkarPortrait', 's4cult', 's4drag']);
 });
