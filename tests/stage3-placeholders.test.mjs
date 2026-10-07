@@ -92,8 +92,9 @@ test('every Stage 3 image exists at its exact size', () => {
     assert.deepEqual(dims, img.size, `${img.file} dimensions match`);
 
     if (img.normal) {
+      // Painted plates can ship ahead of their normal map: the flat placeholder card is then recorded as normalSize.
       const normDims = dimensions(bytes(img.normal));
-      assert.deepEqual(normDims, img.size, `${img.normal} dimensions match`);
+      assert.deepEqual(normDims, img.normalSize || img.size, `${img.normal} dimensions match`);
     }
 
     if (img.kind === 'strip') {

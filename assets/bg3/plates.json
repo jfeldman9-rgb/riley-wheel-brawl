@@ -1,5 +1,6 @@
 {
  "note": "Stage 3 plates. floors: contiguous [from,to) world-x segments.",
+ "placeholder": false,
  "overlap": 0,
  "midScale": 0.76,
  "midParallax": 0.5,

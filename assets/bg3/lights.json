@@ -1,5 +1,5 @@
 {
- "note": "Stage 3 world lights. timeKeys: time of day by camera x. torches: [plateIndex, x, y, intensity, radius, litAt] in plate px; litAt is t (0..1).",
+ "note": "Stage 3 world lights. timeKeys: time of day by camera x. torches: [plateIndex, x, y, intensity, radius, litAt] in plate px; litAt is t (0..1). Torches sit on the painted lanterns (mid3a inn door pair; mid3b rooftop lamp and garden lanterns).",
  "ambientUnlit": "0x5a6482",
  "torchColor": "0xff9a48",
  "capOnScreen": 4,
@@ -39,64 +39,64 @@
  "torches": [
   [
    0,
-   1700,
-   560,
+   1615,
+   424,
    0.9,
    420,
    0.3
   ],
   [
    0,
-   2050,
-   560,
+   1835,
+   422,
    0.9,
    420,
    0.3
   ],
   [
    1,
-   150,
-   520,
+   308,
+   493,
    1,
    440,
    0.62
   ],
   [
    1,
-   520,
-   520,
+   1228,
+   577,
    1,
    440,
    0.64
   ],
   [
    1,
-   860,
-   520,
+   1410,
+   384,
    1,
    440,
    0.8
   ],
   [
    1,
-   1250,
-   560,
+   1908,
+   387,
    1.1,
    460,
    0.95
   ],
   [
    1,
-   1560,
-   560,
+   1914,
+   547,
    1.1,
    460,
    0.97
   ],
   [
    1,
-   1880,
-   560,
+   2045,
+   580,
    1.1,
    460,
    1

@@ -295,10 +295,29 @@
     "assets/bg3/bg3-far-day.jpg"
    ],
    "sha256": {
-    "assets/bg3/bg3-far-day.jpg": "f59f07f5a02b511cf862d87c3a4514afe04169d6eabc618b9b59e1a6d7e2a3c7"
+    "assets/bg3/bg3-far-day.jpg": "f8a3997cdfa62965502592aa4d17177759f16493bb43e7580a17f6db39b48ce8"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/bg3-far-day.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-far-day.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-far-day.src.jpg",
+    "sourceSha256": "0ea363582347bb467cb99362bf42def5166034956d306543c9d8f5c900e99f41",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     427
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: 3:1 band (rows 90-517) of the source at native resolution, re-encoded JPEG q92",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
   },
   {
    "id": "bg3-far-night",
@@ -306,10 +325,29 @@
     "assets/bg3/bg3-far-night.jpg"
    ],
    "sha256": {
-    "assets/bg3/bg3-far-night.jpg": "097164365b809d344afd71f93c1768783c811b69bcc17e413347438cdd64710d"
+    "assets/bg3/bg3-far-night.jpg": "5092faaba275c0edce055242df74c14ea284ce96c7b29344735c0f927285c0c7"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/bg3-far-night.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-far-night.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-far-night.src.jpg",
+    "sourceSha256": "3a52aacf1303927e0c61ed5fde5623067ae6c3296aca43b29868320da0dd3241",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     427
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: 3:1 band (rows 90-517) of the source at native resolution, re-encoded JPEG q92",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
   },
   {
    "id": "bg3-mid",
@@ -318,11 +356,31 @@
     "assets/bg3/bg3-mid_n.webp"
    ],
    "sha256": {
-    "assets/bg3/bg3-mid.webp": "3251ef043329726f473011c15cd1c8a523a0b52a782de3b97244ee7092918dc7",
+    "assets/bg3/bg3-mid.webp": "88810fcda40a70b1e23a39926936e1c41f3a7d4d4669cb7eb98bc71dc4f2ed61",
     "assets/bg3/bg3-mid_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/bg3-mid.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-mid.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-mid.src.jpg",
+    "sourceSha256": "918c0d08b26de8dba06abed042d1eb0fc7cd76a7dc5c1b5ca7b537159c30017f",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     2172,
+     724
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: 3:1 band with the ground on the bottom edge; flat magenta sky keyed to alpha (soft 4 px edge, colour unmix, despill); premultiplied Lanczos to 2172x724; WebP",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
   },
   {
    "id": "bg3-mid2",
@@ -331,11 +389,31 @@
     "assets/bg3/bg3-mid2_n.webp"
    ],
    "sha256": {
-    "assets/bg3/bg3-mid2.webp": "65e64984142f0dffa212d8724ff2995dd76d9f87bcc6bfad0ded64b706226f7b",
+    "assets/bg3/bg3-mid2.webp": "025a70cd14688e8ac501ddf00f2cbe5d2f265c413c60926c98acf877852c783f",
     "assets/bg3/bg3-mid2_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/bg3-mid2.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-mid2.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-mid2.src.jpg",
+    "sourceSha256": "d8b2fb5be09883836115697d849ef7c8863a0cdbf69440aaa42b2384cbd89516",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     2172,
+     724
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: 3:1 band with the ground on the bottom edge; flat magenta sky keyed to alpha (soft 4 px edge, colour unmix, despill); premultiplied Lanczos to 2172x724; WebP; left 240 px eased into a cool shadow so the cut from mid3a reads as a gap",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
   },
   {
    "id": "bg3-floor",
@@ -344,11 +422,31 @@
     "assets/bg3/bg3-floor_n.webp"
    ],
    "sha256": {
-    "assets/bg3/bg3-floor.jpg": "3437fcb9f368cc33e42ea6cfb41ebf61b6ce2fa08668ae7753b959072e07f099",
+    "assets/bg3/bg3-floor.jpg": "745ac0650246c4095be4ff1212ae8825045b471d0d1f0473e8c69050a2c05186",
     "assets/bg3/bg3-floor_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/bg3-floor.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-floor.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-floor.src.jpg",
+    "sourceSha256": "25f6b69063dd0c3d15b2f89a955d339a25a9e386af60be23e3d3d577ea02677b",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1080,
+     360
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: vertical centre gutter cut out with a min-error seam; horizontal light flattening, min-error-seam horizontal wrap (seamless when tiled), periodic Lanczos to 1080x360, JPEG q92",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
   },
   {
    "id": "bg3-floor2",
@@ -357,11 +455,31 @@
     "assets/bg3/bg3-floor2_n.webp"
    ],
    "sha256": {
-    "assets/bg3/bg3-floor2.jpg": "d4430eb20b5a10db9146a86abf5f05fc33c882dcb7ace782618d4284e71dde07",
+    "assets/bg3/bg3-floor2.jpg": "dd28b54706f3398376fe44cb0c33d505d61cd4c929a3e7ca2586e63a2698f1de",
     "assets/bg3/bg3-floor2_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/bg3-floor2.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-floor2.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-floor2.src.jpg",
+    "sourceSha256": "c7214ebbbf1437fddbe00120d7e285ac6443f28d88053141042f34cd31226de4",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1080,
+     360
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: horizontal light flattening, min-error-seam horizontal wrap (seamless when tiled), periodic Lanczos to 1080x360, JPEG q92",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
   },
   {
    "id": "bg3-floor3",
@@ -370,11 +488,31 @@
     "assets/bg3/bg3-floor3_n.webp"
    ],
    "sha256": {
-    "assets/bg3/bg3-floor3.jpg": "24323da3ae175174b2d46860997c4b958285fda12fb8bb05cc0646d938a1975a",
+    "assets/bg3/bg3-floor3.jpg": "3f69316ac9392f5a71f2ff6ff3dc4fbade7824ada32178086e116b66e6f4c849",
     "assets/bg3/bg3-floor3_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/bg3-floor3.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-floor3.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-floor3.src.jpg",
+    "sourceSha256": "74dd36d4710e87fcf7f4589efc728faa330ac99f9a7ad3fbd2899e13014e5e4a",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1080,
+     360
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: horizontal light flattening, min-error-seam horizontal wrap (seamless when tiled), periodic Lanczos to 1080x360, JPEG q92",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
   },
   {
    "id": "prop-rooftiles",
