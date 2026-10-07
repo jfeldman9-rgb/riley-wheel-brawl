@@ -4,6 +4,7 @@ import { EventEmitter } from 'node:events';
 import { stage1Simulation } from './helpers/stage1-simulation.mjs';
 import { stage3Simulation } from './helpers/stage3-harness.mjs';
 import { stage4Simulation } from './helpers/stage4-harness.mjs';
+import { stage5Simulation } from './helpers/stage5-harness.mjs';
 import { q } from '../src/config.js';
 import { perf } from '../src/perf.js';
 
@@ -27,8 +28,8 @@ async function boot(s, software = false) {
   game.governor(1 / 60);
   return game;
 }
-for (const stage of [1, 2, 3, 4]) test(`real governor levels 0..5 and restart with Stage ${stage}`, async () => {
-  const h = stage === 4 ? stage4Simulation({ mode: null }) : stage === 3 ? stage3Simulation({ mode: null }) : stage1Simulation({ stage, mode: null });
+for (const stage of [1, 2, 3, 4, 5]) test(`real governor levels 0..5 and restart with Stage ${stage}`, async () => {
+  const h = stage === 5 ? stage5Simulation({ mode: null }) : stage === 4 ? stage4Simulation({ mode: null }) : stage === 3 ? stage3Simulation({ mode: null }) : stage1Simulation({ stage, mode: null });
   const s = h.s, colors = [];
   s.lights.setAmbientColor = color => { assert.ok(Number.isFinite(color), 'ambient must be finite'); colors.push(color); };
   try {

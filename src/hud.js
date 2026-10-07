@@ -27,16 +27,15 @@ export function bossBannerBox() {
   const b = BOSS_BANNER, w = b.maxWidth + b.padX * 2, h = b.maxHeight + b.padY * 2;
   return Object.freeze({ x: b.x, y: b.y, w, h, left: b.x - w / 2, right: b.x + w / 2, top: b.y - h / 2, bottom: b.y + h / 2 });
 }
-export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS', 3: 'STAGE 3 · CAEMLYN — THE MYRDDRAAL', 4: 'STAGE 4 · SHADAR LOGOTH — THE DRAGHKAR' });
+export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS', 3: 'STAGE 3 · CAEMLYN — THE MYRDDRAAL', 4: 'STAGE 4 · SHADAR LOGOTH — THE DRAGHKAR', 5: 'STAGE 5 · THE BLIGHT — THE EYE OF THE WORLD' });
 // The perf readout is two 12px lines anchored at VH-8 and is on unless ?hud=0.
 // A tag at VH-30 sits inside that block.
 export const PLACEHOLDER_TAG_Y = VH - 56;
-export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR|CUTTHROAT|MYRDDRAAL|DRAGHKAR|CULTIST|MORDETH/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
+export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR|CUTTHROAT|MYRDDRAAL|DRAGHKAR|CULTIST|MORDETH|AGINOR|BALTHAMEL|GREEN/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
 export function clearPrompt(stage, touch, next) {
   const verb = touch ? 'TAP KICK' : 'PRESS ATTACK';
-  if (next === 4) return `${verb} TO CONTINUE TO STAGE 4`;
-  if (next === 3) return `${verb} TO CONTINUE TO STAGE 3`;
-  if (stage === 4 || stage === 3) return `${verb} TO RETURN TO THE TITLE`;
+  if (next > 2 && next < 6) return `${verb} TO CONTINUE TO STAGE ${next}`;
+  if (stage > 2 && stage < 6) return `${verb} TO RETURN TO THE TITLE`;
   return stage === 1 ? `${verb} TO CONTINUE TO STAGE 2` : stage === 2 ? `${verb} TO RETURN TO THE TITLE` : `${verb} TO PLAY AGAIN`;
 }
 
@@ -44,7 +43,7 @@ export function clearPrompt(stage, touch, next) {
 export const MASH_NEED = 6;
 
 export function bossLabel(s, has = () => true) {
-  if (s && (s.stageNo === 3 || s.stageNo === 4)) {
+  if (s && s.stageNo > 2 && s.stageNo < 6) {
     const b = s.stageDef?.boss || {};
     return { name: b.name, portrait: has(b.portrait) ? b.portrait : 'bossPortrait' };
   }
@@ -103,7 +102,7 @@ function noteMash(s) {
 }
 
 const stage3Plates = s => s?.stageNo && s.stageNo !== 3 ? null : s?.cache?.json?.get?.('plates3');
-export const placeholderArt = (s, plates = stage3Plates(s)) => s?.stageNo === 4 || Object.values(s?.metas || {}).some(m => m && m.placeholder === true) || plates?.placeholder === true;
+export const placeholderArt = (s, plates = stage3Plates(s)) => s?.stageNo > 3 || Object.values(s?.metas || {}).some(m => m && m.placeholder === true) || plates?.placeholder === true;
 
 // Drawing consumes each fill immediately, so both meters can reuse one result.
 const METER_FILL = {};

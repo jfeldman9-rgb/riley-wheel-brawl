@@ -46,7 +46,7 @@ for (const seed of FULL_STAGE_SEEDS) {
       for (let frame = 0; frame < 60 * 15; frame++) h.step();
       assert.ok(h.resources().lights <= 10);
       s.inp.press('attack');
-      assert.deepEqual(h.observations.restartData, [{ stage: 1 }]);
+      assert.deepEqual(h.observations.restartData, [{ stage: 5, fromStage4: true, autostart: true }]);
     } finally { h.destroy(); }
   }));
 }

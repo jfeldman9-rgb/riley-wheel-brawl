@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "evidenceKind": "deterministic combat-logic simulation",
-  "baseGitCommit": "2b257ffe59878a0a04266fb9fcf165585c12b9aa",
+  "baseGitCommit": "2aa9cafb0c53fb6da7c4307310e878070e93dda0",
   "sourceSha256": {
     "src/stage1.js": "3f85e769fd02f96550bcd5a15be196d884c20d47f7c43157e8bb26d73dc8e638",
     "src/riley.js": "0079041bed5b25440fb0487e4d319e1a9d26f116c7034c88f6c14c92463980e1",
     "src/loial.js": "7f564b884fe81c9efddad49e5100f13ff6ec5543463f12f4797822c8ac3cb5a5",
     "src/enemies.js": "88314da46278dd8685edc64962c7eeaf5d601287ade012cd36abc20609038644",
     "src/fighter.js": "0ba30ef9136bde437028e77a3c44e17739ecb0a93d051e9b5038bb29b6de2606",
-    "src/bot.js": "065e5efce83896247b02bd0a553ce1cc9b339f47a1f2c2de58f9635eb6c341e8",
+    "src/bot.js": "138ce7ba004c770731fa9a517b1bf3e39a000a56a7ef8410114fed3075e499cb",
     "src/input.js": "2dc72b914de4bdd9418b8eecf1ebc69025effaf9636e94e2ecd9a88c88d93b80",
     "src/fx.js": "7f825f15465147a6a001bafa27b8c2a6d9987fc130f683f1f5cff2df543e998b",
     "src/assets.js": "6067eee4ff3e8e5be15486f3637255add3f708629cec5d830bddc517f4ee81db",

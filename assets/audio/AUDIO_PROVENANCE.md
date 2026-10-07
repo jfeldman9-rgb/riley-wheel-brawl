@@ -69,3 +69,12 @@ Original loops rendered the same way (FluidSynth + FluidR3_GM), looped in `src/a
 - `music-stage4.mp3`: "Shadar Logoth". E phrygian, hollow and slow. 16 bars @ 96 bpm, -16.0 LUFS, loop [0.250, 40.250) s.
 - `music-boss4.mp3`: "The Draghkar's Croon". A minor pulse under a high line. 16 bars @ 126 bpm, -15.2 LUFS, loop [0.250, 30.726) s.
 Both are under 1.2 MB. Loop points are in `tools/music/music-manifest.json`. Stage 4 voice lines are in `assets/audio/stage4-voice-manifest.json`.
+
+## Stage 5 music stand-ins
+
+| File | Id | What it is | Licence / rights |
+| --- | --- | --- | --- |
+| `music-stage5.mp3` | stage5 | One second of silence. Stand-in so the Stage 5 music id is a real file. Replace with the rendered Blight loop. Planned loop in `src/stage5.js` is [0.250, 40.250) s. | Original silence generated for this project. No third-party audio. |
+| `music-boss5.mp3` | boss5 | One second of silence. Stand-in for the Eye boss loop. Planned loop is [0.250, 32.000) s. | Original silence generated for this project. No third-party audio. |
+
+`playTrack` still treats a failed fetch as silence. These files exist so the music inventory can see the hooks. Voice lines are not rendered yet.

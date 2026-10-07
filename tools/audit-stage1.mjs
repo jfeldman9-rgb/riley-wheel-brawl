@@ -1,5 +1,5 @@
 // Deterministic shipped-content audit. Reports open acceptance gaps; it never lowers gates.
-import { readFileSync, statSync, readdirSync } from 'node:fs';
+import { readFileSync, statSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -52,9 +52,11 @@ export function audit() {
   // They are a separate source budget, the same way Stage 3 voices sit outside this gate.
   const STAGE4_SRC = new Set(['stage4.js','stage4-def.js','stage4-hud.js','stage4-hazards.js','stage4-sfx.js','stage4-actors.js','stage4-arena.js','stage4-towers.js','stage4-view.js','stage4-art.js','stage4-art-bg.js','stage4-art-fog.js','stage4-art-cast.js','stage4-voice.js','cultists.js','draghkar.js','bot-stage4.js']);
   for (const name of ['stage4-lifecycle.js', 'stage4-time.js', 'stage4-lighting.js', 'draghkar-impact.js', 'stage4-art-thug.js']) STAGE4_SRC.add(name);
-  const stage4SourceFiles = [];
+  const STAGE5_SRC = new Set(['stage5.js','stage5-def.js','stage5-hud.js','stage5-blight.js','stage5-sfx.js','stage5-actors.js','stage5-arena.js','stage5-view.js','stage5-art.js','stage5-art-bg.js','stage5-art-fx.js','stage5-art-cast.js','stage5-voice.js','blightspawn.js','aginor.js','balthamel.js','bot-stage5.js','stage5-lifecycle.js','stage5-clock.js','stage5-hurt.js','stage5-lighting.js','stage5-spores.js']);
+  const stage4SourceFiles = [], stage5SourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
     if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);
+    else if (STAGE5_SRC.has(name)) stage5SourceFiles.push(`src/${name}`);
     else files.add(`src/${name}`);
   }
   for (const group of ['chars','bg','props','ui','powers']) for (const name of readdirSync(resolve(ROOT,'assets',group))) if (!name.endsWith('.md')) files.add(`assets/${group}/${name}`);
@@ -65,11 +67,13 @@ export function audit() {
   // of being dropped from the Stage 1 gate along with Stage 2.
   const stage3Voice = /^(st3_|cutthroat_|fade_|riley_st3_|riley_escape_|riley_counter_)/;
   const stage4Voice = /^(st4_|draghkar_|cultist_|riley_fog_|riley_tower_|riley_bridge_|riley_light_|riley_st4_)/;
-  let countedVoiceBytes = 0, stage3VoiceBytes = 0, stage3VoiceCount = 0, stage4VoiceBytes = 0, stage4VoiceCount = 0;
+  const stage5Voice = /^(st5_|aginor_|balthamel_|greenman_|riley_st5_)/;
+  let countedVoiceBytes = 0, stage3VoiceBytes = 0, stage3VoiceCount = 0, stage4VoiceBytes = 0, stage4VoiceCount = 0, stage5VoiceBytes = 0, stage5VoiceCount = 0;
   for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) {
     const path = `assets/audio/voice/${name}`, bytes = statSync(resolve(ROOT, path)).size;
     if (stage3Voice.test(name)) { stage3VoiceBytes += bytes; stage3VoiceCount++; }
     else if (stage4Voice.test(name)) { stage4VoiceBytes += bytes; stage4VoiceCount++; }
+    else if (stage5Voice.test(name)) { stage5VoiceBytes += bytes; stage5VoiceCount++; }
     else { files.add(path); countedVoiceBytes += bytes; }
   }
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
@@ -78,9 +82,14 @@ export function audit() {
   const stage4MusicFiles = ['assets/audio/music-stage4.mp3', 'assets/audio/music-boss4.mp3'];
   const stage4MusicBytes = stage4MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const stage4SourceBytes = stage4SourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const stage5SourceBytes = stage5SourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const stage5MusicFiles = ['assets/audio/music-stage5.mp3', 'assets/audio/music-boss5.mp3'].filter(p => existsSync(resolve(ROOT, p)));
+  const stage5MusicBytes = stage5MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const stage4SourceBudget = 192 * 1024;
+  const stage5SourceBudget = 192 * 1024;
   const stage3VoiceBudget = 18 * 200 * 1024, stage3MusicBudget = 2 * 1_200_000;
   const stage4VoiceBudget = 23 * 200 * 1024, stage4MusicBudget = 2 * 1_200_000;
+  const stage5VoiceBudget = 23 * 200 * 1024, stage5MusicBudget = 2 * 1_200_000;
   const rgbaBytes = images.reduce((n,x)=>n+x.rgbaBytes,0);
   const rileyAnimations = json('assets/chars/riley.anims.json').anims;
   // These are the shipped attack-animation mappings, not a claim that every
@@ -113,6 +122,17 @@ export function audit() {
       music: { files: stage4MusicFiles, bytes: stage4MusicBytes, budgetBytes: stage4MusicBudget,
         status: stage4MusicBytes <= stage4MusicBudget ? 'PASS' : 'FAIL',
         note: 'Two decoded loops, each under 1.2 MB. Not part of the Stage 1 pre-fight sum.' },
+    },
+    stage5: {
+      source: { files: stage5SourceFiles, bytes: stage5SourceBytes, budgetBytes: stage5SourceBudget,
+        status: stage5SourceBytes <= stage5SourceBudget ? 'PASS' : 'FAIL',
+        note: 'Stage 5 modules only. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
+      voices: { count: stage5VoiceCount, bytes: stage5VoiceBytes, budgetBytes: stage5VoiceBudget,
+        status: stage5VoiceBytes <= stage5VoiceBudget ? 'PASS' : 'FAIL',
+        note: 'Stage 5 voice lines only, when the files exist. Each line is capped at 200 KB; the total cap is 23 times that.' },
+      music: { files: stage5MusicFiles, bytes: stage5MusicBytes, budgetBytes: stage5MusicBudget,
+        status: stage5MusicBytes <= stage5MusicBudget ? 'PASS' : 'FAIL',
+        note: 'Two decoded loops, each under 1.2 MB, counted only when the file is on disk. Not part of the Stage 1 pre-fight sum.' },
     },
     playerAttackDensity: { minimumFrames:5, attacks:playerAttacks,
       densityStatus:playerAttacks.every(a=>a.densityStatus==='PASS')?'PASS':'FAIL',

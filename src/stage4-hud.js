@@ -1,6 +1,7 @@
 // Croon arc and kiss-mash hint. Drawn by the shared HUD; the bytes live here so
 // they sit in the Stage 4 source budget rather than the Stage 1 pre-fight sum.
 import { clamp } from './config.js';
+import { drawStage5Meters } from './stage5-hud.js';
 const clamp01 = v => clamp(v, 0, 1);
 const FILL = {};
 
@@ -18,6 +19,7 @@ export function kissHint(s) {
 }
 
 export function drawStage4Meters(s, g) {
+  if (s?.stageNo === 5) return drawStage5Meters(s, g);
   if (!s || s.stageNo !== 4 || !g || !s.riley) return;
   const arc = croonArc(s, FILL);
   if (arc) {

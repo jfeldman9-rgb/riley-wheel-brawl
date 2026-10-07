@@ -38,7 +38,7 @@ function titleHUD() {
   return { hud, pressed, tap };
 }
 
-test('title select offers stages 1–4 and clamps at 4; s3=1 does not change that', () => withSeed(1, () => {
+test('title select offers stages 1–5 and clamps at 5; s3=1 does not change that', () => withSeed(1, () => {
   q.set('s3', '1');
   try {
     const h = stage1Simulation({ mode: '' }), s = h.s;
@@ -50,10 +50,12 @@ test('title select offers stages 1–4 and clamps at 4; s3=1 does not change tha
       s.selectStage(1);
       assert.equal(s.titleSel, 4);
       s.selectStage(1);
-      assert.equal(s.titleSel, 4);
+      assert.equal(s.titleSel, 5);
+      s.selectStage(1);
+      assert.equal(s.titleSel, 5);
       s.selectStage(-1);
-      assert.equal(s.titleSel, 3);
-      assert.deepEqual(h.observations.hud.filter(e => e.method === 'titleSelect').map(e => e.args[0]), [2, 3, 4, 3]);
+      assert.equal(s.titleSel, 4);
+      assert.deepEqual(h.observations.hud.filter(e => e.method === 'titleSelect').map(e => e.args[0]), [2, 3, 4, 5, 4]);
       assert.equal(s.music.state, 'title');
     } finally {
       h.destroy();
@@ -63,7 +65,7 @@ test('title select offers stages 1–4 and clamps at 4; s3=1 does not change tha
   }
 }));
 
-test('no flag: title select reaches Stage 3 and Stage 4 and dims the right arrow at 4', () => withSeed(1, () => {
+test('no flag: title select reaches Stage 5 and dims the right arrow at 5', () => withSeed(1, () => {
   assert.equal(q.get('s3'), null);
   assert.equal(q.get('s4'), null);
   const h = stage1Simulation({ mode: '' }), s = h.s;
@@ -77,12 +79,14 @@ test('no flag: title select reaches Stage 3 and Stage 4 and dims the right arrow
     s.selectStage(1);
     assert.equal(s.titleSel, 4);
     s.selectStage(1);
-    assert.equal(s.titleSel, 4);
+    assert.equal(s.titleSel, 5);
+    s.selectStage(1);
+    assert.equal(s.titleSel, 5);
     s.selectStage(-1);
-    assert.equal(s.titleSel, 3);
+    assert.equal(s.titleSel, 4);
     const selectCalls = h.observations.hud.filter(e => e.method === 'titleSelect').map(e => e.args[0]);
-    assert.deepEqual(selectCalls, [2, 3, 4, 3]);
-    assert.ok(selectCalls.includes(3) && selectCalls.includes(4));
+    assert.deepEqual(selectCalls, [2, 3, 4, 5, 4]);
+    assert.ok(selectCalls.includes(3) && selectCalls.includes(4) && selectCalls.includes(5));
   } finally {
     h.destroy();
   }
@@ -100,15 +104,20 @@ test('no flag: title select reaches Stage 3 and Stage 4 and dims the right arrow
   hud.stage.selectStage(1);
   assert.equal(hud.stage.titleSel, 4);
   assert.equal(hud.titleStageT.text, STAGE_NAMES[4]);
+  assert.equal(hud.titleArrowR.alpha, 1);
+  assert.equal(hud.titleArrowL.alpha, 1);
+  hud.stage.selectStage(1);
+  assert.equal(hud.stage.titleSel, 5);
+  assert.equal(hud.titleStageT.text, STAGE_NAMES[5]);
   assert.equal(hud.titleArrowR.alpha, 0.25);
   assert.equal(hud.titleArrowL.alpha, 1);
   hud.stage.selectStage(1);
-  assert.equal(hud.stage.titleSel, 4);
+  assert.equal(hud.stage.titleSel, 5);
   assert.equal(hud.titleArrowR.alpha, 0.25);
-  assert.notEqual(hud.titleStageT.text, STAGE_NAMES[3]);
+  assert.notEqual(hud.titleStageT.text, STAGE_NAMES[4]);
 }));
 
-test('the 120×100 arrow targets reach Stage 4 and dim the right arrow there', () => {
+test('the 120×100 arrow targets reach Stage 5 and dim the right arrow there', () => {
   const { hud, pressed, tap } = titleHUD();
   const arrow = hud.titleArrowR;
   assert.equal(arrow.input.hitArea.width, 120);
@@ -127,12 +136,12 @@ test('the 120×100 arrow targets reach Stage 4 and dim the right arrow there', (
     assert.deepEqual(tap(arrow.x + dx, arrow.y + dy), [arrow], 'expanded touch target catches the tap');
     assert.equal(pressed.length, 0, 'stage selection never emits Start, even on repeated/clamped taps');
   }
-  assert.equal(hud.stage.titleSel, 4);
-  assert.equal(hud.titleStageT.text, STAGE_NAMES[4]);
+  assert.equal(hud.stage.titleSel, 5);
+  assert.equal(hud.titleStageT.text, STAGE_NAMES[5]);
   assert.equal(hud.titleArrowR.alpha, 0.25);
   assert.equal(hud.titleArrowL.alpha, 1);
   tap(arrow.x, arrow.y);
-  assert.equal(hud.stage.titleSel, 4);
+  assert.equal(hud.stage.titleSel, 5);
   assert.equal(pressed.length, 0);
 });
 
@@ -295,7 +304,7 @@ test('clearing Stage 3 continues to Stage 4 with or without s4=1', () => withSee
   }
 }));
 
-test('no-flag campaign goes Stage 1 → 2 → 3 → 4, then Stage 4 returns to the title', () => withSeed(1, () => {
+test('no-flag campaign goes Stage 1 → 2 → 3 → 4 → 5, then Stage 5 returns to the title', () => withSeed(1, () => {
   assert.equal(q.get('s3'), null);
   assert.equal(q.get('s4'), null);
   q.set('story', '0');
@@ -303,7 +312,8 @@ test('no-flag campaign goes Stage 1 → 2 → 3 → 4, then Stage 4 returns to t
     { from: 1, restart: { stage: 2, fromStage1: true, autostart: true }, prompt: 'CONTINUE TO STAGE 2' },
     { from: 2, restart: { stage: 3, fromStage2: true, autostart: true }, prompt: 'CONTINUE TO STAGE 3' },
     { from: 3, restart: { stage: 4, fromStage3: true, autostart: true }, prompt: 'CONTINUE TO STAGE 4' },
-    { from: 4, restart: { stage: 1 }, prompt: 'RETURN TO THE TITLE' },
+    { from: 4, restart: { stage: 5, fromStage4: true, autostart: true }, prompt: 'CONTINUE TO STAGE 5' },
+    { from: 5, restart: { stage: 1 }, prompt: 'RETURN TO THE TITLE' },
   ];
   try {
     const h = stage1Simulation({ mode: '1', stage: 1, followRestart: true }), s = h.s;
