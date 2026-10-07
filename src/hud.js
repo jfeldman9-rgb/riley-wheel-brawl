@@ -103,11 +103,7 @@ function noteMash(s) {
 }
 
 const stage3Plates = s => s?.stageNo && s.stageNo !== 3 ? null : s?.cache?.json?.get?.('plates3');
-export const placeholderArt = (s, plates = stage3Plates(s)) => {
-  if (s?.stageNo === 4) return true;
-  if (s?.stage3Painted === true && s?.stageNo === 3) return false;
-  return Object.values(s?.metas || {}).some(m => m && m.placeholder === true) || plates?.placeholder === true;
-};
+export const placeholderArt = (s, plates = stage3Plates(s)) => s?.stageNo === 4 || !(s?.stage3Painted === true && s?.stageNo === 3) && (Object.values(s?.metas || {}).some(m => m && m.placeholder === true) || plates?.placeholder === true);
 
 // Drawing consumes each fill immediately, so both meters can reuse one result.
 const METER_FILL = {};

@@ -181,3 +181,4 @@ export function installViewportFit(game, root = globalThis) {
   schedule();
   return schedule;
 }
+export const fit = installViewportFit;

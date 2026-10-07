@@ -4,6 +4,10 @@ import assert from 'node:assert/strict';
 import { existsSync, readdirSync } from 'node:fs';
 import { STAGE2, resolveStage } from '../src/stages.js';
 import { ensureStage3Plates, isPlaceholderPlate, STAGE3_PLATE_W, STAGE3_PLATE_H } from '../src/stage3-art.js';
+import { directoryBaseHref, resolvePageAsset } from '../src/page-base.js';
+import { audit } from '../tools/audit-stage1.mjs';
+
+const PAGES = 'https://jfeldman9-rgb.github.io/riley-wheel-brawl/';
 
 globalThis.Phaser = globalThis.Phaser || { Scene: class {} };
 const { queueStage3 } = await import('../src/stage3.js');
@@ -46,6 +50,15 @@ test('stage 2 hands the campaign to stage 3 on relative case-exact bg3 paths', (
   assert.ok(bg3.includes('assets/bg3/bg3-mid.webp'));
   assert.ok(bg3.includes('assets/bg3/bg3-floor.jpg'));
   assert.ok(bg3.includes('assets/bg3/plates.json'));
+  assert.equal(directoryBaseHref(PAGES), PAGES);
+  assert.equal(directoryBaseHref(PAGES.slice(0, -1)), PAGES);
+  assert.equal(directoryBaseHref(PAGES + 'index.html'), PAGES + 'index.html');
+  for (const url of bg3) assert.equal(resolvePageAsset(PAGES.slice(0, -1), url), PAGES + url, url);
+  const gate = audit();
+  assert.equal(gate.preFight.inventoryStatus, 'PASS');
+  assert.ok(gate.preFight.inventoryUpperBoundBytes <= 25_000_000);
+  assert.equal(gate.iosHotfix.source.status, 'PASS');
+  assert.ok(gate.iosHotfix.source.bytes <= gate.iosHotfix.source.budgetBytes);
 });
 
 test('half-res stage 3 plates are painted once and full-size sources are left alone', () => {

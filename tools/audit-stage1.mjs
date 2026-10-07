@@ -52,9 +52,9 @@ export function audit() {
   // They are a separate source budget, the same way Stage 3 voices sit outside this gate.
   const STAGE4_SRC = new Set(['stage4.js','stage4-def.js','stage4-hud.js','stage4-hazards.js','stage4-sfx.js','stage4-actors.js','stage4-arena.js','stage4-towers.js','stage4-view.js','stage4-art.js','stage4-art-bg.js','stage4-art-fog.js','stage4-art-cast.js','stage4-voice.js','cultists.js','draghkar.js','bot-stage4.js']);
   for (const name of ['stage4-lifecycle.js', 'stage4-time.js', 'stage4-lighting.js', 'draghkar-impact.js', 'stage4-art-thug.js']) STAGE4_SRC.add(name);
-  // The Stage 1 gate had 484 bytes of headroom. These iOS hotfix modules do not
-  // fit in it. They are counted on their own line, the same way Stage 4 is.
-  const IOS_SRC = new Set(['viewport.js', 'page-base.js', 'debug-flags.js', 'stage3-art.js']);
+  // The Stage 1 gate has a few hundred bytes of headroom. These hotfix modules
+  // do not fit in it. They are counted on their own line, the same way Stage 4 is.
+  const IOS_SRC = new Set(['viewport.js', 'page-base.js', 'debug-flag.js', 'stage3-art.js']);
   const stage4SourceFiles = [];
   const iosSourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
@@ -105,7 +105,7 @@ export function audit() {
     iosHotfix: {
       source: { files: iosSourceFiles, bytes: iosSourceBytes, budgetBytes: iosSourceBudget,
         status: iosSourceBytes <= iosSourceBudget ? 'PASS' : 'FAIL',
-        note: 'visual viewport, Pages base, perf-button flag, and Stage 3 plate paint. Not folded into the 25 MB pre-fight sum: the gate had no room left.' },
+        note: 'Viewport, Pages base, debug flag and Stage 3 plate stand-in. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
     },
     stage3: {
       voices: { count: stage3VoiceCount, bytes: stage3VoiceBytes, budgetBytes: stage3VoiceBudget,

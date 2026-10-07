@@ -211,3 +211,4 @@ export function ensureStage3Plates(scene) {
   if (painted) scene.stage3Painted = true;
   return painted;
 }
+export const p3 = ensureStage3Plates;
