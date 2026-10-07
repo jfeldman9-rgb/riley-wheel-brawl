@@ -1,4 +1,5 @@
 // iPhone landscape hotfix: shell fit, Stage 2 → 3 paths, perf button, audit cap.
+import './helpers/install-location.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fitCanvasRect, elementClipped } from '../src/viewport.js';

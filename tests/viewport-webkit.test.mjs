@@ -27,7 +27,7 @@ function serve() {
   return new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve(server)));
 }
 
-test('WebKit shrinks the stage shell by 60px and keeps the HUD canvas on screen', async (t) => {
+test('WebKit shrinks the stage shell by 60px and keeps the HUD canvas on screen', { timeout: 90_000 }, async (t) => {
   let webkit;
   try {
     ({ webkit } = await import('playwright'));
@@ -37,7 +37,17 @@ test('WebKit shrinks the stage shell by 60px and keeps the HUD canvas on screen'
   }
   const server = await serve();
   const port = server.address().port;
-  const browser = await webkit.launch({ headless: true });
+  let browser;
+  try {
+    browser = await webkit.launch({ headless: true });
+  } catch (error) {
+    server.close();
+    if (/missing dependencies|Host system is missing/i.test(String(error))) {
+      t.skip('Playwright WebKit browser libraries are not installed');
+      return;
+    }
+    throw error;
+  }
   try {
     const page = await browser.newPage({ viewport: { width: 844, height: 390 } });
     await page.goto(`http://127.0.0.1:${port}/?stage=2&skip=boss&story=0&autostart=1`, { waitUntil: 'domcontentloaded' });
