@@ -63,10 +63,11 @@ const EXPECTED_PROMPT_IDS = [
   'story3-3',
 ];
 
-// Jason approved the Grok Bot background stills on 2026-10-07 (PR #30), and the character reskins of
-// existing painted sheets the same day. Only these ids may use those sources, and each must carry its provenance block.
+// Jason approved the Grok Bot background stills on 2026-10-07 (PR #30), the character reskins of
+// existing painted sheets and the three Grok Bot story panels the same day. Only these ids may use those sources,
+// and each must carry its provenance block.
 export const APPROVED_STILLS = Object.freeze({
-  'grokbot-image': Object.freeze(['bg3-far-day', 'bg3-far-night', 'bg3-mid', 'bg3-mid2', 'bg3-floor', 'bg3-floor2', 'bg3-floor3']),
+  'grokbot-image': Object.freeze(['bg3-far-day', 'bg3-far-night', 'bg3-mid', 'bg3-mid2', 'bg3-floor', 'bg3-floor2', 'bg3-floor3', 'story3-1', 'story3-2', 'story3-3']),
   reskin: Object.freeze(EXPECTED_PROMPT_IDS.slice(0, EXPECTED_PROMPT_IDS.indexOf('fade-portrait') + 1)),
 });
 
@@ -253,7 +254,7 @@ test('every real (non-placeholder) art entry records its source, tries and conta
   const realEntries = S.entries.filter(e => !e.placeholder);
   t.diagnostic(`real entries: ${realEntries.length}`);
   const approved = Object.values(APPROVED_STILLS).flat();
-  assert.deepEqual(realEntries.map(e => e.id), EXPECTED_PROMPT_IDS.filter(id => approved.includes(id)), 'the approved plates and character reskins are the only real entries');
+  assert.deepEqual(realEntries.map(e => e.id), EXPECTED_PROMPT_IDS.filter(id => approved.includes(id)), 'the approved plates, story panels and character reskins are the only real entries');
 
   for (const e of realEntries) {
     const p = json(e.prompt);
@@ -279,7 +280,7 @@ test('every real (non-placeholder) art entry records its source, tries and conta
   assert.ok(err3.some(msg => msg.includes('contactSheet')));
 
   const fakeUnlisted = { id: 'fade-a', placeholder: false, source: 'grokbot-image', contactSheet: existingPath, art: { approvedBy: 'x', sourceSha256: 'x' } };
-  assert.ok(provenanceErrors(fakeUnlisted, { tries: 1 }).some(msg => msg.includes('source')), 'grokbot-image is limited to the approved plates');
+  assert.ok(provenanceErrors(fakeUnlisted, { tries: 1 }).some(msg => msg.includes('source')), 'grokbot-image is limited to the approved plates and panels');
 
   const err4 = provenanceErrors(fakeGood, { tries: 1 });
   assert.deepEqual(err4, [], 'fake good entry produces no errors');
