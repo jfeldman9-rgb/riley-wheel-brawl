@@ -1,3 +1,4 @@
+import { launchSpore } from './stage5-spores.js';
 // Stalker and sporepod. Pure cores; sprites live on the actors.
 import { clamp } from './config.js';
 import { stage4Delta } from './stage4-time.js';
@@ -45,7 +46,8 @@ export class Stalker {
   }
   update(dt) {
     dt = dtOf(dt);
-    if (!dt || !this.alive || this.scene.paused || this.scene.cutscene) return;
+    if (!dt || this.scene.paused || this.scene.cutscene) return;
+    if (!this.alive) { if (this.state === 'dead' && (this.st += dt) > 0.8) this.gone = true; return; }
     const R = this.target, S = STALKER; this.st += dt; if (this.daze > 0) this.daze -= dt;
     const light = this.scene.kit?.lightAt?.(this.x, S.light);
     if (light && (this.state === 'lurk' || (this.state === 'attack' && !this.leaping))) { if (this.flush('light')) this.scene.kit?.onFlush?.(this); }
@@ -112,7 +114,8 @@ export class Sporepod {
   place(spot) { if (spot) { this.x = spot.x; this.y = spot.y; } }
   dropIn() { this.entering = false; this.state = 'emerge'; this.st = 0; }
   update(dt) {
-    dt = dtOf(dt); if (!dt || !this.alive || this.scene.paused || this.scene.cutscene) return;
+    dt = dtOf(dt); if (!dt || this.scene.paused || this.scene.cutscene) return;
+    if (!this.alive) { if (this.state === 'dead' && (this.st += dt) > 0.7) this.gone = true; return; }
     const R = this.target, P = SPOREPOD; this.st += dt; this.cool -= dt;
     if (this.state === 'emerge') { if (this.st >= P.emerge) { this.state = 'idle'; this.st = 0; } return; }
     if (this.state === 'attack') { if (this.st >= P.swell) this.loose(); return; }
@@ -122,11 +125,7 @@ export class Sporepod {
       this.state = 'attack'; this.st = 0; this.scene.kit?.onSwell?.(this);
     }
   }
-  loose() {
-    const R = this.target, P = SPOREPOD; if (!R) { this.state = 'idle'; this.cool = P.cool; return; }
-    this.scene.spores.push({ alive: true, x: this.x, y: this.y, tx: R.x, ty: R.y, t: 0, flight: P.flight, r: P.r, from: this });
-    this.state = 'idle'; this.st = 0; this.cool = P.cool; this.scene.kit?.onLob?.(this);
-  }
+  loose() { return launchSpore(this); }
   takeHit(h, from) {
     if (!this.canBeHit) return false;
     let dmg = from?.state === 'thrown' ? SPOREPOD.thrown : (h.dmg || 0);

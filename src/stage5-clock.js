@@ -12,7 +12,7 @@ export function substeps(owner, dt, fn) {
   if (!d) return 0;
   owner.accum = (owner.accum || 0) + d;
   let n = Math.floor(owner.accum * HZ + 1e-4);
-  if (n > SUB_CAP) n = SUB_CAP;
+  if (n > SUB_CAP) { owner.accum -= (n - SUB_CAP) * SUB; n = SUB_CAP; }
   for (let i = 0; i < n; i++) fn(SUB);
   owner.accum -= n * SUB;
   if (owner.accum > SUB_CAP * SUB) owner.accum = SUB_CAP * SUB;

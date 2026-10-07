@@ -1,11 +1,15 @@
 // Riley damage from Stage 5 hazards and bosses. A hit releases a Balthamel hold
 // in the same call. God mode and i-frames skip the hp loss. fogSlow is owned
 // by the kit, which clears it when no snare, cloud or seep is active.
+export function damageAllowed(scene, opts = {}) {
+  const R = scene?.riley;
+  return !!(R && R.alive !== false && R.hp > 0 && !scene.paused && !scene.cutscene && !scene.kit?.arena?.frozen && !scene.god && !(R.inv > 0 && !opts.throughInv));
+}
+
 export function strikeRiley(scene, dmg, opts = {}) {
   const R = scene?.riley;
-  if (!R || R.alive === false) return false;
+  if (!damageAllowed(scene, opts)) return false;
   R.grabbedBy?.releaseHold?.('break');
-  if (scene.god || (R.inv > 0 && !opts.throughInv)) return false;
   if (!opts.throughVuln && R.vulnerable === false && !opts.dot) return false;
   R.hp = Math.max(0, (R.hp || 0) - dmg);
   if (opts.down) {

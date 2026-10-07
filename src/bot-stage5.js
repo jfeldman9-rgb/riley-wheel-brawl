@@ -1,12 +1,12 @@
+import { go, press, strike, dodgeString, dodgeHand, parryFlail, staffDamage } from './stage5-bot-combat.js';
 import { LANE_TOP, LANE_BOT } from './config.js';
+import { bandOf } from './stage5-hurt.js';
 const BANDS = [0, 1, 2].map(i => {
   const a = Math.round(LANE_TOP + (LANE_BOT - LANE_TOP) * i / 3);
   const b = Math.round(LANE_TOP + (LANE_BOT - LANE_TOP) * (i + 1) / 3);
   return [a, b];
 });
 
-const go = (bot, x, y, run = false) => { bot.s.inp.demo = { x, y, run }; return true; };
-const press = (bot, key, gap) => { if (bot.t >= (bot.next || 0)) { bot.s.inp.press(key); bot.next = bot.t + gap; } };
 const bandY = i => (BANDS[i][0] + BANDS[i][1]) / 2;
 const on = (p, s) => p && p.x > s.bounds.l - 40 && p.x < s.bounds.r + 40;
 
@@ -40,8 +40,7 @@ export function stage5Bot(bot) {
   }
   for (const h of th.hands || []) {
     if (h.phase === 'tell' && Math.hypot(R.x - h.x, R.y - h.y) < 100) {
-      const dir = boss?.phase === 3 ? (bot.hd = bot.hd || Math.sign(R.x - h.x) || 1) : (Math.sign(R.x - h.x) || 1);
-      return go(bot, dir, 0, true);
+      return dodgeHand(bot, R, h);
     }
   }
   bot.hd = 0;
@@ -107,7 +106,7 @@ export function stage5Bot(bot) {
   }
   if (boss?.state === 'tether' && !boss.locked && st.tetherCounters < 1) return strike(bot, R, boss, 170, 0.14, true);
   if (boss?.locked) {
-    const y = bandY((Math.round((R.y - LANE_TOP) / 40) + 1) % 3);
+    const y = bandY((bandOf(boss.y, BANDS) + 1) % 3);
     return go(bot, 0, Math.sign(y - R.y) || 1, true);
   }
   if (balth?.alive && st.embraces < 1 && balth.hp < 80 && !['lunge', 'holding', 'attack', 'step', 'down', 'hurt'].includes(balth.state)) {
@@ -117,7 +116,7 @@ export function stage5Bot(bot) {
     if (Math.abs(dx) < 70) return go(bot, -side, 0);
     return go(bot, 0, 0);
   }
-  if (balth?.alive && st.parries < 1 && st.embraces >= 1 && balth.hp < 70 && !['attack', 'step', 'lunge', 'holding', 'down', 'hurt'].includes(balth.state)) {
+  if (balth?.alive && st.parries < 1 && !['drop', 'attack', 'step', 'lunge', 'holding', 'down', 'hurt'].includes(balth.state)) {
     const dx = balth.x - R.x, side = Math.sign(dx) || 1;
     if (Math.abs(dx) > 140) return go(bot, side, Math.abs(balth.y - R.y) > 12 ? Math.sign(balth.y - R.y) : 0);
     if (Math.abs(dx) < 60) return go(bot, -side, 0);
@@ -128,11 +127,8 @@ export function stage5Bot(bot) {
     if (Math.abs(dx) > 70) return go(bot, Math.sign(dx), Math.abs(balth.y - R.y) > 10 ? Math.sign(balth.y - R.y) : 0);
     return go(bot, 0, 0);
   }
-  if (balth && st.parries < 1 && balth.state === 'attack') {
-    const tell = balth.st || 0, side = Math.sign(balth.x - R.x) || 1;
-    const swinging = R.facing === side && (R.state === 'combo1' || R.state === 'combo2' || R.state === 'combo3');
-    if ((swinging && tell > 0.36) || (!swinging && tell > 0.22)) return strike(bot, R, balth, 160, 0.12, true);
-  }
+  if (balth && st.parries < 1 && balth.state === 'attack') return parryFlail(bot, R, balth);
+  if (st.parries >= 1 && dodgeString(bot, R, balth, 150, true)) return true;
   if (balth && st.stepCounters < 1 && balth.state === 'step' && !balth.arrived) {
     const tell = balth.st || 0;
     if (R.state === 'back') return go(bot, 0, 0);
@@ -142,13 +138,11 @@ export function stage5Bot(bot) {
     }
     return go(bot, 0, 0);
   }
+  if (boss && th.surge?.phase === 'tell' && st.surgeCounters < 1) return go(bot, 0, 0);
+  if (R.hp <= staffDamage && st.staffs >= 1 && dodgeString(bot, R, boss, 185, false)) return true;
   if (boss && (boss.overdrawn || th.surge?.phase === 'hot') && boss.canBeHit && !['burn', 'dead', 'step'].includes(boss.state)) return strike(bot, R, boss, 180, 0.12, true);
-  if (boss && boss.phase === 3 && R.hp < 24 && s.kit.arena?.oak) { const o = s.kit.arena.oak; return go(bot, Math.sign(o.x - R.x) || 1, Math.abs(o.y - R.y) > 12 ? Math.sign(o.y - R.y) : 0, true); }
+  if (st.staffs >= 1 && dodgeString(bot, R, boss, 185, false)) return true;
   if (boss && boss.phase === 3 && th.oak?.open && (st.oak < 1 || R.hp < 55)) return go(bot, Math.sign(th.oak.x - R.x) || 1, Math.abs(th.oak.y - R.y) > 12 ? Math.sign(th.oak.y - R.y) : 0, true);
-  if (boss && st.staffs >= 1 && boss.state === 'attack' && !boss.overdrawn) {
-    const tell = boss.st || 0, hot = (tell > 0.42 && tell < 0.68) || (tell > 0.84 && tell < 1.1);
-    if (hot && Math.abs(boss.x - R.x) < 185 && Math.abs(boss.y - R.y) < 40) return go(bot, Math.sign(R.x - boss.x) || -1, 0, true);
-  }
   if (boss && st.staffs < 1 && boss.phase !== 2 && boss.state === 'idle' && Math.abs(boss.x - R.x) < 240) return strike(bot, R, boss, 120, 0.3);
   if (R.hp < 88 && !crowded) {
     const barrel = (s.barrels || []).find(b => !b.broken && on(b, s) && Math.abs(b.x - R.x) < 520);
@@ -184,18 +178,4 @@ export function stage5Bot(bot) {
   if (!s.locked) return go(bot, 1, R.y > 650 ? -1 : R.y < LANE_TOP + 24 ? 1 : 0, true);
   if (R.y < LANE_TOP + 8 || R.y > LANE_BOT - 8) return go(bot, 0, R.y > 630 ? -1 : 1);
   return go(bot, 0, 0);
-}
-
-function strike(bot, R, e, reach, gap, melee) {
-  const dx = e.x - R.x, dy = (e.y || R.y) - R.y, side = Math.sign(dx) || 1;
-  if(e.type==='aginor'&&e.state==='attack'&&R.hp<18&&Math.abs(dx)<50)return go(bot,Math.sign(R.x-e.x)||-1,1,1);
-  if (e.type !== 'aginor' && e.type !== 'balthamel' && Math.abs(dy) > 48 && Math.abs(dx) < reach) {
-    bot.missY = (bot.missY || 0) + 1;
-    if (bot.missY > 45) return go(bot, 0, Math.sign(dy), true);
-  } else bot.missY = 0;
-  if (Math.abs(dx) > reach) return go(bot, side, Math.abs(dy) > 10 ? Math.sign(dy) : 0, Math.abs(dx) > reach + 80);
-  if (R.facing !== side) return go(bot, side, Math.abs(dy) > 12 ? Math.sign(dy) : 0);
-  if (!melee && !bot.s.noPower && Math.abs(dx) > 90 && bot.t >= (bot.specT || 0)) { bot.s.inp.press('special'); bot.specT = bot.t + 0.85; }
-  press(bot, 'attack', gap);
-  return go(bot, Math.abs(dx) < 60 ? -side : 0, Math.abs(dy) > 14 ? Math.sign(dy) : 0);
 }

@@ -5,7 +5,7 @@ import { SPOREPOD } from './blightspawn.js';
 
 export function updateSpores(scene, dt) {
   dt = stage4Delta(dt);
-  if (!dt || scene.paused || scene.cutscene) return;
+  if (!dt || scene.paused || scene.cutscene || scene.kit?.arena?.frozen) return;
   const R = scene.riley, kept = [], P = SPOREPOD;
   for (const p of scene.spores || []) {
     if (!p.alive) continue;
@@ -25,4 +25,14 @@ export function updateSpores(scene, dt) {
     if (R && Math.hypot(R.x - c.x, R.y - c.y) <= c.r) scene._cloudSlow = P.slow;
     return true;
   });
+}
+
+// Recheck at launch: other swelling pods may have filled the flight pool.
+export function launchSpore(pod) {
+  const s = pod.scene, R = pod.target, P = SPOREPOD;
+  if (R?.alive && !['grabbed', 'down', 'getup'].includes(R.state) && (s.spores || []).filter(p => p.alive !== false).length < P.spores) {
+    s.spores.push({ alive: true, x: pod.x, y: pod.y, tx: R.x, ty: R.y, t: 0, flight: P.flight, r: P.r, from: pod });
+    s.kit?.onLob?.(pod);
+  }
+  pod.state = 'idle'; pod.st = 0; pod.cool = P.cool;
 }

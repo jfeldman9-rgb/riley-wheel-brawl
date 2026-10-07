@@ -1,3 +1,4 @@
+import { flail, balthPhysics } from './stage5-balthamel.js';
 import { clamp, rand } from './config.js';
 import { substeps } from './stage5-clock.js';
 import { strikeRiley } from './stage5-hurt.js';
@@ -20,6 +21,7 @@ export class Balthamel {
   shield() { return !!(this.scene.powers?.active?.('fireshield') || this.scene.fireShieldActive); }
   update(dt) { if (!this.alive || this.scene.paused || this.scene.cutscene || this.deps.frozen?.()) return; substeps(this, dt, d => this.substep(d)); }
   substep(dt) {
+    if (this.deps.frozen?.()) return;
     const R = this.target;
     this.st += dt; if (this.cool > 0) this.cool -= dt; if (this.embraceCool > 0) this.embraceCool -= dt; if (this.grabLock > 0) this.grabLock -= dt;
     if (this.state === 'drop') { if (this.st >= 0.6) { this.state = 'idle'; this.st = 0; } return; }
@@ -43,21 +45,7 @@ export class Balthamel {
     this.startFlail();
   }
   startFlail() { this.state = 'attack'; this.st = this.string = 0; this.counterUsed = this.hitOnce = false; this.face(Math.sign((this.target?.x || this.x) - this.x) || this.facing); this.scene.kit?.onFlail?.(this); }
-  flail(dt, R) {
-    if (this.st < BALTH.tell) return;
-    const active = (this.string === 0 && this.st < BALTH.tell + 0.16) || (this.string === 1 && this.st > BALTH.tell + 0.34 && this.st < BALTH.tell + 0.5);
-    if (this.string === 0 && this.st >= BALTH.tell + 0.16) this.string = 1;
-    if (active && R && !this.hitOnce) {
-      if (!this.counterUsed && this.string === 0 && R.attackFrame && Math.sign(this.x - R.x) === (R.facing || 1) && Math.abs(R.y - this.y) < 36 && Math.abs(R.x - this.x) < 190) {
-        this.counterUsed = true; this.state = 'hurt'; this.st = 0; this.since = 'flail'; this.scene.kit?.onParry?.(this); return;
-      }
-      if (Math.abs(R.x - this.x) < 150 && Math.abs(R.y - this.y) < 34 && (R.z || 0) < 50) {
-        this.hitOnce = true;
-        strikeRiley(this.scene, BALTH.flail[this.string === 0 ? 0 : 1], { fromX: this.x, kb: 200 });
-      }
-    }
-    if (this.st >= BALTH.tell + 0.62) { this.state = 'idle'; this.st = 0; this.cool = rand(0.7, 1.2); this.since = 'flail'; }
-  }
+  flail(dt, R) { return flail.call(this, dt, R); }
   startStep() {
     const R = this.target; if (!R) return; const b = this.scene.bounds || { l: 0, r: 1280 };
     const dir = -Math.sign(R.facing || 1) || -1;
@@ -81,7 +69,7 @@ export class Balthamel {
   startCoil() { this.state = 'lunge'; this.st = 0; this.counterUsed = false; this.face(Math.sign((this.target?.x || this.x) - this.x) || this.facing); this.scene.kit?.onCoil?.(this); }
   coil(dt, R) {
     if (this.st < BALTH.coil) return;
-    if (!R || R.grabbedBy || (R.z || 0) > 0 || !GRAB_OK.includes(R.state) || this.shield() || !R.alive) {
+    if (!R || R.grabbedBy || R.inv > 0 || (R.z || 0) > 0 || !GRAB_OK.includes(R.state) || this.shield() || !R.alive) {
       this.state = 'idle'; this.st = 0; this.embraceCool = rand(BALTH.cool[0], BALTH.cool[1]); return;
     }
     if (Math.abs(R.x - this.x) > 90 || Math.abs(R.y - this.y) > 28) { this.state = 'idle'; this.st = 0; this.cool = 0.4; return; }
@@ -93,7 +81,7 @@ export class Balthamel {
     R.grabbedBy = this; R.face?.(-this.facing); R.enterGrabbed?.(this); this.scene.kit?.onEmbrace?.(this);
   }
   hold(dt, R) {
-    if (!R || R.grabbedBy !== this) return this.releaseHold('break');
+    if (!R || !R.alive || R.hp <= 0 || R.state !== 'grabbed' || R.grabbedBy !== this) return this.releaseHold('break');
     R.x = this.x + this.facing * 46; R.vx = 0;
     this.chipT = (this.chipT || 0) + dt; this.mashT += dt;
     while (this.mashT >= BALTH.decay) { this.mashT -= BALTH.decay; this.mashN = Math.max(0, this.mashN - 1); }
@@ -139,9 +127,6 @@ export class Balthamel {
   }
   fall() { if (this._down || this.state === 'vines' || this.state === 'dead') return; this._down = true; this.hp = 0; this.releaseHold('break'); this.scene.kit?.onBalthDown?.(this); }
   seize() { this.releaseHold('break'); this.state = 'vines'; this.st = 0; this.alive = false; }
-  physics(dt) {
-    if (this.vx) { this.x += this.vx * (dt || 0); this.vx *= 0.9; }
-    const b = this.scene.bounds; if (b && this.state !== 'step') this.x = clamp(this.x, b.l + 50, b.r - 50);
-  }
+  physics(dt) { return balthPhysics.call(this, dt); }
   destroy() { this.releaseHold('break'); this.alive = false; this.gone = true; }
 }

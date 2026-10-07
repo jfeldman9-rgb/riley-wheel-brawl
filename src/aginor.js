@@ -1,7 +1,7 @@
 // Aginor. Three phases. Tether is not a hold. Ring, hands, oak and the Green Man live in the arena.
 import { clamp, rand } from './config.js';
 import { substeps } from './stage5-clock.js';
-import { strikeRiley, sameBand } from './stage5-hurt.js';
+import { strikeRiley, sameBand, damageAllowed } from './stage5-hurt.js';
 
 export const AGINOR = Object.freeze({
   hp: 600, keep: [300, 500], tetherTell: 0.8, tetherMax: 3, tetherReach: 520, tetherTick: 0.5,
@@ -30,11 +30,13 @@ export class Aginor {
   face(dir) { if (dir) this.facing = dir; }
   frozen() { return !!(this.invuln && this.deps.frozen?.()); }
   update(dt) {
-    if (!this.alive || this.scene.paused || this.scene.cutscene) return;
+    if (this.scene.paused || this.scene.cutscene) return;
+    if (!this.alive && this.state !== 'dead') return;
     if (this.deps.frozen?.()) return;
     substeps(this, dt, d => this.substep(d));
   }
   substep(dt) {
+    if (this.deps.frozen?.()) return;
     this.st += dt;
     this.clock = (this.clock || 0) + dt;
     if (this.stepCool > 0) this.stepCool -= dt;
@@ -42,12 +44,15 @@ export class Aginor {
     if (this.phase === 2) this.p2t += dt;
     if (this.state === 'burn') { if (this.st >= 1.3) this.finish(); return; }
     if (this.state === 'dead') { if (this.st > 0.4) this.gone = true; return; }
+    if (this.phase === 2 && !this.beatDone && (this.p2t >= 50 || this.deps.balthDown?.())) {
+      this.deps.onBeat?.(this);
+      if (this.deps.frozen?.()) return;
+    }
     if (this.state === 'staggered') { if (this.st >= AGINOR.stagger) { this.state = 'idle'; this.st = 0; } return; }
     if (this.state === 'tether') return this.tether(dt);
     if (this.state === 'attack') return this.staff(dt);
     if (this.state === 'step') return this.blink(dt);
     if (this.state === 'hurt') { if (this.st > 0.22) { this.state = 'idle'; this.st = 0; } return; }
-    if (this.phase === 2 && (this.p2t >= 50 || this.deps.balthDown?.())) this.deps.onBeat?.(this);
     this.wander(dt);
     if (this.tetherCd <= 0) this.startTether();
   }
@@ -69,6 +74,8 @@ export class Aginor {
   }
   tether(dt) {
     const R = this.target;
+    if (this.scene.paused || this.scene.cutscene || this.scene.kit?.arena?.frozen) return;
+    if (!R || R.alive === false || R.hp <= 0) return this.breakTether();
     if (!this.locked) {
       if (R?.attackFrame && !this.counterUsed && this.st >= AGINOR.tetherTell - AGINOR.counter && this.st < AGINOR.tetherTell) {
         if (Math.sign(this.x - R.x) === (R.facing || 1) && Math.abs(R.x - this.x) < 220 && Math.abs(R.y - this.y) < 40) {
@@ -89,10 +96,11 @@ export class Aginor {
       return;
     }
     this.lockT += dt; this.tickT += dt;
-    if (!R || R.grabbedBy || !sameBand(R.y, this.y, this.deps.bands || this.scene.bands)) return this.breakTether();
+    if (!R || R.grabbedBy || this.deps.oakBlocks?.(R) || !sameBand(R.y, this.y, this.deps.bands || this.scene.bands)) return this.breakTether();
     if (this.deps.lightCross?.(this, R)) return this.breakTether();
     while (this.tickT >= AGINOR.tetherTick) {
       this.tickT -= AGINOR.tetherTick;
+      if (!damageAllowed(this.scene)) continue;
       R.hp = Math.max(0, R.hp - AGINOR.drainHp);
       R.saidin = Math.max(0, (R.saidin || 0) - AGINOR.drainSaidin);
       if (this.healed < AGINOR.healCap && this.hp < this.ceiling) { this.hp = Math.min(this.ceiling, this.hp + AGINOR.heal); this.healed += AGINOR.heal; }
@@ -155,7 +163,8 @@ export class Aginor {
     return true;
   }
   guardHp() {
-    if (this.beatFired) return;
+    if (this.phase === 3) return;
+    if (this.beatFired && !this.beatDone) return;
     const floor = Math.floor(this.maxHp * (this.phase <= 1 ? 0.66 : 0.33));
     if (this.hp < floor) this.hp = floor;
   }

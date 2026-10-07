@@ -20,7 +20,7 @@ export function createBlight(layout = {}) {
     clearZone(zone) {
       for (const t of trees) if (t.zone === zone) { t.lashed = false; t.cool = 1e9; }
       for (const t of thorns) if (t.zone === zone) t.on = false;
-      for (const s of seeps) if (s.zone === zone) { s.phase = 'idle'; s.ignite = 0; }
+      for (const s of seeps) if (s.zone === zone) { s.phase = 'gone'; s.ignite = 0; }
       b.snare = 0;
     },
     dispose() { b.snare = 0; b.slow = 0; for (const t of trees) t.lashed = false; for (const s of seeps) s.phase = 'gone'; for (const t of thorns) t.on = false; },

@@ -6,6 +6,7 @@ import { Balthamel } from './balthamel.js';
 import { stage4Delta } from './stage4-time.js';
 import { stalkFrame, podFrame, aginFrame, baltFrame } from './stage5-art-cast.js';
 import { LAYOUT5 } from './stage5-def.js';
+import { safeStage5Spot } from './stage5-spawn.js';
 
 function stub() { const o = { x: 0, y: 0, setPosition() { return o; }, setDepth() { return o; }, setAlpha() { return o; }, setScale() { return o; }, setFrame() { return o; }, setOrigin() { return o; }, setFlipX() {}, setLighting() {}, destroy() {} }; return o; }
 function body(e, scene, key, shadowW) {
@@ -33,7 +34,7 @@ export class StalkerActor extends Stalker {
     const zone = scene.zoneI < 0 ? 0 : scene.zoneI;
     const used = new Set((scene.enemies || []).filter(e => e !== this && e.type === 'stalker').map(e => e.homeX));
     const spot = spots(scene, 'lurks').find(s => s.zone === zone && !used.has(s.x)) || spots(scene, 'lurks').find(s => s.zone === zone);
-    this.place(spot); this.homeX = this.x; this.entering = false;
+    this.place(safeStage5Spot(scene, spot, 'lurks')); this.homeX = this.x; this.entering = false;
     body(this, scene, 's5stalk', 130);
   }
   update(dt) { this.entering = false; const prev = this.state; super.update(dt); this.scene.kit?.noteStalk?.(this, prev); }
@@ -48,7 +49,7 @@ export class SporepodActor extends Sporepod {
     const zone = this.scene.zoneI < 0 ? 0 : this.scene.zoneI;
     const used = new Set((this.scene.enemies || []).filter(e => e !== this && e.type === 'sporepod').map(e => e.x));
     const spot = spots(this.scene, 'pods').find(s => s.zone === zone && !used.has(s.x)) || { x: this.x, y: this.y };
-    this.place(spot);
+    this.place(safeStage5Spot(this.scene, spot, 'pods'));
   }
   update(dt) { const prev = this.state; super.update(dt); this.scene.kit?.notePod?.(this, prev); }
   sync() { paint(this, podFrame, 1.1); }
@@ -95,9 +96,11 @@ export class BalthamelActor extends Balthamel {
     body(this, scene, 's5balt', 150);
   }
   update(dt) {
+    dt = stage4Delta(dt);
+    if (!dt || this.scene.paused || this.scene.cutscene || this.deps.frozen?.()) return;
     this.entering = false;
     const prev = this.state; super.update(dt);
-    if ((this.z || 0) > 0 || this.vz) { this.vz = (this.vz || 0) - 2600 * (dt || 0); this.z = Math.max(0, (this.z || 0) + this.vz * (dt || 0)); if (!this.z) this.vz = 0; }
+    if ((this.z || 0) > 0 || this.vz) { this.z = Math.max(0, (this.z || 0) + (this.vz || 0) * dt - 1300 * dt * dt); this.vz = this.z ? (this.vz || 0) - 2600 * dt : 0; }
     this.scene.kit?.noteBalth?.(this, prev);
   }
   sync() { paint(this, baltFrame, 1.25); }

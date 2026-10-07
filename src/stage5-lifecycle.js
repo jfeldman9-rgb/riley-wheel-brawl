@@ -1,5 +1,6 @@
 // Stage 5 exits. Holds, tethers and hazard clocks end in the same call.
 import { drainHum } from './stage5-voice.js';
+import { stage4Delta } from './stage4-time.js';
 
 export function clearStage5Hazards(kit) {
   const s = kit.s;
@@ -32,7 +33,29 @@ function hook(kit, object, key, wrap) {
 }
 export function installStage5SceneHooks(kit) {
   const s = kit.s;
-  hook(kit, s, 'update', original => function(time, deltaMs) { if (!Number.isFinite(deltaMs) || deltaMs <= 0) return; return original.call(this, time, deltaMs); });
+  hook(kit, kit, 'update', original => function(dt) {
+    if (!this.arena?.frozen) return original.call(this, dt);
+    dt = stage4Delta(dt);
+    if (!dt || this.s.paused || this.s.cutscene) return;
+    this.s.inp?.clear?.();
+    this.arena.step(dt, this.world());
+    this.view?.sync?.(this);
+  });
+  hook(kit, s, 'update', original => function(time, deltaMs) {
+    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;
+    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);
+    kit.update(Math.min(deltaMs, 50) / 1000);
+    this.riley?.sync?.();
+    for (const e of this.enemies || []) e.sync?.();
+  });
+  hook(kit, s, 'onPress', original => function(action) {
+    if (kit.arena?.frozen && action !== 'pause' && action !== 'start') { this.inp?.clear?.(); return; }
+    return original.call(this, action);
+  });
+  hook(kit, kit, 'onPause', original => function(paused) {
+    if (paused) this.s.riley?.grabbedBy?.releaseHold?.('break');
+    return original.call(this, paused);
+  });
   hook(kit, s, 'rileyDied', original => function() {
     this.riley?.grabbedBy?.releaseHold?.('break');
     for (const e of this.enemies || []) {
