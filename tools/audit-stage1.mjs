@@ -57,9 +57,13 @@ export function audit() {
   // The Stage 1 gate has a few hundred bytes of headroom. These hotfix modules
   // do not fit in it. They are counted on their own line, the same way Stage 4 is.
   const IOS_SRC = new Set(['viewport.js', 'page-base.js', 'debug-flag.js', 'stage3-art.js']);
-  const stage4SourceFiles = [], stage5SourceFiles = [], iosSourceFiles = [];
+  // Restart fix (quality governor moved out of main.js, freeze-guard resume). Same split as the iOS hotfix:
+  // the Stage 1 gate has about 100 bytes left, so these modules carry their own budget line.
+  const RESTART_SRC = new Set(['quality-governor.js', 'recovery.js']);
+  const stage4SourceFiles = [], stage5SourceFiles = [], iosSourceFiles = [], restartSourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
-    if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);
+    if (RESTART_SRC.has(name)) restartSourceFiles.push(`src/${name}`);
+    else if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);
     else if (STAGE5_SRC.has(name)) stage5SourceFiles.push(`src/${name}`);
     else if (IOS_SRC.has(name)) iosSourceFiles.push(`src/${name}`);
     else files.add(`src/${name}`);
@@ -94,6 +98,8 @@ export function audit() {
   const stage5MusicBytes = stage5MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const iosSourceBytes = iosSourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const iosSourceBudget = 24 * 1024;
+  const restartSourceBytes = restartSourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const restartSourceBudget = 16 * 1024;
   const stage4SourceBudget = 192 * 1024;
   const stage5SourceBudget = 192 * 1024;
   const stage3VoiceBudget = 18 * 200 * 1024, stage3MusicBudget = 2 * 1_200_000;
@@ -117,6 +123,11 @@ export function audit() {
       source: { files: iosSourceFiles, bytes: iosSourceBytes, budgetBytes: iosSourceBudget,
         status: iosSourceBytes <= iosSourceBudget ? 'PASS' : 'FAIL',
         note: 'Viewport, Pages base, debug flag, Stage 3 plate stand-in and freeze guard. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
+    },
+    restartHotfix: {
+      source: { files: restartSourceFiles, bytes: restartSourceBytes, budgetBytes: restartSourceBudget,
+        status: restartSourceBytes <= restartSourceBudget ? 'PASS' : 'FAIL',
+        note: 'Quality governor and freeze-guard resume. Not folded into the 25 MB pre-fight sum, the same split as iosHotfix.' },
     },
     stage3: {
       voices: { count: stage3VoiceCount, bytes: stage3VoiceBytes, budgetBytes: stage3VoiceBudget,

@@ -69,12 +69,13 @@ function bank(g, w, h, phase) {
   g.fillRect(0, 4, w, h - 8);
 }
 
+// Blue-grey stone sampled from the painted Tower Row (bg4-mid2) so the hazard sits in the plate. Shape unchanged.
 function tower(g, w, h, dust) {
   g.fillStyle = 'rgba(0,0,0,0.28)';
   g.beginPath();
   g.ellipse(w / 2, h - 8, 28, 6, 0, 0, 6.3);
   g.fill();
-  g.fillStyle = '#6e675c';
+  g.fillStyle = '#334259';
   g.beginPath();
   g.moveTo(34, h - 16);
   g.lineTo(40, 70);
@@ -87,34 +88,34 @@ function tower(g, w, h, dust) {
   g.lineTo(90, h - 16);
   g.closePath();
   g.fill();
-  g.fillStyle = '#5a554c';
+  g.fillStyle = '#2a384d';
   g.fillRect(44, 56, 30, h - 78);
-  g.fillStyle = '#7c756a';
+  g.fillStyle = '#475a77';
   g.fillRect(46, 56, 8, h - 80);
-  g.strokeStyle = '#3a342e';
+  g.strokeStyle = '#1e2a3c';
   g.lineWidth = 1;
   for (let y = 70; y < h - 30; y += 16) {
     g.beginPath(); g.moveTo(44, y); g.lineTo(74, y + 2); g.stroke();
   }
-  g.strokeStyle = '#2a2620';
+  g.strokeStyle = '#141c2a';
   g.beginPath();
   g.moveTo(52, 40); g.lineTo(58, h - 28);
   g.moveTo(68, 36); g.lineTo(62, h - 36);
   g.stroke();
-  g.fillStyle = '#14120e';
+  g.fillStyle = '#0a0f18';
   g.fillRect(50, 78, 8, 14);
   g.fillRect(64, 108, 8, 14);
   g.fillRect(52, 150, 8, 16);
   g.fillStyle = 'rgba(160,255,140,0.35)';
   g.fillRect(66, 112, 4, 6);
   if (dust) {
-    g.fillStyle = 'rgba(220,210,186,0.8)';
+    g.fillStyle = 'rgba(132,148,174,0.8)';
     for (let i = 0; i < 18; i++) {
       const x = 28 + (i * 11) % 62;
       const y = 16 + (i * 23) % (h - 36);
       g.fillRect(x, y, 3, 10 + (i % 4) * 2);
     }
-    g.fillStyle = 'rgba(180,170,150,0.35)';
+    g.fillStyle = 'rgba(120,136,162,0.35)';
     g.beginPath();
     g.ellipse(w / 2, h - 22, 30, 10, 0, 0, 6.3);
     g.fill();
@@ -149,9 +150,9 @@ export function paintFog(scene) {
       g.closePath(); g.fill();
       g.strokeStyle = edge; g.lineWidth = 1; g.stroke();
     };
-    chunk([[6, 34], [18, 16], [40, 12], [48, 28], [36, 40]], '#6a6358', '#3e3a34');
-    chunk([[40, 38], [52, 18], [78, 14], [88, 30], [70, 42]], '#847c70', '#4a453e');
-    chunk([[72, 36], [84, 22], [104, 26], [100, 42], [80, 44]], '#534e46', '#2c2924');
+    chunk([[6, 34], [18, 16], [40, 12], [48, 28], [36, 40]], '#3c4a60', '#1c2636');
+    chunk([[40, 38], [52, 18], [78, 14], [88, 30], [70, 42]], '#52637e', '#243044');
+    chunk([[72, 36], [84, 22], [104, 26], [100, 42], [80, 44]], '#2f3b4f', '#141c28');
     g.fillStyle = 'rgba(255,255,255,0.18)';
     g.beginPath(); g.moveTo(22, 20); g.lineTo(34, 18); g.lineTo(30, 26); g.fill();
   });

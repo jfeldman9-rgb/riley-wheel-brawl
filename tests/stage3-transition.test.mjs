@@ -81,12 +81,13 @@ test('half-res stage 3 plates are painted once and full-size sources are left al
   }
 });
 
-test('painted stage 3 hides the placeholder tag and every other stage keeps it', () => {
+test('painted stage 3 hides the placeholder tag, stage 4 follows its debug flag, and the rest keep the rule', () => {
   const metas = { cutthroat: { placeholder: true } };
   const cached = { cache: { json: { get: () => ({ placeholder: true }) } } };
   assert.equal(placeholderArt({ stageNo: 3, metas, stage3Painted: true }), false);
   assert.equal(placeholderArt({ stageNo: 3, metas }), true);
-  assert.equal(placeholderArt({ stageNo: 4, stage3Painted: true }), true);
+  assert.equal(placeholderArt({ stageNo: 4, stage3Painted: true }), false);
+  assert.equal(placeholderArt({ stageNo: 4, metas, ph4: true }), true);
   assert.equal(placeholderArt({ stageNo: 2, ...cached }), false);
   assert.equal(placeholderArt({ stageNo: 1, ...cached, stage3Painted: true }), false);
 });

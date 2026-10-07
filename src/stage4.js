@@ -7,7 +7,7 @@ import { lightNear } from './myrddraal.js';
 import { createFog } from './stage4-hazards.js';
 import { createTowers, TOWER } from './stage4-towers.js';
 import { createArena } from './stage4-arena.js';
-import { LAYOUT, createStage4View, moonAmbient } from './stage4-view.js';
+import { LAYOUT, createStage4View, moonAmbient, stage4Placeholder } from './stage4-view.js';
 import { updateFogBolts, cultistHoldsToken } from './cultists.js';
 import { preloadClips, say } from './audio.js';
 import { STAGE4_VOICES, bark, croon, sfxCue, fogOffId } from './stage4-voice.js';
@@ -33,6 +33,11 @@ export function queueStage4(scene) {
   if (!has('planks')) L.atlas('planks', 'assets/props/planks.webp', 'assets/props/planks.json');
   if (!has('ribbon')) L.image('ribbon', 'assets/props/item-ribbon.webp');
   if (!scene.cache.json.get('lights4')) L.json('lights4', 'assets/bg4/lights.json');
+  // Painted plates and story panels under the procedural keys; a file that fails leaves its key to the painter.
+  const img = (k, u) => { if (!has(k)) L.image(k, u); };
+  img('bg4far', 'assets/bg4/bg4-far.jpg'); img('bg4mid', 'assets/bg4/bg4-mid.webp'); img('bg4mid2', 'assets/bg4/bg4-mid2.webp');
+  for (const n of ['', '2', '3']) img('bg4floor' + n, `assets/bg4/bg4-floor${n}.jpg`);
+  for (const n of [1, 2, 3]) img('story4p' + n, `assets/story/story4_panel_${n}.jpg`);
   if (scene.cache.json.get('cutthroat.A')) queueCharPages(scene, ['cutthroat']);
   else {
     L.json('cutthroat.A', 'assets/stage3/chars/cutthroat.anims.json');
@@ -72,6 +77,8 @@ export class Stage4Kit {
     s.fireCap = 2;
     s.fires = [];
     s.moon = this.view.moon || null;
+    // HUD PLACEHOLDER ART tag: only under ?debug, and only while visible Stage 4 art is still code-drawn
+    s.ph4 = q.has('debug') && q.get('debug') !== '0' && stage4Placeholder(s);
     s.fogBolts = [];
     if (q.get('nopower') === '1' || s.stageData?.noPower) s.noPower = true;
   }

@@ -17,5 +17,15 @@
   "attach": [
     "spike-art/HOUSE_STYLE.txt"
   ],
-  "prompt": "Use case: stylized-concept. Production art for Riley Wheel Brawl 2.0, Stage 4, Shadar Logoth. Asset bg4-floor3.png. Canvas exactly 2172\u00d7724. Single image, not a sprite sheet. Fully opaque. Left and right edges must tile. HOUSE STYLE, identical to spike-art/HOUSE_STYLE.txt: HOUSE STYLE (Riley Wheel Brawl 2.0), identical for every image:\n- Hand-drawn HD 2D fighting-game sprite art in the spirit of Streets of Rage 4: confident dark-brown/near-black ink outlines (thicker on the outer silhouette, thinner inside), clean cel shading with 2-3 tone steps plus subtle painterly gradients. NOT pixel art, NOT 3D render, NOT photo-real, NOT chibi.\n- Lighting baked lightly: soft key light from the upper LEFT, gentle cool rim on the right edge. Keep shading moderate (the game adds real-time light on top).\n- Rich but grounded colors. Strong readable silhouette.\n- Side view (profile / slight 3/4), character faces RIGHT, full body head to boots, whole figure inside the frame with margin.\n- Genuinely TRANSPARENT background (real alpha). No ground shadow, no floor, no text, no labels, no borders, no frame numbers. Opaque tileable ground plate: flagstones stained with dull green fog, still readable as stone. No horizon. Left and right edges tile. No text, letters, numbers, watermarks, frame labels, or borders in the finished image. No gore: Shadowspawn become ash; human cultists are knocked out or flee."
+  "prompt": "Use case: stylized-concept. Production art for Riley Wheel Brawl 2.0, Stage 4, Shadar Logoth. Asset bg4-floor3.png. Canvas exactly 2172\u00d7724. Single image, not a sprite sheet. Fully opaque. Left and right edges must tile. HOUSE STYLE, identical to spike-art/HOUSE_STYLE.txt: HOUSE STYLE (Riley Wheel Brawl 2.0), identical for every image:\n- Hand-drawn HD 2D fighting-game sprite art in the spirit of Streets of Rage 4: confident dark-brown/near-black ink outlines (thicker on the outer silhouette, thinner inside), clean cel shading with 2-3 tone steps plus subtle painterly gradients. NOT pixel art, NOT 3D render, NOT photo-real, NOT chibi.\n- Lighting baked lightly: soft key light from the upper LEFT, gentle cool rim on the right edge. Keep shading moderate (the game adds real-time light on top).\n- Rich but grounded colors. Strong readable silhouette.\n- Side view (profile / slight 3/4), character faces RIGHT, full body head to boots, whole figure inside the frame with margin.\n- Genuinely TRANSPARENT background (real alpha). No ground shadow, no floor, no text, no labels, no borders, no frame numbers. Opaque tileable ground plate: flagstones stained with dull green fog, still readable as stone. No horizon. Left and right edges tile. No text, letters, numbers, watermarks, frame labels, or borders in the finished image. No gore: Shadowspawn become ash; human cultists are knocked out or flee.",
+  "tries": 1,
+  "generatedWith": "grokbot-image (Grok Bot image generation, 2026-10-07); the prompt field is the brief, not the literal generation prompt",
+  "shipped": {
+    "file": "assets/bg4/bg4-floor3.jpg",
+    "size": [
+      1080,
+      360
+    ],
+    "note": "source delivered at 1280x720; shipped at native resolution (not upscaled to the brief size) to keep decoded memory down"
+  }
 }

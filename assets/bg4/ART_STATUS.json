@@ -1,0 +1,300 @@
+{
+ "version": 1,
+ "note": "Stage 4 art provenance. Painted files load under the procedural texture keys; a file that fails to load falls back to the boot painter.",
+ "entries": [
+  {
+   "id": "bg4-far",
+   "key": "bg4far",
+   "files": [
+    "assets/bg4/bg4-far.jpg"
+   ],
+   "sha256": {
+    "assets/bg4/bg4-far.jpg": "4426adf3fa04c35bfd21ea2b61d5d1fb4cef7563927eea561e00f1e1edcd1fb5"
+   },
+   "size": [
+    1280,
+    602
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/prompts/bg4-far.json",
+   "source": "grokbot-image",
+   "art": {
+    "status": "real painted art",
+    "sourceFile": "art-in/bg4/bg4-far.src.jpg",
+    "sourceSha256": "6bde6c10644cd33feae377f4f5fe35a19caef2ab4e4f5c6fb36ea121e1604766",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "method": "rows 0-602 kept at native resolution (the far plate sits behind the 572 px lane line plus 30)",
+    "tool": "tools/stage4/process_bg4_art.py",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "bg4-mid",
+   "key": "bg4mid",
+   "files": [
+    "assets/bg4/bg4-mid.webp"
+   ],
+   "sha256": {
+    "assets/bg4/bg4-mid.webp": "125adb26779fe7e062b00c1e1a2d075a98c3f366db7f14db7939f3cc1d93a054"
+   },
+   "size": [
+    1280,
+    502
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/prompts/bg4-mid.json",
+   "source": "grokbot-image",
+   "art": {
+    "status": "real painted art",
+    "sourceFile": "art-in/bg4/bg4-mid.src.jpg",
+    "sourceSha256": "e8fcdccc03dc0e204b99f72961cf2d9cd725e6d71539a2793477482a120413bc",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "method": "rows 170-672; magenta sky keyed to alpha with unmix and despill (components down to 3 px), strong-magenta despill, 140 px right-edge fade so it overlaps bg4-mid2",
+    "tool": "tools/stage4/process_bg4_art.py",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "bg4-mid2",
+   "key": "bg4mid2",
+   "files": [
+    "assets/bg4/bg4-mid2.webp"
+   ],
+   "sha256": {
+    "assets/bg4/bg4-mid2.webp": "3b6541c26ab071d66cb3b643c86b25a191b0eb43ad8532365efb9d81a87aaa4e"
+   },
+   "size": [
+    1280,
+    588
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/prompts/bg4-mid2.json",
+   "source": "grokbot-image",
+   "art": {
+    "status": "real painted art",
+    "sourceFile": "art-in/bg4/bg4-mid2.src.jpg",
+    "sourceSha256": "0e28c1983e842624a23ee480c5e80c72bfed21d6bccfd57cf722e8709f15662d",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "method": "rows 110-698 (drops the magenta strip at the bottom); magenta sky keyed to alpha with unmix and despill, strong-magenta despill",
+    "tool": "tools/stage4/process_bg4_art.py",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "bg4-floor",
+   "key": "bg4floor",
+   "files": [
+    "assets/bg4/bg4-floor.jpg"
+   ],
+   "sha256": {
+    "assets/bg4/bg4-floor.jpg": "59aa501fa373a3c575e4ac8fb88be459bf2862ce592bfa3ae5fb4a04063231ae"
+   },
+   "size": [
+    1080,
+    360
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/prompts/bg4-floor.json",
+   "source": "grokbot-image",
+   "art": {
+    "status": "real painted art",
+    "sourceFile": "art-in/bg4/bg4-floor.src.jpg",
+    "sourceSha256": "c754b3b9fb2a0e07e74449dd08d0b2ef1f394ba0c5f51edc0e19918fa7990029",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "method": "bottom band flattened for light and made horizontally seamless (tools/stage3 floor(): wrap + quilt join)",
+    "tool": "tools/stage4/process_bg4_art.py",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "bg4-floor2",
+   "key": "bg4floor2",
+   "files": [
+    "assets/bg4/bg4-floor2.jpg"
+   ],
+   "sha256": {
+    "assets/bg4/bg4-floor2.jpg": "a4d19cfcf8a4afb4a5e0770814b2c338f553dfad18f37c361cc8600361e9204b"
+   },
+   "size": [
+    1080,
+    360
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/prompts/bg4-floor2.json",
+   "source": "grokbot-image",
+   "art": {
+    "status": "real painted art",
+    "sourceFile": "art-in/bg4/bg4-floor2.src.jpg",
+    "sourceSha256": "e21d5bb389ae118e1ce3bf2890d87e61bd371fba3f4ee0371884094210cf0af4",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "method": "bottom band flattened for light and made horizontally seamless (tools/stage3 floor(): wrap + quilt join)",
+    "tool": "tools/stage4/process_bg4_art.py",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "bg4-floor3",
+   "key": "bg4floor3",
+   "files": [
+    "assets/bg4/bg4-floor3.jpg"
+   ],
+   "sha256": {
+    "assets/bg4/bg4-floor3.jpg": "c502784935d9ca47c30c0f70594c0f37816909fd811ac1c7623f4b41966e1190"
+   },
+   "size": [
+    1080,
+    360
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/prompts/bg4-floor3.json",
+   "source": "grokbot-image",
+   "art": {
+    "status": "real painted art",
+    "sourceFile": "art-in/bg4/bg4-floor3.src.jpg",
+    "sourceSha256": "45f8f1dceb7d3da048357f0b496bf2851ba660f6ffd3bc63cba931917fa63453",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "method": "bottom band flattened for light and made horizontally seamless (tools/stage3 floor(): wrap + quilt join)",
+    "tool": "tools/stage4/process_bg4_art.py",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "story4_panel_1",
+   "key": "story4p1",
+   "files": [
+    "assets/story/story4_panel_1.jpg"
+   ],
+   "sha256": {
+    "assets/story/story4_panel_1.jpg": "cb50b85d8f53caa728c3cf9fa396401dbef8fb8faae326f0c0d04ccbf4c0f0a9"
+   },
+   "size": [
+    1280,
+    720
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/prompts/story4_panel_1.json",
+   "source": "grokbot-image",
+   "art": {
+    "status": "real painted art",
+    "sourceFile": "art-in/story4/story4_panel_1.src.jpg",
+    "sourceSha256": "c8a65ed6780fe902a857bb24700ec1e935b13a0e21f74f34609f2fed9bd26476",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "method": "re-encoded at 1280x720 with story_panel_1.jpg quantisation tables, 4:2:0",
+    "tool": "tools/stage4/process_bg4_art.py",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "story4_panel_2",
+   "key": "story4p2",
+   "files": [
+    "assets/story/story4_panel_2.jpg"
+   ],
+   "sha256": {
+    "assets/story/story4_panel_2.jpg": "4dbe9614f58fcc1f55b35469ded5d1e0443a89f9980e916865e5733aaaaa8bcc"
+   },
+   "size": [
+    1280,
+    720
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/prompts/story4_panel_2.json",
+   "source": "grokbot-image",
+   "art": {
+    "status": "real painted art",
+    "sourceFile": "art-in/story4/story4_panel_2.src.jpg",
+    "sourceSha256": "32bef5bc5c9b6b69d617e026d3a13d4224d7ff921bb6e568fde4fa0e4d4b618e",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "method": "re-encoded at 1280x720 with story_panel_1.jpg quantisation tables, 4:2:0",
+    "tool": "tools/stage4/process_bg4_art.py",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "story4_panel_3",
+   "key": "story4p3",
+   "files": [
+    "assets/story/story4_panel_3.jpg"
+   ],
+   "sha256": {
+    "assets/story/story4_panel_3.jpg": "676f06a2b0e2d8f2e59b0df236fa6b6c364f0cde71fcf41fe39868388e5558c1"
+   },
+   "size": [
+    1280,
+    720
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/prompts/story4_panel_3.json",
+   "source": "grokbot-image",
+   "art": {
+    "status": "real painted art",
+    "sourceFile": "art-in/story4/story4_panel_3.src.jpg",
+    "sourceSha256": "1798f766c8a26bdff0fba099922346423972e80a95a0dfbc7efd3e9d7868b4aa",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "method": "re-encoded at 1280x720 with story_panel_1.jpg quantisation tables, 4:2:0",
+    "tool": "tools/stage4/process_bg4_art.py",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "cultist-master",
+   "key": "s4cult",
+   "files": [],
+   "placeholder": true,
+   "prompt": "docs/stage4/prompts/cultist-master.json",
+   "source": "procedural (src/stage4-art-cast.js)",
+   "art": {
+    "status": "code-drawn at boot; the HUD tag shows for it only under ?debug"
+   }
+  },
+  {
+   "id": "draghkar-master",
+   "key": "s4drag",
+   "files": [],
+   "placeholder": true,
+   "prompt": "docs/stage4/prompts/draghkar-master.json",
+   "source": "procedural (src/stage4-art-cast.js)",
+   "art": {
+    "status": "code-drawn at boot; the HUD tag shows for it only under ?debug"
+   }
+  },
+  {
+   "id": "draghkar-portrait",
+   "key": "draghkarPortrait",
+   "files": [],
+   "placeholder": true,
+   "prompt": "docs/stage4/prompts/draghkar-portrait.json",
+   "source": "procedural (src/stage4-art-cast.js)",
+   "art": {
+    "status": "code-drawn at boot; the HUD tag shows for it only under ?debug"
+   }
+  }
+ ]
+}

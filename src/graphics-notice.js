@@ -1,8 +1,8 @@
 // Accessible DOM notice independent of the unavailable WebGL canvas.
-export function installGraphicsNotice(root = globalThis) {
+export function installGraphicsNotice(root = globalThis, again = () => root.location?.reload()) {
   const doc = root.document, notice = doc?.getElementById('graphics-notice');
   const button = doc?.getElementById('graphics-retry');
-  const reload = () => root.location?.reload();
+  const reload = () => again();
   button?.addEventListener('click', reload);
   return {
     lost() { if (notice) notice.hidden = false; doc?.body?.classList.add('graphics-lost'); },

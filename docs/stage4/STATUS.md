@@ -12,9 +12,15 @@ Playable Shadar Logoth on `rwb-2-stage4`, entered with `?s4=1&stage=4`. `?god=1`
 
 ## Placeholder vs final
 
-Placeholder (labelled `PLACEHOLDER ART`. Painted at boot from `src/stage4-art.js`, `src/stage4-art-bg.js`, `src/stage4-art-fog.js`, and `src/stage4-art-cast.js`. Not final art):
+Painted (Grok Bot image generation, 2026-10-07; provenance in `assets/bg4/ART_STATUS.json`, processing in `tools/stage4/process_bg4_art.py`, sources in `art-in/bg4` and `art-in/story4`):
 
-- A moonlit dead city: night gradient, a full moon with glow, two parallax ruin skylines, cracked flagstones. Mashadar banks, tapering tendrils with a bright tip, flaring vents, churning fog walls, moonshafts, stone towers with a dust frame, rubble.
+- `bg4-far.jpg` 1280x602 moonlit skyline. `bg4-mid.webp` 1280x502 (Gate of Aridhol, dry fountain plaza) and `bg4-mid2.webp` 1280x588 (Tower Row, Mordeth's hall), magenta sky keyed to alpha. Three seamless floors at 1080x360, tiled at 188/360. Story panels `story4_panel_1..3.jpg` at 1280x720.
+- They load in `queueStage4` under the procedural texture keys, so the boot painter skips them. A file that fails to load during a session leaves its key to the painter, and the view falls back to the old layout for that layer. On a cold boot straight into `?stage=4`, the startup guard still treats any failed file as a required-asset failure, the same as every other preload file.
+- Layout (`PLATES` in `src/stage4-view.js`): the two mids sit side by side at native size, parallax 0.29 with a 140 px overlap, bottom at y 590. Floors hand off over 280 px at x 1800 and 3600 and fade 40 px up into the plates. The moon light sits on the painted moon (756, 269).
+
+Placeholder (painted at boot from `src/stage4-art.js`, `src/stage4-art-fog.js`, and `src/stage4-art-cast.js`. Not final art). The HUD `PLACEHOLDER ART` tag shows only with `?debug` while any of this is on screen:
+
+- Mashadar banks, tapering tendrils with a bright tip, flaring vents, churning fog walls, moonshafts, stone towers with a dust frame, rubble.
 - Draghkar sheet (perch, flap, glide, land, claw, croon, kiss, reel, down, ash) and cultist sheet (walk, chant, bolt, shove, hurt, down, flee), plus the boss portrait and three story panels. Hitboxes, timing, and texture keys are unchanged. Backdrop and fighters use Light2D. At quality 2 and above the fog banks thin and tendrils draw five segments.
 - Music `stage4` / `boss4` loop from `assets/audio/music-stage4.mp3` and `music-boss4.mp3` (loop [0.25, 40.25) s and [0.25, 30.726) s). The 23 Stage 4 voice lines play from `assets/audio/voice/` on the story, fog, tower, bridge, light, cultist, and Draghkar beats. The croon hum loops only while the croon is active.
 
@@ -38,5 +44,5 @@ Final logic (not art): fog, cultists, Draghkar phases, kiss rules, towers, arena
 
 ## Known issues
 
-- The pictures are procedural boot art, still under the `PLACEHOLDER ART` tag. The Stage 4 music and voice files are the rendered takes.
+- The backdrop and story panels are painted. The cultist and Draghkar sheets and the Draghkar portrait are still procedural; the `PLACEHOLDER ART` tag for them shows only with `?debug`. The Stage 4 music and voice files are the rendered takes.
 - The bot is tuned to demonstrate every mechanic in one clear. A human player is not carried the same way; tells are the fairness, not the bot's spacing.
