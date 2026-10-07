@@ -2,6 +2,7 @@
 // docs/stage5/ART-NEEDED.md. sheet() leaves an existing key alone, so a
 // painted row in assets/stage5/painted.json still replaces these.
 import { tex, sheet } from './stage4-art.js';
+import { stage5DebugArt } from './stage5-art-bg.js';
 
 const STALK = { lurk: 0, stalk: 1, attack: 2, recover: 2, hurt: 3, down: 4, dead: 5, gone: 5 };
 const POD = { emerge: 0, idle: 1, attack: 2, hurt: 3, dead: 4, gone: 4 };
@@ -38,6 +39,7 @@ const glow = (g, x, y, r, a, b) => {
   g.fillStyle = d; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
 };
 const mark = (g, size = 7, y = 8) => {
+  if (!stage5DebugArt()) return;
   g.font = `bold ${size}px sans-serif`; g.lineWidth = 3; g.lineJoin = 'round';
   g.strokeStyle = 'rgba(0,0,0,0.88)'; g.strokeText('PLACEHOLDER', 2, y);
   g.fillStyle = '#ffe7a8'; g.fillText('PLACEHOLDER', 2, y);

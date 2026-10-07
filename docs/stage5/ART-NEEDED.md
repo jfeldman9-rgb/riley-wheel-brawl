@@ -20,4 +20,4 @@ Single images (portrait, story panels) omit `frameWidth` and `frameHeight`. Spri
 | `story5p2` | 1 | 640×360 | — | story panel, into the Blight |
 | `story5p3` | 1 | 640×360 | — | story panel, the Eye |
 
-Aginor and Balthamel are the sheets this build is waiting on. The other rows can stay procedural. Cast frames are stamped `PLACEHOLDER`. The far plate's `PLACEHOLDER SKY` title is drawn only with `?debug` (empty or any value except `0`). Boss and Green Man scales above are render scale only; combat hitboxes are unchanged. During a grab, Balthamel's sprite is drawn in front of Riley with a 16px offset toward him.
+Aginor and Balthamel are the sheets this build is waiting on. The other rows can stay procedural. Procedural `PLACEHOLDER` stamps, including the far plate's `PLACEHOLDER SKY` title, are drawn only with `?debug` (empty or any value except `0`). Boss and Green Man scales above are render scale only; combat hitboxes are unchanged. During a grab, Balthamel's sprite is drawn in front of Riley with a 16px offset toward him.
