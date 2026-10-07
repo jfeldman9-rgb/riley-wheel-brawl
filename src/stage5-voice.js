@@ -29,7 +29,7 @@ export const LINES = {
 };
 registerLines(LINES);
 export const STAGE5_VOICES = Object.freeze(Object.keys(LINES));
-const keep = ids => (Array.isArray(ids) ? ids : []).filter(id => Object.hasOwn(LINES, id));
+const keep = ids => (Array.isArray(ids) ? ids : []).filter(id => Object.prototype.hasOwnProperty.call(LINES, id));
 async function presentIds() {
   const url = new URL('../assets/audio/stage5-voice-manifest.json', import.meta.url);
   try {
