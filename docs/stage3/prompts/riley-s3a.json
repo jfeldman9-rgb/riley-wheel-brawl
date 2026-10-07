@@ -2,7 +2,7 @@
  "id": "riley-s3a",
  "tool": "chatgpt",
  "fallback": "gemini",
- "tries": 0,
+ "tries": 1,
  "attach": [
   "riley master",
   "riley.jpg",
@@ -11,5 +11,7 @@
  "output": "riley-s3a.png",
  "prompts": [
   "Create riley-s3a.png, a production animation sprite sheet for Riley Wheel Brawl 2.0. Use the attached riley-master.png as the LOCKED character and style reference and riley.jpg for his face.\nRILEY (must match exactly): 16 years old and VERY muscular, huge bare biceps and shoulders, thick chest, athletic adult-teen proportions about 7.5 heads tall; NEVER a child, never chibi, never a stubbly grown man. Friendly youthful clean-shaven face, light olive skin, short dark brown hair with a short straight fringe, THIN BLUE-FRAMED RECTANGULAR GLASSES always on and visible. SLEEVELESS BLACK ASHA'MAN COAT with a high standing collar and a small silver sword pin, fitted torso, coat skirts to the knees split front and back, arms fully bare, black fingerless gloves, black trousers, black boots. No weapon. No other colours on the outfit except the silver pin.\nOUTPUT: 1536x1024 landscape PNG, genuinely transparent background, real alpha, no shadows/floor/text/labels/borders/frame numbers. Exactly EIGHT full-body figures in TWO rows of FOUR, read left to right. Equal cells 384x512, generous separation, nothing clipped. Same scale as the master, common boot baseline at y=490 (top) and y=1000 (bottom). Every figure FACES RIGHT, profile / slight 3/4. All eight are independently drawn, never copied or mirrored. Draw ONLY Riley; there is no second person.\nSTYLE: match the reference exactly: hand-drawn HD 2D fighting-game art in the spirit of Streets of Rage 4, near-black outlines thick outside thin inside, clean 2-3 step cel shading with subtle painterly gradients, light upper left, cool right rim. Not pixel art, 3D or chibi. Kid-friendly. Exactly two arms, two legs, five-finger hands.\nTOP ROW, GRABBED FROM BEHIND (4-frame struggle loop): his upper arms are pinned to his sides at the elbows as if an invisible person behind him has both arms wrapped around his chest; forearms free and straining forward, fists clenched, gritted teeth, glasses on. 1: bracing, knees bent, leaning forward. 2: twisting his shoulders to the left, straining. 3: twisting to the right, one foot lifting. 4: leaning forward again, determined face, muscles bulging.\nBOTTOM ROW, BREAK FREE (4 frames): 5 anticipation: drops his weight, chin tucked, right elbow pulled forward. 6 strike (SMEAR FRAME): drives his right elbow hard backwards behind him at stomach height, painted motion smear on the elbow arc, arms now free. 7: spins a quarter turn and shoves backwards with both open palms, coat skirts flaring. 8: recovers into his Tae Kwon Do fighting stance facing right, fists up, confident."
- ]
+ ],
+ "generatedWith": "reskin of assets/chars/riley via tools/stage3/reskin_chars.py (no image generation)",
+ "rejections": []
 }

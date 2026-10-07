@@ -1,5 +1,5 @@
-// Stage 4 stand-in for the Stage 3 cutthroat sheet, which is still a labelled
-// grey card. Frames stay on the existing atlas so hitboxes and anim keys do not move.
+// Stage 4 stand-in for the Stage 3 cutthroat sheet while it is still a labelled
+// grey card (skipped once the painted reskin ships). Frames stay on the existing atlas so hitboxes and anim keys do not move.
 // Riley's grabbed/escape clips are copied from clips Stage 4 already loaded.
 
 function alias(anims, name, from, loop) {
@@ -156,6 +156,8 @@ function normalFrom(color) {
 }
 
 export function paintCutthroats(scene) {
+  // The reskinned painted sheet ships with placeholder: false; only a grey card gets painted over.
+  if (scene.cache?.json?.get?.('cutthroat.A')?.placeholder === false) return;
   const texture = scene.textures?.get?.('cutthroat-0');
   const source = texture?.source?.[0];
   const image = source?.image;

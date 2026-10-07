@@ -2,7 +2,7 @@
  "id": "fade-e",
  "tool": "chatgpt",
  "fallback": "gemini",
- "tries": 0,
+ "tries": 1,
  "attach": [
   "fade-master",
   "trolloc master"
@@ -10,5 +10,7 @@
  "output": "fade-e.png",
  "prompts": [
   "Create fade-e.png, a production animation sprite sheet for Riley Wheel Brawl 2.0. Use the attached fade-master.png as the LOCKED character and style reference; reproduce that exact Myrddraal (eyeless pale grey face, close-cropped black hair, black snake-scale armour, perfectly still long black cloak, black-bladed curved sword with a cold blue-white edge) in every drawing. Do not copy any background.\nOUTPUT: 1536x1024 landscape PNG, genuinely transparent background, real alpha, no floor/text/labels/borders/frame numbers. Exactly EIGHT full-body figures in TWO rows of FOUR, read left to right. Equal cells 384x512, generous separation, nothing clipped. Same scale, common boot baseline at y=490 (top) and y=1000 (bottom). Every figure faces LEFT. All eight are independently drawn, never copied or mirrored.\nSTYLE: hand-drawn HD 2D fighting-game art in the spirit of Streets of Rage 4, near-black outlines thick outside thin inside, clean 2-3 step cel shading, light upper left, cool right rim. Painted shadow tendrils with clean outlines, not blur. Not pixel art, 3D or chibi. Spooky but kid-friendly, no blood.\nCELLS 1-5, FEAR AURA CAST: 1: stands tall, sword lowered, the free left hand rising. 2: the left hand extended forward with fingers spread, eyeless face tilted forward, the first thin black tendrils curling off its cloak. 3: head thrown back, cloak beginning to billow outward for the first time, painted black tendrils spreading around it in a ring. 4: leaning forward, hand thrust out, the tendril ring at its widest, a chilling cold smile. 5: settling into a menacing hunched stance, a few tendrils still clinging to the cloak.\nCELLS 6-8, STAGGER (after being countered): 6: rocked hard backwards, sword arm flung up and wide, head snapped back. 7: stumbling on one leg, cloak flaring, free hand clawing at the air. 8: dazed and hunched, sword point dragging on the ground, wide open to attack."
- ]
+ ],
+ "generatedWith": "reskin of assets/chars/byar via tools/stage3/reskin_chars.py (no image generation)",
+ "rejections": []
 }

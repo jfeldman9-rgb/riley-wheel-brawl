@@ -32,9 +32,26 @@ The far and floor plates are below 2172×724 on purpose. `tests/stage3-memory.te
 
 **Approved 2026-10-07.** Jason approved these seven stills, so their `ART_STATUS.json` entries are `placeholder: false` with `source: "grokbot-image"`, `contactSheet`, and an `art` provenance block (`approvedBy`, source sha256, post-process). `tests/stage3-assets.test.mjs` allows that source only for these seven ids (`APPROVED_STILLS`). The prompt JSONs record `tries: 1` and `generatedWith`. `assets/bg3/plates.json` now carries `placeholder: false`.
 
-The in-game `PLACEHOLDER ART` tag still shows in Stage 3, because `placeholderArt` (`src/hud.js`) also counts the character sheets. `cutthroat`, `fade` and `riley3` are still `placeholder: true` in their `anims.json`.
+The in-game `PLACEHOLDER ART` tag stayed on in Stage 3 at this point, because `placeholderArt` (`src/hud.js`) also counts the character sheets. They were cleared on 2026-10-07 by the character reskins below.
 
 Follow-ups in the same PR:
 - **Floor hand-offs** (world x 2540 and 3880): the next floor now fades in over 280 px with corner alphas `setAlpha(0, 1, 0, 1)`. It used to be a 200 px strip at 0.5 alpha.
 - **mid3a → mid3b cut:** mid3b's left 240 px ease into a cool shadow. A pure alpha feather showed the far plate through translucent roofs.
 - **Torches** (`lights.json`): they now sit on the painted lanterns. On mid3a that is the inn door pair at (1615,424) and (1835,422). On mid3b it is the rooftop street lamp (308,493) and the garden lanterns (1228,577), (1410,384), (1908,387) for the pair, (1914,547) and (2045,580).
+
+## Status 2026-10-07: character reskins shipped (branch `rwb-w2-s3-chars`)
+
+The grey `PLACEHOLDER` cards for `cutthroat`, `fade` and `riley3` are gone. Each atlas is built from an existing painted sheet by `tools/stage3/reskin_chars.py` (helpers in `reskin_lib.py`). Frames are copied 1:1 at the source pack scale (zealot and cutthroat 0.62, Byar and Fade 0.6, Riley 0.85). They are re-registered so the anchor and baseline land on the same pixel of the Stage 3 canvas, and repacked with a skyline packer. Identical frames share one rect. Normal maps are cut from the source sheet's own `_n`/`_nl` with the same rects, at half resolution like every shared atlas (`normalScale: 0.5` in `anims.json`). `reskin_status.py` writes provenance and `reskin_contact.py` writes the contact sheets.
+
+| Sheet | Source | What changed |
+| --- | --- | --- |
+| `cutthroat` | `assets/chars/zealot` | Charcoal hood (was the helmet) and cloak/tabard, oxblood shirt (was mail), brown leather, copper fittings. Every anim key maps onto zealot frames: slash = slash, lunge = charge-up + shoulder charge, hold = guard/block poses, grabthrow = shield slam, shoved = hurt + guard break, stalk = walk at 140 ms, flee = flee. The 6-slot walk is the 4-pose zealot cycle with contact poses doubled (holds 90/90/130/90/90/130). |
+| `fade` | `assets/chars/byar` | Black cloak and armour, black hair, pale grey face with the eyes and brows smoothed out. slash = Byar's combo (thrust on the active frame 4), lunge = rush, fear = volley/accuse poses (pointing on the aura frame), split = rage poses, blinkout/blinkin = the figure sinking into and rising out of the floor (generated from parry/riposte frames). |
+| `riley3` | `assets/chars/riley` | Riley's own frames, unchanged: grabbed = hurt struggle loop, escape = back kick (hit on frame 1). |
+| `fadePortrait` | `assets/ui/byar-portrait.webp` | The same recolour, with the eyes and brows inpainted. |
+
+Contact sheets: `docs/stage3/shots/contact-cutthroat-reskin.jpg`, `contact-fade-reskin.jpg`, `contact-riley3.jpg`. `ART_STATUS.json` records `source: "reskin"`, the source sheet and its sha256, and `approvedBy`. `tests/stage3-assets.test.mjs` allows `reskin` only for the character ids (`APPROVED_STILLS`). This departs from PLAN rule 5 ("no recolouring ... existing sprites into new frames"; real art only from ChatGPT or Gemini). The owner asked for these reskins on 2026-10-07 as the replacement for the grey cards, so they are recorded as reskins, not as new paintings. The Fade's blink frames are also derived: the parry and riposte frames are cut at the floor line, darkened and frayed. The PLAN prompts remain in `docs/stage3/prompts/` for a future painted pass.
+
+Texture memory (RGBA8 estimate, colour + `_n` + `_nl`): the Stage 3 character atlases dropped from 186.9 MB to 139.7 MB (MiB), and the Stage 3-only pages from 81.1 to 33.9. `tests/stage3-memory.test.mjs` now caps Stage 3 pages + plates at 66 MB (was 110; 62.0 today) and every Stage 3 character atlas together at 142 MB. Stage 2 is 124.6 MB. The Stage 3 total stays above it because the shared sheets alone (Riley 48.7, hound 22.4, zealot 13.2, archer 11.3, Loial 10.1 = 105.7) leave less than 19 MB for the cutthroat and the Fade at native density.
+
+`src/stage4-art-thug.js` no longer paints its stick-figure stand-in over `cutthroat-0` once the sheet says `placeholder: false`, so Stage 4 shows the same painted cutthroats.

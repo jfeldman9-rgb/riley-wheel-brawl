@@ -20,7 +20,7 @@ function charMeta(key) {
   return json(`${dir}/${key}.anims.json`);
 }
 
-test('Stage 3 resident texture estimate (colour, _n and _nl pages, plus plates) is at most 110 MB', t => {
+test('Stage 3 resident texture estimate (colour, _n and _nl pages, plus plates) is at most 66 MB', t => {
   let bytes = 0;
   for (const key of ['cutthroat', 'fade', 'riley3']) {
     for (const page of charMeta(key).pages) {
@@ -37,7 +37,22 @@ test('Stage 3 resident texture estimate (colour, _n and _nl pages, plus plates) 
     bytes += w * h * 4;
   }
   t.diagnostic(`Stage 3 pages + plates RGBA8 ${(bytes / MB).toFixed(2)} MB`);
-  assert.ok(bytes <= 110 * MB, `resident estimate ${bytes} exceeds 110 MB`);
+  assert.ok(bytes <= 66 * MB, `resident estimate ${bytes} exceeds 66 MB`);
+});
+
+test('every Stage 3 character atlas together (shared sheets included) stays at most 142 MB', t => {
+  let bytes = 0;
+  for (const key of STAGE_CHARS[3]) {
+    const meta = charMeta(key);
+    for (const page of meta.pages) {
+      for (const suffix of ['', '_n', '_nl']) {
+        const [w, h] = dimensions(read(`${meta.dir || 'assets/chars'}/${page}${suffix}.webp`));
+        bytes += w * h * 4;
+      }
+    }
+  }
+  t.diagnostic(`Stage 3 character atlases RGBA8 ${(bytes / MB).toFixed(2)} MB`);
+  assert.ok(bytes <= 142 * MB, `Stage 3 character atlases ${bytes} exceed 142 MB`);
 });
 
 test('switching stages 1 → 3 → 2 → 3 → 1 leaves only the current stage art resident', () => {

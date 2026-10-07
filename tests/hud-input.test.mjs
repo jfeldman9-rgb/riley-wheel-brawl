@@ -61,10 +61,13 @@ test('PLACEHOLDER ART watermark shows with placeholder metas and hides when none
   const { readFileSync, readdirSync } = await import('node:fs');
   const { placeholderArt } = hud3;
 
-  const st3Metas = {};
+  const real3 = {};
   for (const f of readdirSync('assets/stage3/chars').filter(f => f.endsWith('.anims.json'))) {
-    st3Metas[f] = JSON.parse(readFileSync(`assets/stage3/chars/${f}`, 'utf8'));
+    real3[f] = JSON.parse(readFileSync(`assets/stage3/chars/${f}`, 'utf8'));
   }
+  // Every Stage 3 sheet is real art now, so a stand-in card takes the placeholder role.
+  assert.equal(placeholderArt({ metas: real3 }), false);
+  const st3Metas = { ...real3, 'card.anims.json': { placeholder: true } };
   assert.equal(placeholderArt({ metas: st3Metas }), true);
 
   const st1Metas = {};

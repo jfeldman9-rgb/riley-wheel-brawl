@@ -9,7 +9,7 @@
  "pages": [
   "riley3-0"
  ],
- "placeholder": true,
+ "placeholder": false,
  "dir": "assets/stage3/chars",
  "anims": [
   {
@@ -56,5 +56,11 @@
     0
    ]
   }
- ]
+ ],
+ "normalScale": 0.5,
+ "source": {
+  "sheet": "assets/chars/riley",
+  "tool": "tools/stage3/reskin_chars.py",
+  "recolor": null
+ }
 }
