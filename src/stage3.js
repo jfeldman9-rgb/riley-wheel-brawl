@@ -7,6 +7,7 @@ import { MID_Y } from './stage2.js';
 import { Stage3Hazards } from './stage3-hazards.js';
 import { budgetStage3Lights, plateScale, playFearCues, coilTell } from './stage3-lights.js';
 import { installStage3Suspension } from './stage3-suspension.js';
+import { p3 } from './stage3-art.js';
 export const STORY3_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story3_panel_' + n, url: `assets/story/story3_panel_${n}.jpg` })));
 export const STORY3_SCRIPT = Object.freeze([
   ['st3_story_01', 0, 3.58], ['st3_story_02', 1, 7.89], ['st3_story_03', 1, 1.54], ['st3_story_04', 1, 3.87], ['st3_story_05', 1, 0.72], ['st3_story_06', 2, 3.41],
@@ -96,6 +97,7 @@ export class Stage3Kit extends Stage3Hazards {
   // ---------- build (never reads s.camX: it is stale on a restart; update() sets every camX-dependent value) ----------
   build() {
     const s = this.s, P = this.plates, cfg = this.cfg, design = P.midScale || 0.76, par = P.midParallax || 0.5;
+    p3(s);
     this.makeTextures();
     const fs = P.farScroll ?? 0.12, farImg = (k, d) => {
       const f = s.add.image(0, 0, k).setOrigin(0, 0).setScrollFactor(fs);

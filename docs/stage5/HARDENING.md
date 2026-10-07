@@ -27,4 +27,4 @@ With no bot, 120 seconds of standing still does not throw, does not leave a hold
 
 ## What these sweeps do not claim
 
-They do not measure GPU frame time, audio output, or a physical gamepad. Lights are logical handles. Painted sheets and rendered voice lines are not in this tree. A burst that drives Aginor to 0 HP before the Green Man beat starts can still skip the beat; the nine campaign seeds do not do that, and a hit during the beat itself does not kill him.
+They do not measure GPU frame time, audio output, or a physical gamepad. Lights are logical handles. Painted sheets and rendered voice lines are not in this tree. A burst before the Green Man beat cannot drive Aginor through the next phase gate or to 0 HP. The floor stays until `startBeat` sets `beatFired`. A hit during the beat itself does not kill him.

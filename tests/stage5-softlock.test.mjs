@@ -78,6 +78,7 @@ test('the Green Man beat keeps only Aginor invulnerable, then seizes Balthamel',
   world.balthamel = b;
   b.invuln = false;
   arena.startBeat(a, b, world);
+  assert.equal(a.beatFired, true);
   assert.equal(a.invuln, true);
   assert.ok(!b.invuln);
   assert.equal(b.alive, true);
@@ -89,4 +90,34 @@ test('the Green Man beat keeps only Aginor invulnerable, then seizes Balthamel',
   assert.equal(a.beatDone, true);
   assert.equal(b.alive, false);
   assert.equal(a.invuln, false);
+});
+
+test('a burst clamps Aginor at the phase gate until the Green Man beat fires', () => {
+  const { scene, riley } = bare();
+  const a = new Aginor(scene, riley.x + 80, riley.y);
+  const p2 = Math.floor(a.maxHp * 0.66);
+  const p3 = Math.floor(a.maxHp * 0.33);
+  assert.equal(a.takeHit({ dmg: 99999 }), true);
+  assert.equal(a.hp, p2);
+  assert.equal(a.phase, 2);
+  assert.equal(a.alive, true);
+  assert.notEqual(a.state, 'burn');
+  assert.equal(a.takeHit({ dmg: 99999 }), true);
+  assert.equal(a.hp, p3);
+  assert.equal(a.phase, 2);
+  assert.equal(a.alive, true);
+  riley.attackFrame = true;
+  riley.facing = 1;
+  riley.x = a.x - 40;
+  a.state = 'tether';
+  a.locked = false;
+  a.counterUsed = false;
+  a.st = 0.5;
+  a.takeHit({ dmg: 99999 }, riley);
+  assert.equal(a.hp, p3);
+  assert.equal(a.state, 'staggered');
+  a.beatFired = true;
+  assert.equal(a.takeHit({ dmg: 99999 }), true);
+  assert.equal(a.state, 'burn');
+  assert.equal(a.hp, 0);
 });

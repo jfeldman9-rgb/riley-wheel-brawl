@@ -9,6 +9,7 @@ import { HUD } from './hud.js';
 import { releaseIdleRenderTargets } from './render-resources.js';
 import { installGraphicsLifecycle } from './graphics-lifecycle.js';
 import { installGraphicsNotice } from './graphics-notice.js';
+import { fit } from './viewport.js';
 class Boot extends Phaser.Scene {
   constructor() { super('boot'); }
   preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); this.load.image('loialPortrait', 'assets/ui/loial-portrait.webp'); this.load.image('byarPortrait', 'assets/ui/byar-portrait.webp'); }
@@ -38,7 +39,9 @@ game.setRS = (rs) => {
   // Quality changes happen during update, between renderer passes. Release only
   // idle old-size targets; asset textures and checked-out filter targets remain.
   releaseIdleRenderTargets(game);
+  game.refitViewport?.();
 };
+fit(game);
 function applyLevel(st, lv) {
   let removedBloom = false;
   while (level < lv) {

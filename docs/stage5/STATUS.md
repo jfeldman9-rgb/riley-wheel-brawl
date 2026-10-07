@@ -39,12 +39,13 @@ The Blight and the Eye of the World. Branch `rwb-2-stage5`. Campaign order is 1 
 - The oak presence stat counts a frame inside the open oak even when Riley is already at the 50% heal cap.
 - A melee flush calls `onFlush`, same as a light flush. Hazard damage that takes an enemy to 0 HP finishes them.
 - The campaign bot, and only when Aginor is in a staff string, Riley is under 18 HP, and the gap is under 50 px, steps off that staff instead of attacking. That is the right-wall pin on seed 3. In phase 3 a bone-hand dodge keeps one direction for the whole tell, because flipping `sign` every frame walked Riley back onto the hand.
-- Aginor can still reach 0 HP before the Green Man beat if something bursts him. The beat itself sets `invuln`. The nine seeds do not skip it.
+- Until `beatFired`, damage clamps Aginor at the next phase gate (66% in phase 1, 33% in phase 2) so a burst cannot kill him or skip the Green Man beat. `startBeat` sets `beatFired` and `invuln`. After the beat, the floor lifts and he can burn.
 - Planned per-mechanic test files (`stage5-blight`, `stage5-stalker`, `stage5-aginor`, `stage5-greenman`, and the rest of the split `stage5-hardening-*` list) are folded into `stage5-kit`, `stage5-hardening`, `stage5-softlock`, `stage5-balthamel-hold`, `stage5-flow`, and `stage5-campaign`. Those files were not added as empty shells.
 - The plan's prose says 23 voice lines. The id list in that same section is 21, and `STAGE5_VOICES` has those 21. The audit still reserves 23 × 200 KB.
 - `releaseStage` is wrapped only when `globalThis.Phaser` already exists. Tests that import the stage table without Phaser do not pull in `stage1.js`.
 - Stage 5 music files in the tree are silent stand-ins, not the rendered loops. The loop points in `MUSIC` are the planned ones.
 - `VOICE_FILES` is empty, so Stage 5 lines caption and do not fetch. `boss.introVoice` is not set; the kit captions `aginor_intro_01` when the Eye arena opens. Add an id to `VOICE_FILES` only when its mp3 is in `assets/audio/voice/`.
+- `assets/fonts/press-start-2p.ttf` is a glyph subset (ASCII, middle dot, multiplication sign, play triangle) under the same OFL file. The internal name is `RWB Pixel` so the subset does not reuse the reserved name Press Start 2P. `@font-face` still calls the family `PressStart`. That is the pre-fight slack under the unchanged 25 MB cap.
 
 ## Audio
 

@@ -73,9 +73,9 @@ export class Aginor {
       if (R?.attackFrame && !this.counterUsed && this.st >= AGINOR.tetherTell - AGINOR.counter && this.st < AGINOR.tetherTell) {
         if (Math.sign(this.x - R.x) === (R.facing || 1) && Math.abs(R.x - this.x) < 220 && Math.abs(R.y - this.y) < 40) {
           this.counterUsed = true; this.breakTether();
-          this.hp -= 10 * AGINOR.mul; this.state = 'staggered'; this.st = 0;
+          this.hp -= 10 * AGINOR.mul; this.guardHp(); this.state = 'staggered'; this.st = 0;
           this.scene.kit?.onCounter?.(this, 'tether');
-          if (this.hp <= 0) this.burn();
+          if (this.hp <= 0) this.burn(); else this.considerPhase();
           return;
         }
       }
@@ -137,9 +137,9 @@ export class Aginor {
     if (!this.canBeHit) return false;
     if (this.state === 'tether' && !this.locked && !this.counterUsed && this.st >= AGINOR.tetherTell - AGINOR.counter && (from?.attackFrame || this.scene.riley?.attackFrame)) {
       this.counterUsed = true; this.breakTether();
-      this.hp -= Math.max(h.dmg || 1, 1) * AGINOR.mul; this.state = 'staggered'; this.st = 0;
+      this.hp -= Math.max(h.dmg || 1, 1) * AGINOR.mul; this.guardHp(); this.state = 'staggered'; this.st = 0;
       this.scene.kit?.onCounter?.(this, 'tether');
-      if (this.hp <= 0) this.burn();
+      if (this.hp <= 0) this.burn(); else this.considerPhase();
       return true;
     }
     if (this.locked) this.breakTether();
@@ -147,11 +147,17 @@ export class Aginor {
     if (this.overdrawn) dmg *= 1.6;
     if (this.overdrawn && !this.surgeUsed) { this.surgeUsed = true; dmg = Math.max(dmg, 1); this.state = 'staggered'; this.st = 0; this.scene.kit?.onCounter?.(this, 'surge'); }
     this.hp -= dmg;
+    this.guardHp();
     this.noteHit();
     if (this.hp <= 0) { this.burn(); return true; }
     this.considerPhase();
     if (this.state === 'idle' || this.state === 'tether') { this.state = 'hurt'; this.st = 0; }
     return true;
+  }
+  guardHp() {
+    if (this.beatFired) return;
+    const floor = Math.floor(this.maxHp * (this.phase <= 1 ? 0.66 : 0.33));
+    if (this.hp < floor) this.hp = floor;
   }
   considerPhase() {
     const f = this.hp / this.maxHp;

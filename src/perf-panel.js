@@ -1,6 +1,7 @@
 // A local-only, keyboard/touch-accessible capture UI. It never uploads reports.
 import { perf, displayMs } from './perf.js';
 import { stageLightLine } from './stage3-lights.js';
+import { perfBtn } from './debug-flag.js';
 
 const SHIELDED_EVENTS = ['pointerdown', 'pointerup', 'pointermove', 'mousedown', 'mouseup',
   'touchstart', 'touchmove', 'touchend', 'touchcancel', 'click', 'dblclick', 'keyup'];
@@ -49,6 +50,7 @@ function clearGameplayInput(game) {
 export function installPerfPanel({ game, getStage }) {
   const opener = document.getElementById('perf-open'), overlay = document.getElementById('perf-overlay');
   if (!opener || !overlay) return { destroy() {} };
+  perfBtn(document);
   const dialog = document.getElementById('perf-dialog'), summary = document.getElementById('perf-summary');
   const output = document.getElementById('perf-json'), status = document.getElementById('perf-status');
   const closeButton = document.getElementById('perf-close'), resetButton = document.getElementById('perf-reset');

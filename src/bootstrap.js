@@ -1,4 +1,6 @@
 import { createStartupGuard } from './startup.js';
+import { perfBtn, base } from './debug-flag.js';
+base(document, location); perfBtn(document, location.search);
 
 const startup = window.__rwbStartup = createStartupGuard(window);
 // Dynamic import catches missing modules and synchronous Phaser boot errors.

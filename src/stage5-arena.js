@@ -125,7 +125,7 @@ export function createArena(opts = {}) {
     startBeat(boss, balth, world) {
       if (a.beat) return false;
       balth?.releaseHold?.('break');
-      boss.invuln = true; boss.breakTether?.();
+      boss.invuln = true; boss.beatFired = true; boss.breakTether?.();
       a.beat = { t: 0, done: false };
       a.green = { state: 'seize', st: 0 };
       world.onGreen?.();
