@@ -1,6 +1,7 @@
-// Stage 5 lines. Missing mp3s stay silent: say() already treats a failed fetch
-// as no audio, and preload skips ids that are not on disk when the manifest says so.
-import { say, playLoop, stopLoop, registerLines, withSfx } from './audio.js';
+// Stage 5 lines. An id plays only when its mp3 is listed in the voice manifest.
+// Anything left out is a caption. setVoiceFiles tells say() not to fetch it,
+// including the story cutscene, which calls say() directly.
+import { say, playLoop, stopLoop, registerLines, withSfx, setVoiceFiles } from './audio.js';
 import { playStage5Sfx } from './stage5-sfx.js';
 
 export const LINES = {
@@ -28,8 +29,23 @@ export const LINES = {
 };
 registerLines(LINES);
 export const STAGE5_VOICES = Object.freeze(Object.keys(LINES));
-// Ids whose mp3 is on disk. Empty until the rendered lines land, so nothing 404s.
-export const VOICE_FILES = [];
+const keep = ids => (Array.isArray(ids) ? ids : []).filter(id => Object.hasOwn(LINES, id));
+async function presentIds() {
+  const url = new URL('../assets/audio/stage5-voice-manifest.json', import.meta.url);
+  try {
+    const fs = globalThis.process?.getBuiltinModule?.('node:fs');
+    const pathFor = globalThis.process?.getBuiltinModule?.('node:url');
+    if (fs?.readFileSync && pathFor?.fileURLToPath) return keep(JSON.parse(fs.readFileSync(pathFor.fileURLToPath(url), 'utf8')).present);
+  } catch { /* a bad manifest stays captions and does not fetch */ }
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    return keep((await res.json()).present);
+  } catch { return []; }
+}
+// Ids whose mp3 is on disk. The manifest's present list is that set, so a missing file is never requested.
+export const VOICE_FILES = await presentIds();
+setVoiceFiles(STAGE5_VOICES, VOICE_FILES);
 export function stage5Say(id, cap, interrupt = true) {
   const line = LINES[id];
   if (!VOICE_FILES.includes(id)) { if (line && typeof cap === 'function') cap(line[0], line[1]); return line; }

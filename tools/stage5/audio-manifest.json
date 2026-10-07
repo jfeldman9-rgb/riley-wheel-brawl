@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "stage": 5,
+  "source": "docs/stage5/VOICE-SCRIPT.md and src/stage5-voice.js LINES",
+  "playback": "assets/audio/stage5-voice-manifest.json present[] is the on-disk subset. src/stage5-voice.js reads it into VOICE_FILES.",
+  "engines": {
+    "kokoro": "Kokoro-82M, same Riley and Loial casts as tools/stage4/tts_stage4_lines.py",
+    "elevenlabs": "Narrator, Aginor, Balthamel, and the Green Man. No voice file is written when the key is missing."
+  },
+  "lines": [
+    {"id": "st5_story_01", "speaker": "NARRATOR", "who": "narrator", "text": "Loial led him through the Ways. In the dark, a wind whispered Riley's name.", "file": "assets/audio/voice/st5_story_01.mp3", "engine": "elevenlabs"},
+    {"id": "st5_story_02", "speaker": "RILEY", "who": "riley", "text": "The trail runs north. Into the Blight.", "file": "assets/audio/voice/st5_story_02.mp3", "engine": "kokoro"},
+    {"id": "st5_story_03", "speaker": "LOIAL", "who": "loial", "text": "Nothing grows right here, Riley. Not even the trees.", "file": "assets/audio/voice/st5_story_03.mp3", "engine": "kokoro"},
+    {"id": "st5_story_04", "speaker": "NARRATOR", "who": "narrator", "text": "Past the hills, something old was waiting.", "file": "assets/audio/voice/st5_story_04.mp3", "engine": "elevenlabs"},
+    {"id": "st5_story_05", "speaker": "RILEY", "who": "riley", "text": "Good. I'm in a mood.", "file": "assets/audio/voice/st5_story_05.mp3", "engine": "kokoro"},
+    {"id": "st5_clear_01", "speaker": "RILEY", "who": "riley", "text": "She's not here. The Fade went south.", "file": "assets/audio/voice/st5_clear_01.mp3", "engine": "kokoro"},
+    {"id": "st5_clear_02", "speaker": "LOIAL", "who": "loial", "text": "South is Tarwin's Gap. Every Trolloc in the Blight is going there.", "file": "assets/audio/voice/st5_clear_02.mp3", "engine": "kokoro"},
+    {"id": "st5_clear_03", "speaker": "RILEY", "who": "riley", "text": "Then so am I.", "file": "assets/audio/voice/st5_clear_03.mp3", "engine": "kokoro"},
+    {"id": "riley_st5_stalk_01", "speaker": "RILEY", "who": "riley", "text": "Something's in the grass.", "file": "assets/audio/voice/riley_st5_stalk_01.mp3", "engine": "kokoro"},
+    {"id": "riley_st5_tree_01", "speaker": "RILEY", "who": "riley", "text": "The trees are moving!", "file": "assets/audio/voice/riley_st5_tree_01.mp3", "engine": "kokoro"},
+    {"id": "riley_st5_ring_01", "speaker": "RILEY", "who": "riley", "text": "Jump it!", "file": "assets/audio/voice/riley_st5_ring_01.mp3", "engine": "kokoro"},
+    {"id": "riley_st5_free_01", "speaker": "RILEY", "who": "riley", "text": "Get your hands off me, corpse.", "file": "assets/audio/voice/riley_st5_free_01.mp3", "engine": "kokoro"},
+    {"id": "riley_st5_greenman_01", "speaker": "RILEY", "who": "riley", "text": "No! Not him!", "file": "assets/audio/voice/riley_st5_greenman_01.mp3", "engine": "kokoro"},
+    {"id": "riley_st5_victory_01", "speaker": "RILEY", "who": "riley", "text": "Burn, then.", "file": "assets/audio/voice/riley_st5_victory_01.mp3", "engine": "kokoro"},
+    {"id": "aginor_intro_01", "speaker": "AGINOR", "who": "aginor", "text": "A channeler. Untrained. Delicious.", "file": "assets/audio/voice/aginor_intro_01.mp3", "engine": "elevenlabs"},
+    {"id": "aginor_drain_01", "speaker": "AGINOR", "who": "aginor", "text": "Your strength is wasted on you.", "file": "assets/audio/voice/aginor_drain_01.mp3", "engine": "elevenlabs", "loop": true},
+    {"id": "aginor_surge_01", "speaker": "AGINOR", "who": "aginor", "text": "The Eye... so much... more!", "file": "assets/audio/voice/aginor_surge_01.mp3", "engine": "elevenlabs"},
+    {"id": "aginor_burn_01", "speaker": "AGINOR", "who": "aginor", "text": "(scream)", "file": "assets/audio/voice/aginor_burn_01.mp3", "engine": "elevenlabs"},
+    {"id": "balthamel_laugh_01", "speaker": "BALTHAMEL", "who": "balthamel", "text": "(dry laugh)", "file": "assets/audio/voice/balthamel_laugh_01.mp3", "engine": "elevenlabs"},
+    {"id": "greenman_arrive_01", "speaker": "GREEN MAN", "who": "greenman", "text": "You will not touch my garden.", "file": "assets/audio/voice/greenman_arrive_01.mp3", "engine": "elevenlabs"},
+    {"id": "greenman_fall_01", "speaker": "GREEN MAN", "who": "greenman", "text": "Grow... again...", "file": "assets/audio/voice/greenman_fall_01.mp3", "engine": "elevenlabs"}
+  ],
+  "music": ["music-stage5", "music-boss5"]
+}

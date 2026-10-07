@@ -1,0 +1,4 @@
+{
+  "present": [],
+  "note": "present is the ids whose mp3 is in assets/audio/voice/. The stage 5 audio test requires this list to match the files on disk. An id left out is a caption and is not fetched. Add the id in the same change as its mp3."
+}

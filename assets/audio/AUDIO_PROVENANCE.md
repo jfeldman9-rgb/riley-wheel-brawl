@@ -77,4 +77,4 @@ Both are under 1.2 MB. Loop points are in `tools/music/music-manifest.json`. Sta
 | `music-stage5.mp3` | stage5 | One second of silence. Stand-in so the Stage 5 music id is a real file. Replace with the rendered Blight loop. Planned loop in `src/stage5.js` is [0.250, 40.250) s. | Original silence generated for this project. No third-party audio. |
 | `music-boss5.mp3` | boss5 | One second of silence. Stand-in for the Eye boss loop. Planned loop is [0.250, 32.000) s. | Original silence generated for this project. No third-party audio. |
 
-`playTrack` still treats a failed fetch as silence. These files exist so the music inventory can see the hooks. Voice lines are not rendered yet.
+`playTrack` still treats a failed fetch as silence. These files exist so the music inventory can see the hooks. The same loop points are on `MUSIC.stage5` and `MUSIC.boss5` in `src/audio.js`. Voice lines are not rendered yet. The script is `docs/stage5/VOICE-SCRIPT.md`. An id plays only after it is listed in `assets/audio/stage5-voice-manifest.json`.

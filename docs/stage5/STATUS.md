@@ -44,9 +44,9 @@ The Blight and the Eye of the World. Branch `rwb-2-stage5`. Campaign order is 1 
 - The plan's prose says 23 voice lines. The id list in that same section is 21, and `STAGE5_VOICES` has those 21. The audit still reserves 23 × 200 KB.
 - `releaseStage` is wrapped only when `globalThis.Phaser` already exists. Tests that import the stage table without Phaser do not pull in `stage1.js`.
 - Stage 5 music files in the tree are silent stand-ins, not the rendered loops. The loop points in `MUSIC` are the planned ones.
-- `VOICE_FILES` is empty, so Stage 5 lines caption and do not fetch. `boss.introVoice` is not set; the kit captions `aginor_intro_01` when the Eye arena opens. Add an id to `VOICE_FILES` only when its mp3 is in `assets/audio/voice/`.
+- `VOICE_FILES` is the `present` list in `assets/audio/stage5-voice-manifest.json`. It is empty, so Stage 5 lines caption and do not fetch. `say()` skips any Stage 5 id left off that list, including story lines. `boss.introVoice` is not set; the kit captions `aginor_intro_01` when the Eye arena opens. Add an id to `present` only when its mp3 is in `assets/audio/voice/`.
 - `assets/fonts/press-start-2p.ttf` is a glyph subset (ASCII, middle dot, multiplication sign, play triangle) under the same OFL file. The internal name is `RWB Pixel` so the subset does not reuse the reserved name Press Start 2P. `@font-face` still calls the family `PressStart`. That is the pre-fight slack under the unchanged 25 MB cap.
 
 ## Audio
 
-Render the voices later. Riley and Loial lines are the Kokoro set. Narrator, Aginor, Balthamel, and the Green Man are the ElevenLabs set. Ids are the keys of `STAGE5_VOICES` in `src/stage5-voice.js`. Replace `assets/audio/music-stage5.mp3` and `assets/audio/music-boss5.mp3` with the rendered loops. The ids stay `stage5` and `boss5`.
+Render the voices later. The script, names, and delivery are in `docs/stage5/VOICE-SCRIPT.md`. Riley and Loial lines are the Kokoro set. Narrator, Aginor, Balthamel, and the Green Man are the ElevenLabs set. Ids are the keys of `STAGE5_VOICES` in `src/stage5-voice.js`. Replace `assets/audio/music-stage5.mp3` and `assets/audio/music-boss5.mp3` with the rendered loops. The ids stay `stage5` and `boss5`, on `MUSIC` in `src/audio.js`.
