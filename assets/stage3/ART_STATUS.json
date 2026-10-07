@@ -740,10 +740,30 @@
     "assets/story/story3_panel_1.jpg"
    ],
    "sha256": {
-    "assets/story/story3_panel_1.jpg": "1bcc61737af2b96b961e22597dbdd2ff9711ddaa7ca2cf7ec9be653842578498"
+    "assets/story/story3_panel_1.jpg": "a72a6a7822e8173190c0775c077f230261ba8a615248fcac050f0fad7737daef"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/story3-1.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-story3-panels.jpg",
+   "prompt": "docs/stage3/prompts/story3-1.json",
+   "art": {
+    "status": "real painted story panel",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "subject": "Riley from behind at the gates of Caemlyn",
+    "source": "art-in/story3/story3_panel_1.src.jpg",
+    "sourceSha256": "e27fd5c2e346edad189dc845772159990d6ebfac72ab68b835d32c902e5e946b",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     720
+    ],
+    "postProcess": "tools/stage3/process_story3_panels.py: native size, re-encoded JPEG with story_panel_1.jpg's quantisation tables (about q86), 4:2:0",
+    "approvedBy": "Jason F (owner), 2026-10-07, rwb-w2-s3-story"
+   }
   },
   {
    "id": "story3-2",
@@ -751,10 +771,30 @@
     "assets/story/story3_panel_2.jpg"
    ],
    "sha256": {
-    "assets/story/story3_panel_2.jpg": "9be369b86b13c75780420603333f54f29465a067c552c575b3f3c0ca9f0d7c14"
+    "assets/story/story3_panel_2.jpg": "1ff2f410f430f36e407783a3727b0002da86badafe5df482708be1698db06df8"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/story3-2.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-story3-panels.jpg",
+   "prompt": "docs/stage3/prompts/story3-2.json",
+   "art": {
+    "status": "real painted story panel",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "subject": "Basel Gill at the Queen's Blessing; Riley holds the blue ribbon",
+    "source": "art-in/story3/story3_panel_2.src.jpg",
+    "sourceSha256": "3b234dcc976812b23d0d4b600faf7465d047c91a40607f9daa379ea06b09f7eb",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     720
+    ],
+    "postProcess": "tools/stage3/process_story3_panels.py: native size, re-encoded JPEG with story_panel_1.jpg's quantisation tables (about q86), 4:2:0",
+    "approvedBy": "Jason F (owner), 2026-10-07, rwb-w2-s3-story"
+   }
   },
   {
    "id": "story3-3",
@@ -762,10 +802,30 @@
     "assets/story/story3_panel_3.jpg"
    ],
    "sha256": {
-    "assets/story/story3_panel_3.jpg": "cef1a22de0a07dc4b46240fbdab69d32e2155e1908ecdf664fc4a40852b76a64"
+    "assets/story/story3_panel_3.jpg": "feed9abc6d41fac7e4d1f8d43b344c160121cca7c1402592f77552f030dbed25"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/story3-3.json"
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-story3-panels.jpg",
+   "prompt": "docs/stage3/prompts/story3-3.json",
+   "art": {
+    "status": "real painted story panel",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "subject": "Sunset rooftops; the cloaked figure flees with the bundle",
+    "source": "art-in/story3/story3_panel_3.src.jpg",
+    "sourceSha256": "0f5556cca6c3d1295bfe085a3f05fbdaefa543e22af6e06644dc89034d30adb4",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     720
+    ],
+    "postProcess": "tools/stage3/process_story3_panels.py: native size, re-encoded JPEG with story_panel_1.jpg's quantisation tables (about q86), 4:2:0",
+    "approvedBy": "Jason F (owner), 2026-10-07, rwb-w2-s3-story"
+   }
   }
  ]
 }

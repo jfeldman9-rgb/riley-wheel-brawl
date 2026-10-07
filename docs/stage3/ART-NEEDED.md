@@ -55,3 +55,18 @@ Contact sheets: `docs/stage3/shots/contact-cutthroat-reskin.jpg`, `contact-fade-
 Texture memory (RGBA8 estimate, colour + `_n` + `_nl`): the Stage 3 character atlases dropped from 186.9 MB to 139.7 MB (MiB), and the Stage 3-only pages from 81.1 to 33.9. `tests/stage3-memory.test.mjs` now caps Stage 3 pages + plates at 66 MB (was 110; 62.0 today) and every Stage 3 character atlas together at 142 MB. Stage 2 is 124.6 MB. The Stage 3 total stays above it because the shared sheets alone (Riley 48.7, hound 22.4, zealot 13.2, archer 11.3, Loial 10.1 = 105.7) leave less than 19 MB for the cutthroat and the Fade at native density.
 
 `src/stage4-art-thug.js` no longer paints its stick-figure stand-in over `cutthroat-0` once the sheet says `placeholder: false`, so Stage 4 shows the same painted cutthroats.
+
+## Status 2026-10-07: story panels shipped (branch `rwb-w2-s3-story`)
+
+The Stage 3 intro no longer shows the grey `PLACEHOLDER PAINTING` cards. That text was baked into the placeholder JPGs by `tools/stage3/make_placeholders.py`; nothing draws it at runtime. Jason approved three Grok Bot panels (sources in `art-in/story3/`, 1280×720):
+
+| Panel | Lines | Subject |
+| --- | --- | --- |
+| `story3_panel_1.jpg` | `st3_story_01` | Riley from behind at the gates of Caemlyn, golden afternoon |
+| `story3_panel_2.jpg` | `st3_story_02`–`05` | Basel Gill at the Queen's Blessing; Riley holds the blue ribbon |
+| `story3_panel_3.jpg` | `st3_story_06` | Sunset rooftops; the cloaked figure flees with the bundle |
+
+`tools/stage3/process_story3_panels.py` re-encodes each source at native size with `story_panel_1.jpg`'s own quantisation tables (about q86, 4:2:0, baseline). The files are 256 KB, 200 KB and 177 KB, against 235–364 KB for the Stage 2 panels. The same script writes `docs/stage3/shots/contact-story3-panels.jpg`, the `ART_STATUS.json` provenance (`source: "grokbot-image"`, source sha256, `approvedBy`) and `tries: 1` in the prompt files. `assets/story/` is outside the Stage 1 pre-fight audit, and the panels are queued only by Stage 3 (`STAGE_TEXTURES[3]`), so the 25 MB gate is unchanged. The decoded size is the same as the cards' (1280×720).
+
+The HUD shows a panel full-frame (`setDisplaySize(VW, VH)`, no Ken Burns pan or crop). The caption box covers y 524–680 of 720. In every panel the main subjects sit above that: Riley's head and torso and the gate (1), Basel Gill's face and the ribbon (2), and the fleeing figure and Riley's fireball (3).
+
