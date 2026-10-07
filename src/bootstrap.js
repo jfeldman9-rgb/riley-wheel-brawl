@@ -1,8 +1,12 @@
 import { createStartupGuard } from './startup.js';
-import { applyPerfButton } from './debug-flags.js';
-import { installDirectoryBase } from './page-base.js';
-installDirectoryBase(document, location);
-applyPerfButton(document, location.search);
+import { perfReportEnabled } from './debug-flag.js';
+
+const perfOpen = document.getElementById('perf-open');
+if (perfOpen && !perfReportEnabled()) {
+  perfOpen.hidden = true;
+  perfOpen.setAttribute('aria-hidden', 'true');
+  perfOpen.tabIndex = -1;
+}
 
 const startup = window.__rwbStartup = createStartupGuard(window);
 // Dynamic import catches missing modules and synchronous Phaser boot errors.

@@ -9,7 +9,7 @@ import { HUD } from './hud.js';
 import { releaseIdleRenderTargets } from './render-resources.js';
 import { installGraphicsLifecycle } from './graphics-lifecycle.js';
 import { installGraphicsNotice } from './graphics-notice.js';
-import { installVisualViewport, syncGameViewport } from './viewport.js';
+import { installViewportFit } from './viewport.js';
 class Boot extends Phaser.Scene {
   constructor() { super('boot'); }
   preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); this.load.image('loialPortrait', 'assets/ui/loial-portrait.webp'); this.load.image('byarPortrait', 'assets/ui/byar-portrait.webp'); }
@@ -22,7 +22,6 @@ const game = window.__game = new Phaser.Game({
   fps: { target: 60 }, scene: [Boot, Stage1, HUD],
 });
 game.inp = new Input(); game.rs = RS0;
-installVisualViewport(game);
 installAudioLifecycle(game);
 const graphicsNotice = installGraphicsNotice(window);
 game.graphicsRecovery = installGraphicsLifecycle({ game, meter: perf,
@@ -35,13 +34,14 @@ game.events.on('step', (time, delta) => game.inp.update(Math.min(delta || 0, 50)
 let acc = 0, n = 0, level = 0, inited = false, appliedRun = null;
 game.setRS = (rs) => {
   if (game.rs === rs) return;
-  syncGameViewport(game);
   game.rs = rs; game.scale.resize(VW * rs, VH * rs);
   for (const k of ['stage1', 'hud']) { const s = game.scene.getScene(k); if (s && s.cameras && s.cameras.main) s.cameras.main.setZoom(rs); }
   // Quality changes happen during update, between renderer passes. Release only
   // idle old-size targets; asset textures and checked-out filter targets remain.
   releaseIdleRenderTargets(game);
+  game.refitViewport?.();
 };
+installViewportFit(game);
 function applyLevel(st, lv) {
   let removedBloom = false;
   while (level < lv) {

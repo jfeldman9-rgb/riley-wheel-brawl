@@ -1,142 +1,183 @@
-// Pin the Phaser parent to the visual viewport. iOS Safari's layout viewport
-// (and a position:fixed inset:0 parent) can stay taller than the visible
-// area. Phaser FIT then letterboxes a 16:9 canvas in that tall box and the
-// phone crops the top, which is where the HUD and health bars are drawn.
-import { VW, VH } from './config.js';
+// iOS Safari clips a FIT canvas when the page can scroll or #game is taller than
+// the visible viewport. Lock scrolling and size the shell with dvh first.
+// visualViewport offsets are applied only when the shell is already clipped,
+// and they replace the inline position instead of stacking on it.
+import { debugViewportEnabled } from './debug-flag.js';
 
-const finite = n => typeof n === 'number' && Number.isFinite(n) ? n : null;
+export const VIEWPORT_SETTLE_MS = 250;
 
-/** Visible box. visualViewport wins over the layout viewport when both exist. */
-export function visualBox(vv, fallback = {}) {
-  const width = finite(vv?.width) ?? finite(fallback.width) ?? 0;
-  const height = finite(vv?.height) ?? finite(fallback.height) ?? 0;
+export const VIEWPORT_CSS = `
+html, body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+#game {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+#game canvas {
+  touch-action: none;
+}
+`;
+
+export function installViewportCss(doc) {
+  if (!doc || typeof doc.getElementById !== 'function' || typeof doc.createElement !== 'function') return;
+  if (doc.getElementById('rwb-viewport-css')) return;
+  const style = doc.createElement('style');
+  style.id = 'rwb-viewport-css';
+  style.textContent = VIEWPORT_CSS;
+  (doc.head || doc.documentElement || doc.body)?.appendChild(style);
+}
+
+export function readVisualFrame(root = globalThis) {
+  const vv = root.visualViewport;
   return {
-    width: width > 0 ? width : 0,
-    height: height > 0 ? height : 0,
-    offsetTop: finite(vv?.offsetTop) ?? 0,
-    offsetLeft: finite(vv?.offsetLeft) ?? 0,
+    width: Math.round(vv?.width ?? root.innerWidth ?? 0),
+    height: Math.round(vv?.height ?? root.innerHeight ?? 0),
+    offsetLeft: Math.round(vv?.offsetLeft || 0),
+    offsetTop: Math.round(vv?.offsetTop || 0),
   };
+}
+
+/** rect is getBoundingClientRect (origin at the visible viewport). */
+export function elementClipped(rect, view, slack = 1) {
+  if (!rect || !view) return false;
+  return rect.top < -slack || rect.left < -slack || rect.bottom > view.height + slack || rect.right > view.width + slack;
+}
+
+export function fitCanvasRect(frame, gameW = 1280, gameH = 720) {
+  const width = frame?.width || 0, height = frame?.height || 0;
+  const scale = width > 0 && height > 0 ? Math.min(width / gameW, height / gameH) : 0;
+  const w = gameW * scale, h = gameH * scale;
+  const left = (frame?.offsetLeft || 0) + (width - w) / 2;
+  const top = (frame?.offsetTop || 0) + (height - h) / 2;
+  return { left, top, right: left + w, bottom: top + h, width: w, height: h, scale };
 }
 
 /**
- * Phaser Scale.FIT + CENTER_BOTH inside a visual-viewport box.
- * The returned canvas rect is the CSS box of the game canvas. World y=0
- * (the HUD) is canvas.top, which stays inside the visual viewport.
+ * Move #game only when its box is outside the visible viewport.
+ * A fixed shell whose rect already starts at 0 is not moved, even if
+ * visualViewport.offsetTop is nonzero — that would shift it twice.
+ * The assigned top/left replaces any previous pin.
  */
-export function fitGame(box, designW = VW, designH = VH) {
-  const width = Math.max(0, finite(box?.width) ?? 0);
-  const height = Math.max(0, finite(box?.height) ?? 0);
-  const offsetTop = finite(box?.offsetTop) ?? 0;
-  const offsetLeft = finite(box?.offsetLeft) ?? 0;
-  const aspect = designW / designH;
-  let canvasW = width, canvasH = height;
-  if (width > 0 && height > 0) {
-    if (width / height > aspect) { canvasH = height; canvasW = height * aspect; }
-    else { canvasW = width; canvasH = width / aspect; }
+export function applyPinFallback(el, frame, rect) {
+  if (!el || !frame) return { pinned: false, cleared: false };
+  const top = frame.offsetTop || 0, left = frame.offsetLeft || 0;
+  const clipped = elementClipped(rect, frame);
+  if (!clipped) {
+    if (el.dataset?.vvPin === '1' && top === 0 && left === 0) {
+      el.style.left = '';
+      el.style.top = '';
+      el.style.width = '';
+      el.style.height = '';
+      el.style.right = '';
+      el.style.bottom = '';
+      if (el.dataset) delete el.dataset.vvPin;
+      return { pinned: false, cleared: true };
+    }
+    return { pinned: el.dataset?.vvPin === '1', cleared: false };
   }
-  return {
-    parent: { top: offsetTop, left: offsetLeft, width, height },
-    canvas: {
-      width: canvasW,
-      height: canvasH,
-      top: offsetTop + (height - canvasH) / 2,
-      left: offsetLeft + (width - canvasW) / 2,
-    },
-  };
-}
-
-/** Screen y of a HUD point (design pixels, origin top-left) after FIT. */
-export function hudScreenY(fit, worldY, designH = VH) {
-  if (!fit?.canvas || !designH) return fit?.canvas?.top ?? 0;
-  return fit.canvas.top + (worldY / designH) * fit.canvas.height;
-}
-
-/** True when the whole canvas, including the top HUD, sits in the visual viewport. */
-export function canvasInsideVisual(fit) {
-  const viewTop = fit.parent.top, viewBottom = fit.parent.top + fit.parent.height;
-  const viewLeft = fit.parent.left, viewRight = fit.parent.left + fit.parent.width;
-  const c = fit.canvas;
-  const slop = 0.51;
-  return c.top >= viewTop - slop && c.top + c.height <= viewBottom + slop
-    && c.left >= viewLeft - slop && c.left + c.width <= viewRight + slop
-    && Math.abs(c.width / c.height - VW / VH) < 0.02;
-}
-
-export function readVisualViewport(root = globalThis) {
-  return visualBox(root.visualViewport, { width: root.innerWidth, height: root.innerHeight });
-}
-
-export function applyGameFrame(el, fit) {
-  if (!el?.style || !fit?.parent) return;
-  const p = fit.parent;
-  el.style.top = p.top + 'px';
-  el.style.left = p.left + 'px';
-  el.style.width = p.width + 'px';
-  el.style.height = p.height + 'px';
+  if (top === 0 && left === 0) return { pinned: false, cleared: false };
+  el.style.position = 'fixed';
+  el.style.left = left + 'px';
+  el.style.top = top + 'px';
+  el.style.width = frame.width + 'px';
+  el.style.height = frame.height + 'px';
   el.style.right = 'auto';
   el.style.bottom = 'auto';
+  if (el.dataset) el.dataset.vvPin = '1';
+  return { pinned: true, cleared: false };
 }
 
-/**
- * Keep #game equal to the visual viewport and tell Phaser that parent size
- * directly. getBoundingClientRect on iOS reports the layout box, which is
- * what made FIT crop the HUD, so the scale parent is set from visualViewport.
- */
-export function syncGameViewport(game, root = globalThis) {
-  const doc = root.document;
-  const el = doc?.getElementById?.('game');
-  const fit = fitGame(readVisualViewport(root));
-  if (el) {
-    applyGameFrame(el, fit);
-    // Flush layout before Phaser reads the parent. Otherwise getParentBounds
-    // still sees the previous tall box and the next scale poll fits that.
-    void el.offsetHeight;
-  }
-  const scale = game?.scale;
-  if (fit.parent.width > 0 && fit.parent.height > 0 && typeof scale?.setParentSize === 'function') {
-    scale.setParentSize(fit.parent.width, fit.parent.height);
-  } else scale?.refresh?.();
-  return fit;
-}
-
-export function installVisualViewport(game, root = globalThis) {
-  let last = '';
-  const sync = () => {
-    const box = readVisualViewport(root);
-    const key = [box.width, box.height, box.offsetTop, box.offsetLeft].join(',');
-    const fit = key === last && root.__rwbViewportFit ? root.__rwbViewportFit : syncGameViewport(game, root);
-    last = key;
-    root.__rwbViewportFit = fit;
-    try { if ((box.offsetTop || 0) !== 0 || (root.scrollY || 0) !== 0) root.scrollTo?.(0, 0); } catch { /* overflow hidden */ }
-    return fit;
-  };
-  sync();
-  const vv = root.visualViewport;
-  root.addEventListener?.('resize', sync);
-  root.addEventListener?.('orientationchange', sync);
-  root.addEventListener?.('focus', sync);
-  vv?.addEventListener?.('resize', sync);
-  vv?.addEventListener?.('scroll', sync);
-  // Safari can change visualViewport without a window resize when the chrome
-  // collapses mid-stage (the barn fire is the usual moment). Phaser only polls
-  // the layout parent, so a parent that has drifted taller than the visual
-  // box is pulled back even when the viewport numbers themselves are unchanged.
-  const timer = root.setInterval?.(() => {
-    const box = readVisualViewport(root);
-    const key = [box.width, box.height, box.offsetTop, box.offsetLeft].join(',');
-    const el = root.document?.getElementById?.('game');
-    const drifted = !!el && box.height > 0 && (Math.abs((el.offsetHeight || 0) - box.height) > 2 || Math.abs((el.offsetTop || 0) - box.offsetTop) > 2);
-    if (key !== last || drifted) sync();
-  }, 250);
-  // Node tests import the game boot. A live interval would keep those
-  // processes from exiting. Browsers ignore unref.
-  timer?.unref?.();
+export function createViewportScheduler(apply, deps = globalThis) {
+  const raf = deps.requestAnimationFrame?.bind(deps) || globalThis.requestAnimationFrame || (fn => setTimeout(fn, 16));
+  const setT = deps.setTimeout?.bind(deps) || setTimeout;
+  const clearT = deps.clearTimeout?.bind(deps) || clearTimeout;
+  let pending = false, timer = 0;
   return () => {
-    root.removeEventListener?.('resize', sync);
-    root.removeEventListener?.('orientationchange', sync);
-    root.removeEventListener?.('focus', sync);
-    vv?.removeEventListener?.('resize', sync);
-    vv?.removeEventListener?.('scroll', sync);
-    if (timer) root.clearInterval?.(timer);
+    if (!pending) {
+      pending = true;
+      raf(() => { pending = false; apply(false); });
+    }
+    if (timer) clearT(timer);
+    timer = setT(() => { timer = 0; apply(true); }, VIEWPORT_SETTLE_MS);
   };
+}
+
+function shellSize(el, frame) {
+  const w = Math.round(el?.clientWidth || frame.width || 0);
+  const h = Math.round(el?.clientHeight || frame.height || 0);
+  return { w, h };
+}
+
+function refreshScale(scale, width, height, pinned) {
+  if (!scale) return;
+  if (pinned && typeof scale.setParentSize === 'function') scale.setParentSize(width, height);
+  else {
+    scale.getParentBounds?.();
+    scale.refresh?.();
+  }
+}
+
+const fmt = r => r ? `${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}×${Math.round(r.height)}` : '?';
+
+function updateViewportLogger(root, game, frame, pin) {
+  const doc = root.document;
+  if (!doc?.getElementById || !doc.createElement) return;
+  let box = doc.getElementById('rwb-viewport-log');
+  if (!box) {
+    box = doc.createElement('div');
+    box.id = 'rwb-viewport-log';
+    box.setAttribute('aria-hidden', 'true');
+    box.style.cssText = 'position:fixed;z-index:80;left:8px;top:8px;max-width:52vw;padding:6px 8px;background:#05070de6;color:#d6ffe8;font:11px/1.35 ui-monospace,monospace;pointer-events:none;white-space:pre;';
+    (doc.body || doc.documentElement)?.appendChild(box);
+  }
+  const el = doc.getElementById('game');
+  const ds = game?.scale?.displaySize;
+  box.textContent = [
+    `inner ${root.innerWidth || 0}×${root.innerHeight || 0}`,
+    `vv ${frame.width}×${frame.height} off ${frame.offsetLeft},${frame.offsetTop}`,
+    `game ${fmt(el?.getBoundingClientRect?.())}`,
+    `canvas ${fmt(game?.canvas?.getBoundingClientRect?.())}`,
+    `display ${ds ? Math.round(ds.width) + '×' + Math.round(ds.height) : '?'}`,
+    `pin ${pin?.pinned ? 'on' : 'off'}`,
+  ].join('\n');
+}
+
+export function syncGameViewport(game, root = globalThis, opts = {}) {
+  const doc = root.document;
+  if (doc) installViewportCss(doc);
+  if ((root.scrollX || 0) !== 0 || (root.scrollY || 0) !== 0) root.scrollTo?.(0, 0);
+  const el = game?.canvas?.parentElement || doc?.getElementById?.('game') || null;
+  const frame = readVisualFrame(root);
+  const rect = el?.getBoundingClientRect?.() || null;
+  const pin = el ? applyPinFallback(el, frame, rect) : { pinned: false, cleared: false };
+  const box = shellSize(el, frame);
+  const key = `${box.w}x${box.h}:${pin.pinned ? 1 : 0}:${pin.cleared ? 1 : 0}`;
+  const force = opts.force === true;
+  let refreshed = false;
+  if (game?.scale && (force || game.__vvKey !== key)) {
+    game.__vvKey = key;
+    refreshScale(game.scale, pin.pinned ? frame.width : box.w, pin.pinned ? frame.height : box.h, pin.pinned);
+    refreshed = true;
+  }
+  if (debugViewportEnabled(root.location?.search)) updateViewportLogger(root, game, frame, pin);
+  return { frame, pin, width: box.w, height: box.h, refreshed };
+}
+
+export function installViewportFit(game, root = globalThis) {
+  if (root.document) installViewportCss(root.document);
+  const schedule = createViewportScheduler(force => syncGameViewport(game, root, { force }), root);
+  const opts = { passive: true };
+  root.addEventListener?.('resize', schedule, opts);
+  root.addEventListener?.('orientationchange', schedule, opts);
+  root.visualViewport?.addEventListener?.('resize', schedule, opts);
+  root.visualViewport?.addEventListener?.('scroll', schedule, opts);
+  if (game) game.refitViewport = schedule;
+  schedule();
+  return schedule;
 }
