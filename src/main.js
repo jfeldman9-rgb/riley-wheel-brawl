@@ -9,7 +9,7 @@ import { HUD } from './hud.js';
 import { releaseIdleRenderTargets } from './render-resources.js';
 import { installGraphicsLifecycle } from './graphics-lifecycle.js';
 import { installGraphicsNotice } from './graphics-notice.js';
-import { fit } from './viewport.js';
+import { fit } from './guard.js';
 class Boot extends Phaser.Scene {
   constructor() { super('boot'); }
   preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); this.load.image('loialPortrait', 'assets/ui/loial-portrait.webp'); this.load.image('byarPortrait', 'assets/ui/byar-portrait.webp'); }

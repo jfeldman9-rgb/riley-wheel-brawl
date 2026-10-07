@@ -5,6 +5,7 @@ import { sfx } from './audio.js';
 import { stageLightLine } from './stage3-lights.js';
 import { perf, displayMs } from './perf.js';
 import { installPerfPanel } from './perf-panel.js';
+import { perfReportEnabled as perfOn } from './debug-flag.js';
 import { POWERS, ART } from './powers.js';
 import { TWIX_PANELS } from './twix.js';
 import { maxStage } from './stages.js';
@@ -197,7 +198,7 @@ export class HUD extends Phaser.Scene {
     this.perfT = this.add.text(VW - 10, VH - 8, '', { fontFamily: 'ui-monospace,Menlo,monospace', fontSize: '12px', color: '#bcd0ff', backgroundColor: 'rgba(0,0,0,0.35)', padding: { x: 4, y: 2 } }).setOrigin(1, 1);
     this.phTag = this.add.text(VW - 10, PLACEHOLDER_TAG_Y, 'PLACEHOLDER ART', { fontFamily: PX, fontSize: '10px', color: '#ffcc66', stroke: '#000', strokeThickness: 3 }).setOrigin(1, 1).setVisible(false);
     this.phShown = false; this.phReady = false; this.phMetas = undefined; this.phPlates = undefined;
-    this.showPerf = new URLSearchParams(location.search).get('hud') !== '0';
+    this.showPerf = perfOn();
     this.pauseLabel = this.add.text(VW / 2, VH / 2, 'PAUSED\nP / Esc / Enter / Start or II to resume', { fontFamily: F, fontStyle: '700', fontSize: '28px', color: '#ffffff', backgroundColor: '#0b1428', padding: { x: 24, y: 18 }, align: 'center' }).setOrigin(0.5).setDepth(200).setVisible(false);
     this.card = this.add.container(VW / 2, VH / 2).setDepth(100);
     this.titleCard();

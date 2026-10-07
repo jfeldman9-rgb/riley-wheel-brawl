@@ -179,34 +179,58 @@ const DRAW = {
   floor3c: floorGarden,
 };
 
+// One-gradient stand-in for a plate that cannot be painted in time (mid plates keep a clear sky).
+const FALLBACK = { far3_day: ['#8ec4ea', '#e8945a'], far3_night: ['#070b18', '#24344a'], mid3a: ['#c9b292', '#6b4a2e'], mid3b: ['#a84332', '#3a342c'], floor3b: ['#8a6a48', '#4a3828'], floor3c: ['#3d6a4e', '#1c3a2c'] };
+export function fallbackPlate(g, key, w, h) {
+  const [a, b] = FALLBACK[key] || ['#b7aa96', '#8d8070'], y = key.startsWith('mid') ? h * 0.55 : 0;
+  g.fillStyle = grad(g, 0, y, 0, h, [[0, a], [1, b]]);
+  g.fillRect(0, y, w, h - y);
+}
+
 function upload(scene, tex, canvas) {
   const source = tex.source?.[0];
   if (!source) return false;
+  const renderer = scene.sys?.renderer || scene.game?.renderer, old = source.glTexture;
   source.image = canvas;
   source.width = canvas.width;
   source.height = canvas.height;
   source.isCanvas = true;
-  const renderer = scene.sys?.renderer || scene.game?.renderer;
-  if (renderer?.createCanvasTexture) source.glTexture = renderer.createCanvasTexture(canvas, false, !!source.flipY);
-  else if (typeof source.update === 'function') source.update();
+  if (renderer?.createCanvasTexture) {
+    source.glTexture = renderer.createCanvasTexture(canvas, false, !!source.flipY);
+    // Free the labelled card's GPU copy (it leaked once per plate per build).
+    if (old && old !== source.glTexture) renderer.deleteTexture?.(old);
+  } else if (typeof source.update === 'function') source.update();
   return true;
 }
 
-/** Replace half-res labelled plates in place. Returns true when the market plate was painted. */
-export function ensureStage3Plates(scene) {
+export const PAINT_BUDGET_MS = 250;
+const clock = () => globalThis.performance?.now?.() ?? Date.now();
+
+/** Replace half-res labelled plates in place. Returns true when the market plate was painted.
+ *  Past PAINT_BUDGET_MS or on a throw a plate gets the gradient; nothing here may stop the build. */
+export function ensureStage3Plates(scene, now = clock) {
   if (!scene?.textures || typeof document === 'undefined' || typeof document.createElement !== 'function') return false;
   if (!isPlaceholderPlate(scene, 'mid3a')) return false;
   let painted = false;
+  const t0 = now();
   for (const key of PLATE_KEYS) {
-    if (!isPlaceholderPlate(scene, key)) continue;
-    const src = sourceOf(scene, key);
-    const canvas = document.createElement('canvas');
-    canvas.width = STAGE3_PLATE_W;
-    canvas.height = STAGE3_PLATE_H;
-    const g = canvas.getContext('2d');
-    if (!g) continue;
-    DRAW[key](g, STAGE3_PLATE_W, STAGE3_PLATE_H);
-    if (upload(scene, src.tex, canvas)) painted = painted || key === 'mid3a';
+    try {
+      if (!isPlaceholderPlate(scene, key)) continue;
+      const src = sourceOf(scene, key);
+      const canvas = document.createElement('canvas');
+      canvas.width = STAGE3_PLATE_W;
+      canvas.height = STAGE3_PLATE_H;
+      const g = canvas.getContext('2d');
+      if (!g) continue;
+      try {
+        if (now() - t0 > PAINT_BUDGET_MS) throw new Error('budget');
+        DRAW[key](g, STAGE3_PLATE_W, STAGE3_PLATE_H);
+      } catch (e) {
+        g.clearRect(0, 0, STAGE3_PLATE_W, STAGE3_PLATE_H);
+        fallbackPlate(g, key, STAGE3_PLATE_W, STAGE3_PLATE_H);
+      }
+      if (upload(scene, src.tex, canvas)) painted = painted || key === 'mid3a';
+    } catch (e) { console.warn('Stage 3 plate skipped', key, e); }
   }
   if (painted) scene.stage3Painted = true;
   return painted;
