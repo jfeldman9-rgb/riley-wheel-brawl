@@ -4,6 +4,7 @@
 // and loader requests time out instead of hanging.
 import { installViewportFit } from './viewport.js';
 import { holdFor } from './twix.js';
+import { showStuck } from './recovery.js';
 
 export const WATCHDOG_PAD = 1.5, WATCHDOG_FALLBACK = 4, STUCK_FRAMES = 180, LOAD_TIMEOUT_MS = 30000;
 
@@ -25,17 +26,6 @@ export function cutsceneWatchdog(stage, now, w = {}) {
   return true;
 }
 
-function showStuck(root, error) {
-  const by = id => root.document?.getElementById?.(id), set = (id, t) => { const el = by(id); if (el) el.textContent = t; };
-  const card = by('startup-error'); if (!card) return false;
-  set('startup-title', 'The game hit a snag');
-  set('startup-description', 'This stage stopped running. Reload game starts again from the title.');
-  set('startup-code', `Code: FRAME_ERROR ${error?.name || ''}`);
-  by('startup-retry')?.addEventListener?.('click', () => root.location?.reload?.());
-  card.hidden = false;
-  return true;
-}
-
 /** Errors log once per message; STUCK_FRAMES failing frames in a row show the Reload card. */
 export function installFrameGuard(game, root = globalThis) {
   const st = { errors: 0, streak: 0, bad: false, seen: new Set(), shown: false, last: '' };
@@ -45,7 +35,7 @@ export function installFrameGuard(game, root = globalThis) {
     st.errors++; st.last = `${where}: ${error?.message || error}`;
     if (!st.bad) { st.bad = true; st.streak++; }
     if (!st.seen.has(st.last) && st.seen.size < 20) { st.seen.add(st.last); root.console?.error?.(`Riley frame error in ${where}; still running.`, error); }
-    if (st.streak >= STUCK_FRAMES && !st.shown) st.shown = showStuck(root, error);
+    if (st.streak >= STUCK_FRAMES && !st.shown) st.shown = showStuck(root, error, game);
   };
   const wrap = () => {
     for (const { sys } of game.scene?.scenes || []) {
