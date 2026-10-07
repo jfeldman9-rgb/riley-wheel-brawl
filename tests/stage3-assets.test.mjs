@@ -63,10 +63,17 @@ const EXPECTED_PROMPT_IDS = [
   'story3-3',
 ];
 
+// Jason approved the Grok Bot background stills on 2026-10-07 (PR #30). Only these ids may use that source,
+// and each must carry its provenance block.
+export const APPROVED_STILLS = Object.freeze({
+  'grokbot-image': Object.freeze(['bg3-far-day', 'bg3-far-night', 'bg3-mid', 'bg3-mid2', 'bg3-floor', 'bg3-floor2', 'bg3-floor3']),
+});
+
 export function provenanceErrors(entry, prompt) {
   const errors = [];
   if (entry.placeholder === false) {
-    if (!['chatgpt', 'gemini'].includes(entry.source)) {
+    const approved = APPROVED_STILLS[entry.source]?.includes(entry.id) && entry.art?.approvedBy && entry.art?.sourceSha256;
+    if (!['chatgpt', 'gemini'].includes(entry.source) && !approved) {
       errors.push(`invalid source: ${entry.source}`);
     }
     if (typeof prompt?.tries !== 'number' || prompt.tries < 1) {
@@ -242,7 +249,7 @@ test('every real (non-placeholder) art entry records its source, tries and conta
   const S = json('assets/stage3/ART_STATUS.json');
   const realEntries = S.entries.filter(e => !e.placeholder);
   t.diagnostic(`real entries: ${realEntries.length}`);
-  assert.equal(realEntries.length, 0, 'currently 0 real entries');
+  assert.deepEqual(realEntries.map(e => e.id), APPROVED_STILLS['grokbot-image'], 'the 7 approved Stage 3 plates are the only real entries');
 
   for (const e of realEntries) {
     const p = json(e.prompt);
@@ -266,6 +273,9 @@ test('every real (non-placeholder) art entry records its source, tries and conta
   const err3 = provenanceErrors(fakeMissingContact, { tries: 2 });
   assert.ok(err3.length > 0, 'fake with missing contactSheet should produce error');
   assert.ok(err3.some(msg => msg.includes('contactSheet')));
+
+  const fakeUnlisted = { id: 'fade-a', placeholder: false, source: 'grokbot-image', contactSheet: existingPath, art: { approvedBy: 'x', sourceSha256: 'x' } };
+  assert.ok(provenanceErrors(fakeUnlisted, { tries: 1 }).some(msg => msg.includes('source')), 'grokbot-image is limited to the approved plates');
 
   const err4 = provenanceErrors(fakeGood, { tries: 1 });
   assert.deepEqual(err4, [], 'fake good entry produces no errors');

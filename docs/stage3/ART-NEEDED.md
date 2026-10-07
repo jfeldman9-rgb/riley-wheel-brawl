@@ -30,4 +30,11 @@ All seven plates are now painted, cel-style backgrounds (Grok Bot image generati
 
 The far and floor plates are below 2172×724 on purpose. `tests/stage3-memory.test.mjs` caps the Stage 3 resident RGBA estimate at 110 MB, and seven full-size plates would come to about 131 MB. `farImg` sizes the far plate from the texture, and the floor tile scale is `fh / height`, so the on-screen layout is unchanged. The mid plates stay at 2172×724 because `plateScale` and the torch coordinates in `lights.json` assume that width. `tools/stage3/art-manifest.json` records the shipped sizes, and its `normalSize` field records the untouched 1086×362 flat normal cards.
 
-`placeholder` stays `true` in `ART_STATUS.json` for these seven entries. PLAN §Conventions 5 and `tests/stage3-assets.test.mjs` only accept `chatgpt` or `gemini` as the source of a real still, and they reject Grok. Each entry's `art` block carries the provenance: generator, date, source path and sha256, the post-process, and the contact sheet `docs/stage3/shots/contact-bg3-plates.jpg`. Flipping the flag needs Jason's decision on that rule.
+**Approved 2026-10-07.** Jason approved these seven stills, so their `ART_STATUS.json` entries are `placeholder: false` with `source: "grokbot-image"`, `contactSheet`, and an `art` provenance block (`approvedBy`, source sha256, post-process). `tests/stage3-assets.test.mjs` allows that source only for these seven ids (`APPROVED_STILLS`). The prompt JSONs record `tries: 1` and `generatedWith`. `assets/bg3/plates.json` now carries `placeholder: false`.
+
+The in-game `PLACEHOLDER ART` tag still shows in Stage 3, because `placeholderArt` (`src/hud.js`) also counts the character sheets. `cutthroat`, `fade` and `riley3` are still `placeholder: true` in their `anims.json`.
+
+Follow-ups in the same PR:
+- **Floor hand-offs** (world x 2540 and 3880): the next floor now fades in over 280 px with corner alphas `setAlpha(0, 1, 0, 1)`. It used to be a 200 px strip at 0.5 alpha.
+- **mid3a → mid3b cut:** mid3b's left 240 px ease into a cool shadow. A pure alpha feather showed the far plate through translucent roofs.
+- **Torches** (`lights.json`): they now sit on the painted lanterns. On mid3a that is the inn door pair at (1615,424) and (1835,422). On mid3b it is the rooftop street lamp (308,493) and the garden lanterns (1228,577), (1410,384), (1908,387) for the pair, (1914,547) and (2045,580).

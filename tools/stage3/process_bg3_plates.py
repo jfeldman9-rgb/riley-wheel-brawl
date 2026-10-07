@@ -8,6 +8,7 @@ art-in/bg3/ (file name = <plate>.src.jpg; the original sha256 is recorded in ART
   mid  (mid3a, mid3b): 3:1 band with the street / parapet on the bottom edge, flat magenta sky keyed to real
        alpha (big connected key regions only, soft alpha on a 4 px edge band, colour unmix + despill),
        premultiplied Lanczos to 2172x724 (plateScale and the torch coordinates in lights.json assume 2172).
+       mid3b's left 240 px sink into a cool shadow (smoothstep, opaque) so the mid3a -> mid3b cut reads as a gap.
   floor (floor3a/b/c): horizontal light flattening, floor3a's vertical gutter cut out with a min-error seam,
        horizontal wrap made seamless with a min-error seam + tone ramp, then a periodic Lanczos resample
        to 1080x360.
@@ -86,6 +87,17 @@ def key_mid(k, top, bottom):
     mask = (alpha <= 0).astype(np.uint8)
     rgb = cv2.inpaint(rgb, mask, 3, cv2.INPAINT_TELEA) if mask.any() else rgb
     return rgb.astype(np.float32), alpha
+
+def shade_left(im, width=240, floor=(0.30, 0.27, 0.36)):
+    """ease the mid3a -> mid3b cut: the plate's left edge sinks into a cool dusk shadow (smoothstep over `width`
+    px, still opaque) so the seam reads as a shadowed gap between the inn and the rooftops. A pure alpha feather
+    showed the busy far plate through translucent roofs (double exposure)."""
+    a = np.asarray(im).astype(np.float32)
+    t = np.clip(np.arange(width) / (width - 1), 0, 1)
+    ramp = (t * t * (3 - 2 * t))[None, :, None]
+    k = np.array(floor, np.float32)[None, None, :]
+    a[:, :width, :3] *= k + (1 - k) * ramp
+    return Image.fromarray(np.clip(a + 0.5, 0, 255).astype(np.uint8), 'RGBA')
 
 def mid(k, top, bottom):
     rgb, alpha = key_mid(k, top, bottom)
@@ -236,7 +248,7 @@ if __name__ == '__main__':
     log['bg3-far-day.jpg'] = encode(far('bg3-far-day'), 'bg3-far-day.jpg')
     log['bg3-far-night.jpg'] = encode(far('bg3-far-night'), 'bg3-far-night.jpg')
     log['bg3-mid.webp'] = encode(mid('bg3-mid', 277, 704), 'bg3-mid.webp')       # magenta strip below row 704
-    log['bg3-mid2.webp'] = encode(mid('bg3-mid2', 276, 703), 'bg3-mid2.webp')
+    log['bg3-mid2.webp'] = encode(shade_left(mid('bg3-mid2', 276, 703)), 'bg3-mid2.webp')   # follows mid3a
     im, info = floor('bg3-floor', gutter=(610, 670))                              # gutter at x ~615..668
     log['bg3-floor.jpg'] = {**encode(im, 'bg3-floor.jpg'), **info}
     im, info = floor('bg3-floor2', rows='middle')
