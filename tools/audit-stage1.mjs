@@ -66,6 +66,8 @@ export function audit() {
   }
   for (const group of ['chars','bg','props','ui','powers']) for (const name of readdirSync(resolve(ROOT,'assets',group))) if (!name.endsWith('.md')) files.add(`assets/${group}/${name}`);
   files.add('assets/audio/music-main.mp3');
+  // The freeze guard is a hotfix module too (kept apart from IOS_SRC so this edit cherry-picks onto Stage 5).
+  if (files.delete('src/guard.js')) iosSourceFiles.push('src/guard.js');
   // Stage 1's 25 MB gate counts every voice Stage 1 and Stage 2 ship (rwb-w2 counted
   // the whole voice folder). Stage 3 lines are preloaded only with s3=1. Folding
   // them into this sum exceeds 25 MB, so they have their own budget below instead
@@ -114,7 +116,7 @@ export function audit() {
     iosHotfix: {
       source: { files: iosSourceFiles, bytes: iosSourceBytes, budgetBytes: iosSourceBudget,
         status: iosSourceBytes <= iosSourceBudget ? 'PASS' : 'FAIL',
-        note: 'Viewport, Pages base, debug flag and Stage 3 plate stand-in. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
+        note: 'Viewport, Pages base, debug flag, Stage 3 plate stand-in and freeze guard. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
     },
     stage3: {
       voices: { count: stage3VoiceCount, bytes: stage3VoiceBytes, budgetBytes: stage3VoiceBudget,

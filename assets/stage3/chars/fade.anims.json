@@ -10,7 +10,7 @@
   "fade-0",
   "fade-1"
  ],
- "placeholder": true,
+ "placeholder": false,
  "dir": "assets/stage3/chars",
  "anims": [
   {
@@ -331,5 +331,11 @@
     1
    ]
   }
- ]
+ ],
+ "normalScale": 0.5,
+ "source": {
+  "sheet": "assets/chars/byar",
+  "tool": "tools/stage3/reskin_chars.py",
+  "recolor": "recolor_fade"
+ }
 }

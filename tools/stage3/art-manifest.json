@@ -27,12 +27,12 @@
       [
        "walk",
        [
-        100,
-        100,
-        100,
-        100,
-        100,
-        100
+        90,
+        90,
+        130,
+        90,
+        90,
+        130
        ],
        true
       ],
@@ -455,8 +455,8 @@
    "key": "far3_day",
    "file": "assets/bg3/bg3-far-day.jpg",
    "size": [
-    1086,
-    362
+    1280,
+    427
    ],
    "kind": "far"
   },
@@ -465,8 +465,8 @@
    "key": "far3_night",
    "file": "assets/bg3/bg3-far-night.jpg",
    "size": [
-    1086,
-    362
+    1280,
+    427
    ],
    "kind": "far"
   },
@@ -475,9 +475,13 @@
    "key": "mid3a",
    "file": "assets/bg3/bg3-mid.webp",
    "normal": "assets/bg3/bg3-mid_n.webp",
-   "size": [
+   "normalSize": [
     1086,
     362
+   ],
+   "size": [
+    2172,
+    724
    ],
    "kind": "mid",
    "halves": [
@@ -490,9 +494,13 @@
    "key": "mid3b",
    "file": "assets/bg3/bg3-mid2.webp",
    "normal": "assets/bg3/bg3-mid2_n.webp",
-   "size": [
+   "normalSize": [
     1086,
     362
+   ],
+   "size": [
+    2172,
+    724
    ],
    "kind": "mid",
    "halves": [
@@ -505,9 +513,13 @@
    "key": "floor3a",
    "file": "assets/bg3/bg3-floor.jpg",
    "normal": "assets/bg3/bg3-floor_n.webp",
-   "size": [
+   "normalSize": [
     1086,
     362
+   ],
+   "size": [
+    1080,
+    360
    ],
    "kind": "floor"
   },
@@ -516,9 +528,13 @@
    "key": "floor3b",
    "file": "assets/bg3/bg3-floor2.jpg",
    "normal": "assets/bg3/bg3-floor2_n.webp",
-   "size": [
+   "normalSize": [
     1086,
     362
+   ],
+   "size": [
+    1080,
+    360
    ],
    "kind": "floor"
   },
@@ -527,9 +543,13 @@
    "key": "floor3c",
    "file": "assets/bg3/bg3-floor3.jpg",
    "normal": "assets/bg3/bg3-floor3_n.webp",
-   "size": [
+   "normalSize": [
     1086,
     362
+   ],
+   "size": [
+    1080,
+    360
    ],
    "kind": "floor"
   },

@@ -92,8 +92,9 @@ test('every Stage 3 image exists at its exact size', () => {
     assert.deepEqual(dims, img.size, `${img.file} dimensions match`);
 
     if (img.normal) {
+      // Painted plates can ship ahead of their normal map: the flat placeholder card is then recorded as normalSize.
       const normDims = dimensions(bytes(img.normal));
-      assert.deepEqual(normDims, img.size, `${img.normal} dimensions match`);
+      assert.deepEqual(normDims, img.normalSize || img.size, `${img.normal} dimensions match`);
     }
 
     if (img.kind === 'strip') {
@@ -122,10 +123,11 @@ for (const char of M.chars) {
       assert.deepEqual(color, [atlas.meta.size.w, atlas.meta.size.h], `${page} size matches atlas meta`);
       assert.ok(color[0] <= 4096 && color[1] <= 4096, `${page} dimensions fit iPad texture`);
 
+      const normalDims = color.map(v => Math.round(v * (meta.normalScale ?? 1)));
       const normal = dimensions(bytes(`${char.dir}/${page}_n.webp`));
       const normalL = dimensions(bytes(`${char.dir}/${page}_nl.webp`));
-      assert.deepEqual(normal, color, `${page}_n dims match color page`);
-      assert.deepEqual(normalL, color, `${page}_nl dims match color page`);
+      assert.deepEqual(normal, normalDims, `${page}_n dims match color page`);
+      assert.deepEqual(normalL, normalDims, `${page}_nl dims match color page`);
 
       const frames = Object.entries(atlas.frames);
       for (const [name, d] of frames) {
@@ -138,7 +140,9 @@ for (const char of M.chars) {
         for (let j = i + 1; j < frames.length; j++) {
           const a = frames[i][1].frame;
           const b = frames[j][1].frame;
-          const overlaps = a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+          // Identical rects are one painted frame reused by several anim slots, not an overlap.
+          const alias = a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h;
+          const overlaps = !alias && a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
           assert.ok(!overlaps, `${frames[i][0]} overlaps ${frames[j][0]} on page ${page}`);
         }
       }

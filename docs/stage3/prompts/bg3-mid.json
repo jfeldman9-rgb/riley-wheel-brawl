@@ -2,7 +2,9 @@
  "id": "bg3-mid",
  "tool": "chatgpt",
  "fallback": "gemini",
- "tries": 0,
+ "tries": 1,
+ "generatedWith": "grokbot-image (Grok Bot image generation, 2026-10-07); prompts[0] is the brief, not the literal generation prompt",
+ "rejections": [],
  "attach": [
   "assets/bg2/bg2-mid.webp",
   "bg3-far-day.png"

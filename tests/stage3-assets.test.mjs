@@ -63,10 +63,18 @@ const EXPECTED_PROMPT_IDS = [
   'story3-3',
 ];
 
+// Jason approved the Grok Bot background stills on 2026-10-07 (PR #30), and the character reskins of
+// existing painted sheets the same day. Only these ids may use those sources, and each must carry its provenance block.
+export const APPROVED_STILLS = Object.freeze({
+  'grokbot-image': Object.freeze(['bg3-far-day', 'bg3-far-night', 'bg3-mid', 'bg3-mid2', 'bg3-floor', 'bg3-floor2', 'bg3-floor3']),
+  reskin: Object.freeze(EXPECTED_PROMPT_IDS.slice(0, EXPECTED_PROMPT_IDS.indexOf('fade-portrait') + 1)),
+});
+
 export function provenanceErrors(entry, prompt) {
   const errors = [];
   if (entry.placeholder === false) {
-    if (!['chatgpt', 'gemini'].includes(entry.source)) {
+    const approved = APPROVED_STILLS[entry.source]?.includes(entry.id) && entry.art?.approvedBy && entry.art?.sourceSha256;
+    if (!['chatgpt', 'gemini'].includes(entry.source) && !approved) {
       errors.push(`invalid source: ${entry.source}`);
     }
     if (typeof prompt?.tries !== 'number' || prompt.tries < 1) {
@@ -109,10 +117,12 @@ function verifyAtlas(metaRelPath, expected) {
     assert.deepEqual(color, [atlas.meta.size.w, atlas.meta.size.h], `${page} matches atlas size`);
     assert.ok(color[0] <= 4096 && color[1] <= 4096, `${page} fits iPad texture`);
 
+    // Shared character atlases ship half-resolution normals; normalScale records that.
+    const normalDims = color.map(v => Math.round(v * (meta.normalScale ?? 1)));
     const normal = dimensions(bytes(`${meta.dir}/${page}_n.webp`));
     const normalL = dimensions(bytes(`${meta.dir}/${page}_nl.webp`));
-    assert.deepEqual(normal, color, `${page}_n dims match color`);
-    assert.deepEqual(normalL, color, `${page}_nl dims match color`);
+    assert.deepEqual(normal, normalDims, `${page}_n dims match color`);
+    assert.deepEqual(normalL, normalDims, `${page}_nl dims match color`);
 
     for (const [name, d] of Object.entries(atlas.frames)) {
       assert.ok(inside(d.frame, atlas.meta.size.w, atlas.meta.size.h), `${name} inside page`);
@@ -242,7 +252,8 @@ test('every real (non-placeholder) art entry records its source, tries and conta
   const S = json('assets/stage3/ART_STATUS.json');
   const realEntries = S.entries.filter(e => !e.placeholder);
   t.diagnostic(`real entries: ${realEntries.length}`);
-  assert.equal(realEntries.length, 0, 'currently 0 real entries');
+  const approved = Object.values(APPROVED_STILLS).flat();
+  assert.deepEqual(realEntries.map(e => e.id), EXPECTED_PROMPT_IDS.filter(id => approved.includes(id)), 'the approved plates and character reskins are the only real entries');
 
   for (const e of realEntries) {
     const p = json(e.prompt);
@@ -266,6 +277,9 @@ test('every real (non-placeholder) art entry records its source, tries and conta
   const err3 = provenanceErrors(fakeMissingContact, { tries: 2 });
   assert.ok(err3.length > 0, 'fake with missing contactSheet should produce error');
   assert.ok(err3.some(msg => msg.includes('contactSheet')));
+
+  const fakeUnlisted = { id: 'fade-a', placeholder: false, source: 'grokbot-image', contactSheet: existingPath, art: { approvedBy: 'x', sourceSha256: 'x' } };
+  assert.ok(provenanceErrors(fakeUnlisted, { tries: 1 }).some(msg => msg.includes('source')), 'grokbot-image is limited to the approved plates');
 
   const err4 = provenanceErrors(fakeGood, { tries: 1 });
   assert.deepEqual(err4, [], 'fake good entry produces no errors');

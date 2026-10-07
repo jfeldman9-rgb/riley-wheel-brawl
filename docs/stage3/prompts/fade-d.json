@@ -2,7 +2,7 @@
  "id": "fade-d",
  "tool": "chatgpt",
  "fallback": "gemini",
- "tries": 0,
+ "tries": 1,
  "attach": [
   "fade-master",
   "trolloc master"
@@ -10,5 +10,7 @@
  "output": "fade-d.png",
  "prompts": [
   "Create fade-d.png, a production animation sprite sheet for Riley Wheel Brawl 2.0. Use the attached fade-master.png as the LOCKED character and style reference; reproduce that exact Myrddraal (eyeless pale grey face, close-cropped black hair, black snake-scale armour, perfectly still long black cloak, black-bladed curved sword with a cold blue-white edge) in every drawing. Do not copy any background.\nOUTPUT: 1536x1024 landscape PNG, genuinely transparent background, real alpha, no floor/text/labels/borders/frame numbers. Exactly EIGHT figures in TWO rows of FOUR, read left to right. Equal cells 384x512, generous separation, nothing clipped. Same scale, common boot baseline at y=490 (top) and y=1000 (bottom). Every figure faces LEFT. All eight are independently drawn, never copied or mirrored.\nSTYLE: hand-drawn HD 2D fighting-game art in the spirit of Streets of Rage 4, near-black outlines thick outside thin inside, clean 2-3 step cel shading, light upper left, cool right rim. The shadow is PAINTED as inky black smoke with clean outlines and cel-shaded purple-black tones, not a blur. Not pixel art, 3D or chibi. Spooky but kid-friendly.\nTOP ROW, SINKING INTO SHADOW (4 frames): 1: wraps its cloak around itself, a pool of inky black shadow spreading on the ground at its feet. 2: sinking knee-deep into the shadow pool, the lower body breaking into curling black smoke. 3: only the chest, head and raised sword hand above the pool, the rest dissolved into swirling smoke. 4: just a swirl of black smoke and the tip of the sword vanishing into the pool.\nBOTTOM ROW, RISING FROM SHADOW (4 frames): 5: a black smoke column bursting up from a shadow pool, the sword tip emerging first. 6: head and shoulders forming from the smoke, eyeless face. 7: body almost whole, cloak re-forming, sword raised high to strike (this is the counter window; make it look exposed and mid-transition). 8: fully formed and standing on the pool, wisps falling away, sword cocked back."
- ]
+ ],
+ "generatedWith": "reskin of assets/chars/byar via tools/stage3/reskin_chars.py (no image generation)",
+ "rejections": []
 }

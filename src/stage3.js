@@ -114,7 +114,7 @@ export class Stage3Kit extends Stage3Hazards {
     floors.forEach(({ key, from, to }, i) => {
       const ts = fh / s.textures.get(key).getSourceImage().height;
       s.backdropLit.push(s.add.tileSprite(from, fy, to - from + (i < last ? 200 : 0), fh, key).setOrigin(0, 0).setLighting(true).setTileScale(ts).setDepth(-40 + i));
-      if (i > 0) s.backdropLit.push(s.add.tileSprite(from - 200, fy, 200, fh, key).setOrigin(0, 0).setLighting(true).setTileScale(ts).setTilePosition(-200 / ts, 0).setDepth(-40 + i).setAlpha(0.5));
+      if (i > 0) s.backdropLit.push(s.add.tileSprite(from - 280, fy, 280, fh, key).setOrigin(0, 0).setLighting(true).setTileScale(ts).setTilePosition(-280 / ts, 0).setDepth(-40 + i).setAlpha(0, 1, 0, 1));
     });
     // lights: torches are latched spots (no light until lit); the sun is world-space like the moon
     s.moon = null; s.fires = []; this.halos = [];
