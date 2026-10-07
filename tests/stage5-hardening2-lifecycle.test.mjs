@@ -38,9 +38,30 @@ test('beat pauses scene timers and animations and restores them on disposal', ()
   assert.equal(s.time.paused, false); assert.equal(s.anims.globalTimeScale, 0.25);
 }));
 
-for (const exit of ['pause', 'down', 'respawn', 'continue', 'clear', 'destroy', 'death']) test(`hold releases synchronously on ${exit}`, () => run((h, s) => {
+test('pause freezes the embrace and unpause keeps Riley held', () => run((h, s) => {
   const b = new BalthamelActor(s, 220, 630); b.z = 0; b.catch(s.riley);
-  if (exit === 'pause') s.setPauseReason('manual', true);
+  const hp = s.riley.hp, st = b.st, mash = b.mashN, chip = b.chipT;
+  s.setPauseReason('manual', true);
+  for (let i = 0; i < 180; i++) h.step();
+  assert.equal(s.paused, true);
+  assert.equal(s.riley.grabbedBy, b);
+  assert.equal(b.state, 'holding');
+  assert.equal(b.st, st);
+  assert.equal(b.mashN, mash);
+  assert.equal(b.chipT, chip);
+  assert.equal(s.riley.hp, hp);
+  s.onPress('pause');
+  assert.equal(s.paused, false);
+  assert.equal(s.riley.grabbedBy, b);
+  assert.equal(b.state, 'holding');
+  for (let i = 0; i < 6; i++) assert.equal(b.mash(), false);
+  assert.equal(b.mash(), true);
+  assert.equal(s.riley.grabbedBy, null);
+  assert.equal(b.state, 'shoved');
+}));
+
+for (const exit of ['down', 'respawn', 'continue', 'clear', 'destroy', 'death']) test(`hold releases synchronously on ${exit}`, () => run((h, s) => {
+  const b = new BalthamelActor(s, 220, 630); b.z = 0; b.catch(s.riley);
   if (exit === 'down') s.riley.setState('down', 'knockdown');
   if (exit === 'respawn') s.riley.respawn();
   if (exit === 'continue') { s.gameOver = true; s.continueGame(); }

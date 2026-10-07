@@ -33,7 +33,8 @@ export function createArena(opts = {}) {
       if (!boss?.alive) return a;
       if (boss.phase === 2) { a.ringAt = 999; if (a.hands.length) a.hands.length = 0; a.ringStep(dt, boss, world); }
       else { a.ringStep(dt, boss, world); a.handStep(dt, boss, world); }
-      if (boss.phase === 3) { a.oakStep(dt, world); a.surgeStep(dt, boss, world); }
+      if (a.oak || boss.phase === 3) a.oakStep(dt, world);
+      if (boss.phase === 3) a.surgeStep(dt, boss, world);
       if (world.riley) world.riley.fogSlow = Math.max(world.riley.fogSlow || 0, a.snare > 0 ? HANDS.slow : 0);
       return a;
     },

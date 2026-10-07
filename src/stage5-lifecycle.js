@@ -52,10 +52,6 @@ export function installStage5SceneHooks(kit) {
     if (kit.arena?.frozen && action !== 'pause' && action !== 'start') { this.inp?.clear?.(); return; }
     return original.call(this, action);
   });
-  hook(kit, kit, 'onPause', original => function(paused) {
-    if (paused) this.s.riley?.grabbedBy?.releaseHold?.('break');
-    return original.call(this, paused);
-  });
   hook(kit, s, 'rileyDied', original => function() {
     this.riley?.grabbedBy?.releaseHold?.('break');
     for (const e of this.enemies || []) {

@@ -1,8 +1,8 @@
 import { flail, balthPhysics } from './stage5-balthamel.js';
 import { clamp, rand } from './config.js';
 import { substeps } from './stage5-clock.js';
-import { strikeRiley } from './stage5-hurt.js';
-export const BALTH = Object.freeze({ hp: 220, tell: 0.5, flail: [9, 11], stepTell: 0.6, slash: 12, coil: 0.5, hold: 2.8, chip: 3, chipEvery: 0.5, mash: 7, decay: 0.5, throwDmg: 16, shove: 1.4, shoveMul: 1.5, cool: [8, 10], lock: 2, inv: 0.3, down: 1.5, score: 4000 });
+import { strikeRiley, damageAllowed } from './stage5-hurt.js';
+export const BALTH = Object.freeze({ hp: 220, tell: 0.5, flail: [9, 11], stepTell: 0.6, slash: 12, coil: 0.5, hold: 2.8, chip: 3, chipEvery: 0.5, mash: 7, throwDmg: 16, shove: 1.4, shoveMul: 1.5, cool: [8, 10], lock: 2, inv: 0.3, down: 1.5, score: 4000 });
 const GRAB_OK = ['idle', 'walk', 'run', 'land'];
 
 export class Balthamel {
@@ -10,7 +10,7 @@ export class Balthamel {
     this.scene = scene; this.deps = deps; this.type = 'balthamel'; this.x = x; this.y = y; this.facing = -1;
     this.hp = this.maxHp = BALTH.hp; this.alive = true; this.state = 'drop'; this.st = 0; this.team = 1; this.accum = 0;
     this.def = { shadowW: 150, team: 1 }; this.T = { speed: 150, score: BALTH.score, boss: false, name: 'BALTHAMEL' };
-    this.cool = 1.2; this.embraceCool = 2; this.grabLock = this.mashN = this.mashT = 0; this.since = 'flail'; this.counterUsed = this.hitOnce = false;
+    this.cool = 1.2; this.embraceCool = 2; this.grabLock = this.mashN = 0; this.since = 'flail'; this.counterUsed = this.hitOnce = false;
     scene.koCount = (scene.koCount || 0) + 1; this.id = scene.koCount;
     if (scene.enemies && !scene.enemies.includes(this)) scene.enemies.push(this);
   }
@@ -30,7 +30,7 @@ export class Balthamel {
     if (this.state === 'attack') return this.flail(dt, R);
     if (this.state === 'step') return this.step(dt, R);
     if (this.state === 'shoved') { if (this.st >= BALTH.shove) { this.state = 'idle'; this.st = 0; } return; }
-    if (this.state === 'down') { if (this.st >= BALTH.down) { this.state = 'idle'; this.st = 0; } return; }
+    if (this.state === 'down') { if (!this._down && this.st >= BALTH.down) { this.state = 'idle'; this.st = 0; } return; }
     if (this.state === 'hurt') { if (this.st > 0.25) this.state = 'idle'; return; }
     if (this.state === 'vines' || this.state === 'dead') { if (this.state === 'dead' && this.st > 0.6) this.gone = true; return; }
     if (this.state === 'idle' && R?.alive && this.cool <= 0) this.think(R);
@@ -77,16 +77,16 @@ export class Balthamel {
   }
   catch(R) {
     if (R.held) { R.held.release?.(); R.held = null; }
-    this.state = 'holding'; this.st = this.mashN = this.mashT = this.chipT = 0; this.since = null;
+    this.state = 'holding'; this.st = this.mashN = this.chipT = 0; this.since = null;
     R.grabbedBy = this; R.face?.(-this.facing); R.enterGrabbed?.(this); this.scene.kit?.onEmbrace?.(this);
   }
   hold(dt, R) {
     if (!R || !R.alive || R.hp <= 0 || R.state !== 'grabbed' || R.grabbedBy !== this) return this.releaseHold('break');
     R.x = this.x + this.facing * 46; R.vx = 0;
-    this.chipT = (this.chipT || 0) + dt; this.mashT += dt;
-    while (this.mashT >= BALTH.decay) { this.mashT -= BALTH.decay; this.mashN = Math.max(0, this.mashN - 1); }
+    this.chipT = (this.chipT || 0) + dt;
     while (this.chipT >= BALTH.chipEvery) {
       this.chipT -= BALTH.chipEvery;
+      if (!damageAllowed(this.scene)) continue;
       R.hp = Math.max(0, R.hp - BALTH.chip);
       if (R.hp <= 0 && R.alive) { R.alive = false; this.releaseHold('break'); this.scene.rileyDied?.(); return; }
     }
@@ -125,7 +125,12 @@ export class Balthamel {
     if (h.down && this.state !== 'attack' && this.state !== 'step') { this.state = 'hurt'; this.st = 0; }
     return true;
   }
-  fall() { if (this._down || this.state === 'vines' || this.state === 'dead') return; this._down = true; this.hp = 0; this.releaseHold('break'); this.scene.kit?.onBalthDown?.(this); }
+  fall() {
+    if (this._down || this.state === 'vines' || this.state === 'dead') return;
+    this._down = true; this.hp = 0; this.releaseHold('break');
+    this.state = 'down'; this.st = 0; this.hitOnce = this.arrived = true;
+    this.scene.kit?.onBalthDown?.(this);
+  }
   seize() { this.releaseHold('break'); this.state = 'vines'; this.st = 0; this.alive = false; }
   physics(dt) { return balthPhysics.call(this, dt); }
   destroy() { this.releaseHold('break'); this.alive = false; this.gone = true; }

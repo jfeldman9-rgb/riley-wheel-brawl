@@ -56,11 +56,21 @@ export const STAGE5 = {
     scene.kit?.onDefeat?.();
     if (scene.kit) scene.kit.clearHazards();
     const cap = (who, text) => scene.caption?.(who, text);
-    scene.time.delayedCall(900, () => { cap('AGINOR', 'The Eye burns him hollow.'); stage5Say('aginor_burn_01', null); });
-    scene.time.delayedCall(3200, () => stage5Say('riley_st5_victory_01', scene.caption));
-    scene.time.delayedCall(5200, () => stage5Say('st5_clear_01', scene.caption));
-    scene.time.delayedCall(7600, () => stage5Say('st5_clear_02', scene.caption));
-    scene.time.delayedCall(10000, () => stage5Say('st5_clear_03', scene.caption));
-    scene.time.delayedCall(11200, () => { scene.ended = true; sfx.levelClear(); scene.hud.stageClear(scene.stats()); scene.music?.set('clear'); scene.time.delayedCall(1200, () => scene.clearShown = true); });
+    const timers = [];
+    const live = () => {
+      const sys = scene.sys;
+      if (sys && typeof sys.isActive === 'function') return sys.isActive();
+      if (typeof scene.isActive === 'function') return scene.isActive();
+      return true;
+    };
+    const later = (ms, fn) => { const t = scene.time.delayedCall(ms, () => { if (live()) fn(); }); if (t) timers.push(t); };
+    const cancel = () => { for (const t of timers) t.remove?.(); timers.length = 0; };
+    scene.events?.once?.('shutdown', cancel);
+    later(900, () => { cap('AGINOR', 'The Eye burns him hollow.'); stage5Say('aginor_burn_01', null); });
+    later(3200, () => stage5Say('riley_st5_victory_01', scene.caption));
+    later(5200, () => stage5Say('st5_clear_01', scene.caption));
+    later(7600, () => stage5Say('st5_clear_02', scene.caption));
+    later(10000, () => stage5Say('st5_clear_03', scene.caption));
+    later(11200, () => { scene.ended = true; sfx.levelClear(); scene.hud?.stageClear(scene.stats()); scene.music?.set('clear'); later(1200, () => { scene.clearShown = true; }); });
   },
 };
