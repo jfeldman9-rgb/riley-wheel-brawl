@@ -86,7 +86,12 @@ export function syncGameViewport(game, root = globalThis) {
   const doc = root.document;
   const el = doc?.getElementById?.('game');
   const fit = fitGame(readVisualViewport(root));
-  if (el) applyGameFrame(el, fit);
+  if (el) {
+    applyGameFrame(el, fit);
+    // Flush layout before Phaser reads the parent. Otherwise getParentBounds
+    // still sees the previous tall box and the next scale poll fits that.
+    void el.offsetHeight;
+  }
   const scale = game?.scale;
   if (fit.parent.width > 0 && fit.parent.height > 0 && typeof scale?.setParentSize === 'function') {
     scale.setParentSize(fit.parent.width, fit.parent.height);
@@ -123,6 +128,9 @@ export function installVisualViewport(game, root = globalThis) {
     const drifted = !!el && box.height > 0 && (Math.abs((el.offsetHeight || 0) - box.height) > 2 || Math.abs((el.offsetTop || 0) - box.offsetTop) > 2);
     if (key !== last || drifted) sync();
   }, 250);
+  // Node tests import the game boot. A live interval would keep those
+  // processes from exiting. Browsers ignore unref.
+  timer?.unref?.();
   return () => {
     root.removeEventListener?.('resize', sync);
     root.removeEventListener?.('orientationchange', sync);

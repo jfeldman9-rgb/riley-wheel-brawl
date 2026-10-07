@@ -8,6 +8,7 @@ import { fitGame, canvasInsideVisual, hudScreenY } from '../src/viewport.js';
 import { perfReportEnabled, applyPerfButton } from '../src/debug-flags.js';
 import { directoryBaseHref, resolvePageAsset } from '../src/page-base.js';
 import { drawPlate, isPlaceholderPlate, paintStage3Art, STAGE3_PLATE_KEYS } from '../src/stage3-art.js';
+import { audit } from '../tools/audit-stage1.mjs';
 
 const { queueStage3 } = await import('../src/stage3.js');
 const { STAGE2, STAGE3, resolveStage } = await import('../src/stages.js');
@@ -146,4 +147,13 @@ test('half-res placeholder plates are painted over and full-res plates are left 
     },
   });
   assert.equal(bare, 0);
+});
+
+test('iOS hotfix source has its own cap and the 25 MB pre-fight gate still passes', () => {
+  const data = audit();
+  assert.equal(data.preFight.inventoryStatus, 'PASS');
+  assert.ok(data.preFight.inventoryUpperBoundBytes <= 25_000_000);
+  assert.equal(data.iosHotfix.source.status, 'PASS');
+  assert.ok(data.iosHotfix.source.bytes <= data.iosHotfix.source.budgetBytes);
+  assert.ok(data.preFight.inventoryUpperBoundBytes + data.iosHotfix.source.bytes > data.preFight.budgetBytes);
 });
