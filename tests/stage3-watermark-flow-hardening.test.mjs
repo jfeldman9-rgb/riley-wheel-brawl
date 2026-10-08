@@ -33,10 +33,13 @@ test('watermark cache follows the active stage even when metadata references are
   cache.json.get = () => plates;
   hud.phTag = { setVisible: on => shown.push(on) };
   hud.phShown = false;
-  hud.updateWatermark({ stageNo: 3, metas, cache });
-  hud.updateWatermark({ stageNo: 1, metas, cache });
-  hud.updateWatermark({ stageNo: 2, metas, cache });
-  assert.deepEqual(shown, [true, false]);
-  hud.updateWatermark({ stageNo: 3, metas, cache });
-  assert.deepEqual(shown, [true, false, true]);
+  q.set('debug', '1');
+  try {
+    hud.updateWatermark({ stageNo: 3, metas, cache });
+    hud.updateWatermark({ stageNo: 1, metas, cache });
+    hud.updateWatermark({ stageNo: 2, metas, cache });
+    assert.deepEqual(shown, [true, false]);
+    hud.updateWatermark({ stageNo: 3, metas, cache });
+    assert.deepEqual(shown, [true, false, true]);
+  } finally { q.delete('debug'); }
 });

@@ -230,13 +230,23 @@ test('queueStage3 queues every Stage 3 texture and re-queues what Stage 2 releas
   const r = recLoader();
   queueStage3(r);
   const texKeys = new Set(r.queued.filter(e => e.kind !== 'json').map(e => e.key)), allKeys = new Set(r.queued.map(e => e.key));
-  for (const k of STAGE_TEXTURES[3]) assert.ok(texKeys.has(k), `queued ${k}`);
+  const FX = ['rooftiles', 'shadowpool', 'shadowburst', 'fade_far'];
+  // The prop/FX sheets are labelled PLACEHOLDER cards: without ?debug they are never queued (code draws them).
+  for (const k of STAGE_TEXTURES[3]) if (!FX.includes(k)) assert.ok(texKeys.has(k), `queued ${k}`);
+  for (const k of FX) assert.ok(!texKeys.has(k), `card not queued without ?debug: ${k}`);
+  assert.ok(!r.queued.some(e => e.urls.some(u => u.startsWith('assets/stage3/props/'))));
   for (const k of ['arrow', 'ribbon', 'fadePortrait']) assert.ok(texKeys.has(k), `queued ${k}`);
   for (const k of ['plates3', 'lights3']) assert.ok(allKeys.has(k), `queued ${k}`);
-  for (const k of ['rooftiles', 'shadowpool', 'shadowburst', 'fade_far']) {
-    const e = r.queued.find(x => x.key === k);
-    assert.equal(e.kind, 'spritesheet', k); assert.equal(e.frame.frameWidth, 256); assert.equal(e.frame.frameHeight, 256);
-  }
+  q.set('debug', '1');
+  try {
+    const rd = recLoader();
+    queueStage3(rd);
+    for (const k of FX) {
+      const e = rd.queued.find(x => x.key === k);
+      assert.equal(e.kind, 'spritesheet', k); assert.equal(e.frame.frameWidth, 256); assert.equal(e.frame.frameHeight, 256);
+      assert.ok(onDisk(e.urls[0]), e.urls[0]);
+    }
+  } finally { q.delete('debug'); }
   for (const e of r.queued) for (const u of e.urls) {
     assert.ok(!u.startsWith('assets/bg/') && !u.startsWith('assets/bg2/'), u);
     assert.ok(onDisk(u), `on disk: ${u}`);
