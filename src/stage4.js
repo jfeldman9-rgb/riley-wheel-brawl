@@ -40,6 +40,10 @@ export function queueStage4(scene) {
   for (const n of [1, 2, 3]) img('story4p' + n, `assets/story/story4_panel_${n}.jpg`);
   // Painted cultist sheet (tools/stage4/reskin_cultist.py): same 8 poses as the painter, 340x338 cells.
   if (!has('s4cult')) L.spritesheet('s4cult', 'assets/bg4/s4cult.webp', { frameWidth: 340, frameHeight: 338 });
+  // Painted Draghkar (tools/stage4/process_draghkar.py): the 10 dragFrame poses in 480x400 cells, feet at 0.96;
+  // the actor scales the cell to the painter's footprint. A file that fails leaves the key to the painter.
+  if (!has('s4drag')) L.spritesheet('s4drag', 'assets/bg4/s4drag.webp', { frameWidth: 480, frameHeight: 400 });
+  img('draghkarPortrait', 'assets/bg4/draghkar-portrait.webp');
   if (scene.cache.json.get('cutthroat.A')) queueCharPages(scene, ['cutthroat']);
   else {
     L.json('cutthroat.A', 'assets/stage3/chars/cutthroat.anims.json');

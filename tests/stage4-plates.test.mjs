@@ -14,6 +14,7 @@ const PLATE_FILES = {
   story4p1: 'assets/story/story4_panel_1.jpg', story4p2: 'assets/story/story4_panel_2.jpg', story4p3: 'assets/story/story4_panel_3.jpg',
 };
 const CULT_FILE = 'assets/bg4/s4cult.webp';
+const DRAG_FILES = { s4drag: 'assets/bg4/s4drag.webp', draghkarPortrait: 'assets/bg4/draghkar-portrait.webp' };
 const SIZES = { bg4far: [1280, 602], bg4mid: [1280, 502], bg4mid2: [1280, 588], bg4floor: [1080, 360], bg4floor2: [1080, 360], bg4floor3: [1080, 360] };
 
 function loaderScene(existing = new Set()) {
@@ -100,22 +101,23 @@ test('the placeholder check reports code-drawn art only', () => {
   assert.equal(stage4Placeholder(s), false);
 });
 
-test('ART_STATUS records every painted Stage 4 file with a matching hash and grokbot-image provenance', () => {
+test('ART_STATUS records every painted Stage 4 file with a matching hash and its provenance', () => {
   const status = JSON.parse(readFileSync(new URL('../assets/bg4/ART_STATUS.json', import.meta.url)));
   const painted = status.entries.filter(e => !e.placeholder);
-  assert.deepEqual(painted.map(e => e.files[0]).sort(), [...Object.values(PLATE_FILES), CULT_FILE].sort());
+  assert.deepEqual(painted.map(e => e.files[0]).sort(), [...Object.values(PLATE_FILES), CULT_FILE, ...Object.values(DRAG_FILES)].sort());
   for (const e of painted) {
     const file = e.files[0];
     assert.equal(createHash('sha256').update(readFileSync(new URL('../' + file, import.meta.url))).digest('hex'), e.sha256[file], file);
-    // plates and panels are Grok Bot stills; the cultist sheet is a reskin of a painted atlas (tools/stage4/reskin_cultist.py)
-    assert.equal(e.source, e.key === 's4cult' ? 'reskin' : 'grokbot-image');
+    // plates and panels are Grok Bot stills; the cultist sheet is a reskin of a painted atlas (tools/stage4/reskin_cultist.py);
+    // the Draghkar sheet and portrait are ChatGPT stills (tools/stage4/process_draghkar.py)
+    assert.equal(e.source, e.key === 's4cult' ? 'reskin' : e.key in DRAG_FILES ? 'chatgpt-image' : 'grokbot-image');
     assert.ok(existsSync(new URL('../' + e.art.sourceFile, import.meta.url)), e.art.sourceFile);
-    if (e.key === 's4cult') {
+    if (e.key === 's4cult' || e.key in DRAG_FILES) {
       assert.equal(createHash('sha256').update(readFileSync(new URL('../' + e.art.sourceFile, import.meta.url))).digest('hex'), e.art.sourceSha256);
       assert.ok(existsSync(new URL('../' + e.art.tool, import.meta.url)), e.art.tool);
     }
   }
-  assert.deepEqual(status.entries.filter(e => e.placeholder).map(e => e.key).sort(), ['draghkarPortrait', 's4drag']);
+  assert.deepEqual(status.entries.filter(e => e.placeholder).map(e => e.key), []);
 });
 
 test('the painted cultist sheet keeps the painter\'s 8 poses and footprint', async () => {

@@ -305,23 +305,65 @@
   {
    "id": "draghkar-master",
    "key": "s4drag",
-   "files": [],
-   "placeholder": true,
-   "prompt": "docs/stage4/prompts/draghkar-master.json",
-   "source": "procedural (src/stage4-art-cast.js)",
+   "files": [
+    "assets/bg4/s4drag.webp"
+   ],
+   "sha256": {
+    "assets/bg4/s4drag.webp": "1bffa48e5ae970888c270f1cbf12f663ad0e53d786bc97fd7617420f6f536b2d"
+   },
+   "size": [
+    4800,
+    400
+   ],
+   "frame": [
+    480,
+    400
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/DRAGHKAR_STILLS_REQUEST.md",
+   "source": "chatgpt-image",
    "art": {
-    "status": "code-drawn at boot; the HUD tag shows for it only under ?debug"
+    "status": "real painted art: ChatGPT image generation, one 10-pose sheet in the approved style (same character in every pose)",
+    "generator": "ChatGPT image generation",
+    "sourceFile": "art-in/draghkar/draghkar-sheet.src.png",
+    "sourceSha256": "5aefbedfb982e5b231c1033d779640803be6d7b3ebf28ef3c7768da83d32bb9b",
+    "sourceSize": [
+     1983,
+     793
+    ],
+    "method": "magenta keyed (deep key cleared, 3 px edge band unmixed from the key colour), despilled (violet wing sheen compressed above an excess of 10, see-through magenta greyed); figures found as blobs (crumbs and ash flakes join the nearest figure); one scale 0.94; feet on 0.96 x 400, hover pair registered on the head and torso, grounded poses on the feet; croon rings, kiss glow and light-reel flash painted on top; dragFrame order (0 hover up, 1 hover down, 2 swoop, 3 stance, 4 claw/buffet, 5 croon, 6 kiss, 7 reel, 8 down, 9 ash), 480x400 cells; the actor scales the cell to the painter's 250 px footprint; the boot painter stays as the fallback",
+    "tool": "tools/stage4/process_draghkar.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-07"
    }
   },
   {
    "id": "draghkar-portrait",
    "key": "draghkarPortrait",
-   "files": [],
-   "placeholder": true,
-   "prompt": "docs/stage4/prompts/draghkar-portrait.json",
-   "source": "procedural (src/stage4-art-cast.js)",
+   "files": [
+    "assets/bg4/draghkar-portrait.webp"
+   ],
+   "sha256": {
+    "assets/bg4/draghkar-portrait.webp": "a0b8d5eddccfedd2b8aa466e21d33fc320cf5c870defe8e6009153b3ea21a008"
+   },
+   "size": [
+    136,
+    136
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/DRAGHKAR_STILLS_REQUEST.md",
+   "source": "chatgpt-image",
    "art": {
-    "status": "code-drawn at boot; the HUD tag shows for it only under ?debug"
+    "status": "real painted art: ChatGPT image generation (head and shoulders, moonlit blue-teal sky)",
+    "generator": "ChatGPT image generation",
+    "sourceFile": "art-in/draghkar/draghkar-portrait.src.png",
+    "sourceSha256": "39170dc21a4d19ed6849372820cb179c31bfa3588698daa92f3c95dc22996a85",
+    "sourceSize": [
+     1254,
+     1254
+    ],
+    "method": "square crop centred on the head (860 px), Lanczos to 136x136 (drawn at 68x68 in the boss bar), opaque WebP",
+    "tool": "tools/stage4/process_draghkar.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-07"
    }
   }
  ]
