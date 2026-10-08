@@ -1,5 +1,5 @@
 // Caemlyn lighting and loading; inherited combat hooks come from Stage2Kit.
-import { VW, VH, LANE_TOP, WORLD_W, clamp, q } from './config.js';
+import { VW, VH, LANE_TOP, WORLD_W, clamp } from './config.js';
 import { sfx, preloadClips, EXTRA_VOICE } from './audio.js';
 import { queueCharPages } from './assets.js';
 import { STAGE3 } from './stages.js';
@@ -8,8 +8,7 @@ import { Stage3Hazards } from './stage3-hazards.js';
 import { budgetStage3Lights, plateScale, playFearCues, coilTell } from './stage3-lights.js';
 import { installStage3Suspension } from './stage3-suspension.js';
 import { p3 } from './stage3-art.js';
-import { STAGE3_FX, paintStage3Fx } from './stage3-fx-art.js';
-import { queryFlag } from './debug-flag.js';
+import { queueStage3Fx, paintStage3Fx } from './stage3-fx-art.js';
 export const STORY3_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story3_panel_' + n, url: `assets/story/story3_panel_${n}.jpg` })));
 export const STORY3_SCRIPT = Object.freeze([
   ['st3_story_01', 0, 3.58], ['st3_story_02', 1, 7.89], ['st3_story_03', 1, 1.54], ['st3_story_04', 1, 3.87], ['st3_story_05', 1, 0.72], ['st3_story_06', 2, 3.41],
@@ -45,14 +44,12 @@ export function timeOfDay(camX, keys, out = {}) {
 
 export function queueStage3(scene) {
   scene.stage3LoadCleanup?.();
-  const L = scene.load, has = k => scene.textures.exists(k), B = 'assets/bg3/', P = 'assets/stage3/props/';
+  const L = scene.load, has = k => scene.textures.exists(k), B = 'assets/bg3/';
   const img = (k, u) => { if (!has(k)) L.image(k, u); };
   img('far3_day', B + 'bg3-far-day.jpg'); img('far3_night', B + 'bg3-far-night.jpg');
   img('mid3a', [B + 'bg3-mid.webp', B + 'bg3-mid_n.webp']); img('mid3b', [B + 'bg3-mid2.webp', B + 'bg3-mid2_n.webp']);
   for (const [k, n] of [['floor3a', ''], ['floor3b', '2'], ['floor3c', '3']]) img(k, [`${B}bg3-floor${n}.jpg`, `${B}bg3-floor${n}_n.webp`]);
-  // The prop/FX sheets are still labelled PLACEHOLDER cards: those load only under ?debug, players get code-drawn ones.
-  if (!queryFlag(q, 'debug')) paintStage3Fx(scene);
-  else for (const [k, f] of Object.entries(STAGE3_FX)) if (!has(k)) L.spritesheet(k, P + f + '.webp', { frameWidth: 256, frameHeight: 256 });
+  queueStage3Fx(scene);   // painted prop/FX sheets; build() code-draws any that failed
   if (!has('crate')) L.image('crate', ['assets/props/prop-crate.webp', 'assets/props/prop-crate_n.webp']);
   if (!has('planks')) L.atlas('planks', 'assets/props/planks.webp', 'assets/props/planks.json');
   if (!has('arrow')) L.image('arrow', 'assets/props/fx-arrow.webp');
@@ -99,7 +96,7 @@ export class Stage3Kit extends Stage3Hazards {
   // ---------- build (never reads s.camX: it is stale on a restart; update() sets every camX-dependent value) ----------
   build() {
     const s = this.s, P = this.plates, cfg = this.cfg, design = P.midScale || 0.76, par = P.midParallax || 0.5;
-    p3(s);
+    p3(s); paintStage3Fx(s);
     this.makeTextures();
     const fs = P.farScroll ?? 0.12, farImg = (k, d) => {
       const f = s.add.image(0, 0, k).setOrigin(0, 0).setScrollFactor(fs);

@@ -68,6 +68,8 @@ const EXPECTED_PROMPT_IDS = [
 // and each must carry its provenance block.
 export const APPROVED_STILLS = Object.freeze({
   'grokbot-image': Object.freeze(['bg3-far-day', 'bg3-far-night', 'bg3-mid', 'bg3-mid2', 'bg3-floor', 'bg3-floor2', 'bg3-floor3', 'story3-1', 'story3-2', 'story3-3']),
+  // ChatGPT collages for the four prop/FX sheets (tools/stage3/process_fx.py), approved by Jason F via Grok Bot on 2026-10-08.
+  'chatgpt-image': Object.freeze(['prop-rooftiles', 'fx-shadowpool', 'fx-shadowburst', 'fx-fade-far']),
   reskin: Object.freeze(EXPECTED_PROMPT_IDS.slice(0, EXPECTED_PROMPT_IDS.indexOf('fade-portrait') + 1)),
 });
 
