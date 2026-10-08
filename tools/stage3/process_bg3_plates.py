@@ -8,7 +8,10 @@ art-in/bg3/ (file name = <plate>.src.jpg; the original sha256 is recorded in ART
   mid  (mid3a, mid3b): 3:1 band with the street / parapet on the bottom edge, flat magenta sky keyed to real
        alpha (big connected key regions only, soft alpha on a 4 px edge band, colour unmix + despill),
        premultiplied Lanczos to 2172x724 (plateScale and the torch coordinates in lights.json assume 2172).
-       mid3b's left 240 px sink into a cool shadow (smoothstep, opaque) so the mid3a -> mid3b cut reads as a gap.
+       The mid3a -> mid3b join is a building corner, not a plate edge: mid3a stops at the inn's corner
+       (x CORNER, the shadowed quoin; the neighbour's roof slope and wall beyond it are cut away), mid3b is
+       laid OVERLAP px under it (plates.json "overlap") with a 6 px alpha feather, and its first ~120 px of
+       roofs recede into the corner's shade, so the rooftops read as the view past the end of the street.
   floor (floor3a/b/c): horizontal light flattening, floor3a's vertical gutter cut out with a min-error seam,
        horizontal wrap made seamless with a min-error seam + tone ramp, then a periodic Lanczos resample
        to 1080x360.
@@ -97,6 +100,40 @@ def shade_left(im, width=240, floor=(0.30, 0.27, 0.36)):
     ramp = (t * t * (3 - 2 * t))[None, :, None]
     k = np.array(floor, np.float32)[None, None, :]
     a[:, :width, :3] *= k + (1 - k) * ramp
+    return Image.fromarray(np.clip(a + 0.5, 0, 255).astype(np.uint8), 'RGBA')
+
+CORNER = 2098                   # mid3a: right edge of the inn's corner quoin (dark band x ~2086..2098)
+FEATHER = 6                     # mid3b: alpha ramp under the corner
+OVERLAP = W - CORNER + FEATHER  # plates.json "overlap" (mid3b starts this many plate px left of mid3a's edge)
+
+def corner_cut(im, x=CORNER, line=2.0):
+    """mid3a ends on the inn's vertical corner (the shadowed quoin band): an anti-aliased edge inked with the
+    plates' dark cel outline, and the last few px of wall turning into the corner's shade."""
+    a = np.asarray(im).astype(np.float32)
+    h, w = a.shape[:2]
+    rng = np.random.default_rng(3)
+    # a painted corner is not ruler-straight: +-0.8 px wobble, smoothed over ~30 rows
+    wob = cv2.GaussianBlur(rng.uniform(-1, 1, (h, 1)).astype(np.float32), (1, 0), sigmaX=0.1, sigmaY=12)[:, 0]
+    edge = x + 0.8 * wob / max(1e-6, np.abs(wob).max())
+    d = edge[:, None] - np.arange(w)[None, :].astype(np.float32)     # > 0 inside the wall
+    a[:, :, 3] *= np.clip(d + 0.75, 0, 1)
+    ink = np.clip(1 - np.abs(d - line * 0.5) / line, 0, 1)
+    col = np.array([34, 24, 22], np.float32)
+    a[:, :, :3] = a[:, :, :3] * (1 - 0.8 * ink[..., None]) + col * 0.8 * ink[..., None]
+    sh = np.clip(1 - d / 12, 0, 1) * (d > 0)
+    a[:, :, :3] *= (1 - 0.22 * sh)[..., None]
+    return Image.fromarray(np.clip(a + 0.5, 0, 255).astype(np.uint8), 'RGBA')
+
+def corner_shade(im, width=150, floor=(0.58, 0.55, 0.66), feather=FEATHER):
+    """mid3b's left edge sits under mid3a's corner: a short alpha ramp (no hard plate edge at the AA line) and the
+    nearest roofs sink into the corner's cool shade (smoothstep over `width` px)."""
+    a = np.asarray(im).astype(np.float32)
+    t = np.clip(np.arange(width) / (width - 1), 0, 1)
+    ramp = (t * t * (3 - 2 * t))[None, :, None]
+    k = np.array(floor, np.float32)[None, None, :]
+    a[:, :width, :3] *= k + (1 - k) * ramp
+    f = np.clip((np.arange(feather) + 0.5) / feather, 0, 1)
+    a[:, :feather, 3] *= f[None, :]
     return Image.fromarray(np.clip(a + 0.5, 0, 255).astype(np.uint8), 'RGBA')
 
 def mid(k, top, bottom):
@@ -247,8 +284,9 @@ if __name__ == '__main__':
     log = {}
     log['bg3-far-day.jpg'] = encode(far('bg3-far-day'), 'bg3-far-day.jpg')
     log['bg3-far-night.jpg'] = encode(far('bg3-far-night'), 'bg3-far-night.jpg')
-    log['bg3-mid.webp'] = encode(mid('bg3-mid', 277, 704), 'bg3-mid.webp')       # magenta strip below row 704
-    log['bg3-mid2.webp'] = encode(shade_left(mid('bg3-mid2', 276, 703)), 'bg3-mid2.webp')   # follows mid3a
+    log['bg3-mid.webp'] = encode(corner_cut(mid('bg3-mid', 277, 704)), 'bg3-mid.webp')       # magenta strip below row 704
+    log['bg3-mid2.webp'] = encode(corner_shade(mid('bg3-mid2', 276, 703)), 'bg3-mid2.webp')  # under mid3a's corner
+    log['overlap'] = OVERLAP
     im, info = floor('bg3-floor', gutter=(610, 670))                              # gutter at x ~615..668
     log['bg3-floor.jpg'] = {**encode(im, 'bg3-floor.jpg'), **info}
     im, info = floor('bg3-floor2', rows='middle')

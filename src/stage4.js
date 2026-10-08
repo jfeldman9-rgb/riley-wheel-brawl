@@ -38,6 +38,8 @@ export function queueStage4(scene) {
   img('bg4far', 'assets/bg4/bg4-far.jpg'); img('bg4mid', 'assets/bg4/bg4-mid.webp'); img('bg4mid2', 'assets/bg4/bg4-mid2.webp');
   for (const n of ['', '2', '3']) img('bg4floor' + n, `assets/bg4/bg4-floor${n}.jpg`);
   for (const n of [1, 2, 3]) img('story4p' + n, `assets/story/story4_panel_${n}.jpg`);
+  // Painted cultist sheet (tools/stage4/reskin_cultist.py): same 8 poses as the painter, 340x370 cells.
+  if (!has('s4cult')) L.spritesheet('s4cult', 'assets/bg4/s4cult.webp', { frameWidth: 340, frameHeight: 370 });
   if (scene.cache.json.get('cutthroat.A')) queueCharPages(scene, ['cutthroat']);
   else {
     L.json('cutthroat.A', 'assets/stage3/chars/cutthroat.anims.json');
