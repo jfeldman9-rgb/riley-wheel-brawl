@@ -10,7 +10,7 @@ mkdir -p "$OUT"
 CLIPS="twinkletoes twinkletoes_v1 3.625 27
 moiraine moiraine_v1 0 27
 intro intro_v2 0 27
-intro_battle battle_edit_v1 0 27
+intro_battle battle_edit_v2 0 27
 stage1 stage1_v1 0 29
 stage2 stage2_v2 0 27
 stage3 stage3_v1 0 27

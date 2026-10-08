@@ -96,11 +96,11 @@
     "assets/cutscenes/intro_battle.jpg"
    ],
    "sha256": {
-    "assets/cutscenes/intro_battle.mp4": "46849630cf7c956fe44910bd8ac4042a8428ac9401d001289423aeca47805b27",
+    "assets/cutscenes/intro_battle.mp4": "b718d188f8979adb0859cf73f5b1c9d025c878d4b1c1f1955bc0c3ce46991fa6",
     "assets/cutscenes/intro_battle.jpg": "1a8e34df184366fd63769b221d39d336699a15f5554654e98d74c8a89f2b0650"
    },
    "bytes": {
-    "assets/cutscenes/intro_battle.mp4": 4427021,
+    "assets/cutscenes/intro_battle.mp4": 4174456,
     "assets/cutscenes/intro_battle.jpg": 35234
    },
    "durationSeconds": 18.125,
@@ -109,18 +109,24 @@
    "plays": "intro 4/4, right after intro_v2, then Stage 1",
    "shows": "Battle edit: Riley (from behind) fights the Trolloc pack with fire; ends on Riley's \"TWINKLE TOES!\" yell.",
    "art": {
-    "status": "photoreal generated video (Grok Imagine), three shots s1/s2b/s3b edited to 18.1 s at 1280x720, re-encoded for the web",
-    "sourceFile": "battle_edit_v1.mp4",
-    "sourceSha256": "4dee8621985498b5a11dae42d9bc2c49f09d9ce2678ac7d2916dff8bff8b3c73",
+    "status": "photoreal generated video (Grok Imagine), three shots s1/s2c/s3b edited to 18.1 s at 1280x720, re-encoded for the web",
+    "sourceFile": "battle_edit_v2.mp4",
+    "sourceSha256": "638e8bc575a5f0755dcd849bd2f89cc37bbdb3ce1cfdbcf661aa5bb4302aefd7",
     "trimStartSeconds": 0,
     "encode": "tools/cutscenes/encode_cutscenes.sh (H.264 main 960x540 CRF 27/29, yuv420p, +faststart, AAC 96k, loudness toward -20 LUFS)",
     "likeness": "Riley appears only from behind; no real person's face is depicted.",
     "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07",
     "shots": [
      "s1",
-     "s2b",
+     "s2c",
      "s3b"
-    ]
+    ],
+    "shotSources": {
+     "s1": "Grok Imagine",
+     "s2c": "Grok Imagine image-to-video from a ChatGPT storyboard panel",
+     "s3b": "Grok Imagine"
+    },
+    "replaces": "battle_edit_v1.mp4 (shot s2b), sha256 4dee8621985498b5a11dae42d9bc2c49f09d9ce2678ac7d2916dff8bff8b3c73"
    },
    "voice": {
     "line": "TWINKLE TOES!",

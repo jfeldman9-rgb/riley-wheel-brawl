@@ -7,7 +7,7 @@ CLIPS = [  # id, source file, trim start, where it plays, what it shows
     ('twinkletoes', 'twinkletoes_v1.mp4', 3.625, 'intro 1/3 (after the first title tap)', 'Twinkle Toes snatched mid-recital by a farting Trolloc (comedic). The first 3.625 s wide shot is cut: a second Trolloc materialises there (generation glitch).'),
     ('moiraine', 'moiraine_v1.mp4', 0, 'intro 2/3', 'Moiraine on the Winternight green, light gathering in her hand.'),
     ('intro', 'intro_v2.mp4', 0, 'intro 3/3, then Stage 1', 'Riley (only ever seen from behind, black coat) faces charging Trollocs with fire in his hands.'),
-    ('intro_battle', 'battle_edit_v1.mp4', 0, 'intro 4/4, right after intro_v2, then Stage 1', 'Battle edit: Riley (from behind) fights the Trolloc pack with fire; ends on Riley\'s "TWINKLE TOES!" yell.'),
+    ('intro_battle', 'battle_edit_v2.mp4', 0, 'intro 4/4, right after intro_v2, then Stage 1', 'Battle edit: Riley (from behind) fights the Trolloc pack with fire; ends on Riley\'s "TWINKLE TOES!" yell.'),
     ('stage1', 'stage1_v1.mp4', 0, 'Stage 1, before the Trolloc Chieftain fight', 'The Trolloc Chieftain roaring in the burning village.'),
     ('stage2', 'stage2_v2.mp4', 0, 'Stage 2 start, before the story panels', 'Whitecloaks and the burning barn; Riley from behind.'),
     ('stage3', 'stage3_v1.mp4', 0, 'Stage 3 start, before the story panels', 'The Myrddraal on moonlit rooftops, cutthroats creeping.'),
@@ -33,8 +33,10 @@ for cid, src, ss, where, desc in CLIPS:
         },
     })
     if cid == 'intro_battle':
-        entries[-1]['art']['status'] = 'photoreal generated video (Grok Imagine), three shots s1/s2b/s3b edited to 18.1 s at 1280x720, re-encoded for the web'
-        entries[-1]['art']['shots'] = ['s1', 's2b', 's3b']
+        entries[-1]['art']['status'] = 'photoreal generated video (Grok Imagine), three shots s1/s2c/s3b edited to 18.1 s at 1280x720, re-encoded for the web'
+        entries[-1]['art']['shots'] = ['s1', 's2c', 's3b']
+        entries[-1]['art']['shotSources'] = {'s1': 'Grok Imagine', 's2c': 'Grok Imagine image-to-video from a ChatGPT storyboard panel', 's3b': 'Grok Imagine'}
+        entries[-1]['art']['replaces'] = 'battle_edit_v1.mp4 (shot s2b), sha256 4dee8621985498b5a11dae42d9bc2c49f09d9ce2678ac7d2916dff8bff8b3c73'
         entries[-1]['voice'] = {'line': 'TWINKLE TOES!', 'speaker': 'Riley', 'tool': 'ElevenLabs', 'voice': 'DYLO', 'model': 'eleven_v3', 'mixedIntoSource': True}
 json.dump({'version': 1, 'note': 'Video cutscenes stream on demand (src/cutscene.js); not part of the 25 MB pre-fight sum. Stage 5 (stage5_v1) is encoded but not shipped until Stage 5 goes live.', 'entries': entries},
           open(f'{OUT}/ART_STATUS.json', 'w'), indent=1)
