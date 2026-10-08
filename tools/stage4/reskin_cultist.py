@@ -26,7 +26,7 @@ import reskin_lib as RL
 
 SRC = 'assets/chars'
 OUT = 'assets/bg4/s4cult.webp'
-CELL_W, CELL_H = 340, 370
+CELL_W, CELL_H = 340, 338
 BASE_Y = 327            # archer baseline in its 558x347 source canvas
 FOOT = round(CELL_H * 0.96)
 # (source frame, mirror). The archer faces left; the cultist sheet faces right like the procedural one.

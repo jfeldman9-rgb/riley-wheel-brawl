@@ -127,7 +127,7 @@ test('the painted cultist sheet keeps the painter\'s 8 poses and footprint', asy
   // WebP VP8X canvas size (24-bit little-endian, minus one)
   assert.equal(b.toString('ascii', 12, 16), 'VP8X');
   const w = 1 + b.readUIntLE(24, 3), h = 1 + b.readUIntLE(27, 3);
-  assert.deepEqual([w, h], [8 * 340, 370]);
+  assert.deepEqual([w, h], [8 * 340, 338]);
   // already loaded: not queued again
   const again = loaderScene(new Set(['s4cult']));
   queueStage4(again);
@@ -141,7 +141,7 @@ test('actors scale a taller painted cell to the painter\'s footprint and leave t
     return sp;
   };
   const fake = { state: 'approach', st: 0, x: 100, y: 600, z: 0, type: 'cultist' };
-  for (const [fh, want] of [[190, 1.2], [370, 1.2 * 190 / 370]]) {
+  for (const [fh, want] of [[190, 1.2], [338, 1.2 * 190 / 338]]) {
     const e = { ...fake, sprite: mk(fh) };
     CultistActor.prototype.sync.call(e);
     assert.ok(Math.abs(e.sprite.scale - want) < 1e-9, `cultist ${fh}`);
