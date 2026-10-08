@@ -87,11 +87,15 @@ test('PLACEHOLDER ART clears the perf readout and is not recomputed every frame'
   const fake = Object.create(HUD.prototype);
   fake.phTag = { setVisible() {} };
   fake.phShown = false;
-  fake.updateWatermark({ metas });
-  const afterFirst = gets;
-  assert.ok(afterFirst > 0);
-  for (let i = 0; i < 30; i++) fake.updateWatermark({ metas });
-  assert.equal(gets, afterFirst);
+  const { q } = await import('../src/config.js');
+  q.set('debug', '1');
+  try {
+    fake.updateWatermark({ metas });
+    const afterFirst = gets;
+    assert.ok(afterFirst > 0);
+    for (let i = 0; i < 30; i++) fake.updateWatermark({ metas });
+    assert.equal(gets, afterFirst);
+  } finally { q.delete('debug'); }
 });
 
 test('Stage 1 pre-fight budget keeps Stage 2 voices and Stage 3 has its own cap', () => {

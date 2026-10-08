@@ -62,11 +62,15 @@ export function audit() {
   // the first fight. Their own budget line, same split as restartHotfix (the clips are under cutscenes.clips).
   const CUTSCENE_SRC = new Set(['cutscene.js', 'cutscene-hooks.js']);
   const cutsceneSourceFiles = [];
+  // Stage 3 FX stand-ins (painted over the labelled prop/FX cards at Stage 3 entry): their own line under stage3.
+  const STAGE3_SRC = new Set(['stage3-fx-art.js']);
+  const stage3SourceFiles = [];
   const stage4SourceFiles = [];
   const iosSourceFiles = [];
   const restartSourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
     if (CUTSCENE_SRC.has(name)) cutsceneSourceFiles.push(`src/${name}`);
+    else if (STAGE3_SRC.has(name)) stage3SourceFiles.push(`src/${name}`);
     else if (RESTART_SRC.has(name)) restartSourceFiles.push(`src/${name}`);
     else if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);
     else if (IOS_SRC.has(name)) iosSourceFiles.push(`src/${name}`);
@@ -101,6 +105,8 @@ export function audit() {
   const restartSourceBudget = 16 * 1024;
   const cutsceneSourceBytes = cutsceneSourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const cutsceneSourceBudget = 20 * 1024;
+  const stage3SourceBytes = stage3SourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const stage3SourceBudget = 8 * 1024;
   const cutsceneClips = existsSync(resolve(ROOT, 'assets/cutscenes')) ? readdirSync(resolve(ROOT, 'assets/cutscenes')).filter(n => /\.(mp4|jpg)$/.test(n)).sort().map(n => `assets/cutscenes/${n}`) : [];
   const cutsceneClipBytes = cutsceneClips.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const cutsceneClipBudget = 25_000_000;
@@ -140,6 +146,9 @@ export function audit() {
         note: 'Streamed one at a time through a temporary <video> when a cutscene starts; nothing is preloaded, so they are outside the pre-fight sum.' },
     },
     stage3: {
+      source: { files: stage3SourceFiles, bytes: stage3SourceBytes, budgetBytes: stage3SourceBudget,
+        status: stage3SourceBytes <= stage3SourceBudget ? 'PASS' : 'FAIL',
+        note: 'Code-drawn stand-ins for the labelled Stage 3 prop/FX sheets, run at Stage 3 entry. Not part of the Stage 1 pre-fight sum.' },
       voices: { count: stage3VoiceCount, bytes: stage3VoiceBytes, budgetBytes: stage3VoiceBudget,
         status: stage3VoiceBytes <= stage3VoiceBudget ? 'PASS' : 'FAIL',
         note: 'STAGE3_VOICES only. Each line is capped at 200 KB; the total cap is 18 times that.' },

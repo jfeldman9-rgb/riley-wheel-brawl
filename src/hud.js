@@ -6,6 +6,7 @@ import { stageLightLine } from './stage3-lights.js';
 import { perf, displayMs } from './perf.js';
 import { installPerfPanel } from './perf-panel.js';
 import { perfReportEnabled as perfOn } from './debug-flag.js';
+import { queryFlag } from './debug-flag.js';
 import { POWERS, ART } from './powers.js';
 import { TWIX_PANELS } from './twix.js';
 import { maxStage } from './stages.js';
@@ -440,7 +441,8 @@ export class HUD extends Phaser.Scene {
     const plates = stage3Plates(s);
     if (this.phReady && this.phMetas === s.metas && this.phPlates === plates) return;
     this.phReady = true; this.phMetas = s.metas; this.phPlates = plates;
-    const on = placeholderArt(s, plates);
+    // the PLACEHOLDER ART tag is a dev marker: ?debug only, on every stage (Stage 4's ph4 is gated the same way)
+    const on = queryFlag(q, 'debug') && placeholderArt(s, plates);
     if (on === this.phShown) return;
     this.phShown = on;
     this.phTag.setVisible(on);
