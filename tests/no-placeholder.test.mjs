@@ -1,7 +1,8 @@
 // No player-visible "PLACEHOLDER" text without ?debug, Stages 1-4 (Jason saw it during the Stage 3 Fade fight).
-// Two sources existed: the HUD "PLACEHOLDER ART" tag, and the four Stage 3 prop/FX sheets, which are labelled cards
+// Two sources existed: the HUD "PLACEHOLDER ART" tag, and the four Stage 3 prop/FX sheets, which were labelled cards
 // with "PLACEHOLDER <id> frame N" baked into the pixels (roof tiles, shadow pool, shadow burst, far Fade glimpse).
-// Without ?debug the cards are never queued (code draws the same keys) and the tag never shows; ?debug keeps both.
+// The sheets are now painted ChatGPT art for everyone (code-drawn stand-ins only replace a file that fails to load),
+// and the tag shows only under ?debug, and only while some art is still marked placeholder.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -43,32 +44,42 @@ function fakeCanvas() {
   return { width: 0, height: 0, getContext: () => ctx };
 }
 
-test('the labelled Stage 3 prop/FX cards ship only behind ?debug; players get code-drawn sheets on the same keys', () => {
-  assert.deepEqual(Object.values(STAGE3_FX).map(id => `assets/stage3/props/${id}.webp`).filter(f => !PLACEHOLDER_FILES.has(f)), [], 'all four are placeholder art per ART_STATUS');
+test('the Stage 3 prop/FX sheets are painted art for everyone; the code-drawn stand-ins only fill a sheet that failed', () => {
+  const files = Object.values(STAGE3_FX).map(id => `assets/stage3/props/${id}.webp`);
+  assert.deepEqual(files.filter(f => PLACEHOLDER_FILES.has(f)), [], 'none of the four is placeholder art per ART_STATUS');
+  assert.deepEqual(J('assets/stage3/ART_STATUS.json').entries.filter(e => e.placeholder !== false).map(e => e.id), [], 'Stage 3 has no placeholder art left');
   for (const stage of [1, 2, 3, 4]) {
-    for (const debug of [null, '0']) withDebug(debug, () => {
+    for (const debug of [null, '0', '1']) withDebug(debug, () => {
       const { urls } = queued(stage);
       assert.deepEqual(urls.filter(u => PLACEHOLDER_FILES.has(u)), [], `Stage ${stage} ?debug=${debug}: no placeholder file queued`);
     });
   }
-  texts.length = 0;
-  const { urls, made } = withDebug(null, () => queued(3, { canvas: true }));
-  assert.deepEqual([...made.keys()].sort(), Object.keys(STAGE3_FX).sort());
-  for (const [key, n] of Object.entries({ rooftiles: 4, shadowpool: 4, shadowburst: 6, fade_far: 4 })) {
-    const { c, frames } = made.get(key);
-    assert.equal(c.width, 256 * n, key); assert.equal(c.height, 256, key);
-    assert.deepEqual(frames.map(f => f.slice(0, 6)), Array.from({ length: n }, (_, i) => [i, 0, i * 256, 0, 256, 256]), `${key} keeps the 256x256 frame grid`);
+  // Stage 3 queues the four painted sheets with or without ?debug and paints nothing at queue time
+  for (const debug of [null, '1']) {
+    const { urls, made } = withDebug(debug, () => queued(3, { canvas: true }));
+    assert.equal(made.size, 0, `?debug=${debug}: nothing code-drawn while the files load`);
+    assert.deepEqual(urls.filter(u => u.startsWith('assets/stage3/props/')).sort(), [...files].sort());
   }
+  // the kit paints whatever is still missing once loading is over (a failed file), before it builds anything
+  const build = readFileSync('src/stage3.js', 'utf8').match(/\n  build\(\) \{[\s\S]*?this\.makeTextures\(\)/)?.[0] || '';
+  assert.match(build, /paintStage3Fx\(s\)/, 'Stage3Kit.build() code-draws the sheets that failed to load');
+  // the stand-ins keep the 256x256 grid, draw no text, and paint only the missing keys
+  texts.length = 0;
+  const doc = globalThis.document, made = new Map();
+  const scene = { textures: { exists: k => made.has(k) || k !== 'shadowburst', addCanvas: (key, c) => { const frames = []; made.set(key, { c, frames }); return { add: (...f) => frames.push(f) }; } } };
+  doc.createElement = () => fakeCanvas();
+  try {
+    assert.deepEqual(paintStage3Fx(scene), ['shadowburst'], 'only the failed sheet is code-drawn');
+    const all = new Map(), every = { textures: { exists: k => all.has(k), addCanvas: (key, c) => { const frames = []; all.set(key, { c, frames }); return { add: (...f) => frames.push(f) }; } } };
+    assert.deepEqual(paintStage3Fx(every).sort(), Object.keys(STAGE3_FX).sort());
+    for (const [key, n] of Object.entries({ rooftiles: 4, shadowpool: 4, shadowburst: 6, fade_far: 4 })) {
+      const { c, frames } = all.get(key);
+      assert.equal(c.width, 256 * n, key); assert.equal(c.height, 256, key);
+      assert.deepEqual(frames.map(f => f.slice(0, 6)), Array.from({ length: n }, (_, i) => [i, 0, i * 256, 0, 256, 256]), `${key} keeps the 256x256 frame grid`);
+    }
+    assert.deepEqual(paintStage3Fx(every), [], 'painting is idempotent');
+  } finally { delete doc.createElement; }
   assert.deepEqual(texts, [], 'the stand-ins draw no text');
-  assert.ok(!urls.some(u => u.startsWith('assets/stage3/props/')));
-  // ?debug: the labelled cards load as before (debug tooling kept), nothing is painted over them
-  const dbg = withDebug('', () => queued(3, { canvas: true }));
-  assert.equal(dbg.made.size, 0);
-  assert.deepEqual(dbg.urls.filter(u => PLACEHOLDER_FILES.has(u)).sort(), Object.values(STAGE3_FX).map(id => `assets/stage3/props/${id}.webp`).sort());
-  // painting is idempotent and skips keys that already exist
-  const again = { textures: { exists: k => made.has(k), addCanvas: () => assert.fail('repainted') } };
-  const doc = globalThis.document; doc.createElement = () => fakeCanvas();
-  try { assert.deepEqual(paintStage3Fx(again), []); } finally { delete doc.createElement; }
 });
 
 test('no shipped source renders the word placeholder except the ?debug HUD tag', () => {
@@ -109,11 +120,10 @@ for (const stage of [1, 2, 3, 4]) {
       const said = h.observations.hud.flatMap(e => e.args).flatMap(a => typeof a === 'string' ? [a] : a && typeof a === 'object' ? Object.values(a).filter(v => typeof v === 'string') : []);
       assert.deepEqual(said.filter(t => /placeholder/i.test(t)), []);
       if (stage === 3) {
-        // the Fade fight draws its pools and bursts (and the rooftop tiles/glimpse) from the stand-in keys, which
-        // without ?debug come from code, never from the labelled cards
+        // the Fade fight draws its pools and bursts (and the rooftop tiles/glimpse) from the painted sheets' keys
         for (const k of ['shadowpool', 'shadowburst', 'rooftiles', 'fade_far']) assert.ok(used.has(k), `Stage 3 used ${k}`);
-        const painted = withDebug(null, () => queued(3, { canvas: true }));
-        for (const k of Object.keys(STAGE3_FX)) assert.ok(painted.made.has(k), `${k} is code-drawn`);
+        // and nothing left in Stage 3 gives the ?debug tag a reason to show: no placeholder meta, plates or FX sheet
+        assert.equal(placeholderArt(s), false, 'Stage 3 reports no placeholder art');
       }
       // the same run with ?debug shows the tag (the debug tooling still works)
       withDebug('1', () => { s.metas.__card = { placeholder: true }; s.ph4 = stage === 4; hud.phReady = false; hud.updateWatermark(s); delete s.metas.__card; s.ph4 = false; });

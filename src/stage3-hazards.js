@@ -152,7 +152,7 @@ export class Stage3Hazards extends Stage2Kit {
       this.glimpsed = true;
       const startX = s.camX * 0.3 - 128;
       this.glimpse = {
-        img: s.add.image(startX, MID_Y - 330, 'fade_far', 0).setScrollFactor(0.3, 1).setDepth(-60).setLighting(false),
+        img: s.add.image(startX, MID_Y - 330, 'fade_far', 0).setScrollFactor(0.3, 1).setDepth(-46).setLighting(false),
         t: 0,
       };
       say('riley_st3_glimpse_01', s.caption, false);

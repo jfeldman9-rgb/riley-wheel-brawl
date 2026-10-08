@@ -696,10 +696,27 @@
     "assets/stage3/props/prop-rooftiles.webp"
    ],
    "sha256": {
-    "assets/stage3/props/prop-rooftiles.webp": "caa0077194d81a48449010ebb832d287e5ebecb59e45d045354d583626c0b007"
+    "assets/stage3/props/prop-rooftiles.webp": "67e66d745958eab4d6d911e8895dd9731571c7ae819fffa81d11d9663d428209"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/prop-rooftiles.json"
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/prop-rooftiles.json",
+   "source": "chatgpt-image",
+   "contactSheet": "docs/stage3/shots/contact-stage3-fx.jpg",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one collage per pair of effects in the approved style",
+    "generator": "ChatGPT image generation",
+    "generated": "2026-10-08",
+    "sourceFile": "art-in/stage3fx/fx-collage-a.src.png",
+    "sourceSha256": "51f40ed6cb23bc89484a06f59fc9b7fd6a074faf3fe8634744b3c34b8bbf90e0",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "sourceSlot": "collage A row 1 (4 roof-tile clusters)",
+    "method": "magenta (~#FC03FB) keyed (background = bright key-hue region connected to the flat key plus a 3 px edge band; alpha from the key excess, colour unmixed from the key, see-through paint fully despilled), frames split by slot, 4 frames in collage order 1, 2, 4, 3 (slot 4 nearly repeats slot 1, so it plays between 2 and 3 instead of holding one pose for two frames); one scale 0.66; opaque tile mass centred at (118, 128); dust trails right (the art travels left, flipX turns it); lossless WebP",
+    "tool": "tools/stage3/process_fx.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-08"
+   }
   },
   {
    "id": "fx-shadowpool",
@@ -707,10 +724,27 @@
     "assets/stage3/props/fx-shadowpool.webp"
    ],
    "sha256": {
-    "assets/stage3/props/fx-shadowpool.webp": "c8aa4b149105f703893c010fcefbbe8efc90d9a7916107340ee00c00bb79c28a"
+    "assets/stage3/props/fx-shadowpool.webp": "ca787c0d61dd6b937d75a1ec4d0ee7abf4f94cde3ac1d09c66c1214c07439c8a"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/fx-shadowpool.json"
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fx-shadowpool.json",
+   "source": "chatgpt-image",
+   "contactSheet": "docs/stage3/shots/contact-stage3-fx.jpg",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one collage per pair of effects in the approved style",
+    "generator": "ChatGPT image generation",
+    "generated": "2026-10-08",
+    "sourceFile": "art-in/stage3fx/fx-collage-b.src.png",
+    "sourceSha256": "8018389c1905e34baa6def028367541a15b820d43474d2ef1f558d08e56b0019",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "sourceSlot": "collage B row 1 (4 shadow pools)",
+    "method": "green (~#04F902) keyed (background = key-hue region connected to the flat key plus a 3 px edge band; alpha from the key excess, colour unmixed from the key, see-through paint fully despilled), frames split by slot, 4 frames in collage order; one scale 0.72; ellipse centred on the cell (128, 128), the foot spot; lossless WebP",
+    "tool": "tools/stage3/process_fx.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-08"
+   }
   },
   {
    "id": "fx-shadowburst",
@@ -718,10 +752,27 @@
     "assets/stage3/props/fx-shadowburst.webp"
    ],
    "sha256": {
-    "assets/stage3/props/fx-shadowburst.webp": "2f6eceb020133e7897960060b58bb5c971161e4065d5ca755de429e544b9e4fa"
+    "assets/stage3/props/fx-shadowburst.webp": "9fc10529badafc32aad308c562c54fad8788e64ce5c18ce58dd907870b7c4d35"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/fx-shadowburst.json"
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fx-shadowburst.json",
+   "source": "chatgpt-image",
+   "contactSheet": "docs/stage3/shots/contact-stage3-fx.jpg",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one collage per pair of effects in the approved style",
+    "generator": "ChatGPT image generation",
+    "generated": "2026-10-08",
+    "sourceFile": "art-in/stage3fx/fx-collage-b.src.png",
+    "sourceSha256": "8018389c1905e34baa6def028367541a15b820d43474d2ef1f558d08e56b0019",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "sourceSlot": "collage B rows 2-3 (6 shadow-burst frames, reading order)",
+    "method": "green (~#04F902) keyed (background = key-hue region connected to the flat key plus a 3 px edge band; alpha from the key excess, colour unmixed from the key, see-through paint fully despilled), frames split by slot, 6 frames in collage order; one scale 0.54; alpha centroid at (128, 128); lossless WebP",
+    "tool": "tools/stage3/process_fx.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-08"
+   }
   },
   {
    "id": "fx-fade-far",
@@ -729,10 +780,27 @@
     "assets/stage3/props/fx-fade-far.webp"
    ],
    "sha256": {
-    "assets/stage3/props/fx-fade-far.webp": "d8e7762a2ce65c1edcf2b6b766bcd8b22da8d611d5d6f7ebcda8c9fa2ac3b833"
+    "assets/stage3/props/fx-fade-far.webp": "2caf6eb2045451d1552fd882f77819491dacf654a6f57af9f923528b9d48cbb9"
    },
-   "placeholder": true,
-   "prompt": "docs/stage3/prompts/fx-fade-far.json"
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fx-fade-far.json",
+   "source": "chatgpt-image",
+   "contactSheet": "docs/stage3/shots/contact-stage3-fx.jpg",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one collage per pair of effects in the approved style",
+    "generator": "ChatGPT image generation",
+    "generated": "2026-10-08",
+    "sourceFile": "art-in/stage3fx/fx-collage-a.src.png",
+    "sourceSha256": "51f40ed6cb23bc89484a06f59fc9b7fd6a074faf3fe8634744b3c34b8bbf90e0",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "sourceSlot": "collage A row 2 (4 far-Fade run frames)",
+    "method": "magenta (~#FC03FB) keyed (background = bright key-hue region connected to the flat key plus a 3 px edge band; alpha from the key excess, colour unmixed from the key, see-through paint fully despilled), frames split by slot, 4 frames in collage order, facing right; one scale 0.45 (body about 130 px); torso x locked at 150, feet on 196 for the grounded frames, the painted leap height kept; lossless WebP",
+    "tool": "tools/stage3/process_fx.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-08"
+   }
   },
   {
    "id": "story3-1",

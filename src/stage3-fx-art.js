@@ -1,9 +1,14 @@
-// Code-drawn stand-ins for the four Stage 3 prop/FX sheets that are still labelled cards
-// (assets/stage3/props/*.webp carry "PLACEHOLDER <id> frame N" text). Same keys and 256x256 frame grid,
-// so stage3-hazards/stage3-lights need no change. The labelled cards load only under ?debug.
-// Deterministic (no Math.random); a few ms once per Stage 3 entry.
+// The four Stage 3 prop/FX sheets: painted ChatGPT art (tools/stage3/process_fx.py) loads for everyone, and these
+// code-drawn stand-ins fill any key whose file failed (Stage3Kit.build). Same keys and 256x256 frame grid,
+// so stage3-hazards/stage3-lights need no change. Deterministic (no Math.random); a few ms once per Stage 3 entry.
 export const STAGE3_FX = Object.freeze({ rooftiles: 'prop-rooftiles', shadowpool: 'fx-shadowpool', shadowburst: 'fx-shadowburst', fade_far: 'fx-fade-far' });
 const N = { rooftiles: 4, shadowpool: 4, shadowburst: 6, fade_far: 4 }, F = 256;
+const P = 'assets/stage3/props/';
+
+/** Queue the painted sheets (spritesheets of 256x256 frames) for every key not already resident. */
+export function queueStage3Fx(scene) {
+  for (const [k, f] of Object.entries(STAGE3_FX)) if (!scene.textures.exists(k)) scene.load.spritesheet(k, P + f + '.webp', { frameWidth: F, frameHeight: F });
+}
 
 function blob(g, x, y, rx, ry, inner, outer) {
   const r = g.createRadialGradient(x, y, 0, x, y, rx);
@@ -28,13 +33,13 @@ function tiles(g, i) {
   for (let k = 0; k < 5; k++) g.fillRect(200 + k * 9, 110 + ((k * 37 + i * 11) % 40), 18 - k * 3, 3);
 }
 
-// inky pool, a flat ellipse; frame i = rising warning
+// inky pool, a flat ellipse centred on the cell (the image origin is the foot spot); frame i = rising warning
 function pool(g, i) {
   const u = (i + 1) / 4;
-  blob(g, 128, 200, 120, 30, `rgba(8,4,14,${0.75 + 0.2 * u})`, 'rgba(20,6,30,0)');
-  blob(g, 128, 200, 70, 16, `rgba(70,30,110,${0.25 * u})`, 'rgba(40,10,60,0)');
+  blob(g, 128, 128, 120, 30, `rgba(8,4,14,${0.75 + 0.2 * u})`, 'rgba(20,6,30,0)');
+  blob(g, 128, 128, 70, 16, `rgba(70,30,110,${0.25 * u})`, 'rgba(40,10,60,0)');
   g.strokeStyle = `rgba(170,110,240,${0.35 + 0.4 * u})`; g.lineWidth = 3;
-  g.beginPath(); g.ellipse(128, 200, 50 + 50 * u, 12 + 12 * u, 0, 0, Math.PI * 2); g.stroke();
+  g.beginPath(); g.ellipse(128, 128, 50 + 50 * u, 12 + 12 * u, 0, 0, Math.PI * 2); g.stroke();
 }
 
 // smoke pop: violet core, then billowing puffs that thin out
@@ -64,7 +69,7 @@ function fade(g, i) {
 
 const DRAW = { rooftiles: tiles, shadowpool: pool, shadowburst: burst, fade_far: fade };
 
-/** Paint every missing stand-in. Returns the keys painted ([] without a DOM canvas). */
+/** Paint every missing stand-in (a painted sheet that failed to load). Returns the keys painted ([] without a DOM canvas). */
 export function paintStage3Fx(scene) {
   const done = [];
   if (!scene?.textures?.addCanvas || typeof document === 'undefined' || !document.createElement) return done;
