@@ -266,12 +266,40 @@
   {
    "id": "cultist-master",
    "key": "s4cult",
-   "files": [],
-   "placeholder": true,
+   "files": [
+    "assets/bg4/s4cult.webp"
+   ],
+   "sha256": {
+    "assets/bg4/s4cult.webp": "d66f6be687eaf33d995ae3b275bf1d684ad698626aa06e66aa05d95a0e24fc0c"
+   },
+   "size": [
+    2720,
+    338
+   ],
+   "frame": [
+    340,
+    338
+   ],
+   "placeholder": false,
    "prompt": "docs/stage4/prompts/cultist-master.json",
-   "source": "procedural (src/stage4-art-cast.js)",
+   "source": "reskin",
    "art": {
-    "status": "code-drawn at boot; the HUD tag shows for it only under ?debug"
+    "status": "real painted art: reskin of an existing painted character atlas (same approach as the Stage 3 cutthroat/Fade, PR #32)",
+    "sourceFile": "assets/chars/archer-0.webp",
+    "sourceSha256": "89e3311b793c2907c5dad2d2124e880b0e4c08f172a16cb29dd2f623391601ce",
+    "sourceFrames": [
+     "archer_walk_00",
+     "archer_walk_02",
+     "archer_getup_00",
+     "archer_shoot_02",
+     "archer_shoot_04",
+     "archer_hurt_00",
+     "archer_knockdown_02",
+     "archer_flee_01"
+    ],
+    "method": "bow and string cut out (5 px opening + wood-colour growth, inpainted where they cross the body, hand-placed boxes for the quiver fletching); Lab region recolour: oxblood robe falling to black in the folds, near-black leathers, face sunk into the hood; the Whitecloak sun badge becomes the green charm; tells painted on top in the procedural colours (charm glow, chant rune rings, glowing bolt hand). Frame order and pose meaning match cultFrame; 340x338 cells, feet at 0.96, mirrored to face right (flee unmirrored: it runs away while the actor faces Riley)",
+    "tool": "tools/stage4/reskin_cultist.py",
+    "requestedBy": "Jason F, 2026-10-07 (reskin request; awaiting PR review)"
    }
   },
   {
