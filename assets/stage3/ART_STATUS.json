@@ -696,26 +696,32 @@
     "assets/stage3/props/prop-rooftiles.webp"
    ],
    "sha256": {
-    "assets/stage3/props/prop-rooftiles.webp": "67e66d745958eab4d6d911e8895dd9731571c7ae819fffa81d11d9663d428209"
+    "assets/stage3/props/prop-rooftiles.webp": "878518d2b9f961d98c34700fbd406cf72a7b9ea8ba5e9d3b81f8a9e42132bc21"
    },
    "placeholder": false,
    "prompt": "docs/stage3/prompts/prop-rooftiles.json",
    "source": "chatgpt-image",
    "contactSheet": "docs/stage3/shots/contact-stage3-fx.jpg",
    "art": {
-    "status": "real painted art: ChatGPT image generation, one collage per pair of effects in the approved style",
+    "status": "real painted art: ChatGPT image generation, tile re-roll (v2) of collage A row 1, requested by Jason after PR #40",
     "generator": "ChatGPT image generation",
     "generated": "2026-10-08",
-    "sourceFile": "art-in/stage3fx/fx-collage-a.src.png",
-    "sourceSha256": "51f40ed6cb23bc89484a06f59fc9b7fd6a074faf3fe8634744b3c34b8bbf90e0",
+    "sourceFile": "art-in/stage3fx/fx-tiles-v2.src.png",
+    "sourceSha256": "72174dbb9c306732725361eabee6e2af99d909eb526a6522ed8cd3a997e40fcd",
     "sourceSize": [
      1536,
      1024
     ],
-    "sourceSlot": "collage A row 1 (4 roof-tile clusters)",
-    "method": "magenta (~#FC03FB) keyed (background = bright key-hue region connected to the flat key plus a 3 px edge band; alpha from the key excess, colour unmixed from the key, see-through paint fully despilled), frames split by slot, 4 frames in collage order 1, 2, 4, 3 (slot 4 nearly repeats slot 1, so it plays between 2 and 3 instead of holding one pose for two frames); one scale 0.66; opaque tile mass centred at (118, 128); dust trails right (the art travels left, flipX turns it); lossless WebP",
+    "sourceSlot": "the single row of 4 three-tile clusters",
+    "method": "textured magenta keyed against a smooth local key field (normalised Gaussian of clean backdrop pixels); alpha solved only in a 3 px band around the paint, colour unmixed from the local key and despilled with no cap (no visible pixel has min(R,B) > G); blobs under 50 px dropped; frames split by slot, played in painted order 1, 2, 3, 4 (anticlockwise; see docs/stage3/FX-ART.md); one scale 0.76; alpha centroid on the cell centre (128, 128); lossless WebP",
     "tool": "tools/stage3/process_fx.py",
-    "approvedBy": "Jason F via Grok Bot, 2026-10-08"
+    "approvedBy": "Jason F via Grok Bot, 2026-10-08",
+    "supersedes": {
+     "sourceFile": "art-in/stage3fx/fx-collage-a.src.png",
+     "sourceSlot": "collage A row 1",
+     "sha256": "67e66d745958eab4d6d911e8895dd9731571c7ae819fffa81d11d9663d428209",
+     "why": "the v1 spin read as a back-and-forth rattle (slot 4 nearly repeated slot 1)"
+    }
    }
   },
   {

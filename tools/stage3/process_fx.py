@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Build the painted Stage 3 prop/FX sheets from the two ChatGPT collages (approved by Jason F via Grok Bot, 2026-10-08).
+"""Build the painted Stage 3 prop/FX sheets from three ChatGPT images (approved by Jason F via Grok Bot, 2026-10-08).
 
 Sources, kept verbatim:
-  art-in/stage3fx/fx-collage-a.src.png  1536x1024, flat magenta (~#FC03FB): row 1 = 4 roof-tile clusters,
-                                        row 2 = 4 frames of the far Fade running right with the blue-ribbon bundle
+  art-in/stage3fx/fx-collage-a.src.png  1536x1024, flat magenta (~#FC03FB): row 1 = 4 roof-tile clusters (v1, superseded
+                                        by fx-tiles-v2 and no longer read), row 2 = 4 frames of the far Fade running right
   art-in/stage3fx/fx-collage-b.src.png  1536x1024, flat green (~#04F902): row 1 = 4 shadow pools,
                                         rows 2-3 = the 6 shadow-burst frames (3 + 3, reading order)
+  art-in/stage3fx/fx-tiles-v2.src.png   1536x1024, textured/graded magenta: one row of 4 three-tile clusters turning
+                                        a rough quarter turn anticlockwise per slot (the tile re-roll; no dust)
 
 Outputs (same files, keys, sizes and 256x256 frame grid as the placeholder cards they replace):
   assets/stage3/props/prop-rooftiles.webp   1024x256  4 frames
@@ -19,17 +21,19 @@ Steps (deterministic: running it twice writes byte-identical files):
      region connected to the flat key (s > 200); a 3 px band around it catches anti-aliased outlines. Inside that
      soft area alpha = (sK - s) / sK and the colour is unmixed from the median key colour, then fully despilled
      (min(R,B) pulled down to G), so the pale-pink dust trails become see-through warm grey with no pink left.
-     Enclosed purple-ish paint (tile undersides) stays opaque, its excess capped at CAP.
+     Enclosed purple-ish paint (cloak shading) stays opaque, its excess capped at CAP.
      B (green): the same with g = G - max(R,B), and G <= max(R,B) everywhere (the smoke palette has no green).
+     tiles v2: key_local(): the backdrop is not flat, so the key colour is a smooth local field; alpha is solved only in
+     a 3 px band around the paint (no see-through art), and every visible pixel is despilled to min(R,B) <= G.
   2. frames: rows are the horizontal bands of painted pixels; within a row every blob goes to the slot (row width /
      frames) holding its centroid, so loose wisps and shards stay with their frame. Specks under 4 px are dropped.
   3. one scale per effect (premultiplied INTER_AREA), never per frame.
   4. registration in the 256x256 cell (the game draws every sheet with origin 0.5, 0.5):
-       tiles: the opaque tile mass centred at (TILE_X, 128); dust trails right (the art travels left, flipX turns it)
+       tiles: alpha centroid on the cell centre (128, 128), the pivot a spin turns about; order TILE_ORDER
        pool:  ellipse centred at (128, 128), the foot spot (wisps rise above it)
        burst: alpha centroid at (128, 128), 100 px above the actor's feet in game
        fade:  torso x locked at FADE_X; feet on FADE_FOOT for the grounded frames, the painted leap height kept
-  5. checks: nothing in the outer 1 px of a cell; no pink (A) / green (B) pixel left; then lossless WebP (lossy 4:2:0
+  5. checks: nothing in the outer 1 px of a cell; no pink (A, tiles: none at all) / green (B) pixel left; then lossless WebP (lossy 4:2:0
      chroma would smear pink/green back into the edges).
 
 Usage: python3 tools/stage3/process_fx.py [--debug DIR]   (needs numpy, opencv-python, Pillow, scipy)
@@ -43,16 +47,20 @@ from scipy import ndimage as ndi
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 SRC_A = os.path.join(ROOT, 'art-in', 'stage3fx', 'fx-collage-a.src.png')
 SRC_B = os.path.join(ROOT, 'art-in', 'stage3fx', 'fx-collage-b.src.png')
+SRC_T = os.path.join(ROOT, 'art-in', 'stage3fx', 'fx-tiles-v2.src.png')
 OUT = os.path.join(ROOT, 'assets', 'stage3', 'props')
 CONTACT = os.path.join(ROOT, 'docs', 'stage3', 'shots', 'contact-stage3-fx.jpg')
 F = 256
 CAP = 12.0                  # opaque paint keeps at most this much magenta excess (tile undersides read cool grey-violet)
-TILE_K, POOL_K, BURST_K, FADE_K = 0.66, 0.72, 0.54, 0.45
-TILE_X = 118                # opaque tile mass centre; the dust trail uses the room on the right
+TILE_K, POOL_K, BURST_K, FADE_K = 0.76, 0.72, 0.54, 0.45
 FADE_X, FADE_FOOT = 150, 196
-# frame order out of the collage slots. Tile slot 4 repeats slot 1 almost exactly, so it goes between 2 and 3:
-# 1,2,4,3 alternates the near-twin with the other two poses instead of holding one pose for two frames (a hitch).
-TILE_ORDER = [0, 1, 3, 2]
+# tile frame order out of the v2 row's slots (left to right = 1..4), chosen for the smoothest anticlockwise tumble
+# at the game's 8 fps (the art travels left; flipX turns it clockwise for tiles flying right). The painted order
+# 1,2,3,4 is the only cycle that turns anticlockwise all the way round (best-match turns about +122/+84/+116/+38 deg)
+# and also nets anticlockwise on the nearest-match reading the eye uses at speed; every other order nets clockwise
+# or has a ~180 deg step with no direction. See docs/stage3/FX-ART.md.
+TILE_ORDER = [0, 1, 2, 3]
+MIN_BLOB = 50               # tiles v2: anything smaller is backdrop texture, not paint
 
 
 def load(p):
@@ -95,6 +103,50 @@ def key(a, green):
         alpha[small] = 0
     rgb[alpha == 0] = 0
     return rgb, alpha
+
+
+def key_local(a):
+    """Magenta key over a textured, slightly graded backdrop (tiles v2). The key colour is a smooth field: the
+    local average of clean backdrop pixels (normalised Gaussian, sigma 12 px, widened where the paint
+    leaves no backdrop nearby). The art has no see-through parts, so alpha is only solved in a 3 px band around the
+    paint; the rest of the backdrop is fully clear whatever its texture. Colour is unmixed from the local key, then
+    despilled with no cap: no visible pixel keeps min(R,B) above G."""
+    R, G, B = a[..., 0], a[..., 1], a[..., 2]
+    s = np.minimum(R, B) - G
+    cand = (s > 30) & (a.mean(-1) > 140)
+    lbl, n = ndi.label(cand, structure=np.ones((3, 3)))
+    hit = np.unique(lbl[(s > 180) & cand])
+    bg = np.isin(lbl, hit[hit > 0])
+    core = ndi.binary_erosion(bg, np.ones((3, 3)), iterations=2) & (s > 150)
+
+    def field(sig):
+        w = cv2.GaussianBlur(core.astype(np.float32), (0, 0), sig)
+        k = np.dstack([cv2.GaussianBlur(np.where(core, a[..., c], 0).astype(np.float32), (0, 0), sig) for c in range(3)])
+        return k / np.maximum(w, 1e-4)[..., None], w
+    K, w = field(12)
+    for sig in (40, 120):
+        miss = w < 0.02
+        if not miss.any(): break
+        K2, w2 = field(sig)
+        K[miss], w = K2[miss], np.where(miss, w2, w)
+    sK = np.minimum(K[..., 0], K[..., 2]) - K[..., 1]
+    near = ndi.distance_transform_edt(bg) <= 3
+    soft = (bg & near) | (ndi.binary_dilation(bg, np.ones((3, 3)), iterations=3) & ~bg & (s > 8))
+    alpha = np.ones(s.shape, np.float32)
+    alpha[bg] = 0
+    alpha[soft] = np.clip((sK[soft] - s[soft]) / sK[soft], 0, 1)
+    alpha = np.where(alpha < 0.06, 0, np.where(alpha > 0.97, 1, alpha)).astype(np.float32)
+    am = np.maximum(alpha, 1e-3)[..., None]
+    Fc = np.clip((a - (1 - alpha)[..., None] * K) / am, 0, 255)
+    Fc = np.where(soft[..., None], Fc, a)
+    ex = np.maximum(np.minimum(Fc[..., 0], Fc[..., 2]) - Fc[..., 1], 0)
+    Fc[..., 0] -= ex; Fc[..., 2] -= ex
+    lb, m = ndi.label(alpha > 0, structure=np.ones((3, 3)))
+    if m:
+        sz = ndi.sum(np.ones_like(lb), lb, range(1, m + 1))
+        alpha[np.isin(lb, 1 + np.nonzero(sz < MIN_BLOB)[0])] = 0
+    Fc[alpha == 0] = 0
+    return Fc, alpha
 
 
 def bands(alpha, min_h=40):
@@ -150,11 +202,12 @@ def bbox(m):
 
 
 def tiles(frames):
+    # a spin turns about the centre of mass, so every frame puts its alpha centroid on the cell centre
     out = []
     for pm in frames:
         s = scale(pm, TILE_K)
-        x0, y0, x1, y1 = bbox(s[..., 3] > 0.9)
-        out.append(place(s, TILE_X - (x0 + x1) / 2, 128 - (y0 + y1) / 2))
+        cy, cx = ndi.center_of_mass(s[..., 3])
+        out.append(place(s, 128 - cx, 128 - cy))
     return [out[i] for i in TILE_ORDER]
 
 
@@ -199,7 +252,7 @@ def fades(frames):
 FADE_BOTTOMS = []          # filled by main(): where each far-Fade frame's lowest pixel sat in the collage
 
 
-def to_u8(cell, green):
+def to_u8(cell, green, cap=CAP):
     a = np.clip(cell[..., 3], 0, 1)
     rgb = np.where(a[..., None] > 0, cell[..., :3] / np.maximum(a, 1e-6)[..., None], 0)
     # resampling can mix a red and a blue-ish neighbour into a purple one: despill once more after scaling
@@ -207,7 +260,7 @@ def to_u8(cell, green):
     if green:
         G = np.minimum(G, np.maximum(R, B))
     else:
-        ex = np.maximum(np.minimum(R, B) - G - np.where(a >= 0.97, CAP, 0.0), 0)
+        ex = np.maximum(np.minimum(R, B) - G - np.where(a >= 0.97, cap, 0.0), 0)
         R, B = R - ex, B - ex
     rgb = np.stack([R, G, B], -1)
     a8 = np.round(a * 255).astype(np.uint8)
@@ -215,11 +268,11 @@ def to_u8(cell, green):
     return np.dstack([rgb8, a8])
 
 
-def strip(cells, green):
-    return np.concatenate([to_u8(c, green) for c in cells], 1)
+def strip(cells, green, cap=CAP):
+    return np.concatenate([to_u8(c, green, cap) for c in cells], 1)
 
 
-def check(name, s, green):
+def check(name, s, green, cap=CAP):
     a = s[..., 3].astype(int)
     for i in range(s.shape[1] // F):
         c = a[:, i * F:(i + 1) * F]
@@ -227,7 +280,7 @@ def check(name, s, green):
     R, G, B = (s[..., j].astype(int) for j in range(3))
     vis = a > 8
     # pink/magenta = R and B both above G. Opaque paint may keep CAP (cool shading); see-through paint keeps none.
-    bad = vis & ((G - np.maximum(R, B) > 2) if green else (np.minimum(R, B) - G > np.where(a >= 247, CAP + 2, 2)))
+    bad = vis & ((G - np.maximum(R, B) > 2) if green else (np.minimum(R, B) - G > np.where(a >= 247, cap + 2, 2)))
     assert not bad.any(), f'{name}: {int(bad.sum())} {"green" if green else "pink"} pixels left'
     return int(vis.sum())
 
@@ -272,7 +325,11 @@ def main():
     rgbB, alB = key(load(SRC_B), True)
     bA, bB = bands(alA), bands(alB)
     assert len(bA) == 2 and len(bB) == 3, (bA, bB)
-    t = slots(rgbA, alA, bA[0], 4)
+    # collage A's top row (the v1 tiles) is superseded by fx-tiles-v2 and no longer read
+    rgbT, alT = key_local(load(SRC_T))
+    bT = bands(alT)
+    assert len(bT) == 1, bT
+    t = slots(rgbT, alT, bT[0], 4)
     f = slots(rgbA, alA, bA[1], 4)
     p = slots(rgbB, alB, bB[0], 4)
     b = slots(rgbB, alB, bB[1], 3) + slots(rgbB, alB, bB[2], 3)
@@ -280,21 +337,21 @@ def main():
     y0, A, W = bA[1][0], alA[bA[1][0]:bA[1][1]], alA.shape[1]
     FADE_BOTTOMS[:] = [y0 + np.nonzero(A[:, int(k * W / 4):int((k + 1) * W / 4)].any(1))[0].max() + 1 for k in range(4)]
     sheets = [
-        ('prop-rooftiles', strip(tiles(t), False), False),
-        ('fx-shadowpool', strip(pools(p), True), True),
-        ('fx-shadowburst', strip(bursts(b), True), True),
-        ('fx-fade-far', strip(fades(f), False), False),
+        ('prop-rooftiles', strip(tiles(t), False, 0.0), False, 0.0),
+        ('fx-shadowpool', strip(pools(p), True), True, CAP),
+        ('fx-shadowburst', strip(bursts(b), True), True, CAP),
+        ('fx-fade-far', strip(fades(f), False), False, CAP),
     ]
     os.makedirs(OUT, exist_ok=True)
-    for name, arr, green in sheets:
-        n = check(name, arr, green)
+    for name, arr, green, cap in sheets:
+        n = check(name, arr, green, cap)
         path = os.path.join(OUT, name + '.webp')
         save_webp(arr, path)
         print(f'{name}: {arr.shape[1]}x{arr.shape[0]}, {n} visible px, {os.path.getsize(path)} B, sha256 {hashlib.sha256(open(path, "rb").read()).hexdigest()}')
         if dbg:
             os.makedirs(dbg, exist_ok=True)
             Image.fromarray(arr, 'RGBA').save(os.path.join(dbg, name + '.png'))
-    contact([(n, a) for n, a, _ in sheets]).save(CONTACT, 'JPEG', quality=88)
+    contact([(n, a) for n, a, _, _ in sheets]).save(CONTACT, 'JPEG', quality=88)
     print('contact', os.path.relpath(CONTACT, ROOT))
 
 
