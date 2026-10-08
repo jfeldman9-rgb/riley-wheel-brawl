@@ -1,0 +1,251 @@
+{
+ "version": 1,
+ "note": "Video cutscenes stream on demand (src/cutscene.js); not part of the 25 MB pre-fight sum. Stage 5 (stage5_v1) is encoded but not shipped until Stage 5 goes live.",
+ "entries": [
+  {
+   "id": "twinkletoes",
+   "files": [
+    "assets/cutscenes/twinkletoes.mp4",
+    "assets/cutscenes/twinkletoes.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/twinkletoes.mp4": "e7403341f8f003e9cf38ec41e8692f3706def299cf7545e0bc6737a6f7ee1cb9",
+    "assets/cutscenes/twinkletoes.jpg": "45f3c98a0a72a6c0458190216ba1d6478601638cf9c399725904efc31eb2e205"
+   },
+   "bytes": {
+    "assets/cutscenes/twinkletoes.mp4": 1668808,
+    "assets/cutscenes/twinkletoes.jpg": 29496
+   },
+   "durationSeconds": 11.417,
+   "placeholder": false,
+   "source": "grok-imagine",
+   "plays": "intro 1/3 (after the first title tap)",
+   "shows": "Twinkle Toes snatched mid-recital by a farting Trolloc (comedic). The first 3.625 s wide shot is cut: a second Trolloc materialises there (generation glitch).",
+   "art": {
+    "status": "photoreal generated video (Grok Imagine), 1280x720 15 s with audio, re-encoded for the web",
+    "sourceFile": "twinkletoes_v1.mp4",
+    "sourceSha256": "b75c4cfc8b8e05374e5cbda10331733c8feff2d41dea3d7c6ac5a1ec2c08182e",
+    "trimStartSeconds": 3.625,
+    "encode": "tools/cutscenes/encode_cutscenes.sh (H.264 main 960x540 CRF 27/29, yuv420p, +faststart, AAC 96k, loudness toward -20 LUFS)",
+    "likeness": "Riley appears only from behind; no real person's face is depicted.",
+    "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07"
+   }
+  },
+  {
+   "id": "moiraine",
+   "files": [
+    "assets/cutscenes/moiraine.mp4",
+    "assets/cutscenes/moiraine.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/moiraine.mp4": "a5a3a12d6c99ff995e8e1b7452438ff769f97d45f98252d711c5798b96ba7181",
+    "assets/cutscenes/moiraine.jpg": "5f090d093be646e0adccefbece4984fb3441122ab52de1606c13dd650dd3e8b1"
+   },
+   "bytes": {
+    "assets/cutscenes/moiraine.mp4": 1592357,
+    "assets/cutscenes/moiraine.jpg": 19786
+   },
+   "durationSeconds": 15.042,
+   "placeholder": false,
+   "source": "grok-imagine",
+   "plays": "intro 2/3",
+   "shows": "Moiraine on the Winternight green, light gathering in her hand.",
+   "art": {
+    "status": "photoreal generated video (Grok Imagine), 1280x720 15 s with audio, re-encoded for the web",
+    "sourceFile": "moiraine_v1.mp4",
+    "sourceSha256": "a2640a12caf40168d8a4d4e1fe6e46801a66d341bfd651ca2f42a2b0bee54185",
+    "trimStartSeconds": 0,
+    "encode": "tools/cutscenes/encode_cutscenes.sh (H.264 main 960x540 CRF 27/29, yuv420p, +faststart, AAC 96k, loudness toward -20 LUFS)",
+    "likeness": "Riley appears only from behind; no real person's face is depicted.",
+    "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07"
+   }
+  },
+  {
+   "id": "intro",
+   "files": [
+    "assets/cutscenes/intro.mp4",
+    "assets/cutscenes/intro.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/intro.mp4": "8b6590ab0d1cc5850a76bce5385d6dd8fb4fce09a034bb348f2f26cd77d1fcc8",
+    "assets/cutscenes/intro.jpg": "959a2d389ebb623295ec4376987082e9504a38eaa13c86150109e1df5ca62fe2"
+   },
+   "bytes": {
+    "assets/cutscenes/intro.mp4": 2854830,
+    "assets/cutscenes/intro.jpg": 28634
+   },
+   "durationSeconds": 15.042,
+   "placeholder": false,
+   "source": "grok-imagine",
+   "plays": "intro 3/3, then Stage 1",
+   "shows": "Riley (only ever seen from behind, black coat) faces charging Trollocs with fire in his hands.",
+   "art": {
+    "status": "photoreal generated video (Grok Imagine), 1280x720 15 s with audio, re-encoded for the web",
+    "sourceFile": "intro_v2.mp4",
+    "sourceSha256": "5c1e28c95598edf210dca2f9dde0eae4a677bfd33d2a9a5ca6a55cf39820fe9b",
+    "trimStartSeconds": 0,
+    "encode": "tools/cutscenes/encode_cutscenes.sh (H.264 main 960x540 CRF 27/29, yuv420p, +faststart, AAC 96k, loudness toward -20 LUFS)",
+    "likeness": "Riley appears only from behind; no real person's face is depicted.",
+    "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07"
+   }
+  },
+  {
+   "id": "intro_battle",
+   "files": [
+    "assets/cutscenes/intro_battle.mp4",
+    "assets/cutscenes/intro_battle.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/intro_battle.mp4": "46849630cf7c956fe44910bd8ac4042a8428ac9401d001289423aeca47805b27",
+    "assets/cutscenes/intro_battle.jpg": "1a8e34df184366fd63769b221d39d336699a15f5554654e98d74c8a89f2b0650"
+   },
+   "bytes": {
+    "assets/cutscenes/intro_battle.mp4": 4427021,
+    "assets/cutscenes/intro_battle.jpg": 35234
+   },
+   "durationSeconds": 18.125,
+   "placeholder": false,
+   "source": "grok-imagine",
+   "plays": "intro 4/4, right after intro_v2, then Stage 1",
+   "shows": "Battle edit: Riley (from behind) fights the Trolloc pack with fire; ends on Riley's \"TWINKLE TOES!\" yell.",
+   "art": {
+    "status": "photoreal generated video (Grok Imagine), three shots s1/s2b/s3b edited to 18.1 s at 1280x720, re-encoded for the web",
+    "sourceFile": "battle_edit_v1.mp4",
+    "sourceSha256": "4dee8621985498b5a11dae42d9bc2c49f09d9ce2678ac7d2916dff8bff8b3c73",
+    "trimStartSeconds": 0,
+    "encode": "tools/cutscenes/encode_cutscenes.sh (H.264 main 960x540 CRF 27/29, yuv420p, +faststart, AAC 96k, loudness toward -20 LUFS)",
+    "likeness": "Riley appears only from behind; no real person's face is depicted.",
+    "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07",
+    "shots": [
+     "s1",
+     "s2b",
+     "s3b"
+    ]
+   },
+   "voice": {
+    "line": "TWINKLE TOES!",
+    "speaker": "Riley",
+    "tool": "ElevenLabs",
+    "voice": "DYLO",
+    "model": "eleven_v3",
+    "mixedIntoSource": true
+   }
+  },
+  {
+   "id": "stage1",
+   "files": [
+    "assets/cutscenes/stage1.mp4",
+    "assets/cutscenes/stage1.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/stage1.mp4": "dff606fa9bbf27a339a5e12d720ceef88b995dd171be0aa6f1eba18fd8bd1233",
+    "assets/cutscenes/stage1.jpg": "56413a45fd00d30b7ef78f0cbb996fae03a289a29804ad38face0026ca1b8b2d"
+   },
+   "bytes": {
+    "assets/cutscenes/stage1.mp4": 2549035,
+    "assets/cutscenes/stage1.jpg": 40024
+   },
+   "durationSeconds": 15.042,
+   "placeholder": false,
+   "source": "grok-imagine",
+   "plays": "Stage 1, before the Trolloc Chieftain fight",
+   "shows": "The Trolloc Chieftain roaring in the burning village.",
+   "art": {
+    "status": "photoreal generated video (Grok Imagine), 1280x720 15 s with audio, re-encoded for the web",
+    "sourceFile": "stage1_v1.mp4",
+    "sourceSha256": "a95adb01ed110731cfb464fa8716442e1982f5b4f59938965191926f1a78da90",
+    "trimStartSeconds": 0,
+    "encode": "tools/cutscenes/encode_cutscenes.sh (H.264 main 960x540 CRF 27/29, yuv420p, +faststart, AAC 96k, loudness toward -20 LUFS)",
+    "likeness": "Riley appears only from behind; no real person's face is depicted.",
+    "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07"
+   }
+  },
+  {
+   "id": "stage2",
+   "files": [
+    "assets/cutscenes/stage2.mp4",
+    "assets/cutscenes/stage2.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/stage2.mp4": "6e71de67da8424c829a96c9ee41e815ea4a26e7f8d783100decce0f856d5b660",
+    "assets/cutscenes/stage2.jpg": "464923f975c8bb32daf175aa876bdecf13b563dade77c697209102e029957fff"
+   },
+   "bytes": {
+    "assets/cutscenes/stage2.mp4": 2551429,
+    "assets/cutscenes/stage2.jpg": 34497
+   },
+   "durationSeconds": 15.042,
+   "placeholder": false,
+   "source": "grok-imagine",
+   "plays": "Stage 2 start, before the story panels",
+   "shows": "Whitecloaks and the burning barn; Riley from behind.",
+   "art": {
+    "status": "photoreal generated video (Grok Imagine), 1280x720 15 s with audio, re-encoded for the web",
+    "sourceFile": "stage2_v2.mp4",
+    "sourceSha256": "a0ed8825b681fc8df13b3810c9dd4c8edc802e40d126154eb2045b3fdf584693",
+    "trimStartSeconds": 0,
+    "encode": "tools/cutscenes/encode_cutscenes.sh (H.264 main 960x540 CRF 27/29, yuv420p, +faststart, AAC 96k, loudness toward -20 LUFS)",
+    "likeness": "Riley appears only from behind; no real person's face is depicted.",
+    "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07"
+   }
+  },
+  {
+   "id": "stage3",
+   "files": [
+    "assets/cutscenes/stage3.mp4",
+    "assets/cutscenes/stage3.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/stage3.mp4": "d0a5f2249dd5bfe6e3bbd673bfbf4fa82bf64a9f9216fb130577f357f5dfe711",
+    "assets/cutscenes/stage3.jpg": "fc3134e2fbf4c2b68126cd976938b45cb8c67b80e8a90c7550de16067aef7164"
+   },
+   "bytes": {
+    "assets/cutscenes/stage3.mp4": 1922332,
+    "assets/cutscenes/stage3.jpg": 22704
+   },
+   "durationSeconds": 15.042,
+   "placeholder": false,
+   "source": "grok-imagine",
+   "plays": "Stage 3 start, before the story panels",
+   "shows": "The Myrddraal on moonlit rooftops, cutthroats creeping.",
+   "art": {
+    "status": "photoreal generated video (Grok Imagine), 1280x720 15 s with audio, re-encoded for the web",
+    "sourceFile": "stage3_v1.mp4",
+    "sourceSha256": "03b6ceda7e8da02c3376cc289f3639204ce29e059342811688e4911695f1a290",
+    "trimStartSeconds": 0,
+    "encode": "tools/cutscenes/encode_cutscenes.sh (H.264 main 960x540 CRF 27/29, yuv420p, +faststart, AAC 96k, loudness toward -20 LUFS)",
+    "likeness": "Riley appears only from behind; no real person's face is depicted.",
+    "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07"
+   }
+  },
+  {
+   "id": "stage4",
+   "files": [
+    "assets/cutscenes/stage4.mp4",
+    "assets/cutscenes/stage4.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/stage4.mp4": "1254295ce0800272dd117521904a4d08e5b8d40b3d1aa0df7006104a1e595f94",
+    "assets/cutscenes/stage4.jpg": "b4462ec0c4ce383cb3d09f42a2a4220733c0557ba602f57f5c25ec38a1ad85b5"
+   },
+   "bytes": {
+    "assets/cutscenes/stage4.mp4": 1847660,
+    "assets/cutscenes/stage4.jpg": 25765
+   },
+   "durationSeconds": 15.042,
+   "placeholder": false,
+   "source": "grok-imagine",
+   "plays": "Stage 4 start, before the story panels",
+   "shows": "Shadar Logoth: cultists, the Draghkar lands and spreads its wings.",
+   "art": {
+    "status": "photoreal generated video (Grok Imagine), 1280x720 15 s with audio, re-encoded for the web",
+    "sourceFile": "stage4_v2.mp4",
+    "sourceSha256": "7aa0c672878e22f4de1bb2cb1d3326bde1ea559dbcf4caa493bcfcb03a5bd8c4",
+    "trimStartSeconds": 0,
+    "encode": "tools/cutscenes/encode_cutscenes.sh (H.264 main 960x540 CRF 27/29, yuv420p, +faststart, AAC 96k, loudness toward -20 LUFS)",
+    "likeness": "Riley appears only from behind; no real person's face is depicted.",
+    "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07"
+   }
+  }
+ ]
+}

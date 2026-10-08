@@ -1,5 +1,5 @@
 // Deterministic shipped-content audit. Reports open acceptance gaps; it never lowers gates.
-import { readFileSync, statSync, readdirSync } from 'node:fs';
+import { readFileSync, statSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -58,11 +58,16 @@ export function audit() {
   // Restart fix (quality governor moved out of main.js, freeze-guard resume). Same split as the iOS hotfix:
   // the Stage 1 gate has about 100 bytes left, so these modules carry their own budget line.
   const RESTART_SRC = new Set(['quality-governor.js', 'recovery.js']);
+  // Video cutscenes: the controller and its hooks load with main.js but the clips stream on demand, never before
+  // the first fight. Their own budget line, same split as restartHotfix (the clips are under cutscenes.clips).
+  const CUTSCENE_SRC = new Set(['cutscene.js', 'cutscene-hooks.js']);
+  const cutsceneSourceFiles = [];
   const stage4SourceFiles = [];
   const iosSourceFiles = [];
   const restartSourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
-    if (RESTART_SRC.has(name)) restartSourceFiles.push(`src/${name}`);
+    if (CUTSCENE_SRC.has(name)) cutsceneSourceFiles.push(`src/${name}`);
+    else if (RESTART_SRC.has(name)) restartSourceFiles.push(`src/${name}`);
     else if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);
     else if (IOS_SRC.has(name)) iosSourceFiles.push(`src/${name}`);
     else files.add(`src/${name}`);
@@ -94,6 +99,11 @@ export function audit() {
   const iosSourceBudget = 24 * 1024;
   const restartSourceBytes = restartSourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const restartSourceBudget = 16 * 1024;
+  const cutsceneSourceBytes = cutsceneSourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const cutsceneSourceBudget = 20 * 1024;
+  const cutsceneClips = existsSync(resolve(ROOT, 'assets/cutscenes')) ? readdirSync(resolve(ROOT, 'assets/cutscenes')).filter(n => /\.(mp4|jpg)$/.test(n)).sort().map(n => `assets/cutscenes/${n}`) : [];
+  const cutsceneClipBytes = cutsceneClips.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const cutsceneClipBudget = 25_000_000;
   const stage4SourceBudget = 192 * 1024;
   const stage3VoiceBudget = 18 * 200 * 1024, stage3MusicBudget = 2 * 1_200_000;
   const stage4VoiceBudget = 23 * 200 * 1024, stage4MusicBudget = 2 * 1_200_000;
@@ -120,6 +130,14 @@ export function audit() {
       source: { files: restartSourceFiles, bytes: restartSourceBytes, budgetBytes: restartSourceBudget,
         status: restartSourceBytes <= restartSourceBudget ? 'PASS' : 'FAIL',
         note: 'Quality governor and freeze-guard resume. Not folded into the 25 MB pre-fight sum, the same split as iosHotfix.' },
+    },
+    cutscenes: {
+      source: { files: cutsceneSourceFiles, bytes: cutsceneSourceBytes, budgetBytes: cutsceneSourceBudget,
+        status: cutsceneSourceBytes <= cutsceneSourceBudget ? 'PASS' : 'FAIL',
+        note: 'Video cutscene controller and hooks. Not folded into the 25 MB pre-fight sum, the same split as restartHotfix.' },
+      clips: { files: cutsceneClips, bytes: cutsceneClipBytes, budgetBytes: cutsceneClipBudget,
+        status: cutsceneClipBytes <= cutsceneClipBudget ? 'PASS' : 'FAIL',
+        note: 'Streamed one at a time through a temporary <video> when a cutscene starts; nothing is preloaded, so they are outside the pre-fight sum.' },
     },
     stage3: {
       voices: { count: stage3VoiceCount, bytes: stage3VoiceBytes, budgetBytes: stage3VoiceBudget,

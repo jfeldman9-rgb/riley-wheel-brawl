@@ -11,6 +11,7 @@ import { installGraphicsNotice } from './graphics-notice.js';
 import { fit } from './guard.js';
 import { installGovernor } from './quality-governor.js';
 import { resumeGame, installResumeCleanup } from './recovery.js';
+import { installCutscenes } from './cutscene-hooks.js';
 class Boot extends Phaser.Scene {
   constructor() { super('boot'); }
   preload() { window.__rwbStartup?.watchLoader(this.load); this.load.setCORS('anonymous'); queueCharJson(this); this.load.image('portrait', 'assets/ui/riley-portrait.webp'); this.load.image('bossPortrait', 'assets/ui/chief-portrait.webp'); this.load.image('loialPortrait', 'assets/ui/loial-portrait.webp'); this.load.image('byarPortrait', 'assets/ui/byar-portrait.webp'); }
@@ -33,3 +34,4 @@ game.events.on('step', (time, delta) => game.inp.update(Math.min(delta || 0, 50)
 installGovernor(game, { q, rs0: RS0, vw: VW, vh: VH, meter: perf });
 fit(game);
 installResumeCleanup(game, q, window);
+installCutscenes();
