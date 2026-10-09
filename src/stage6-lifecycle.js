@@ -194,8 +194,10 @@ export function restoreStage6Hooks(kit) {
 export function lateEnemies(bot) {
   const d = bot.lag, s = bot.s, t = bot.t, m = bot.mem || (bot.mem = new Map()), out = [];
   bot._e = s.enemies;
+  const present = new Set(s.enemies || []);
+  for (const e of m.keys()) if (!present.has(e) || e.alive === false || e.gone) m.delete(e);
   for (const e of s.enemies || []) {
-    if (!e || e.type === 'hatch' || e.entering || e.alive === false) continue;
+    if (!e || e.type === 'hatch' || e.entering || e.alive === false || e.gone) continue;
     if (e.type === 'grayman' && !grayVisible(e)) continue;
     let a = m.get(e);
     if (!a) m.set(e, a = []);

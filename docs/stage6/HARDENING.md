@@ -108,3 +108,63 @@ The measurements above are asset/renderer inventories at scale 1, not process RS
 device guarantee; the known Stage 5 retina render-target risk still applies. Source still contains the pre-existing
 HUD debug marker identifier and earlier-stage comments at HEAD; the protected HUD is byte-identical and no new
 Stage 6 source contains that string. No marker is displayed without `?debug` in any of the six stage boss loops.
+
+## Review-fix cycle (Codex Sol 6.1)
+
+Started at `359e815` on `rwb-2-stage6`. Read this history, `CONTRACT.md`, and the outside review at
+`/workspace/ag/codex-run-s6b/kimi-review.md`. Checked the claims against the complete runtime, including
+Stage6Kit, arena, CutscenePlayer, main-player hooks, Stage1, Riley, shared Input, bot and simulation harness.
+Stage 6 remains behind `?s6=1`. No commits, stashes, pushes, merges or other-branch changes.
+
+All five confirmed defects had failing tests in new files before production changes. The corrected-fixture
+baseline in [review-reproductions.tap](review-reproductions.tap) contains **14 tests: 1 pass, 13 fail**.
+The failures include extra defensive terminal-state checks with deliberately retained stale timers; these
+are coverage of finding 1, not claims that counter/hurt paths independently corrupt death. Initial local
+fixtures without an eligible enemy were corrected before this recorded baseline and before fixes.
+Existing tests and helpers were not edited, loosened, skipped or deleted.
+
+| Finding | Verdict and reproduced evidence | Fix / touched production file |
+|---|---|---|
+| 1. Rand stagger overwrites Be'lal's erase | **REAL, P1.** `lethal Riley hit during Rand stagger completes erase and the real bossDown path exactly once` in `stage6-review-combat.test.mjs` applies Rand at 39 HP, then a lethal Riley hit at 1 HP. Before fixing, Be'lal remains alive after 120 updates and never reaches bossDown. Stage1 has no independent zero-HP boss cleanup: victory depends on `onEnemyDie`. The phase-3 gate allows Riley's lethal hit; Rand itself cannot kill. | `belal.js` dispatches erase/dead before temporary states and clears `randStagger` in `beginErase`. Exactly one death notification now reaches the real Stage1 victory path and the body retires. Counter and channel-break mutations occur before `guard`, and ordinary hits do not install Fighter hit stun; none independently overwrites a terminal state. Three additional regressions pin terminal priority and rejected repeated hits. `rand-call.js` needs no change. |
+| 2. Throwing storage getter strands the call | **REAL, P2.** The three `throwing sessionStorage getter at initial/finish/warm cannot strand a spent Rand call` tests in `stage6-review-lifecycle.test.mjs` reproduce the escaped getter and missing strike callback. The game frame guard catches update exceptions but does not undo `trySpend`; CutscenePlayer catches a thrown completion callback but does not retry it. Neither guard repairs busy state. | `rand-call-cutscene.js` obtains storage through a safe accessor at warmup, initial selection and completion/prefetch. The bag falls back to memory, the strike runs and busy clears. `resetRandCall(storage, rng)` has no root getter access: its explicitly supplied storage's getItem/setItem accesses already run inside createBag's catches. |
+| 3. Lunge continues into the protected wall zone | **REAL, P2.** Four mirrored `lunge tell/active aborts when Riley enters the left/right 140px wall zone` regressions in `stage6-review-combat.test.mjs` fail before the fix: the tell launches and active movement advances toward the wall. The contract's prohibition applies during movement, not just selection. | `belal.js` rechecks at launch and before each active movement/hit, aborts to idle with the existing 0.7 s lunge recovery, and keeps the existing 0.7 s tell. Early cancellation during the tell was rejected by campaign validation (seed 10 ratio 0.679); the final launch check preserves the existing tell clock and all campaign constraints. Away-from-wall lunges remain allowed. Both mirrored cancelled active lunges still permit close pinned flurries; the unchanged 60 s wall-pin test still passes. |
+| 4. Bot sample map retains departed enemies | **REAL, P3, bot only.** `delayed bot memory follows current living enemies across replacement waves` in `stage6-review-lifecycle.test.mjs` observes 3 retained entries instead of 1 after death/removal. Bot.destroy does not clear the map; normal scene teardown releases the bot, but that does not solve retention during a campaign. | `stage6-lifecycle.js` prunes absent, dead and gone keys before sampling and excludes gone enemies from new samples. Thirty replacement waves now track live population, preserve delayed samples, and return to zero entries between waves. |
+
+The additional review boundaries were checked as follows:
+
+| Area | Verdict / evidence / fix |
+|---|---|
+| a. Skip input | **REAL for held gamepad Start; NOT REAL for the checked keyboard/touch/pointer paths.** `gamepad Start held after a Rand skip cannot leak a manual pause before the first resumed scene update` in `stage6-review-input.test.mjs` reproduced a manual pause before the Stage 6 flush wrapper. Pinned Phaser Game.step emits no STEP while game-paused; main.js polls pads on STEP before scene update. At video exit Input.pollPad therefore creates a fresh Start edge and Stage1.onPress toggles manual pause. `rand-call-cutscene.js` now polls once while the cutscene still owns onPress, then flushes: held edges are consumed, a release/new press still pauses normally. New keyboard and touch tests use production Input/Stage1.onPress, hold/repeat/release through the strike, verify idle after resume and a working fresh attack. Input ignores keyboard repeat; touch release emits no press; overlay touchend prevents the compatibility click. The overlay is a DOM sibling above the canvas, so its bubbling events do not target the canvas's pointerdown controls; the title pointer callback also rejects a started fight. Shared input bytes/controls/layout are unchanged. |
+| b. Safari video/audio unlock | **NOT REAL as a reproduced unlock or listener leak.** Existing second-player reuse/muted retry tests and the new `Rand retains two owned capture listeners for muted-play unmute and removes both on teardown` test verify the blessed element is reused, both inline attributes and playsInline, play-promise rejection handling, NotAllowedError's muted retry, and gesture unmute on that same element. The two capture listeners intentionally remain after the first gesture so later muted playback can unmute; they do not accumulate and both disappear on Stage6Kit teardown. Removing them on first use would lose that recovery path. This is deterministic behavior evidence, not proof of physical Safari sound unlock. |
+| c. Media cleanup | **NOT REAL.** `player abort synchronously releases its interval, listeners, source and overlay without invoking done` in `stage6-review-video.test.mjs` pins abort's immediate cleanup. CutscenePlayer.finish clears the single interval (also owns start/stall checks), removes ended/error/overlay/resize listeners, pauses, clears src/poster, calls load and detaches the overlay. Abort calls finish with null and **never calls done**, synchronously or later. Existing completion/skip/decode/refusal/stall/start-timeout/construction-failure/prefetch-race tests pass. Rand removes its shutdown listener and invalidates blob generations. The watchdog belongs to the game, not a call: a cleared scene.cutscene makes its next tick inert. A successfully completed player object is deliberately reusable; its detached video has no source or active decoding. |
+| d. Exit/strike races | **NOT REAL beyond finding 1's boss-death interaction.** Eight new `death/quit/restart/stage switch / Rand exit/completion first: no late strike, damage or retained media` regressions in `stage6-review-video.test.mjs` use the real scene death hook or shutdown handler in both orders, and check the 899/900 ms guard. Exiting first aborts without invoking the strike callback; completing first creates the strike synchronously and exit disposes it. The target's HP remains unchanged, all media/timers are released, busy clears, and late events are inert. A Riley death keeps the scene's own shutdown handler (for respawn), while removing Rand's handler. Existing mid-strike death/disposal tests cover lights, visuals, freeze clocks and no granted death i-frames; continue/quit/restart/stage-switch tests remain green. |
+
+New tests: `stage6-review-combat.test.mjs` (9), `stage6-review-lifecycle.test.mjs` (4),
+`stage6-review-input.test.mjs` (3), `stage6-review-video.test.mjs` (10).
+[review-focused.tap](review-focused.tap): **26 pass, 0 fail, 0 skip**.
+Production edits are only `src/belal.js`, `src/rand-call-cutscene.js`, `src/stage6-lifecycle.js`.
+No new source modules, audit exceptions, minification, comment removal, assets or difficulty tuning.
+
+Final validation:
+
+- `node --test tests/*.test.mjs`: **1325 tests, 1323 pass, 0 fail, 2 existing skips**.
+  [review-suite.tap](review-suite.tap) includes Stage 3, 4 and 5 campaigns **9/9 each**, plus Stage 5 no-power seed 1.
+- Stage 6 **9/9 without Rand, 9/9 with Rand, 9/9 at 250 ms lag**. Paired boss-time ratios
+  **0.708–1.009** (rounded test diagnostics); all unrounded values pass 0.70–1.02.
+  [review-campaign.tap](review-campaign.tap). Unchanged Stage 6 no-power and 60 s wall-pin checks also pass.
+- `node tools/audit-stage1.mjs`: exit **0**, pre-fight **24,904,870 / 25,000,000 bytes**;
+  Stage 6 source **106,473 / 196,608 bytes**, with all file caps passing.
+  [review-audit.json](review-audit.json). Every edited source remains outside pre-fight inventory.
+- `node tests/helpers/run-full-stage-simulations.mjs > /tmp/sim.json` exits **0**;
+  the requested `jq del(.sourceSha256,.baseGitCommit)` payload diff is empty. All evidence source hashes
+  still match, so **no hashes were refreshed** and the Stage 1 evidence file is unchanged.
+- Protected diffs against `origin/rwb-w2` for Input/lib/index, against `origin/rwb-2-stage5` and HEAD
+  for HUD, and against HEAD for existing tests/helpers are empty. `git diff --check` passes.
+  The all-src Safari 15 forbidden syntax/API scan reports no violations. Removed the ignored Python
+  bytecode cache produced by the suite; no `__pycache__` or `.pyc` remains.
+
+Remaining limits: no new physical iPhone/iPad, Safari 15 audio-unlock, controller-hardware or rendering
+acceptance run; the video/gesture/race evidence is deterministic DOM plus production gameplay logic.
+Rand media/voice assets remain absent as in cycle 1. The literal no-`placeholder`-anywhere-in-src instruction
+conflicts with required byte-identical HUD: that existing identifier and earlier Stage 4/5 property/comments
+remain in their unchanged files, as documented in cycle 1. No edited/new Stage 6 source contains the string.

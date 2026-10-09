@@ -40,11 +40,12 @@ export function createBag(storage, rng = Math.random, ids) {
 }
 
 function bagOf(storage) { if (!bag) bag = createBag(storage); return bag; }
+function storageOf(root) { try { return root.sessionStorage; } catch { return undefined; } }
 
 export function warmRand(scene) {
   const root = scene?.cutRoot || globalThis;
   if ((scene?.kit?.quality | 0) >= 4 || (scene?.fx?.quality | 0) >= 4) { dropBlob(); return Promise.resolve(false); }
-  const id = bagOf(root.sessionStorage).peek();
+  const id = bagOf(storageOf(root)).peek();
   return prefetchRand(id, root.fetch || globalThis.fetch);
 }
 
@@ -127,19 +128,22 @@ export function abortRandCall(scene) {
 export function playCall(scene, then) {
   const root = scene?.cutRoot || globalThis;
   if (!cutscenesEnabled(q, root.navigator) || handle?.active || scene.cutscene) return false;
-  const id = bagOf(root.sessionStorage).next();
+  const id = bagOf(storageOf(root)).next();
   let once = false;
   const finish = how => {
     if (once) return;
     once = true;
     handle = null;
+    // Game.step did not poll pads under the video. Consume held edges while the
+    // cutscene still owns onPress, before a Start edge can toggle manual pause.
+    try { scene.inp?.pollPad?.(); } catch { /* disconnected pad */ }
     offShutdown?.(); offShutdown = null;
     unpauseGame?.(); unpauseGame = null;
     flushInp(scene);
     scene.cutscene = null;
     scene.setPauseReason?.('cutscene', false);
     unduck(scene);
-    const next = bagOf(root.sessionStorage).peek();
+    const next = bagOf(storageOf(root)).peek();
     if ((scene.kit?.quality | 0) >= 4 || (scene.fx?.quality | 0) >= 4) dropBlob();
     else { dropBlob(); prefetchRand(next, root.fetch || globalThis.fetch); }
     try { then(how); } catch (e) { root.console?.error?.(e); }

@@ -62,13 +62,13 @@ export class Belal {
   }
   sub(dt) {
     this.st += dt; if (this.cool > 0) this.cool -= dt;
+    if (this.state === 'erase') return this.eraseStep();
+    if (this.state === 'dead') { if (this.st > 0.4) this.gone = true; return; }
     if (this.randStagger > 0) {
       this.randStagger -= dt; this.state = 'stagger'; this.counterUsed = true;
       if (this.randStagger <= 0 && this.alive) { this.state = 'idle'; this.st = 0; this.counterUsed = false; }
       return;
     }
-    if (this.state === 'erase') return this.eraseStep();
-    if (this.state === 'dead') { if (this.st > 0.4) this.gone = true; return; }
     if (this.state === 'stagger') { if (this.st >= BELAL.stun) { this.state = 'idle'; this.st = 0; this.counterUsed = false; } return; }
     if (this.beat || this.invuln) { if (this.st > 0.45) { this.beat = false; this.invuln = false; this.state = 'idle'; this.st = 0; } return; }
     if (this.state === 'attack') return this.flurry();
@@ -119,8 +119,18 @@ export class Belal {
       this.hitI++; this.st = 0; this.struck = false; this.counterUsed = false;
     }
   }
-  lungeTell() { if (this.st >= BELAL.lungeTell) { this.state = 'lunge'; this.st = 0; this.hit = false; this.fromX = this.x; this.counterUsed = false; } }
+  abortPinnedLunge() {
+    const pin = wallDir(this.scene);
+    if (!pin || this.facing !== pin) return false;
+    this.state = 'idle'; this.st = 0; this.cool = 0.7; this.counterUsed = false;
+    return true;
+  }
+  lungeTell() {
+    if (this.st < BELAL.lungeTell || this.abortPinnedLunge()) return;
+    this.state = 'lunge'; this.st = 0; this.hit = false; this.fromX = this.x; this.counterUsed = false;
+  }
   lunge(dt) {
+    if (this.abortPinnedLunge()) return;
     const R = this.scene.riley, dir = this.facing || 1;
     if (!this.counterUsed && this.facingRiley()) {
       this.counterUsed = true; this.state = 'stagger'; this.st = 0; this.hp -= 14; this.guard();
@@ -167,6 +177,7 @@ export class Belal {
   }
   beginErase() {
     if (this.erasing) return;
+    this.randStagger = 0;
     this.erasing = true; this.alive = true; this.hp = 0; this.invuln = true; this.beat = true; this.state = 'erase'; this.st = 0; this.hasCallandor = false;
     this.scene.kit?.onErase?.(this);
   }

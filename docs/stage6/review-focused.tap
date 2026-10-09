@@ -1,0 +1,140 @@
+TAP version 13
+# Subtest: lethal Riley hit during Rand stagger completes erase and the real bossDown path exactly once
+ok 1 - lethal Riley hit during Rand stagger completes erase and the real bossDown path exactly once
+  ---
+  duration_ms: 63.889495
+  ...
+# Subtest: lethal counter preserves terminal states against temporary timers and repeated hits
+ok 2 - lethal counter preserves terminal states against temporary timers and repeated hits
+  ---
+  duration_ms: 0.522752
+  ...
+# Subtest: lethal channel break preserves terminal states against temporary timers and repeated hits
+ok 3 - lethal channel break preserves terminal states against temporary timers and repeated hits
+  ---
+  duration_ms: 0.178454
+  ...
+# Subtest: lethal ordinary hit preserves terminal states against temporary timers and repeated hits
+ok 4 - lethal ordinary hit preserves terminal states against temporary timers and repeated hits
+  ---
+  duration_ms: 0.13346
+  ...
+# Subtest: lunge tell aborts when Riley enters the left 140px wall zone
+ok 5 - lunge tell aborts when Riley enters the left 140px wall zone
+  ---
+  duration_ms: 0.590744
+  ...
+# Subtest: lunge active aborts when Riley enters the left 140px wall zone
+ok 6 - lunge active aborts when Riley enters the left 140px wall zone
+  ---
+  duration_ms: 0.953394
+  ...
+# Subtest: lunge tell aborts when Riley enters the right 140px wall zone
+ok 7 - lunge tell aborts when Riley enters the right 140px wall zone
+  ---
+  duration_ms: 0.264362
+  ...
+# Subtest: lunge active aborts when Riley enters the right 140px wall zone
+ok 8 - lunge active aborts when Riley enters the right 140px wall zone
+  ---
+  duration_ms: 0.320282
+  ...
+# Subtest: wall protection permits a lunge moving away from the pinned wall
+ok 9 - wall protection permits a lunge moving away from the pinned wall
+  ---
+  duration_ms: 0.374109
+  ...
+# Subtest: gamepad Start held after a Rand skip cannot leak a manual pause before the first resumed scene update
+ok 10 - gamepad Start held after a Rand skip cannot leak a manual pause before the first resumed scene update
+  ---
+  duration_ms: 58.608648
+  ...
+# Subtest: keyboard skip, held controls and release produce no resumed attack; a fresh press still works
+ok 11 - keyboard skip, held controls and release produce no resumed attack; a fresh press still works
+  ---
+  duration_ms: 4.735003
+  ...
+# Subtest: touch skip, held controls and release produce no resumed attack; a fresh press still works
+ok 12 - touch skip, held controls and release produce no resumed attack; a fresh press still works
+  ---
+  duration_ms: 3.586921
+  ...
+# Subtest: throwing sessionStorage getter at initial cannot strand a spent Rand call
+ok 13 - throwing sessionStorage getter at initial cannot strand a spent Rand call
+  ---
+  duration_ms: 69.138347
+  ...
+# Subtest: throwing sessionStorage getter at finish cannot strand a spent Rand call
+ok 14 - throwing sessionStorage getter at finish cannot strand a spent Rand call
+  ---
+  duration_ms: 2.868491
+  ...
+# Subtest: throwing sessionStorage getter at warm cannot strand a spent Rand call
+ok 15 - throwing sessionStorage getter at warm cannot strand a spent Rand call
+  ---
+  duration_ms: 2.65034
+  ...
+# Subtest: delayed bot memory follows current living enemies across replacement waves
+ok 16 - delayed bot memory follows current living enemies across replacement waves
+  ---
+  duration_ms: 0.825721
+  ...
+# Subtest: player abort synchronously releases its interval, listeners, source and overlay without invoking done
+ok 17 - player abort synchronously releases its interval, listeners, source and overlay without invoking done
+  ---
+  duration_ms: 3.449577
+  ...
+# Subtest: Rand retains two owned capture listeners for muted-play unmute and removes both on teardown
+ok 18 - Rand retains two owned capture listeners for muted-play unmute and removes both on teardown
+  ---
+  duration_ms: 1.837632
+  ...
+# Subtest: death / Rand exit first: no late strike, damage or retained media
+ok 19 - death / Rand exit first: no late strike, damage or retained media
+  ---
+  duration_ms: 57.745243
+  ...
+# Subtest: death / Rand completion first: no late strike, damage or retained media
+ok 20 - death / Rand completion first: no late strike, damage or retained media
+  ---
+  duration_ms: 3.549181
+  ...
+# Subtest: quit / Rand exit first: no late strike, damage or retained media
+ok 21 - quit / Rand exit first: no late strike, damage or retained media
+  ---
+  duration_ms: 2.525124
+  ...
+# Subtest: quit / Rand completion first: no late strike, damage or retained media
+ok 22 - quit / Rand completion first: no late strike, damage or retained media
+  ---
+  duration_ms: 2.181437
+  ...
+# Subtest: restart / Rand exit first: no late strike, damage or retained media
+ok 23 - restart / Rand exit first: no late strike, damage or retained media
+  ---
+  duration_ms: 7.169867
+  ...
+# Subtest: restart / Rand completion first: no late strike, damage or retained media
+ok 24 - restart / Rand completion first: no late strike, damage or retained media
+  ---
+  duration_ms: 7.559933
+  ...
+# Subtest: stage switch / Rand exit first: no late strike, damage or retained media
+ok 25 - stage switch / Rand exit first: no late strike, damage or retained media
+  ---
+  duration_ms: 2.190402
+  ...
+# Subtest: stage switch / Rand completion first: no late strike, damage or retained media
+ok 26 - stage switch / Rand completion first: no late strike, damage or retained media
+  ---
+  duration_ms: 4.00897
+  ...
+1..26
+# tests 26
+# suites 0
+# pass 26
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 372.66283
