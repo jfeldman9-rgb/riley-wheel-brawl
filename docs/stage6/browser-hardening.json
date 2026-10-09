@@ -1,0 +1,1142 @@
+{
+  "transitions": [
+    {
+      "to": 1,
+      "before": {
+        "stage": 6,
+        "loaded": 6,
+        "started": true,
+        "sourceBytes": 99323948,
+        "stage6": [
+          "bg6far",
+          "bg6mid",
+          "bg6mid2",
+          "bg6floor",
+          "bg6floor2",
+          "bg6floor3",
+          "s6gray",
+          "s6fade",
+          "s6belal",
+          "s6rand",
+          "randPortrait",
+          "belalPortrait",
+          "s6storm",
+          "s6net",
+          "s6lamp",
+          "s6oil",
+          "s6hatch",
+          "s6call",
+          "s6ray",
+          "s6ribbon",
+          "s6crate",
+          "s6planks",
+          "s6streak",
+          "s6def"
+        ],
+        "normals": [
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/c16ac367-88ec-4721-9d3f-2ad9a5126162",
+            "width": 680,
+            "height": 323
+          },
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/5ea286e2-53fb-4f9d-aeb1-116e2d784580",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/13c68761-64fd-433c-a1d5-1d80e9caa6a5",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "grunt-0_nl",
+            "url": "blob:http://127.0.0.1:8765/3537a883-48ab-4f29-a453-a113732948c3",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "spear-0_nl",
+            "url": "blob:http://127.0.0.1:8765/ab317162-22df-43b8-a51d-e73d56c32b67",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/9a10348c-f248-4ea1-b4e4-b7ab34880e33",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "spear-0",
+            "url": "blob:http://127.0.0.1:8765/50b7779c-e374-4341-bf5b-a6820676b838",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/ba3c80c0-6ada-4a7d-8c46-db5fe1fe37ca",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "grunt-0",
+            "url": "blob:http://127.0.0.1:8765/d0e53d3e-d486-446a-bf92-03023d5d8071",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/c3fdb532-ba45-40ab-93e5-de0e9248b7e8",
+            "width": 680,
+            "height": 323
+          }
+        ],
+        "animationsMissing": []
+      },
+      "after": {
+        "stage": 1,
+        "loaded": 1,
+        "started": true,
+        "sourceBytes": 261946660,
+        "stage6": [],
+        "normals": [
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/b4fc8176-4db0-4871-a034-b40c58e03069",
+            "width": 942,
+            "height": 164
+          },
+          {
+            "key": "grunt-0_nl",
+            "url": "blob:http://127.0.0.1:8765/4090eae4-69d2-47de-8708-180dac873720",
+            "width": 2038,
+            "height": 606
+          },
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/c6351124-f6ea-4e40-9095-607e0be122f4",
+            "width": 2040,
+            "height": 968
+          },
+          {
+            "key": "spear-0_nl",
+            "url": "blob:http://127.0.0.1:8765/0edcd3e9-26cd-4a53-8654-ba3630479262",
+            "width": 1896,
+            "height": 426
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/78d03621-7ee3-4c9a-8e8a-7836ac8b3fd4",
+            "width": 1806,
+            "height": 542
+          },
+          {
+            "key": "chief-0_nl",
+            "url": "blob:http://127.0.0.1:8765/6397df3b-35f6-4678-810f-69ce9e01244b",
+            "width": 2018,
+            "height": 924
+          },
+          {
+            "key": "loial-0_nl",
+            "url": "blob:http://127.0.0.1:8765/7bee7e8e-c8a5-4f39-b3df-c8840d319ec0",
+            "width": 1772,
+            "height": 248
+          },
+          {
+            "key": "loial-0",
+            "url": "blob:http://127.0.0.1:8765/d518a8e3-d51c-4fc4-90b0-821cdb324c87",
+            "width": 1772,
+            "height": 248
+          },
+          {
+            "key": "mid0",
+            "url": "blob:http://127.0.0.1:8765/1adb1b43-a06f-4784-9bcd-389400a549dc",
+            "width": 2172,
+            "height": 724
+          },
+          {
+            "key": "chief-0",
+            "url": "blob:http://127.0.0.1:8765/44ead90b-c0e7-4c1d-8e33-ceacabfa9ef4",
+            "width": 2018,
+            "height": 924
+          },
+          {
+            "key": "mid1",
+            "url": "blob:http://127.0.0.1:8765/97c2ee61-b46b-444b-b6de-e8465c83cf30",
+            "width": 2172,
+            "height": 724
+          },
+          {
+            "key": "floor",
+            "url": "blob:http://127.0.0.1:8765/d33a7916-a213-472a-8991-18aa31b3d67f",
+            "width": 2172,
+            "height": 724
+          },
+          {
+            "key": "floor2",
+            "url": "blob:http://127.0.0.1:8765/5044ebbc-7a38-4c0b-acb2-45f5d987f227",
+            "width": 2172,
+            "height": 724
+          },
+          {
+            "key": "barrel",
+            "url": "blob:http://127.0.0.1:8765/d2f32381-f2f0-4164-82bf-73177fc4e8fe",
+            "width": 490,
+            "height": 586
+          },
+          {
+            "key": "cart",
+            "url": "blob:http://127.0.0.1:8765/7b387a7e-9149-4ea5-9b84-9595a8cea331",
+            "width": 1225,
+            "height": 669
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/9695e1fc-8b9e-44a4-9dad-7b6aae9078ca",
+            "width": 2040,
+            "height": 968
+          },
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/4c9a7c98-d243-48bc-9e0a-d457322ce75f",
+            "width": 942,
+            "height": 164
+          },
+          {
+            "key": "grunt-0",
+            "url": "blob:http://127.0.0.1:8765/b10af942-0715-4db0-b210-7a9a9196e34f",
+            "width": 2038,
+            "height": 606
+          },
+          {
+            "key": "spear-0",
+            "url": "blob:http://127.0.0.1:8765/d216f314-254c-4c2e-8e44-e459f58e86c9",
+            "width": 1896,
+            "height": 426
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/da683565-7122-465e-a471-3b26508e11b3",
+            "width": 1806,
+            "height": 542
+          }
+        ],
+        "animationsMissing": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "to": 2,
+      "before": {
+        "stage": 6,
+        "loaded": 6,
+        "started": true,
+        "sourceBytes": 99323948,
+        "stage6": [
+          "bg6far",
+          "bg6mid",
+          "bg6mid2",
+          "bg6floor",
+          "bg6floor2",
+          "bg6floor3",
+          "s6gray",
+          "s6fade",
+          "s6belal",
+          "s6rand",
+          "randPortrait",
+          "belalPortrait",
+          "s6storm",
+          "s6net",
+          "s6lamp",
+          "s6oil",
+          "s6hatch",
+          "s6call",
+          "s6ray",
+          "s6ribbon",
+          "s6crate",
+          "s6planks",
+          "s6streak",
+          "s6def"
+        ],
+        "normals": [
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/095a66ee-ae0c-4cf0-9ada-9174769767af",
+            "width": 680,
+            "height": 323
+          },
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/a98f65f1-772f-45ee-91d4-e1f89ddd62a8",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/fc5e25a7-011b-45e5-82c9-fed61e57a533",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/7b20662b-f68e-4ab5-8fb0-292dcaa6e2ec",
+            "width": 680,
+            "height": 323
+          },
+          {
+            "key": "grunt-0_nl",
+            "url": "blob:http://127.0.0.1:8765/a34d1085-413c-4cd6-b330-1717d295b989",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "spear-0_nl",
+            "url": "blob:http://127.0.0.1:8765/50665500-92d5-4d48-99de-cfa7cec84ffb",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/e71cca03-b871-4bfb-a715-946da31f126a",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "spear-0",
+            "url": "blob:http://127.0.0.1:8765/db5a5041-f74d-420f-afb2-615edb766e93",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "grunt-0",
+            "url": "blob:http://127.0.0.1:8765/da0472be-d901-4647-a103-3bd4496c657e",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/58944638-8735-4a0f-b556-6ee3f8f51401",
+            "width": 602,
+            "height": 181
+          }
+        ],
+        "animationsMissing": []
+      },
+      "after": {
+        "stage": 2,
+        "loaded": 2,
+        "started": true,
+        "sourceBytes": 217747788,
+        "stage6": [],
+        "normals": [
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/86b919b4-19ee-47ac-8cc0-eeeadc448bb1",
+            "width": 942,
+            "height": 164
+          },
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/fec99ed5-b2e2-4c53-8948-9fe15e31433c",
+            "width": 2040,
+            "height": 968
+          },
+          {
+            "key": "zealot-0",
+            "url": "blob:http://127.0.0.1:8765/f15abfc4-1d76-493c-9524-cf742c889443",
+            "width": 2008,
+            "height": 288
+          },
+          {
+            "key": "zealot-0_nl",
+            "url": "blob:http://127.0.0.1:8765/c433cd9b-352b-4532-ac39-545c584bd385",
+            "width": 2008,
+            "height": 288
+          },
+          {
+            "key": "archer-0_nl",
+            "url": "blob:http://127.0.0.1:8765/a805e7bc-1258-45a9-bc3a-a29c6caefa72",
+            "width": 2040,
+            "height": 242
+          },
+          {
+            "key": "archer-0",
+            "url": "blob:http://127.0.0.1:8765/3ceb3a35-a9f7-4479-94de-1c1d8c6de904",
+            "width": 2040,
+            "height": 242
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/430d08da-6169-45db-9c89-7c73ba1dd272",
+            "width": 1806,
+            "height": 542
+          },
+          {
+            "key": "byar-0_nl",
+            "url": "blob:http://127.0.0.1:8765/e017deed-85c6-4227-9676-70a8e8a4252f",
+            "width": 1958,
+            "height": 422
+          },
+          {
+            "key": "loial-0_nl",
+            "url": "blob:http://127.0.0.1:8765/984b877c-c846-42e1-a667-7730375d797f",
+            "width": 1772,
+            "height": 248
+          },
+          {
+            "key": "loial-0",
+            "url": "blob:http://127.0.0.1:8765/fe1a93a7-1036-45b7-a421-555d6ce34e0f",
+            "width": 1772,
+            "height": 248
+          },
+          {
+            "key": "mid2a",
+            "url": "blob:http://127.0.0.1:8765/177eba6d-8d59-4596-b3bc-8a660c311a0f",
+            "width": 2172,
+            "height": 724
+          },
+          {
+            "key": "byar-0",
+            "url": "blob:http://127.0.0.1:8765/9c4fbe96-1de9-407f-8cc9-f0a24130c8b0",
+            "width": 1958,
+            "height": 422
+          },
+          {
+            "key": "mid2b",
+            "url": "blob:http://127.0.0.1:8765/7ffd4ff1-00ab-4832-8e10-ba3656c34455",
+            "width": 2172,
+            "height": 724
+          },
+          {
+            "key": "floor2a",
+            "url": "blob:http://127.0.0.1:8765/9c137e76-5a70-4361-ac5a-12846fe2989a",
+            "width": 2172,
+            "height": 724
+          },
+          {
+            "key": "floor2b",
+            "url": "blob:http://127.0.0.1:8765/68b087ca-07ed-41cf-93df-81377d2bb09d",
+            "width": 2172,
+            "height": 724
+          },
+          {
+            "key": "crate",
+            "url": "blob:http://127.0.0.1:8765/3f50b8d9-75f3-43bc-aa8d-be6e12b81ea1",
+            "width": 490,
+            "height": 482
+          },
+          {
+            "key": "beam2",
+            "url": "blob:http://127.0.0.1:8765/e2550996-4bae-4342-abba-93b5941cccf6",
+            "width": 1100,
+            "height": 318
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/0251b714-43e2-427a-81b8-05b3cddd572a",
+            "width": 2040,
+            "height": 968
+          },
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/cd57501a-decf-4cbc-8535-c4583fee5301",
+            "width": 942,
+            "height": 164
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/1f5b88ac-1048-45a7-b467-3ddb4c052937",
+            "width": 1806,
+            "height": 542
+          }
+        ],
+        "animationsMissing": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "to": 3,
+      "before": {
+        "stage": 6,
+        "loaded": 6,
+        "started": true,
+        "sourceBytes": 99323948,
+        "stage6": [
+          "bg6far",
+          "bg6mid",
+          "bg6mid2",
+          "bg6floor",
+          "bg6floor2",
+          "bg6floor3",
+          "s6gray",
+          "s6fade",
+          "s6belal",
+          "s6rand",
+          "randPortrait",
+          "belalPortrait",
+          "s6storm",
+          "s6net",
+          "s6lamp",
+          "s6oil",
+          "s6hatch",
+          "s6call",
+          "s6ray",
+          "s6ribbon",
+          "s6crate",
+          "s6planks",
+          "s6streak",
+          "s6def"
+        ],
+        "normals": [
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/069ad1c3-86c9-4f20-a116-3ceb9bc4ffac",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/64a82ae1-e2ae-4adc-8fad-456046d08095",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/c8e4e45e-d8de-4c19-ba11-627146c3026b",
+            "width": 680,
+            "height": 323
+          },
+          {
+            "key": "grunt-0_nl",
+            "url": "blob:http://127.0.0.1:8765/6f67d66e-6b6c-4ccd-bfd3-5d9e426d4385",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "spear-0_nl",
+            "url": "blob:http://127.0.0.1:8765/ef2cb6e6-b5db-4097-a706-2ab1b56f0fe8",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/0eafda8f-ad91-484e-85cd-29e3bda4b3e5",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "grunt-0",
+            "url": "blob:http://127.0.0.1:8765/28df6f7e-16e8-41e7-9f49-84f6b1d4781f",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "spear-0",
+            "url": "blob:http://127.0.0.1:8765/80c9f86f-2fbd-46ba-8a3e-d34d10f05aba",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/e65f203c-d9b4-4d11-8a0a-e2ab939956bc",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/24c37e22-8267-480d-b5a5-b1fe754f4f5d",
+            "width": 680,
+            "height": 323
+          }
+        ],
+        "animationsMissing": []
+      },
+      "after": {
+        "stage": 3,
+        "loaded": 3,
+        "started": true,
+        "sourceBytes": 198292188,
+        "stage6": [],
+        "normals": [
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/784b19d6-bb1b-4676-845c-5ad115be7038",
+            "width": 2040,
+            "height": 968
+          },
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/0e585b18-10d8-4695-8e5d-ba72979abfe4",
+            "width": 942,
+            "height": 164
+          },
+          {
+            "key": "cutthroat-0_nl",
+            "url": "blob:http://127.0.0.1:8765/ebae8c56-7baf-49d4-a7f5-20b6a15d2993",
+            "width": 768,
+            "height": 698
+          },
+          {
+            "key": "zealot-0_nl",
+            "url": "blob:http://127.0.0.1:8765/95a9bd9a-eb60-464b-844d-69a7cfc640d7",
+            "width": 2008,
+            "height": 288
+          },
+          {
+            "key": "zealot-0",
+            "url": "blob:http://127.0.0.1:8765/12157ce6-e351-4057-965a-600c9c8a88a3",
+            "width": 2008,
+            "height": 288
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/e41dc666-f9b7-4881-8e87-3daf0ed3fb5b",
+            "width": 1806,
+            "height": 542
+          },
+          {
+            "key": "archer-0_nl",
+            "url": "blob:http://127.0.0.1:8765/f13fc521-f936-4f7b-b87c-7c67b3983d1c",
+            "width": 2040,
+            "height": 242
+          },
+          {
+            "key": "loial-0_nl",
+            "url": "blob:http://127.0.0.1:8765/918b0723-a28e-456f-b382-2a2231e85e7b",
+            "width": 1772,
+            "height": 248
+          },
+          {
+            "key": "archer-0",
+            "url": "blob:http://127.0.0.1:8765/01bc9834-30f2-4aec-be4c-5e7739f92efe",
+            "width": 2040,
+            "height": 242
+          },
+          {
+            "key": "loial-0",
+            "url": "blob:http://127.0.0.1:8765/7524daac-f831-44b9-8a91-797817145f3e",
+            "width": 1772,
+            "height": 248
+          },
+          {
+            "key": "mid3a",
+            "url": "blob:http://127.0.0.1:8765/1d105108-734d-4108-93bd-c81ac7ee9865",
+            "width": 1086,
+            "height": 362
+          },
+          {
+            "key": "mid3b",
+            "url": "blob:http://127.0.0.1:8765/15782c1b-6929-4a8c-bfc1-95702e36273b",
+            "width": 1086,
+            "height": 362
+          },
+          {
+            "key": "floor3b",
+            "url": "blob:http://127.0.0.1:8765/832fbafa-d95b-4346-9189-82bd6936f75a",
+            "width": 1086,
+            "height": 362
+          },
+          {
+            "key": "floor3a",
+            "url": "blob:http://127.0.0.1:8765/cfb79927-9021-4ee2-9be7-9bcf517749e1",
+            "width": 1086,
+            "height": 362
+          },
+          {
+            "key": "floor3c",
+            "url": "blob:http://127.0.0.1:8765/17dee720-5e78-4ae4-adc1-4d0f36347b49",
+            "width": 1086,
+            "height": 362
+          },
+          {
+            "key": "crate",
+            "url": "blob:http://127.0.0.1:8765/80fcee33-807c-4d4f-aa95-6780e02066da",
+            "width": 490,
+            "height": 482
+          },
+          {
+            "key": "riley3-0_nl",
+            "url": "blob:http://127.0.0.1:8765/2ce49dd4-d55a-49a0-a819-0aa6bcc7084a",
+            "width": 840,
+            "height": 168
+          },
+          {
+            "key": "riley3-0",
+            "url": "blob:http://127.0.0.1:8765/d77a343e-dae5-4e7e-a812-879f37a63b78",
+            "width": 840,
+            "height": 168
+          },
+          {
+            "key": "fade-0_nl",
+            "url": "blob:http://127.0.0.1:8765/6ce320f1-c279-4cab-8178-4dc135ea7e47",
+            "width": 1928,
+            "height": 249
+          },
+          {
+            "key": "fade-1_nl",
+            "url": "blob:http://127.0.0.1:8765/924be22c-e1dc-4260-82b7-7d3d09ffc937",
+            "width": 1360,
+            "height": 239
+          },
+          {
+            "key": "fade-1",
+            "url": "blob:http://127.0.0.1:8765/c2d49d42-28e6-4e74-8d7a-f15d3e9808e7",
+            "width": 1360,
+            "height": 239
+          },
+          {
+            "key": "fade-0",
+            "url": "blob:http://127.0.0.1:8765/4d59b52c-6bb1-4578-85d1-a9d38521e83f",
+            "width": 1928,
+            "height": 249
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/7b8a8471-91c4-4b18-86e4-032c0a308121",
+            "width": 2040,
+            "height": 968
+          },
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/f5c19ea9-f9f0-4349-9127-6fc36f037e99",
+            "width": 942,
+            "height": 164
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/457e4a33-60e9-4a37-b3db-ab4a3ad758c0",
+            "width": 1806,
+            "height": 542
+          }
+        ],
+        "animationsMissing": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "to": 4,
+      "before": {
+        "stage": 6,
+        "loaded": 6,
+        "started": true,
+        "sourceBytes": 99323948,
+        "stage6": [
+          "bg6far",
+          "bg6mid",
+          "bg6mid2",
+          "bg6floor",
+          "bg6floor2",
+          "bg6floor3",
+          "s6gray",
+          "s6fade",
+          "s6belal",
+          "s6rand",
+          "randPortrait",
+          "belalPortrait",
+          "s6storm",
+          "s6net",
+          "s6lamp",
+          "s6oil",
+          "s6hatch",
+          "s6call",
+          "s6ray",
+          "s6ribbon",
+          "s6crate",
+          "s6planks",
+          "s6streak",
+          "s6def"
+        ],
+        "normals": [
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/711dd6de-e521-424d-80a4-2763abfbc40b",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/46a7169f-d9d6-499d-ab15-1b0ec25ac532",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/326b6eb8-e777-46b1-b4ee-a98da0a7d539",
+            "width": 680,
+            "height": 323
+          },
+          {
+            "key": "grunt-0_nl",
+            "url": "blob:http://127.0.0.1:8765/731b754a-70c4-47ad-801b-f07275134c23",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "spear-0_nl",
+            "url": "blob:http://127.0.0.1:8765/07903d30-46c0-4eff-950f-a379362659c8",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/62a32cea-4c82-439f-a234-87ec02c1a7b2",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "spear-0",
+            "url": "blob:http://127.0.0.1:8765/90bca279-17b2-4e8d-841d-41933b734fa7",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/119a0c15-f722-4459-b4db-c0d9f823369c",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "grunt-0",
+            "url": "blob:http://127.0.0.1:8765/d4ce7814-a471-450f-9e7c-abed5807c3ac",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/668988ec-bfb9-46cc-8c99-78520415f4f6",
+            "width": 680,
+            "height": 323
+          }
+        ],
+        "animationsMissing": []
+      },
+      "after": {
+        "stage": 4,
+        "loaded": 4,
+        "started": true,
+        "sourceBytes": 140295660,
+        "stage6": [],
+        "normals": [
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/4ed6696f-7423-4a2f-afdb-af895a740c18",
+            "width": 942,
+            "height": 164
+          },
+          {
+            "key": "cutthroat-0_nl",
+            "url": "blob:http://127.0.0.1:8765/be99ec0f-16a1-4d6f-b755-5ef0f3e5b3cd",
+            "width": 768,
+            "height": 698
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/d2fe9612-6059-41c7-b527-e350b866c1ce",
+            "width": 1806,
+            "height": 542
+          },
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/61acfdcb-7ea2-422f-aad4-daaf6ed43f64",
+            "width": 2040,
+            "height": 968
+          },
+          {
+            "key": "loial-0",
+            "url": "blob:http://127.0.0.1:8765/826ceae1-a6da-467c-ab4e-a6ba56654c73",
+            "width": 1772,
+            "height": 248
+          },
+          {
+            "key": "loial-0_nl",
+            "url": "blob:http://127.0.0.1:8765/5afe5c1e-35b1-4786-91a0-b36ff1e608f6",
+            "width": 1772,
+            "height": 248
+          },
+          {
+            "key": "crate",
+            "url": "blob:http://127.0.0.1:8765/15587a5e-1e60-4802-ba16-def1bf087a09",
+            "width": 490,
+            "height": 482
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/250641d9-d507-40b2-9305-e406ff8c26a5",
+            "width": 2040,
+            "height": 968
+          },
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/6f3c5322-6560-41fd-9d5f-593f7992e846",
+            "width": 942,
+            "height": 164
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/012acd1a-5315-4516-84a5-05be6ad980e2",
+            "width": 1806,
+            "height": 542
+          }
+        ],
+        "animationsMissing": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "to": 5,
+      "before": {
+        "stage": 6,
+        "loaded": 6,
+        "started": true,
+        "sourceBytes": 99323948,
+        "stage6": [
+          "bg6far",
+          "bg6mid",
+          "bg6mid2",
+          "bg6floor",
+          "bg6floor2",
+          "bg6floor3",
+          "s6gray",
+          "s6fade",
+          "s6belal",
+          "s6rand",
+          "randPortrait",
+          "belalPortrait",
+          "s6storm",
+          "s6net",
+          "s6lamp",
+          "s6oil",
+          "s6hatch",
+          "s6call",
+          "s6ray",
+          "s6ribbon",
+          "s6crate",
+          "s6planks",
+          "s6streak",
+          "s6def"
+        ],
+        "normals": [
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/0038ec35-7725-47a6-9f33-6bca9689b9e7",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/2277a6c0-5e4c-4675-ba93-da91acba8fac",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/bdc0d9cf-f53a-4a39-9881-5fefb4e4e85e",
+            "width": 680,
+            "height": 323
+          },
+          {
+            "key": "spear-0_nl",
+            "url": "blob:http://127.0.0.1:8765/cee11202-51f5-4194-979f-76a71a1867e6",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "grunt-0_nl",
+            "url": "blob:http://127.0.0.1:8765/c83c3f6b-cf75-4974-bc04-baeed651c3bc",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "grunt-0",
+            "url": "blob:http://127.0.0.1:8765/736e31ff-f970-4a95-9814-066ed5afac84",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/8451da45-427e-4c1e-96fe-82cb5962324c",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "spear-0",
+            "url": "blob:http://127.0.0.1:8765/3cedb726-96f7-4138-a2a2-bae0c1d9747f",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/419a1d32-ee42-4b16-9967-a33ed9c44ac6",
+            "width": 680,
+            "height": 323
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/4448819a-3982-4e2e-9d60-52661b45eb60",
+            "width": 602,
+            "height": 181
+          }
+        ],
+        "animationsMissing": []
+      },
+      "after": {
+        "stage": 5,
+        "loaded": 5,
+        "started": true,
+        "sourceBytes": 111707004,
+        "stage6": [],
+        "normals": [
+          {
+            "key": "riley-1_nl",
+            "url": "blob:http://127.0.0.1:8765/0038ec35-7725-47a6-9f33-6bca9689b9e7",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-1",
+            "url": "blob:http://127.0.0.1:8765/2277a6c0-5e4c-4675-ba93-da91acba8fac",
+            "width": 314,
+            "height": 55
+          },
+          {
+            "key": "riley-0_nl",
+            "url": "blob:http://127.0.0.1:8765/bdc0d9cf-f53a-4a39-9881-5fefb4e4e85e",
+            "width": 680,
+            "height": 323
+          },
+          {
+            "key": "spear-0_nl",
+            "url": "blob:http://127.0.0.1:8765/cee11202-51f5-4194-979f-76a71a1867e6",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "grunt-0_nl",
+            "url": "blob:http://127.0.0.1:8765/c83c3f6b-cf75-4974-bc04-baeed651c3bc",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "grunt-0",
+            "url": "blob:http://127.0.0.1:8765/736e31ff-f970-4a95-9814-066ed5afac84",
+            "width": 680,
+            "height": 202
+          },
+          {
+            "key": "hound-0_nl",
+            "url": "blob:http://127.0.0.1:8765/8451da45-427e-4c1e-96fe-82cb5962324c",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "spear-0",
+            "url": "blob:http://127.0.0.1:8765/3cedb726-96f7-4138-a2a2-bae0c1d9747f",
+            "width": 632,
+            "height": 142
+          },
+          {
+            "key": "riley-0",
+            "url": "blob:http://127.0.0.1:8765/419a1d32-ee42-4b16-9967-a33ed9c44ac6",
+            "width": 680,
+            "height": 323
+          },
+          {
+            "key": "hound-0",
+            "url": "blob:http://127.0.0.1:8765/4448819a-3982-4e2e-9d60-52661b45eb60",
+            "width": 602,
+            "height": 181
+          },
+          {
+            "key": "loial-0_nl",
+            "url": "blob:http://127.0.0.1:8765/ddabe67d-4d83-4df2-b69f-624f18bc5b4a",
+            "width": 591,
+            "height": 83
+          },
+          {
+            "key": "crate",
+            "url": "blob:http://127.0.0.1:8765/d6fa1a34-1cf4-4840-92a8-6b3e5d12cf6e",
+            "width": 490,
+            "height": 482
+          },
+          {
+            "key": "loial-0",
+            "url": "blob:http://127.0.0.1:8765/0c68d878-fc12-4292-8523-e9e15c3809d3",
+            "width": 591,
+            "height": 83
+          },
+          {
+            "key": "riley3-0_nl",
+            "url": "blob:http://127.0.0.1:8765/8ac4742a-e581-483a-8c1f-e78ef709322f",
+            "width": 280,
+            "height": 56
+          },
+          {
+            "key": "riley3-0",
+            "url": "blob:http://127.0.0.1:8765/8e7ecbb5-45cf-40e9-b4cc-69e0ad98d763",
+            "width": 280,
+            "height": 56
+          }
+        ],
+        "animationsMissing": []
+      },
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "video": [
+    {
+      "mode": "404",
+      "during": {
+        "gamePaused": true,
+        "videos": 1,
+        "inline": true
+      },
+      "after": {
+        "stage": 6,
+        "videos": 0,
+        "paused": false,
+        "inv": 2
+      },
+      "errors": []
+    },
+    {
+      "mode": "abort",
+      "during": {
+        "gamePaused": true,
+        "videos": 1,
+        "inline": true
+      },
+      "after": {
+        "stage": 1,
+        "videos": 0,
+        "paused": false,
+        "inv": 0
+      },
+      "errors": []
+    },
+    {
+      "mode": "skip",
+      "during": {
+        "gamePaused": true,
+        "videos": 1,
+        "inline": true
+      },
+      "clipStillActiveAtSkip": false,
+      "after": {
+        "stage": 6,
+        "videos": 0,
+        "paused": false,
+        "inv": 2
+      },
+      "errors": []
+    }
+  ]
+}

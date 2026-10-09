@@ -1,4 +1,5 @@
 // Stage 6 hooks. Rand replaces Loial only on this scene instance.
+import { freezeStrike, thawStrike } from './stage6-freeze.js';
 import { stage4Delta } from './stage4-time.js';
 import { VW, LANE_TOP } from './config.js';
 import { refuseReason, trySpend, eligibleTargets, allocateStrikes, randEffect, noteRileyKo, tickRand, RAND } from './rand-call.js';
@@ -36,12 +37,13 @@ function hatch(kit, type) {
   };
   h.sprite = s.add?.sprite?.(x, y, 's6hatch', 0); h.sprite?.setOrigin?.(0.5, 0.96); h.sprite?.setDepth?.(1000 + y);
   s.enemies.push(h); sfxCue('craneCreak');
-  s.time?.delayedCall?.(1000, () => {
+  const timer = s.time?.delayedCall?.(1000, () => {
     if (!h.alive && h.gone) return;
     h.alive = false; h.gone = true; h.sprite?.setFrame?.(1);
     const e = kit._spawn?.(type, 'R');
     if (e) { e.x = x; e.y = y; e.entering = false; }
   });
+  (kit.hooks || (kit.hooks = [])).push(() => { timer?.remove?.(); h.destroy(); });
   return h;
 }
 
@@ -70,18 +72,16 @@ export function installStage6SceneHooks(kit) {
     for (const e of this.enemies || []) e.sync?.();
   });
   hook(kit, s, 'rileyDied', original => function() {
-    abortRandCall(this); kit.strike = null; if (kit.rand) kit.rand.on = false;
+    abortRandCall(this); if (kit.strike) endStrike(kit, false); if (kit.rand) kit.rand.on = false;
     this.riley?.grabbedBy?.releaseHold?.('break');
     for (const e of this.enemies || []) e.releaseHold?.('break');
     return original.call(this);
   });
   hook(kit, s, 'spawnFireball', original => function(R) {
     const had = this.powers?.boost;
-    if (kit.empowered && this.powers) this.powers.boost = { kind: 'angreal', t: 0.2, total: 0.2 };
-    const out = original.call(this, R);
-    kit.empowered = false;
-    if (this.powers) this.powers.boost = had;
-    return out;
+    if (kit.empowered && this.powers && had?.kind !== 'saangreal') this.powers.boost = { kind: 'angreal', t: 0.2, total: 0.2 };
+    try { return original.call(this, R); }
+    finally { kit.empowered = false; if (this.powers) this.powers.boost = had; }
   });
 }
 
@@ -108,6 +108,7 @@ function startStrike(kit) {
   const list = eligibleTargets(s.enemies, s.camX || 0, VW);
   const plan = allocateStrikes(list);
   kit.strike = { t: 0, plan, list, resolved: false, spawned: 0, bolts: [], fires: [], dim: null, rand: null, glow: null, flash: null };
+  freezeStrike(kit);
   sfxCue('randThunder');
   const x = (s.camX || 0) + 110, y = LANE_TOP + 16;
   kit.strike.rand = s.add?.sprite?.(x, y, 's6rand', 0);
@@ -151,15 +152,16 @@ function stepStrike(kit, dt) {
   if (st.t >= 2) endStrike(kit);
 }
 
-function endStrike(kit) {
+function endStrike(kit, grantInv = true) {
   const s = kit.s, st = kit.strike;
   if (!st) return;
   for (const im of [...st.bolts, ...st.fires]) im?.destroy?.();
   st.dim?.destroy?.(); st.rand?.destroy?.();
   if (st.glow) s.lights?.removeLight?.(st.glow);
   if (st.flash) s.lights?.removeLight?.(st.flash);
-  if (s.riley) s.riley.inv = Math.max(s.riley.inv || 0, RAND.inv);
+  if (grantInv && s.riley) s.riley.inv = Math.max(s.riley.inv || 0, RAND.inv);
   kit.rand.on = false; kit.strike = null;
+  thawStrike(kit);
 }
 
 export function holdDown(kit, dt) {
@@ -181,7 +183,8 @@ export function holdDown(kit, dt) {
 
 export function restoreStage6Hooks(kit) {
   abortRandCall(kit.s);
-  if (kit.strike) endStrike(kit);
+  if (kit.rand) kit.rand.on = false;
+  if (kit.strike) endStrike(kit, false);
   for (let i = (kit.hooks?.length || 0) - 1; i >= 0; i--) kit.hooks[i]();
   if (kit.hooks) kit.hooks.length = 0;
   dropBlob();

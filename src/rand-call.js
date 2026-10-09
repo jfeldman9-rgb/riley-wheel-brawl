@@ -97,6 +97,7 @@ export function randEffect(e) {
     const dmg = Math.max(0, e.hp - next);
     e.hp = next;
     e.randStagger = RAND.stagger;
+    e.state = 'stagger'; e.st = 0; e.counterUsed = true;
     return { kind, dmg, killed: false, down: 0, score: 0 };
   }
   if (kind === 'trolloc') {

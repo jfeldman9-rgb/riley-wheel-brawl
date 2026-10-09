@@ -1,6 +1,6 @@
 // Myrddraal lieutenant. Stage 3 shadow-blink only: no fear, no split. Linked Trollocs reel when it dies.
 import { clamp, LANE_TOP, LANE_BOT } from './config.js';
-import { strikeRiley } from './stage5-hurt.js';
+import { strikeRiley } from './stage6-hurt.js';
 import { substeps } from './stage5-clock.js';
 
 export const FADELT = Object.freeze({

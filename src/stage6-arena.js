@@ -1,6 +1,6 @@
 // Docks, halls and the Heart. Nets, lamps, oil, Netweaver lines, Callandor rays.
 import { LANE_TOP, LANE_BOT } from './config.js';
-import { strikeRiley } from './stage5-hurt.js';
+import { strikeRiley } from './stage6-hurt.js';
 import { sfxCue } from './stage6-voice.js';
 
 const BANDS = Object.freeze([0, 1, 2].map(i => Object.freeze([
@@ -16,10 +16,11 @@ function hurtEnemy(e, dmg, x) {
 
 export function createStone() {
   const stone = {
-    nets: [], lamps: [], pools: [], lines: [], rays: [],
+    nets: [], lamps: [], pools: [], lines: [], rays: [], cleared: new Set(),
     netAt: 1.6, lampAt: 2.2, lineAt: 2, quality: 0, getupAt: -9,
     setQuality(n) { this.quality = n | 0; },
     clearZone(z) {
+      this.cleared.add(z);
       this.nets = this.nets.filter(n => n.zone !== z);
       this.lamps = this.lamps.filter(n => n.zone !== z);
       this.pools = this.pools.filter(n => n.zone !== z);
@@ -37,6 +38,7 @@ export function createStone() {
 
 function step(s, dt, w) {
   const R = w.riley, zone = w.zone | 0;
+  if (s.cleared.has(zone)) return;
   if (s.snare > 0) s.snare -= dt;
   if (R && R.state === 'getup') s.getupAt = 0; else if (s.getupAt >= 0 && s.getupAt < 5) s.getupAt += dt;
   if (zone === 0 && !s.nets.some(n => n.phase === 'tell')) {
@@ -86,7 +88,7 @@ function step(s, dt, w) {
     if (n.phase === 'tell' && n.t >= 1.2) { n.phase = 'fire'; n.t = 0; }
     if (n.phase === 'fire') {
       const y0 = BANDS[n.band][0], y1 = BANDS[n.band][1];
-      if (R && R.y >= y0 && R.y <= y1 && n.t < 0.15 && !n.snared) { strikeRiley(w.scene, 8, { fromX: R.x - 1, down: false }); if (w.stone) w.stone.snare = 1; n.snared = 1; }
+      if (R && R.y >= y0 && R.y <= y1 && n.t < 0.15 && !n.snared) { if (strikeRiley(w.scene, 8, { fromX: R.x - 1, down: false }) && w.stone) w.stone.snare = 1; n.snared = 1; }
       if (n.snareT > 0) n.snareT -= dt;
       if (n.t > 0.45) n.dead = true;
     }
@@ -112,8 +114,7 @@ function dropNet(s, w) {
 function landNet(n, w) {
   const y0 = BANDS[n.band][0], y1 = BANDS[n.band][1], R = w.riley;
     if (R && R.y >= y0 && R.y <= y1 && Math.abs(R.x - n.x) < 200) {
-    strikeRiley(w.scene, 10, { fromX: n.x, down: false });
-    if (w.stone) w.stone.snare = 0.8;
+    if (strikeRiley(w.scene, 10, { fromX: n.x, down: false }) && w.stone) w.stone.snare = 0.8;
   }
   for (const e of w.enemies || []) if (e.alive && e.y >= y0 && e.y <= y1 && Math.abs(e.x - n.x) < 200) hurtEnemy(e, 18, n.x);
 }

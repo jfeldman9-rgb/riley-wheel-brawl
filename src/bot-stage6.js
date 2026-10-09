@@ -1,5 +1,6 @@
 import { LANE_TOP, LANE_BOT, q } from './config.js';
 import { refuseReason } from './rand-call.js';
+import { leave } from './stage6-bot-escape.js';
 import { lateEnemies } from './stage6-lifecycle.js';
 
 const go = (bot, x, y, run = false) => { bot.s.inp.demo = { x, y, run }; return true; };
@@ -17,23 +18,6 @@ function awayY(R, e) {
   return dir;
 }
 
-function leave(bot, R, th) {
-  for (const n of th.nets || []) {
-    const y0 = n.band?.[0], y1 = n.band?.[1];
-    if (y0 == null || Math.abs(R.x - n.x) >= 280) continue;
-    const mid = (y0 + y1) / 2;
-    if (R.y >= y0 - 18 && R.y <= y1 + 18) return go(bot, 0, R.y >= mid ? 1 : -1, 1);
-  }
-  for (const l of th.lamps || []) if (Math.hypot(R.x - l.x, R.y - l.y) < 150) return go(bot, Math.sign(R.x - l.x) || -1, R.y > l.y ? 1 : -1, 1);
-  for (const p of th.pools || []) if (Math.hypot(R.x - p.x, R.y - p.y) < 120) return go(bot, Math.sign(R.x - p.x) || 1, R.y >= p.y ? 1 : -1, 1);
-  for (const n of th.lines || []) {
-    const b = (bot.s.bands || [])[n.band];
-    if (!b) continue;
-    const mid = (b[0] + b[1]) / 2;
-    if (R.y >= b[0] - 16 && R.y <= b[1] + 16) return go(bot, 0, R.y >= mid ? 1 : -1, 1);
-  }
-  return null;
-}
 
 function incoming(e, R) {
   const x = adx(e, R), y = ady(R, e), st = e.state;
@@ -76,6 +60,7 @@ function strike(bot, R, e, reach, chain = true, tight = false) {
   const off = tight ? (y > 12 ? Math.sign(e.y - R.y) : 0) : (y < 24 ? awayY(R, e) : y > 33 ? Math.sign(e.y - R.y) : 0);
   if (x > reach) return go(bot, side, off, 1);
   if (R.facing !== side) return go(bot, side, off, 1);
+  if (bot.lag && R.state === 'run') return go(bot, 0, off);
   if ((chain || !R.busy) && y < (tight ? 36 : 34)) press(bot, 'attack', e.T?.boss ? 0.14 : 0.12);
   return go(bot, 0, off);
 }
@@ -163,10 +148,10 @@ function play(bot, s, R, k) {
   }
   if (R.state === 'down' || R.state === 'getup' || R.state === 'dead' || !R.alive) return go(bot, 0, 0);
   const useRand = bot.useRand || q.get('rand') === '1';
-  if (useRand && s.boss?.phase >= 3 && k.rand && refuseReason(k.rand, k.randCtx()) === '' && bot.t >= (bot.randAt || 0)) {
+  if (useRand && !R.busy && s.boss?.phase >= 3 && k.rand && refuseReason(k.rand, k.randCtx()) === '' && bot.t >= (bot.randAt || 0)) {
     s.inp.press('assist'); bot.randAt = bot.t + 3; return go(bot, 0, 0);
   }
-  const away = leave(bot, R, k.threats?.() || {});
+  const away = leave(bot, R, k.threats?.() || {}, incoming);
   if (away) return away;
   const live = liveOf(s);
   const elite = live.find(e => (e.type === 'belal' || e.type === 'fadelt') && e.state !== 'erase');

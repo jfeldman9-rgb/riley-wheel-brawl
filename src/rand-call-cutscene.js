@@ -8,10 +8,11 @@ export const RAND_BASE = 'assets/cutscenes/rand/';
 const START = 1500, STALL = 1500, MAX = 11000, GUARD = 900;
 
 let bag = null, blobUrl = null, blobId = null, held = 0, player = null, handle = null, ducked = null;
+let prefetchVersion = 0, offShutdown = null, unpauseGame = null;
 
 export function blobCount() { return held; }
 export function resetRandCall(storage, rng) {
-  dropBlob(); bag = createBag(storage, rng); player = null; handle = null; ducked = null;
+  abortRandCall(); bag = createBag(storage, rng);
 }
 
 function shuffle(list, rng) {
@@ -48,18 +49,20 @@ export function warmRand(scene) {
 }
 
 export function dropBlob() {
+  prefetchVersion++;
   if (blobUrl) { try { URL.revokeObjectURL(blobUrl); } catch { /* already gone */ } }
   blobUrl = null; blobId = null; held = 0;
 }
 
 export function prefetchRand(id, fetcher = globalThis.fetch) {
   dropBlob();
+  const version = prefetchVersion;
   if (!id || !fetcher) return Promise.resolve(false);
   return Promise.resolve().then(() => fetcher(RAND_BASE + id + '.mp4')).then(res => {
     if (!res || !res.ok || !res.blob) return false;
     return res.blob();
   }).then(b => {
-    if (!b || !URL.createObjectURL) return false;
+    if (version !== prefetchVersion || !b || !URL.createObjectURL) return false;
     blobUrl = URL.createObjectURL(b); blobId = id; held = 1; return true;
   }).catch(() => false);
 }
@@ -78,7 +81,7 @@ export function installRandBless(scene) {
   if (!doc?.addEventListener || !doc.createElement) return;
   const fire = () => {
     try {
-      if (!player) player = new CutscenePlayer(root, { base: RAND_BASE, startMs: START, stallMs: STALL, maxMs: MAX, guardMs: GUARD });
+      if (!player || player.root !== root) player = new CutscenePlayer(root, { base: RAND_BASE, startMs: START, stallMs: STALL, maxMs: MAX, guardMs: GUARD });
       player.bless();
     } catch { /* the element is not available yet */ }
   };
@@ -112,6 +115,9 @@ function whyOf(log, id, how) {
 export function abortRandCall(scene) {
   const h = handle; handle = null;
   try { h?.abort?.(); } catch { /* overlay already gone */ }
+  offShutdown?.(); offShutdown = null;
+  unpauseGame?.(); unpauseGame = null;
+  try { player?.video?.pause(); } catch { /* detached element */ }
   flushInp(scene);
   dropBlob(); unduck(scene); player = null;
   if (scene) { scene.cutscene = null; scene.setPauseReason?.('cutscene', false); }
@@ -120,17 +126,18 @@ export function abortRandCall(scene) {
 /** false when cutscenes are off: the caller runs the strike immediately. then() fires once. */
 export function playCall(scene, then) {
   const root = scene?.cutRoot || globalThis;
-  if (!cutscenesEnabled(q, root.navigator)) return false;
+  if (!cutscenesEnabled(q, root.navigator) || handle?.active || scene.cutscene) return false;
   const id = bagOf(root.sessionStorage).next();
   let once = false;
   const finish = how => {
     if (once) return;
     once = true;
-    handle = null; player = null;
+    handle = null;
+    offShutdown?.(); offShutdown = null;
+    unpauseGame?.(); unpauseGame = null;
     flushInp(scene);
     scene.cutscene = null;
     scene.setPauseReason?.('cutscene', false);
-    try { scene.scene?.resume?.(); } catch { /* already running */ }
     unduck(scene);
     const next = bagOf(root.sessionStorage).peek();
     if ((scene.kit?.quality | 0) >= 4 || (scene.fx?.quality | 0) >= 4) dropBlob();
@@ -140,23 +147,34 @@ export function playCall(scene, then) {
   const m = scene.music;
   if (m) { ducked = { state: m.state, track: m.track, gainMul: m.gainMul ?? 1 }; m.gainMul = 0.35; }
   scene.setPauseReason?.('cutscene', true);
-  try { scene.scene?.pause?.(); } catch { /* tests have no scene manager */ }
+  const game = scene.game, ownsPause = !!game && !game.isPaused && typeof game.pause === 'function';
+  unpauseGame = () => { if (ownsPause && game.isPaused && !game.pendingDestroy) game.resume?.(); };
+  if (ownsPause) game.pause();
   scene.cutscene = {
     rand: true, i: 0, line: null,
     press(a) { handle?.skip?.(a || 'press', a === 'pause' || a === 'start'); },
     next(why) { handle?.next?.(why || 'watchdog'); },
   };
-  player = new CutscenePlayer(root, { base: RAND_BASE, startMs: START, stallMs: STALL, maxMs: MAX, guardMs: GUARD });
-  const url = blobId === id ? blobUrl : null;
-  player.srcOf = key => url && key === id ? { src: url, poster: RAND_BASE + key + '.jpg' } : null;
-  handle = player.play([id], {
-    done: how => finish(whyOf(player?.log, id, how)),
-    touch: !!scene.game?.inp?.isTouch,
-    progress: n => {
-      if (scene.cutscene) scene.cutscene.i = n;
-      if ((+player?.video?.currentTime || 0) >= 11) handle?.next?.('timeout');
-    },
-  });
-  scene.events?.once?.('shutdown', () => abortRandCall(scene));
-  return true;
+  try {
+    if (!player || player.root !== root) player = new CutscenePlayer(root, { base: RAND_BASE, startMs: START, stallMs: STALL, maxMs: MAX, guardMs: GUARD });
+    const activePlayer = player;
+    const off = () => abortRandCall(scene);
+    scene.events?.once?.('shutdown', off);
+    offShutdown = () => scene.events?.off?.('shutdown', off);
+    const url = blobId === id ? blobUrl : null;
+    player.srcOf = key => url && key === id ? { src: url, poster: RAND_BASE + key + '.jpg' } : null;
+    const nextHandle = player.play([id], {
+      done: how => finish(whyOf(activePlayer.log, id, how)),
+      touch: !!scene.game?.inp?.isTouch,
+      progress: n => {
+        if (scene.cutscene) scene.cutscene.i = n;
+        if ((+player?.video?.currentTime || 0) >= 11) handle?.next?.('timeout');
+      },
+    });
+    if (!once) handle = nextHandle;
+    return true;
+  } catch {
+    abortRandCall(scene);
+    return false;
+  }
 }

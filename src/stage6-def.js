@@ -3,7 +3,7 @@ import { sfx } from './audio.js';
 import { stage6Say } from './stage6-voice.js';
 
 export const STAGE6_CHARS = Object.freeze(['riley', 'grunt', 'spear', 'hound']);
-export const STAGE6_TEXTURES = Object.freeze(['bg6far', 'bg6mid', 'bg6mid2', 'bg6floor', 'bg6floor2', 'bg6floor3', 's6gray', 's6fade', 's6belal', 's6rand', 'randPortrait', 'belalPortrait', 's6storm', 's6net', 's6lamp', 's6oil', 's6hatch', 's6call', 's6ray', 's6ribbon', 's6crate', 's6streak', 's6def', 'story6p1', 'story6p2', 'story6p3']);
+export const STAGE6_TEXTURES = Object.freeze(['bg6far', 'bg6mid', 'bg6mid2', 'bg6floor', 'bg6floor2', 'bg6floor3', 's6gray', 's6fade', 's6belal', 's6rand', 'randPortrait', 'belalPortrait', 's6storm', 's6net', 's6lamp', 's6oil', 's6hatch', 's6call', 's6ray', 's6ribbon', 's6crate', 's6planks', 's6streak', 's6def', 'story6p1', 'story6p2', 'story6p3']);
 
 export const STAGE6 = {
   no: 6, key: 'tear', title: 'THE STONE OF TEAR', loading: 'Loading the Stone…',

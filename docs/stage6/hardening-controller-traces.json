@@ -1,0 +1,363 @@
+{
+  "ordinary": [
+    {
+      "seed": 1,
+      "rand": false,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 43.66333333333241,
+      "hp": 12
+    },
+    {
+      "seed": 2,
+      "rand": false,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 40.47499999999924,
+      "hp": 26
+    },
+    {
+      "seed": 3,
+      "rand": false,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 50.294999999998694,
+      "hp": 58
+    },
+    {
+      "seed": 4,
+      "rand": false,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 44.19166666666592,
+      "hp": 49
+    },
+    {
+      "seed": 5,
+      "rand": false,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 41.46833333333249,
+      "hp": 76
+    },
+    {
+      "seed": 10,
+      "rand": false,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 108.65666666666162,
+      "hp": 22
+    },
+    {
+      "seed": 20,
+      "rand": false,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 40.16999999999936,
+      "hp": 58
+    },
+    {
+      "seed": 100,
+      "rand": false,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 75.83833333333054,
+      "hp": 8
+    },
+    {
+      "seed": 97,
+      "rand": false,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 44.25166666666572,
+      "hp": 37
+    },
+    {
+      "seed": 1,
+      "rand": true,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 41.46833333333248,
+      "hp": 12
+    },
+    {
+      "seed": 2,
+      "rand": true,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 38.01833333333269,
+      "hp": 26
+    },
+    {
+      "seed": 3,
+      "rand": true,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 43.299999999999066,
+      "hp": 70
+    },
+    {
+      "seed": 4,
+      "rand": true,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 42.77833333333256,
+      "hp": 59
+    },
+    {
+      "seed": 5,
+      "rand": true,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 38.53999999999921,
+      "hp": 76
+    },
+    {
+      "seed": 10,
+      "rand": true,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 90.42333333332941,
+      "hp": 48
+    },
+    {
+      "seed": 20,
+      "rand": true,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 41.25166666666589,
+      "hp": 58
+    },
+    {
+      "seed": 100,
+      "rand": true,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 57.251666666665024,
+      "hp": 26
+    },
+    {
+      "seed": 97,
+      "rand": true,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 41.26166666666584,
+      "hp": 47
+    }
+  ],
+  "delayed": [
+    {
+      "seed": 1,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 67.27499999999773,
+      "hp": 70
+    },
+    {
+      "seed": 2,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 82.52333333332959,
+      "hp": 6
+    },
+    {
+      "seed": 3,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 79.7733333333298,
+      "hp": 78
+    },
+    {
+      "seed": 4,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 96.97833333332885,
+      "hp": 32
+    },
+    {
+      "seed": 5,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 91.32333333332932,
+      "hp": 94
+    },
+    {
+      "seed": 10,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 67.55499999999773,
+      "hp": 38
+    },
+    {
+      "seed": 20,
+      "ended": true,
+      "gameOver": false,
+      "bossT": 68.47833333333098,
+      "hp": 70
+    },
+    {
+      "seed": 100,
+      "ended": false,
+      "gameOver": true,
+      "bossT": 113.03166666666125,
+      "hp": 0
+    },
+    {
+      "seed": 97,
+      "ended": false,
+      "gameOver": true,
+      "bossT": 86.75166666666296,
+      "hp": 0
+    }
+  ],
+  "delayedFailure100": [
+    {
+      "frame": 15600,
+      "hp": 10,
+      "x": 5096.223354012707,
+      "y": 596.2499999999983,
+      "state": "run",
+      "calls": 0,
+      "strike": false,
+      "boss": {
+        "hp": 65,
+        "x": 5034.223354012707,
+        "y": 608.0346731101163,
+        "state": "idle",
+        "st": 0.7333333333333332,
+        "hitI": 2
+      },
+      "lines": [
+        {
+          "band": 2,
+          "t": 0.4833333333333333,
+          "phase": "tell",
+          "snareT": 1
+        }
+      ],
+      "saidin": 94.80000000000001,
+      "boost": null
+    },
+    {
+      "frame": 15660,
+      "hp": 4,
+      "x": 5096.223354012707,
+      "y": 596.2499999999983,
+      "state": "runkick",
+      "calls": 0,
+      "strike": false,
+      "boss": {
+        "hp": 55,
+        "x": 5034.223354012707,
+        "y": 608.0346731101163,
+        "state": "attack",
+        "st": 0.5750000000000004,
+        "hitI": 0
+      },
+      "lines": [
+        {
+          "band": 2,
+          "t": 0.03333333333333333,
+          "phase": "fire",
+          "snareT": 0.9499999999999998
+        }
+      ],
+      "saidin": 97.80000000000001,
+      "boost": null
+    },
+    {
+      "frame": 15720,
+      "hp": 4,
+      "x": 5096.223354012707,
+      "y": 669.1666666666663,
+      "state": "idle",
+      "calls": 0,
+      "strike": false,
+      "boss": {
+        "hp": 55,
+        "x": 5034.223354012707,
+        "y": 608.0346731101163,
+        "state": "attack",
+        "st": 0.2583333333333333,
+        "hitI": 2
+      },
+      "lines": [],
+      "saidin": 97.80000000000001,
+      "boost": null
+    },
+    {
+      "frame": 15780,
+      "hp": 4,
+      "x": 5096.223354012707,
+      "y": 669.1666666666663,
+      "state": "run",
+      "calls": 0,
+      "strike": false,
+      "boss": {
+        "hp": 55,
+        "x": 5034.223354012707,
+        "y": 657.5346731101163,
+        "state": "idle",
+        "st": 0.6333333333333335,
+        "hitI": 2
+      },
+      "lines": [
+        {
+          "band": 1,
+          "t": 0.7500000000000007,
+          "phase": "tell",
+          "snareT": 1
+        }
+      ],
+      "saidin": 97.80000000000001,
+      "boost": null
+    },
+    {
+      "frame": 15840,
+      "hp": 4,
+      "x": 5096.223354012707,
+      "y": 669.1666666666663,
+      "state": "runkick",
+      "calls": 0,
+      "strike": false,
+      "boss": {
+        "hp": 45,
+        "x": 5034.223354012707,
+        "y": 657.5346731101163,
+        "state": "attack",
+        "st": 0.47500000000000064,
+        "hitI": 0
+      },
+      "lines": [
+        {
+          "band": 1,
+          "t": 0.30166666666666664,
+          "phase": "fire",
+          "snareT": 0.6816666666666658
+        }
+      ],
+      "saidin": 100,
+      "boost": null
+    },
+    {
+      "frame": 15900,
+      "hp": 0,
+      "x": 5096.223354012707,
+      "y": 669.1666666666663,
+      "state": "idle",
+      "calls": 0,
+      "strike": false,
+      "boss": {
+        "hp": 45,
+        "x": 5034.223354012707,
+        "y": 657.5346731101163,
+        "state": "attack",
+        "st": 0.15833333333333333,
+        "hitI": 2
+      },
+      "lines": [],
+      "saidin": 100,
+      "boost": null
+    }
+  ]
+}

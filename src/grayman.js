@@ -1,7 +1,7 @@
 // Gray Man. A plain assassin the eye slides off. One live. No grab.
 import { clamp, LANE_TOP, LANE_BOT } from './config.js';
 import { lightNear } from './myrddraal.js';
-import { strikeRiley } from './stage5-hurt.js';
+import { strikeRiley } from './stage6-hurt.js';
 import { substeps } from './stage5-clock.js';
 import { queryFlag } from './debug-flag.js';
 import { q } from './config.js';

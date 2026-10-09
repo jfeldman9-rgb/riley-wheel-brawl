@@ -1,6 +1,6 @@
 // Be'lal, the Netweaver. Three phases. He never takes Callandor. Rand cannot skip a gate or kill him.
 import { clamp, LANE_TOP, LANE_BOT } from './config.js';
-import { strikeRiley } from './stage5-hurt.js';
+import { strikeRiley } from './stage6-hurt.js';
 import { substeps } from './stage5-clock.js';
 
 export const BELAL = Object.freeze({
@@ -108,7 +108,7 @@ export class Belal {
       this.scene.kit?.onCounter?.(this, 'flurry'); this.scene.hud?.flashText?.('COUNTER!');
       return;
     }
-    if (!this.struck && this.st >= tell && this.st < tell + 0.1 && R && Math.abs(R.x - this.x) < BELAL.reach && Math.abs(R.y - this.y) < 36) {
+    if (!snared(this.scene) && !lined(this.scene) && !(this.scene.kit?.getupCool > 0) && !this.struck && this.st >= tell && this.st < tell + 0.1 && R && Math.abs(R.x - this.x) < BELAL.reach && Math.abs(R.y - this.y) < 36) {
       this.struck = true;
       if (!last) R.hurtStreak = 0;
       strikeRiley(this.scene, BELAL.dmg[this.hitI], { fromX: this.x, kb: this.facing * (last ? 300 : 60), down: last });
@@ -185,7 +185,7 @@ export class Belal {
     this.sprite.flipX = this.facing < 0; this.sprite.setDepth?.(1000 + this.y);
     this.sprite.setAlpha?.(this.state === 'erase' ? Math.max(0, 1 - this.st) : 1);
     this.shadow?.setPosition?.(this.x, this.y + 2); this.shadow?.setAlpha?.(this.state === 'erase' ? 0 : 0.5); this.shadow?.setScale?.(2.4, 0.55);
-    const show = this.state === 'tell' || this.state === 'lunge' || this.state === 'channel';
+    const show = this.state === 'tell' || this.state === 'lunge' || this.state === 'channel' || (this.state === 'attack' && this.st < BELAL.tells[this.hitI]);
     this.streak?.setPosition?.(this.x + this.facing * 40, this.y - 70); this.streak?.setVisible?.(show); this.streak?.setAlpha?.(show ? 0.85 : 0); this.streak?.setScale?.(this.state === 'channel' ? 0.6 : 1.4, 0.35);
   }
   destroy() { this.sprite?.destroy?.(); this.shadow?.destroy?.(); this.streak?.destroy?.(); this.alive = false; this.gone = true; }

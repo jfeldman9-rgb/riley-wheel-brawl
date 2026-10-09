@@ -1,7 +1,7 @@
 // Stone backdrop: rain sheen, window flicker, Defenders, Callandor. Lights stay scarce.
 import { VW, VH, LANE_TOP, WORLD_W } from './config.js';
 import { paintStage6Art } from './stage6-art.js';
-import { bandY } from './stage6-arena.js';
+import { createStoneTells } from './stage6-tells.js';
 
 function img(scene, x, y, key) {
   const s = scene.add?.image ? scene.add.image(x, y, key) : null;
@@ -10,7 +10,7 @@ function img(scene, x, y, key) {
 }
 
 export function createStage6View(scene) {
-  const owned = [];
+  const owned = [], tells = createStoneTells(scene), timers = [];
   let far, rain, defs = [], call, rays = [], flicker = 2, bolt = 0;
   const view = {
     light: null, quality: 0,
@@ -46,6 +46,7 @@ export function createStage6View(scene) {
     setQuality(n) { view.quality = n | 0; },
     move(camX) { far?.setTint?.(bolt > 0 ? 0xb9c7e8 : 0xffffff); },
     sync(kit) {
+      tells.sync(kit?.stone);
       const q = view.quality || kit?.quality || kit?.s?.fx?.quality || 0;
       const zone = kit?.s?.zoneI ?? -1;
       if (rain) {
@@ -79,14 +80,15 @@ export function createStage6View(scene) {
       const g = img(thisScene(scene), (scene.camX || 0) + VW * 0.7, 180, 's6rand');
       g?.setScrollFactor?.(0); g?.setDepth?.(3000); g?.setAlpha?.(0.9); g?.setScale?.(1.2);
       if (g) owned.push(g);
-      scene.time?.delayedCall?.(1600, () => g?.destroy?.());
+      const timer = scene.time?.delayedCall?.(1600, () => g?.destroy?.());
+      if (timer) timers.push(timer);
     },
     randSprite(x, y) {
       const s = scene.add?.sprite?.(x, y, 's6rand', 1);
       s?.setOrigin?.(0.5, 0.96); s?.setScale?.(1.4); s?.setDepth?.(1400);
       return s;
     },
-    destroy() { for (const o of owned) o?.destroy?.(); owned.length = 0; if (view.light) scene.lights?.removeLight?.(view.light); },
+    destroy() { tells.destroy(); for (const t of timers) t.remove?.(); timers.length = 0; for (const o of owned) o?.destroy?.(); owned.length = 0; if (view.light) scene.lights?.removeLight?.(view.light); },
   };
   return view;
 }
