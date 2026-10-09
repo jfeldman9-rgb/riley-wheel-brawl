@@ -48,11 +48,13 @@ test('Stage 6 campaign clears 9 seeds with and without Rand, and Rand keeps 70 p
     assert.ok(row.calls >= 1 && row.calls <= 3, `${seed} calls ${row.calls}`);
     const ratio = row.bossT / base[i].bossT;
     assert.ok(ratio >= 0.7 && ratio <= 1.02, `seed ${seed} boss ${row.bossT.toFixed(1)} / ${base[i].bossT.toFixed(1)} = ${ratio.toFixed(3)}`);
+    console.log(JSON.stringify({ seed, off: +base[i].bossT.toFixed(1), on: +row.bossT.toFixed(1), ratio: +ratio.toFixed(3), calls: row.calls }));
   }));
   const slow = [];
   for (const seed of FULL_STAGE_SEEDS) withSeed(seed, () => {
     try { run(seed, false, 0.25); }
     catch (err) { slow.push(seed + ' ' + (err && err.message)); }
   });
+  console.log(JSON.stringify({ lag250: FULL_STAGE_SEEDS.length - slow.length, of: FULL_STAGE_SEEDS.length, fail: slow }));
   assert.ok(FULL_STAGE_SEEDS.length - slow.length >= 8, slow.join('\n'));
 });
