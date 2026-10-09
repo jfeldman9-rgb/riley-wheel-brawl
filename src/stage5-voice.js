@@ -53,8 +53,12 @@ export function stage5Say(id, cap, interrupt = true) {
 }
 
 const GAP = 8000;
+function barkNow() {
+  const now = globalThis.performance?.now;
+  return typeof now === 'function' ? now.call(globalThis.performance) : Date.now();
+}
 export function bark(scene, type, id, interrupt = false) {
-  const now = scene.time?.now || 0;
+  const now = barkNow();
   const at = scene._s5bark || (scene._s5bark = {});
   if (now - (at[type] ?? -1e9) < GAP) return;
   at[type] = now;

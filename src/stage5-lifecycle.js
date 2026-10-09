@@ -1,9 +1,11 @@
 // Stage 5 exits. Holds, tethers and hazard clocks end in the same call.
 import { drainHum } from './stage5-voice.js';
 import { stage4Delta } from './stage4-time.js';
+import { releaseBeatClock, thawBeat } from './stage5-beat.js';
 
 export function clearStage5Hazards(kit) {
   const s = kit.s;
+  thawBeat(kit.arena);
   drainHum(false);
   for (const e of s.enemies || []) e.releaseHold?.('break');
   s.boss?.releaseHold?.('break');
@@ -18,8 +20,8 @@ export function clearStage5Zone(kit, zone) {
   kit.cleared = kit.cleared || new Set();
   kit.cleared.add(zone);
   kit.blight?.clearZone(zone);
-  if (kit.s.spores) kit.s.spores = kit.s.spores.filter(p => false);
-  if (kit.s.clouds) kit.s.clouds = [];
+  if (kit.s.spores) kit.s.spores.length = 0;
+  if (kit.s.clouds) kit.s.clouds.length = 0;
   if (kit.s.riley) kit.s.riley.fogSlow = 0;
 }
 
@@ -29,7 +31,12 @@ function hook(kit, object, key, wrap) {
   const own = Object.prototype.hasOwnProperty.call(object, key);
   const replacement = wrap(original);
   object[key] = replacement;
-  (kit.hooks || (kit.hooks = [])).push(() => { if (object[key] !== replacement) kit.hookMiss = (kit.hookMiss || 0) + 1; if (own) object[key] = original; else delete object[key]; });
+  // Count a later wrapper, then put the original back. This scene object is reused;
+  // leaving that wrapper would keep this kit alive into the next stage.
+  (kit.hooks || (kit.hooks = [])).push(() => {
+    if (object[key] !== replacement) kit.hookMiss = (kit.hookMiss || 0) + 1;
+    if (own) object[key] = original; else delete object[key];
+  });
 }
 export function installStage5SceneHooks(kit) {
   const s = kit.s;
@@ -42,6 +49,7 @@ export function installStage5SceneHooks(kit) {
     this.view?.sync?.(this);
   });
   hook(kit, s, 'update', original => function(time, deltaMs) {
+    if (this._s5freeStory && !this.cutscene) this._s5freeStory();
     if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;
     if (!kit.arena?.frozen) return original.call(this, time, deltaMs);
     kit.update(Math.min(deltaMs, 50) / 1000);
@@ -53,6 +61,7 @@ export function installStage5SceneHooks(kit) {
     return original.call(this, action);
   });
   hook(kit, s, 'rileyDied', original => function() {
+    releaseBeatClock(kit.arena);
     this.riley?.grabbedBy?.releaseHold?.('break');
     for (const e of this.enemies || []) {
       e.releaseHold?.('break');

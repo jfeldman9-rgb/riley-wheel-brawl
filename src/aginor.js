@@ -44,9 +44,13 @@ export class Aginor {
     if (this.phase === 2) this.p2t += dt;
     if (this.state === 'burn') { if (this.st >= 1.3) this.finish(); return; }
     if (this.state === 'dead') { if (this.st > 0.4) this.gone = true; return; }
-    if (this.phase === 2 && !this.beatDone && (this.p2t >= 50 || this.deps.balthDown?.())) {
+    // A beat that is not actually frozen must still open the next gate. Otherwise beatFired
+    // never sticks, guardHp holds the 33% floor, and phase 3 (the only way through it) never starts.
+    if (this.beatFired && !this.beatDone) this.markBeat();
+    if (this.phase === 2 && !this.beatDone && !this.beatFired && (this.p2t >= 50 || this.deps.balthDown?.())) {
       this.deps.onBeat?.(this);
       if (this.deps.frozen?.()) return;
+      this.beatFired = true; this.markBeat(); return;
     }
     if (this.state === 'staggered') { if (this.st >= AGINOR.stagger) { this.state = 'idle'; this.st = 0; } return; }
     if (this.state === 'tether') return this.tether(dt);
