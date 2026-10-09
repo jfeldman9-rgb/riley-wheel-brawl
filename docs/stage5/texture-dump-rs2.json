@@ -1,0 +1,4930 @@
+{
+  "method": "RGBA base levels: all Texture.source + Texture.dataSource; renderer glTextureWrappers separately (includes render targets). No process-RSS claim.",
+  "viewport": [
+    1280,
+    720
+  ],
+  "deviceScaleFactor": 2,
+  "renderScale": 2,
+  "runs": [
+    {
+      "engine": "webkit",
+      "stage": 5,
+      "errors": [],
+      "progression": [
+        {
+          "label": "title",
+          "stage": 5,
+          "zone": -1,
+          "started": false,
+          "ended": false,
+          "clearShown": false,
+          "rs": 2,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 100,
+            "state": "idle",
+            "x": 180,
+            "y": 630,
+            "enemies": []
+          },
+          "sourceBytes": 114257544,
+          "colorBytes": 110761988,
+          "glBytes": 158494344
+        },
+        {
+          "label": "0/0/false/false",
+          "stage": 5,
+          "zone": 0,
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 2,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 100,
+            "state": "combo1",
+            "x": 230.9903809186494,
+            "y": 627.9166666666666,
+            "enemies": [
+              {
+                "type": "grunt",
+                "hp": 42,
+                "state": "approach",
+                "x": 868.9333333333474,
+                "y": 642.8444988384508
+              },
+              {
+                "type": "stalker",
+                "hp": 13,
+                "state": "down",
+                "x": 292.9903809186494,
+                "y": 640
+              }
+            ]
+          },
+          "sourceBytes": 111644544,
+          "colorBytes": 108148988,
+          "glBytes": 155881344
+        },
+        {
+          "label": "1/0/false/false",
+          "stage": 5,
+          "zone": 1,
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 2,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 71,
+            "state": "run",
+            "x": 1501.9367241874193,
+            "y": 640.4166666666669,
+            "enemies": []
+          },
+          "sourceBytes": 111204844,
+          "colorBytes": 107709288,
+          "glBytes": 155441644
+        },
+        {
+          "label": "2/0/false/false",
+          "stage": 5,
+          "zone": 2,
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 2,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 51,
+            "state": "run",
+            "x": 2746.6942053769753,
+            "y": 667.2916666666675,
+            "enemies": [
+              {
+                "type": "sporepod",
+                "hp": 28,
+                "state": "idle",
+                "x": 3000,
+                "y": 640
+              },
+              {
+                "type": "spear",
+                "hp": 34,
+                "state": "approach",
+                "x": 3766.7333333333563,
+                "y": 678.4877188277861
+              },
+              {
+                "type": "stalker",
+                "hp": 16,
+                "state": "lurk",
+                "x": 3300,
+                "y": 620
+              }
+            ]
+          },
+          "sourceBytes": 111222652,
+          "colorBytes": 107727096,
+          "glBytes": 155459452
+        },
+        {
+          "label": "3/1/false/false",
+          "stage": 5,
+          "zone": 3,
+          "phase": 1,
+          "state": "staggered",
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 2,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 70,
+            "state": "combo1",
+            "x": 4882.115130332912,
+            "y": 619.7916666666675,
+            "bossHp": 592.5,
+            "p2t": 0,
+            "beat": null,
+            "enemies": [
+              {
+                "type": "aginor",
+                "hp": 592.5,
+                "state": "staggered",
+                "x": 5040.605255558067,
+                "y": 627.3985081850509
+              }
+            ]
+          },
+          "sourceBytes": 111221884,
+          "colorBytes": 107726328,
+          "glBytes": 155458684
+        },
+        {
+          "label": "3/2/false/false",
+          "stage": 5,
+          "zone": 3,
+          "phase": 2,
+          "state": "idle",
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 2,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 70,
+            "state": "idle",
+            "x": 4998.159719310156,
+            "y": 633.6666666666661,
+            "bossHp": 391,
+            "p2t": 3.416666666666657,
+            "beat": null,
+            "enemies": [
+              {
+                "type": "aginor",
+                "hp": 391,
+                "state": "idle",
+                "x": 5119.999999999997,
+                "y": 627.3985081850509
+              },
+              {
+                "type": "balthamel",
+                "hp": 179,
+                "state": "shoved",
+                "x": 4936.159719310156,
+                "y": 633.6666666666661
+              }
+            ]
+          },
+          "sourceBytes": 111230436,
+          "colorBytes": 107734880,
+          "glBytes": 155467236
+        },
+        {
+          "label": "3/3/false/false",
+          "stage": 5,
+          "zone": 3,
+          "phase": 3,
+          "state": "attack",
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 2,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 70,
+            "state": "run",
+            "x": 4985.118308319822,
+            "y": 622.0000000000009,
+            "bossHp": 174,
+            "p2t": 46.741666666664656,
+            "beat": {
+              "t": 2.2166666666666637,
+              "done": true
+            },
+            "enemies": [
+              {
+                "type": "aginor",
+                "hp": 174,
+                "state": "attack",
+                "x": 5119.999999999997,
+                "y": 627.3985081850509
+              }
+            ]
+          },
+          "sourceBytes": 111257908,
+          "colorBytes": 107762352,
+          "glBytes": 155494708
+        },
+        {
+          "label": "3/3/false/true",
+          "stage": 5,
+          "zone": 3,
+          "phase": 3,
+          "state": "dead",
+          "started": true,
+          "ended": true,
+          "clearShown": true,
+          "rs": 2,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 70,
+            "state": "idle",
+            "x": 5027.358247077817,
+            "y": 600.4583333333325,
+            "bossHp": 0,
+            "p2t": 46.741666666664656,
+            "beat": null,
+            "enemies": []
+          },
+          "sourceBytes": 111505340,
+          "colorBytes": 108009784,
+          "glBytes": 155742140
+        },
+        {
+          "label": "final",
+          "stage": 5,
+          "zone": 3,
+          "phase": 3,
+          "state": "dead",
+          "started": true,
+          "ended": true,
+          "clearShown": true,
+          "rs": 2,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 70,
+            "state": "idle",
+            "x": 5027.358247077817,
+            "y": 600.4583333333325,
+            "bossHp": 0,
+            "p2t": 46.741666666664656,
+            "beat": null,
+            "enemies": []
+          },
+          "sourceBytes": 111505340,
+          "colorBytes": 108009784,
+          "glBytes": 155742140
+        }
+      ],
+      "peak": {
+        "label": "title",
+        "stage": 5,
+        "zone": -1,
+        "started": false,
+        "ended": false,
+        "clearShown": false,
+        "rs": 2,
+        "rendererConfig": {
+          "mipmapFilter": "",
+          "mipmapRegeneration": false
+        },
+        "diagnostics": {
+          "gamePaused": false,
+          "paused": false,
+          "pauseReasons": [],
+          "hp": 100,
+          "state": "idle",
+          "x": 180,
+          "y": 630,
+          "enemies": []
+        },
+        "sourceBytes": 114257544,
+        "colorBytes": 110761988,
+        "glBytes": 158494344,
+        "gl": [
+          {
+            "width": 1,
+            "height": 1,
+            "bytes": 4,
+            "minFilter": 9728,
+            "magFilter": 9728,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1884,
+            "height": 328,
+            "bytes": 2471808,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 602,
+            "height": 181,
+            "bytes": 435848,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3792,
+            "height": 852,
+            "bytes": 12923136,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4076,
+            "height": 1212,
+            "bytes": 19760448,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3612,
+            "height": 1084,
+            "bytes": 15661632,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 602,
+            "height": 181,
+            "bytes": 435848,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4080,
+            "height": 1936,
+            "bytes": 31595520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3544,
+            "height": 496,
+            "bytes": 7031296,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 591,
+            "height": 83,
+            "bytes": 196212,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 591,
+            "height": 83,
+            "bytes": 196212,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 490,
+            "height": 482,
+            "bytes": 944720,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 490,
+            "height": 482,
+            "bytes": 944720,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 258,
+            "bytes": 264192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1183,
+            "height": 549,
+            "bytes": 2597868,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1630,
+            "height": 317,
+            "bytes": 2066840,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1690,
+            "height": 242,
+            "bytes": 1635920,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 136,
+            "height": 136,
+            "bytes": 73984,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 384,
+            "height": 320,
+            "bytes": 491520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 192,
+            "bytes": 393216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1680,
+            "height": 336,
+            "bytes": 2257920,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 280,
+            "height": 56,
+            "bytes": 62720,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 280,
+            "height": 56,
+            "bytes": 62720,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 16,
+            "height": 16,
+            "bytes": 1024,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 40,
+            "height": 6,
+            "bytes": 960,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 14,
+            "height": 5,
+            "bytes": 280,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 210,
+            "bytes": 537600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 128,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 128,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 128,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 192,
+            "height": 48,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 576,
+            "height": 64,
+            "bytes": 147456,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 400,
+            "height": 80,
+            "bytes": 128000,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 480,
+            "height": 180,
+            "bytes": 345600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 360,
+            "bytes": 921600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 360,
+            "bytes": 921600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 360,
+            "bytes": 921600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 8,
+            "height": 64,
+            "bytes": 2048,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 47,
+            "height": 21,
+            "bytes": 3948,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 17,
+            "height": 16,
+            "bytes": 1088,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 21,
+            "bytes": 5376,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 7,
+            "height": 60,
+            "bytes": 1680,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 88,
+            "height": 16,
+            "bytes": 5632,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 70,
+            "height": 16,
+            "bytes": 4480,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 5,
+            "height": 30,
+            "bytes": 600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 69,
+            "height": 38,
+            "bytes": 10488,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 6,
+            "height": 29,
+            "bytes": 696,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 8,
+            "height": 19,
+            "bytes": 608,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 94,
+            "height": 16,
+            "bytes": 6016,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 548,
+            "height": 104,
+            "bytes": 227968,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 420,
+            "height": 58,
+            "bytes": 97440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 215,
+            "height": 21,
+            "bytes": 18060,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 721,
+            "height": 42,
+            "bytes": 121128,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 46,
+            "bytes": 6072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 46,
+            "bytes": 6072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 233,
+            "height": 26,
+            "bytes": 24232,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1054,
+            "height": 40,
+            "bytes": 168640,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 2560,
+            "height": 1440,
+            "bytes": 14745600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 2560,
+            "height": 1440,
+            "bytes": 14745600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 2560,
+            "height": 1440,
+            "bytes": 14745600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          }
+        ],
+        "entries": [
+          {
+            "key": "__NORMAL",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1,
+                "height": 1,
+                "bytes": 4,
+                "canvas": false,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "__DEFAULT",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAABVJREFUeF7NwIEAAAAAgKD9qdeocAMAoAABm3DkcAAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__MISSING",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJ9JREFUeNq01ssOwyAMRFG46v//Mt1ESmgh+DFmE2GPOBARKb2NVjo+17PXLD8a1+pl5+A+wSgFygymWYHBb0FtsKhJDdZlncG2IzJ4ayoMDv20wTmSMzClEgbWYNTAkQ0Z+OJ+A/eWnAaR9+oxCF4Os0H8htsMUp+pwcgBBiMNnAwF8GqIgL2hAzaGFFgZauDPKABmowZ4GL369/0rwACp2yA/ttmvsQAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__WHITE",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABdJREFUeNpi/P//PwMMMDEgAdwcgAADAJZuAwXJYZOzAAAAAElFTkSuQmCC"
+              }
+            ]
+          },
+          {
+            "key": "portrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4ce3a731-ca8d-415a-9832-a5f100ca8b4d"
+              }
+            ]
+          },
+          {
+            "key": "byarPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/64ab9004-8425-4f47-ad3f-7b2f77d6fa01"
+              }
+            ]
+          },
+          {
+            "key": "bossPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/089a7d44-b140-44dd-b9e1-02e49a134fc1"
+              }
+            ]
+          },
+          {
+            "key": "loialPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/3543510c-41bc-4748-a8d9-e68e22d7ebc1"
+              }
+            ]
+          },
+          {
+            "key": "riley-1",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1884,
+                "height": 328,
+                "bytes": 2471808,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/04e05fa0-f06d-40ca-a303-425c68cf3547"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/aba91d37-325b-45ca-8b94-e65beacf558c"
+              }
+            ]
+          },
+          {
+            "key": "riley-1_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/75236861-77bc-49a0-956a-60d9923db6cf"
+              }
+            ]
+          },
+          {
+            "key": "riley-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/9696a415-1f65-457d-b9f2-ec3441e0a234"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/a3b60b60-d682-4a28-999f-6292bd0c31b6"
+              }
+            ]
+          },
+          {
+            "key": "spear-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/418d34e0-586a-43ef-877b-ca0f0052c805"
+              }
+            ]
+          },
+          {
+            "key": "hound-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 602,
+                "height": 181,
+                "bytes": 435848,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c5441e4f-e3d9-4264-b699-6f8e871d4a7a"
+              }
+            ]
+          },
+          {
+            "key": "spear-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3792,
+                "height": 852,
+                "bytes": 12923136,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/333dffd0-a108-4e41-8d6b-791ad56de054"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c202541c-11ae-405e-aa7a-945bf474721d"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4076,
+                "height": 1212,
+                "bytes": 19760448,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/e15dfaef-6333-4f0d-a03b-697fbffd0e7a"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/228b9249-477d-473d-86d8-7cc1f5cd06d7"
+              }
+            ]
+          },
+          {
+            "key": "hound-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3612,
+                "height": 1084,
+                "bytes": 15661632,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/72ca9d0e-194a-44b8-83df-0c8792405bf0"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 602,
+                "height": 181,
+                "bytes": 435848,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/258aa2c6-bc00-480e-90e5-6613ed3c5e5e"
+              }
+            ]
+          },
+          {
+            "key": "riley-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4080,
+                "height": 1936,
+                "bytes": 31595520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b22261c5-238f-4dbc-a97d-7a5d3923eec1"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/79049353-2b69-49f7-9c49-39c5f941977a"
+              }
+            ]
+          },
+          {
+            "key": "loial-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3544,
+                "height": 496,
+                "bytes": 7031296,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/526b8f6e-fc49-44fa-b39b-341d713bb554"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 591,
+                "height": 83,
+                "bytes": 196212,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/79efef00-e1ae-41b8-95cd-6c72439b62ed"
+              }
+            ]
+          },
+          {
+            "key": "loial-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 591,
+                "height": 83,
+                "bytes": 196212,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/632d58df-ecbc-4372-9f3f-54f3858e6a1c"
+              }
+            ]
+          },
+          {
+            "key": "crate",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 490,
+                "height": 482,
+                "bytes": 944720,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/fddb642a-c1e6-450e-a03a-eabfca321a17"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 490,
+                "height": 482,
+                "bytes": 944720,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/a085d315-9880-4caa-8ff6-52d2d831fcd8"
+              }
+            ]
+          },
+          {
+            "key": "ribbon",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 258,
+                "bytes": 264192,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/ddc57f9d-9f92-4797-83f9-26739622974a"
+              }
+            ]
+          },
+          {
+            "key": "planks",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1183,
+                "height": 549,
+                "bytes": 2597868,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/d836cdb6-59bb-4017-9c9a-dd3f41e3211e"
+              }
+            ]
+          },
+          {
+            "key": "s5agin",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1630,
+                "height": 317,
+                "bytes": 2066840,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/79d42f60-c037-4be1-a21a-d8fb53dca4bd"
+              }
+            ]
+          },
+          {
+            "key": "s5balt",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1690,
+                "height": 242,
+                "bytes": 1635920,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/df005114-4ad9-492a-9c19-b002f30733ae"
+              }
+            ]
+          },
+          {
+            "key": "aginorPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 136,
+                "height": 136,
+                "bytes": 73984,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/573789aa-a4d1-4598-98ea-2d593b7cb019"
+              }
+            ]
+          },
+          {
+            "key": "pu_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/2fd0d78d-2d4b-413c-878d-42b68e17d0d8"
+              }
+            ]
+          },
+          {
+            "key": "pu_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/586704a7-5c42-4b5d-b24e-e90ebd0ddad1"
+              }
+            ]
+          },
+          {
+            "key": "pu_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/bee0d475-301b-4bf9-81bc-6af26d785be6"
+              }
+            ]
+          },
+          {
+            "key": "pu_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/49c998bd-97ee-4f57-a6b5-13d6c86dc7a9"
+              }
+            ]
+          },
+          {
+            "key": "hud_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/42641bdb-c16f-402e-9c67-c240e2596182"
+              }
+            ]
+          },
+          {
+            "key": "hud_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c65710ec-0a28-4a96-9c00-178fa1c825c5"
+              }
+            ]
+          },
+          {
+            "key": "pu_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/131f0bc5-f0d6-4c36-9455-480a120ff457"
+              }
+            ]
+          },
+          {
+            "key": "hud_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/42f57313-c098-4ec8-aead-7c52a6eb7cab"
+              }
+            ]
+          },
+          {
+            "key": "hud_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/fc8319dd-dde1-4074-be85-8ec35ff0a9ac"
+              }
+            ]
+          },
+          {
+            "key": "hud_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4b336eda-ace9-4c05-8c4e-4efcc60602af"
+              }
+            ]
+          },
+          {
+            "key": "fx_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/f3584469-0c98-464c-9a2b-a0566fe0b222"
+              }
+            ]
+          },
+          {
+            "key": "fx_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 384,
+                "height": 320,
+                "bytes": 491520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/04715db6-2b96-48ef-ba28-79fdecb841e5"
+              }
+            ]
+          },
+          {
+            "key": "fx_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 192,
+                "bytes": 393216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/1d57a7cd-6a0b-42af-b973-eff660972482"
+              }
+            ]
+          },
+          {
+            "key": "riley3-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1680,
+                "height": 336,
+                "bytes": 2257920,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b675127b-88ef-4ee1-b393-1762e98be0ca"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 280,
+                "height": 56,
+                "bytes": 62720,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/78943dc0-89c5-427f-8628-47cf353ca9f4"
+              }
+            ]
+          },
+          {
+            "key": "riley3-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 280,
+                "height": 56,
+                "bytes": 62720,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/dfaf267e-4508-45fc-82c9-63176a80f27b"
+              }
+            ]
+          },
+          {
+            "key": "flake",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 16,
+                "height": 16,
+                "bytes": 1024,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "glow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "core",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ember",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "shadow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dust",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "smoke",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "streak",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 40,
+                "height": 6,
+                "bytes": 960,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dot",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "chip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 14,
+                "height": 5,
+                "bytes": 280,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "px",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5far",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 210,
+                "bytes": 537600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5mid",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5mid2",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5floor",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 128,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5floor2",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 128,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5floor3",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 128,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s5flare",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 192,
+                "height": 48,
+                "bytes": 36864,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s5stalk",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 576,
+                "height": 64,
+                "bytes": 147456,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s5pod",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 400,
+                "height": 80,
+                "bytes": 128000,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s5green",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 480,
+                "height": 180,
+                "bytes": 345600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "story5p1",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 360,
+                "bytes": 921600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "story5p2",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 360,
+                "bytes": 921600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "story5p3",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 360,
+                "bytes": 921600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "beam",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 8,
+                "height": 64,
+                "bytes": 2048,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "f9c26792-3b1f-48c2-bf37-ff944f089376",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 47,
+                "height": 21,
+                "bytes": 3948,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bb92e61a-6dc4-4306-9ef1-5c3b455dfab5",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 17,
+                "height": 16,
+                "bytes": 1088,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "f1611647-9305-4a1a-b3d4-58ee5cdccca9",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 21,
+                "bytes": 5376,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "a22ee31b-f905-4431-b1fc-8adeefaba474",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 7,
+                "height": 60,
+                "bytes": 1680,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "55a48eff-062c-4b22-a37a-aac11f4aedcb",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 88,
+                "height": 16,
+                "bytes": 5632,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "6c140451-2636-466f-ad09-f1c331635346",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 70,
+                "height": 16,
+                "bytes": 4480,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "a1b177a2-7cbb-4f64-aeac-d1bb54e364be",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "8fd9b6a5-8bf5-4c7f-9a56-9e7f6a031c88",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "6d8f66e4-7550-4025-84b4-5f0e858d8b94",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "be4e8dc2-af21-4148-b583-6bb034cbd2ed",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "50551e4e-b9d8-4e01-9070-8fd28a7515fa",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "e0f424c4-ae10-4225-b13c-baed0da60136",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bec27202-4357-49cd-9169-1952aa662af4",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 5,
+                "height": 30,
+                "bytes": 600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "fa7934af-8ad2-4e3c-8e75-6e0f8465b351",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 69,
+                "height": 38,
+                "bytes": 10488,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "d4ec4ddc-765e-4567-aaa3-043c6a7d5ca7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 6,
+                "height": 29,
+                "bytes": 696,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "6a46ad8d-9dfd-43e7-9a72-b568807669a7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 8,
+                "height": 19,
+                "bytes": 608,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "b8c936b3-40de-441e-a77f-a87c5fc75d1e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 94,
+                "height": 16,
+                "bytes": 6016,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "aeae92e7-4503-4f14-87d3-25b1296627ad",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 548,
+                "height": 104,
+                "bytes": 227968,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "adf19c08-df2f-4a0c-960f-d1786b92096d",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 420,
+                "height": 58,
+                "bytes": 97440,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "8c18baff-7425-4cd4-8353-76ba324fa432",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 215,
+                "height": 21,
+                "bytes": 18060,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "73453aef-8fd1-424e-80f5-18bb7dcc3859",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 721,
+                "height": 42,
+                "bytes": 121128,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "5a845c80-59b3-42e1-8601-30790e2bee0d",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 46,
+                "bytes": 6072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "f87e7d13-3d0c-49bc-936c-ce00eea92194",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 46,
+                "bytes": 6072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "848294fe-ac95-477b-8fab-56fbf66e9e22",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 233,
+                "height": 26,
+                "bytes": 24232,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "8e64dd65-1cc0-4513-b4ec-5362ae3604ee",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1054,
+                "height": 40,
+                "bytes": 168640,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          }
+        ]
+      },
+      "glPeak": {
+        "label": "title",
+        "stage": 5,
+        "zone": -1,
+        "started": false,
+        "ended": false,
+        "clearShown": false,
+        "rs": 2,
+        "rendererConfig": {
+          "mipmapFilter": "",
+          "mipmapRegeneration": false
+        },
+        "diagnostics": {
+          "gamePaused": false,
+          "paused": false,
+          "pauseReasons": [],
+          "hp": 100,
+          "state": "idle",
+          "x": 180,
+          "y": 630,
+          "enemies": []
+        },
+        "sourceBytes": 114257544,
+        "colorBytes": 110761988,
+        "glBytes": 158494344,
+        "gl": [
+          {
+            "width": 1,
+            "height": 1,
+            "bytes": 4,
+            "minFilter": 9728,
+            "magFilter": 9728,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1884,
+            "height": 328,
+            "bytes": 2471808,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 602,
+            "height": 181,
+            "bytes": 435848,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3792,
+            "height": 852,
+            "bytes": 12923136,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4076,
+            "height": 1212,
+            "bytes": 19760448,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3612,
+            "height": 1084,
+            "bytes": 15661632,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 602,
+            "height": 181,
+            "bytes": 435848,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4080,
+            "height": 1936,
+            "bytes": 31595520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3544,
+            "height": 496,
+            "bytes": 7031296,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 591,
+            "height": 83,
+            "bytes": 196212,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 591,
+            "height": 83,
+            "bytes": 196212,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 490,
+            "height": 482,
+            "bytes": 944720,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 490,
+            "height": 482,
+            "bytes": 944720,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 258,
+            "bytes": 264192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1183,
+            "height": 549,
+            "bytes": 2597868,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1630,
+            "height": 317,
+            "bytes": 2066840,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1690,
+            "height": 242,
+            "bytes": 1635920,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 136,
+            "height": 136,
+            "bytes": 73984,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 384,
+            "height": 320,
+            "bytes": 491520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 192,
+            "bytes": 393216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1680,
+            "height": 336,
+            "bytes": 2257920,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 280,
+            "height": 56,
+            "bytes": 62720,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 280,
+            "height": 56,
+            "bytes": 62720,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 16,
+            "height": 16,
+            "bytes": 1024,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 40,
+            "height": 6,
+            "bytes": 960,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 14,
+            "height": 5,
+            "bytes": 280,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 210,
+            "bytes": 537600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 128,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 128,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 128,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 192,
+            "height": 48,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 576,
+            "height": 64,
+            "bytes": 147456,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 400,
+            "height": 80,
+            "bytes": 128000,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 480,
+            "height": 180,
+            "bytes": 345600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 360,
+            "bytes": 921600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 360,
+            "bytes": 921600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 360,
+            "bytes": 921600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 8,
+            "height": 64,
+            "bytes": 2048,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 47,
+            "height": 21,
+            "bytes": 3948,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 17,
+            "height": 16,
+            "bytes": 1088,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 21,
+            "bytes": 5376,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 7,
+            "height": 60,
+            "bytes": 1680,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 88,
+            "height": 16,
+            "bytes": 5632,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 70,
+            "height": 16,
+            "bytes": 4480,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 5,
+            "height": 30,
+            "bytes": 600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 69,
+            "height": 38,
+            "bytes": 10488,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 6,
+            "height": 29,
+            "bytes": 696,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 8,
+            "height": 19,
+            "bytes": 608,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 94,
+            "height": 16,
+            "bytes": 6016,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 548,
+            "height": 104,
+            "bytes": 227968,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 420,
+            "height": 58,
+            "bytes": 97440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 215,
+            "height": 21,
+            "bytes": 18060,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 721,
+            "height": 42,
+            "bytes": 121128,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 46,
+            "bytes": 6072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 46,
+            "bytes": 6072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 233,
+            "height": 26,
+            "bytes": 24232,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1054,
+            "height": 40,
+            "bytes": 168640,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 2560,
+            "height": 1440,
+            "bytes": 14745600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 2560,
+            "height": 1440,
+            "bytes": 14745600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 2560,
+            "height": 1440,
+            "bytes": 14745600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          }
+        ],
+        "entries": [
+          {
+            "key": "__NORMAL",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1,
+                "height": 1,
+                "bytes": 4,
+                "canvas": false,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "__DEFAULT",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAABVJREFUeF7NwIEAAAAAgKD9qdeocAMAoAABm3DkcAAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__MISSING",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJ9JREFUeNq01ssOwyAMRFG46v//Mt1ESmgh+DFmE2GPOBARKb2NVjo+17PXLD8a1+pl5+A+wSgFygymWYHBb0FtsKhJDdZlncG2IzJ4ayoMDv20wTmSMzClEgbWYNTAkQ0Z+OJ+A/eWnAaR9+oxCF4Os0H8htsMUp+pwcgBBiMNnAwF8GqIgL2hAzaGFFgZauDPKABmowZ4GL369/0rwACp2yA/ttmvsQAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__WHITE",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABdJREFUeNpi/P//PwMMMDEgAdwcgAADAJZuAwXJYZOzAAAAAElFTkSuQmCC"
+              }
+            ]
+          },
+          {
+            "key": "portrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4ce3a731-ca8d-415a-9832-a5f100ca8b4d"
+              }
+            ]
+          },
+          {
+            "key": "byarPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/64ab9004-8425-4f47-ad3f-7b2f77d6fa01"
+              }
+            ]
+          },
+          {
+            "key": "bossPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/089a7d44-b140-44dd-b9e1-02e49a134fc1"
+              }
+            ]
+          },
+          {
+            "key": "loialPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/3543510c-41bc-4748-a8d9-e68e22d7ebc1"
+              }
+            ]
+          },
+          {
+            "key": "riley-1",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1884,
+                "height": 328,
+                "bytes": 2471808,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/04e05fa0-f06d-40ca-a303-425c68cf3547"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/aba91d37-325b-45ca-8b94-e65beacf558c"
+              }
+            ]
+          },
+          {
+            "key": "riley-1_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/75236861-77bc-49a0-956a-60d9923db6cf"
+              }
+            ]
+          },
+          {
+            "key": "riley-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/9696a415-1f65-457d-b9f2-ec3441e0a234"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/a3b60b60-d682-4a28-999f-6292bd0c31b6"
+              }
+            ]
+          },
+          {
+            "key": "spear-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/418d34e0-586a-43ef-877b-ca0f0052c805"
+              }
+            ]
+          },
+          {
+            "key": "hound-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 602,
+                "height": 181,
+                "bytes": 435848,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c5441e4f-e3d9-4264-b699-6f8e871d4a7a"
+              }
+            ]
+          },
+          {
+            "key": "spear-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3792,
+                "height": 852,
+                "bytes": 12923136,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/333dffd0-a108-4e41-8d6b-791ad56de054"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c202541c-11ae-405e-aa7a-945bf474721d"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4076,
+                "height": 1212,
+                "bytes": 19760448,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/e15dfaef-6333-4f0d-a03b-697fbffd0e7a"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/228b9249-477d-473d-86d8-7cc1f5cd06d7"
+              }
+            ]
+          },
+          {
+            "key": "hound-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3612,
+                "height": 1084,
+                "bytes": 15661632,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/72ca9d0e-194a-44b8-83df-0c8792405bf0"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 602,
+                "height": 181,
+                "bytes": 435848,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/258aa2c6-bc00-480e-90e5-6613ed3c5e5e"
+              }
+            ]
+          },
+          {
+            "key": "riley-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4080,
+                "height": 1936,
+                "bytes": 31595520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b22261c5-238f-4dbc-a97d-7a5d3923eec1"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/79049353-2b69-49f7-9c49-39c5f941977a"
+              }
+            ]
+          },
+          {
+            "key": "loial-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3544,
+                "height": 496,
+                "bytes": 7031296,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/526b8f6e-fc49-44fa-b39b-341d713bb554"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 591,
+                "height": 83,
+                "bytes": 196212,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/79efef00-e1ae-41b8-95cd-6c72439b62ed"
+              }
+            ]
+          },
+          {
+            "key": "loial-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 591,
+                "height": 83,
+                "bytes": 196212,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/632d58df-ecbc-4372-9f3f-54f3858e6a1c"
+              }
+            ]
+          },
+          {
+            "key": "crate",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 490,
+                "height": 482,
+                "bytes": 944720,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/fddb642a-c1e6-450e-a03a-eabfca321a17"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 490,
+                "height": 482,
+                "bytes": 944720,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/a085d315-9880-4caa-8ff6-52d2d831fcd8"
+              }
+            ]
+          },
+          {
+            "key": "ribbon",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 258,
+                "bytes": 264192,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/ddc57f9d-9f92-4797-83f9-26739622974a"
+              }
+            ]
+          },
+          {
+            "key": "planks",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1183,
+                "height": 549,
+                "bytes": 2597868,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/d836cdb6-59bb-4017-9c9a-dd3f41e3211e"
+              }
+            ]
+          },
+          {
+            "key": "s5agin",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1630,
+                "height": 317,
+                "bytes": 2066840,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/79d42f60-c037-4be1-a21a-d8fb53dca4bd"
+              }
+            ]
+          },
+          {
+            "key": "s5balt",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1690,
+                "height": 242,
+                "bytes": 1635920,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/df005114-4ad9-492a-9c19-b002f30733ae"
+              }
+            ]
+          },
+          {
+            "key": "aginorPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 136,
+                "height": 136,
+                "bytes": 73984,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/573789aa-a4d1-4598-98ea-2d593b7cb019"
+              }
+            ]
+          },
+          {
+            "key": "pu_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/2fd0d78d-2d4b-413c-878d-42b68e17d0d8"
+              }
+            ]
+          },
+          {
+            "key": "pu_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/586704a7-5c42-4b5d-b24e-e90ebd0ddad1"
+              }
+            ]
+          },
+          {
+            "key": "pu_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/bee0d475-301b-4bf9-81bc-6af26d785be6"
+              }
+            ]
+          },
+          {
+            "key": "pu_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/49c998bd-97ee-4f57-a6b5-13d6c86dc7a9"
+              }
+            ]
+          },
+          {
+            "key": "hud_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/42641bdb-c16f-402e-9c67-c240e2596182"
+              }
+            ]
+          },
+          {
+            "key": "hud_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c65710ec-0a28-4a96-9c00-178fa1c825c5"
+              }
+            ]
+          },
+          {
+            "key": "pu_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/131f0bc5-f0d6-4c36-9455-480a120ff457"
+              }
+            ]
+          },
+          {
+            "key": "hud_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/42f57313-c098-4ec8-aead-7c52a6eb7cab"
+              }
+            ]
+          },
+          {
+            "key": "hud_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/fc8319dd-dde1-4074-be85-8ec35ff0a9ac"
+              }
+            ]
+          },
+          {
+            "key": "hud_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4b336eda-ace9-4c05-8c4e-4efcc60602af"
+              }
+            ]
+          },
+          {
+            "key": "fx_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/f3584469-0c98-464c-9a2b-a0566fe0b222"
+              }
+            ]
+          },
+          {
+            "key": "fx_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 384,
+                "height": 320,
+                "bytes": 491520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/04715db6-2b96-48ef-ba28-79fdecb841e5"
+              }
+            ]
+          },
+          {
+            "key": "fx_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 192,
+                "bytes": 393216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/1d57a7cd-6a0b-42af-b973-eff660972482"
+              }
+            ]
+          },
+          {
+            "key": "riley3-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1680,
+                "height": 336,
+                "bytes": 2257920,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b675127b-88ef-4ee1-b393-1762e98be0ca"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 280,
+                "height": 56,
+                "bytes": 62720,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/78943dc0-89c5-427f-8628-47cf353ca9f4"
+              }
+            ]
+          },
+          {
+            "key": "riley3-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 280,
+                "height": 56,
+                "bytes": 62720,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/dfaf267e-4508-45fc-82c9-63176a80f27b"
+              }
+            ]
+          },
+          {
+            "key": "flake",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 16,
+                "height": 16,
+                "bytes": 1024,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "glow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "core",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ember",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "shadow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dust",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "smoke",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "streak",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 40,
+                "height": 6,
+                "bytes": 960,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dot",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "chip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 14,
+                "height": 5,
+                "bytes": 280,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "px",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5far",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 210,
+                "bytes": 537600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5mid",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5mid2",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5floor",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 128,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5floor2",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 128,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg5floor3",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 128,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s5flare",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 192,
+                "height": 48,
+                "bytes": 36864,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s5stalk",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 576,
+                "height": 64,
+                "bytes": 147456,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s5pod",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 400,
+                "height": 80,
+                "bytes": 128000,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s5green",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 480,
+                "height": 180,
+                "bytes": 345600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "story5p1",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 360,
+                "bytes": 921600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "story5p2",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 360,
+                "bytes": 921600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "story5p3",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 360,
+                "bytes": 921600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "beam",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 8,
+                "height": 64,
+                "bytes": 2048,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "f9c26792-3b1f-48c2-bf37-ff944f089376",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 47,
+                "height": 21,
+                "bytes": 3948,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bb92e61a-6dc4-4306-9ef1-5c3b455dfab5",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 17,
+                "height": 16,
+                "bytes": 1088,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "f1611647-9305-4a1a-b3d4-58ee5cdccca9",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 21,
+                "bytes": 5376,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "a22ee31b-f905-4431-b1fc-8adeefaba474",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 7,
+                "height": 60,
+                "bytes": 1680,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "55a48eff-062c-4b22-a37a-aac11f4aedcb",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 88,
+                "height": 16,
+                "bytes": 5632,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "6c140451-2636-466f-ad09-f1c331635346",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 70,
+                "height": 16,
+                "bytes": 4480,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "a1b177a2-7cbb-4f64-aeac-d1bb54e364be",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "8fd9b6a5-8bf5-4c7f-9a56-9e7f6a031c88",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "6d8f66e4-7550-4025-84b4-5f0e858d8b94",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "be4e8dc2-af21-4148-b583-6bb034cbd2ed",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "50551e4e-b9d8-4e01-9070-8fd28a7515fa",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "e0f424c4-ae10-4225-b13c-baed0da60136",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bec27202-4357-49cd-9169-1952aa662af4",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 5,
+                "height": 30,
+                "bytes": 600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "fa7934af-8ad2-4e3c-8e75-6e0f8465b351",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 69,
+                "height": 38,
+                "bytes": 10488,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "d4ec4ddc-765e-4567-aaa3-043c6a7d5ca7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 6,
+                "height": 29,
+                "bytes": 696,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "6a46ad8d-9dfd-43e7-9a72-b568807669a7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 8,
+                "height": 19,
+                "bytes": 608,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "b8c936b3-40de-441e-a77f-a87c5fc75d1e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 94,
+                "height": 16,
+                "bytes": 6016,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "aeae92e7-4503-4f14-87d3-25b1296627ad",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 548,
+                "height": 104,
+                "bytes": 227968,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "adf19c08-df2f-4a0c-960f-d1786b92096d",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 420,
+                "height": 58,
+                "bytes": 97440,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "8c18baff-7425-4cd4-8353-76ba324fa432",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 215,
+                "height": 21,
+                "bytes": 18060,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "73453aef-8fd1-424e-80f5-18bb7dcc3859",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 721,
+                "height": 42,
+                "bytes": 121128,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "5a845c80-59b3-42e1-8601-30790e2bee0d",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 46,
+                "bytes": 6072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "f87e7d13-3d0c-49bc-936c-ce00eea92194",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 46,
+                "bytes": 6072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "848294fe-ac95-477b-8fab-56fbf66e9e22",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 233,
+                "height": 26,
+                "bytes": 24232,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "8e64dd65-1cc0-4513-b4ec-5362ae3604ee",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1054,
+                "height": 40,
+                "bytes": 168640,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

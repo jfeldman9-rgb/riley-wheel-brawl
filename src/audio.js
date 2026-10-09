@@ -444,7 +444,7 @@ function loadClip(id) {
 }
 export function preloadVoices() { Object.keys(VOICE).forEach(loadClip); }
 /** on-demand preload for EXTRA_VOICE lines (power pickups and the Twix cutscene) */
-export function preloadClips(ids) { for (const id of ids) if (Object.hasOwn(EXTRA_VOICE, id) || moreVoice[id]) loadClip(id); }
+export function preloadClips(ids) { for (const id of ids) if (Object.prototype.hasOwnProperty.call(EXTRA_VOICE, id) || moreVoice[id]) loadClip(id); }
 export function registerLines(map) { for (const id in map) moreVoice[id] = map[id]; }
 /** `present` is the ids whose mp3 is on disk. Every other id in `all` stays a caption and is not fetched. */
 export function setVoiceFiles(all, present) {
@@ -457,7 +457,7 @@ export function releaseClips(ids) { if (ids) for (const id of ids) delete clips[
 export function residentClipIds() { return Object.keys(clips); }
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
 export function say(id, onCaption, interrupt = true) {
-  const cap = Object.hasOwn(VOICE, id) ? VOICE[id] : Object.hasOwn(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : moreVoice[id] || null;
+  const cap = Object.prototype.hasOwnProperty.call(VOICE, id) ? VOICE[id] : Object.prototype.hasOwnProperty.call(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : moreVoice[id] || null;
   if (!cap) return;
   if (!interrupt && (voiceSrc || voicePending)) return cap;
   const request = ++voiceRequest, shouldPlay = !muted;

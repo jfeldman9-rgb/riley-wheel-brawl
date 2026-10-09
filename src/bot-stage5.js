@@ -1,4 +1,4 @@
-import { go, press, strike, dodgeString, dodgeHand, parryFlail, staffDamage } from './stage5-bot-combat.js';
+import { go, press, strike, dodgeString, dodgeHand, parryFlail, staffDamage, dodgeRing } from './stage5-bot-combat.js';
 import { LANE_TOP, LANE_BOT } from './config.js';
 import { bandOf } from './stage5-hurt.js';
 const BANDS = [0, 1, 2].map(i => {
@@ -27,11 +27,7 @@ export function stage5Bot(bot) {
   const boss = s.enemies.find(e => e.alive && e.type === 'aginor');
   const balth = s.enemies.find(e => e.alive && e.type === 'balthamel');
   if (!s.noPower && boss?.phase === 1 && R.lives < 3 && R.z < 8 && Math.abs(R.y - boss.y) < 18 && R.x > s.bounds.r - 80 && R.x > boss.x + 20) return go(bot, -1, boss.y > 630 ? -1 : 1, true);
-  if (th.ring && (th.ring.phase === 'grow' || th.ring.phase === 'tell')) {
-    const d = Math.hypot(R.x - (th.ring.x || boss?.x || R.x), R.y - (th.ring.y || boss?.y || R.y));
-    const edge = th.ring.phase === 'grow' ? th.ring.r : 0;
-    if (Math.abs(d - edge) < 200 && (R.z || 0) < 24) press(bot, 'jump', 0.35);
-  }
+  if (dodgeRing(bot, R, th.ring, th.oak)) return true;
   for (const g of th.gouts || []) {
     if (Math.hypot(R.x - g.x, R.y - g.y) < 150) {
       const dir = Math.sign(R.x - g.x) || 1;

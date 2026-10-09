@@ -2,7 +2,7 @@
 
 Teen/adult. Riley is sixteen and has already walked the Two Rivers, Baerlon, Caemlyn, and Shadar Logoth. Say the lines straight. No kid-show bounce, and no soft whisper unless the note asks for it.
 
-Riley and Loial use the Stage 4 Kokoro casts. The narrator, Aginor, Balthamel, and the Green Man are the ElevenLabs set. Spoken text below is the exact caption string in `src/stage5-voice.js`.
+Riley is ElevenLabs `eleven_v4`, voice DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot; prompts and hashes in `assets/audio/riley-voice-manifest-stage5.json`). Loial uses the Stage 4 Kokoro cast. The narrator, Aginor, Balthamel, and the Green Man are the ElevenLabs set. Spoken text below is the exact caption string in `src/stage5-voice.js`.
 
 ## How the names are said
 
