@@ -8,13 +8,13 @@ export { stalkFrame, podFrame, aginFrame, baltFrame, greenFrame } from './stage5
 
 // Painted sheets, hard-coded like Stage 4's queue (a JSON manifest queued in the same pass was still empty when it
 // was read, so painted rows never loaded). Built by tools/stage5/process_bosses.py: trimmed atlases, frames "0".."n"
-// in aginFrame/baltFrame order, sourceSize = the cell, feet at 0.96. baseH is the procedural cell height the actor
-// scale was tuned for; a taller painted cell is scaled down to it (scaleFor). Flip present to true only when the
+// in aginFrame/baltFrame order, sourceSize = the cell, feet at 0.96. baseH is the painted cell height in code-drawn
+// pixels (cell height / PX, the tool prints it); a painted cell is drawn at scale * baseH / its height (scaleFor). Flip present to true only when the
 // files are committed: a missing file would stop a cold start straight into Stage 5.
 export const PAINTED = Object.freeze([
-  Object.freeze({ key: 's5agin', url: 'assets/stage5/s5agin.webp', atlas: 'assets/stage5/s5agin.json', baseH: 180, present: false }),
-  Object.freeze({ key: 's5balt', url: 'assets/stage5/s5balt.webp', atlas: 'assets/stage5/s5balt.json', baseH: 170, present: false }),
-  Object.freeze({ key: 'aginorPortrait', url: 'assets/stage5/aginor-portrait.webp', present: false }),
+  Object.freeze({ key: 's5agin', url: 'assets/stage5/s5agin.webp', atlas: 'assets/stage5/s5agin.json', baseH: 224, present: true }),
+  Object.freeze({ key: 's5balt', url: 'assets/stage5/s5balt.webp', atlas: 'assets/stage5/s5balt.json', baseH: 176, present: true }),
+  Object.freeze({ key: 'aginorPortrait', url: 'assets/stage5/aginor-portrait.webp', present: true }),
 ]);
 
 export function queuePainted(scene, rows = PAINTED) {

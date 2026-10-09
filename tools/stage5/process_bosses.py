@@ -340,9 +340,9 @@ def portrait(src_dir, out_dir, agin_cells):
         a = out[..., 3] > 128
         rows = np.where(a.any(1))[0]
         top = int(rows[0])
-        cx = float(np.where(a[top:top + 40])[1].mean())
-        side = 150
-        x0, y0 = int(round(cx - side / 2)), max(0, top - 12)
+        cx = float(np.where(a[top:top + round(27 * PX)])[1].mean())
+        side = round(76 * PX)
+        x0, y0 = int(round(cx - side / 2)), max(0, top - round(6 * PX))
         bg = np.zeros((side, side, 3), np.float32)
         bg[:] = np.linspace([58, 22, 18], [16, 8, 10], side)[:, None, :]
         cut = np.zeros((side, side, 4), np.float32)

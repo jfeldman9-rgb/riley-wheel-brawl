@@ -5,7 +5,8 @@ import { Aginor } from './aginor.js';
 import { Balthamel } from './balthamel.js';
 import { stage4Delta } from './stage4-time.js';
 import { stalkFrame, podFrame, aginFrame, baltFrame } from './stage5-art-cast.js';
-import { scaleFor } from './stage5-art.js';
+import { scaleFor, PAINTED } from './stage5-art.js';
+const BASE_H = Object.fromEntries(PAINTED.map(r => [r.key, r.baseH]));
 import { LAYOUT5 } from './stage5-def.js';
 import { safeStage5Spot } from './stage5-spawn.js';
 
@@ -90,7 +91,7 @@ export class AginorActor extends Aginor {
     this.y = clamp(this.y, LANE_TOP, LANE_BOT);
     this.scene.kit?.noteBoss?.(this, prev);
   }
-  sync() { paint(this, aginFrame, AGIN_SCALE, 180); this.shadow?.setScale?.(1.55, 0.42); }
+  sync() { paint(this, aginFrame, AGIN_SCALE, BASE_H.s5agin); this.shadow?.setScale?.(1.55, 0.42); }
   destroy() { super.destroy(); this.sprite?.destroy?.(); this.shadow?.destroy?.(); }
   die() { if (this.state !== 'dead') this.burn(); this.gone = true; }
 }
@@ -109,7 +110,7 @@ export class BalthamelActor extends Balthamel {
     this.scene.kit?.noteBalth?.(this, prev);
   }
   sync() {
-    paint(this, baltFrame, BALT_SCALE, 170);
+    paint(this, baltFrame, BALT_SCALE, BASE_H.s5balt);
     this.shadow?.setScale?.(1.45, 0.4);
     if (this.state !== 'holding' || !this.sprite) return;
     const face = this.facing < 0 ? -1 : 1;
