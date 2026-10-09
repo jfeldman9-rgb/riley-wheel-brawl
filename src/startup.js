@@ -41,7 +41,10 @@ export function createStartupGuard(root = globalThis) {
     },
     watchLoader(loader) {
       if (!loader || failed || finished) return;
-      const failure = () => guard.fail(null, 'assets');
+      const failure = file => {
+        const key = file?.multiFile?.key || file?.key;
+        if (!loader.optionalAssetKeys?.has(key)) guard.fail(null, 'assets');
+      };
       const remove = () => loader.off('loaderror', failure);
       loader.on('loaderror', failure); loader.once('complete', remove);
       cleanups.push(remove);

@@ -1,13 +1,13 @@
 // The Blight kit: hazards, the Eye, story, and the load. Controls stay in input.js.
 import { q } from './config.js';
 import { VOLLEY_BANDS, STAGE_TEXTURES } from './stages.js';
-import { queuePowerArt } from './powers.js';
+import { queueStage5 } from './stage5-load.js';
 import { STAGE5, STAGE5_TEXTURES, LAYOUT5 } from './stage5-def.js';
 import { createBlight, meleeTrunk, burnTrunk } from './stage5-blight.js';
 import { createArena } from './stage5-arena.js';
 import { createStage5View, sunAmbient } from './stage5-view.js';
 import { updateSpores } from './stage5-spores.js';
-import { queuePainted, freeStory5 } from './stage5-art.js';
+import { freeStory5 } from './stage5-art.js';
 import { preloadClips, releaseClips, MUSIC } from './audio.js';
 import { STAGE5_VOICES, VOICE_FILES, stage5Say, bark, drainHum, sfxCue } from './stage5-voice.js';
 import { clearStage5Hazards, clearStage5Zone, installStage5SceneHooks, installStage5RileyHook, restoreStage5Hooks } from './stage5-lifecycle.js';
@@ -30,15 +30,7 @@ MUSIC.boss5 = { url: 'assets/audio/music-boss5.mp3', loopStart: 0.25, loopEnd: 3
 
 const STATS = ['hints', 'stalkers', 'pounces', 'pounceCounters', 'flushes', 'pods', 'spores', 'lashes', 'thornTicks', 'gouts', 'tethers', 'tetherCounters', 'rings', 'hands', 'staffs', 'shortSteps', 'flails', 'parries', 'steps', 'stepCounters', 'embraces', 'escapes', 'greenman', 'surges', 'surgeCounters', 'oak', 'ribbon', 'glimpses'];
 
-export function queueStage5(scene) {
-  const L = scene.load, has = k => scene.textures.exists(k);
-  if (!has('crate')) L.image('crate', ['assets/props/prop-crate.webp', 'assets/props/prop-crate_n.webp']);
-  if (!has('planks')) L.atlas('planks', 'assets/props/planks.webp', 'assets/props/planks.json');
-  if (!has('ribbon')) L.image('ribbon', 'assets/props/item-ribbon.webp');
-  if (!scene.cache.json.get('layout5')) L.json('layout5', 'assets/bg5/layout.json');
-  queuePainted(scene);
-  queuePowerArt(scene, { twix: false });
-}
+export { queueStage5 };
 
 export class Stage5Kit {
   constructor(s) {

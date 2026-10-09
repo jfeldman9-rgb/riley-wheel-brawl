@@ -3,7 +3,7 @@
 import { sfx } from './audio.js';
 import { stage5Say } from './stage5-voice.js';
 
-export const STAGE5_CHARS = Object.freeze(['riley', 'grunt', 'spear', 'hound', 'loial']);
+export const STAGE5_CHARS = Object.freeze(['riley', 'riley3', 'grunt', 'spear', 'hound', 'loial']);
 export const STAGE5_TEXTURES = Object.freeze(['bg5far', 'bg5mid', 'bg5mid2', 'bg5floor', 'bg5floor2', 'bg5floor3', 's5flare', 's5stalk', 's5pod', 's5agin', 's5balt', 's5green', 'story5p1', 'story5p2', 'story5p3', 'aginorPortrait', 'crate', 'planks', 'ribbon']);
 
 export const LAYOUT5 = Object.freeze({

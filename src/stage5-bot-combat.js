@@ -1,8 +1,21 @@
 // Stage 5 bot combat actions, shared with its hazard responses.
 import { AGINOR } from './aginor.js';
+import { RING } from './stage5-arena.js';
 export const staffDamage = AGINOR.staff[0] + AGINOR.staff[1];
 export const go = (bot, x, y, run = false) => { bot.s.inp.demo = { x, y, run }; return true; };
 export const press = (bot, key, gap) => { if (bot.t >= (bot.next || 0)) { bot.s.inp.press(key); bot.next = bot.t + gap; } };
+
+// Jump near contact, not at the start of a tell. Attack cooldown cannot veto an escape.
+export function dodgeRing(bot, R, ring, oak) {
+  if (!ring || ring.hit || !['tell', 'grow'].includes(ring.phase)) return false;
+  if (oak?.open && Math.hypot(R.x - oak.x, R.y - oak.y) <= oak.r) return false;
+  const d = Math.hypot(R.x - ring.x, R.y - ring.y), edge = ring.r || 0;
+  if (d > RING.radius + RING.thick / 2 || d < edge - RING.thick / 2) return false;
+  const contact = (ring.phase === 'tell' ? Math.max(0, RING.tell - (ring.st || 0)) : 0) + Math.max(0, d - edge - RING.thick / 2) / (RING.radius / RING.grow);
+  if (contact > 0.55) return false;
+  if (contact <= 0.3 && (R.z || 0) < 24 && !R.busy) bot.s.inp.press('jump');
+  return go(bot, 0, ring.y > 630 ? -1 : 1, true);
+}
 
 export function strike(bot, R, e, reach, gap, melee) {
   const dx = e.x - R.x, dy = (e.y || R.y) - R.y, side = Math.sign(dx) || 1;

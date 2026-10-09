@@ -53,7 +53,7 @@ export function audit() {
   const STAGE4_SRC = new Set(['stage4.js','stage4-def.js','stage4-hud.js','stage4-hazards.js','stage4-sfx.js','stage4-actors.js','stage4-arena.js','stage4-towers.js','stage4-view.js','stage4-art.js','stage4-art-bg.js','stage4-art-fog.js','stage4-art-cast.js','stage4-voice.js','cultists.js','draghkar.js','bot-stage4.js']);
   for (const name of ['stage4-lifecycle.js', 'stage4-time.js', 'stage4-lighting.js', 'draghkar-impact.js', 'stage4-art-thug.js']) STAGE4_SRC.add(name);
   const STAGE5_SRC = new Set(['stage5.js','stage5-def.js','stage5-hud.js','stage5-blight.js','stage5-sfx.js','stage5-actors.js','stage5-arena.js','stage5-view.js','stage5-art.js','stage5-art-bg.js','stage5-art-fx.js','stage5-art-cast.js','stage5-voice.js','blightspawn.js','aginor.js','balthamel.js','bot-stage5.js','stage5-lifecycle.js','stage5-clock.js','stage5-hurt.js','stage5-lighting.js','stage5-spores.js']);
-  for (const name of ['stage5-balthamel.js', 'stage5-beat.js', 'stage5-spawn.js', 'stage5-effects.js', 'stage5-bot-combat.js']) STAGE5_SRC.add(name);
+  for (const name of ['stage5-balthamel.js', 'stage5-beat.js', 'stage5-spawn.js', 'stage5-effects.js', 'stage5-bot-combat.js', 'stage5-texture-pages.js', 'stage5-load.js']) STAGE5_SRC.add(name);
   // The Stage 1 gate has a few hundred bytes of headroom. These hotfix modules
   // do not fit in it. They are counted on their own line, the same way Stage 4 is.
   const IOS_SRC = new Set(['viewport.js', 'page-base.js', 'debug-flag.js', 'stage3-art.js']);

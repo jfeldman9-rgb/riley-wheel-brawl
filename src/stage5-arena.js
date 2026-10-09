@@ -31,6 +31,9 @@ export function createArena(opts = {}) {
       }
       if (a.snare > 0) a.snare -= dt;
       if (!boss?.alive) return a;
+      // Phase 2 parks the ring clock; restore its authored cooldown on Phase 3 entry.
+      if (a.phase === 2 && boss.phase === 3) a.ringAt = rand(RING.every[0], RING.every[1]);
+      a.phase = boss.phase;
       if (boss.phase === 2) { a.ringAt = 999; if (a.hands.length) a.hands.length = 0; a.ringStep(dt, boss, world); }
       else { a.ringStep(dt, boss, world); a.handStep(dt, boss, world); }
       if (a.oak || boss.phase === 3) a.oakStep(dt, world);

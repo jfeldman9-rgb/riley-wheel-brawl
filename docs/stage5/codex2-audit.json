@@ -1,0 +1,1110 @@
+{
+  "characters": [
+    {
+      "key": "riley",
+      "frames": 104,
+      "target": 150,
+      "densityStatus": "FAIL",
+      "animations": [
+        {
+          "name": "riley_idle",
+          "frames": 6
+        },
+        {
+          "name": "riley_walk",
+          "frames": 8
+        },
+        {
+          "name": "riley_combo1",
+          "frames": 6
+        },
+        {
+          "name": "riley_combo2",
+          "frames": 6
+        },
+        {
+          "name": "riley_combo3",
+          "frames": 8
+        },
+        {
+          "name": "riley_hurt",
+          "frames": 3
+        },
+        {
+          "name": "riley_knockdown",
+          "frames": 4
+        },
+        {
+          "name": "riley_getup",
+          "frames": 4
+        },
+        {
+          "name": "riley_run",
+          "frames": 8
+        },
+        {
+          "name": "riley_jump_crouch",
+          "frames": 1
+        },
+        {
+          "name": "riley_jump_rise",
+          "frames": 1
+        },
+        {
+          "name": "riley_jump_apex",
+          "frames": 1
+        },
+        {
+          "name": "riley_jump_fall",
+          "frames": 1
+        },
+        {
+          "name": "riley_land",
+          "frames": 1
+        },
+        {
+          "name": "riley_airkick",
+          "frames": 5
+        },
+        {
+          "name": "riley_back",
+          "frames": 5
+        },
+        {
+          "name": "riley_cast",
+          "frames": 5
+        },
+        {
+          "name": "riley_grab",
+          "frames": 1
+        },
+        {
+          "name": "riley_hold",
+          "frames": 1
+        },
+        {
+          "name": "riley_knee",
+          "frames": 5
+        },
+        {
+          "name": "riley_throw",
+          "frames": 5
+        },
+        {
+          "name": "riley_runkick",
+          "frames": 5
+        },
+        {
+          "name": "riley_balefire",
+          "frames": 8
+        },
+        {
+          "name": "riley_lightning",
+          "frames": 6
+        }
+      ],
+      "pages": [
+        {
+          "name": "riley-0",
+          "w": 4080,
+          "h": 1936
+        },
+        {
+          "name": "riley-1",
+          "w": 1884,
+          "h": 328
+        }
+      ]
+    },
+    {
+      "key": "grunt",
+      "frames": 23,
+      "target": 40,
+      "densityStatus": "FAIL",
+      "animations": [
+        {
+          "name": "grunt_walk",
+          "frames": 8
+        },
+        {
+          "name": "grunt_hurt",
+          "frames": 2
+        },
+        {
+          "name": "grunt_knockdown",
+          "frames": 5
+        },
+        {
+          "name": "grunt_attack",
+          "frames": 6
+        },
+        {
+          "name": "grunt_getup",
+          "frames": 2
+        }
+      ],
+      "pages": [
+        {
+          "name": "grunt-0",
+          "w": 4076,
+          "h": 1212
+        }
+      ]
+    },
+    {
+      "key": "spear",
+      "frames": 16,
+      "target": 40,
+      "densityStatus": "FAIL",
+      "animations": [
+        {
+          "name": "spear_walk",
+          "frames": 4
+        },
+        {
+          "name": "spear_attack",
+          "frames": 4
+        },
+        {
+          "name": "spear_hurt",
+          "frames": 2
+        },
+        {
+          "name": "spear_knockdown",
+          "frames": 3
+        },
+        {
+          "name": "spear_getup",
+          "frames": 3
+        }
+      ],
+      "pages": [
+        {
+          "name": "spear-0",
+          "w": 3792,
+          "h": 852
+        }
+      ]
+    },
+    {
+      "key": "hound",
+      "frames": 16,
+      "target": 40,
+      "densityStatus": "FAIL",
+      "animations": [
+        {
+          "name": "hound_walk",
+          "frames": 4
+        },
+        {
+          "name": "hound_attack",
+          "frames": 4
+        },
+        {
+          "name": "hound_hurt",
+          "frames": 2
+        },
+        {
+          "name": "hound_knockdown",
+          "frames": 3
+        },
+        {
+          "name": "hound_getup",
+          "frames": 3
+        }
+      ],
+      "pages": [
+        {
+          "name": "hound-0",
+          "w": 3612,
+          "h": 1084
+        }
+      ]
+    },
+    {
+      "key": "chief",
+      "frames": 24,
+      "target": null,
+      "densityStatus": "NO_SLICE_COUNT_SPECIFIED",
+      "animations": [
+        {
+          "name": "chief_walk",
+          "frames": 4
+        },
+        {
+          "name": "chief_chop",
+          "frames": 4
+        },
+        {
+          "name": "chief_sweep",
+          "frames": 2
+        },
+        {
+          "name": "chief_charge",
+          "frames": 2
+        },
+        {
+          "name": "chief_roar",
+          "frames": 1
+        },
+        {
+          "name": "chief_lift",
+          "frames": 1
+        },
+        {
+          "name": "chief_hurl",
+          "frames": 1
+        },
+        {
+          "name": "chief_stunned",
+          "frames": 1
+        },
+        {
+          "name": "chief_hurt",
+          "frames": 2
+        },
+        {
+          "name": "chief_knockdown",
+          "frames": 3
+        },
+        {
+          "name": "chief_getup",
+          "frames": 3
+        }
+      ],
+      "pages": [
+        {
+          "name": "chief-0",
+          "w": 4036,
+          "h": 1848
+        }
+      ]
+    },
+    {
+      "key": "loial",
+      "frames": 7,
+      "target": null,
+      "densityStatus": "NO_SLICE_COUNT_SPECIFIED",
+      "animations": [
+        {
+          "name": "loial_run",
+          "frames": 4
+        },
+        {
+          "name": "loial_sweep",
+          "frames": 3
+        }
+      ],
+      "pages": [
+        {
+          "name": "loial-0",
+          "w": 3544,
+          "h": 496
+        }
+      ]
+    }
+  ],
+  "preFight": {
+    "inventoryUpperBoundBytes": 24904337,
+    "budgetBytes": 25000000,
+    "inventoryStatus": "PASS",
+    "countedVoiceBytes": 1378036,
+    "note": "Stage 1 and Stage 2 static inventory, including music-main and every voice those stages ship. Stage 3 and Stage 4 voices and music are under stage3 and stage4 (they are not loaded before the first fight, and they do not fit this 25 MB gate). The iOS hotfix modules are under iosHotfix for the same reason. Actual transfer/cold-load timing requires browser resource evidence."
+  },
+  "iosHotfix": {
+    "source": {
+      "files": [
+        "src/debug-flag.js",
+        "src/page-base.js",
+        "src/stage3-art.js",
+        "src/viewport.js",
+        "src/guard.js"
+      ],
+      "bytes": 24057,
+      "budgetBytes": 24576,
+      "status": "PASS",
+      "note": "Viewport, Pages base, debug flag, Stage 3 plate stand-in and freeze guard. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum."
+    }
+  },
+  "restartHotfix": {
+    "source": {
+      "files": [
+        "src/quality-governor.js",
+        "src/recovery.js"
+      ],
+      "bytes": 6589,
+      "budgetBytes": 16384,
+      "status": "PASS",
+      "note": "Quality governor and freeze-guard resume. Not folded into the 25 MB pre-fight sum, the same split as iosHotfix."
+    }
+  },
+  "cutscenes": {
+    "source": {
+      "files": [
+        "src/cutscene-hooks.js",
+        "src/cutscene.js"
+      ],
+      "bytes": 14909,
+      "budgetBytes": 20480,
+      "status": "PASS",
+      "note": "Video cutscene controller and hooks. Not folded into the 25 MB pre-fight sum, the same split as restartHotfix."
+    },
+    "clips": {
+      "files": [
+        "assets/cutscenes/intro.jpg",
+        "assets/cutscenes/intro.mp4",
+        "assets/cutscenes/intro_battle.jpg",
+        "assets/cutscenes/intro_battle.mp4",
+        "assets/cutscenes/moiraine.jpg",
+        "assets/cutscenes/moiraine.mp4",
+        "assets/cutscenes/stage1.jpg",
+        "assets/cutscenes/stage1.mp4",
+        "assets/cutscenes/stage2.jpg",
+        "assets/cutscenes/stage2.mp4",
+        "assets/cutscenes/stage3.jpg",
+        "assets/cutscenes/stage3.mp4",
+        "assets/cutscenes/stage4.jpg",
+        "assets/cutscenes/stage4.mp4",
+        "assets/cutscenes/twinkletoes.jpg",
+        "assets/cutscenes/twinkletoes.mp4"
+      ],
+      "bytes": 19397047,
+      "budgetBytes": 25000000,
+      "status": "PASS",
+      "note": "Streamed one at a time through a temporary <video> when a cutscene starts; nothing is preloaded, so they are outside the pre-fight sum."
+    }
+  },
+  "stage3": {
+    "source": {
+      "files": [
+        "src/stage3-fx-art.js"
+      ],
+      "bytes": 5169,
+      "budgetBytes": 8192,
+      "status": "PASS",
+      "note": "Code-drawn stand-ins for the labelled Stage 3 prop/FX sheets, run at Stage 3 entry. Not part of the Stage 1 pre-fight sum."
+    },
+    "voices": {
+      "count": 18,
+      "bytes": 813463,
+      "budgetBytes": 3686400,
+      "status": "PASS",
+      "note": "STAGE3_VOICES only. Each line is capped at 200 KB; the total cap is 18 times that."
+    },
+    "music": {
+      "files": [
+        "assets/audio/music-stage3.mp3",
+        "assets/audio/music-boss3.mp3"
+      ],
+      "bytes": 1667012,
+      "budgetBytes": 2400000,
+      "status": "PASS",
+      "note": "Two decoded loops, each under 1.2 MB. Not part of the Stage 1 pre-fight sum."
+    }
+  },
+  "stage4": {
+    "source": {
+      "files": [
+        "src/bot-stage4.js",
+        "src/cultists.js",
+        "src/draghkar-impact.js",
+        "src/draghkar.js",
+        "src/stage4-actors.js",
+        "src/stage4-arena.js",
+        "src/stage4-art-bg.js",
+        "src/stage4-art-cast.js",
+        "src/stage4-art-fog.js",
+        "src/stage4-art-thug.js",
+        "src/stage4-art.js",
+        "src/stage4-def.js",
+        "src/stage4-hazards.js",
+        "src/stage4-hud.js",
+        "src/stage4-lifecycle.js",
+        "src/stage4-lighting.js",
+        "src/stage4-sfx.js",
+        "src/stage4-time.js",
+        "src/stage4-towers.js",
+        "src/stage4-view.js",
+        "src/stage4-voice.js",
+        "src/stage4.js"
+      ],
+      "bytes": 139522,
+      "budgetBytes": 196608,
+      "status": "PASS",
+      "note": "Stage 4 modules only. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum."
+    },
+    "voices": {
+      "count": 23,
+      "bytes": 830011,
+      "budgetBytes": 4710400,
+      "status": "PASS",
+      "note": "Stage 4 voice lines only. Each line is capped at 200 KB; the total cap is 23 times that."
+    },
+    "music": {
+      "files": [
+        "assets/audio/music-stage4.mp3",
+        "assets/audio/music-boss4.mp3"
+      ],
+      "bytes": 1002509,
+      "budgetBytes": 2400000,
+      "status": "PASS",
+      "note": "Two decoded loops, each under 1.2 MB. Not part of the Stage 1 pre-fight sum."
+    }
+  },
+  "stage5": {
+    "source": {
+      "files": [
+        "src/aginor.js",
+        "src/balthamel.js",
+        "src/blightspawn.js",
+        "src/bot-stage5.js",
+        "src/stage5-actors.js",
+        "src/stage5-arena.js",
+        "src/stage5-art-bg.js",
+        "src/stage5-art-cast.js",
+        "src/stage5-art-fx.js",
+        "src/stage5-art.js",
+        "src/stage5-balthamel.js",
+        "src/stage5-beat.js",
+        "src/stage5-blight.js",
+        "src/stage5-bot-combat.js",
+        "src/stage5-clock.js",
+        "src/stage5-def.js",
+        "src/stage5-effects.js",
+        "src/stage5-hud.js",
+        "src/stage5-hurt.js",
+        "src/stage5-lifecycle.js",
+        "src/stage5-lighting.js",
+        "src/stage5-load.js",
+        "src/stage5-sfx.js",
+        "src/stage5-spawn.js",
+        "src/stage5-spores.js",
+        "src/stage5-texture-pages.js",
+        "src/stage5-view.js",
+        "src/stage5-voice.js",
+        "src/stage5.js"
+      ],
+      "bytes": 144272,
+      "budgetBytes": 196608,
+      "status": "PASS",
+      "note": "Stage 5 modules only. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum."
+    },
+    "voices": {
+      "count": 21,
+      "bytes": 778648,
+      "budgetBytes": 4710400,
+      "status": "PASS",
+      "note": "Stage 5 voice lines only, when the files exist. Each line is capped at 200 KB; the total cap is 23 times that."
+    },
+    "music": {
+      "files": [
+        "assets/audio/music-stage5.mp3",
+        "assets/audio/music-boss5.mp3"
+      ],
+      "bytes": 1020429,
+      "budgetBytes": 2400000,
+      "status": "PASS",
+      "note": "Two decoded loops, each under 1.2 MB, counted only when the file is on disk. Not part of the Stage 1 pre-fight sum."
+    }
+  },
+  "playerAttackDensity": {
+    "minimumFrames": 5,
+    "attacks": [
+      {
+        "action": "combo1",
+        "animation": "riley_combo1",
+        "namedFrames": 6,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "combo2",
+        "animation": "riley_combo2",
+        "namedFrames": 6,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "combo3",
+        "animation": "riley_combo3",
+        "namedFrames": 8,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "back",
+        "animation": "riley_back",
+        "namedFrames": 5,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "airkick",
+        "animation": "riley_airkick",
+        "namedFrames": 5,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "runkick",
+        "animation": "riley_runkick",
+        "namedFrames": 5,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "cast",
+        "animation": "riley_cast",
+        "namedFrames": 5,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "knee",
+        "animation": "riley_knee",
+        "namedFrames": 5,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      },
+      {
+        "action": "throw",
+        "animation": "riley_throw",
+        "namedFrames": 5,
+        "minimumFrames": 5,
+        "densityStatus": "PASS"
+      }
+    ],
+    "densityStatus": "PASS",
+    "note": "Unique named references per shipped action, not proof of unique painted poses or anticipation/recovery quality. Balefire (8) is a special, not in this list; candidate artwork outside game assets is excluded."
+  },
+  "textureEstimate": {
+    "rgbaBaseBytes": 329762776,
+    "withFullMipChainBytes": 439683702,
+    "images": [
+      {
+        "path": "assets/chars/archer-0.webp",
+        "bytes": 540938,
+        "width": 4080,
+        "height": 484,
+        "rgbaBytes": 7898880
+      },
+      {
+        "path": "assets/chars/archer-0_n.webp",
+        "bytes": 59624,
+        "width": 2040,
+        "height": 242,
+        "rgbaBytes": 1974720
+      },
+      {
+        "path": "assets/chars/archer-0_nl.webp",
+        "bytes": 57752,
+        "width": 2040,
+        "height": 242,
+        "rgbaBytes": 1974720
+      },
+      {
+        "path": "assets/chars/byar-0.webp",
+        "bytes": 1205958,
+        "width": 3916,
+        "height": 844,
+        "rgbaBytes": 13220416
+      },
+      {
+        "path": "assets/chars/byar-0_n.webp",
+        "bytes": 141048,
+        "width": 1958,
+        "height": 422,
+        "rgbaBytes": 3305104
+      },
+      {
+        "path": "assets/chars/byar-0_nl.webp",
+        "bytes": 132566,
+        "width": 1958,
+        "height": 422,
+        "rgbaBytes": 3305104
+      },
+      {
+        "path": "assets/chars/chief-0.webp",
+        "bytes": 1822528,
+        "width": 4036,
+        "height": 1848,
+        "rgbaBytes": 29834112
+      },
+      {
+        "path": "assets/chars/chief-0_n.webp",
+        "bytes": 216856,
+        "width": 2018,
+        "height": 924,
+        "rgbaBytes": 7458528
+      },
+      {
+        "path": "assets/chars/chief-0_nl.webp",
+        "bytes": 217458,
+        "width": 2018,
+        "height": 924,
+        "rgbaBytes": 7458528
+      },
+      {
+        "path": "assets/chars/grunt-0.webp",
+        "bytes": 1265536,
+        "width": 4076,
+        "height": 1212,
+        "rgbaBytes": 19760448
+      },
+      {
+        "path": "assets/chars/grunt-0_n.webp",
+        "bytes": 143348,
+        "width": 2038,
+        "height": 606,
+        "rgbaBytes": 4940112
+      },
+      {
+        "path": "assets/chars/grunt-0_nl.webp",
+        "bytes": 142128,
+        "width": 2038,
+        "height": 606,
+        "rgbaBytes": 4940112
+      },
+      {
+        "path": "assets/chars/hound-0.webp",
+        "bytes": 934384,
+        "width": 3612,
+        "height": 1084,
+        "rgbaBytes": 15661632
+      },
+      {
+        "path": "assets/chars/hound-0_n.webp",
+        "bytes": 112090,
+        "width": 1806,
+        "height": 542,
+        "rgbaBytes": 3915408
+      },
+      {
+        "path": "assets/chars/hound-0_nl.webp",
+        "bytes": 111466,
+        "width": 1806,
+        "height": 542,
+        "rgbaBytes": 3915408
+      },
+      {
+        "path": "assets/chars/loial-0.webp",
+        "bytes": 500702,
+        "width": 3544,
+        "height": 496,
+        "rgbaBytes": 7031296
+      },
+      {
+        "path": "assets/chars/loial-0_n.webp",
+        "bytes": 71638,
+        "width": 1772,
+        "height": 248,
+        "rgbaBytes": 1757824
+      },
+      {
+        "path": "assets/chars/loial-0_nl.webp",
+        "bytes": 75590,
+        "width": 1772,
+        "height": 248,
+        "rgbaBytes": 1757824
+      },
+      {
+        "path": "assets/chars/riley-0.webp",
+        "bytes": 2079478,
+        "width": 4080,
+        "height": 1936,
+        "rgbaBytes": 31595520
+      },
+      {
+        "path": "assets/chars/riley-0_n.webp",
+        "bytes": 250126,
+        "width": 2040,
+        "height": 968,
+        "rgbaBytes": 7898880
+      },
+      {
+        "path": "assets/chars/riley-0_nl.webp",
+        "bytes": 261796,
+        "width": 2040,
+        "height": 968,
+        "rgbaBytes": 7898880
+      },
+      {
+        "path": "assets/chars/riley-1.webp",
+        "bytes": 144436,
+        "width": 1884,
+        "height": 328,
+        "rgbaBytes": 2471808
+      },
+      {
+        "path": "assets/chars/riley-1_n.webp",
+        "bytes": 17578,
+        "width": 942,
+        "height": 164,
+        "rgbaBytes": 617952
+      },
+      {
+        "path": "assets/chars/riley-1_nl.webp",
+        "bytes": 19434,
+        "width": 942,
+        "height": 164,
+        "rgbaBytes": 617952
+      },
+      {
+        "path": "assets/chars/spear-0.webp",
+        "bytes": 771850,
+        "width": 3792,
+        "height": 852,
+        "rgbaBytes": 12923136
+      },
+      {
+        "path": "assets/chars/spear-0_n.webp",
+        "bytes": 90084,
+        "width": 1896,
+        "height": 426,
+        "rgbaBytes": 3230784
+      },
+      {
+        "path": "assets/chars/spear-0_nl.webp",
+        "bytes": 88560,
+        "width": 1896,
+        "height": 426,
+        "rgbaBytes": 3230784
+      },
+      {
+        "path": "assets/chars/zealot-0.webp",
+        "bytes": 836860,
+        "width": 4016,
+        "height": 576,
+        "rgbaBytes": 9252864
+      },
+      {
+        "path": "assets/chars/zealot-0_n.webp",
+        "bytes": 99778,
+        "width": 2008,
+        "height": 288,
+        "rgbaBytes": 2313216
+      },
+      {
+        "path": "assets/chars/zealot-0_nl.webp",
+        "bytes": 95404,
+        "width": 2008,
+        "height": 288,
+        "rgbaBytes": 2313216
+      },
+      {
+        "path": "assets/bg/bg-far.jpg",
+        "bytes": 200817,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-floor.jpg",
+        "bytes": 423452,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-floor2.jpg",
+        "bytes": 440086,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-floor2_n.webp",
+        "bytes": 316152,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-floor_n.webp",
+        "bytes": 448084,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-mid.webp",
+        "bytes": 440206,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-mid2.webp",
+        "bytes": 654766,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-mid2_n.webp",
+        "bytes": 285812,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/bg/bg-mid_n.webp",
+        "bytes": 243334,
+        "width": 2172,
+        "height": 724,
+        "rgbaBytes": 6290112
+      },
+      {
+        "path": "assets/props/fx-arrow.webp",
+        "bytes": 8944,
+        "width": 600,
+        "height": 117,
+        "rgbaBytes": 280800
+      },
+      {
+        "path": "assets/props/fx-torch.webp",
+        "bytes": 41722,
+        "width": 700,
+        "height": 237,
+        "rgbaBytes": 663600
+      },
+      {
+        "path": "assets/props/item-ribbon.webp",
+        "bytes": 30042,
+        "width": 256,
+        "height": 258,
+        "rgbaBytes": 264192
+      },
+      {
+        "path": "assets/props/planks.webp",
+        "bytes": 192362,
+        "width": 1183,
+        "height": 549,
+        "rgbaBytes": 2597868
+      },
+      {
+        "path": "assets/props/prop-barrel.webp",
+        "bytes": 93584,
+        "width": 490,
+        "height": 586,
+        "rgbaBytes": 1148560
+      },
+      {
+        "path": "assets/props/prop-barrel_n.webp",
+        "bytes": 38090,
+        "width": 490,
+        "height": 586,
+        "rgbaBytes": 1148560
+      },
+      {
+        "path": "assets/props/prop-beam.webp",
+        "bytes": 48168,
+        "width": 1100,
+        "height": 318,
+        "rgbaBytes": 1399200
+      },
+      {
+        "path": "assets/props/prop-beam_n.webp",
+        "bytes": 21470,
+        "width": 1100,
+        "height": 318,
+        "rgbaBytes": 1399200
+      },
+      {
+        "path": "assets/props/prop-cart.webp",
+        "bytes": 235088,
+        "width": 1225,
+        "height": 669,
+        "rgbaBytes": 3278100
+      },
+      {
+        "path": "assets/props/prop-cart_n.webp",
+        "bytes": 116538,
+        "width": 1225,
+        "height": 669,
+        "rgbaBytes": 3278100
+      },
+      {
+        "path": "assets/props/prop-crate.webp",
+        "bytes": 53958,
+        "width": 490,
+        "height": 482,
+        "rgbaBytes": 944720
+      },
+      {
+        "path": "assets/props/prop-crate_n.webp",
+        "bytes": 23154,
+        "width": 490,
+        "height": 482,
+        "rgbaBytes": 944720
+      },
+      {
+        "path": "assets/props/staves.webp",
+        "bytes": 247626,
+        "width": 2261,
+        "height": 353,
+        "rgbaBytes": 3192532
+      },
+      {
+        "path": "assets/ui/byar-portrait.webp",
+        "bytes": 24138,
+        "width": 256,
+        "height": 256,
+        "rgbaBytes": 262144
+      },
+      {
+        "path": "assets/ui/chief-portrait.webp",
+        "bytes": 25474,
+        "width": 256,
+        "height": 256,
+        "rgbaBytes": 262144
+      },
+      {
+        "path": "assets/ui/loial-portrait.webp",
+        "bytes": 29708,
+        "width": 256,
+        "height": 256,
+        "rgbaBytes": 262144
+      },
+      {
+        "path": "assets/ui/riley-portrait.webp",
+        "bytes": 15520,
+        "width": 256,
+        "height": 256,
+        "rgbaBytes": 262144
+      },
+      {
+        "path": "assets/powers/fx_airwhip.png",
+        "bytes": 38148,
+        "width": 512,
+        "height": 64,
+        "rgbaBytes": 131072
+      },
+      {
+        "path": "assets/powers/fx_fireshield.png",
+        "bytes": 52805,
+        "width": 384,
+        "height": 320,
+        "rgbaBytes": 491520
+      },
+      {
+        "path": "assets/powers/fx_lightning.png",
+        "bytes": 107334,
+        "width": 512,
+        "height": 192,
+        "rgbaBytes": 393216
+      },
+      {
+        "path": "assets/powers/hud_airwhip.png",
+        "bytes": 5956,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_angreal.png",
+        "bytes": 5262,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_fireshield.png",
+        "bytes": 5379,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_lightning.png",
+        "bytes": 4955,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/hud_saangreal.png",
+        "bytes": 5251,
+        "width": 48,
+        "height": 48,
+        "rgbaBytes": 9216
+      },
+      {
+        "path": "assets/powers/pu_airwhip.png",
+        "bytes": 15580,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_angreal.png",
+        "bytes": 10569,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_fireshield.png",
+        "bytes": 16671,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_lightning.png",
+        "bytes": 8094,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_saangreal.png",
+        "bytes": 6050,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/pu_twix.png",
+        "bytes": 11883,
+        "width": 96,
+        "height": 96,
+        "rgbaBytes": 36864
+      },
+      {
+        "path": "assets/powers/riley_lightning.png",
+        "bytes": 785442,
+        "width": 2880,
+        "height": 1280,
+        "rgbaBytes": 14745600
+      },
+      {
+        "path": "assets/powers/twix_panel_1.jpg",
+        "bytes": 274048,
+        "width": 1280,
+        "height": 720,
+        "rgbaBytes": 3686400
+      },
+      {
+        "path": "assets/powers/twix_panel_2.jpg",
+        "bytes": 269531,
+        "width": 1280,
+        "height": 720,
+        "rgbaBytes": 3686400
+      },
+      {
+        "path": "assets/powers/twix_panel_3.jpg",
+        "bytes": 298206,
+        "width": 1280,
+        "height": 720,
+        "rgbaBytes": 3686400
+      }
+    ],
+    "mipmaps": "Disabled by the pinned Phaser default and current game configuration; full-chain bytes are hypothetical.",
+    "note": "RGBA8 decoded base-level estimate, not measured GPU allocation. Excludes framebuffer/filter/canvas/driver allocations. Normal maps counted separately; no device-safe claim."
+  },
+  "physicalDeviceGate": "UNMEASURED",
+  "blindReview": "PENDING",
+  "freezeFrameReview": "PENDING",
+  "likenessReview": "PENDING"
+}

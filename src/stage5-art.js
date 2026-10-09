@@ -10,8 +10,7 @@ export { stalkFrame, podFrame, aginFrame, baltFrame, greenFrame } from './stage5
 // was read, so painted rows never loaded). Built by tools/stage5/process_bosses.py: trimmed atlases, frames "0".."n"
 // in aginFrame/baltFrame order, sourceSize = the cell, feet at 0.96. baseH is the painted cell height in code-drawn
 // pixels (cell height / PX, the tool prints it); a painted cell is drawn at scale * baseH / its height (scaleFor).
-// A file that fails mid-session drops its key so the painter fills it, the same rule as Stage 4. A cold start
-// still treats any load error as fatal through the shared startup guard.
+// Failed painted files drop their keys so the painter fills them, including on cold startup.
 export const PAINTED = Object.freeze([
   Object.freeze({ key: 's5agin', url: 'assets/stage5/s5agin.webp', atlas: 'assets/stage5/s5agin.json', baseH: 224, present: true }),
   Object.freeze({ key: 's5balt', url: 'assets/stage5/s5balt.webp', atlas: 'assets/stage5/s5balt.json', baseH: 176, present: true }),
@@ -30,11 +29,14 @@ export function queuePainted(scene, rows = PAINTED) {
     else L.image(row.key, row.url);
   }
   if (!wanted.size || typeof L.on !== 'function') return;
+  const optional = L.optionalAssetKeys || (L.optionalAssetKeys = new Set());
+  for (const key of wanted) optional.add(key);
   const drop = file => {
     const key = failedKey(file);
     if (wanted.has(key) && scene.textures?.exists?.(key)) scene.textures.remove(key);
   };
   const cleanup = () => {
+    for (const key of wanted) optional.delete(key);
     L.off?.('loaderror', drop); L.off?.('complete', cleanup);
     scene.events?.off?.('shutdown', cleanup);
   };
