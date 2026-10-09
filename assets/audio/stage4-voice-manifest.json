@@ -22,7 +22,7 @@
   },
   "pronunciation": {
     "Aridhol": "ˈɛɹɪdˌɔl",
-    "Moiraine": "mwɑˈreɪn",
+    "Moiraine": "mwɑˈɹAn",
     "Caemlyn": "ˈkeɪmlɪn",
     "Mashadar": "ˈmæʃədɑɹ",
     "Waygate": "ˈweɪɡeɪt",
@@ -293,15 +293,16 @@
       "speaker": "RILEY",
       "text": "Aridhol. Moiraine said never go in.",
       "asset_path": "assets/audio/voice/st4_story_02.mp3",
-      "duration_s": 2.64,
-      "bytes": 32012,
-      "sha256": "9cfb21f8145e61c8dc797394a2db0e252109bb10cc7f0da4f0c8e9629ff63441",
+      "duration_s": 2.592,
+      "bytes": 31436,
+      "sha256": "01521b8799808cea40c2ecf9f49b933f319fca7c2880ca4433b11f87b6eee75f",
       "source": "kokoro",
       "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0 (rev f3ff3571)",
       "cast": "riley",
-      "speech_input": "[Aridhol](/ˈɛɹɪdˌɔl/). [Moiraine](/mwɑˈreɪn/) said never go in.",
+      "speech_input": "[Aridhol](/ˈɛɹɪdˌɔl/). [Moiraine](/mwɑˈɹAn/) said never go in.",
       "previous_sha256": "6f8a4dcfed2a72967a46dfac1a11fc1bf5ecfe508ea8eaa92d3ef884c5b2d4f2",
-      "rerecord_note": "re-recorded 2026-10-08, approved by Jason F via Grok Bot. Aridhol = AIR-ih-dol (IPA ˈɛɹɪdˌɔl; was ˈærɪdhɒl)."
+      "rerecord_note": "re-recorded 2026-10-08, approved by Jason F via Grok Bot. Aridhol = AIR-ih-dol (IPA ˈɛɹɪdˌɔl; was ˈærɪdhɒl). Moiraine = mwah-RAIN (Kokoro/misaki phonemes mwɑˈɹAn; was mwɑˈreɪn, which Kokoro mangled).",
+      "processing": "tts_stage4_lines.py to_mp3 chain, with alimiter level_in=1.15 (+1.2 dB into the limiter) to match the original -20.2 LUFS"
     },
     {
       "id": "st4_story_03",

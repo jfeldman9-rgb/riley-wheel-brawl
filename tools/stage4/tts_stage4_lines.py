@@ -30,7 +30,7 @@ ELEVEN_VOICES = {
     'mordeth': os.environ.get('ELEVENLABS_VOICE_MORDETH', ''),
 }
 PRON = {
-    'Aridhol': 'ˈɛɹɪdˌɔl', 'Moiraine': 'mwɑˈreɪn', 'Caemlyn': 'ˈkeɪmlɪn',
+    'Aridhol': 'ˈɛɹɪdˌɔl', 'Moiraine': 'mwɑˈɹAn', 'Caemlyn': 'ˈkeɪmlɪn',
     'Mashadar': 'ˈmæʃədɑɹ', 'Waygate': 'ˈweɪɡeɪt', 'Loial': 'ˈlɔɪæl',
 }
 
