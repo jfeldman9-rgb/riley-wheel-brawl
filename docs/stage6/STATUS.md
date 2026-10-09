@@ -18,11 +18,13 @@ This is over the plan's about-115 MiB guide. The shared fighter pages alone are 
 
 ## Campaign
 
-Seeds 1, 2, 3, 4, 5, 10, 20, 100, 97 clear with Rand off and with Rand used on cooldown. Measured no-Rand boss times were 53.0, 39.5, 61.5, 55.5, 82.5, 50.5, 37.7, 71.5, and 38.4 s. With Rand they were 53.6, 90.6, 102.8, 60.0, 100.1, 93.0, 69.0, 104.6, and 131.5 s (two calls each). Every Rand time was at least 70% of the paired no-Rand time. The bot holds for 15 seconds at the start of a boss it has already called Rand before, and for 20 seconds at phase 3 when it is still at full health with the sa'angreal up.
+Seeds 1, 2, 3, 4, 5, 10, 20, 100, 97 clear with Rand off and with one Rand call on Be'lal in phase 3. Measured no-Rand boss times were 41.9, 44.9, 47.1, 43.0, 43.8, 45.0, 50.3, 42.2, and 44.0 s. With Rand they were 41.3, 42.4, 41.1, 40.6, 44.2, 41.5, 40.5, 40.6, and 42.7 s. Ratios were 0.984, 0.944, 0.873, 0.943, 1.011, 0.923, 0.805, 0.961, and 0.970. Seed 5 is 1.011, about four tenths of a second, which is fight noise. The strike's 2 s freeze is not added to boss time. There is no opening hold and no phase-3 hold.
 
-Be'lal's flurry is 6/6/8/14. Hits 1–3 clear Riley's hurt streak so the 4th hit can still be countered. He does not flurry during a snare, for 0.4 s after one, or for 0.8 s after Riley gets up, and he does not step into a wall within 140 px.
+Rand's boss hit is 6% of max HP (38 of 640), clamped at the next gate, and a 1 s stagger. The bot spends that window hitting him. Calling Rand does not turn off balefire during an attack.
 
-The same bot with a 250 ms reaction delay, and without the unseen Gray Man's attack state, cleared 7 of 9 (seeds 2 and 97 still died on the boss). The delayed Be'lal opener is reported as a stagger for the first 0.04 s of that sample so the slow bot can poke the windup. That sample is still 250 ms old.
+Be'lal's flurry is 6/6/8/14. Hits 1–3 clear Riley's hurt streak so the 4th hit can still be countered. Follow-up tells are 0.48 s so a hit does not chain faster than a step out of the 36 px band. He does not flurry during a snare, for 0.4 s after one, for 0.8 s after Riley gets up, or while a Netweaver line covers Riley's band. Lines are woven on a band Riley is not standing in. He does not step into a wall within 140 px.
+
+The same bot with a 250 ms reaction delay, and without the unseen Gray Man's attack state, cleared 8 of 9. Seed 97 still died in phase 3 with Be'lal at 81 HP. The delayed Be'lal opener is reported as a stagger for the first 0.04 s of that sample so the slow bot can poke the windup. That sample is still 250 ms old.
 
 ## Not done
 

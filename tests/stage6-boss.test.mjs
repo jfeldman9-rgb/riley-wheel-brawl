@@ -105,4 +105,11 @@ test('a wall pin allows at most three hits in a row, and a snare or a getup bloc
   held.scene.kit.snareCool = 0; held.scene.kit.getupCool = 0.8; held.st = 2;
   for (let i = 0; i < 60; i++) held.update(1 / 60);
   assert.notEqual(held.state, 'attack');
+  const weaving = make();
+  weaving.scene.bands = [[572, 611], [612, 651], [652, 690]];
+  weaving.scene.kit.stone = { lines: [{ band: 1, phase: 'tell' }] };
+  weaving.x = 1000; weaving.scene.riley.x = 900; weaving.scene.riley.y = 630;
+  weaving.invuln = false; weaving.beat = false; weaving.cool = 0; weaving.st = 2; weaving.state = 'idle';
+  for (let i = 0; i < 90; i++) weaving.update(1 / 60);
+  assert.equal(weaving.state, 'idle');
 });

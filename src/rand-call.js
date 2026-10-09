@@ -4,7 +4,7 @@ import { VW } from './config.js';
 
 export const RAND = Object.freeze({
   charges: 1, maxCharges: 1, kos: 10, recharge: 45, maxCalls: 3, perPhase: 1,
-  bossFrac: 0.1, fadeFrac: 0.75, humanFrac: 0.6, fadeDown: 2, humanDown: 1.6,
+  bossFrac: 0.06, fadeFrac: 0.75, humanFrac: 0.6, fadeDown: 2, humanDown: 1.6,
   bolts: 8, fires: 4, boltGap: 0.08, pad: 60, inv: 2, stagger: 1,
   gates: Object.freeze([0.66, 0.33]),
 });
@@ -84,7 +84,7 @@ export function bossFloor(boss) {
 
 /**
  * Apply one Rand hit. Trollocs die. Fadelt loses 75% of max and lives.
- * Humans lose 60% of max and live. The boss loses 10% of max, clamped at the gate, never killed, never while invulnerable.
+ * Humans lose 60% of max and live. The boss loses 6% of max, clamped at the gate, never killed, never while invulnerable.
  * Returns null when the hit is ignored.
  */
 export function randEffect(e) {
@@ -93,7 +93,7 @@ export function randEffect(e) {
   if (kind === 'boss') {
     if (!e.alive || e.invuln || e.beat) return null;
     const floor = bossFloor(e);
-    const next = Math.max(floor, e.hp - e.maxHp * RAND.bossFrac);
+    const next = Math.max(floor, e.hp - Math.round(e.maxHp * RAND.bossFrac));
     const dmg = Math.max(0, e.hp - next);
     e.hp = next;
     e.randStagger = RAND.stagger;

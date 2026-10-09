@@ -32,15 +32,16 @@ Gameplay is in. Art (A1–A4) and hardening tests (C1–C4) build against the na
 
 ## Be'lal
 
-`BELAL.dmg` is `[6, 6, 8, 14]`. Hits 1–3 set `riley.hurtStreak = 0` before `strikeRiley`, and only hit 4 uses `down: true`. No flurry while `fogSlow > 0`, `snareCool > 0`, or `getupCool > 0` (`0.8` s after getup, `0.4` s after a snare). No forward step, and no lunge toward Riley, when he is within 140 px of a wall. A wall-pinned flurry ends after 3 hits.
+`BELAL.dmg` is `[6, 6, 8, 14]`. Tells are `[0.55, 0.48, 0.48, 0.6]`. Hits 1–3 set `riley.hurtStreak = 0` before `strikeRiley`, and only hit 4 uses `down: true`. No flurry while `fogSlow > 0`, `snareCool > 0`, `getupCool > 0` (`0.8` s after getup, `0.4` s after a snare), or while a live Netweaver line covers Riley's band. Lines are woven onto a band he is not standing in. No forward step, and no lunge toward Riley, when he is within 140 px of a wall. A wall-pinned flurry ends after 3 hits.
 
 ## Bot seams
 
-- `?rand=1` makes `stage6Bot` press `assist` when `refuseReason` is empty.
+- `?rand=1` makes `stage6Bot` press `assist` when Be'lal is in phase 3 and `refuseReason` is empty. That spends the call on the boss. Balefire during an attack does not depend on `rand.calls`.
+- Boss damage from Rand is 6% of max HP (`Math.round`, 38 of 640), clamped at the gate, plus `RAND.stagger` (1 s) which Riley has to hit himself. The 2 s strike freeze is not added to `bossTime`.
 - `bot.lag` (seconds) swaps `scene.enemies` for `lateEnemies(bot)` during `play()`. Samples are `bot.t` old. An unseen Gray Man (`grayVisible` false) is omitted.
 - A delayed Be'lal opener (`state === 'attack'`, `hitI === 0`, `st < 0.04`) is reported as `stagger` so the slow bot can poke that windup. It does not read a future frame.
 - While `bot.lag` is set, attack / tell / lunge hold `openY` 72 and the frame-perfect counter block is skipped.
-- Campaign seeds are `1, 2, 3, 4, 5, 10, 20, 100, 97` in `tests/stage6-campaign.test.mjs`. One process, no-Rand then Rand. Rand boss time must stay at least 70% of the paired no-Rand time. The 250 ms loop must clear at least 7 of 9.
+- Campaign seeds are `1, 2, 3, 4, 5, 10, 20, 100, 97` in `tests/stage6-campaign.test.mjs`. One process, a discarded warmup, then no-Rand, then Rand. Rand boss time must stay between 70% and 102% of the paired no-Rand time. The 250 ms loop must clear at least 8 of 9.
 
 ## Art seams (A1–A4)
 

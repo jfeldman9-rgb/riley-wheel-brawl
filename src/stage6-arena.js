@@ -133,7 +133,9 @@ function landLamp(s, n, w) {
 
 function weave(s, w, cap) {
   const used = new Set(s.lines.map(n => n.band));
-  const free = [0, 1, 2].filter(i => !used.has(i));
+  const y = w.riley?.y;
+  const mine = y == null ? -1 : BANDS.findIndex(b => y >= b[0] && y <= b[1]);
+  const free = [0, 1, 2].filter(i => !used.has(i) && i !== mine);
   if (free.length <= 1 && cap >= 2) return;
   if (!free.length) return;
   const band = free[Math.floor(Math.random() * free.length)];

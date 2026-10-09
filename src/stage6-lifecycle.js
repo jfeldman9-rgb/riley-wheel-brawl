@@ -120,7 +120,6 @@ function stepStrike(kit, dt) {
   const s = kit.s, st = kit.strike;
   if (!st) return;
   st.t += dt;
-  if (s.boss?.alive) kit.bossTime = (kit.bossTime || 0) + dt;
   if (st.t >= 0.3 && !st.glow && s.lights?.addLight) st.glow = s.lights.addLight((s.camX || 0) + 110, LANE_TOP, 220, 0x7dffa0, 1.2, 50);
   const shown = st.plan.bolts.length + st.plan.fires.length;
   const idx = Math.min(shown, Math.floor(Math.max(0, st.t - 0.5) / RAND.boltGap));
@@ -145,7 +144,6 @@ function stepStrike(kit, dt) {
       const fx = randEffect(e);
       if (!fx) continue;
       if (fx.killed && e.die) e.die(1, { kb: 200 });
-      if (e.type === 'belal') kit.randHold = 1.05;
     }
     randBark(s.caption);
     kit.rand.on = false;

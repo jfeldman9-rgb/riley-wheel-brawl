@@ -77,13 +77,6 @@ export class Stage6Kit {
     if (!dt || s.paused || s.cutscene || this.strike) return;
     if (!R) return;
     tickRand(this.rand, dt);
-    if (s.boss?.alive && this.rand?.calls && !this.fairOn) { this.fairOn = 1; this.fair = 15; }
-    if (s.boss?.phase >= 3 && !this.fairP3) {
-      this.fairP3 = 1;
-      if (this.rand?.calls && s.powers?.boost?.kind === 'saangreal' && R.hp >= 100) this.fair = Math.max(this.fair || 0, 20);
-    }
-    if (this.fair > 0) this.fair -= dt;
-    if (this.randHold > 0) this.randHold -= dt;
     if (s.boss?.alive) this.bossTime += dt;
     if (s.zoneI !== this._zone) this.enterZone(s.zoneI);
     R.fogSlow = 0;

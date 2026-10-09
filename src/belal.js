@@ -4,7 +4,7 @@ import { strikeRiley } from './stage5-hurt.js';
 import { substeps } from './stage5-clock.js';
 
 export const BELAL = Object.freeze({
-  hp: 640, tells: Object.freeze([0.55, 0.35, 0.35, 0.6]), dmg: Object.freeze([6, 6, 8, 14]),
+  hp: 640, tells: Object.freeze([0.55, 0.48, 0.48, 0.6]), dmg: Object.freeze([6, 6, 8, 14]),
   lungeTell: 0.7, lunge: 380, lungeT: 0.28, channel: 1.5, stun: 1.4, reach: 176, speed: 96, score: 8000,
 });
 const ATK = new Set(['combo1', 'combo2', 'combo3', 'back', 'runkick', 'airkick', 'knee']);
@@ -19,6 +19,16 @@ function wallDir(scene) {
 function snared(scene) {
   const R = scene?.riley, k = scene?.kit;
   return (R?.fogSlow || 0) > 0 || (k?.snareCool || 0) > 0;
+}
+function lined(scene) {
+  const R = scene?.riley, lines = scene?.kit?.stone?.lines, bands = scene?.bands;
+  if (!R || !lines || !bands) return false;
+  for (const n of lines) {
+    if (n.phase !== 'tell' && n.phase !== 'fire') continue;
+    const b = bands[n.band];
+    if (b && R.y >= b[0] - 8 && R.y <= b[1] + 8) return true;
+  }
+  return false;
 }
 
 function stub() {
@@ -79,7 +89,7 @@ export class Belal {
     }
     const tokens = this.scene.attackTokens?.() || 0;
     if (this.phase >= 3 && this.st > 1.2 && Math.random() < 0.012) { this.startChannel(); return; }
-    if (!snared(this.scene) && !((this.scene.kit?.getupCool || 0) > 0) && tokens < (this.scene.maxTokens || 2) && Math.abs(dx) < 220 && Math.abs(R.y - this.y) < 36) { this.startFlurry(); return; }
+    if (!snared(this.scene) && !lined(this.scene) && !((this.scene.kit?.getupCool || 0) > 0) && tokens < (this.scene.maxTokens || 2) && Math.abs(dx) < 220 && Math.abs(R.y - this.y) < 36) { this.startFlurry(); return; }
     if (!snared(this.scene) && tokens < (this.scene.maxTokens || 2) && Math.abs(dx) > 240 && Math.abs(dx) < 520 && Math.abs(R.y - this.y) < 40 && !(pin && this.facing === pin)) { this.startLunge(); return; }
     if (Math.abs(dx) > 150) step();
     const b = this.scene.bounds; if (b) this.x = clamp(this.x, b.l + 50, b.r - 50);

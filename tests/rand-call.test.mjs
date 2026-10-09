@@ -103,11 +103,11 @@ test('trollocs die, fadelt lives at a quarter, humans are never killed', () => {
   }
 });
 
-test('the boss loses 10 percent, stops at the gate, and is never killed or hit while invulnerable', () => {
+test('the boss loses 6 percent, stops at the gate, and is never killed or hit while invulnerable', () => {
   const boss = foe('belal', { hp: 640, maxHp: 640, phase: 1, invuln: false, beat: false });
   const fx = randEffect(boss);
   assert.equal(fx.killed, false);
-  assert.equal(boss.hp, 640 - 64);
+  assert.equal(boss.hp, 640 - 38);
   assert.equal(boss.randStagger, 1);
   const gated = foe('belal', { hp: 430, maxHp: 640, phase: 1, invuln: false, beat: false });
   randEffect(gated);
@@ -115,7 +115,7 @@ test('the boss loses 10 percent, stops at the gate, and is never killed or hit w
   assert.equal(gated.hp, 422);
   const late = foe('belal', { hp: 40, maxHp: 640, phase: 3, invuln: false, beat: false });
   randEffect(late);
-  assert.equal(late.hp, 1);
+  assert.equal(late.hp, 2);
   const safe = foe('belal', { hp: 640, maxHp: 640, phase: 1, invuln: true, beat: false });
   assert.equal(randEffect(safe), null);
   assert.equal(safe.hp, 640);

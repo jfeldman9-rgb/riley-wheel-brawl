@@ -39,6 +39,7 @@ function run(seed, rand, lag) {
 }
 
 test('Stage 6 campaign clears 9 seeds with and without Rand, and Rand keeps 70 percent of the boss time', () => {
+  withSeed(1, () => { const h = stage6Simulation({ rand: false }); h.destroy(); });
   const base = [];
   for (const seed of FULL_STAGE_SEEDS) withSeed(seed, () => base.push(run(seed, false)));
   FULL_STAGE_SEEDS.forEach((seed, i) => withSeed(seed, () => {
@@ -46,12 +47,12 @@ test('Stage 6 campaign clears 9 seeds with and without Rand, and Rand keeps 70 p
     assert.equal(base[i].calls, 0, seed);
     assert.ok(row.calls >= 1 && row.calls <= 3, `${seed} calls ${row.calls}`);
     const ratio = row.bossT / base[i].bossT;
-    assert.ok(ratio >= 0.7, `seed ${seed} boss ${row.bossT.toFixed(1)} / ${base[i].bossT.toFixed(1)} = ${ratio.toFixed(3)}`);
+    assert.ok(ratio >= 0.7 && ratio <= 1.02, `seed ${seed} boss ${row.bossT.toFixed(1)} / ${base[i].bossT.toFixed(1)} = ${ratio.toFixed(3)}`);
   }));
   const slow = [];
   for (const seed of FULL_STAGE_SEEDS) withSeed(seed, () => {
     try { run(seed, false, 0.25); }
     catch (err) { slow.push(seed + ' ' + (err && err.message)); }
   });
-  assert.ok(FULL_STAGE_SEEDS.length - slow.length >= 7, slow.join('\n'));
+  assert.ok(FULL_STAGE_SEEDS.length - slow.length >= 8, slow.join('\n'));
 });

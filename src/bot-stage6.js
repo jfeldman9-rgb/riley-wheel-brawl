@@ -162,9 +162,8 @@ function play(bot, s, R, k) {
     return go(bot, 0, 0);
   }
   if (R.state === 'down' || R.state === 'getup' || R.state === 'dead' || !R.alive) return go(bot, 0, 0);
-  if (s.boss?.alive && (k.randHold > 0 || k.fair > 0)) bot.quiet = bot.t + 0.2;
   const useRand = bot.useRand || q.get('rand') === '1';
-  if (useRand && k.rand && refuseReason(k.rand, k.randCtx()) === '' && bot.t >= (bot.randAt || 0)) {
+  if (useRand && s.boss?.phase >= 3 && k.rand && refuseReason(k.rand, k.randCtx()) === '' && bot.t >= (bot.randAt || 0)) {
     s.inp.press('assist'); bot.randAt = bot.t + 3; return go(bot, 0, 0);
   }
   const away = leave(bot, R, k.threats?.() || {});
@@ -180,7 +179,7 @@ function play(bot, s, R, k) {
     if (!R.busy && elite.hitI === 3 && elite.st >= 0.3 && elite.st < 0.4 && bot.t >= (bot.cntAt || 0)) { s.inp.press('attack'); bot.cntAt = bot.t + 0.85; }
     return go(bot, 0, y);
   }
-  if (elite && (R.saidin || 0) >= 100 && (elite.state !== 'attack' || !k.rand.calls) && beam(bot, R, elite)) return 1;
+  if (elite && (R.saidin || 0) >= 100 && beam(bot, R, elite)) return 1;
   const danger = live.find(e => incoming(e, R));
   if (danger) return commit(bot, R, danger);
   const saaDrop = (s.pickups || []).find(p => p.kind === 'saangreal');
