@@ -1,0 +1,160 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 242,
+    "w": 178,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 336,
+    "w": 432
+   },
+   "spriteSourceSize": {
+    "h": 242,
+    "w": 178,
+    "x": 128,
+    "y": 83
+   },
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 270,
+    "w": 241,
+    "x": 180,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 336,
+    "w": 432
+   },
+   "spriteSourceSize": {
+    "h": 270,
+    "w": 241,
+    "x": 89,
+    "y": 55
+   },
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 317,
+    "w": 201,
+    "x": 423,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 336,
+    "w": 432
+   },
+   "spriteSourceSize": {
+    "h": 317,
+    "w": 201,
+    "x": 126,
+    "y": 8
+   },
+   "trimmed": true
+  },
+  "3": {
+   "frame": {
+    "h": 266,
+    "w": 234,
+    "x": 626,
+    "y": 0
+   },
+   "palm": [
+    124,
+    212
+   ],
+   "rotated": false,
+   "sourceSize": {
+    "h": 336,
+    "w": 432
+   },
+   "spriteSourceSize": {
+    "h": 266,
+    "w": 234,
+    "x": 136,
+    "y": 59
+   },
+   "trimmed": true
+  },
+  "4": {
+   "frame": {
+    "h": 247,
+    "w": 298,
+    "x": 862,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 336,
+    "w": 432
+   },
+   "spriteSourceSize": {
+    "h": 247,
+    "w": 298,
+    "x": 127,
+    "y": 78
+   },
+   "trimmed": true
+  },
+  "5": {
+   "frame": {
+    "h": 228,
+    "w": 215,
+    "x": 1162,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 336,
+    "w": 432
+   },
+   "spriteSourceSize": {
+    "h": 228,
+    "w": 215,
+    "x": 100,
+    "y": 97
+   },
+   "trimmed": true
+  },
+  "6": {
+   "frame": {
+    "h": 258,
+    "w": 251,
+    "x": 1379,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 336,
+    "w": 432
+   },
+   "spriteSourceSize": {
+    "h": 258,
+    "w": 251,
+    "x": 81,
+    "y": 66
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage5/process_bosses.py",
+  "baseH": 224.0,
+  "format": "RGBA8888",
+  "image": "s5agin.webp",
+  "px": 1.5,
+  "scale": "1",
+  "size": {
+   "h": 317,
+   "w": 1630
+  }
+ }
+}

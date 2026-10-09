@@ -5,6 +5,8 @@ import { Aginor } from './aginor.js';
 import { Balthamel } from './balthamel.js';
 import { stage4Delta } from './stage4-time.js';
 import { stalkFrame, podFrame, aginFrame, baltFrame } from './stage5-art-cast.js';
+import { scaleFor, PAINTED } from './stage5-art.js';
+const BASE_H = Object.fromEntries(PAINTED.map(r => [r.key, r.baseH]));
 import { LAYOUT5 } from './stage5-def.js';
 import { safeStage5Spot } from './stage5-spawn.js';
 
@@ -17,10 +19,11 @@ function body(e, scene, key, shadowW) {
   e.sprite = add?.sprite ? add.sprite(e.x, e.y, key, 0) : stub();
   e.shadow.setDepth?.(900); e.sprite.setDepth?.(1000 + e.y);
 }
-function paint(e, frame, scale) {
+function paint(e, frame, scale, baseH) {
   if (!e.sprite) return;
   e.sprite.x = e.x; e.sprite.y = e.y - (e.z || 0); e.sprite.setDepth?.(1000 + e.y);
-  e.sprite.setOrigin?.(0.5, 0.96); e.sprite.setScale?.(scale); e.sprite.setFrame?.(frame(e.state));
+  e.sprite.setOrigin?.(0.5, 0.96); e.sprite.setFrame?.(frame(e.state));
+  e.sprite.setScale?.(scaleFor(e.sprite.frame, scale, baseH));
   e.sprite.flipX = e.facing < 0; e.sprite.setLighting?.(true);
   const ash = e.state === 'dead' || e.state === 'burn';
   e.sprite.setAlpha?.(ash ? Math.max(0, 1 - (e.st || 0)) : 1);
@@ -88,7 +91,7 @@ export class AginorActor extends Aginor {
     this.y = clamp(this.y, LANE_TOP, LANE_BOT);
     this.scene.kit?.noteBoss?.(this, prev);
   }
-  sync() { paint(this, aginFrame, AGIN_SCALE); this.shadow?.setScale?.(1.55, 0.42); }
+  sync() { paint(this, aginFrame, AGIN_SCALE, BASE_H.s5agin); this.shadow?.setScale?.(1.55, 0.42); }
   destroy() { super.destroy(); this.sprite?.destroy?.(); this.shadow?.destroy?.(); }
   die() { if (this.state !== 'dead') this.burn(); this.gone = true; }
 }
@@ -107,7 +110,7 @@ export class BalthamelActor extends Balthamel {
     this.scene.kit?.noteBalth?.(this, prev);
   }
   sync() {
-    paint(this, baltFrame, BALT_SCALE);
+    paint(this, baltFrame, BALT_SCALE, BASE_H.s5balt);
     this.shadow?.setScale?.(1.45, 0.4);
     if (this.state !== 'holding' || !this.sprite) return;
     const face = this.facing < 0 ? -1 : 1;

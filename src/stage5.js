@@ -7,7 +7,7 @@ import { createBlight, meleeTrunk, burnTrunk } from './stage5-blight.js';
 import { createArena } from './stage5-arena.js';
 import { createStage5View, sunAmbient } from './stage5-view.js';
 import { updateSpores } from './stage5-spores.js';
-import { queuePainted } from './stage5-art.js';
+import { queuePainted, freeStory5 } from './stage5-art.js';
 import { preloadClips, releaseClips, MUSIC } from './audio.js';
 import { STAGE5_VOICES, VOICE_FILES, stage5Say, bark, drainHum, sfxCue } from './stage5-voice.js';
 import { clearStage5Hazards, clearStage5Zone, installStage5SceneHooks, installStage5RileyHook, restoreStage5Hooks } from './stage5-lifecycle.js';
@@ -36,7 +36,6 @@ export function queueStage5(scene) {
   if (!has('planks')) L.atlas('planks', 'assets/props/planks.webp', 'assets/props/planks.json');
   if (!has('ribbon')) L.image('ribbon', 'assets/props/item-ribbon.webp');
   if (!scene.cache.json.get('layout5')) L.json('layout5', 'assets/bg5/layout.json');
-  if (!scene.cache.json.get('painted5')) L.json('painted5', 'assets/stage5/painted.json');
   queuePainted(scene);
   queuePowerArt(scene, { twix: false });
 }
@@ -221,8 +220,9 @@ STAGE5.kit = Stage5Kit;
 STAGE5.queue = queueStage5;
 STAGE5.start = scene => {
   scene.kit?.start();
-  if (q.get('story') === '0' || scene.stageData?.story === false) { scene.music?.set('stage'); return; }
-  scene.startCutscene(STORY5_SCRIPT, STORY5_PANELS, () => { scene.storyResult = 'end'; scene.music?.set('stage'); });
+  if (q.get('story') === '0' || scene.stageData?.story === false) { scene.music?.set('stage'); freeStory5(scene); return; }
+  const begun = scene.startCutscene(STORY5_SCRIPT, STORY5_PANELS, () => { scene.storyResult = 'end'; scene.music?.set('stage'); freeStory5(scene); });
+  if (begun === false) freeStory5(scene);
 };
 
 queueMicrotask(() => {
