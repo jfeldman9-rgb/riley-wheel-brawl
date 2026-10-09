@@ -69,3 +69,12 @@ Original loops rendered the same way (FluidSynth + FluidR3_GM), looped in `src/a
 - `music-stage4.mp3`: "Shadar Logoth". E phrygian, hollow and slow. 16 bars @ 96 bpm, -16.0 LUFS, loop [0.250, 40.250) s.
 - `music-boss4.mp3`: "The Draghkar's Croon". A minor pulse under a high line. 16 bars @ 126 bpm, -15.2 LUFS, loop [0.250, 30.726) s.
 Both are under 1.2 MB. Loop points are in `tools/music/music-manifest.json`. Stage 4 voice lines are in `assets/audio/stage4-voice-manifest.json`.
+
+## Stage 5 music and voices
+
+| File | Id | What it is | Licence / rights |
+| --- | --- | --- | --- |
+| `music-stage5.mp3` | stage5 | "The Blight". Rendered loop, 16 bars @ 96 bpm, about -16.0 LUFS. Loop [0.250, 40.250) s. | Original music generated for this project. No third-party audio. |
+| `music-boss5.mp3` | boss5 | "The Eye". Rendered loop, 16 bars, about -15.2 LUFS. Loop [0.250, 32.000) s. | Original music generated for this project. No third-party audio. |
+
+The same loop points are on `MUSIC.stage5` and `MUSIC.boss5` in `src/audio.js`. Render notes are in `tools/stage5/music-manifest.json`. The 21 Stage 5 voice lines are in `assets/audio/voice/` and listed in `assets/audio/stage5-voice-manifest.json`. The script is `docs/stage5/VOICE-SCRIPT.md`. An id plays only when it is in that present list.

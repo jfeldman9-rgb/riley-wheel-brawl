@@ -151,14 +151,14 @@ test('touch stage-select arrows have centred 120×100 targets, including edges o
     assert.equal(arrow.input.hitArea.width, 120); assert.equal(arrow.input.hitArea.height, 100);
   }
   const corners = [[-59, -49], [59, 49], [-59, 49], [59, -49], [0, 0]];
-  const expectRight = [2, 3, 4, 4, 4];
+  const expectRight = [2, 3, 4, 5, 5];
   corners.forEach(([dx, dy], i) => {
     assert.deepEqual(tap(right.x + dx, right.y + dy), [right], 'expanded touch target catches the tap');
     assert.equal(hud.stage.titleSel, expectRight[i]); assert.equal(hud.titleStageT.text, STAGE_NAMES[expectRight[i]]);
     assert.equal(pressed.length, 0, 'stage selection never emits Start, even on repeated/clamped taps');
   });
   assert.equal(hud.titleArrowR.alpha, 0.25); assert.equal(hud.titleArrowL.alpha, 1);
-  const expectLeft = [3, 2, 1, 1, 1];
+  const expectLeft = [4, 3, 2, 1, 1];
   corners.forEach(([dx, dy], i) => {
     assert.deepEqual(tap(left.x + dx, left.y + dy), [left]);
     assert.equal(hud.stage.titleSel, expectLeft[i]); assert.equal(hud.titleStageT.text, STAGE_NAMES[expectLeft[i]]);

@@ -1,7 +1,7 @@
 // Music state machine. The stage reports what is happening (title, fighting, boss, cutscene, victory, game over)
 // and the director picks the track and crossfade; the audio backend (audio.js playTrack) does the WebAudio work.
 // Pure logic with an injectable backend so the transitions are unit-tested without a browser.
-export const STAGE_MUSIC = Object.freeze({ 1: Object.freeze({ stage: 'stage1', boss: 'boss1' }), 2: Object.freeze({ stage: 'stage2', boss: 'boss2' }), 3: Object.freeze({ stage: 'stage3', boss: 'boss3' }), 4: Object.freeze({ stage: 'stage4', boss: 'boss4' }) });
+export const STAGE_MUSIC = Object.freeze({ 1: Object.freeze({ stage: 'stage1', boss: 'boss1' }), 2: Object.freeze({ stage: 'stage2', boss: 'boss2' }), 3: Object.freeze({ stage: 'stage3', boss: 'boss3' }), 4: Object.freeze({ stage: 'stage4', boss: 'boss4' }), 5: Object.freeze({ stage: 'stage5', boss: 'boss5' }) });
 // seconds for each kind of change
 export const FADES = Object.freeze({ toBoss: 1.2, toCutscene: 1.0, fromCutscene: 1.4, toStage: 2.0, toTitle: 2.0, victory: 2.5, gameOver: 1.5, resume: 1.0 });
 export const MUSIC_STATES = Object.freeze(['silent', 'title', 'stage', 'boss', 'cutscene', 'victory', 'clear', 'gameover']);

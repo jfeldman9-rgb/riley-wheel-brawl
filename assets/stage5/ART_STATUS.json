@@ -1,0 +1,126 @@
+{
+ "version": 1,
+ "note": "Stage 5 art provenance. Painted atlases load under the code-drawn texture keys (PAINTED in src/stage5-art.js); the boot painter stays as the fallback. Stage 5 is not live.",
+ "facingFlips": [
+  {
+   "key": "s5agin",
+   "frame": 4,
+   "why": "backstep painted leaning toward Riley; mirrored so it leans away, the way the blink goes"
+  }
+ ],
+ "entries": [
+  {
+   "id": "aginor-sheet",
+   "key": "s5agin",
+   "files": [
+    "assets/stage5/s5agin.webp",
+    "assets/stage5/s5agin.json"
+   ],
+   "sha256": {
+    "assets/stage5/s5agin.webp": "e4e4228b0b0996e75b05d769f45568dc917e60edfa7fd0b0ed5e3996d2f28fb1",
+    "assets/stage5/s5agin.json": "0783c50019c741774e2f43ef8da28770a9f54fde9d24f6a2fde408ed94103c1e"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage5/BOSS_ART_PROMPTS.md",
+   "source": "chatgpt-image",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one pose collage on flat magenta (same character in every pose)",
+    "generator": "ChatGPT image generation",
+    "chat": "https://chatgpt.com/c/6ac89a0f-5940-83e8-8810-26879f2a61d5",
+    "sourceFile": "art-in/stage5/aginor-sheet.src.png",
+    "sourceSha256": "8f4b161923be23e25a3f0a49f81ea47397a44c825c521a8517ff9fa4bab9adff",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "method": "magenta keyed (deep key cleared, edge band unmixed from the key colour), despilled; 7 figures as blobs, rows 4+3; one scale 0.64058 (idle = 1.5 x the 161 px code-drawn idle); feet on 0.96 x 336 with the bone-white staff ignored for the foot row; torso-registered, step on the feet; frame 4 mirrored; trimmed JSON-hash atlas, 432x336 cells, page 1630x317; frame 3 carries the tether palm [124, 212]",
+    "tool": "tools/stage5/process_bosses.py",
+    "approvedBy": "approved by Jason F via Grok Bot 2026-10-09 pending review",
+    "review": "pending"
+   },
+   "size": [
+    1630,
+    317
+   ],
+   "cell": [
+    432,
+    336
+   ],
+   "baseH": 224.0,
+   "contactSheet": "docs/stage5/shots/contact-bosses-before-after.jpg"
+  },
+  {
+   "id": "balthamel-sheet",
+   "key": "s5balt",
+   "files": [
+    "assets/stage5/s5balt.webp",
+    "assets/stage5/s5balt.json"
+   ],
+   "sha256": {
+    "assets/stage5/s5balt.webp": "e122f54ba1e1fe32e814b733557c4f264e2579b5aea625decda5585346c54481",
+    "assets/stage5/s5balt.json": "8e2dc322fa0f6680109193f840767a29133da7f4c3a1a5a9fcbad17d71642c2c"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage5/BOSS_ART_PROMPTS.md",
+   "source": "chatgpt-image",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one pose collage on flat magenta (same character in every pose)",
+    "generator": "ChatGPT image generation",
+    "chat": "https://chatgpt.com/c/6ac89b02-502c-83e8-a8dd-6447f1f2d61c",
+    "sourceFile": "art-in/stage5/balthamel-sheet.src.png",
+    "sourceSha256": "36ffe5b56a50a8357885380d6ea665d7cab5bf01be761dc102e9c5cebbdbb1d0",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "method": "magenta keyed and despilled, violet coat-hem cast turned steel-blue instead of keyed out; 9 figures as blobs, rows 5+4; one scale 0.57015 (idle = 1.5 x the 149 px code-drawn idle); feet on 0.96 x 264; torso-registered, flail/lunge/recoil on the feet, down centred; trimmed JSON-hash atlas, 280x264 cells, page 1690x242",
+    "tool": "tools/stage5/process_bosses.py",
+    "approvedBy": "approved by Jason F via Grok Bot 2026-10-09 pending review",
+    "review": "pending"
+   },
+   "size": [
+    1690,
+    242
+   ],
+   "cell": [
+    280,
+    264
+   ],
+   "baseH": 176.0,
+   "contactSheet": "docs/stage5/shots/contact-bosses-before-after.jpg"
+  },
+  {
+   "id": "aginor-portrait",
+   "key": "aginorPortrait",
+   "files": [
+    "assets/stage5/aginor-portrait.webp"
+   ],
+   "sha256": {
+    "assets/stage5/aginor-portrait.webp": "0454d6e834dc526ea35633426ae1199fa898121d647697ed4f3bea84fe2a6b23"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage5/BOSS_ART_PROMPTS.md",
+   "source": "chatgpt-image",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one pose collage on flat magenta (same character in every pose)",
+    "generator": "ChatGPT image generation",
+    "chat": "https://chatgpt.com/c/6ac89a0f-5940-83e8-8810-26879f2a61d5",
+    "sourceFile": "art-in/stage5/aginor-sheet.src.png",
+    "sourceSha256": "8f4b161923be23e25a3f0a49f81ea47397a44c825c521a8517ff9fa4bab9adff",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "method": "cut from the processed idle pose (head and shoulders) on a rust gradient, 136x136",
+    "tool": "tools/stage5/process_bosses.py",
+    "approvedBy": "approved by Jason F via Grok Bot 2026-10-09 pending review",
+    "review": "pending"
+   },
+   "size": [
+    136,
+    136
+   ],
+   "contactSheet": "docs/stage5/shots/contact-bosses-before-after.jpg"
+  }
+ ]
+}

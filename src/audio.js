@@ -4,6 +4,8 @@ const clips = Object.create(null), gates = Object.create(null), oneShots = new M
 let voiceSrc = null, voiceRequest = 0, voicePending = false;
 let loopSrc = null, loopToken = 0, loopId = null;
 const moreVoice = Object.create(null);
+// Stage lines with no mp3 yet. say() still captions; loadClip does not fetch.
+const voiceOff = new Set();
 let audioHidden = false, audioEpoch = 0;
 const audioTimers = new Set();
 export const VOICE = {
@@ -265,6 +267,8 @@ export const MUSIC = {
   boss3: { url: 'assets/audio/music-boss3.mp3', loopStart: 0.25, loopEnd: 53.583333, gain: 0.94 },
   stage4: { url: 'assets/audio/music-stage4.mp3', loopStart: 0.25, loopEnd: 40.25, gain: 1 },
   boss4: { url: 'assets/audio/music-boss4.mp3', loopStart: 0.25, loopEnd: 30.726190476190474, gain: 0.94 },
+  stage5: { url: 'assets/audio/music-stage5.mp3', loopStart: 0.25, loopEnd: 40.25, gain: 1 },
+  boss5: { url: 'assets/audio/music-boss5.mp3', loopStart: 0.25, loopEnd: 32, gain: 0.94 },
 };
 const tracks = Object.create(null), musicBytes = Object.create(null);
 let currentTrack = null, wantedTrack = 'stage1';
@@ -423,6 +427,7 @@ export function setRain(on, level = 1) {
   }
 }
 function loadClip(id) {
+  if (voiceOff.has(id)) return Promise.resolve(null);
   init(); if (!ctx) return Promise.resolve(null);
   if (clips[id]) return clips[id];
   const audioContext = ctx, epoch = audioEpoch;
@@ -441,6 +446,11 @@ export function preloadVoices() { Object.keys(VOICE).forEach(loadClip); }
 /** on-demand preload for EXTRA_VOICE lines (power pickups and the Twix cutscene) */
 export function preloadClips(ids) { for (const id of ids) if (Object.hasOwn(EXTRA_VOICE, id) || moreVoice[id]) loadClip(id); }
 export function registerLines(map) { for (const id in map) moreVoice[id] = map[id]; }
+/** `present` is the ids whose mp3 is on disk. Every other id in `all` stays a caption and is not fetched. */
+export function setVoiceFiles(all, present) {
+  const on = new Set(present);
+  for (const id of all) if (on.has(id)) voiceOff.delete(id); else voiceOff.add(id);
+}
 export function withSfx(fn) { init(); if (ctx && sfxBus) fn(ctx, sfxBus); }
 /** Drop decoded lines the next stage does not play. Shared VOICE clips stay cached. */
 export function releaseClips(ids) { if (ids) for (const id of ids) delete clips[id]; }

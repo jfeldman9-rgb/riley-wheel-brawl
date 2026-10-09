@@ -13,15 +13,17 @@ const { STORY_SCRIPT, STORY_PANELS, STAGE_TEXTURES } = await import('../src/stag
 const { MusicDirector, STAGE_MUSIC, FADES } = await import('../src/music.js');
 const { TWIX_ART_KEYS } = await import('../src/powers.js');
 
-test('stage selection from URL and restart data: stages 1–4, data wins over the URL', () => {
+test('stage selection from URL and restart data: stages 1–5, data wins over the URL', () => {
   const Q = s => new URLSearchParams(s);
   assert.equal(stageFromQuery(Q('stage=2')), 2); assert.equal(stageFromQuery(Q('')), 1);
   assert.equal(stageFromQuery(Q('stage=3')), 3); assert.equal(stageFromQuery(Q('stage=4')), 4);
   assert.equal(stageFromQuery(Q('stage=3&s3=1')), 3); assert.equal(stageFromQuery(Q('stage=4&s4=1')), 4);
   assert.equal(stageFromQuery(Q('s3=1')), 1); assert.equal(stageFromQuery(Q('s4=1')), 1);
-  for (const bad of ['stage=0', 'stage=5', 'stage=abc', 'stage=-2', 'stage=2.5']) assert.equal(stageFromQuery(Q(bad)), 1, bad);
+  assert.equal(stageFromQuery(Q('stage=5')), 5);
+  for (const bad of ['stage=0', 'stage=6', 'stage=abc', 'stage=-2', 'stage=2.5']) assert.equal(stageFromQuery(Q(bad)), 1, bad);
   assert.equal(resolveStage({ stage: 1 }, Q('stage=2')), 1); assert.equal(resolveStage({ stage: 2 }, Q('')), 2);
   assert.equal(resolveStage({ stage: 3 }, Q('')), 3); assert.equal(resolveStage({ stage: 4 }, Q('stage=1')), 4);
+  assert.equal(resolveStage({ stage: 5 }, Q('stage=1')), 5);
   assert.equal(resolveStage({}, Q('stage=2')), 2); assert.equal(resolveStage(undefined, Q('stage=3')), 3); assert.equal(resolveStage({ stage: 7 }, Q('')), 1);
 });
 
@@ -72,19 +74,21 @@ test('campaign: beating the Chieftain leads to the story beat, then Stage 2; cle
   } finally { h.destroy(); }
 }));
 
-test('title stage select: arrows choose a stage (clamped 1..4), starting another stage reloads with autostart', () => withSeed(2, () => {
+test('title stage select: arrows choose a stage (clamped 1..5), starting another stage reloads with autostart', () => withSeed(2, () => {
   const h = stage1Simulation({ mode: '', followRestart: true }), s = h.s;
   try {
     s.selectStage(-1); assert.equal(s.titleSel || s.stageNo, 1, 'already on Stage 1: nothing to change');
     s.selectStage(1); assert.equal(s.titleSel, 2);
     s.selectStage(1); assert.equal(s.titleSel, 3);
     s.selectStage(1); assert.equal(s.titleSel, 4);
-    s.selectStage(1); assert.equal(s.titleSel, 4);
+    s.selectStage(1); assert.equal(s.titleSel, 5);
+    s.selectStage(1); assert.equal(s.titleSel, 5);
+    s.selectStage(-1); assert.equal(s.titleSel, 4);
     s.selectStage(-1); assert.equal(s.titleSel, 3);
     s.selectStage(-1); assert.equal(s.titleSel, 2);
     s.selectStage(-1); assert.equal(s.titleSel, 1);
     s.selectStage(1);
-    assert.deepEqual(h.observations.hud.filter(e => e.method === 'titleSelect').map(e => e.args[0]), [2, 3, 4, 3, 2, 1, 2]);
+    assert.deepEqual(h.observations.hud.filter(e => e.method === 'titleSelect').map(e => e.args[0]), [2, 3, 4, 5, 4, 3, 2, 1, 2]);
     assert.equal(s.music.state, 'title');
     h.step(); assert.deepEqual(h.observations.restartData, [{ stage: 2, autostart: true }]); assert.equal(s.started, false);
     h.step(); assert.equal(s.stageNo, 2);

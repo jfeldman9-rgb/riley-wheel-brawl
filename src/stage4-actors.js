@@ -7,6 +7,7 @@ import { stage4Delta } from './stage4-time.js';
 import { lightNear } from './myrddraal.js';
 import { croon } from './stage4-voice.js';
 import { beginDraghkarStrike, finishDraghkarStrike, finishDraghkarKiss } from './draghkar-impact.js';
+import { STAGE5_ACTORS } from './stage5-actors.js';
 
 const ATK = new Set(['combo1', 'combo2', 'combo3', 'back', 'runkick', 'airkick', 'knee']);
 
@@ -162,4 +163,4 @@ export class DraghkarActor extends Draghkar {
   die() { if (this.alive) this.defeat(); this.gone = true; }
 }
 
-export const STAGE4_ACTORS = Object.freeze({ cultist: CultistActor, draghkar: DraghkarActor });
+export const STAGE4_ACTORS = Object.freeze({ cultist: CultistActor, draghkar: DraghkarActor, ...STAGE5_ACTORS });
