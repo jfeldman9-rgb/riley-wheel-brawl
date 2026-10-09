@@ -131,3 +131,14 @@ for (const stage of [1, 2, 3, 4]) {
     } finally { h.destroy(); }
   }));
 }
+
+test('Stage 6 queue loads no placeholder file and paints nothing up front', () => {
+  for (const p of ['assets/stage6/ART_STATUS.json', 'assets/bg6/ART_STATUS.json', 'assets/cutscenes/rand/ART_STATUS.json']) {
+    assert.deepEqual(J(p).entries.filter(e => e.placeholder === true), [], p);
+  }
+  for (const debug of [null, '0', '1']) withDebug(debug, () => {
+    const { urls, made } = queued(6, { canvas: true });
+    assert.equal(made.size, 0, `?debug=${debug}: Stage 6 queue does not code-draw`);
+    assert.deepEqual(urls.filter(u => PLACEHOLDER_FILES.has(u)), [], `Stage 6 ?debug=${debug}`);
+  });
+});

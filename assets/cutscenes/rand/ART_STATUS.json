@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "note": "Rand call clips are not generated yet. The player falls back when a file is missing and the strike still lands. placeholder is false: these are absent finals, not labelled stand-in cards.",
+  "entries": [
+    { "id": "R1", "files": ["assets/cutscenes/rand/R1.mp4", "assets/cutscenes/rand/R1.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 8, "missing": true },
+    { "id": "R2", "files": ["assets/cutscenes/rand/R2.mp4", "assets/cutscenes/rand/R2.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 8, "missing": true },
+    { "id": "R3", "files": ["assets/cutscenes/rand/R3.mp4", "assets/cutscenes/rand/R3.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 8, "missing": true },
+    { "id": "R4", "files": ["assets/cutscenes/rand/R4.mp4", "assets/cutscenes/rand/R4.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 6, "missing": true },
+    { "id": "R5", "files": ["assets/cutscenes/rand/R5.mp4", "assets/cutscenes/rand/R5.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 10, "missing": true }
+  ]
+}

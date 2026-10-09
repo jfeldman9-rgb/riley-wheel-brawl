@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "note": "Stone of Tear plates are code-drawn at build. Nothing here is queued as a file.",
+  "entries": [
+    { "id": "bg6far", "key": "bg6far", "files": [], "placeholder": false, "source": "code-drawn" },
+    { "id": "bg6mid", "key": "bg6mid", "files": [], "placeholder": false, "source": "code-drawn" },
+    { "id": "bg6floor", "key": "bg6floor", "files": [], "placeholder": false, "source": "code-drawn" }
+  ]
+}

@@ -47,6 +47,7 @@ export class CutscenePlayer {
     this.root = root; this.base = o.base ?? CLIP_BASE;
     this.startMs = o.startMs ?? START_MS; this.stallMs = o.stallMs ?? STALL_MS; this.maxMs = o.maxMs ?? MAX_CLIP_MS;
     this.tickMs = o.tickMs ?? TICK_MS; this.guardMs = o.guardMs ?? GUARD_MS; this.volume = o.volume ?? VOLUME;
+    this.srcOf = typeof o.src === 'function' ? o.src : null;
     this.video = null; this.run = null; this.blessed = false; this.log = [];
   }
   get active() { return !!this.run; }
@@ -131,11 +132,11 @@ export class CutscenePlayer {
     if (r.ended) return;
     if (r.i >= 0) this.log.push(`${r.ids[r.i]}:${why}`);
     if (++r.i >= r.ids.length) return this.finish(r, why === 'skipped' ? 'skip' : 'end');
-    const v = this.video, id = r.ids[r.i];
+    const v = this.video, id = r.ids[r.i], over = (this.srcOf || this.srcFor)?.(id);
     r.clipT0 = r.lastT = this.now(); r.lastTime = 0; r.started = false;
     try {
-      v.poster = this.base + id + '.jpg';
-      v.src = this.base + id + '.mp4';
+      v.poster = over?.poster || (this.base + id + '.jpg');
+      v.src = over?.src || (this.base + id + '.mp4');
       v.muted = r.muted; v.volume = this.volume;
       this.start(r, v, id);
     } catch (e) { this.next(r, 'error'); }

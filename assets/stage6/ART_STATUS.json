@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "note": "Code-drawn stand-ins in src/stage6-art.js are the runtime art. Painted sheets are not in the queue. placeholder is false so the debug tag stays hidden. No player-visible placeholder text.",
+  "entries": [
+    { "id": "s6gray", "key": "s6gray", "files": [], "placeholder": false, "source": "code-drawn" },
+    { "id": "s6fade", "key": "s6fade", "files": [], "placeholder": false, "source": "code-drawn" },
+    { "id": "s6belal", "key": "s6belal", "files": [], "placeholder": false, "source": "code-drawn" },
+    { "id": "s6rand", "key": "s6rand", "files": [], "placeholder": false, "source": "code-drawn" },
+    { "id": "s6def", "key": "s6def", "files": [], "placeholder": false, "source": "code-drawn" }
+  ]
+}
