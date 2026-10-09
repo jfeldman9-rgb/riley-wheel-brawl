@@ -69,8 +69,8 @@ export const STAGE5 = {
     later(900, () => { cap('AGINOR', 'The Eye burns him hollow.'); stage5Say('aginor_burn_01', null); });
     later(3200, () => stage5Say('riley_st5_victory_01', scene.caption));
     later(5200, () => stage5Say('st5_clear_01', scene.caption));
-    later(7600, () => stage5Say('st5_clear_02', scene.caption));
-    later(10000, () => stage5Say('st5_clear_03', scene.caption));
-    later(11200, () => { scene.ended = true; sfx.levelClear(); scene.hud?.stageClear(scene.stats()); scene.music?.set('clear'); later(1200, () => { scene.clearShown = true; }); });
+    later(8400, () => stage5Say('st5_clear_02', scene.caption));
+    later(10800, () => stage5Say('st5_clear_03', scene.caption));
+    later(12000, () => { scene.ended = true; sfx.levelClear(); scene.hud?.stageClear(scene.stats()); scene.music?.set('clear'); later(1200, () => { scene.clearShown = true; }); });
   },
 };

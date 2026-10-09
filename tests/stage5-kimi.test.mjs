@@ -63,7 +63,7 @@ test('outro timers cancel on shutdown and a dead scene cannot stage-clear', () =
   const live = clockScene();
   STAGE5.bossDown(live.scene);
   assert.equal(live.timers.length, 6);
-  fireDue(live.timers, 11200);
+  fireDue(live.timers, 12000);
   assert.equal(live.scene.ended, true);
   assert.equal(live.scene.cleared, 1);
   const tail = live.timers.find(t => t.ms === 1200);

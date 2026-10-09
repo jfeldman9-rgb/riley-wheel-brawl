@@ -80,9 +80,149 @@
    "dur": 2.32,
    "voice_id": "6sFKzaJr574YWVu4UuJF",
    "voice_name": "Cornelius - Wise Sage"
+  },
+  "st5_story_02": {
+   "generation_id": "dsY3gtjpwi6BjAYZe9Hb",
+   "session_id": "AwCEPtyc2PYHOXh3zOqb",
+   "prompt": "[serious] The trail runs north. Into the Blight.",
+   "credits": 48.0,
+   "model": "eleven_v4",
+   "dur": 3.048,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 24620,
+   "sha256": "046dd639079c52f712da794c37a48a2ad3274c49d7fc15d8283d63a4297603c4",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+  },
+  "st5_story_05": {
+   "generation_id": "soxnrojXDtgMP8JZwEKv",
+   "session_id": "i8YLlpdQjwYRKdjHMq0h",
+   "prompt": "[cocky] Good. I'm in a mood.",
+   "credits": 28.000000000000004,
+   "model": "eleven_v4",
+   "dur": 2.088,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 16940,
+   "sha256": "b51a20426eaa1b4b89476c9085edac40784d9ec2a1c9ec65db3bd9cc1a92e2c4",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+  },
+  "st5_clear_01": {
+   "generation_id": "4OpqoglQ4GWTSKTIcEDG",
+   "session_id": "uxCdIv3Cvfo7z4G9rP0Q",
+   "prompt": "[frustrated] She's not here. The Fade went south.",
+   "credits": 49.0,
+   "model": "eleven_v4",
+   "dur": 3.168,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 25580,
+   "sha256": "38f9836d2eb4abdc19edbe4d2f58a836b6e3f3d7163b2032245f2341d7f0d1a1",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+  },
+  "st5_clear_03": {
+   "generation_id": "GCDEmrREz4yFbVkBap0T",
+   "session_id": "29oU85HRkJa5OLSD3PAW",
+   "prompt": "[determined] Then so am I.",
+   "credits": 26.0,
+   "model": "eleven_v4",
+   "dur": 1.392,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 11372,
+   "sha256": "37013b7ddd051258222179db6ade45d44c6e062e367180e1e36c1fd1d7e24287",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+  },
+  "riley_st5_stalk_01": {
+   "generation_id": "glkuxuros6O7Kqm1tUBE",
+   "session_id": "b6jZqa3TkVE9OnnZAtvW",
+   "prompt": "[serious] Something's in the grass.",
+   "credits": 35.0,
+   "model": "eleven_v4",
+   "dur": 1.656,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 13484,
+   "sha256": "d56ba589738d4febe6e260cfb1a3c969be55db1666c42255cc575dd1fcfd169c",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+  },
+  "riley_st5_tree_01": {
+   "generation_id": "t7O8ytTrNeO55h6qK5VO",
+   "session_id": "pfanyCcr4V3ncwkc4OO2",
+   "prompt": "[surprised] The trees are moving!",
+   "credits": 33.0,
+   "model": "eleven_v4",
+   "dur": 1.68,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 13676,
+   "sha256": "debb2e7b194970738601e695c8e971c5e4f8f749d764d407e137a454f408a584",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+  },
+  "riley_st5_ring_01": {
+   "generation_id": "7kJJzoc3qiO6z3DSqqSo",
+   "session_id": "LfDqGhAcYuzIDqZvxUaQ",
+   "prompt": "[shouting] Jump it!",
+   "credits": 19.0,
+   "model": "eleven_v4",
+   "dur": 1.056,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 8684,
+   "sha256": "78a837d3ce479d2751c59087855d6d60db88c3542b541dc6214ead671f5a9fcb",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+  },
+  "riley_st5_free_01": {
+   "generation_id": "161GPeajyk3NdKQ8D1Vk",
+   "session_id": "S6XrK4Y5cnWhe11JFL6i",
+   "prompt": "[angry] Get your hands off me, corpse.",
+   "credits": 38.0,
+   "model": "eleven_v4",
+   "dur": 2.064,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 16748,
+   "sha256": "8269eee7866d33eb412708ff70b847b7e93d553fba8f1690ad765242da254fb1",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+  },
+  "riley_st5_greenman_01": {
+   "generation_id": "ikObykVQnveszX8y0773",
+   "session_id": "8KFj9djOUTTq6G1OveA3",
+   "prompt": "[shouting] No! Not him!",
+   "credits": 23.0,
+   "model": "eleven_v4",
+   "dur": 1.992,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 16172,
+   "sha256": "5f33d5c3986fb440f4ff688a3966c2be82754cb3f3b296d58f13aca02df99c1f",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+  },
+  "riley_st5_victory_01": {
+   "generation_id": "sNLk3NUJC6BTrb7EfYXE",
+   "session_id": "RYITAES5Bt3Ybzf3NJTy",
+   "prompt": "[serious] Burn, then.",
+   "credits": null,
+   "model": "eleven_v4",
+   "dur": 1.536,
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "bitrate": "64k",
+   "bytes": 12524,
+   "sha256": "2d7d039ea2b801e6bb314018145353076667213b41d78d43cf5881a87a414e4b",
+   "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
   }
  },
- "kokoro": "tools/stage5/render_kokoro_stage5.py (Stage 4 casts, tools/stage4 to_mp3 chain)",
+ "kokoro": "tools/stage5/render_kokoro_stage5.py (Stage 4 Loial cast, tools/stage4 to_mp3 chain). Riley: tools/stage5/render_riley_stage5.py (ElevenLabs DYLO eleven_v4, re-recorded 2026-10-09, approved by Jason F via Grok Bot)",
  "elevenlabs_processing": "loudnorm I=-16 TP=-2 LRA=7 + alimiter 0.75, mono 44.1 kHz 128 kbps",
  "stt_check_whisper_medium_en": {
   "st5_story_01": {
@@ -92,7 +232,7 @@
   },
   "st5_story_02": {
    "text": "The trail runs north. Into the Blight.",
-   "heard": "The trail runs north into the blight.",
+   "heard": "The trail runs north, into the blight.",
    "word_match": 1.0
   },
   "st5_story_03": {
@@ -107,12 +247,12 @@
   },
   "st5_story_05": {
    "text": "Good. I'm in a mood.",
-   "heard": "Good, I'm in a mood.",
+   "heard": "Good. I'm in a mood.",
    "word_match": 1.0
   },
   "st5_clear_01": {
    "text": "She's not here. The Fade went south.",
-   "heard": "She's not here, the Fade went south.",
+   "heard": "She's not here! The Fade went south!",
    "word_match": 1.0
   },
   "st5_clear_02": {
@@ -122,17 +262,17 @@
   },
   "st5_clear_03": {
    "text": "Then so am I.",
-   "heard": "then so am I.",
+   "heard": "Then so am I!",
    "word_match": 1.0
   },
   "riley_st5_stalk_01": {
    "text": "Something's in the grass.",
-   "heard": "Some things in the grass.",
-   "word_match": 0.667
+   "heard": "Something's in the grass.",
+   "word_match": 1.0
   },
   "riley_st5_tree_01": {
    "text": "The trees are moving!",
-   "heard": "The trees are moving.",
+   "heard": "The trees are moving!",
    "word_match": 1.0
   },
   "riley_st5_ring_01": {
@@ -142,12 +282,12 @@
   },
   "riley_st5_free_01": {
    "text": "Get your hands off me, corpse.",
-   "heard": "Get your hands off me, corpse.",
+   "heard": "Get your hands off me, corpse!",
    "word_match": 1.0
   },
   "riley_st5_greenman_01": {
    "text": "No! Not him!",
-   "heard": "No, not him.",
+   "heard": "No! Not him!",
    "word_match": 1.0
   },
   "riley_st5_victory_01": {
@@ -191,5 +331,6 @@
    "heard": "grow again.",
    "word_match": 1.0
   }
- }
+ },
+ "riley_processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)"
 }
