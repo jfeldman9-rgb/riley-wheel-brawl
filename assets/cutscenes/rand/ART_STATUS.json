@@ -1,11 +1,61 @@
 {
   "version": 1,
-  "note": "Rand call clips are not generated yet. The player falls back when a file is missing and the strike still lands. placeholder is false: these are absent finals, not labelled stand-in cards.",
+  "note": "R1-R3 are Jason-approved Grok Imagine finals (re-encoded to fit the 160 KB/s cap, AAC 48 kHz, +faststart; JPG posters from the first lit frame). R4 and R5 are reserved and not in RAND_IDS; the bag only draws ids whose clips exist. placeholder is false.",
   "entries": [
-    { "id": "R1", "files": ["assets/cutscenes/rand/R1.mp4", "assets/cutscenes/rand/R1.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 8, "missing": true },
-    { "id": "R2", "files": ["assets/cutscenes/rand/R2.mp4", "assets/cutscenes/rand/R2.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 8, "missing": true },
-    { "id": "R3", "files": ["assets/cutscenes/rand/R3.mp4", "assets/cutscenes/rand/R3.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 8, "missing": true },
-    { "id": "R4", "files": ["assets/cutscenes/rand/R4.mp4", "assets/cutscenes/rand/R4.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 6, "missing": true },
-    { "id": "R5", "files": ["assets/cutscenes/rand/R5.mp4", "assets/cutscenes/rand/R5.jpg"], "placeholder": false, "source": "grok-imagine", "durationSeconds": 10, "missing": true }
+    {
+      "id": "R1",
+      "files": [
+        "assets/cutscenes/rand/R1.mp4",
+        "assets/cutscenes/rand/R1.jpg"
+      ],
+      "placeholder": false,
+      "source": "grok-imagine",
+      "durationSeconds": 8.8,
+      "sourceFile": "rand_call_01_final.mp4"
+    },
+    {
+      "id": "R2",
+      "files": [
+        "assets/cutscenes/rand/R2.mp4",
+        "assets/cutscenes/rand/R2.jpg"
+      ],
+      "placeholder": false,
+      "source": "grok-imagine",
+      "durationSeconds": 8.61,
+      "sourceFile": "rand_call_02_final.mp4"
+    },
+    {
+      "id": "R3",
+      "files": [
+        "assets/cutscenes/rand/R3.mp4",
+        "assets/cutscenes/rand/R3.jpg"
+      ],
+      "placeholder": false,
+      "source": "grok-imagine",
+      "durationSeconds": 8.61,
+      "sourceFile": "rand_call_03_final.mp4"
+    },
+    {
+      "id": "R4",
+      "files": [
+        "assets/cutscenes/rand/R4.mp4",
+        "assets/cutscenes/rand/R4.jpg"
+      ],
+      "placeholder": false,
+      "source": "grok-imagine",
+      "durationSeconds": 6,
+      "missing": true
+    },
+    {
+      "id": "R5",
+      "files": [
+        "assets/cutscenes/rand/R5.mp4",
+        "assets/cutscenes/rand/R5.jpg"
+      ],
+      "placeholder": false,
+      "source": "grok-imagine",
+      "durationSeconds": 10,
+      "missing": true
+    }
   ]
 }

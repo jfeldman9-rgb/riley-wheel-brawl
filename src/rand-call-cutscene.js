@@ -3,6 +3,8 @@ import { CutscenePlayer, cutscenesEnabled } from './cutscene.js';
 import { q } from './config.js';
 
 export const RAND_IDS = Object.freeze(['R1', 'R2', 'R3', 'R4', 'R5']);
+// The live bag draws only clips that ship. R4 and R5 stay reserved in ART_STATUS.json.
+export const RAND_CLIPS = Object.freeze(['R1', 'R2', 'R3']);
 export const BAG_KEY = 'rwb-rand-bag';
 export const RAND_BASE = 'assets/cutscenes/rand/';
 const START = 1500, STALL = 1500, MAX = 11000, GUARD = 900;
@@ -12,7 +14,7 @@ let prefetchVersion = 0, offShutdown = null, unpauseGame = null;
 
 export function blobCount() { return held; }
 export function resetRandCall(storage, rng) {
-  abortRandCall(); bag = createBag(storage, rng);
+  abortRandCall(); bag = createBag(storage, rng, RAND_CLIPS);
 }
 
 function shuffle(list, rng) {
@@ -39,7 +41,7 @@ export function createBag(storage, rng = Math.random, ids) {
   };
 }
 
-function bagOf(storage) { if (!bag) bag = createBag(storage); return bag; }
+function bagOf(storage) { if (!bag) bag = createBag(storage, Math.random, RAND_CLIPS); return bag; }
 function storageOf(root) { try { return root.sessionStorage; } catch { return undefined; } }
 
 export function warmRand(scene) {
