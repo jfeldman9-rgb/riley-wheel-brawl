@@ -266,34 +266,104 @@
   {
    "id": "cultist-master",
    "key": "s4cult",
-   "files": [],
-   "placeholder": true,
+   "files": [
+    "assets/bg4/s4cult.webp"
+   ],
+   "sha256": {
+    "assets/bg4/s4cult.webp": "d66f6be687eaf33d995ae3b275bf1d684ad698626aa06e66aa05d95a0e24fc0c"
+   },
+   "size": [
+    2720,
+    338
+   ],
+   "frame": [
+    340,
+    338
+   ],
+   "placeholder": false,
    "prompt": "docs/stage4/prompts/cultist-master.json",
-   "source": "procedural (src/stage4-art-cast.js)",
+   "source": "reskin",
    "art": {
-    "status": "code-drawn at boot; the HUD tag shows for it only under ?debug"
+    "status": "real painted art: reskin of an existing painted character atlas (same approach as the Stage 3 cutthroat/Fade, PR #32)",
+    "sourceFile": "assets/chars/archer-0.webp",
+    "sourceSha256": "89e3311b793c2907c5dad2d2124e880b0e4c08f172a16cb29dd2f623391601ce",
+    "sourceFrames": [
+     "archer_walk_00",
+     "archer_walk_02",
+     "archer_getup_00",
+     "archer_shoot_02",
+     "archer_shoot_04",
+     "archer_hurt_00",
+     "archer_knockdown_02",
+     "archer_flee_01"
+    ],
+    "method": "bow and string cut out (5 px opening + wood-colour growth, inpainted where they cross the body, hand-placed boxes for the quiver fletching); Lab region recolour: oxblood robe falling to black in the folds, near-black leathers, face sunk into the hood; the Whitecloak sun badge becomes the green charm; tells painted on top in the procedural colours (charm glow, chant rune rings, glowing bolt hand). Frame order and pose meaning match cultFrame; 340x338 cells, feet at 0.96, mirrored to face right (flee unmirrored: it runs away while the actor faces Riley)",
+    "tool": "tools/stage4/reskin_cultist.py",
+    "requestedBy": "Jason F, 2026-10-07 (reskin request; awaiting PR review)"
    }
   },
   {
    "id": "draghkar-master",
    "key": "s4drag",
-   "files": [],
-   "placeholder": true,
-   "prompt": "docs/stage4/prompts/draghkar-master.json",
-   "source": "procedural (src/stage4-art-cast.js)",
+   "files": [
+    "assets/bg4/s4drag.webp"
+   ],
+   "sha256": {
+    "assets/bg4/s4drag.webp": "1bffa48e5ae970888c270f1cbf12f663ad0e53d786bc97fd7617420f6f536b2d"
+   },
+   "size": [
+    4800,
+    400
+   ],
+   "frame": [
+    480,
+    400
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/DRAGHKAR_STILLS_REQUEST.md",
+   "source": "chatgpt-image",
    "art": {
-    "status": "code-drawn at boot; the HUD tag shows for it only under ?debug"
+    "status": "real painted art: ChatGPT image generation, one 10-pose sheet in the approved style (same character in every pose)",
+    "generator": "ChatGPT image generation",
+    "sourceFile": "art-in/draghkar/draghkar-sheet.src.png",
+    "sourceSha256": "5aefbedfb982e5b231c1033d779640803be6d7b3ebf28ef3c7768da83d32bb9b",
+    "sourceSize": [
+     1983,
+     793
+    ],
+    "method": "magenta keyed (deep key cleared, 3 px edge band unmixed from the key colour), despilled (violet wing sheen compressed above an excess of 10, see-through magenta greyed); figures found as blobs (crumbs and ash flakes join the nearest figure); one scale 0.94; feet on 0.96 x 400, hover pair registered on the head and torso, grounded poses on the feet; croon rings, kiss glow and light-reel flash painted on top; dragFrame order (0 hover up, 1 hover down, 2 swoop, 3 stance, 4 claw/buffet, 5 croon, 6 kiss, 7 reel, 8 down, 9 ash), 480x400 cells; the actor scales the cell to the painter's 250 px footprint; the boot painter stays as the fallback",
+    "tool": "tools/stage4/process_draghkar.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-07"
    }
   },
   {
    "id": "draghkar-portrait",
    "key": "draghkarPortrait",
-   "files": [],
-   "placeholder": true,
-   "prompt": "docs/stage4/prompts/draghkar-portrait.json",
-   "source": "procedural (src/stage4-art-cast.js)",
+   "files": [
+    "assets/bg4/draghkar-portrait.webp"
+   ],
+   "sha256": {
+    "assets/bg4/draghkar-portrait.webp": "a0b8d5eddccfedd2b8aa466e21d33fc320cf5c870defe8e6009153b3ea21a008"
+   },
+   "size": [
+    136,
+    136
+   ],
+   "placeholder": false,
+   "prompt": "docs/stage4/DRAGHKAR_STILLS_REQUEST.md",
+   "source": "chatgpt-image",
    "art": {
-    "status": "code-drawn at boot; the HUD tag shows for it only under ?debug"
+    "status": "real painted art: ChatGPT image generation (head and shoulders, moonlit blue-teal sky)",
+    "generator": "ChatGPT image generation",
+    "sourceFile": "art-in/draghkar/draghkar-portrait.src.png",
+    "sourceSha256": "39170dc21a4d19ed6849372820cb179c31bfa3588698daa92f3c95dc22996a85",
+    "sourceSize": [
+     1254,
+     1254
+    ],
+    "method": "square crop centred on the head (860 px), Lanczos to 136x136 (drawn at 68x68 in the boss bar), opaque WebP",
+    "tool": "tools/stage4/process_draghkar.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-07"
    }
   }
  ]

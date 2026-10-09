@@ -84,6 +84,16 @@ test('PLACEHOLDER ART watermark shows with placeholder metas and hides when none
   const fakeHud = Object.create(hud3.HUD.prototype);
   fakeHud.phTag = phTag;
   fakeHud.phShown = false;
+  // The tag is a dev marker: without ?debug it never shows, placeholder art or not.
+  const { q } = await import('../src/config.js');
+  q.delete('debug');
+  fakeHud.updateWatermark({ metas: st3Metas });
+  assert.equal(calls, 0); assert.equal(fakeHud.phShown, false);
+  q.set('debug', '0'); fakeHud.phReady = false;
+  fakeHud.updateWatermark({ metas: st3Metas });
+  assert.equal(calls, 0, '?debug=0 is off');
+  q.set('debug', ''); fakeHud.phReady = false;
+  try {
 
   fakeHud.updateWatermark({ metas: st3Metas });
   assert.equal(calls, 1);
@@ -98,5 +108,6 @@ test('PLACEHOLDER ART watermark shows with placeholder metas and hides when none
 
   fakeHud.updateWatermark({ metas: st1Metas });
   assert.equal(calls, 2);
+  } finally { q.delete('debug'); }
 });
 

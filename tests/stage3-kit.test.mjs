@@ -230,13 +230,28 @@ test('queueStage3 queues every Stage 3 texture and re-queues what Stage 2 releas
   const r = recLoader();
   queueStage3(r);
   const texKeys = new Set(r.queued.filter(e => e.kind !== 'json').map(e => e.key)), allKeys = new Set(r.queued.map(e => e.key));
+  const FX = { rooftiles: 'prop-rooftiles', shadowpool: 'fx-shadowpool', shadowburst: 'fx-shadowburst', fade_far: 'fx-fade-far' };
+  // The prop/FX sheets are painted art (tools/stage3/process_fx.py): queued for everyone, with or without ?debug.
   for (const k of STAGE_TEXTURES[3]) assert.ok(texKeys.has(k), `queued ${k}`);
   for (const k of ['arrow', 'ribbon', 'fadePortrait']) assert.ok(texKeys.has(k), `queued ${k}`);
   for (const k of ['plates3', 'lights3']) assert.ok(allKeys.has(k), `queued ${k}`);
-  for (const k of ['rooftiles', 'shadowpool', 'shadowburst', 'fade_far']) {
-    const e = r.queued.find(x => x.key === k);
-    assert.equal(e.kind, 'spritesheet', k); assert.equal(e.frame.frameWidth, 256); assert.equal(e.frame.frameHeight, 256);
+  for (const debug of [null, '1']) {
+    if (debug) q.set('debug', debug);
+    try {
+      const rd = debug ? recLoader() : r;
+      if (debug) queueStage3(rd);
+      for (const [k, f] of Object.entries(FX)) {
+        const e = rd.queued.filter(x => x.key === k);
+        assert.equal(e.length, 1, k);
+        assert.equal(e[0].kind, 'spritesheet', k); assert.equal(e[0].frame.frameWidth, 256); assert.equal(e[0].frame.frameHeight, 256);
+        assert.deepEqual(e[0].urls, [`assets/stage3/props/${f}.webp`]);
+      }
+    } finally { q.delete('debug'); }
   }
+  // a sheet already resident (or code-drawn after a failed load) is not queued again
+  const rr = recLoader({}, Object.keys(FX));
+  queueStage3(rr);
+  assert.ok(!rr.queued.some(e => e.key in FX));
   for (const e of r.queued) for (const u of e.urls) {
     assert.ok(!u.startsWith('assets/bg/') && !u.startsWith('assets/bg2/'), u);
     assert.ok(onDisk(u), `on disk: ${u}`);

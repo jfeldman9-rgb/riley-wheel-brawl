@@ -27,13 +27,15 @@ function body(e, scene, key, shadowW) {
   e.sprite.setDepth?.(1000 + e.y);
 }
 function aim(e, dir) { if (dir) { e.facing = dir; if (e.sprite) e.sprite.flipX = dir < 0; } }
-function paint(e, frameOf, scale) {
+// scale is for the painter's cell height (baseH); a painted sheet with taller cells is scaled to the same footprint.
+function paint(e, frameOf, scale, baseH) {
   if (!e.sprite) return;
   e.sprite.x = e.x; e.sprite.y = e.y - (e.z || 0);
   e.sprite.setDepth?.(1000 + e.y);
   e.sprite.setOrigin?.(0.5, 0.96);
-  e.sprite.setScale?.(scale);
   e.sprite.setFrame?.(frameOf(e.state, e.st || 0));
+  const fh = e.sprite.frame?.height;
+  e.sprite.setScale?.(fh > baseH ? scale * baseH / fh : scale);
   e.sprite.setLighting?.(true);
   const ash = e.state === 'defeated' || e.state === 'ash';
   e.sprite.setAlpha?.(ash ? Math.max(0, 1 - (e.st || 0) * 0.65) : 1);
@@ -64,7 +66,7 @@ export class CultistActor extends Cultist {
     this.scene.kit?.noteCult?.(this, prev);
   }
   physics(dt) { slide(this, dt, this.state === 'flee'); }
-  sync() { paint(this, cultFrame, 1.2); }
+  sync() { paint(this, cultFrame, 1.2, 190); }
   destroy() { this.sprite?.destroy?.(); this.shadow?.destroy?.(); this.alive = false; this.state = 'gone'; this.gone = true; }
   die() { this.alive = false; this.gone = true; this.state = 'ko'; }
 }
@@ -155,7 +157,7 @@ export class DraghkarActor extends Draghkar {
     this.scene.kit?.noteBoss?.(this, prev);
   }
   physics(dt) { slide(this, dt, this.state === 'swoop_tell' || this.state === 'swoop_dive'); }
-  sync() { paint(this, dragFrame, 1.62); }
+  sync() { paint(this, dragFrame, 1.62, 250); }
   dispose() { croon(false); super.dispose(); }
   destroy() { this.sprite?.destroy?.(); this.shadow?.destroy?.(); this.dispose(); }
   die() { if (this.alive) this.defeat(); this.gone = true; }
