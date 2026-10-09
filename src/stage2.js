@@ -19,7 +19,7 @@ export const BARN_ART = Object.freeze({
 export const STORY_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story_panel_' + n, url: `assets/story/story_panel_${n}.jpg` })));
 // Story beat between the stages: [voice id, panel, TTS clip seconds]. Captions live in audio.js EXTRA_VOICE.
 export const STORY_SCRIPT = Object.freeze([
-  ['st2_story_01', 0, 3.77], ['st2_story_02', 0, 3.48], ['st2_story_03', 1, 1.25], ['st2_story_04', 2, 3.38], ['st2_story_05', 2, 2.62], ['st2_story_06', 2, 2.16],
+  ['st2_story_01', 0, 3.77], ['st2_story_02', 0, 5.02], ['st2_story_03', 1, 2.35], ['st2_story_04', 2, 3.38], ['st2_story_05', 2, 4.32], ['st2_story_06', 2, 2.16],
 ].map(([id, panel, voice]) => Object.freeze({ id, who: EXTRA_VOICE[id][0], text: EXTRA_VOICE[id][1], panel, voice })));
 export const STAGE2_VOICES = Object.freeze(Object.keys(EXTRA_VOICE).filter(id => /^(st2_|byar_|zealot_|archer_|riley_st2|riley_ribbon|riley_mud)/.test(id)));
 // textures each stage owns (released when the other stage loads, so an iPad never holds both backdrops)

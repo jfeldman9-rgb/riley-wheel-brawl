@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Stage 4 TTS. Reads tools/stage4/audio-manifest.json and writes MP3s.
 
-Riley and Loial use Kokoro, the same shape as tools/tts-stage2-lines.py.
-The Draghkar, cultists, the narrator and Mordeth use ElevenLabs (Q3).
+Loial uses Kokoro, the same shape as tools/tts-stage2-lines.py.
+Riley uses ElevenLabs DYLO eleven_v4 through tools/riley_voice.py (re-recorded 2026-10-09,
+approved by Jason F via Grok Bot). The Draghkar, cultists, the narrator and Mordeth use ElevenLabs (Q3).
 
 If Kokoro or ELEVENLABS_API_KEY is missing, this exits before writing any audio.
 It will not invent a silent or stand-in voice file.
@@ -18,12 +19,14 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'tools'))
+import riley_voice  # noqa: E402
 MANIFEST = json.loads((ROOT / 'tools' / 'stage4' / 'audio-manifest.json').read_text())
 KOKORO = {
-    'riley': dict(lang='a', blend={'am_puck': 0.8, 'am_fenrir': 0.2}, speed=1.04, pitch=1.02),
     'loial': dict(lang='b', blend={'bm_george': 1.0}, speed=0.90, pitch=0.86),
 }
 ELEVEN_VOICES = {
+    'riley': riley_voice.VOICE_ID,
     'draghkar': os.environ.get('ELEVENLABS_VOICE_DRAGHKAR', ''),
     'cultist': os.environ.get('ELEVENLABS_VOICE_CULTIST', ''),
     'narrator': os.environ.get('ELEVENLABS_VOICE_NARRATOR', ''),
@@ -106,6 +109,8 @@ def main():
             kokoro_synth(row['who'], text, wav)
             to_mp3(wav, mp3, KOKORO[row['who']]['pitch'])
             wav.unlink()
+        elif row['who'] == 'riley':
+            riley_voice.render(row['id'], mp3)
         else:
             eleven_synth(row['who'], text, mp3)
         if mp3.stat().st_size < 2048:

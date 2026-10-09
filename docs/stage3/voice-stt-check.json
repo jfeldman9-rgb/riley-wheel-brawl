@@ -14,8 +14,9 @@
   {
     "id": "st3_story_03",
     "text": "Twinkle Toes' ribbon. He's here.",
-    "heard": "Twinkle Toe's ribbon, he's here.",
-    "word_match": 1.0
+    "heard": "Twinkle Toes Ribbon, he's here.",
+    "word_match": 1.0,
+    "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
   },
   {
     "id": "st3_story_04",
@@ -26,8 +27,9 @@
   {
     "id": "st3_story_05",
     "text": "I always do.",
-    "heard": "I always do.",
-    "word_match": 1.0
+    "heard": "I always do",
+    "word_match": 1.0,
+    "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
   },
   {
     "id": "st3_story_06",
@@ -50,20 +52,23 @@
   {
     "id": "riley_escape_01",
     "text": "Off me!",
-    "heard": "off me.",
-    "word_match": 1.0
+    "heard": "Off me!",
+    "word_match": 1.0,
+    "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
   },
   {
     "id": "riley_st3_roof_01",
     "text": "Roof tiles. Great. Of course it's roof tiles.",
     "heard": "roof tiles great of course it's roof tiles",
-    "word_match": 1.0
+    "word_match": 1.0,
+    "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
   },
   {
     "id": "riley_st3_glimpse_01",
     "text": "There! On the far roof!",
-    "heard": "there on the far roof.",
-    "word_match": 1.0
+    "heard": "There! On the far roof!",
+    "word_match": 1.0,
+    "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
   },
   {
     "id": "fade_intro_01",
@@ -86,8 +91,9 @@
   {
     "id": "riley_counter_01",
     "text": "That one!",
-    "heard": "that one.",
-    "word_match": 1.0
+    "heard": "That one.",
+    "word_match": 1.0,
+    "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
   },
   {
     "id": "fade_defeat_01",
@@ -98,13 +104,15 @@
   {
     "id": "riley_st3_victory_01",
     "text": "Remember this, then.",
-    "heard": "Remember this then.",
-    "word_match": 1.0
+    "heard": "Remember this, then.",
+    "word_match": 1.0,
+    "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
   },
   {
     "id": "riley_st3_clear_01",
     "text": "Another ribbon. I'm coming, Twinkle Toes.",
-    "heard": "Another ribbon I'm coming, twinkle toes.",
-    "word_match": 1.0
+    "heard": "Another Ribbon! I'm coming, Twinkle Toes!",
+    "word_match": 1.0,
+    "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
   }
 ]

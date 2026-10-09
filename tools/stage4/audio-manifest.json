@@ -2,10 +2,10 @@
   "version": 1,
   "stage": 4,
   "source": "docs/stage4/PLAN-OUTLINE.md §1 and §7",
-  "q3": "Kokoro for Riley. ElevenLabs for the Draghkar, cultists, and the narrator. Loial stays on the Stage 1 Kokoro cast (bm_george) so the call-in matches. Mordeth, a new whisper, is ElevenLabs.",
+  "q3": "ElevenLabs for Riley (DYLO, eleven_v4; re-recorded 2026-10-09, approved by Jason F via Grok Bot). ElevenLabs also for the Draghkar, cultists, and the narrator. Loial stays on the Stage 1 Kokoro cast (bm_george) so the call-in matches. Mordeth, a new whisper, is ElevenLabs.",
   "engines": {
-    "kokoro": "Kokoro-82M, same Riley blend as tools/tts-stage2-lines.py",
-    "elevenlabs": "ELEVENLABS_API_KEY, no voice file is written when the key is missing"
+    "kokoro": "Kokoro-82M, for Loial (Riley moved to ElevenLabs, see tools/riley_voice.py)",
+    "elevenlabs": "ELEVENLABS_API_KEY, no voice file is written when the key is missing. Riley renders through tools/riley_voice.py"
   },
   "lines": [
     {"id": "draghkar_come_01", "speaker": "DRAGHKAR", "who": "draghkar", "text": "Come... rest...", "file": "assets/audio/voice/draghkar_come_01.mp3", "engine": "elevenlabs"},
@@ -16,21 +16,21 @@
     {"id": "cultist_call_01", "speaker": "CULTIST", "who": "cultist", "text": "The fog answers us!", "file": "assets/audio/voice/cultist_call_01.mp3", "engine": "elevenlabs"},
     {"id": "cultist_feed_01", "speaker": "CULTIST", "who": "cultist", "text": "Mashadar, feed!", "file": "assets/audio/voice/cultist_feed_01.mp3", "engine": "elevenlabs"},
     {"id": "cultist_burn_01", "speaker": "CULTIST", "who": "cultist", "text": "He burns... it burns!", "file": "assets/audio/voice/cultist_burn_01.mp3", "engine": "elevenlabs"},
-    {"id": "riley_fog_01", "speaker": "RILEY", "who": "riley", "text": "Don't touch the fog.", "file": "assets/audio/voice/riley_fog_01.mp3", "engine": "kokoro"},
-    {"id": "riley_fog_off_01", "speaker": "RILEY", "who": "riley", "text": "Off me!", "file": "assets/audio/voice/riley_fog_off_01.mp3", "engine": "kokoro"},
-    {"id": "riley_fog_off_02", "speaker": "RILEY", "who": "riley", "text": "Not today!", "file": "assets/audio/voice/riley_fog_off_02.mp3", "engine": "kokoro", "variantOf": "riley_fog_off_01"},
-    {"id": "riley_tower_01", "speaker": "RILEY", "who": "riley", "text": "That tower's coming down!", "file": "assets/audio/voice/riley_tower_01.mp3", "engine": "kokoro"},
-    {"id": "riley_bridge_01", "speaker": "RILEY", "who": "riley", "text": "There, on the bridge!", "file": "assets/audio/voice/riley_bridge_01.mp3", "engine": "kokoro"},
-    {"id": "riley_light_01", "speaker": "RILEY", "who": "riley", "text": "Light it up.", "file": "assets/audio/voice/riley_light_01.mp3", "engine": "kokoro"},
-    {"id": "riley_st4_victory_01", "speaker": "RILEY", "who": "riley", "text": "Sing to the ash.", "file": "assets/audio/voice/riley_st4_victory_01.mp3", "engine": "kokoro"},
+    {"id": "riley_fog_01", "speaker": "RILEY", "who": "riley", "text": "Don't touch the fog.", "file": "assets/audio/voice/riley_fog_01.mp3", "engine": "elevenlabs"},
+    {"id": "riley_fog_off_01", "speaker": "RILEY", "who": "riley", "text": "Off me!", "file": "assets/audio/voice/riley_fog_off_01.mp3", "engine": "elevenlabs"},
+    {"id": "riley_fog_off_02", "speaker": "RILEY", "who": "riley", "text": "Not today!", "file": "assets/audio/voice/riley_fog_off_02.mp3", "engine": "elevenlabs", "variantOf": "riley_fog_off_01"},
+    {"id": "riley_tower_01", "speaker": "RILEY", "who": "riley", "text": "That tower's coming down!", "file": "assets/audio/voice/riley_tower_01.mp3", "engine": "elevenlabs"},
+    {"id": "riley_bridge_01", "speaker": "RILEY", "who": "riley", "text": "There, on the bridge!", "file": "assets/audio/voice/riley_bridge_01.mp3", "engine": "elevenlabs"},
+    {"id": "riley_light_01", "speaker": "RILEY", "who": "riley", "text": "Light it up.", "file": "assets/audio/voice/riley_light_01.mp3", "engine": "elevenlabs"},
+    {"id": "riley_st4_victory_01", "speaker": "RILEY", "who": "riley", "text": "Sing to the ash.", "file": "assets/audio/voice/riley_st4_victory_01.mp3", "engine": "elevenlabs"},
     {"id": "st4_story_01", "speaker": "NARRATOR", "who": "narrator", "text": "The Fade fled Caemlyn by night. Its trail ran east, to a city no map still names.", "file": "assets/audio/voice/st4_story_01.mp3", "engine": "elevenlabs"},
-    {"id": "st4_story_02", "speaker": "RILEY", "who": "riley", "text": "Aridhol. Moiraine said never go in.", "file": "assets/audio/voice/st4_story_02.mp3", "engine": "kokoro"},
-    {"id": "st4_story_03", "speaker": "RILEY", "who": "riley", "text": "He went in.", "file": "assets/audio/voice/st4_story_03.mp3", "engine": "kokoro"},
+    {"id": "st4_story_02", "speaker": "RILEY", "who": "riley", "text": "Aridhol. Moiraine said never go in.", "file": "assets/audio/voice/st4_story_02.mp3", "engine": "elevenlabs"},
+    {"id": "st4_story_03", "speaker": "RILEY", "who": "riley", "text": "He went in.", "file": "assets/audio/voice/st4_story_03.mp3", "engine": "elevenlabs"},
     {"id": "st4_story_04", "speaker": "MORDETH", "who": "mordeth", "text": "Stay... and be welcome... forever.", "file": "assets/audio/voice/st4_story_04.mp3", "engine": "elevenlabs"},
     {"id": "st4_story_05", "speaker": "NARRATOR", "who": "narrator", "text": "Riley walked in.", "file": "assets/audio/voice/st4_story_05.mp3", "engine": "elevenlabs"},
-    {"id": "st4_clear_01", "speaker": "RILEY", "who": "riley", "text": "The trail goes underground. A Waygate.", "file": "assets/audio/voice/st4_clear_01.mp3", "engine": "kokoro"},
+    {"id": "st4_clear_01", "speaker": "RILEY", "who": "riley", "text": "The trail goes underground. A Waygate.", "file": "assets/audio/voice/st4_clear_01.mp3", "engine": "elevenlabs"},
     {"id": "st4_clear_02", "speaker": "LOIAL", "who": "loial", "text": "Riley, the Ways are dark. Nobody goes into the Ways.", "file": "assets/audio/voice/st4_clear_02.mp3", "engine": "kokoro"},
-    {"id": "st4_clear_03", "speaker": "RILEY", "who": "riley", "text": "Then show me how.", "file": "assets/audio/voice/st4_clear_03.mp3", "engine": "kokoro"}
+    {"id": "st4_clear_03", "speaker": "RILEY", "who": "riley", "text": "Then show me how.", "file": "assets/audio/voice/st4_clear_03.mp3", "engine": "elevenlabs"}
   ],
   "sfx": ["fogGurgle", "towerCrack", "screech", "croonChord"],
   "music": ["music-stage4", "music-boss4"]

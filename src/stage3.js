@@ -11,7 +11,7 @@ import { p3 } from './stage3-art.js';
 import { queueStage3Fx, paintStage3Fx } from './stage3-fx-art.js';
 export const STORY3_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story3_panel_' + n, url: `assets/story/story3_panel_${n}.jpg` })));
 export const STORY3_SCRIPT = Object.freeze([
-  ['st3_story_01', 0, 3.58], ['st3_story_02', 1, 7.89], ['st3_story_03', 1, 1.54], ['st3_story_04', 1, 3.87], ['st3_story_05', 1, 0.72], ['st3_story_06', 2, 3.41],
+  ['st3_story_01', 0, 3.58], ['st3_story_02', 1, 7.89], ['st3_story_03', 1, 2.76], ['st3_story_04', 1, 3.87], ['st3_story_05', 1, 1.80], ['st3_story_06', 2, 3.41],
 ].map(([id, panel, voice]) => Object.freeze({ id, who: EXTRA_VOICE[id][0], text: EXTRA_VOICE[id][1], panel, voice })));
 export const STAGE3_VOICES = Object.freeze(Object.keys(EXTRA_VOICE).filter(id => /^(st3_|cutthroat_|fade_|riley_st3|riley_escape|riley_counter)/.test(id)));
 export const STAGE3_ATLASES = Object.freeze(['riley3', 'cutthroat', 'fade']);   // = STAGE_CHARS[3] minus ALL_CHARS

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "evidenceKind": "deterministic combat-logic simulation",
-  "baseGitCommit": "2b257ffe59878a0a04266fb9fcf165585c12b9aa",
+  "baseGitCommit": "06979ff52b53e1a24b5c1687ade48b688f2906db",
   "sourceSha256": {
     "src/stage1.js": "3f85e769fd02f96550bcd5a15be196d884c20d47f7c43157e8bb26d73dc8e638",
     "src/riley.js": "0079041bed5b25440fb0487e4d319e1a9d26f116c7034c88f6c14c92463980e1",
@@ -15,7 +15,7 @@
     "src/config.js": "dbe7dda121c137c191db1f6b538efad8d8547f7eee2f58780650a5494d04a8b1",
     "src/audio.js": "44f444bc53b9f53ddcd3a7a15d827ccdd9b8fc5e8a571d53e746557837d31f85",
     "src/powers.js": "3903ac14369c46f44493dc409bf5155866c0936b1d7fba1548f68587e7ffd35b",
-    "src/twix.js": "b8df8820b9efd2d49526d26552b5a36e1b7e2426143973c2fd3d2e81f451032f",
+    "src/twix.js": "93f6835b7e31edc0b9ea4a386879377b78b327fb2ab2871775b5a5b8800a435a",
     "assets/chars/riley.anims.json": "7ac00fcc0c9b9d9bd694f6b305c71649b30e646771de517935c4d5016f8f65d9",
     "assets/chars/grunt.anims.json": "a21a67d311422dea2445dd5be01679abb8711e400f3e1a8ef0f0b503b225318f",
     "assets/chars/spear.anims.json": "877d81c18a10fa19adb6a10eec0297a506c8860fe2f50ecb9ce4f549d5698f5e",
@@ -78,7 +78,7 @@
     {
       "seed": 1,
       "mode": "1",
-      "simulatedSecondsToOutcome": 170.48333333332565,
+      "simulatedSecondsToOutcome": 173.13333333332412,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -143,13 +143,13 @@
         "remainingPatches": 0,
         "remainingBooms": 0
       },
-      "maxCompletedEntrySeconds": 38.233333333330776,
+      "maxCompletedEntrySeconds": 40.88333333333155,
       "stageClearNotifications": 1
     },
     {
       "seed": 2,
       "mode": "1",
-      "simulatedSecondsToOutcome": 162.84999999999678,
+      "simulatedSecondsToOutcome": 165.49999999999523,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -214,13 +214,13 @@
         "remainingPatches": 0,
         "remainingBooms": 0
       },
-      "maxCompletedEntrySeconds": 38.11666666666486,
+      "maxCompletedEntrySeconds": 40.76666666666563,
       "stageClearNotifications": 1
     },
     {
       "seed": 3,
       "mode": "1",
-      "simulatedSecondsToOutcome": 158.0666666666662,
+      "simulatedSecondsToOutcome": 160.71666666666468,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -285,13 +285,13 @@
         "remainingPatches": 0,
         "remainingBooms": 0
       },
-      "maxCompletedEntrySeconds": 38.116666666662475,
+      "maxCompletedEntrySeconds": 40.76666666666325,
       "stageClearNotifications": 1
     },
     {
       "seed": 4,
       "mode": "1",
-      "simulatedSecondsToOutcome": 171.26666666665852,
+      "simulatedSecondsToOutcome": 173.916666666657,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -362,7 +362,7 @@
     {
       "seed": 5,
       "mode": "1",
-      "simulatedSecondsToOutcome": 169.24999999999304,
+      "simulatedSecondsToOutcome": 171.8999999999915,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -427,13 +427,13 @@
         "remainingPatches": 0,
         "remainingBooms": 0
       },
-      "maxCompletedEntrySeconds": 38.11666666666313,
+      "maxCompletedEntrySeconds": 40.7666666666639,
       "stageClearNotifications": 1
     },
     {
       "seed": 10,
       "mode": "1",
-      "simulatedSecondsToOutcome": 168.96666666665988,
+      "simulatedSecondsToOutcome": 171.61666666665835,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -498,13 +498,13 @@
         "remainingPatches": 0,
         "remainingBooms": 0
       },
-      "maxCompletedEntrySeconds": 38.23333333333139,
+      "maxCompletedEntrySeconds": 40.88333333333216,
       "stageClearNotifications": 1
     },
     {
       "seed": 20,
       "mode": "1",
-      "simulatedSecondsToOutcome": 170.19999999999249,
+      "simulatedSecondsToOutcome": 172.84999999999096,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -569,13 +569,13 @@
         "remainingPatches": 0,
         "remainingBooms": 0
       },
-      "maxCompletedEntrySeconds": 38.11666666666369,
+      "maxCompletedEntrySeconds": 40.76666666666446,
       "stageClearNotifications": 1
     },
     {
       "seed": 100,
       "mode": "1",
-      "simulatedSecondsToOutcome": 176.6999999999887,
+      "simulatedSecondsToOutcome": 179.34999999998718,
       "clear": true,
       "gameOver": false,
       "lives": 2,
@@ -640,13 +640,13 @@
         "remainingPatches": 0,
         "remainingBooms": 0
       },
-      "maxCompletedEntrySeconds": 38.1166666666647,
+      "maxCompletedEntrySeconds": 40.76666666666547,
       "stageClearNotifications": 1
     },
     {
       "seed": 97,
       "mode": "1",
-      "simulatedSecondsToOutcome": 168.76666666666,
+      "simulatedSecondsToOutcome": 171.41666666665844,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -711,13 +711,13 @@
         "remainingPatches": 0,
         "remainingBooms": 0
       },
-      "maxCompletedEntrySeconds": 38.233333333329014,
+      "maxCompletedEntrySeconds": 40.88333333332968,
       "stageClearNotifications": 1
     },
     {
       "seed": 1,
       "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 194.96666666664476,
+      "simulatedSecondsToOutcome": 197.6166666666432,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -799,7 +799,7 @@
     {
       "seed": 2,
       "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 208.08333333330378,
+      "simulatedSecondsToOutcome": 210.73333333330223,
       "clear": true,
       "gameOver": false,
       "lives": 2,
@@ -881,7 +881,7 @@
     {
       "seed": 3,
       "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 201.61666666664087,
+      "simulatedSecondsToOutcome": 204.26666666663934,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -1127,7 +1127,7 @@
     {
       "seed": 10,
       "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 195.89999999997752,
+      "simulatedSecondsToOutcome": 198.549999999976,
       "clear": true,
       "gameOver": false,
       "lives": 2,
@@ -1209,7 +1209,7 @@
     {
       "seed": 20,
       "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 207.66666666663735,
+      "simulatedSecondsToOutcome": 210.3166666666358,
       "clear": true,
       "gameOver": false,
       "lives": 3,
@@ -1373,7 +1373,7 @@
     {
       "seed": 97,
       "mode": "boss-coverage",
-      "simulatedSecondsToOutcome": 198.53333333330934,
+      "simulatedSecondsToOutcome": 201.1833333333078,
       "clear": true,
       "gameOver": false,
       "lives": 3,
