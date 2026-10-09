@@ -1,13 +1,13 @@
 // Procedural Blight cast. Frame sizes, origins and keys stay as in
 // docs/stage5/ART-NEEDED.md. sheet() leaves an existing key alone, so a
-// painted row in assets/stage5/painted.json still replaces these.
+// PAINTED row in src/stage5-art.js still replaces these.
 import { tex, sheet } from './stage4-art.js';
-import { stage5DebugArt } from './stage5-art-bg.js';
 
 const STALK = { lurk: 0, stalk: 1, attack: 2, recover: 2, hurt: 3, down: 4, dead: 5, gone: 5 };
 const POD = { emerge: 0, idle: 1, attack: 2, hurt: 3, dead: 4, gone: 4 };
 const AGIN = { idle: 0, hurt: 1, attack: 2, tether: 3, step: 4, staggered: 5, burn: 6, dead: 6 };
-const BALT = { drop: 0, idle: 1, attack: 2, step: 3, lunge: 4, holding: 5, shoved: 6, hurt: 6, down: 6, vines: 7, dead: 7 };
+// 8 is the standing recoil (parry, flinch, shoved): frame 6 is lying flat and stays for down only.
+const BALT = { drop: 0, idle: 1, attack: 2, step: 3, lunge: 4, holding: 5, shoved: 8, hurt: 8, down: 6, vines: 7, dead: 7 };
 export const stalkFrame = s => STALK[s] ?? 1;
 export const podFrame = s => POD[s] ?? 1;
 export const aginFrame = s => AGIN[s] ?? 0;
@@ -37,12 +37,6 @@ const glow = (g, x, y, r, a, b) => {
   const d = g.createRadialGradient(x, y, 0.4, x, y, r);
   d.addColorStop(0, a); d.addColorStop(1, b);
   g.fillStyle = d; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
-};
-const mark = (g, size = 7, y = 8) => {
-  if (!stage5DebugArt()) return;
-  g.font = `bold ${size}px sans-serif`; g.lineWidth = 3; g.lineJoin = 'round';
-  g.strokeStyle = 'rgba(0,0,0,0.88)'; g.strokeText('PLACEHOLDER', 2, y);
-  g.fillStyle = '#ffe7a8'; g.fillText('PLACEHOLDER', 2, y);
 };
 function greenMan(g, w, h, i) {
   const G = h * 0.96, cx = w * 0.5;
@@ -122,7 +116,7 @@ function stalk(g, w, h, i) {
     limb(g, 42, G - 8, 36, G - 2, 30, G - 1, 2.4, shade, ink);
     limb(g, 62, G - 6, 72, G - 4, 80, G - 1, 2.4, shade, ink);
     if (dead) { g.fillStyle = '#efe8dc'; g.fillRect(28, G - 20, 2, 2); g.fillRect(58, G - 14, 2, 2); g.fillRect(70, G - 22, 2, 2); }
-    mark(g); return;
+    return;
   }
   const lurk = i === 0, leap = i === 2, hurt = i === 3;
   const lift = lurk ? 7 : leap ? -7 : hurt ? 2 : 0;
@@ -148,7 +142,6 @@ function stalk(g, w, h, i) {
   if (leap) { leg(50, 14, 8); leg(38, 4, -6); claws(g, hx + 8, hy + 4, 1, bone); }
   else if (hurt) { leg(48, -8, 2); leg(40, 6, 4); }
   else { leg(lurk ? 36 : 34, lurk ? 2 : -4, 4); leg(lurk ? 54 : 58, lurk ? 4 : 12, 5); }
-  mark(g);
 }
 
 function lobe(g, x, y, rx, ry, fill, ink) {
@@ -165,7 +158,7 @@ function pod(g, w, h, i) {
     lobe(g, cx + 10, G - 6, 12, 5, '#8a7844', '#1a1008');
     ell(g, cx, G - 8, 6, 4, '#2a140c');
     g.fillStyle = '#fff6d0'; g.fillRect(cx - 16, G - 14, 3, 3); g.fillRect(cx + 12, G - 12, 3, 3);
-    mark(g); return;
+    return;
   }
   const s = emerge ? 0.62 : swell ? 1.12 : hurt ? 0.86 : 1;
   const body = swell ? '#f4ffb0' : hurt ? '#d8c078' : '#e4ee78';
@@ -197,7 +190,6 @@ function pod(g, w, h, i) {
     g.beginPath(); g.moveTo(cx - 6, cy - 4); g.lineTo(cx + 4, cy + 8); g.lineTo(cx - 1, cy + 16); g.stroke();
     ell(g, cx + 8, cy + 14, 2, 2.6, '#c6a050');
   }
-  mark(g);
 }
 
 function hood(g, x, y, tilt, burn) {
@@ -236,7 +228,7 @@ function hand(g, x, y, dir) {
   g.stroke();
 }
 
-function agin(g, w, h, i, quiet) {
+function agin(g, w, h, i) {
   const G = h * 0.96, cx = 54, burn = i === 6;
   const pose = [
     { lean: 10, crouch: 0, tip: [32, -2], foot: 14, grip: 0.48, hot: 0, step: 0 },
@@ -287,7 +279,6 @@ function agin(g, w, h, i, quiet) {
     g.beginPath(); g.moveTo(x0, y0); g.lineTo(Math.min(w - 8, x0 + 18), y0 + 4); g.lineTo(Math.min(w - 6, x0 + 30), y0 - 4); g.stroke();
     glow(g, Math.min(w - 10, x0 + 30), y0 - 4, 8, 'rgba(244,255,210,0.95)', 'rgba(244,255,210,0)');
   }
-  if (!quiet) mark(g);
 }
 
 function mask(g, x, y) {
@@ -323,7 +314,7 @@ function balt(g, w, h, i) {
     g.stroke();
     ell(g, cx - 16, G - 40, 4, 2.6, '#f0ffc0');
     ell(g, cx + 12, G - 72, 3.4, 2.2, '#f0ffc0');
-    mark(g); return;
+    return;
   }
   if (i === 6) {
     ell(g, cx + 6, G - 16, 42, 13, ink, -0.3);
@@ -333,7 +324,7 @@ function balt(g, w, h, i) {
     mitt(g, cx - 36, G - 2);
     limb(g, cx + 18, G - 14, cx + 34, G - 26, cx + 46, G - 34, 5, glove, ink);
     mitt(g, cx + 48, G - 36);
-    mark(g); return;
+    return;
   }
   const pose = [
     { lean: 0, crouch: 40, ax: 36, ay: -22, bx: -34, by: -12, spread: 2 },
@@ -342,7 +333,8 @@ function balt(g, w, h, i) {
     { lean: -22, crouch: 4, ax: 14, ay: -4, bx: -32, by: 6, spread: 22 },
     { lean: 34, crouch: 32, ax: 54, ay: 6, bx: 16, by: 8, spread: 24 },
     { lean: 8, crouch: 8, ax: 26, ay: 14, bx: -26, by: 12, spread: 6, hold: 1 },
-  ][i];
+    { lean: -26, crouch: 2, ax: 10, ay: -44, bx: -30, by: -34, spread: 16 },
+  ][i === 8 ? 6 : i];
   const top = G - 136 + pose.crouch;
   const hx = cx + pose.lean * 0.65;
   const hip = top + 58;
@@ -366,26 +358,59 @@ function balt(g, w, h, i) {
     mitt(g, hx + pose.ax, top + 36 + pose.ay);
     mitt(g, hx + pose.bx, top + 50 + pose.by);
   }
-  mark(g);
 }
 
 function portrait(g, w, h) {
   const sky = g.createLinearGradient(0, 0, 0, h);
   sky.addColorStop(0, '#3a1612'); sky.addColorStop(1, '#10080a');
   g.fillStyle = sky; g.fillRect(0, 0, w, h);
-  g.save(); g.translate(16, -36); g.scale(1.9, 1.9); agin(g, 120, 180, 3, true); g.restore();
-  mark(g, 16, 28);
+  g.save(); g.translate(16, -36); g.scale(1.9, 1.9); agin(g, 120, 180, 3); g.restore();
+}
+
+// Story panels until painted: plain scenes, no words (tests/no-placeholder.test.mjs). 1 the waygate, 2 into the
+// Blight, 3 the Eye. Freed once the story ends (Stage5Kit.freeStory) and repainted by the next build if needed.
+function panel(g, w, h, n) {
+  const grad = (y0, y1, a, b) => { const d = g.createLinearGradient(0, y0, 0, y1); d.addColorStop(0, a); d.addColorStop(1, b); return d; };
+  g.fillStyle = grad(0, h, ['', '#0e0c14', '#4a180e', '#08060a'][n], ['', '#1c1612', '#120806', '#1a1208'][n]); g.fillRect(0, 0, w, h);
+  if (n === 1) {
+    g.fillStyle = '#2a2420'; g.fillRect(0, h - 70, w, 70);
+    poly(g, [w / 2 - 92, h - 70, w / 2 - 86, 52, w / 2 + 86, 52, w / 2 + 92, h - 70], '#3a3430');
+    glow(g, w / 2, h / 2 + 10, 120, 'rgba(190,200,210,0.35)', 'rgba(190,200,210,0)');
+    poly(g, [w / 2 - 66, h - 78, w / 2 - 62, 76, w / 2 + 62, 76, w / 2 + 66, h - 78], '#5c646e');
+    g.strokeStyle = '#7fae6a'; g.lineWidth = 3; g.lineCap = 'round';
+    for (const sx of [-1, 1]) {
+      g.beginPath(); g.moveTo(w / 2 + sx * 78, h - 80);
+      for (let y = h - 80; y > 70; y -= 34) g.quadraticCurveTo(w / 2 + sx * 96, y - 17, w / 2 + sx * 78, y - 34);
+      g.stroke();
+      for (let y = h - 96; y > 80; y -= 34) ell(g, w / 2 + sx * 88, y, 6, 3.5, '#7fae6a', sx * 0.6);
+    }
+  } else if (n === 2) {
+    g.fillStyle = '#ffb060'; g.beginPath(); g.arc(w * 0.78, 70, 26, 0, TAU); g.fill();
+    const ridge = (y, amp, c) => { g.fillStyle = c; g.beginPath(); g.moveTo(0, h); for (let x = 0; x <= w; x += 32) g.lineTo(x, y - amp * (((x / 32) * 7) % 5) / 4); g.lineTo(w, h); g.fill(); };
+    ridge(h - 120, 40, '#2a1410'); ridge(h - 70, 24, '#160a08');
+    for (const [x, s] of [[110, 1], [250, 0.7], [470, 1.15], [560, 0.8]]) {
+      seg(g, x, h - 60, x + 6 * s, h - 60 - 120 * s, 6 * s, '#0a0504');
+      seg(g, x + 4 * s, h - 60 - 70 * s, x + 40 * s, h - 60 - 110 * s, 3 * s, '#0a0504');
+      seg(g, x + 3 * s, h - 60 - 90 * s, x - 34 * s, h - 60 - 128 * s, 3 * s, '#0a0504');
+    }
+  } else {
+    g.fillStyle = '#120c08'; g.fillRect(0, h - 90, w, 90);
+    glow(g, w / 2, h - 96, 230, 'rgba(255,224,150,0.45)', 'rgba(255,200,120,0)');
+    ell(g, w / 2, h - 80, 170, 34, '#3a3026');
+    ell(g, w / 2, h - 82, 150, 26, '#fff0c0');
+    glow(g, w / 2, h - 84, 120, 'rgba(255,255,240,0.9)', 'rgba(255,240,190,0)');
+    for (const sx of [-1, 1]) poly(g, [w / 2 + sx * 210, h - 60, w / 2 + sx * 236, 0, w / 2 + sx * 320, 0, w / 2 + sx * 300, h - 60], '#0c0806');
+  }
 }
 
 export function paintCast(scene) {
   sheet(scene, 's5stalk', 6, 96, 64, (g, i) => stalk(g, 96, 64, i));
   sheet(scene, 's5pod', 5, 80, 80, (g, i) => pod(g, 80, 80, i));
   sheet(scene, 's5agin', 7, 120, 180, (g, i) => agin(g, 120, 180, i));
-  sheet(scene, 's5balt', 8, 110, 170, (g, i) => balt(g, 110, 170, i));
+  sheet(scene, 's5balt', 9, 110, 170, (g, i) => balt(g, 110, 170, i));
   sheet(scene, 's5green', 4, 120, 180, (g, i, w, h) => greenMan(g, w, h, i));
   tex(scene, 'aginorPortrait', 256, 256, portrait);
-  const panel = (g, w, h, title) => { g.fillStyle = '#140c0a'; g.fillRect(0, 0, w, h); g.fillStyle = '#ffb070'; g.font = 'bold 32px sans-serif'; g.fillText(title, 40, 80); g.fillStyle = '#fff'; g.font = '16px sans-serif'; g.fillText('PLACEHOLDER ART', 40, 120); };
-  tex(scene, 'story5p1', 640, 360, (g, w, h) => panel(g, w, h, 'THE WAYGATE'));
-  tex(scene, 'story5p2', 640, 360, (g, w, h) => panel(g, w, h, 'INTO THE BLIGHT'));
-  tex(scene, 'story5p3', 640, 360, (g, w, h) => panel(g, w, h, 'THE EYE'));
+  tex(scene, 'story5p1', 640, 360, (g, w, h) => panel(g, w, h, 1));
+  tex(scene, 'story5p2', 640, 360, (g, w, h) => panel(g, w, h, 2));
+  tex(scene, 'story5p3', 640, 360, (g, w, h) => panel(g, w, h, 3));
 }

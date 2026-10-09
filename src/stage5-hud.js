@@ -12,7 +12,12 @@ export function surgeArc(s) {
 export function tetherLine(s) {
   const b = s?.boss;
   if (!s || s.stageNo !== 5 || !b || b.state !== 'tether' || !s.riley) return null;
-  return { x0: b.x, y0: b.y - 90, x1: s.riley.x, y1: s.riley.y - 50, locked: !!b.locked };
+  // A painted tether frame carries its palm (cell px from the feet anchor) in the atlas frame data; the line starts
+  // there. The code-drawn frame has none and keeps the old start, 90 px up.
+  const sp = b.sprite, palm = sp?.frame?.customData?.palm;
+  const k = Math.abs(sp?.scaleX || 1), dir = b.facing < 0 ? -1 : 1;
+  const x0 = palm ? b.x + dir * palm[0] * k : b.x, y0 = palm ? b.y - (b.z || 0) - palm[1] * k : b.y - 90;
+  return { x0, y0, x1: s.riley.x, y1: s.riley.y - 50, locked: !!b.locked };
 }
 export function snareRing(s) {
   const left = Math.max(s?.kit?.blight?.snare || 0, s?.kit?.arena?.snare || 0);

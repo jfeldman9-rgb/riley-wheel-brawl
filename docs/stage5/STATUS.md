@@ -8,7 +8,7 @@ The Blight and the Eye of the World. Branch `rwb-2-stage5`. Campaign order is 1 
 2. Balthamel's grab is mash 7 within 2.8 s.
 3. The oak heals 1 HP/s up to 50% of max HP, then the 1.0 s root-out pushes Riley 220 px and the oak stays shut for 6 s.
 4. Score and lives reset on the scene restart into Stage 5. `next()` does not carry them.
-5. Aginor and Balthamel have painted-art slots. `assets/stage5/painted.json` has `sheets: []`. Procedural sheets are labeled `PLACEHOLDER` so the stage is playable. Exact frames are in `docs/stage5/ART-NEEDED.md`.
+5. Aginor and Balthamel have painted-art slots: the hard-coded `PAINTED` list in `src/stage5-art.js`, all `present: false` until the art is committed. `tools/stage5/process_bosses.py` turns the two ChatGPT collages into trimmed atlases. Until then the code-drawn sheets play, with no text in any frame. Exact frames are in `docs/stage5/ART-NEEDED.md`.
 
 ## Tasks
 
