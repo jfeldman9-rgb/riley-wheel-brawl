@@ -1,8 +1,15 @@
 # Stage 6 plan: the Stone of Tear, and Rand al'Thor as the call-in
 
-*Planner: Grok Bot, Fri Oct 9 2026. Branch `rwb-2-stage6-plan`, cut from `origin/rwb-2-stage5` at `dfc2559`.
-This is a docs-only plan. It makes no game code changes. Live `rwb-w2` was at `06979ff` when this was written.
-Names marked **†** are new. Every other name was checked in this checkout or on `origin/rwb-w2`.*
+*Planner: Grok Bot, Fri Oct 9 2026. Branch `rwb-2-stage6-plan`, cut from `origin/rwb-2-stage5` at `dfc2559`, then
+merged with `origin/rwb-2-stage5` at `58bbf74` (which already carries live `rwb-w2` `06979ff`: cutscenes, the
+no-placeholder rule, the painted Draghkar). This is a docs-only plan. It makes no game code changes.
+Names marked **†** are new. Every other name was checked in this checkout.*
+
+**Revision 2 (Oct 9, 1 AM PT): decisions applied.**
+- Rand cutscenes are **5–10 s each** (Jason's call). They play on every call, are skippable with a tap, and pause
+  the game.
+- **Be'lal is the boss**, pending Jason's final word; he hasn't objected.
+- The defaults in §11 are adopted.
 
 Jason asked for three things on Oct 9:
 1. **A Stone of Tear level.**
@@ -54,9 +61,9 @@ fit for everything Jason asked for:
 
 That makes the call-in canon flavour rather than an invention.
 
-**Honest canon note.** Be'lal (the boss Jason suggested) died in the Heart of the Stone *before* that night (The
-Dragon Reborn, ch. 55, balefired by Moiraine). Using Be'lal bends the timeline a little. That is fine for a fan
-game, but Jason should choose it knowingly (Q2).
+**Canon note.** Be'lal (the chosen boss) died in the Heart of the Stone *before* that night (The Dragon Reborn,
+ch. 55, balefired by Moiraine). Using him bends the timeline a little. That is fine for a fan game, and it is
+accepted (§11).
 
 **Bridge from Stage 5.** Stage 5's recorded outro points at Tarwin's Gap (`st5_clear_02`/`03`). Stage 6's story-in
 picks that up with no re-recording:
@@ -72,8 +79,8 @@ picks that up with no re-recording:
 goes east, into the Waste."* / RILEY `st6_clear_02` *"Rhuidean."* / RAND `st6_clear_03` *"Call, and I'll come."*
 This matches `plan/LEVELS.md` row 8 (Rhuidean).
 
-**Tarwin's Gap** (`plan/LEVELS.md` row 6) is displaced. Q3 asks Jason whether it becomes a later bonus stage, the
-way the Ways did.
+**Tarwin's Gap** (`plan/LEVELS.md` row 6) is displaced. It goes on the later bonus/stage list, alongside the Ways
+(§11).
 
 ## 2. The level
 
@@ -85,7 +92,7 @@ Lanes stay 572–690. Stage 6 adds 2 new enemy types and 1 elite, and reuses the
 | 0 (0–1280) | **The Maule docks**: wet planks, grain barges, the Stone's sea wall above | Night, harbor lanterns, rain sheen | `[grunt R 0, grunt L 1.2]`, `[spear R 0, cutthroat L 0.6, hound R 1.6]` | **Barge holds burst**: a hatch kicks open and spawns the next Trolloc (spawn side `B`†, the hatch shakes for 1.0 s as a tell). **Cargo-net drop**† from a crane (§2.3). |
 | 1 (1240–2520) | **The sea-gate and the lower halls**: Defenders' barricade, redstone columns | Torches and gilded lamps | `[grayman† T 0, grunt R 0.8]`, `[cutthroat L 0, spear R 0.5, grunt R 1.8]` | **Defenders hold the line** in the background, with ambient clashes and no escort mission. **Falling lamp**† (§2.3). Twinkle Toes' ribbon is snagged on a lamp chain. |
 | 2 (2560–3840) | **The Great Hall of columns** | Lamps, torches, lightning flicker through high windows | `[fadelt† R 0, grunt L 0.4, grunt R 0.8]`, `[grayman† T 0, hound L 0.6, spear R 1.2, grunt L 1.8]` | **Linked Trollocs**: killing the Myrddraal lieutenant drops the Trollocs linked to it (canon). Clear: a **Twinkle Toes glimpse** on a far gallery, using the `view.glimpse()` pattern. |
-| 3 (3920–5200) | **The Heart of the Stone**: redstone dome, Callandor, the crystal sword, thrust into the floor | Crystal god-rays, cold white over warm | Boss (§2.4) | Callandor's glow pulses with the boss phases. Nobody can take it during the fight (Q6). |
+| 3 (3920–5200) | **The Heart of the Stone**: redstone dome, Callandor, the crystal sword, thrust into the floor | Crystal god-rays, cold white over warm | Boss (§2.4) | Callandor's glow pulses with the boss phases. Nobody can take it during the fight; Rand takes it in the outro. |
 
 ### 2.1 Enemies
 
@@ -110,7 +117,7 @@ with a red sash tint, and keeps the Stage 3 shadow-blink only. There is no fear 
   1.5 s **daze**. They are not killed. A HUD hint shows once: `KILL THE HALF-MAN, ITS TROLLOCS REEL`.
 - **Sword string:** 3 hits. The tells are 0.5 / 0.35 / 0.45 s, the third is counterable, and each hit does 10 / 10 / 16.
 
-**Defenders of the Stone.** They are **background allies, not enemies** (Q5). Painted on the zone 1 plate, they have a
+**Defenders of the Stone.** They are **background allies, not enemies** (decided). Painted on the zone 1 plate, they have a
 looping clash animation on one mid-plate prop and a voice bark (`defender_01`† *"For the Stone! For the Dragon!"*).
 Fighting the Defenders as enemies is possible, but it would make the Rand rules messy (Rand would be blasting
 Tear's own soldiers), so it is not the default.
@@ -131,9 +138,10 @@ Tear's own soldiers), so it is not the default.
 | **Barge hatch**† | Z0 | 1.0 s hatch shake | Spawns 1 Trolloc only (no damage) | Spawn cap = the wave list | — |
 | **Netweaver lines**† (boss, option A) | Z3 | **1.2 s** thin black-fire line across one band | 8 dmg and a 1.0 s snare | ≤ 1 band live in P2; ≤ 2 in P3, always leaving at least 1 band clear | `clearStage6Hazards`† |
 
-### 2.4 Boss: three options (Jason picks, Q1)
+### 2.4 Boss: Be'lal (chosen), with the alternatives kept on file
 
-**A. Be'lal, the Netweaver (recommended; Jason's own example; `plan/LEVELS.md` row 7).** HP 640, phase gates at
+**A. Be'lal, the Netweaver: CHOSEN** (Jason's own example, `plan/LEVELS.md` row 7; pending his final word, no
+objection so far). HP 640, phase gates at
 66% and 33%. Until a beat fires, damage clamps at the next gate, the same rule as `aginor.js`.
 - **P1, Sword of black fire:** a 4-hit flurry. The tells are 0.55 / 0.35 / 0.35 / 0.6 s, and only the 4th hit is
   counterable (`COUNTER!` stuns him for 1.4 s). Then a 380 px lunge with a 0.7 s tell, telegraphed by a black-fire
@@ -148,7 +156,7 @@ Tear's own soldiers), so it is not the default.
   a single line, reusing her established voice where possible.
 - **Art:** 10 painted poses at 360×500 (about 6.9 MiB, the same as the Draghkar), plus a 136 px portrait.
 
-**B. Lanfear (canon present that night, TSR ch. 10).** HP 600. She is theatrical and never dies; at 0 HP she smiles
+**B. Lanfear: not used in Stage 6, kept as a possible later stage or boss** (canon present that night, TSR ch. 10). HP 600. She is theatrical and never dies; at 0 HP she smiles
 and steps through a gateway, which keeps her as a recurring villain.
 - **P1:** compulsion pulses (a ring tell; Riley walks slowly toward her unless he jumps).
 - **P2:** turns Trollocs on each other (some adds attack each other, a canon detail).
@@ -157,7 +165,7 @@ and steps through a gateway, which keeps her as a recurring villain.
 Risk: a female Forsaken fighting a 16-year-old needs the same no-flirt, purely villain tone the rest of the game
 keeps.
 
-**C. Ba'alzamon in the dream-twisted Stone (TDR ch. 55).** HP 700. The hazards straight from the book are flames from
+**C. Ba'alzamon in the dream-twisted Stone (TDR ch. 55): not used.** Better saved for late in the campaign. HP 700. The hazards straight from the book are flames from
 the floor, rising water that slows, and "heavy air" that shrinks jump height. That makes a strong hazard variety. Risk:
 he is the series' biggest villain, so spending him at Stage 6 leaves less for Stage 10. It also needs the most new art
 (the fire-eyed face).
@@ -238,7 +246,8 @@ power 1, which makes **9 ≤ 10**. A call is refused while balefire's 2 beam lig
   (pitch-randomised, at most 3 voices), `randWhoosh` per fireball.
 - **Music:** ducks to 35% during the clip and the effect, then restores. The cutscene hook's `silence()` must not be
   used here (§4.3).
-- **Rand barks:** ElevenLabs (§6), 1 per call, rotating with no immediate repeat.
+- **Rand barks:** ElevenLabs (§6), 1 per call, rotating with no immediate repeat. Each bark plays when the bolts
+  land, after the clip.
 
 ### 3.6 HUD
 
@@ -256,52 +265,77 @@ power 1, which makes **9 ≤ 10**. A call is refused while balefire's 2 beam lig
 
 ## 4. Rand call-in cutscenes
 
-### 4.1 Rules
+### 4.1 Rules (Jason's call: 5–10 s, every call)
 
-- **It plays on every call**, as Jason asked. Each clip is **2.5–3.5 s**.
+- **A full scene plays on every call.** There is no shortened or flash-only mode. Each clip is **5–10 s**: either one
+  shot, or two short single-action shots joined by a hard cut.
 - **Any tap, click, game button or pad button skips it**, using the existing `SKIP_ACTIONS`. `assist` is already in
-  that set, so pressing CALL again skips. The existing **450 ms guard** (`GUARD_MS`) stops the CALL press itself
-  from skipping the clip.
+  that set, so pressing CALL again skips. The existing **450 ms guard** (`GUARD_MS`) stops the CALL press itself from
+  skipping the clip.
 - **The game pauses** while it plays (`game.pause()`, the same ownership rule as `playFor`).
-- **There are 4 variants in a shuffle bag with no immediate repeat**, including across bag refills. The bag's last
-  pick is kept in `sessionStorage` (`rwb-rand-bag`†), so a restart does not replay the same clip first.
-- **The call never depends on the clip.** If cutscenes are off (bot, demo, webdriver, `?nocutscenes=1`), the clip
-  fails, or it does not start within **1.5 s**, the in-game effect (§3.4) runs anyway.
+- **There are 5 variants in a shuffle bag with no immediate repeat**, including across bag refills. These are R1–R4
+  plus R5. R5 is the backup if R4 fails generation; if all five pass, all five rotate. The bag's last pick is kept in
+  `sessionStorage` (`rwb-rand-bag`†), so a restart does not replay the same clip first.
+- **Rand's strike never depends on the clip.** If cutscenes are off (bot, demo, webdriver, `?nocutscenes=1`), the
+  clip errors, it does not start within **1.5 s**, it stalls, or the player skips it, the in-game strike (§3.4) runs
+  as soon as the overlay closes.
+- **Riley's call line plays immediately** on the CALL press, before the overlay opens. **Rand's bark plays when the
+  bolts land**, after the clip. Clip audio is SFX only (thunder, fire), so a skip never cuts a voice line.
 
-### 4.2 Size and encode
+### 4.2 Size and encode (re-budgeted for 5–10 s)
 
-- Encode at 960×540 H.264 main, **CRF 28**, yuv420p, `+faststart`, `-g 24` (a keyframe every second so the first
-  frame decodes fast), AAC 64k stereo (thunder only), and loudness toward -20 LUFS. This is the
-  `tools/cutscenes/encode_cutscenes.sh` recipe with a per-clip CRF, plus a trim start and a duration (`-t`).
-- **Size:** the existing intro battle clip is 4.17 MB for 18 s (about 1.85 Mbit/s, busy action). A 3 s lightning clip
-  at that rate is about 0.7 MB. Lightning and rain compress badly, so the cap is **≤ 700 KB per clip** (CRF 29–30 if a
-  clip runs over) and **≤ 2.8 MB for all 4**. Posters (`.jpg`, 640×360) are about 25 KB each.
-- **Budget:** the shipped clips total 19,397,047 bytes on `rwb-w2`. The encoded Stage 5 clip
-  (`/workspace/cutscenes/stage5_v1_web.mp4`, 2,338,688 bytes) brings that to about 21.7 MB of the 25,000,000
-  `cutscenes.clips` line, and a Stage 6 intro clip (about 2 MB) brings it to about 23.8 MB. **The Rand clips don't fit
-  that line.** They go in `assets/cutscenes/rand/`†. The audit's `readdirSync` is not recursive, so that folder would
-  be silently uncounted. T2 therefore adds an explicit `cutscenes.randCalls`† line with a 2,800,000-byte budget.
+- **The reference rate is too heavy here.** The intro battle clip is 4.17 MB for 18 s at 960×540 CRF 27, about
+  1.85 Mbit/s for busy action. At that rate a 10 s clip is about 2.3 MB, and 5 clips come to about 10–12 MB.
+  Lightning, rain and fire are the worst cases for H.264, so a lightning-heavy clip could be even larger.
+- **Chosen recipe:**
+  - **854×480**, H.264 main, **CRF 29**, yuv420p;
+  - `+faststart`, `-g 24`, so the first frame decodes fast and seeking is cheap;
+  - AAC **64k** stereo;
+  - loudness toward -20 LUFS.
+
+  On a phone this looks almost the same as 960×540, and it needs about 21% fewer pixels to encode.
+- **Expected size:** about 1.0–1.3 Mbit/s, so **about 1.2–1.6 MB per 10 s** and about 0.6–0.8 MB per 5 s.
+- **Hard caps:**
+  - **≤ 160 KB per second of clip** (≤ 1.6 MB for a 10 s clip). If a clip runs over, retry at CRF 30, then CRF 31.
+    If it still runs over, trim it.
+  - **≤ 7.5 MB for all 5 clips.**
+  - Posters (`.jpg`, 640×360) are about 25 KB each.
+- **Script:** `tools/cutscenes/encode_rand.sh`†, a copy of `encode_cutscenes.sh` with a per-clip CRF, trim start and
+  duration (`-t`). It takes a 2-shot list and joins the shots with a hard cut (concat demuxer, one re-encode).
+  It runs `scale=854:480:flags=lanczos,setsar=1`.
+- **Budget line:** the shipped clips total 19,397,047 bytes. The encoded Stage 5 clip (2,338,688 bytes) brings that to
+  about 21.7 MB of the 25,000,000 `cutscenes.clips` line, and an optional Stage 6 intro clip (about 2 MB) brings it to
+  about 23.8 MB. **The Rand clips cannot share that line.** They go in `assets/cutscenes/rand/`†. The audit's
+  `readdirSync` is not recursive, so that folder would otherwise go uncounted. T2 therefore adds an explicit
+  `cutscenes.randCalls`† line of **7,500,000 bytes**. These bytes are streamed one clip per call and never preloaded
+  as a group. They never count toward the 25 MB pre-fight gate.
+- **If 854×480 looks soft next to the 960×540 stage intros on Jason's phone,** the alternative is 960×540 at CRF 30
+  with about the same bytes. The worse grain in dark storm skies is the cost. Pick by eye on the device.
 
 ### 4.3 Preload strategy (iPhone)
 
 `CutscenePlayer` sets `src` only at play time, preloads nothing, and gives a clip 4 s to start (`START_MS`). That is
 fine for a stage intro but too slow for a mid-fight call. The plan:
 
-1. **Prefetch only the next clip in the bag**, never all 4. When the Stage 6 kit's `start()` runs, after the stage
-   loader finishes and never before the first fight, `fetch()` the next variant into a `Blob` (about 0.7 MB of heap).
-   Then `URL.createObjectURL`.
-2. **After each call,** revoke that URL, drop the blob, and prefetch the following variant. At most **1 blob** is held,
-   and it is released on stage teardown, restart and the governor's low-memory path.
+1. **Prefetch only the next clip in the bag**, never the set. When the Stage 6 kit's `start()` runs, after the
+   stage loader finishes and never before the first fight, `fetch()` the next variant into a `Blob` (≤ 1.6 MB of
+   heap). Then `URL.createObjectURL`.
+2. **After each call,** revoke that URL, drop the blob, and prefetch the following variant. At most **1 blob** is
+   held, and it is released on stage teardown, restart and the governor's low-memory path. A call uses about 1 MB of
+   mobile data on average. A player who never calls Rand downloads only the first clip.
 3. **Play through a second player** with tight timeouts:
-   `new CutscenePlayer(root, { base: 'assets/cutscenes/rand/', startMs: 1500, stallMs: 1000, maxMs: 6000 })`. The
-   blob URL is played by pointing `base` at `''` and the id at the blob URL, or through a 2-line `srcFor(id)` override
-   (§4.4).
-   - Same `<video playsinline>` lifecycle: one element, `src` cleared after each clip.
+   `new CutscenePlayer(root, { base: 'assets/cutscenes/rand/', startMs: 1500, stallMs: 1500, maxMs: 12000 })`.
+   - `maxMs` covers the 10 s maximum plus slack.
+   - The player keeps the same `<video playsinline>` lifecycle: one element, `src` cleared after each clip.
    - It is blessed for sound on the first Stage 6 gesture by the same capture-listener trick as `installCutscenes`.
    - If iOS refuses sound, it falls back to muted, as today.
-4. **Fallbacks.** If the blob is not ready, play the network URL. If nothing starts in 1.5 s, skip and run the effect.
-5. **Device check (Jason's iPhone)** is required before going live. Blob-URL `<video>` works in current iOS Safari
-   for small faststart MP4s, but it must be confirmed. If it misbehaves, the fallback is to warm the HTTP cache with
+4. **Fallbacks.**
+   - If the blob is not ready (a call right after the stage starts on a slow link), play the network URL. Faststart
+     plus `-g 24` lets it begin before the whole file arrives.
+   - If nothing starts in 1.5 s, skip and run the strike.
+   - If a 10 s clip stalls partway, `stallMs` ends it and the strike runs.
+5. **Device check (Jason's iPhone)** is required before going live. Blob-URL `<video>` works in current iOS Safari for
+   small faststart MP4s, but it must be confirmed. If it misbehaves, the fallback is to warm the HTTP cache with
    `fetch(url, { cache: 'force-cache' })` and play the plain URL.
 
 ### 4.4 Playback hook (in the existing cutscene system)
@@ -318,51 +352,58 @@ small module, `src/rand-call-cutscene.js`† (in `STAGE6_SRC`, not in the cutsce
   - **ducks** the music instead of calling `silence()`, then restores the previous `music.state` and track on `done`.
     `silence()` expects the stage to bring the music back, which a mid-fight call never does;
   - aborts on scene `shutdown`;
-  - calls `then()` exactly once, on 'end', 'skip', 'error' or 'timeout'.
-- `callRand()` spends the charge first, then `playCall(scene, () => startRandStrike())`, or calls
-  `startRandStrike()` directly when `playCall` returns `false`.
+  - calls `then()` exactly once, on 'end', 'skip', 'error', 'stall' or 'timeout'.
+- `callRand()` spends the charge, plays Riley's call line, then runs `playCall(scene, () => startRandStrike())`. If
+  `playCall` returns `false`, it calls `startRandStrike()` directly.
 
-If the variant id is not a plain file name, `src/cutscene.js` needs a 2-line `srcFor(id)` override point. That is the
-only shared-module edit, and it counts against the 20 KB cutscene source line.
+If the blob URL needs it, `src/cutscene.js` gets a 2-line `srcFor(id)` override point. That is the only shared-module
+edit, and it counts against the 20 KB cutscene source line.
 
-The 4 entries go in `assets/cutscenes/ART_STATUS.json` with `placeholder: false`, `source: "grok-imagine"`, sha256,
-bytes, trim, encode, the likeness note ("Riley appears only from behind") and `approvedBy`.
+The 5 entries go in `assets/cutscenes/ART_STATUS.json` (or `assets/cutscenes/rand/ART_STATUS.json`†) with:
+- `placeholder: false` and `source: "grok-imagine"`;
+- sha256, bytes, trim and the shot list;
+- the encode;
+- the likeness note ("Riley appears only from behind");
+- `approvedBy`.
 
-### 4.5 Variants and Grok Imagine prompts
+### 4.5 Variants and Grok Imagine prompts (5–10 s)
 
 **Method** (it worked on the intro and the stage clips):
-- grok.com/imagine in the box browser, 720p, a **6 s** generation trimmed to the best 2.5–3.5 s.
+- grok.com/imagine in the box browser, 720p.
+- **6 s generations** for single shots and each half of a two-shot clip. **10 s generations** only for a single,
+  slow continuous shot. Trim to the best frames, and join two-shot clips with a **hard cut** in ffmpeg. Grok Imagine
+  is never asked for the cut itself.
 - **Reference mode** (the @ picker, up to 7 references; references cannot be combined with a start frame) keeps 16:9
-  and keeps Rand the same across all 4 clips. The references are:
-  - `@rand_ref`†: a ChatGPT photoreal reference still of a fictional Rand. It must not resemble the Amazon series'
-    actor, so it is never prompted by name;
+  and keeps Rand the same across every shot. The references are:
+  - `@rand_ref`†: a ChatGPT photoreal reference still of a fictional Rand in a dark red coat. It must not resemble the
+    Amazon series' actor, so it is never prompted by name;
   - `@angreal_ref`†: the green stone figurine, close up;
-  - `@riley_back_ref`: the existing back-view outfit reference used for the intro clips;
+  - `@riley_back_ref`: the existing back-view outfit reference;
   - `@stone_hall_ref`†.
-- Short, single-action shots only. Long multi-beat prompts fail.
-- No gore, no blood, no text. Monsters only flee or scatter as shadows; they are never struck on camera.
+- **One action per prompt.** Long multi-beat prompts fail, and that is why longer clips are built from two short
+  shots.
+- No gore, no blood, no text. Monsters only flee or scatter as shadows; nothing is struck on camera.
 
-Rand's look in every prompt: a tall young man, early twenties, red-gold hair, grey eyes, a dark red coat with gold
-embroidery (or black, per Q7), and a heron brand on the palm when his palm faces the camera.
+Rand's look in every prompt: a tall young man, early twenties, red-gold hair, grey eyes, a **dark red coat** with gold
+embroidery, and a heron brand on the palm when his palm faces the camera.
 
-| # | Name | Clip | Prompt |
-|---|---|---|---|
-| R1 | **Heron palm** | 3.0 s close-up | `Close-up at night in a torchlit stone hall. A tall young man with red-gold hair and grey eyes, dark red coat, opens his right hand. In his palm sits a small dark green stone figurine of a round fat man sitting cross-legged with a sword across his knees, and it begins to glow gold. A heron brand is on his palm. Blue-white sparks crawl up his wrist. Slow push-in on his face. Shallow depth of field. No text.` refs: @rand_ref @angreal_ref @stone_hall_ref |
-| R2 | **Storm on the wall** | 3.0 s wide | `Wide low-angle shot at night in the rain. The same red-haired man stands on top of a vast grey stone fortress wall above a dark harbor and raises a small glowing green figurine over his head. Above him the storm clouds swirl and one huge fork of lightning splits the sky. Camera static. No text.` refs: @rand_ref @angreal_ref |
-| R3 | **Fire down the hall** | 2.5 s medium | `Medium shot inside an enormous hall of red stone columns and gilded lamps. The same red-haired man in a dark red coat steps forward and thrusts his open hand toward the camera, and a roaring ball of fire flies past the lens down the hall. Distant monstrous shadows scatter. Warm firelight, handheld. No text.` refs: @rand_ref @stone_hall_ref |
-| R4 | **Behind you** | 3.5 s | `A teenage boy seen only from behind in the left foreground, he never turns around: short dark hair, long black calf-length coat over a black sleeveless top, black fingerless gloves, black trousers and boots. Beyond him, the same red-haired man walks out of drifting smoke toward the camera with a small green figurine glowing in his fist and lightning flickering around him. Camera static at the boy's shoulder. No text.` refs: @rand_ref @angreal_ref @riley_back_ref @stone_hall_ref |
+| # | Name | Length | Shot A (prompt) | Shot B after a hard cut (prompt) |
+|---|---|---|---|---|
+| R1 | **Heron palm** | about 8 s (A 4 s + B 4 s) | `Close-up at night in a torchlit stone hall. A tall young man with red-gold hair and grey eyes, dark red coat, opens his right hand. In his palm sits a small dark green stone figurine of a round fat man sitting cross-legged with a sword across his knees. A heron brand is on his palm. The figurine starts to glow gold. Slow push-in. No text.` refs: @rand_ref @angreal_ref @stone_hall_ref | `Close-up of the same red-haired man's face, lit gold from below. He looks up, and blue-white sparks crackle around his grey eyes. Camera static. No text.` refs: @rand_ref |
+| R2 | **Storm on the wall** | about 9 s (A 4 s + B 5 s) | `Wide low-angle shot at night in the rain. The same red-haired man in a dark red coat stands on top of a vast grey stone fortress wall above a dark harbor and raises a small glowing green figurine over his head. Camera static. No text.` refs: @rand_ref @angreal_ref | `Wide shot of a black storm sky over a stone fortress and harbor at night. The clouds swirl and one huge fork of lightning splits the sky. Camera static. No text.` (no refs) |
+| R3 | **Fire down the hall** | about 7 s (one 6–10 s shot, trimmed) | `Medium shot inside an enormous hall of red stone columns and gilded lamps. The same red-haired man in a dark red coat walks forward and thrusts his open hand toward the camera, and a roaring ball of fire flies past the lens down the hall. Warm firelight, handheld. No text.` refs: @rand_ref @stone_hall_ref (a 10 s generation, keeping the walk-up and the throw) | — (single shot. If the throw lands early in the take, add B: `Down a long red-columned hall, a ball of fire rushes away from the camera and distant monstrous shadows scatter. No text.`) |
+| R4 | **Behind you** | about 9 s (A 5 s + B 4 s) | `A teenage boy seen only from behind in the left foreground, he never turns around: short dark hair, long black calf-length coat over a black sleeveless top, black fingerless gloves, black trousers and boots. Beyond him, the same red-haired man in a dark red coat walks out of drifting smoke toward the camera. Camera static at the boy's shoulder. No text.` refs: @rand_ref @riley_back_ref @stone_hall_ref | `Medium shot of the red-haired man in the dark red coat raising a small glowing green figurine in his fist as lightning flickers around him in a smoky stone hall. Camera static. No text.` refs: @rand_ref @angreal_ref |
+| R5 | **Lightning hand** (backup, or the 5th in rotation) | about 6 s (A 3 s + B 3 s) | `Extreme close-up: a man's hand in a dark red sleeve clenches around a small glowing green figurine, and blue-white lightning bursts between his fingers. Black background. No text.` refs: @angreal_ref | `The same red-haired man in a dark red coat, waist-up, flings his hand forward and lightning arcs off toward the camera. Dark stone hall. No text.` refs: @rand_ref |
+
+**The R4 rule:** Riley appears only from behind, in the outfit above. Any frame in which he turns or his face shows
+is rejected outright, because Riley is a real 16-year-old.
 
 **Known Grok Imagine risks:**
 - Red-gold hair drifts toward plain ginger or brown. Regenerate rather than fix in post.
 - The heron brand often won't render. That is acceptable.
 - The figurine may come out as a generic idol. `@angreal_ref` helps.
-- R4 may turn the boy around. Any frame showing his face is rejected outright, because Riley is a real 16-year-old.
-- If R4 fails 3 times, replace it with **R5 "Lightning hand"**:
-  `Extreme close-up: a man's hand in a dark red sleeve clenches around a small glowing green figurine, and blue-white lightning bursts between his fingers. Black background. No text.`
-  R5 is also the cheapest fallback for any slot.
-
-Clip audio: keep the thunder and fire. Strip anything voice-like, because Rand's bark plays in-game instead (§6). That
-way a skipped or failed clip still gets the line.
+- Rand's face can drift between shots A and B, so check each pair side by side before encoding.
+- **Expect about 2–3 generations per shot, about 18–25 generations for the set.**
 
 ## 5. Art (ChatGPT collage sheets, processed by script)
 
@@ -390,7 +431,7 @@ violet-grey, and violet cannot be cut off magenta (the Stage 3 lesson), so the c
 **ChatGPT guardrail wording** (from Stages 3–4): ask for "Rand raises his hand and lightning crackles across the
 sky" and "monsters flee". Never ask for "lightning strikes Trollocs" or for defeated bodies.
 
-**Rand's face:** a fictional adult man. It is fine to paint him with image generation, as long as he does not resemble
+**Rand's face and coat:** a fictional adult man in a **dark red** coat (decided). It is fine to paint him with image generation, as long as he does not resemble
 the TV actor. Riley is not repainted.
 
 ## 6. Voice (ElevenLabs) and music
@@ -430,7 +471,7 @@ ostinato). Both use the Stage 4/5 composer pattern (`tools/stage5/compose_stage5
   - hud, voice, sfx, def ≤ 6144.
 - Voices: 24 × 200 KB. Music: 2 × 1.2 MB. Stage 6 art: **6 MB** of files on disk under `assets/stage6` and
   `assets/bg6`.
-- `cutscenes.randCalls`†: 2,800,000 bytes.
+- `cutscenes.randCalls`†: 7,500,000 bytes (5 clips of 5–10 s at 854×480 CRF 29, §4.2).
 - **The 25 MB pre-fight number must not move by more than the few bytes of the `src/stages.js` registry edit.**
 
 **GPU memory (WebKit, every texture key, measured the same way as the Stage 4 Draghkar note):** the **target is
@@ -457,14 +498,11 @@ cleared afterwards, as for the existing mid-stage Stage 1 boss clip.
 
 Stage 5 is not live yet, and Stage 6 builds on it.
 
-0. **Gate.**
-   - Stage 5 (PR #27) must first merge `rwb-w2` (this plan branch's base `dfc2559` predates the cutscene PR #37,
-     the painted Draghkar and the Stage 3 art).
-   - Jason OKs Stage 5.
-   - It merges into `rwb-w2`.
-   - The Stage 6 build branch `rwb-2-stage6`† is cut from that `rwb-w2`.
-
-   If Jason wants Stage 6 started earlier, it is cut from `rwb-2-stage5` and rebased later, accepting the rebase cost.
+0. **Base: already done.** `origin/rwb-2-stage5` at `58bbf74` has merged live `rwb-w2` (`06979ff`, with the
+   cutscene system, the no-placeholder rule and the painted art), and this plan branch has merged that tip. The
+   Stage 6 build branch `rwb-2-stage6`† is cut from `rwb-2-stage5`'s tip when the build starts. The only remaining
+   gate is the rebase onto `rwb-w2` after Stage 5 goes live, which needs Jason's OK. Stage 6 stays behind `s6=1`
+   either way.
 1. **T1 registry.** `STAGES[6]` from `src/stage6-def.js`†, behind a **`s6=1` flag** until Jason OKs it.
    `stageEnabled`/`maxStage`/`stageFromQuery` accept 6 only with the flag. `STAGE5.next` → Stage 6 only with the
    flag. A `stage6-harness`† is copied from `stage5-harness`. Minimal bytes in `src/stages.js`.
@@ -476,11 +514,11 @@ Stage 5 is not live yet, and Stage 6 builds on it.
 5. **T5 kit, layout, view and hazards:** `Stage6Kit`, `assets/bg6/layout.json`, docks/halls/hall/Heart, net, lamp,
    hatch.
 6. **T6 enemies:** `grayman`, `fadelt` with the link.
-7. **T7 boss** (Jason's pick).
+7. **T7 boss:** Be'lal (§2.4 A).
 8. **T8 art:** ChatGPT sheets and `tools/stage6/process_*.py` with ART_STATUS. Procedural stand-ins until then, stamped
    only under `?debug`.
-9. **T9 cutscenes:** Rand reference stills, R1–R4 in Grok Imagine, trim and encode, ART_STATUS. A Stage 6 intro clip
-   is optional.
+9. **T9 cutscenes:** Rand reference stills, R1–R5 shots in Grok Imagine (6/10 s generations), trim, hard-cut joins,
+   854×480 CRF 29 encode under the §4.2 caps, ART_STATUS. A Stage 6 intro clip is optional.
 10. **T10 audio:** ElevenLabs lines, SFX, music.
 11. **T11 HUD and flow:** the Rand slot, story in/out, the hint lines.
 12. **T12 bot and campaign:** `bot-stage6.js`, 9 seeds, run both with Rand and without (§9).
@@ -520,7 +558,10 @@ Protected files show no diff. `node tools/audit-stage1.mjs` exits 0.
   - plays on every call;
   - 1000 draws with no immediate repeat, including across bag refills and a `sessionStorage` restore;
   - skip by tap, button or pad; the 450 ms guard;
-  - `then` runs exactly once on end, skip, error and a 1.5 s no-start timeout;
+  - `then` runs exactly once on end, skip, error, a mid-clip stall and a 1.5 s no-start timeout, so the strike
+    always lands;
+  - a 10 s clip is never cut by `maxMs`;
+  - the bag rotates all 5 variants;
   - with cutscenes disabled, the strike runs with no clip;
   - music is ducked and restored, never left silent;
   - pause, death or stage switch mid-clip leaves no overlay, no blob URL and no paused game;
@@ -533,6 +574,8 @@ Protected files show no diff. `node tools/audit-stage1.mjs` exits 0.
   - **the boss time with Rand ≥ 70% of the time without him** (the no-trivialise guard).
 - `stage6-no-placeholder`: added to `tests/no-placeholder.test.mjs`'s stage list. The Stage 6 queue loads no file that
   an ART_STATUS marks `placeholder: true`, and no `PLACEHOLDER` text is drawn without `?debug`.
+- `rand-clip-sizes`†: every file in `assets/cutscenes/rand/` is ≤ 160 KB per second of its ART_STATUS
+  `durationSeconds`. Each clip is 5–10 s, and the folder totals ≤ 7,500,000 bytes.
 - `stage6-memory`: plate and sheet RGBA sums under the §7 caps, plus a WebKit boss-peak measurement recorded in
   `docs/stage6/STATUS.md`.
 - `stage6-hardening`: idle 120 s, a no-power seed 1 clear, a 200-input fuzz, the governor before `build()`, and NaN/0/huge
@@ -540,42 +583,45 @@ Protected files show no diff. `node tools/audit-stage1.mjs` exits 0.
 
 **Device check by Jason:**
 - an iPhone playthrough;
-- 3 Rand calls in one run;
+- 3 Rand calls in one run, each with a full 5–10 s scene;
 - one clip skipped by tap;
 - airplane mode partway through (the fallback path).
 
 ## 10. Honest pushback
 
-1. **A cutscene on every call can get tiresome.** Each call is a 3 s pause in the middle of a fight, up to 3 times a
-   stage, and it breaks combo rhythm. It is skippable with a tap, and the 4 variants rotate, but by the third stage
-   Jason has seen them all many times. The recommendation is to build it as asked, and add a one-line option (Q4):
-   the full clip on the **first** call of each stage, then a 1 s in-engine sting (flash plus Rand's bark).
+1. **Every call is now a 5–10 s pause in the middle of a fight** (Jason's call, built as asked). With up to 3 calls
+   per stage, that is up to about 30 s of video per stage. Tap-to-skip and the 5-clip rotation are the mitigations.
+   Watch whether Riley starts skipping every clip in playtests.
 2. **A screen clear can make fights too easy.** That is why there is a hard cap (3 per stage, 1 per boss phase), why
    elites and humans survive, why bosses take only 10% clamped at the phase gates, and why "Rand off" must still clear
    9/9 in the bot test. Wiping the boss's adds is still very strong in P2. If playtests feel too easy, cut the cap to 2.
-3. **Callandor.** `plan/LEVELS.md` row 7 has Riley taking Callandor with a moveset swap. With Rand in the stage, canon
-   says Rand takes it. A moveset swap also risks the "same controls" rule. The plan keeps Callandor as scenery and a P3
-   god-ray mechanic, and Rand takes it in the outro (Q6).
-4. **Timeline.** Be'lal and the fat-man angreal don't overlap in the books (§1).
+3. **Callandor (decided).** `plan/LEVELS.md` row 7 had Riley taking Callandor with a moveset swap. Rand takes it in
+   the outro instead, and Riley keeps the same moveset.
+4. **Timeline.** Be'lal and the fat-man angreal don't overlap in the books (§1). That is accepted.
 5. **Budgets are tight.** The pre-fight gate has about 2 KB left. The cutscene clip line is about 87% full once Stage 5
-   ships. Stage 4 GPU memory is 1.1 MiB from the guide. That is why the plan uses its own budget lines, drops Loial's
-   atlas on Stage 6, and sets a 115 MiB target.
-6. **Rand's look across 4 clips.** Grok Imagine drifts. Expect about 2–3 generations per variant, and a reject on
+   ships, and the 5–10 s Rand clips need their own 7.5 MB line. Stage 4 GPU memory is 1.1 MiB from the guide. That is
+   why the plan uses its own budget lines, drops Loial's atlas on Stage 6, and sets a 115 MiB target.
+6. **Rand's look across 5 clips (about 9 shots).** Grok Imagine drifts. Expect about 2–3 generations per shot, and a reject on
    any face that looks like the TV actor.
 7. **Stage numbering.** Earlier plans put Tarwin's Gap at Stage 6 and the Stone of Tear at Stage 7. This plan moves
-   the Stone up to Stage 6 (Q3).
+   the Stone up to Stage 6, and Tarwin's Gap goes on the later bonus/stage list.
 
-## 11. Open questions for Jason
+## 11. Decisions (Oct 9) and what is still open
 
-| # | Question | Default |
+| # | Topic | Decision |
 |---|---|---|
-| Q1 | Boss: **A Be'lal** (sword of black fire, Netweaver lines, Moiraine's balefire finish), **B Lanfear** (theatrical, escapes, recurring), or **C Ba'alzamon** (dream-twisted Stone hazards)? | A, Be'lal |
-| Q2 | Set the stage on the canon Shadowspawn-assault night (fits the barges, Gray Men, Rand's lightning and the angreal), knowing Be'lal is out of timeline? | Yes |
-| Q3 | Tarwin's Gap (old Stage 6): later bonus stage, or drop it? | Later bonus stage, like the Ways |
-| Q4 | Rand cutscene on **every** call (as asked), or full clip on the first call per stage and a 1 s sting after? | Every call, with a tap to skip; revisit after a playtest |
-| Q5 | Defenders of the Stone: background allies (default) or enemies under a Darkfriend High Lord? | Allies |
-| Q6 | Callandor: Rand takes it in the outro (canon), or Riley takes it with a moveset swap (`LEVELS.md`)? | Rand takes it; no moveset swap |
-| Q7 | Rand's coat: dark red with gold herons/embroidery, or black? | Dark red |
-| Q8 | Is Riley-from-behind in the R4 "Behind you" clip OK, or should Rand clips show Rand only? | OK, from behind only, rejected on any face |
-| Q9 | Rand rules: 3 calls per stage, 10 Riley KOs plus 45 s to recharge, bosses take 10% clamped at the gates. Right teeth? | Yes; tune after a playtest |
-| Q10 | Stage 6 behind an `s6=1` flag until you OK it, the same as Stage 5? | Yes |
+| D1 | Boss | **Be'lal** (§2.4 A), pending Jason's final word; no objection so far. Lanfear is kept as a possible later stage or boss |
+| D2 | Setting | The canon Shadowspawn-assault night, with Be'lal out of timeline (accepted) |
+| D3 | Tarwin's Gap | On the later bonus/stage list, alongside the Ways |
+| D4 | Rand cutscenes | **A full 5–10 s scene on every call** (Jason). Tap to skip; the game pauses; the strike lands regardless. No shortened mode |
+| D5 | Defenders of the Stone | Background allies |
+| D6 | Callandor | Rand takes it in the outro. Riley keeps the same moveset |
+| D7 | Rand's coat | Dark red |
+| D8 | R4 "Behind you" | OK, with Riley from behind only, rejected on any face |
+| D9 | Rand numbers | As proposed: 1 charge, recharged by 10 Riley KOs plus 45 s, 3 per stage, 1 per boss phase, bosses take 10% clamped at the gates. Tune after a playtest |
+| D10 | Release | Stage 6 stays behind `s6=1` until Jason OKs it |
+
+**Still open for Jason:**
+- his final yes on Be'lal;
+- 854×480 versus 960×540 for the Rand clips, judged on his phone (§4.2);
+- whether all 5 Rand clips rotate, or R5 stays a backup only.
