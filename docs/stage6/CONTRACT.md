@@ -28,7 +28,7 @@ Gameplay is in. Art (A1–A4) and hardening tests (C1–C4) build against the na
 - **HUD.** `bindRandLabel(hud)` installs an own-property `updateLoialLabel` and points `loialPic` at `randPortrait`. `syncRandReady` sets `s.loial = null` and mirrors readiness onto `riley.loialReady` before `hud.update`. Labels are `RAND!`, `RAND SPENT`, `RAND READY`, and `RAND n/10`. No countdown. Boss name is set with `fixBoss` (`BE'LAL`).
 - **Cutscene.** `playCall(scene, then)` sets `scene.cutscene = { rand:true, i:0, line:null, press, next }`. `progress` writes `cutscene.i`. `flushPresses()` runs on every exit and again on the first resumed frame (`kit.flushInp`). Clips cap at 11 s, skip guard is 900 ms, and the bag allows 1–5 ids (N = 1 may repeat). `installRandBless` is installed in `Stage6Kit.build` and removed in `destroy`.
 - **Strike.** `onScreenHittable` is the only hittable check for refusal and for the strike. `riley.inv` is set in `endStrike` (2 s), not when the strike starts. Recharge adds `dt` in `tickRand`.
-- **Release.** Leaving stage 6 drops Stage 6 textures, stage 6 voice clips, and the `fade` / `cutthroat` atlases when the destination does not use them.
+- **Release.** Leaving stage 6 drops Stage 6 textures, stage 6 voice clips, and the `fade` / `cutthroat` atlases when the destination does not use them. Shared fighter normals use `src/texture-pages.js` (`assets/stage5/normals`) while the loaded stage is 5 or 6. Queueing any other stage removes those pages and reloads the originals.
 
 ## Be'lal
 
@@ -57,5 +57,5 @@ Gameplay is in. Art (A1–A4) and hardening tests (C1–C4) build against the na
 - `tests/stage6-boss.test.mjs` pins damage, the 4th-hit counter, the 60 s wall pin (≤ 3 hits), and the snare / getup blocks.
 - `tests/rand-call.test.mjs` and `tests/rand-call-cutscene.test.mjs` pin the shared hittable check, inv-at-unfreeze, bag N = 1..5, the 900 ms guard, the watchdog, and the bless listener.
 - `tests/stage6-size-caps.test.mjs` spawns `node tools/audit-stage1.mjs` and rejects any pre-fight path matching stage 6, Rand, Be'lal, Gray Man, or Fadelt.
-- `tests/stage6-memory.test.mjs` sums decoded RGBA. The recorded total is 129.07 MiB. Do not treat 115 MiB as already met.
+- `tests/stage6-memory.test.mjs` sums decoded RGBA of the compact normal pages and asserts that static total is under 120 MiB. The live WebKit boss-fight source peak (`tools/stage5/texture-dump.mjs`, `RWB_STAGES=6`) is 94.81 MiB. The old 129.07 MiB figure was a static sum of the full-size normals and is not the loaded peak.
 - New hardening files should be `tests/stage6-hardening*.test.mjs`, `tests/stage6-protected.test.mjs`, and the no-placeholder loop over stages 1–6. Gameplay fixes stay in the gameplay modules above.

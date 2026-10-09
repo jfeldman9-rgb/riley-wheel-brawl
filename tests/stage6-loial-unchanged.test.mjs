@@ -12,7 +12,15 @@ test('stages 1-5 still call Loial and do not queue Rand', () => {
   for (const n of [1, 5]) assert.ok(STAGE_CHARS[n].includes('loial'), n);
   assert.ok(!STAGE_CHARS[6].includes('loial'));
   const urls = [];
-  const load = new Proxy({}, { get: () => (...args) => args.slice(1).forEach(a => { if (typeof a === 'string' && a.startsWith('assets/')) urls.push(a); }) });
+  const note = (...args) => args.flat(2).forEach(a => { if (typeof a === 'string' && a.startsWith('assets/')) urls.push(a); });
+  const load = new Proxy({}, {
+    get(target, prop) {
+      if (Object.prototype.hasOwnProperty.call(target, prop)) return target[prop];
+      if (prop === 'optionalAssetKeys') return undefined;
+      return note;
+    },
+    set(target, prop, value) { target[prop] = value; return true; },
+  });
   const scene = { load, textures: { exists: () => false }, cache: { json: { get: () => undefined } }, anims: { exists: () => false } };
   for (const n of [1, 2, 3, 4, 5]) if (STAGES[n].queue) STAGES[n].queue(scene);
   assert.deepEqual(urls.filter(u => /rand|s6rand|belal/i.test(u)), []);
