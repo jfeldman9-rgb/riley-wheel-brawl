@@ -30,8 +30,8 @@ ELEVEN_VOICES = {
     'mordeth': os.environ.get('ELEVENLABS_VOICE_MORDETH', ''),
 }
 PRON = {
-    'Aridhol': 'ˈærɪdhɒl', 'Moiraine': 'mwɑˈreɪn', 'Caemlyn': 'ˈkeɪmlɪn',
-    'Mashadar': 'mæˈʃɑdɑr', 'Waygate': 'ˈweɪɡeɪt', 'Loial': 'ˈlɔɪæl',
+    'Aridhol': 'ˈɛɹɪdˌɔl', 'Moiraine': 'mwɑˈreɪn', 'Caemlyn': 'ˈkeɪmlɪn',
+    'Mashadar': 'ˈmæʃədɑɹ', 'Waygate': 'ˈweɪɡeɪt', 'Loial': 'ˈlɔɪæl',
 }
 
 def speech_input(text):

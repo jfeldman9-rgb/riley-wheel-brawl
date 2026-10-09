@@ -21,10 +21,10 @@
     }
   },
   "pronunciation": {
-    "Aridhol": "ˈærɪdhɒl",
+    "Aridhol": "ˈɛɹɪdˌɔl",
     "Moiraine": "mwɑˈreɪn",
     "Caemlyn": "ˈkeɪmlɪn",
-    "Mashadar": "mæˈʃɑdɑr",
+    "Mashadar": "ˈmæʃədɑɹ",
     "Waygate": "ˈweɪɡeɪt",
     "Loial": "ˈlɔɪæl"
   },
@@ -142,14 +142,16 @@
       "asset_path": "assets/audio/voice/cultist_feed_01.mp3",
       "duration_s": 2.038,
       "bytes": 33061,
-      "sha256": "790caa75e7689723d9be4d11fee83e53f52e2bab57f7af7d02bd34d176339d87",
+      "sha256": "ca0a843aedf595ee1cf1a92a9727656de959df8b7073a213f49ebc2010a4f1ec",
       "source": "elevenlabs",
       "engine": "eleven_v4",
       "voice_id": "SOYHLrjzK2X1ezoPC6cr",
       "voice_name": "Harry - Fierce Warrior",
-      "prompt": "[shouting] [raspy] Mashadar, feed!",
-      "generation_id": "1nJYtXccvIonU0WfbPtC",
-      "processing": "loudnorm -16 LUFS + limiter"
+      "prompt": "[shouting] [raspy] Mash-uh-dar, feed!",
+      "generation_id": "OfPJAETjdZB10yfSBoAG",
+      "processing": "loudnorm -16 LUFS + limiter",
+      "previous_sha256": "790caa75e7689723d9be4d11fee83e53f52e2bab57f7af7d02bd34d176339d87",
+      "rerecord_note": "re-recorded 2026-10-08, approved by Jason F via Grok Bot. Mashadar = MASH-uh-dar (respelled 'Mash-uh-dar' in the prompt)."
     },
     {
       "id": "cultist_burn_01",
@@ -157,16 +159,18 @@
       "speaker": "CULTIST",
       "text": "He burns... it burns!",
       "asset_path": "assets/audio/voice/cultist_burn_01.mp3",
-      "duration_s": 2.586,
-      "bytes": 41838,
-      "sha256": "39a487aece44348f48353dc77dffcb338ec4723aa96922ac99cdc4d0c72ac0dc",
+      "duration_s": 2.508,
+      "bytes": 40585,
+      "sha256": "094e82c3951e9e4f06ff4e9759c3425cd84245e3e4209b927013eac461f2ef30",
       "source": "elevenlabs",
       "engine": "eleven_v4",
       "voice_id": "SOYHLrjzK2X1ezoPC6cr",
       "voice_name": "Harry - Fierce Warrior",
-      "prompt": "[panicked] [raspy] He burns... [screaming] it burns!",
-      "generation_id": "1ibv5dCyalSAlIZ7FE1Y",
-      "processing": "loudnorm -16 LUFS + limiter"
+      "prompt": "[panicked] [raspy] He burns! [screaming] It burns!",
+      "generation_id": "tP0xTxWKtFWaWfMJBAvH",
+      "processing": "loudnorm -16 LUFS + limiter",
+      "previous_sha256": "39a487aece44348f48353dc77dffcb338ec4723aa96922ac99cdc4d0c72ac0dc",
+      "rerecord_note": "re-recorded 2026-10-08, approved by Jason F via Grok Bot. previous take dropped 'He'."
     },
     {
       "id": "riley_fog_01",
@@ -291,11 +295,13 @@
       "asset_path": "assets/audio/voice/st4_story_02.mp3",
       "duration_s": 2.64,
       "bytes": 32012,
-      "sha256": "6f8a4dcfed2a72967a46dfac1a11fc1bf5ecfe508ea8eaa92d3ef884c5b2d4f2",
+      "sha256": "9cfb21f8145e61c8dc797394a2db0e252109bb10cc7f0da4f0c8e9629ff63441",
       "source": "kokoro",
       "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0 (rev f3ff3571)",
       "cast": "riley",
-      "speech_input": "[Aridhol](/ˈærɪdhɒl/). [Moiraine](/mwɑˈreɪn/) said never go in."
+      "speech_input": "[Aridhol](/ˈɛɹɪdˌɔl/). [Moiraine](/mwɑˈreɪn/) said never go in.",
+      "previous_sha256": "6f8a4dcfed2a72967a46dfac1a11fc1bf5ecfe508ea8eaa92d3ef884c5b2d4f2",
+      "rerecord_note": "re-recorded 2026-10-08, approved by Jason F via Grok Bot. Aridhol = AIR-ih-dol (IPA ˈɛɹɪdˌɔl; was ˈærɪdhɒl)."
     },
     {
       "id": "st4_story_03",
