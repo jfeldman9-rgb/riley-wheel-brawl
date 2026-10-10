@@ -34,6 +34,7 @@ export class Riley extends Fighter {
     this.sprite.setAlpha(this.inv > 0 && this.state !== 'down' && this.state !== 'getup' && this.state !== 'balefire' ? (Math.floor(this.st * 20) % 2 ? 0.45 : 1) : 1);
     // The assist call works in any state (as in 1.1); the stage decides whether Loial is available.
     if (this.alive && inp.take('assist')) this.scene.callLoial?.();
+    if (this.scene.stageNo === 6 && (this.scene.kit?.strike || this.scene.cutscene)) return;
     const s = this.state, x = inp.x, y = inp.y;
     switch (s) {
       case 'idle': case 'walk': case 'run': return this.free(dt, inp);

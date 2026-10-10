@@ -1,0 +1,30 @@
+{
+  "present": [
+    "st6_story_01",
+    "st6_story_02",
+    "st6_story_03",
+    "st6_story_04",
+    "st6_story_05",
+    "st6_clear_01",
+    "st6_clear_02",
+    "st6_clear_03",
+    "riley_st6_call_01",
+    "riley_st6_call_02",
+    "riley_st6_rand_wait_01",
+    "rand_call_01",
+    "rand_call_02",
+    "rand_call_03",
+    "rand_call_04",
+    "rand_call_05",
+    "belal_intro_01",
+    "belal_net_01",
+    "belal_mid_01",
+    "belal_defeat_01",
+    "st6_moiraine_01",
+    "grayman_01",
+    "defender_01",
+    "riley_st6_gray_01",
+    "riley_st6_victory_01"
+  ],
+  "note": "present is the ids whose mp3 is in assets/audio/voice/. The stage 6 registry test requires this list to match the files on disk. An id left out is a caption and is not fetched. Add the id in the same change as its mp3. Cast, prompts and generation ids: tools/stage6/voice-render.json."
+}

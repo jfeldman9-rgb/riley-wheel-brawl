@@ -5,7 +5,7 @@
 // Every character's small anims.json loads at boot (ALL_CHARS); only the current stage's atlas pages are fetched.
 export const CHARS = ['riley', 'grunt', 'spear', 'hound', 'chief', 'loial'];
 export const ALL_CHARS = [...CHARS, 'zealot', 'archer', 'byar'];
-import { normalPageDir } from './stage5-texture-pages.js';
+import { normalPageDir } from './texture-pages.js';
 const NML = {};
 export function queueCharJson(scene) {
   for (const k of ALL_CHARS) scene.load.json(k + '.A', `assets/chars/${k}.anims.json`);

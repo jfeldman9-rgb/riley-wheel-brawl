@@ -1,0 +1,678 @@
+[
+  {
+    "mode": "none",
+    "errors": [],
+    "warnings": [],
+    "state": {
+      "started": true,
+      "optional": [],
+      "keys": [
+        [
+          "s6belal",
+          "file"
+        ],
+        [
+          "belalPortrait",
+          "file"
+        ],
+        [
+          "s6gray",
+          "file"
+        ],
+        [
+          "s6fade",
+          "file"
+        ],
+        [
+          "s6rand",
+          "file"
+        ],
+        [
+          "s6def",
+          "file"
+        ],
+        [
+          "randPortrait",
+          "file"
+        ],
+        [
+          "s6hatch",
+          "file"
+        ],
+        [
+          "s6oil",
+          "file"
+        ],
+        [
+          "s6lamp",
+          "file"
+        ],
+        [
+          "s6net",
+          "file"
+        ],
+        [
+          "s6streak",
+          "file"
+        ],
+        [
+          "s6call",
+          "file"
+        ],
+        [
+          "bg6far",
+          "file"
+        ],
+        [
+          "bg6mid",
+          "file"
+        ],
+        [
+          "bg6mid2",
+          "file"
+        ],
+        [
+          "bg6mid3",
+          "file"
+        ],
+        [
+          "bg6mid4",
+          "file"
+        ],
+        [
+          "bg6floor",
+          "file"
+        ],
+        [
+          "bg6floor2",
+          "file"
+        ],
+        [
+          "bg6floor3",
+          "file"
+        ],
+        [
+          "story6p1",
+          "absent"
+        ],
+        [
+          "story6p2",
+          "absent"
+        ],
+        [
+          "story6p3",
+          "absent"
+        ],
+        [
+          "s6ribbon",
+          "file"
+        ],
+        [
+          "crate",
+          "file"
+        ]
+      ],
+      "missingCanvases": [],
+      "plateTiles": [],
+      "atlasMeta": {
+        "meta": {
+          "app": "tools/stage6/process_art.py",
+          "drawScale": 1,
+          "format": "RGBA8888",
+          "image": "s6belal.webp",
+          "origin": [
+            0.5,
+            0.96
+          ],
+          "res": 1,
+          "scale": "1",
+          "screenH": 250,
+          "size": {
+            "h": 283,
+            "w": 1871
+          }
+        }
+      }
+    }
+  },
+  {
+    "mode": "one",
+    "errors": [],
+    "warnings": [],
+    "state": {
+      "started": true,
+      "optional": [],
+      "keys": [
+        [
+          "s6belal",
+          "file"
+        ],
+        [
+          "belalPortrait",
+          "file"
+        ],
+        [
+          "s6gray",
+          "file"
+        ],
+        [
+          "s6fade",
+          "file"
+        ],
+        [
+          "s6rand",
+          "file"
+        ],
+        [
+          "s6def",
+          "file"
+        ],
+        [
+          "randPortrait",
+          "file"
+        ],
+        [
+          "s6hatch",
+          "file"
+        ],
+        [
+          "s6oil",
+          "file"
+        ],
+        [
+          "s6lamp",
+          "file"
+        ],
+        [
+          "s6net",
+          "file"
+        ],
+        [
+          "s6streak",
+          "file"
+        ],
+        [
+          "s6call",
+          "file"
+        ],
+        [
+          "bg6far",
+          "file"
+        ],
+        [
+          "bg6mid",
+          "file"
+        ],
+        [
+          "bg6mid2",
+          "file"
+        ],
+        [
+          "bg6mid3",
+          "absent"
+        ],
+        [
+          "bg6mid4",
+          "file"
+        ],
+        [
+          "bg6floor",
+          "file"
+        ],
+        [
+          "bg6floor2",
+          "file"
+        ],
+        [
+          "bg6floor3",
+          "file"
+        ],
+        [
+          "story6p1",
+          "absent"
+        ],
+        [
+          "story6p2",
+          "absent"
+        ],
+        [
+          "story6p3",
+          "absent"
+        ],
+        [
+          "s6ribbon",
+          "file"
+        ],
+        [
+          "crate",
+          "file"
+        ]
+      ],
+      "missingCanvases": [],
+      "plateTiles": [
+        [
+          "bg6mid",
+          false
+        ],
+        [
+          "bg6mid2",
+          false
+        ],
+        [
+          "bg6mid",
+          false
+        ],
+        [
+          "bg6mid2",
+          false
+        ],
+        [
+          "bg6mid",
+          false
+        ],
+        [
+          "bg6mid2",
+          false
+        ]
+      ],
+      "atlasMeta": {
+        "meta": {
+          "app": "tools/stage6/process_art.py",
+          "drawScale": 1,
+          "format": "RGBA8888",
+          "image": "s6belal.webp",
+          "origin": [
+            0.5,
+            0.96
+          ],
+          "res": 1,
+          "scale": "1",
+          "screenH": 250,
+          "size": {
+            "h": 283,
+            "w": 1871
+          }
+        }
+      }
+    }
+  },
+  {
+    "mode": "atlas-json",
+    "errors": [],
+    "warnings": [],
+    "state": {
+      "started": true,
+      "optional": [],
+      "keys": [
+        [
+          "s6belal",
+          "canvas"
+        ],
+        [
+          "belalPortrait",
+          "file"
+        ],
+        [
+          "s6gray",
+          "file"
+        ],
+        [
+          "s6fade",
+          "file"
+        ],
+        [
+          "s6rand",
+          "file"
+        ],
+        [
+          "s6def",
+          "file"
+        ],
+        [
+          "randPortrait",
+          "file"
+        ],
+        [
+          "s6hatch",
+          "file"
+        ],
+        [
+          "s6oil",
+          "file"
+        ],
+        [
+          "s6lamp",
+          "file"
+        ],
+        [
+          "s6net",
+          "file"
+        ],
+        [
+          "s6streak",
+          "file"
+        ],
+        [
+          "s6call",
+          "file"
+        ],
+        [
+          "bg6far",
+          "file"
+        ],
+        [
+          "bg6mid",
+          "file"
+        ],
+        [
+          "bg6mid2",
+          "file"
+        ],
+        [
+          "bg6mid3",
+          "file"
+        ],
+        [
+          "bg6mid4",
+          "file"
+        ],
+        [
+          "bg6floor",
+          "file"
+        ],
+        [
+          "bg6floor2",
+          "file"
+        ],
+        [
+          "bg6floor3",
+          "file"
+        ],
+        [
+          "story6p1",
+          "absent"
+        ],
+        [
+          "story6p2",
+          "absent"
+        ],
+        [
+          "story6p3",
+          "absent"
+        ],
+        [
+          "s6ribbon",
+          "file"
+        ],
+        [
+          "crate",
+          "file"
+        ]
+      ],
+      "missingCanvases": [],
+      "plateTiles": [],
+      "atlasMeta": {}
+    }
+  },
+  {
+    "mode": "atlas-webp",
+    "errors": [],
+    "warnings": [],
+    "state": {
+      "started": true,
+      "optional": [],
+      "keys": [
+        [
+          "s6belal",
+          "canvas"
+        ],
+        [
+          "belalPortrait",
+          "file"
+        ],
+        [
+          "s6gray",
+          "file"
+        ],
+        [
+          "s6fade",
+          "file"
+        ],
+        [
+          "s6rand",
+          "file"
+        ],
+        [
+          "s6def",
+          "file"
+        ],
+        [
+          "randPortrait",
+          "file"
+        ],
+        [
+          "s6hatch",
+          "file"
+        ],
+        [
+          "s6oil",
+          "file"
+        ],
+        [
+          "s6lamp",
+          "file"
+        ],
+        [
+          "s6net",
+          "file"
+        ],
+        [
+          "s6streak",
+          "file"
+        ],
+        [
+          "s6call",
+          "file"
+        ],
+        [
+          "bg6far",
+          "file"
+        ],
+        [
+          "bg6mid",
+          "file"
+        ],
+        [
+          "bg6mid2",
+          "file"
+        ],
+        [
+          "bg6mid3",
+          "file"
+        ],
+        [
+          "bg6mid4",
+          "file"
+        ],
+        [
+          "bg6floor",
+          "file"
+        ],
+        [
+          "bg6floor2",
+          "file"
+        ],
+        [
+          "bg6floor3",
+          "file"
+        ],
+        [
+          "story6p1",
+          "absent"
+        ],
+        [
+          "story6p2",
+          "absent"
+        ],
+        [
+          "story6p3",
+          "absent"
+        ],
+        [
+          "s6ribbon",
+          "file"
+        ],
+        [
+          "crate",
+          "file"
+        ]
+      ],
+      "missingCanvases": [],
+      "plateTiles": [],
+      "atlasMeta": {}
+    }
+  },
+  {
+    "mode": "all",
+    "errors": [],
+    "warnings": [],
+    "state": {
+      "started": true,
+      "optional": [],
+      "keys": [
+        [
+          "s6belal",
+          "canvas"
+        ],
+        [
+          "belalPortrait",
+          "canvas"
+        ],
+        [
+          "s6gray",
+          "canvas"
+        ],
+        [
+          "s6fade",
+          "canvas"
+        ],
+        [
+          "s6rand",
+          "canvas"
+        ],
+        [
+          "s6def",
+          "canvas"
+        ],
+        [
+          "randPortrait",
+          "canvas"
+        ],
+        [
+          "s6hatch",
+          "canvas"
+        ],
+        [
+          "s6oil",
+          "canvas"
+        ],
+        [
+          "s6lamp",
+          "canvas"
+        ],
+        [
+          "s6net",
+          "canvas"
+        ],
+        [
+          "s6streak",
+          "canvas"
+        ],
+        [
+          "s6call",
+          "canvas"
+        ],
+        [
+          "bg6far",
+          "canvas"
+        ],
+        [
+          "bg6mid",
+          "canvas"
+        ],
+        [
+          "bg6mid2",
+          "canvas"
+        ],
+        [
+          "bg6mid3",
+          "absent"
+        ],
+        [
+          "bg6mid4",
+          "absent"
+        ],
+        [
+          "bg6floor",
+          "canvas"
+        ],
+        [
+          "bg6floor2",
+          "canvas"
+        ],
+        [
+          "bg6floor3",
+          "canvas"
+        ],
+        [
+          "story6p1",
+          "absent"
+        ],
+        [
+          "story6p2",
+          "absent"
+        ],
+        [
+          "story6p3",
+          "absent"
+        ],
+        [
+          "s6ribbon",
+          "canvas"
+        ],
+        [
+          "crate",
+          "canvas"
+        ]
+      ],
+      "missingCanvases": [],
+      "plateTiles": [
+        [
+          "bg6mid",
+          true
+        ],
+        [
+          "bg6mid2",
+          true
+        ],
+        [
+          "bg6mid",
+          true
+        ],
+        [
+          "bg6mid2",
+          true
+        ],
+        [
+          "bg6mid",
+          true
+        ],
+        [
+          "bg6mid2",
+          true
+        ]
+      ],
+      "atlasMeta": {}
+    }
+  }
+]

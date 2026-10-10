@@ -1,5 +1,7 @@
 // Serve the worktree, then: NODE_PATH=$(npm root -g) node tools/stage5/texture-dump.mjs
-// Uses the actual Phaser renderer/scene, including attached normal sources and GL render targets.
+// Stage 6 needs the flag: RWB_STAGES=6 (the URL adds s6=1). Boss peak is the largest
+// sample whose boss phase is set. Uses the actual Phaser renderer/scene, including
+// attached normal sources and GL render targets.
 import { createRequire } from 'node:module';
 import { writeFileSync } from 'node:fs';
 const { webkit, chromium } = createRequire(import.meta.url)('playwright');
@@ -35,7 +37,8 @@ for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
     for (const stage of stages) {
       const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: scale });
       const errors = []; page.on('pageerror', e => errors.push(e.message));
-      await page.goto(`${base}?stage=${stage}&demo=1&story=0&debug=1&rs=${scale}`, { waitUntil: 'load' });
+      const flag = stage >= 6 ? 's6=1&' : '';
+      await page.goto(`${base}?${flag}stage=${stage}&demo=1&story=0&debug=1&rs=${scale}`, { waitUntil: 'load' });
       await page.waitForFunction(() => window.__stage?.riley, null, { timeout: 60000 });
       const samples = [await page.evaluate(snapshot, 'title')];
       await page.waitForFunction(() => window.__stage?.started, null, { timeout: 60000 });
@@ -59,10 +62,13 @@ for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
       // Keep a complete dump at the largest source and GL sample, plus compact progression.
       const peak = samples.reduce((a, b) => b.sourceBytes > a.sourceBytes ? b : a);
       const glPeak = samples.reduce((a, b) => b.glBytes > a.glBytes ? b : a);
-      const run = { engine, stage, errors, progression: samples.map(({ entries, gl, ...s }) => s), peak, glPeak };
+      const bossSamples = samples.filter(s => (s.phase || 0) >= 1);
+      const bossPeak = bossSamples.reduce((a, b) => b.sourceBytes > a.sourceBytes ? b : a, bossSamples[0] || null);
+      const run = { engine, stage, errors, progression: samples.map(({ entries, gl, ...s }) => s), peak, glPeak, bossPeak };
       result.runs.push(run);
       console.log(JSON.stringify({ engine, stage, sourceMiB: peak.sourceBytes / 2 ** 20, colorMiB: peak.colorBytes / 2 ** 20,
-        glMiB: glPeak.glBytes / 2 ** 20, reachedClear: samples.some(s => s.clearShown), errors }));
+        glMiB: glPeak.glBytes / 2 ** 20, bossSourceMiB: bossPeak ? bossPeak.sourceBytes / 2 ** 20 : null,
+        bossLabel: bossPeak?.label || null, reachedClear: samples.some(s => s.clearShown), errors }));
       // Check restart residency in the same TextureManager rather than a fresh browser.
       if (stage === 4) {
         await page.evaluate(() => { window.__stage.scene.restart({ stage: 5, autostart: true, story: false }); window.__game.loop.start(window.__game.step.bind(window.__game)); });

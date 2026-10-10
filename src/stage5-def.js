@@ -44,7 +44,7 @@ export const STAGE5 = {
   }),
   music: Object.freeze({ stage: 'stage5', boss: 'boss5' }),
   kit: null,
-  next: () => ({ stage: 1 }),
+  next: q => (q?.get?.('s6') === '1' ? { stage: 6, fromStage5: true, autostart: true } : { stage: 1 }),
   onBossPhase: (scene, c, ph) => {
     const L = STAGE5.phaseLines[ph];
     if (L) { scene.caption?.(L.who, L.text); scene.fx.trauma = 0.5; scene.hud?.flashText(L.flash); }

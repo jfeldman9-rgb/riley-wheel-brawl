@@ -1,0 +1,182 @@
+{
+ "version": 1,
+ "note": "Painted Stone of Tear art from ChatGPT collages (tools/stage6/process_art.py, docs/stage6/ART.md). Keys without files stay code-drawn by src/stage6-art.js. placeholder is false.",
+ "entries": [
+  {
+   "id": "bg6far",
+   "key": "bg6far",
+   "files": [
+    "assets/bg6/bg6far.jpg"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/bg6/bg6far.jpg": "51884c05e79845d67ec32818a074cd0f569731dee06b375d1598eb4bdb34250a"
+   },
+   "size": [
+    1024,
+    464
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/far.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "bg6floor",
+   "key": "bg6floor",
+   "files": [
+    "assets/bg6/bg6floor.jpg"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/bg6/bg6floor.jpg": "1fda7e651f51b2d4fb8091ad25821de84fe6901d6ffd7b4a5a8768a40b37285c"
+   },
+   "size": [
+    768,
+    180
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/floors.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "bg6floor2",
+   "key": "bg6floor2",
+   "files": [
+    "assets/bg6/bg6floor2.jpg"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/bg6/bg6floor2.jpg": "a1d45d78a85752831107ff93aea8819848e577b1743ffa3b4921d51387dead30"
+   },
+   "size": [
+    768,
+    180
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/floors.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "bg6floor3",
+   "key": "bg6floor3",
+   "files": [
+    "assets/bg6/bg6floor3.jpg"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/bg6/bg6floor3.jpg": "e22aa3adb063d85dac84a8c47e8db6b24a73f2ec1a67aa0d4dd5c040ecf83bc7"
+   },
+   "size": [
+    1280,
+    180
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/floors.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "bg6mid",
+   "key": "bg6mid",
+   "files": [
+    "assets/bg6/bg6mid.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/bg6/bg6mid.webp": "62620a388e5577ba66dfaff05d98e5429b1d3e2f53aefbb56be9cbdab48dcf91"
+   },
+   "size": [
+    1024,
+    274
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/plates-exterior.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "bg6mid2",
+   "key": "bg6mid2",
+   "files": [
+    "assets/bg6/bg6mid2.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/bg6/bg6mid2.webp": "619770e661a2618048bd268dc11c22659bbd3da1f0f1c11499d9ac8a0dc1ecbe"
+   },
+   "size": [
+    1024,
+    297
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/plates-exterior.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "bg6mid3",
+   "key": "bg6mid3",
+   "files": [
+    "assets/bg6/bg6mid3.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/bg6/bg6mid3.webp": "33c1734bc3b2a62df1eca8cc448675b7c822903baca3efa7a92ceeeb284c4cea"
+   },
+   "size": [
+    1024,
+    464
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/plates-interior.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "bg6mid4",
+   "key": "bg6mid4",
+   "files": [
+    "assets/bg6/bg6mid4.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/bg6/bg6mid4.webp": "f39bd299a27fa11be7c095999de63b98c9e0df56254b62922834d43fed467bcf"
+   },
+   "size": [
+    1024,
+    464
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/plates-interior.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  }
+ ]
+}

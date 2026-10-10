@@ -36,8 +36,9 @@ test('compact colour plus BOTH normal sets fit the Stage 5 resident budget with 
   // Reserve 27.5 MiB for boss sheets, story, powers, HUD, props, FX and render targets.
   assert.ok(bytes + 27.5 * 2 ** 20 < 120 * 2 ** 20, `${bytes / 2 ** 20} MiB character sources`);
 });
-for (const stage of [4, 5]) test(`switch to Stage ${stage} evicts the opposite normal variant and its cached animation frames`, () => {
-  const url = stage === 5 ? 'assets/chars/riley-0_n.webp' : 'assets/stage5/normals/riley-0_n.webp';
+for (const stage of [1, 4, 5, 6]) test(`switch to Stage ${stage} evicts the opposite normal variant and its cached animation frames`, () => {
+  const compact = stage === 5 || stage === 6;
+  const url = compact ? 'assets/chars/riley-0_n.webp' : 'assets/stage5/normals/riley-0_n.webp';
   const keys = new Set(['riley-0', 'riley-0_nl']), removed = [], anims = new Set(['riley_walk']);
   const rows = [];
   queueCharPages({ loadedStage: stage, cache: { json: { get: () => ({ pages: ['riley-0'], anims: [{ name: 'riley_walk' }] }) } },
@@ -45,5 +46,5 @@ for (const stage of [4, 5]) test(`switch to Stage ${stage} evicts the opposite n
     anims: { exists: k => anims.has(k), remove: k => anims.delete(k) }, load: { atlas: r => rows.push(r), image() {} } }, ['riley']);
   assert.deepEqual(removed, ['riley-0', 'riley-0_nl']);
   assert.equal(anims.size, 0, 'animations must not retain frames from the freed texture');
-  assert.equal(rows[0].normalMap, `${stage === 5 ? 'assets/stage5/normals' : 'assets/chars'}/riley-0_n.webp`);
+  assert.equal(rows[0].normalMap, `${compact ? 'assets/stage5/normals' : 'assets/chars'}/riley-0_n.webp`);
 });

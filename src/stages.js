@@ -4,32 +4,33 @@ import { sfx, say } from './audio.js';
 import { LANE_TOP, LANE_BOT } from './config.js';
 import { STAGE4, STAGE4_CHARS, STAGE4_TEXTURES } from './stage4-def.js';
 import { STAGE5, STAGE5_CHARS, STAGE5_TEXTURES } from './stage5-def.js';
+import { STAGE6, STAGE6_CHARS, STAGE6_TEXTURES } from './stage6-def.js';
 import './stage5.js';
+import './stage6.js';
 export const STAGE_COUNT = 2;
 
 /** Stages 1–5 are always playable. ?s3=1 and ?s4=1 stay valid and change nothing. */
 export function stageEnabled(n, q) {
-  void q;
+  if (n === 6) return q?.get?.('s6') === '1';
   return n === 1 || n === 2 || n === 3 || n === 4 || n === 5;
 }
 
-/** Title select offers every shipped stage. */
+/** Title select offers every shipped stage. Stage 6 needs ?s6=1. */
 export function maxStage(q) {
-  void q;
-  return 5;
+  return stageEnabled(6, q) ? 6 : 5;
 }
 
-/** ?stage=2 through ?stage=5; anything else is Stage 1. */
+/** ?stage=2 through ?stage=6; stage 6 only with ?s6=1. Anything else is Stage 1. */
 export function stageFromQuery(q) {
   const n = q && q.get ? +q.get('stage') : 0;
-  if (n > 1 && n < 6 && stageEnabled(n, q)) return n;
+  if (n > 1 && n < 7 && stageEnabled(n, q)) return n;
   return 1;
 }
 
 /** scene data (restart({ stage })) wins over the URL */
 export function resolveStage(data, q) {
   const n = data && data.stage;
-  if (n > 0 && n < 6 && stageEnabled(n, q)) return n;
+  if (n > 0 && n < 7 && stageEnabled(n, q)) return n;
   return stageFromQuery(q);
 }
 
@@ -40,6 +41,7 @@ export const STAGE_CHARS = Object.freeze({
   3: Object.freeze(['riley', 'riley3', 'cutthroat', 'zealot', 'archer', 'hound', 'fade', 'loial']),
   4: STAGE4_CHARS,
   5: STAGE5_CHARS,
+  6: STAGE6_CHARS,
 });
 
 // Textures that each stage owns, plus textures shared between stages.
@@ -50,6 +52,7 @@ export const STAGE_TEXTURES = Object.freeze({
   3: Object.freeze(['far3_day', 'far3_night', 'mid3a', 'mid3b', 'floor3a', 'floor3b', 'floor3c', 'crate', 'planks', 'rooftiles', 'shadowpool', 'shadowburst', 'fade_far', 'story3_panel_1', 'story3_panel_2', 'story3_panel_3']),
   4: STAGE4_TEXTURES,
   5: STAGE5_TEXTURES,
+  6: STAGE6_TEXTURES,
   shared: SHARED_TEXTURES,
 });
 
@@ -227,12 +230,15 @@ STAGE4.chars = STAGE4_CHARS;
 STAGE4.textures = STAGE4_TEXTURES;
 STAGE5.chars = STAGE5_CHARS;
 STAGE5.textures = STAGE5_TEXTURES;
-export { STAGE4, STAGE5 };
+STAGE6.chars = STAGE6_CHARS;
+STAGE6.textures = STAGE6_TEXTURES;
+export { STAGE4, STAGE5, STAGE6 };
 export const STAGES = Object.freeze({
   1: STAGE1,
   2: STAGE2,
   3: STAGE3,
   4: STAGE4,
   5: STAGE5,
+  6: STAGE6,
 });
 

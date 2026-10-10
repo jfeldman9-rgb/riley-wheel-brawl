@@ -78,3 +78,12 @@ Both are under 1.2 MB. Loop points are in `tools/music/music-manifest.json`. Sta
 | `music-boss5.mp3` | boss5 | "The Eye". Rendered loop, 16 bars, about -15.2 LUFS. Loop [0.250, 32.000) s. | Original music generated for this project. No third-party audio. |
 
 The same loop points are on `MUSIC.stage5` and `MUSIC.boss5` in `src/audio.js`. Render notes are in `tools/stage5/music-manifest.json`. The 21 Stage 5 voice lines are in `assets/audio/voice/` and listed in `assets/audio/stage5-voice-manifest.json`. The script is `docs/stage5/VOICE-SCRIPT.md`. An id plays only when it is in that present list.
+
+## Stage 6 music and voices
+
+| File | Id | What it is | Licence / rights |
+| --- | --- | --- | --- |
+| `music-stage6.mp3` | stage6 | "The Stone of Tear". ElevenLabs Music v2.5 take (instrumental, 120 bpm), cut by `tools/stage6/loop_music.py` into 36 bars, about -16.0 LUFS. Loop [0.250, 72.245) s. | Generated with ElevenLabs Music in Jason F's ElevenLabs workspace for this project. Use follows that account's ElevenLabs plan terms. No third-party samples. |
+| `music-boss6.mp3` | boss6 | "The Netweaver". Rendered loop (FluidSynth + FluidR3_GM via `tools/stage6/compose_stage6.py`), 40 bars @ 132 bpm, about -15.2 LUFS. Loop [0.250, 72.977) s. | Original music generated for this project. No third-party audio. |
+
+The same loop points are on `MUSIC.stage6` and `MUSIC.boss6` in `src/stage6.js` (not `src/audio.js`, so the pre-fight gate does not grow). Render notes are in `tools/stage6/music-manifest.json`. The 25 Stage 6 voice lines are in `assets/audio/voice/` and listed in `assets/audio/stage6-voice-manifest.json`; cast, prompts, generation ids and Whisper checks are in `tools/stage6/voice-render.json`. ElevenLabs eleven_v4 voices: Riley (DYLO), Rand ("Rand al'Thor (RWB)", Voice Design), Be'lal ("Be'lal (RWB)", Voice Design), the narrator (George), the Defender captain (Kaelen) and the Gray Man (Corvin). Moiraine's line uses her established Kokoro voice (bf_emma). Synthetic voices only; no real-person cloning.

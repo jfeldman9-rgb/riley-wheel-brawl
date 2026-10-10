@@ -1,0 +1,78 @@
+{
+  "baseline": false,
+  "errors": [],
+  "samples": [
+    {
+      "name": "before-death",
+      "state": {
+        "music": "stage6",
+        "director": "stage",
+        "activeLoops": 1,
+        "activeVoices": 1
+      }
+    },
+    {
+      "name": "death",
+      "state": {
+        "music": null,
+        "director": "silent",
+        "activeLoops": 0,
+        "activeVoices": 0
+      }
+    },
+    {
+      "name": "respawn",
+      "state": {
+        "music": "stage6",
+        "director": "stage",
+        "activeLoops": 1,
+        "activeVoices": 0
+      }
+    },
+    {
+      "name": "continue",
+      "state": {
+        "music": "stage6",
+        "director": "stage",
+        "activeLoops": 1,
+        "activeVoices": 0
+      }
+    },
+    {
+      "name": "rand-video",
+      "state": {
+        "music": null,
+        "director": "cutscene",
+        "activeLoops": 0,
+        "activeVoices": 0
+      }
+    },
+    {
+      "name": "rand-abort",
+      "state": {
+        "music": "stage6",
+        "director": "stage",
+        "activeLoops": 1,
+        "activeVoices": 0
+      }
+    },
+    {
+      "name": "crossfade-before-quit",
+      "state": {
+        "music": "boss6",
+        "director": "boss",
+        "activeLoops": 2,
+        "activeVoices": 1
+      }
+    },
+    {
+      "name": "quit",
+      "state": {
+        "music": null,
+        "director": "silent",
+        "activeLoops": 0,
+        "activeVoices": 0
+      }
+    }
+  ]
+}
