@@ -1,12 +1,12 @@
 import './helpers/install-location.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const { stageEnabled, maxStage, stageFromQuery, resolveStage, STAGES, STAGE_CHARS } = await import('../src/stages.js');
 const { STAGE_MUSIC } = await import('../src/music.js');
-const { stage6Say, STAGE6_VOICES } = await import('../src/stage6-voice.js');
+const { stage6Say, STAGE6_VOICES, VOICE_FILES } = await import('../src/stage6-voice.js');
 
 const Q = s => new URLSearchParams(s);
 
@@ -39,13 +39,17 @@ test('stage 5 returns to the title unless s6=1, and stage 6 always returns to th
   assert.ok(STAGE_CHARS[6].includes('riley'));
 });
 
-test('missing voice files stay captions', () => {
+test('voice manifest matches the mp3s on disk, and voiced lines still caption', () => {
   const said = [];
   stage6Say('riley_st6_rand_wait_01', (who, text) => said.push(`${who}:${text}`));
   assert.deepEqual(said, ['RILEY:Rand needs a breather.']);
   assert.ok(STAGE6_VOICES.length >= 24);
   const manifest = JSON.parse(readFileSync('assets/audio/stage6-voice-manifest.json', 'utf8'));
-  assert.deepEqual(manifest.present, []);
+  assert.ok(manifest.present.every(id => STAGE6_VOICES.includes(id)));
+  for (const id of STAGE6_VOICES) assert.equal(existsSync(`assets/audio/voice/${id}.mp3`), manifest.present.includes(id), id);
+  assert.deepEqual([...VOICE_FILES].sort(), [...manifest.present].sort());
+  for (const id of manifest.present) assert.ok(statSync(`assets/audio/voice/${id}.mp3`).size <= 200 * 1024, id);
+  for (const f of ['music-stage6.mp3', 'music-boss6.mp3']) assert.ok(statSync(`assets/audio/${f}`).size <= 1_200_000, f);
   assert.match(readFileSync('index.html', 'utf8'), /id="tbL"[^>]*>CALL</);
 });
 

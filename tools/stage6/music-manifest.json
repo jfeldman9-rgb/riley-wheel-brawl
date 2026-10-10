@@ -1,0 +1,56 @@
+{
+ "rendered": true,
+ "render": "stage6: tools/stage6/loop_music.py (ElevenLabs Music v2.5 take cut into a loop); boss6: tools/stage6/compose_stage6.py (tools/music/compose.py). Loops checked with tools/music/check_loops.py",
+ "note": "Loop points match MUSIC.stage6 / MUSIC.boss6 in src/stage6.js (set there, not in src/audio.js, so the pre-fight gate does not grow).",
+ "stage6": {
+  "file": "music-stage6.mp3",
+  "title": "The Stone of Tear",
+  "target": "assets/audio/music-stage6.mp3",
+  "loopStart": 0.25,
+  "loopEnd": 72.245283,
+  "gain": 1,
+  "doc": "Stage 6 fortress infiltration. Martial snare and taiko ostinato, low staccato strings, brass stabs and a tolling harbor bell. Tense and driving, steady from the first bar to the last.",
+  "bpm": 120,
+  "bars": 36,
+  "loopSeconds": 71.995283,
+  "cutStart": 5.01,
+  "seamMatch": 0.19,
+  "lufs": -16.0,
+  "peakDbfs": -3.1,
+  "bytes": 1015997,
+  "source": {
+   "engine": "elevenlabs",
+   "model": "eleven_music_v2_5",
+   "flow_id": "x8UHdNhZLNYXMfMI1CLb",
+   "node_id": "Zwjpkh99TPnN7kgFqtij",
+   "generation_id": "sUaBzDV1ogEU9CM5Dalv",
+   "duration_s": 84,
+   "instrumental": true,
+   "credits": 1260,
+   "prompt": "Tense, driving orchestral video game stealth-action loop at a steady 120 BPM in D minor. Martial snare and taiko drums in a relentless ostinato, low staccato strings, short brass stabs, and a tolling harbor bell motif every few bars. Constant energy from start to end with no intro, no fade-in, no ending and no fade-out, so it loops seamlessly. Instrumental, no vocals, crisp modern cinematic production.",
+   "raw": "stage6_raw.mp3 (48 kHz stereo, not shipped)"
+  },
+  "render": "python3 tools/stage6/loop_music.py RAW_DIR OUT_DIR stage6"
+ },
+ "boss6": {
+  "file": "music-boss6.mp3",
+  "bpm": 132,
+  "bars": 40,
+  "loopStart": 0.25,
+  "loopEnd": 72.977279,
+  "loopSeconds": 72.727279,
+  "lufs": -15.2,
+  "peakDbfs": -2.3,
+  "bytes": 1026237,
+  "doc": "\"The Netweaver\" - Stage 6 boss duel with Be'lal. C minor. Dark choir, low string ostinato, war drums, taiko-style toms, timpani and heavy brass. 40 bars @ 132 bpm.",
+  "title": "The Netweaver",
+  "target": "assets/audio/music-boss6.mp3",
+  "gain": 0.94,
+  "source": {
+   "engine": "fluidsynth",
+   "soundfont": "FluidR3_GM.sf2",
+   "why": "the ElevenLabs boss take failed with \"Insufficient funds\" (workspace out of credits), so boss6 uses the Stage 1-5 composer"
+  },
+  "render": "python3 tools/stage6/compose_stage6.py OUT_DIR"
+ }
+}

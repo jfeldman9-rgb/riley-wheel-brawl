@@ -6,7 +6,7 @@ import { STAGE6, STAGE6_TEXTURES } from './stage6-def.js';
 import { createStone, threatsOf, bandY } from './stage6-arena.js';
 import { createStage6View } from './stage6-view.js';
 import { freeStory6 } from './stage6-art.js';
-import { preloadClips, releaseClips } from './audio.js';
+import { preloadClips, releaseClips, MUSIC } from './audio.js';
 import { makeCharAnims, releaseChars } from './assets.js';
 import { STAGE6_VOICES, VOICE_FILES, stage6Say, sfxCue } from './stage6-voice.js';
 import { installStage6SceneHooks, restoreStage6Hooks, holdDown, randCtx, warmRand } from './stage6-lifecycle.js';
@@ -14,6 +14,9 @@ import { installRandBless, removeRandBless } from './rand-call-cutscene.js';
 import { createRand, tickRand } from './rand-call.js';
 import { stage4Delta } from './stage4-time.js';
 import { installStage6Hud, bindRandLabel, syncRandReady } from './stage6-hud.js';
+
+MUSIC.stage6 = { url: 'assets/audio/music-stage6.mp3', loopStart: 0.25, loopEnd: 72.245283, gain: 1 };
+MUSIC.boss6 = { url: 'assets/audio/music-boss6.mp3', loopStart: 0.25, loopEnd: 72.977279, gain: 0.94 };
 
 export const STORY6_PANELS = Object.freeze([1, 2, 3].map(n => Object.freeze({ key: 'story6p' + n })));
 export const STORY6_SCRIPT = Object.freeze([

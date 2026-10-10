@@ -1,0 +1,751 @@
+{
+ "version": 1,
+ "stage": 6,
+ "date": "2026-10-09",
+ "note": "Stage 6 voice lines, rendered for Jason F via Grok Bot. ElevenLabs lines were requested one at a time and checked with faster-whisper small.en and medium.en.",
+ "flow_id": "x8UHdNhZLNYXMfMI1CLb",
+ "cast": {
+  "RILEY": {
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "why": "live Riley voice (Stage 5 re-record); no Balefire line in Stage 6, so Michael/Tate Dalton is not used"
+  },
+  "RAND": {
+   "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+   "voice_name": "Rand al'Thor (RWB)",
+   "why": "Jason's pick (Voice Design D3-a)"
+  },
+  "BELAL": {
+   "voice_id": "j983IRf8XiqkSH3MM7bU",
+   "voice_name": "Be'lal (RWB)",
+   "why": "Voice Design (eleven_ttv_v3), \"Mature male, cultured, silky and menacing, arrogant aristocrat, unhurried.\" Preview a of 3: all three scored the same on Whisper, a was the slowest and widest-ranged delivery.",
+   "discarded": [
+    "MIeGNOwqKDxO1eOrJ9Xg",
+    "v2T8vLVGWiokkV0NNSH9"
+   ]
+  },
+  "NARRATOR": {
+   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+   "voice_name": "George",
+   "why": "same narrator as Stage 5"
+  },
+  "MOIRAINE": {
+   "engine": "kokoro",
+   "voice": "bf_emma",
+   "why": "her established voice from Stage 1 (assets/audio/VOICE_PROVENANCE.md)"
+  },
+  "DEFENDER": {
+   "voice_id": "10NkTYmU7tSz3Kkl3Lex",
+   "voice_name": "Kaelen - Amateur Warrior",
+   "why": "gravelly bass-baritone soldier"
+  },
+  "GRAY MAN": {
+   "voice_id": "wro66dKmwTwIW6GiLvWa",
+   "voice_name": "Corvin - Velvety & Intimate",
+   "why": "deep whispery voice for a wordless hush"
+  }
+ },
+ "pronunciation": {
+  "Be'lal": "BAY-lahl (not spoken in any line)",
+  "Callandor": "IPA /ˈkæləndɔɹ/ (KAL-an-dor)",
+  "Tear": "IPA /tɪɹ/ (TEER)",
+  "Rhuidean": "respelled Roo-EE-dee-an",
+  "sa'angreal": "not spoken in any line"
+ },
+ "credits": {
+  "voice_lines": 1190,
+  "voice_design": 0
+ },
+ "lines": {
+  "st6_story_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+   "voice_name": "George",
+   "prompt": "[gravely] Tarwin's Gap held. But the Fade's trail ran south... to the greatest fortress in the world.",
+   "generation_id": "7b5dE4RTPzvlneos0k7Q",
+   "session_id": "GAFRAKPhKFlXrkPhpBzl",
+   "credits": 101,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "NARRATOR",
+   "text": "Tarwin's Gap held. But the Fade's trail ran south, to the greatest fortress in the world.",
+   "file": "assets/audio/voice/st6_story_01.mp3",
+   "bytes": 57068,
+   "duration_s": 7.104,
+   "sha256": "6b9bee5486c38d4c9287406205aeda25afa7dc66ad6f6f1ba1d0524e31174ee5",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Tarwin's gap held, but the Fades trail ran south, to the greatest fortress in the world."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Tarwin's Gap held but the Fade's trail ran south to the greatest fortress in the world."
+    }
+   }
+  },
+  "st6_story_02": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "prompt": "[determined] The Stone of /tɪɹ/. [quietly] She's in there.",
+   "generation_id": "dgStIfhIoXOiuYN3eGd7",
+   "session_id": "UzqbylAIUMKIH20pnNoG",
+   "credits": 58,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RILEY",
+   "text": "The Stone of Tear. She's in there.",
+   "file": "assets/audio/voice/st6_story_02.mp3",
+   "bytes": 25388,
+   "duration_s": 3.144,
+   "sha256": "4bc44918c537d688d36cf37a1437f64ef7d443a2ef685096dc7774396ab04636",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "The Stone of Tear. She's in there."
+    },
+    "medium.en": {
+     "match": 0.86,
+     "heard": "The Stone of Tyr. She's in there."
+    }
+   }
+  },
+  "st6_story_03": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+   "voice_name": "George",
+   "prompt": "[ominous] That night, the barges at the Maule were not carrying grain.",
+   "generation_id": "k8UPPDVpVWN05Qw9ApHE",
+   "session_id": "sMmfVWUd6rTHlJ0ic4Vj",
+   "credits": 70,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "NARRATOR",
+   "text": "That night, the barges at the Maule were not carrying grain.",
+   "file": "assets/audio/voice/st6_story_03.mp3",
+   "bytes": 34796,
+   "duration_s": 4.32,
+   "sha256": "f6f95c8172370036d5d31c35b36d3d2e90ac83ba2531363510baf03e39c74a27",
+   "whisper": {
+    "small.en": {
+     "match": 0.91,
+     "heard": "That night the barges at the mall were not carrying grain."
+    },
+    "medium.en": {
+     "match": 0.91,
+     "heard": "That night, the barges at the mall were not carrying grain."
+    }
+   }
+  },
+  "st6_story_04": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+   "voice_name": "Rand al'Thor (RWB)",
+   "prompt": "[calm, steely] You're the one hunting the Half-man. [beat] Then we hunt together.",
+   "generation_id": "hcdyXYnvhaumhWgu1Fbt",
+   "session_id": "bAutnYsgVOf11fnjDX6Z",
+   "credits": 81,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RAND",
+   "text": "You're the one hunting the Half-man. Then we hunt together.",
+   "file": "assets/audio/voice/st6_story_04.mp3",
+   "bytes": 33644,
+   "duration_s": 4.176,
+   "sha256": "e62c384d5cc1fd4351e7894e91fb8110ffb1759043aa4494fd3f7c70f9195e80",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "You're the one hunting the half-man. Then we hunt together."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "You're the one hunting the half-man. Then we hunt together."
+    }
+   }
+  },
+  "st6_story_05": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "prompt": "[smirking, cocky] Just don't steal my kills.",
+   "generation_id": "0pFEWGYOrZOnzWi4imt9",
+   "session_id": "ut4I666Yt8b6PVyMVcYm",
+   "credits": 44,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RILEY",
+   "text": "Just don't steal my kills.",
+   "file": "assets/audio/voice/st6_story_05.mp3",
+   "bytes": 26540,
+   "duration_s": 3.288,
+   "sha256": "d8f92f682dee983512347bbf7770822d68c4817f77b897a10da87ba5920b4bc0",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Just don't steal my kills."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Just don't steal my kills!"
+    }
+   }
+  },
+  "st6_clear_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+   "voice_name": "Rand al'Thor (RWB)",
+   "prompt": "[tired, resolute] The Stone is ours. [beat] Your sister's trail goes east... into the Waste.",
+   "generation_id": "Oiuph0rtShTNM9Ep7joV",
+   "session_id": "9I2h7negGB0IivlHtfBc",
+   "credits": 92,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RAND",
+   "text": "The Stone is ours. Your sister's trail goes east, into the Waste.",
+   "file": "assets/audio/voice/st6_clear_01.mp3",
+   "bytes": 44012,
+   "duration_s": 5.472,
+   "sha256": "67572b0aac62c9784d129fa0e0426fb5d34eb33b757ea2634117b3885e2e27c7",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "The stone is ours. Your sister's trail goes east into the waste."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "The stone is ours. Your sister's trail goes east into the waste."
+    }
+   }
+  },
+  "st6_clear_02": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "prompt": "[quiet, determined] Roo-EE-dee-an.",
+   "generation_id": "26Et1AufMN3D6hcknIhD",
+   "session_id": "MOeRb1lkAlEhtjnMqQDu",
+   "credits": 34,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RILEY",
+   "text": "Rhuidean.",
+   "file": "assets/audio/voice/st6_clear_02.mp3",
+   "bytes": 10028,
+   "duration_s": 1.224,
+   "sha256": "ea84b426de5a8dff702973eeda331b306f430e862d3b890a04ecef21d0aac846",
+   "whisper": {
+    "small.en": {
+     "match": 0.0,
+     "heard": "Ruidian."
+    },
+    "medium.en": {
+     "match": 0.0,
+     "heard": "Ruidean."
+    },
+    "note": "Whisper spells the name its own way; heard as roo-EE-dee-an"
+   }
+  },
+  "st6_clear_03": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+   "voice_name": "Rand al'Thor (RWB)",
+   "prompt": "[quietly, firm] Call... and I'll come.",
+   "generation_id": "NanRq4yunWh7pGNmR3Ma",
+   "session_id": "FWu0T6VD87jLAfGHIOpM",
+   "credits": 38,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RAND",
+   "text": "Call, and I'll come.",
+   "file": "assets/audio/voice/st6_clear_03.mp3",
+   "bytes": 15596,
+   "duration_s": 1.92,
+   "sha256": "7e661874004f7f150a12bc42a1f27e73283e0357358c4659374042a84b818ec9",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Call, and I'll come."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Call and I'll come."
+    }
+   }
+  },
+  "riley_st6_call_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "prompt": "[shouting] Rand! Now!",
+   "generation_id": "qxHoeDaO4a0VLXOqCiZY",
+   "session_id": "Yb6wOnI1rIEkWcR6PXqf",
+   "credits": 21,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RILEY",
+   "text": "Rand! Now!",
+   "file": "assets/audio/voice/riley_st6_call_01.mp3",
+   "bytes": 13484,
+   "duration_s": 1.656,
+   "sha256": "b776611530449495919a0add0a88ce6e3b1b13f7378b843c442eb7d6df6a7b2c",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Rand, now!"
+    },
+    "medium.en": {
+     "match": 0.5,
+     "heard": "RANT, NOW!"
+    }
+   }
+  },
+  "riley_st6_call_02": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "prompt": "[shouting] Dragon! [urgent] Little help!",
+   "generation_id": "61Zg5vRbFmliGNZ1bS5B",
+   "session_id": "oB4IF7CQLQEm7oLcF1Iv",
+   "credits": 40,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RILEY",
+   "text": "Dragon! Little help!",
+   "file": "assets/audio/voice/riley_st6_call_02.mp3",
+   "bytes": 15788,
+   "duration_s": 1.944,
+   "sha256": "ec85e38bbd08ec7360bbcf4f7cfd8e52b79e3c596219c5953b1d1d0c05bb3f27",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Dragon! Little help?"
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Dragon! Little help?"
+    }
+   }
+  },
+  "riley_st6_rand_wait_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "prompt": "[frustrated, panting] Rand needs a breather.",
+   "generation_id": "5C2p1I1DfbmHALAi4JMV",
+   "session_id": "3yfznF9QQC7kAttImEF3",
+   "credits": 44,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RILEY",
+   "text": "Rand needs a breather.",
+   "file": "assets/audio/voice/riley_st6_rand_wait_01.mp3",
+   "bytes": 20780,
+   "duration_s": 2.568,
+   "sha256": "111289c335c08fbb07d5a01ee9a2b0ee4298f3ed55009c0e6501c21e4bd82484",
+   "whisper": {
+    "small.en": {
+     "match": 0.75,
+     "heard": "Rand means a breather!"
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Rand needs a breather!"
+    }
+   }
+  },
+  "rand_call_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+   "voice_name": "Rand al'Thor (RWB)",
+   "prompt": "[shouting] Down, Riley!",
+   "generation_id": "GVqO6BkjYhcsI6it8kiJ",
+   "session_id": "zgRil3TatD2NEZxaOv1m",
+   "credits": 23,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RAND",
+   "text": "Down, Riley!",
+   "file": "assets/audio/voice/rand_call_01.mp3",
+   "bytes": 11564,
+   "duration_s": 1.416,
+   "sha256": "ae6ffc72f92ac0dc31e23514e1de603c2a8053c26a6905b7ba5ca34c0afd6f46",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Down, Riley!"
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Down, Riley!"
+    }
+   }
+  },
+  "rand_call_02": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+   "voice_name": "Rand al'Thor (RWB)",
+   "prompt": "[furious] Burn, Shadowspawn.",
+   "generation_id": "6QYz3DP4Xmm0HUIh3A9m",
+   "session_id": "P8LEyA1HaGKPsUmKdNPe",
+   "credits": 28,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RAND",
+   "text": "Burn, Shadowspawn.",
+   "file": "assets/audio/voice/rand_call_02.mp3",
+   "bytes": 15020,
+   "duration_s": 1.848,
+   "sha256": "3572af18c821b966e8f24df16076642a790056472f75808a7f6ede89d7df59d0",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Burn, Shadow Spawn!"
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Burn, shadowspawn!"
+    }
+   }
+  },
+  "rand_call_03": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+   "voice_name": "Rand al'Thor (RWB)",
+   "prompt": "[commanding, powerful] The Dragon is here.",
+   "generation_id": "sDs2MX3zWGOPuyJz8xZh",
+   "session_id": "imLmlFXe4y6ngFnDPdVr",
+   "credits": 42,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RAND",
+   "text": "The Dragon is here.",
+   "file": "assets/audio/voice/rand_call_03.mp3",
+   "bytes": 14444,
+   "duration_s": 1.776,
+   "sha256": "a9102371778595a453035de59e673d717944e8626624a9bb596c3bd697cb8829",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "The dragon is here!"
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "The dragon is here!"
+    }
+   }
+  },
+  "rand_call_04": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+   "voice_name": "Rand al'Thor (RWB)",
+   "prompt": "[firm, protective] Stay behind me.",
+   "generation_id": "eaL1nvPoU8JO1Nsmml71",
+   "session_id": "jHJCmXjvVSDcieUoJZ4h",
+   "credits": 34,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RAND",
+   "text": "Stay behind me.",
+   "file": "assets/audio/voice/rand_call_04.mp3",
+   "bytes": 10220,
+   "duration_s": 1.248,
+   "sha256": "2f84a4a64789306e51626544d1dd373aa141734affdb863c7dff8fdde985b195",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Stay behind me."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Stay behind me!"
+    }
+   }
+  },
+  "rand_call_05": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+   "voice_name": "Rand al'Thor (RWB)",
+   "prompt": "[grim, weary] Light... there's always more of them.",
+   "generation_id": "zqDy7W4Ak9Kn2JBxU7qj",
+   "session_id": "veB7nGw1SFNa8g7s64KW",
+   "credits": 51,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RAND",
+   "text": "Light, there's always more of them.",
+   "file": "assets/audio/voice/rand_call_05.mp3",
+   "bytes": 24236,
+   "duration_s": 3.0,
+   "sha256": "5f7b1a5bd8045f77a0c58dc0e8e3ea35034499964021b78bfe01c63be82bb10a",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Light. There's always more of them."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Light. There's always more of them."
+    }
+   }
+  },
+  "belal_intro_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "j983IRf8XiqkSH3MM7bU",
+   "voice_name": "Be'lal (RWB)",
+   "prompt": "[silky, contemptuous] Another boy... who thinks the Power makes him a man.",
+   "generation_id": "7mtVTZXUUVZ031JWbW9n",
+   "session_id": "YMkmvzPAnBLd0mW1oEdX",
+   "credits": 74,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "BELAL",
+   "text": "Another boy who thinks the Power makes him a man.",
+   "file": "assets/audio/voice/belal_intro_01.mp3",
+   "bytes": 37484,
+   "duration_s": 4.656,
+   "sha256": "5da936ad59f90e8431ffec98899b62cf08986c6d74aa8272b1e2bac6f498a17c",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Another boy, who thinks the power makes him a man."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Another boy who thinks the power makes him a man."
+    }
+   }
+  },
+  "belal_net_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "j983IRf8XiqkSH3MM7bU",
+   "voice_name": "Be'lal (RWB)",
+   "prompt": "[amused, menacing] Every thread... is mine.",
+   "generation_id": "C1QouTI469JPcdKJZtTD",
+   "session_id": "6NT45QeQIephxCOR3TJe",
+   "credits": 43,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "BELAL",
+   "text": "Every thread is mine.",
+   "file": "assets/audio/voice/belal_net_01.mp3",
+   "bytes": 25004,
+   "duration_s": 3.096,
+   "sha256": "f26e146e1b70619a5c9d93f1d28338e41f41bd7fd3e4425c7bd90dfd1ea500b8",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Every thread is mine."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Every thread is mine."
+    }
+   }
+  },
+  "belal_mid_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "j983IRf8XiqkSH3MM7bU",
+   "voice_name": "Be'lal (RWB)",
+   "prompt": "[cold, dismissive] /ˈkæləndɔɹ/ is not for you.",
+   "generation_id": "JGoE24xFlHapWKMF0XuS",
+   "session_id": "lrGGSVHZQq6wRAJ3QE9y",
+   "credits": 46,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "BELAL",
+   "text": "Callandor is not for you.",
+   "file": "assets/audio/voice/belal_mid_01.mp3",
+   "bytes": 19244,
+   "duration_s": 2.376,
+   "sha256": "a6cadc29d1b2efd10fc7cd544dae931255cc91d105ebb5cf450abf21a9709d63",
+   "whisper": {
+    "small.en": {
+     "match": 0.8,
+     "heard": "Kalindor is not for you."
+    },
+    "medium.en": {
+     "match": 0.8,
+     "heard": "Kalindor is not for you."
+    }
+   }
+  },
+  "belal_defeat_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "j983IRf8XiqkSH3MM7bU",
+   "voice_name": "Be'lal (RWB)",
+   "prompt": "[gasps in shock] [choking] Hhhuh... ahh...",
+   "generation_id": "9k57hEm52x0fxbm1wWVI",
+   "session_id": "L3nBLbIceYv3jTNxn4M6",
+   "credits": 42,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "BELAL",
+   "text": "...",
+   "file": "assets/audio/voice/belal_defeat_01.mp3",
+   "bytes": 25196,
+   "duration_s": 3.12,
+   "sha256": "98da304a0a84de4ef49ce1f5811831a7a198e24b6a7628822f88d54d33fa2a22",
+   "whisper": {
+    "small.en": {
+     "match": 0.0,
+     "heard": "Ugh!"
+    },
+    "medium.en": {
+     "match": 0.0,
+     "heard": "You You"
+    }
+   }
+  },
+  "st6_moiraine_01": {
+   "engine": "kokoro",
+   "voice": "bf_emma",
+   "speed": 0.95,
+   "pitch": 0.97,
+   "lang": "b",
+   "prompt": "Not today, Netweaver.",
+   "processing": "tools/stage4/tts_stage4_lines.py to_mp3 (rubberband pitch 0.97, highpass 70, loudnorm -16, alimiter 0.75, mono 24 kHz 96k)",
+   "speaker": "MOIRAINE",
+   "text": "Not today, Netweaver.",
+   "file": "assets/audio/voice/st6_moiraine_01.mp3",
+   "bytes": 27980,
+   "duration_s": 2.304,
+   "sha256": "40b1a31ccb5afcf6bd09cc2459a9e7a2a8c58b317187c7a3fd14d2cbdb9580cd",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Not today, Netweaver."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Not today, NetWeaver."
+    }
+   }
+  },
+  "grayman_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "wro66dKmwTwIW6GiLvWa",
+   "voice_name": "Corvin - Velvety & Intimate",
+   "prompt": "[whispering] Shhhhh...",
+   "generation_id": "w9pKHrqcWbw04aQ9FazO",
+   "session_id": "yICqktDfi69PK9v5VEFF",
+   "credits": 22,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "GRAY MAN",
+   "text": "...",
+   "file": "assets/audio/voice/grayman_01.mp3",
+   "bytes": 10412,
+   "duration_s": 1.272,
+   "sha256": "42e041ba804d9607a064adb918d39df4e4db28d7dad204084c7ed62cfc3bb86b",
+   "whisper": {
+    "small.en": {
+     "match": 0.0,
+     "heard": "Shh."
+    },
+    "medium.en": {
+     "match": 0.0,
+     "heard": "Shh."
+    }
+   }
+  },
+  "defender_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "10NkTYmU7tSz3Kkl3Lex",
+   "voice_name": "Kaelen - Amateur Warrior",
+   "prompt": "[shouting, battle cry] For the Stone! For the Dragon!",
+   "generation_id": "HRZ5XUqbhsECnlzgUfOy",
+   "session_id": "f3f0ynrMnOtGd117AwJq",
+   "credits": 53,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "DEFENDER",
+   "text": "For the Stone! For the Dragon!",
+   "file": "assets/audio/voice/defender_01.mp3",
+   "bytes": 20204,
+   "duration_s": 2.496,
+   "sha256": "cdbb5582384177cd60853aef16708b0f6db998dd6a477ff199e5623eea6b9dde",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "For the stone! For the dragon!"
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "For the Stone! For the Dragon!"
+    }
+   }
+  },
+  "riley_st6_gray_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "prompt": "[uneasy, looking around] Where'd he go?",
+   "generation_id": "NgJ2yVzrsMmZVu4XmuYs",
+   "session_id": "yFwNPz0StSJIwifJQDOo",
+   "credits": 39,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RILEY",
+   "text": "Where'd he go?",
+   "file": "assets/audio/voice/riley_st6_gray_01.mp3",
+   "bytes": 10604,
+   "duration_s": 1.296,
+   "sha256": "12ab472cb6e33644e99bbd3ddd0cb16dee2dc1ce89ed52e9326039b44e28cdb1",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Where'd he go?"
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Where'd he go?"
+    }
+   }
+  },
+  "riley_st6_victory_01": {
+   "engine": "elevenlabs",
+   "model": "eleven_v4",
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "prompt": "[breathless, satisfied] Stone's clear.",
+   "generation_id": "Sa814Yj9crQ9YXOULEAu",
+   "session_id": "B3Gbsx9djUkBZvNYikVF",
+   "credits": 38,
+   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
+   "speaker": "RILEY",
+   "text": "Stone's clear.",
+   "file": "assets/audio/voice/riley_st6_victory_01.mp3",
+   "bytes": 11948,
+   "duration_s": 1.464,
+   "sha256": "0d1082e371e7e35e31b077a7520d2acae9ac9ca99f91e860dbb44b81b7f64798",
+   "whisper": {
+    "small.en": {
+     "match": 1.0,
+     "heard": "Stone's clear."
+    },
+    "medium.en": {
+     "match": 1.0,
+     "heard": "Stone's clear."
+    }
+   }
+  }
+ },
+ "retries": [
+  {
+   "id": "st6_clear_02",
+   "prompt": "[quiet, determined] /ɹuˈiːdiən/.",
+   "generation_id": "GP2iDCnWAtIHSHRRS0S6",
+   "credits": 32,
+   "why": "first take (IPA prompt) was heard as \"Roidian\"; re-rendered with a plain respelling"
+  },
+  {
+   "id": "riley_st6_victory_01",
+   "prompt": "[breathless, satisfied] Stone's clear.",
+   "generation_id": "G5mhPZRrfvtwTBrXlYmn",
+   "credits": 0,
+   "why": "failed: free-tier unusual-activity block; re-rendered"
+  }
+ ]
+}
