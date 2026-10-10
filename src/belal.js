@@ -198,7 +198,10 @@ export class Belal {
     this.sprite.setAlpha?.(this.state === 'erase' ? Math.max(0, 1 - this.st) : 1);
     this.shadow?.setPosition?.(this.x, this.y + 2); this.shadow?.setAlpha?.(this.state === 'erase' ? 0 : 0.5); this.shadow?.setScale?.(2.4, 0.55);
     const show = this.state === 'tell' || this.state === 'lunge' || this.state === 'channel' || (this.state === 'attack' && this.st < BELAL.tells[this.hitI]);
-    this.streak?.setPosition?.(this.x + this.facing * 40, this.y - 70); this.streak?.setVisible?.(show); this.streak?.setAlpha?.(show ? 0.85 : 0);
+    // Painted blade/raised-hand centres in the full source cell; packed trim does not move the foot origin.
+    const offsets = [[80, 184], [30, 138], [-25, 254]], painted = isPainted(this.scene, 's6belal');
+    const p = painted ? (this.state === 'channel' ? [55, 215] : this.state === 'attack' ? offsets[Math.min(2, this.hitI)] : [110, 148]) : [40, 70];
+    this.streak?.setPosition?.(this.x + this.facing * p[0], this.y - p[1]); this.streak?.setVisible?.(show); this.streak?.setAlpha?.(show ? 0.85 : 0);
     if (isPainted(this.scene, 's6streak')) this.streak?.setDisplaySize?.(this.state === 'channel' ? 40 : 96, 14); else this.streak?.setScale?.(this.state === 'channel' ? 0.6 : 1.4, 0.35);
   }
   destroy() { this.sprite?.destroy?.(); this.shadow?.destroy?.(); this.streak?.destroy?.(); this.alive = false; this.gone = true; }

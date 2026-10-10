@@ -5,6 +5,7 @@ import { queryFlag } from './debug-flag.js';
 
 export const STAGE6_CANVASES = Object.freeze([
   ['bg6far', 320, 180], ['bg6mid', 160, 96], ['bg6mid2', 160, 96],
+  ['bg6mid3', 160, 96], ['bg6mid4', 160, 96],
   ['bg6floor', 64, 32], ['bg6floor2', 64, 32], ['bg6floor3', 64, 32],
   ['s6gray', 192, 48], ['s6fade', 216, 56], ['s6belal', 320, 64], ['s6rand', 192, 48],
   ['randPortrait', 32, 32], ['belalPortrait', 32, 32], ['s6storm', 192, 32],
@@ -51,6 +52,11 @@ export function paintStage6Art(scene) {
     g.fillStyle = '#4a2824'; g.fillRect(0, 16, w, h);
     g.fillStyle = '#6a3830'; for (let x = 4; x < w; x += 22) g.fillRect(x, 0, 8, h);
     g.fillStyle = '#f0d090'; g.fillRect(40, 30, 6, 8); g.fillRect(110, 28, 6, 8);
+  });
+  for (const key of ['bg6mid3', 'bg6mid4']) put(key, 160, 96, (g, w, h) => {
+    g.fillStyle = '#2a241c'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#4a3830'; for (let x = 4; x < w; x += 32) g.fillRect(x, 0, 10, h);
+    g.fillStyle = '#e8c878'; g.fillRect(40, 30, 6, 8); g.fillRect(110, 28, 6, 8);
   });
   const floor = (key, wet) => put(key, 64, 32, (g, w, h) => {
     g.fillStyle = wet ? '#3a4038' : '#5a4038'; g.fillRect(0, 0, w, h);

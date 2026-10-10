@@ -1,0 +1,229 @@
+TAP version 13
+# Subtest: Stage 3 campaign bot clears Caemlyn, seed 1
+ok 1 - Stage 3 campaign bot clears Caemlyn, seed 1
+  ---
+  duration_ms: 848.446141
+  ...
+# Stage 3 bot: 2 grabs, 2 escapes, 0 tile hits, 1 copies popped
+# Subtest: Stage 3 campaign bot clears Caemlyn, seed 2
+ok 2 - Stage 3 campaign bot clears Caemlyn, seed 2
+  ---
+  duration_ms: 508.372909
+  ...
+# Stage 3 bot: 3 grabs, 3 escapes, 1 tile hits, 1 copies popped
+# Subtest: Stage 3 campaign bot clears Caemlyn, seed 3
+ok 3 - Stage 3 campaign bot clears Caemlyn, seed 3
+  ---
+  duration_ms: 401.537185
+  ...
+# Stage 3 bot: 3 grabs, 3 escapes, 1 tile hits, 2 copies popped
+# Subtest: Stage 3 campaign bot clears Caemlyn, seed 4
+ok 4 - Stage 3 campaign bot clears Caemlyn, seed 4
+  ---
+  duration_ms: 342.757325
+  ...
+# Stage 3 bot: 1 grabs, 1 escapes, 0 tile hits, 1 copies popped
+# Subtest: Stage 3 campaign bot clears Caemlyn, seed 5
+ok 5 - Stage 3 campaign bot clears Caemlyn, seed 5
+  ---
+  duration_ms: 231.150869
+  ...
+# Stage 3 bot: 1 grabs, 1 escapes, 0 tile hits, 1 copies popped
+# Subtest: Stage 3 campaign bot clears Caemlyn, seed 10
+ok 6 - Stage 3 campaign bot clears Caemlyn, seed 10
+  ---
+  duration_ms: 254.941753
+  ...
+# Stage 3 bot: 3 grabs, 3 escapes, 0 tile hits, 1 copies popped
+# Subtest: Stage 3 campaign bot clears Caemlyn, seed 20
+ok 7 - Stage 3 campaign bot clears Caemlyn, seed 20
+  ---
+  duration_ms: 204.654628
+  ...
+# Stage 3 bot: 1 grabs, 1 escapes, 0 tile hits, 1 copies popped
+# Subtest: Stage 3 campaign bot clears Caemlyn, seed 100
+ok 8 - Stage 3 campaign bot clears Caemlyn, seed 100
+  ---
+  duration_ms: 399.786106
+  ...
+# Stage 3 bot: 1 grabs, 1 escapes, 0 tile hits, 2 copies popped
+# Subtest: Stage 3 campaign bot clears Caemlyn, seed 97
+ok 9 - Stage 3 campaign bot clears Caemlyn, seed 97
+  ---
+  duration_ms: 257.280286
+  ...
+# Stage 3 bot: 3 grabs, 3 escapes, 1 tile hits, 2 copies popped
+# Subtest: Stage 3 grabs and tile hits stay in their target bands, seed 1
+ok 10 - Stage 3 grabs and tile hits stay in their target bands, seed 1
+  ---
+  duration_ms: 164.823134
+  ...
+# Subtest: Stage 3 grabs and tile hits stay in their target bands, seed 2
+ok 11 - Stage 3 grabs and tile hits stay in their target bands, seed 2
+  ---
+  duration_ms: 126.026366
+  ...
+# Subtest: Stage 3 grabs and tile hits stay in their target bands, seed 3
+ok 12 - Stage 3 grabs and tile hits stay in their target bands, seed 3
+  ---
+  duration_ms: 103.378944
+  ...
+# Subtest: Stage 3 grabs and tile hits stay in their target bands, seed 4
+ok 13 - Stage 3 grabs and tile hits stay in their target bands, seed 4
+  ---
+  duration_ms: 111.009991
+  ...
+# Subtest: Stage 3 grabs and tile hits stay in their target bands, seed 5
+ok 14 - Stage 3 grabs and tile hits stay in their target bands, seed 5
+  ---
+  duration_ms: 112.74079
+  ...
+# Subtest: Stage 3 grabs and tile hits stay in their target bands, seed 10
+ok 15 - Stage 3 grabs and tile hits stay in their target bands, seed 10
+  ---
+  duration_ms: 101.879866
+  ...
+# Subtest: Stage 3 grabs and tile hits stay in their target bands, seed 20
+ok 16 - Stage 3 grabs and tile hits stay in their target bands, seed 20
+  ---
+  duration_ms: 103.189356
+  ...
+# Subtest: Stage 3 grabs and tile hits stay in their target bands, seed 100
+ok 17 - Stage 3 grabs and tile hits stay in their target bands, seed 100
+  ---
+  duration_ms: 94.436833
+  ...
+# Subtest: Stage 3 grabs and tile hits stay in their target bands, seed 97
+ok 18 - Stage 3 grabs and tile hits stay in their target bands, seed 97
+  ---
+  duration_ms: 107.004877
+  ...
+# Subtest: the Stage 3 bot mashes out of a hold and steps out of a marked tile band, and never runs in Stage 1 or 2
+ok 19 - the Stage 3 bot mashes out of a hold and steps out of a marked tile band, and never runs in Stage 1 or 2
+  ---
+  duration_ms: 40.900845
+  ...
+# Subtest: in phase 3 the Stage 3 bot attacks the real Myrddraal, not a shadow copy
+ok 20 - in phase 3 the Stage 3 bot attacks the real Myrddraal, not a shadow copy
+  ---
+  duration_ms: 2.504588
+  ...
+# Subtest: Stage 4 campaign bot clears Shadar Logoth, seed 1
+ok 21 - Stage 4 campaign bot clears Shadar Logoth, seed 1
+  ---
+  duration_ms: 1655.162575
+  ...
+# Subtest: Stage 4 campaign bot clears Shadar Logoth, seed 2
+ok 22 - Stage 4 campaign bot clears Shadar Logoth, seed 2
+  ---
+  duration_ms: 920.987251
+  ...
+# Subtest: Stage 4 campaign bot clears Shadar Logoth, seed 3
+ok 23 - Stage 4 campaign bot clears Shadar Logoth, seed 3
+  ---
+  duration_ms: 817.567993
+  ...
+# Subtest: Stage 4 campaign bot clears Shadar Logoth, seed 4
+ok 24 - Stage 4 campaign bot clears Shadar Logoth, seed 4
+  ---
+  duration_ms: 530.529346
+  ...
+# Subtest: Stage 4 campaign bot clears Shadar Logoth, seed 5
+ok 25 - Stage 4 campaign bot clears Shadar Logoth, seed 5
+  ---
+  duration_ms: 369.283667
+  ...
+# Subtest: Stage 4 campaign bot clears Shadar Logoth, seed 10
+ok 26 - Stage 4 campaign bot clears Shadar Logoth, seed 10
+  ---
+  duration_ms: 390.238562
+  ...
+# Subtest: Stage 4 campaign bot clears Shadar Logoth, seed 20
+ok 27 - Stage 4 campaign bot clears Shadar Logoth, seed 20
+  ---
+  duration_ms: 354.691139
+  ...
+# Subtest: Stage 4 campaign bot clears Shadar Logoth, seed 100
+ok 28 - Stage 4 campaign bot clears Shadar Logoth, seed 100
+  ---
+  duration_ms: 372.198296
+  ...
+# Subtest: Stage 4 campaign bot clears Shadar Logoth, seed 97
+ok 29 - Stage 4 campaign bot clears Shadar Logoth, seed 97
+  ---
+  duration_ms: 284.002771
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight, seed 1
+ok 30 - Stage 5 campaign bot clears the Blight, seed 1
+  ---
+  duration_ms: 770.561825
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight, seed 2
+ok 31 - Stage 5 campaign bot clears the Blight, seed 2
+  ---
+  duration_ms: 844.131758
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight, seed 3
+ok 32 - Stage 5 campaign bot clears the Blight, seed 3
+  ---
+  duration_ms: 408.825658
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight, seed 4
+ok 33 - Stage 5 campaign bot clears the Blight, seed 4
+  ---
+  duration_ms: 425.446578
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight, seed 5
+ok 34 - Stage 5 campaign bot clears the Blight, seed 5
+  ---
+  duration_ms: 379.056235
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight, seed 10
+ok 35 - Stage 5 campaign bot clears the Blight, seed 10
+  ---
+  duration_ms: 347.947127
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight, seed 20
+ok 36 - Stage 5 campaign bot clears the Blight, seed 20
+  ---
+  duration_ms: 237.548549
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight, seed 100
+ok 37 - Stage 5 campaign bot clears the Blight, seed 100
+  ---
+  duration_ms: 245.318554
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight, seed 97
+ok 38 - Stage 5 campaign bot clears the Blight, seed 97
+  ---
+  duration_ms: 232.450107
+  ...
+# Subtest: Stage 5 campaign bot clears the Blight with no powers, seed 1
+ok 39 - Stage 5 campaign bot clears the Blight with no powers, seed 1
+  ---
+  duration_ms: 246.978328
+  ...
+# {"seed":1,"off":42.2,"on":41.4,"ratio":0.981,"calls":1}
+# {"seed":2,"off":39.9,"on":37.9,"ratio":0.952,"calls":1}
+# {"seed":3,"off":43.5,"on":43.2,"ratio":0.993,"calls":1}
+# {"seed":4,"off":43.6,"on":42.2,"ratio":0.968,"calls":1}
+# {"seed":5,"off":41.5,"on":38.5,"ratio":0.929,"calls":1}
+# {"seed":10,"off":59.6,"on":42.2,"ratio":0.708,"calls":1}
+# {"seed":20,"off":40.2,"on":40.5,"ratio":1.009,"calls":1}
+# {"seed":100,"off":75.8,"on":53.8,"ratio":0.709,"calls":1}
+# {"seed":97,"off":44.3,"on":41.3,"ratio":0.932,"calls":1}
+# {"lag250":9,"of":9,"fail":[]}
+# Subtest: Stage 6 campaign clears 9 seeds with and without Rand, and Rand keeps 70 percent of the boss time
+ok 40 - Stage 6 campaign clears 9 seeds with and without Rand, and Rand keeps 70 percent of the boss time
+  ---
+  duration_ms: 5982.348977
+  ...
+1..40
+# tests 40
+# suites 0
+# pass 40
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6206.152477

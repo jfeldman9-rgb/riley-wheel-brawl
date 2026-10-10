@@ -1,0 +1,227 @@
+TAP version 13
+# Subtest: painted Gray Man knife glint lies on the attack blade facing -1
+not ok 1 - painted Gray Man knife glint lies on the attack blade facing -1
+  ---
+  duration_ms: 2.413745
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:12:30'
+  failureType: 'testCodeFailure'
+  error: 'glint x 38.639999999999986, blade x 99'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:20:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    node:internal/test_runner/harness:255:12
+    node:internal/process/task_queues:140:7
+    AsyncResource.runInAsyncScope (node:async_hooks:206:9)
+    AsyncResource.runMicrotask (node:internal/process/task_queues:137:8)
+  ...
+# Subtest: painted Gray Man knife glint lies on the attack blade facing 1
+not ok 2 - painted Gray Man knife glint lies on the attack blade facing 1
+  ---
+  duration_ms: 0.263045
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:12:30'
+  failureType: 'testCodeFailure'
+  error: 'glint x 38.639999999999986, blade x 99'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:20:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: code Gray Man retains its original glint offsets and combat dimensions
+ok 3 - code Gray Man retains its original glint offsets and combat dimensions
+  ---
+  duration_ms: 0.242693
+  ...
+# Subtest: painted Be'lal flurry 0 streak follows the visible blade facing -1
+not ok 4 - painted Be'lal flurry 0 streak follows the visible blade facing -1
+  ---
+  duration_ms: 1.124002
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:33:60'
+  failureType: 'testCodeFailure'
+  error: 'streak x 40, blade x 80'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:41:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.start (node:internal/test_runner/test:702:17)
+    startSubtest (node:internal/test_runner/harness:259:17)
+    run (node:internal/test_runner/harness:267:14)
+    test (node:internal/test_runner/harness:278:12)
+    file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:33:60
+  ...
+# Subtest: painted Be'lal flurry 1 streak follows the visible blade facing -1
+not ok 5 - painted Be'lal flurry 1 streak follows the visible blade facing -1
+  ---
+  duration_ms: 0.308391
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:33:60'
+  failureType: 'testCodeFailure'
+  error: 'streak y -70, blade y -138.83999999999997'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:42:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async startSubtest (node:internal/test_runner/harness:259:3)
+  ...
+# Subtest: painted Be'lal flurry 2 streak follows the visible blade facing -1
+not ok 6 - painted Be'lal flurry 2 streak follows the visible blade facing -1
+  ---
+  duration_ms: 0.362667
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:33:60'
+  failureType: 'testCodeFailure'
+  error: 'streak x 40, blade x -25'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:41:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: painted Be'lal flurry 3 streak follows the visible blade facing -1
+not ok 7 - painted Be'lal flurry 3 streak follows the visible blade facing -1
+  ---
+  duration_ms: 0.194649
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:33:60'
+  failureType: 'testCodeFailure'
+  error: 'streak x 40, blade x -25'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:41:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: painted Be'lal flurry 0 streak follows the visible blade facing 1
+not ok 8 - painted Be'lal flurry 0 streak follows the visible blade facing 1
+  ---
+  duration_ms: 0.164003
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:33:60'
+  failureType: 'testCodeFailure'
+  error: 'streak x 40, blade x 80'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:41:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: painted Be'lal flurry 1 streak follows the visible blade facing 1
+not ok 9 - painted Be'lal flurry 1 streak follows the visible blade facing 1
+  ---
+  duration_ms: 0.25243
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:33:60'
+  failureType: 'testCodeFailure'
+  error: 'streak y -70, blade y -138.83999999999997'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:42:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: painted Be'lal flurry 2 streak follows the visible blade facing 1
+not ok 10 - painted Be'lal flurry 2 streak follows the visible blade facing 1
+  ---
+  duration_ms: 0.252192
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:33:60'
+  failureType: 'testCodeFailure'
+  error: 'streak x 40, blade x -25'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:41:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: painted Be'lal flurry 3 streak follows the visible blade facing 1
+not ok 11 - painted Be'lal flurry 3 streak follows the visible blade facing 1
+  ---
+  duration_ms: 0.315252
+  location: '/workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:33:60'
+  failureType: 'testCodeFailure'
+  error: 'streak x 40, blade x -25'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-alignment.test.mjs:41:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 1
+# fail 10
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 142.461055

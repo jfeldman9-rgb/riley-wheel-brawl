@@ -1,6 +1,7 @@
 // Rand call clips. One prefetch, a shuffle bag, and a strike that does not wait on the video.
 import { CutscenePlayer, cutscenesEnabled } from './cutscene.js';
 import { q } from './config.js';
+import { quietStage6 } from './stage6-audio.js';
 
 export const RAND_IDS = Object.freeze(['R1', 'R2', 'R3', 'R4', 'R5']);
 // The live bag draws only clips that ship. R4 and R5 stay reserved in ART_STATUS.json.
@@ -152,6 +153,7 @@ export function playCall(scene, then) {
   };
   const m = scene.music;
   if (m) { ducked = { state: m.state, track: m.track, gainMul: m.gainMul ?? 1 }; m.gainMul = 0.35; }
+  quietStage6(scene, 'cutscene');
   scene.setPauseReason?.('cutscene', true);
   const game = scene.game, ownsPause = !!game && !game.isPaused && typeof game.pause === 'function';
   unpauseGame = () => { if (ownsPause && game.isPaused && !game.pendingDestroy) game.resume?.(); };

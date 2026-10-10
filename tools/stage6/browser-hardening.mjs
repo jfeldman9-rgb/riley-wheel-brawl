@@ -31,7 +31,8 @@ try {
   for (const mode of ['404', 'abort', 'skip']) {
     const page = await browser.newPage({ viewport: { width: 1280, height: 720 } }), errors = [];
     page.on('pageerror', e => errors.push(e.message));
-    if (mode !== '404') await page.route('**/assets/cutscenes/rand/R*.mp4', route => route.fulfill({ contentType: 'video/mp4', body: readFileSync('assets/cutscenes/stage1.mp4') }));
+    // R1-R3 ship now, so the 404 mode has to force the miss; the other modes play a known-short stand-in clip.
+    await page.route('**/assets/cutscenes/rand/R*.mp4', route => mode === '404' ? route.fulfill({ status: 404, body: '' }) : route.fulfill({ contentType: 'video/mp4', body: readFileSync('assets/cutscenes/stage1.mp4') }));
     await page.goto(base + '?s6=1&stage=6&demo=1&story=0&cutscenes=1&debug=1&rs=1');
     await page.waitForFunction(() => window.__stage?.started, null, { timeout: 60000 });
     await page.evaluate(() => { const s = window.__stage; s.god = true; s.bot = null; s.zone = s.zone || { l: s.camX, r: s.camX + 1280 }; const e = s.spawn('grunt', 'R'); e.x = s.camX + 400; e.entering = false; });
@@ -47,6 +48,14 @@ try {
     if (mode === 'abort') {
       await page.evaluate(async () => { const m = await import('./src/rand-call-cutscene.js'); m.abortRandCall(window.__stage); window.__stage.scene.restart({ stage: 1, autostart: true, story: false }); });
       await page.waitForFunction(() => window.__stage.stageNo === 1 && window.__stage.started, null, { timeout: 60000 });
+      // The abort must take Rand's player down at once. ?cutscenes=1 then (correctly) plays Stage 1's own intro clips,
+      // which run longer than the wait below, so skip them through the real cutscene skip.
+      row.randVideosAfterAbort = await page.evaluate(() => [...document.querySelectorAll('video')].filter(v => /cutscenes\/rand\//.test(v.currentSrc || v.src || '')).length);
+      assert.equal(row.randVideosAfterAbort, 0);
+      for (let i = 0; i < 40; i++) {
+        const busy = await page.evaluate(() => { const s = window.__stage; if (!s.cutscene) return false; s.cutscene.press?.('jump'); return true; });
+        if (!busy) break; await page.waitForTimeout(500);
+      }
     } else if (mode === 'skip') {
       await page.waitForTimeout(1000);
       row.clipStillActiveAtSkip = await page.evaluate(() => { const s = window.__stage; if (!s.cutscene) return false; s.cutscene.press('jump'); return true; });

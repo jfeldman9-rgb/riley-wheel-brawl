@@ -3,6 +3,7 @@ import { freezeStrike, thawStrike } from './stage6-freeze.js';
 import { stage4Delta } from './stage4-time.js';
 import { VW, LANE_TOP } from './config.js';
 import { s6Scale } from './stage6-paint.js';
+import { quietStage6 } from './stage6-audio.js';
 import { refuseReason, trySpend, eligibleTargets, allocateStrikes, randEffect, noteRileyKo, tickRand, RAND } from './rand-call.js';
 import { playCall, abortRandCall, dropBlob, warmRand } from './rand-call-cutscene.js';
 import { grayVisible } from './grayman.js';
@@ -64,6 +65,10 @@ export function installStage6SceneHooks(kit) {
     return original.call(this, e);
   });
   hook(kit, s, 'update', original => function(time, deltaMs) {
+    if (kit.deathAudio && this.riley?.alive) {
+      kit.deathAudio = false;
+      if (!this.ended && !this.victoryPending && !this.gameOver && this.music?.state === 'silent') this.music.resumeFight?.();
+    }
     if (kit.flushInp) { kit.flushInp = 0; this.inp?.flushPresses?.(); }
     if (!kit.strike) return original.call(this, time, deltaMs);
     if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;
@@ -74,8 +79,13 @@ export function installStage6SceneHooks(kit) {
   });
   hook(kit, s, 'rileyDied', original => function() {
     abortRandCall(this); if (kit.strike) endStrike(kit, false); if (kit.rand) kit.rand.on = false;
+    quietStage6(this); kit.deathAudio = true;
     this.riley?.grabbedBy?.releaseHold?.('break');
     for (const e of this.enemies || []) e.releaseHold?.('break');
+    return original.call(this);
+  });
+  hook(kit, s, 'continueGame', original => function() {
+    quietStage6(this); kit.deathAudio = false;
     return original.call(this);
   });
   hook(kit, s, 'spawnFireball', original => function(R) {
@@ -184,6 +194,7 @@ export function holdDown(kit, dt) {
 
 export function restoreStage6Hooks(kit) {
   abortRandCall(kit.s);
+  quietStage6(kit.s);
   if (kit.rand) kit.rand.on = false;
   if (kit.strike) endStrike(kit, false);
   for (let i = (kit.hooks?.length || 0) - 1; i >= 0; i--) kit.hooks[i]();

@@ -168,3 +168,82 @@ acceptance run; the video/gesture/race evidence is deterministic DOM plus produc
 Rand media/voice assets remain absent as in cycle 1. The literal no-`placeholder`-anywhere-in-src instruction
 conflicts with required byte-identical HUD: that existing identifier and earlier Stage 4/5 property/comments
 remain in their unchanged files, as documented in cycle 1. No edited/new Stage 6 source contains the string.
+
+## Final hardening cycle (Codex Sol 6.1)
+
+Started at `ccea76b` on `rwb-2-stage6`; reviewed `198b3e1..HEAD`, the two preceding cycles,
+`CONTRACT.md`, and `ART.md` sections 4 and 6. Stage 6 still requires `?s6=1`.
+Only reproduced bugs in the five requested areas were fixed. No combat constants, hit/hurt boxes,
+controls, HUD, touch layout, painted outputs, voice/music files or generated paint manifest changed.
+No commits, stashes, pushes, merges or other-branch changes.
+
+All defects had red regressions in **new** `tests/stage6-final-*.test.mjs` files before production edits.
+Existing tests/helpers remain unchanged. Red evidence:
+[paint](final-reproductions-paint.tap) (4 fail / 3 pass),
+[audio](final-reproductions-audio.tap) (7 fail / 1 pass),
+[alignment](final-reproductions-alignment.tap) (10 fail / 1 pass), and
+[outgoing crossfade](final-reproductions-crossfade.tap) (1 fail / 8 pass).
+The audio red run's final failure is the immediate-stop ordering defect, not a duplicate-loop failure;
+the duplicate-loop assertions preceding it passed. The separate crossfade regression was added after
+that first immediate-stop fix, then reproduced the remaining outgoing-source leak before its fix.
+
+| Scope / suspicion | Verdict, reproduction and final behavior | Fix / files |
+|---|---|---|
+| 1. A failed interior plate never gets a fallback texture | **REAL.** Cold all-file failure and an isolated `bg6mid3.webp` 404 left `bg6mid3` / `bg6mid4` absent. `cold all-file failures create code canvases for every painted key including interior plates` failed at `bg6mid3 missing after fallback`. Native [before](final-browser-before.json) / [after](final-browser.json) agree. All non-story painted keys now exist as canvases under all-file 404s; story keys are intentionally freed at start. | `src/stage6-art.js`: add both canvases to painter and canvas inventory. `tests/stage6-final-paint.test.mjs`. |
+| 1. Atlas JSON vs WebP failure, optional-key cleanup, resident crate or missing texture after ordinary load failure | **NOT REAL beyond the two missing interior canvases.** New `atlas image/json failure falls back and cleans optional keys on shutdown` tests pass. Cold native contexts with one failure, all failures, atlas JSON 404 and atlas WebP 404 start successfully, with zero optional keys, missing non-story keys, page errors or missing-texture warnings. No change to `queueStage6Painted`, `isPainted`, `CRATE6` or generated `stage6-painted.js`. | `final-browser.json`, `tests/stage6-final-paint.test.mjs`; existing `stage6-painted-art.test.mjs` unchanged. |
+| 1. Stage 5→6 double-loads the shared crate; 6→1–5 evicts needed keys or leaves Stage 6 pages resident; restart/continue reloads them | **NOT REAL.** Native 5→6→1–6 probes preserve crate object identity on 5→6 and destinations 2–6, make exactly one crate request total, remove it for Stage 1, and leave zero Stage 6 keys outside the destination inventory. Every destination's non-story texture inventory is complete; no missing-texture warnings or page errors. Restart 6 leaves optional keys empty. Continue does not preload/release textures. | [final-transitions.json](final-transitions.json), existing texture-page/release tests. No release-list changes. |
+| 2. Voice manifest ids/files or Stage 6 music entries disagree | **NOT REAL.** `Stage 6 voice ids and music loop bounds match the shipped manifest and files` passes: all 25 ids equal `STAGE6_VOICES` and `VOICE_FILES`, are unique, and have MP3s. Both music files exist, loop bounds are valid, and native WebAudio starts them as looping buffers. | `tests/stage6-final-audio.test.mjs`, existing registry tests; no manifest/music-entry edits. |
+| 2. Speech survives Riley death/continue; fight music survives quit/restart/disposal or Rand video | **REAL.** New death/continue/dispose pending-decode tests and active-speech/respawn test failed. Rand's `gainMul` property did not reach the backend: the native [before](final-audio-browser-before.json) kept a loop and voice playing through death and the video, and loops after shutdown. [After](final-audio-browser.json): death/video/quit have zero active loops and voices, respawn/continue/abort restore exactly one fight loop. Scene shutdown already canceled speech; the direct-kit-disposal regression additionally pins ownership without depending on that shutdown handler. | New `src/stage6-audio.js` cancels scene audio and silences the real backend. `stage6-lifecycle.js` uses it for death, continue and hook disposal, resuming fight music after respawn. `rand-call-cutscene.js` uses it with the cutscene state so return resumes the old position rather than restarting the boss intro. Audit adds the new module to `STAGE6_SRC`. |
+| 2. First captured gesture cannot unlock a context created by pre-unlock speech | **REAL.** `first captured gesture unlocks a suspended context with a voice queued before any gameplay press` failed: unlocked remained false and the context stayed suspended. The capture listener now calls `unlock()` when a context already exists or the game is already unlocked. An untouched game still creates no context on an unrelated gesture, preserving the existing audio lifecycle contract. Subsequent touch gestures recover suspension. | `src/audio.js`, `tests/stage6-final-audio.test.mjs`; all existing audio lifecycle tests unchanged and green. Deterministic context evidence, not physical iOS acceptance. |
+| 2. Immediate stop or unfinished crossfade leaves music sources behind | **REAL.** `Stage 6 restarts during a pending music decode cannot create duplicate loops` reproduced its final immediate-stop assertion: the old current-track check prevented stopping. The subsequent `immediate Stage 6 music teardown also cancels the outgoing loop in an unfinished crossfade` reproduced one surviving outgoing source. Native quit while two loops are active now leaves zero. | `src/audio.js` selects the new current track before stopping the old one; immediate silence also stops every outgoing track. No fade durations changed for normal transitions. |
+| 2. Restart creates duplicate loops; stale decoded speech restarts after cancellation | **NOT REAL beyond exit cancellation above.** Both restart-before-decode and restart-after-decode assertions have exactly one live loop. Cancellation invalidates voice requests, and every death/continue/disposal pending decode remains stopped. Existing hidden/interrupted-context, scene/video exit-order and terminal-disposal tests pass. | New audio tests plus unchanged audio and Rand lifecycle suites. |
+| 3. Gray Man glint and Be'lal flurry streak align with painted weapons | **REAL offset defects.** The Gray Man glint was at `(38.64, -107.64)` relative to his feet, about 60 px behind / 38 px below the blade tip. It is now `(100, -146)`. Be'lal's thrust streak was at `(±40, -70)` near the shins while the painted blade was near `y -184`; it now follows the blade/raised hand for the painted poses. Mirrored atlas-trim regressions failed before both fixes. [Native before](final-alignment-before.jpg) / [after](final-alignment.jpg), with [frame registration](final-alignment.json), show the correction. | `src/grayman.js`, `src/belal.js` visual sync offsets only; `tests/stage6-final-alignment.test.mjs`. Code-art offsets remain unchanged. |
+| 3. Painted scaling/trim changes reach, hit/hurt boxes, feet or shadows for Be'lal, Gray Man, Fadelt, Rand, Defenders, hatch and Callandor | **NOT REAL beyond the two visual offsets.** All shipped character atlas `meta.drawScale` values are 1 and match `s6Scale`; native actors use untrimmed `sourceSize`, origin `(0.5, 0.96)`, feet at their world point and shadows at `y + 2`. Combat uses explicit existing distances and `def.shadowW`, not packed frame width. Rand/Defenders/hatch/Callandor use the painted scales, with fallback scales preserved; those decorative props have no combat hitbox. Existing painted-art, boss, Gray Man, Fadelt, Rand and wall-pin tests pass. | No scale, origin, combat, reach or shadow changes. Existing tests plus new alignment tests and native registration probe. |
+| 4. Mixed painted/code plates rescale a painted exterior file as a code fallback | **REAL.** A single interior-plate 404 created 0.4-parallax tiles using painted `bg6mid` / `bg6mid2` files at 560×150. `one failed interior plate uses code tiles rather than rescaling resident painted exterior plates` failed. The tiles now select an actual failed-zone canvas (`bg6mid3` in this probe), retain flat lighting, and dispose with the view. | `src/stage6-view.js` picks the corresponding missing-zone key. `tests/stage6-final-paint.test.mjs`, native one-file fault probe. |
+| 4. Plate overlaps, feathers/world ends/camera clamps or floor seam strips introduce gaps, double seams, inconsistent lighting or off-world floors | **NOT REAL.** `clamped camera never exposes world plate ends; floor seams are contiguous lit strips with one left-floor sample per pixel` checks every integer camera position 0–3920, exact 96 px neighbour overlap, and outer ends beyond the legal viewport. Painted base floors end at the world bound. Each seam has 16 adjoining 10 px strips across 160 px, unique left-floor sampling at `x - x0`, descending nonzero alpha, one seam per boundary and the same flat lighting as the base. Code floors have no seam strips; all/mixed asset-failure cases build cleanly. | Existing painted-floor/seam tests unchanged; new paint boundary test. No `plateRect`, `floorSeam`, `SEAM6`, floor geometry, feather, camera or lighting changes. |
+| 5. Callandor reverts after Be'lal's body retires; failed painted Callandor never flares | **REAL.** Both `Callandor painted/code fallback flares through Be'lal retirement and resets in a fresh view` regressions failed. The painted key reverted to frame 0 after `enemies` emptied despite the scene retaining its phase-3 boss; the fallback never left frame 0. | `src/stage6-view.js` uses the retained scene boss phase and sets the frame for both painted and code textures. Painted NORMAL / code ADD and their alpha formulas remain unchanged. |
+| 5. Restart, Rand strike freeze or blend mode breaks the phase-3 swap | **NOT REAL beyond the retirement/fallback cases.** Fresh views start at frame 0, phase 1 resets it, and non-boss zones hide it. Existing whole-frame/Rand-clock freeze tests pass; the frozen boss phase does not change during a strike. Painted NORMAL and code ADD are pinned in the new test and existing painted-art test. | No freeze, blend, pulse or scale changes. |
+
+### Validation
+
+- Full suite (Codex run): **1367 tests, 1365 pass, 0 fail, 2 existing skips** (Stage 4 STT and
+  optional ESM Playwright viewport test). Twenty-seven new regressions/assertion tests across three new files.
+  Focused Stage 6 run: **123 pass, 0 fail, 0 skip**.
+- [final-campaign.tap](final-campaign.tap): Stage 3 / 4 / 5 **9/9 each**; Stage 6 **9/9 without Rand,
+  9/9 with Rand, 9/9 at 250 ms lag**. Paired rounded Rand/no-Rand boss ratios **0.708–1.009**;
+  all unrounded values pass the existing 0.70–1.02 assertions. The complete final suite repeats these campaigns.
+- `node tools/audit-stage1.mjs` exits **0**. Pre-fight
+  **24,905,039 < 25,000,000 bytes**; Stage 6 source **118,791 / 196,608 bytes**, all per-file caps pass.
+  The small shared audio fix adds 169 pre-fight bytes; new Stage 6 audio ownership stays outside that path.
+- `node tests/helpers/run-full-stage-simulations.mjs > /tmp/sim.json` exits **0**, and
+  `diff <(jq 'del(.sourceSha256,.baseGitCommit)' /tmp/sim.json)
+  <(jq 'del(.sourceSha256,.baseGitCommit)' docs/stage1/evidence/full-stage-simulation.json)` prints nothing.
+  **Only the `src/audio.js` source hash was refreshed**, matching the previous cycle's hash-only method.
+  The gameplay payload and recorded base commit were retained.
+- Protected diffs are empty against `origin/rwb-w2` for Input/lib/index, and against
+  `origin/rwb-2-stage5` and HEAD for HUD. Existing tests/helpers and assets/art-in have no working-tree edits.
+  `git diff --check` passes; all-src Safari 15 forbidden syntax/API test passes.
+  Test-generated `tools/music/__pycache__` was removed; no `__pycache__` / `.pyc` remains.
+- Three **new** browser probes under `tools/stage6/final-*.mjs` record cold 404s, texture transitions,
+  native WebAudio source start/stop, and trimmed-frame visual registration. They use the actual pinned Phaser
+  and a static server for this worktree, Chromium/SwiftShader, 1280×720 at scale 1. Baseline audio/actor
+  source comes from read-only `git show HEAD:src/...`, not asset edits or a different checkout. Production
+  findings are also pinned by dependency-free Node regressions; the new probes use global Playwright.
+
+### Ownership and remaining limits
+
+This pass edits production `audio.js`, `stage6-audio.js` (new), `stage6-lifecycle.js`, `rand-call-cutscene.js`,
+`stage6-art.js`, `stage6-view.js`, `grayman.js`, `belal.js`, and the audit's module list. It adds three new
+`stage6-final-*.test.mjs` files, three new browser tools and final evidence, appends this section, and refreshes
+one Stage 1 evidence hash. **This pass did not edit** `tools/stage6/browser-hardening.mjs`,
+`tools/stage6/art-shots.mjs`, assets or art-in. Concurrent edits to `browser-hardening.mjs` and its JSON
+appeared while this pass was running and were left untouched.
+
+Physical iPhone/iPad Safari 15 unlock, native hardware input, listening acceptance and retina renderer
+performance remain untested. The browser/context evidence proves graph ownership and deterministic recovery,
+not physical-device sound acceptance. Atlas drawScale values other than the shipped 1 were not exercised.
+No painted art processing output or bitmap budget changed.
+
+The inherited literal `placeholder` occurrences in the protected HUD and unrelated Stage 4/5 source remain,
+as documented in both preceding cycles: deleting them would violate protected bytes and/or this cycle's
+real-bugs-only scope. No edited/new Stage 6 source contains that string, and controls/HUD are byte-identical.

@@ -1,0 +1,162 @@
+TAP version 13
+# Subtest: Stage 6 voice ids and music loop bounds match the shipped manifest and files
+ok 1 - Stage 6 voice ids and music loop bounds match the shipped manifest and files
+  ---
+  duration_ms: 2.457279
+  ...
+# Subtest: first captured gesture unlocks a suspended context with a voice queued before any gameplay press
+not ok 2 - first captured gesture unlocks a suspended context with a voice queued before any gameplay press
+  ---
+  duration_ms: 7.162
+  location: '/workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:67:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:71:10)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: Stage 6 death cancels speech, including a pending decode
+not ok 3 - Stage 6 death cancels speech, including a pending decode
+  ---
+  duration_ms: 9.091962
+  location: '/workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:75:54'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:80:10)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: Stage 6 continue cancels speech, including a pending decode
+not ok 4 - Stage 6 continue cancels speech, including a pending decode
+  ---
+  duration_ms: 17.742061
+  location: '/workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:75:54'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:80:10)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: Stage 6 dispose cancels speech, including a pending decode
+not ok 5 - Stage 6 dispose cancels speech, including a pending decode
+  ---
+  duration_ms: 12.133232
+  location: '/workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:75:54'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:80:10)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: Riley death stops active speech and fight music; respawn resumes one boss loop
+not ok 6 - Riley death stops active speech and fight music; respawn resumes one boss loop
+  ---
+  duration_ms: 5.371785
+  location: '/workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:84:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:87:27)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: Rand video silences the actual backend and speech, then restores exactly one boss loop
+not ok 7 - Rand video silences the actual backend and speech, then restores exactly one boss loop
+  ---
+  duration_ms: 6.101839
+  location: '/workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:92:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    gainMul alone never reaches audio.js
+    
+    2 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 2
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:102:23)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: Stage 6 restarts during a pending music decode cannot create duplicate loops
+not ok 8 - Stage 6 restarts during a pending music decode cannot create duplicate loops
+  ---
+  duration_ms: 2.053194
+  location: '/workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:109:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-final-audio.test.mjs:113:44)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 1
+# fail 7
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 213.25754

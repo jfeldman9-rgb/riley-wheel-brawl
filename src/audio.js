@@ -122,7 +122,7 @@ export function unlock() { init(); unlocked = true; resumeAudio(); }
 export function installAudioLifecycle(game) {
   let disposed = false;
   const gestureEvents = ['pointerdown', 'touchend', 'keydown'];
-  const gesture = () => { if (!disposed && unlocked) resumeAudio(); };
+  const gesture = () => { if (!disposed && (unlocked || ctx)) unlock(); };
   const hidden = () => { if (disposed) return; audioHidden = true; suspendAudio(); };
   const visible = () => { if (disposed) return; audioHidden = false; if (unlocked) resumeAudio(); };
   const destroy = () => {
@@ -361,8 +361,13 @@ export function playTrack(id, opts = {}) {
   if (id !== null && !MUSIC[id]) return;
   musicWanted = true; wantedTrack = id; init(); if (!ctx || !musicOn) return;
   const fade = opts.fade === undefined ? 1.5 : opts.fade, prev = currentTrack;
+  currentTrack = id;
   if (prev && prev !== id) stopTrack(tracks[prev], fade);
-  currentTrack = id; if (id === null) return;
+  if (id === null) {
+    // Immediate scene/video exits also own any outgoing crossfade sources.
+    if (!(fade > 0)) for (const T of Object.values(tracks)) stopTrack(T, 0);
+    return;
+  }
   const T = trackNode(id);
   if (T.stopTimer) { T.stopTimer.cancel(); T.stopTimer = null; }
   if (opts.restart) {

@@ -1,0 +1,106 @@
+[
+  {
+    "to": 1,
+    "reuse": true,
+    "crateLoads": 1,
+    "after": {
+      "stage": 1,
+      "optional": [],
+      "remaining6": [],
+      "missingNeeded": [],
+      "crateSame": false,
+      "shared": []
+    },
+    "errors": [],
+    "missing": []
+  },
+  {
+    "to": 2,
+    "reuse": true,
+    "crateLoads": 1,
+    "after": {
+      "stage": 2,
+      "optional": [],
+      "remaining6": [],
+      "missingNeeded": [],
+      "crateSame": true,
+      "shared": [
+        "crate",
+        "planks"
+      ]
+    },
+    "errors": [],
+    "missing": []
+  },
+  {
+    "to": 3,
+    "reuse": true,
+    "crateLoads": 1,
+    "after": {
+      "stage": 3,
+      "optional": [],
+      "remaining6": [],
+      "missingNeeded": [],
+      "crateSame": true,
+      "shared": [
+        "crate",
+        "planks"
+      ]
+    },
+    "errors": [],
+    "missing": []
+  },
+  {
+    "to": 4,
+    "reuse": true,
+    "crateLoads": 1,
+    "after": {
+      "stage": 4,
+      "optional": [],
+      "remaining6": [],
+      "missingNeeded": [],
+      "crateSame": true,
+      "shared": [
+        "crate",
+        "planks"
+      ]
+    },
+    "errors": [],
+    "missing": []
+  },
+  {
+    "to": 5,
+    "reuse": true,
+    "crateLoads": 1,
+    "after": {
+      "stage": 5,
+      "optional": [],
+      "remaining6": [],
+      "missingNeeded": [],
+      "crateSame": true,
+      "shared": [
+        "crate",
+        "planks"
+      ]
+    },
+    "errors": [],
+    "missing": []
+  },
+  {
+    "to": 6,
+    "reuse": true,
+    "crateLoads": 1,
+    "after": {
+      "stage": 6,
+      "optional": [],
+      "remaining6": [],
+      "missingNeeded": [],
+      "crateSame": true,
+      "shared": [
+        "crate"
+      ]
+    },
+    "errors": [],
+    "missing": []
+  }
+]

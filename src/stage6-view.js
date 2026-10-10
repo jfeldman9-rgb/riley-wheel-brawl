@@ -42,13 +42,14 @@ export function createStage6View(scene) {
         lit(mid);
       });
       // Zones without a painted plate keep the code-drawn tiles on the 0.4 parallax strip (below painted plates).
-      const seen = x => flat.some(i => {
+      const codeKey = x => flat.find(i => {
         const c0 = i ? zones[i - 1].l : 0, c1 = i + 1 < zones.length ? zones[i + 1].l : WORLD_W - VW;
         return x + 560 > 0.4 * c0 && x < 0.4 * c1 + VW;
       });
       for (let x = -40, i = 0; x < WORLD_W; x += 520, i++) {
-        if (!seen(x)) continue;
-        const mid = scene.add?.image?.(x, LANE_TOP + 6, i % 2 ? 'bg6mid2' : 'bg6mid');
+        const zone = codeKey(x);
+        if (zone === undefined) continue;
+        const mid = scene.add?.image?.(x, LANE_TOP + 6, PLATES6[zone]);
         mid?.setOrigin?.(0, 1); mid?.setScrollFactor?.(0.4); mid?.setDepth?.(-51); mid?.setDisplaySize?.(560, 150);
         lit(mid);
       }
@@ -98,9 +99,11 @@ export function createStage6View(scene) {
       const boss = zone === 3 && kit?.s?.boss;
       const pulse = Math.sin((kit?.s?.time?.now || 0) / 280);
       call?.setVisible?.(!!boss);
+      // The scene keeps its boss after the body leaves enemies; retain the final flare until the stage ends.
+      const flare = kit?.s?.boss?.phase >= 3 || (kit?.s?.enemies || []).some(e => e.type === 'belal' && e.phase >= 3);
+      call?.setFrame?.(flare ? 1 : 0);
       if (call && isPainted(scene, 's6call')) {
-        const flare = (kit?.s?.enemies || []).some(e => e.type === 'belal' && e.phase >= 3);
-        call.setFrame?.(flare ? 1 : 0); call.setAlpha?.(flare ? 0.9 + 0.1 * pulse : 0.82 + 0.1 * pulse);
+        call.setAlpha?.(flare ? 0.9 + 0.1 * pulse : 0.82 + 0.1 * pulse);
       } else call?.setAlpha?.(0.55 + 0.35 * pulse);
       if (boss && !rays.length && kit?.s?.add?.image) {
         for (let i = 0; i < 3; i++) {
