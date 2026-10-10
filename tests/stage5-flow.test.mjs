@@ -14,13 +14,19 @@ const { stage5Simulation, withSeed } = await import('./helpers/stage5-harness.mj
 const Q = s => new URLSearchParams(s);
 
 test('Stage 5 is on the title arrows and a clear of Stage 4 continues into it', () => {
-  assert.equal(maxStage(Q('')), 5);
+  assert.equal(maxStage(Q('')), 6);
+  assert.equal(maxStage(Q('s6=0')), 5);
+  assert.match(STAGE_NAMES[6], /STONE OF TEAR/);
   assert.equal(stageFromQuery(Q('stage=5')), 5);
   assert.match(STAGE_NAMES[5], /BLIGHT/);
   assert.match(clearPrompt(4, false, 5), /CONTINUE TO STAGE 5/);
   assert.match(clearPrompt(5, false, 1), /RETURN TO THE TITLE/);
+  assert.match(clearPrompt(5, false, 6), /CONTINUE TO STAGE 6/);
+  assert.match(clearPrompt(6, false, 1), /RETURN TO THE TITLE/);
+  assert.match(clearPrompt(6, true, 1), /^TAP KICK TO RETURN TO THE TITLE$/);
   assert.deepEqual(STAGES[4].next(), { stage: 5, fromStage4: true, autostart: true });
-  assert.deepEqual(STAGES[5].next(), { stage: 1 });
+  assert.deepEqual(STAGES[5].next(), { stage: 6, fromStage5: true, autostart: true });
+  assert.deepEqual(STAGES[5].next(Q('s6=0')), { stage: 1 });
   assert.equal(STAGES[5].next().score, undefined);
   assert.equal(STAGES[5].next().lives, undefined);
   assert.equal(STORY5_SCRIPT.length, 5);

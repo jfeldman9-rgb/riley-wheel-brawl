@@ -9,18 +9,18 @@ import './stage5.js';
 import './stage6.js';
 export const STAGE_COUNT = 2;
 
-/** Stages 1–5 are always playable. ?s3=1 and ?s4=1 stay valid and change nothing. */
+/** Stages 1–6 are playable by default. ?s3=1 to ?s6=1 stay valid and change nothing; ?s6=0 hides Stage 6. */
 export function stageEnabled(n, q) {
-  if (n === 6) return q?.get?.('s6') === '1';
+  if (n === 6) return q?.get?.('s6') !== '0';
   return n === 1 || n === 2 || n === 3 || n === 4 || n === 5;
 }
 
-/** Title select offers every shipped stage. Stage 6 needs ?s6=1. */
+/** Title select offers every shipped stage (Stage 5 is the last one under ?s6=0). */
 export function maxStage(q) {
   return stageEnabled(6, q) ? 6 : 5;
 }
 
-/** ?stage=2 through ?stage=6; stage 6 only with ?s6=1. Anything else is Stage 1. */
+/** ?stage=2 through ?stage=6 (not 6 under ?s6=0). Anything else is Stage 1. */
 export function stageFromQuery(q) {
   const n = q && q.get ? +q.get('stage') : 0;
   if (n > 1 && n < 7 && stageEnabled(n, q)) return n;

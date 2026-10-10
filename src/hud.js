@@ -29,15 +29,15 @@ export function bossBannerBox() {
   const b = BOSS_BANNER, w = b.maxWidth + b.padX * 2, h = b.maxHeight + b.padY * 2;
   return Object.freeze({ x: b.x, y: b.y, w, h, left: b.x - w / 2, right: b.x + w / 2, top: b.y - h / 2, bottom: b.y + h / 2 });
 }
-export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS', 3: 'STAGE 3 · CAEMLYN — THE MYRDDRAAL', 4: 'STAGE 4 · SHADAR LOGOTH — THE DRAGHKAR', 5: 'STAGE 5 · THE BLIGHT — THE EYE OF THE WORLD' });
+export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS', 3: 'STAGE 3 · CAEMLYN — THE MYRDDRAAL', 4: 'STAGE 4 · SHADAR LOGOTH — THE DRAGHKAR', 5: 'STAGE 5 · THE BLIGHT — THE EYE OF THE WORLD', 6: 'STAGE 6 · TEAR — THE STONE OF TEAR' });
 // The perf readout is two 12px lines anchored at VH-8 and is on unless ?hud=0.
 // A tag at VH-30 sits inside that block.
 export const PLACEHOLDER_TAG_Y = VH - 56;
 export const speakerColor = who => /TROLLOC|WHITECLOAK|BYAR|CUTTHROAT|MYRDDRAAL|DRAGHKAR|CULTIST|MORDETH|AGINOR|BALTHAMEL|GREEN/.test(who) ? '#ffb3a0' : /NARRATOR/.test(who) ? '#ffe2a0' : '#9fd8ff';
 export function clearPrompt(stage, touch, next) {
   const verb = touch ? 'TAP KICK' : 'PRESS ATTACK';
-  if (next > 2 && next < 6) return `${verb} TO CONTINUE TO STAGE ${next}`;
-  if (stage > 2 && stage < 6) return `${verb} TO RETURN TO THE TITLE`;
+  if (next > 2 && next < 7) return `${verb} TO CONTINUE TO STAGE ${next}`;
+  if (stage > 2 && stage < 7) return `${verb} TO RETURN TO THE TITLE`;
   return stage === 1 ? `${verb} TO CONTINUE TO STAGE 2` : stage === 2 ? `${verb} TO RETURN TO THE TITLE` : `${verb} TO PLAY AGAIN`;
 }
 

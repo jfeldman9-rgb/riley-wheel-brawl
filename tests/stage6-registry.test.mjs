@@ -10,26 +10,31 @@ const { stage6Say, STAGE6_VOICES, VOICE_FILES } = await import('../src/stage6-vo
 
 const Q = s => new URLSearchParams(s);
 
-test('stage 6 stays behind s6=1', () => {
-  assert.equal(stageEnabled(6, Q('')), false);
-  assert.equal(stageEnabled(6, Q('s4=1')), false);
-  assert.equal(stageEnabled(6, Q('s5=1')), false);
+test('stage 6 is on by default; ?s6=1 stays valid and ?s6=0 hides it', () => {
+  assert.equal(stageEnabled(6, Q('')), true);
+  assert.equal(stageEnabled(6, Q('s4=1')), true);
+  assert.equal(stageEnabled(6, Q('s5=1')), true);
   assert.equal(stageEnabled(6, Q('s6=1')), true);
-  assert.equal(maxStage(Q('')), 5);
+  assert.equal(stageEnabled(6, Q('s6=0')), false);
+  assert.equal(maxStage(Q('')), 6);
   assert.equal(maxStage(Q('s6=0')), 5);
   assert.equal(maxStage(Q('s6=1')), 6);
-  assert.equal(stageFromQuery(Q('stage=6')), 1);
+  assert.equal(stageFromQuery(Q('stage=6')), 6);
   assert.equal(stageFromQuery(Q('stage=6&s6=1')), 6);
-  assert.equal(resolveStage({ stage: 6 }, Q('')), 1);
+  assert.equal(stageFromQuery(Q('stage=6&s6=0')), 1);
+  assert.equal(resolveStage({ stage: 6 }, Q('')), 6);
   assert.equal(resolveStage({ stage: 6 }, Q('s6=1')), 6);
-  for (const n of [1, 2, 3, 4, 5]) assert.equal(stageEnabled(n, Q('')), true);
+  assert.equal(resolveStage({ stage: 6 }, Q('s6=0')), 1);
+  for (const n of [1, 2, 3, 4, 5]) { assert.equal(stageEnabled(n, Q('')), true); assert.equal(stageEnabled(n, Q('s6=0')), true); }
 });
 
-test('stage 5 returns to the title unless s6=1, and stage 6 always returns to the title', () => {
-  assert.deepEqual(STAGES[5].next(), { stage: 1 });
-  assert.deepEqual(STAGES[5].next(Q('')), { stage: 1 });
-  assert.deepEqual(STAGES[5].next(Q('s3=1')), { stage: 1 });
-  assert.deepEqual(STAGES[5].next(Q('s6=1')), { stage: 6, fromStage5: true, autostart: true });
+test('stage 5 continues to stage 6 unless s6=0, and stage 6 always returns to the title', () => {
+  const to6 = { stage: 6, fromStage5: true, autostart: true };
+  assert.deepEqual(STAGES[5].next(), to6);
+  assert.deepEqual(STAGES[5].next(Q('')), to6);
+  assert.deepEqual(STAGES[5].next(Q('s3=1')), to6);
+  assert.deepEqual(STAGES[5].next(Q('s6=1')), to6);
+  assert.deepEqual(STAGES[5].next(Q('s6=0')), { stage: 1 });
   assert.deepEqual(STAGES[6].next(), { stage: 1 });
   assert.deepEqual(STAGES[6].next(Q('s6=1')), { stage: 1 });
   assert.equal(STAGES[6].boss.type, 'belal');
