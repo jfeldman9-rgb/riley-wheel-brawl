@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-# Kokoro-82M v1.0 TTS for Stage 3 (Caemlyn) lines. Riley and narrator reuse the approved Stage 2 casts.
+# Kokoro-82M v1.0 TTS for Stage 3 (Caemlyn) lines. Riley renders via ElevenLabs (tools/riley_voice.py, DYLO eleven_v4).
 import json, subprocess, sys, hashlib, re
 from pathlib import Path
 import numpy as np, soundfile as sf, torch
 from kokoro import KPipeline
+sys.path.insert(0, str(Path(__file__).resolve().parent)); import riley_voice  # Riley: ElevenLabs DYLO, re-recorded 2026-10-09, approved by Jason F via Grok Bot
 
 REV = 'f3ff3571791e39611d31c381e3a41a3af07b4987'
 OUT = Path(sys.argv[1]); OUT.mkdir(parents=True, exist_ok=True)
 CAST = {
-  'riley':    dict(lang='a', blend={'am_puck': 0.8, 'am_fenrir': 0.2}, speed=1.04, pitch=1.02),
+  'riley':    riley_voice.CAST,  # was Kokoro 80% am_puck + 20% am_fenrir
   'narrator': dict(lang='b', blend={'bm_fable': 1.0}, speed=0.95, pitch=0.97),
 }
 PRON = {
@@ -54,10 +55,13 @@ def process(wav, mp3, c):
 manifest = []
 for id_, who, text in LINES:
   mp3 = OUT / f'{id_}.mp3'
-  wav = OUT / f'_{id_}.wav'; phon = synth(who, text, wav); process(wav, mp3, CAST[who])
+  if who == 'riley':
+    riley_voice.require_key(); riley_voice.render(id_, mp3); phon = ['(ElevenLabs ' + riley_voice.LINES[id_]['prompt'] + ')']
+  else:
+    wav = OUT / f'_{id_}.wav'; phon = synth(who, text, wav); process(wav, mp3, CAST[who])
   dur = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(mp3)], capture_output=True, text=True).stdout)
   manifest.append({'id': id_, 'who': who, 'text': text, 'speech_input': speech_input(text), 'phonemes': phon, 'duration_s': round(dur, 3),
-                   'sha256': hashlib.sha256(mp3.read_bytes()).hexdigest(), 'asset_path': f'assets/audio/voice/{id_}.mp3', 'source': 'kokoro'})
+                   'sha256': hashlib.sha256(mp3.read_bytes()).hexdigest(), 'asset_path': f'assets/audio/voice/{id_}.mp3', 'source': 'elevenlabs' if who == 'riley' else 'kokoro'})
   print(id_, round(dur, 2), flush=True)
 for f in OUT.glob('_*.wav'): f.unlink()
 (OUT / 'manifest.json').write_text(json.dumps({'engine': 'Kokoro 0.9.4 / Kokoro-82M v1.0', 'model_revision_requested': REV, 'cast': CAST, 'pronunciation': PRON, 'lines': manifest}, indent=2, ensure_ascii=False))

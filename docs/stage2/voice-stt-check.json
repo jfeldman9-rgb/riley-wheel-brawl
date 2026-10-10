@@ -8,14 +8,16 @@
  {
   "id": "st2_story_02",
   "text": "These hoofprints... a Myrddraal came this way. Hang on, Twinkle Toes.",
-  "heard": "These hoof prints emerald came this way, hang on twinkle toes.",
-  "word_match": 0.727
+  "heard": "These hoofprints. A Myrddraal came. Hang on, Twinkle Toes.",
+  "word_match": 0.9,
+  "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
  },
  {
   "id": "st2_story_03",
   "text": "That's her ribbon! She was here!",
-  "heard": "That's her ribbon she was here.\"",
-  "word_match": 1.0
+  "heard": "That's her ribbon! She was here!",
+  "word_match": 1.0,
+  "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
  },
  {
   "id": "st2_story_04",
@@ -26,8 +28,9 @@
  {
   "id": "st2_story_05",
   "text": "Darkfriend? I'm sixteen! I'm just looking for my friend!",
-  "heard": "Dark friend I'm 16, I'm just looking for my friends.",
-  "word_match": 0.667
+  "heard": "Darkfriend? I'm sixteen! I'm just looking for my friend!",
+  "word_match": 1.0,
+  "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
  },
  {
   "id": "st2_story_06",
@@ -44,14 +47,16 @@
  {
   "id": "riley_st2_stable_01",
   "text": "Hound Trollocs? The Fade left guards behind!",
-  "heard": "Hound Trollocks the Fade Lift guards behind.",
-  "word_match": 0.714
+  "heard": "Hound Trollocs? The Fade left guards behind",
+  "word_match": 1.0,
+  "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
  },
  {
   "id": "riley_ribbon_01",
   "text": "Twinkle Toes' ribbon! I'm getting closer.",
-  "heard": "Ribbon, I'm getting closer.",
-  "word_match": 0.8
+  "heard": "Twinkle Toes Ribbon! I'm getting closer!",
+  "word_match": 1.0,
+  "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
  },
  {
   "id": "zealot_mud_01",
@@ -63,7 +68,8 @@
   "id": "riley_mud_01",
   "text": "Try cold water!",
   "heard": "Try cold water.",
-  "word_match": 1.0
+  "word_match": 1.0,
+  "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
  },
  {
   "id": "byar_intro_01",
@@ -104,13 +110,15 @@
  {
   "id": "riley_st2_victory_01",
   "text": "I'm NOT a Darkfriend! ...And your barn is on fire!",
-  "heard": "I'm not a dark friend and your barn is on fire.",
-  "word_match": 0.857
+  "heard": "I'm not a Darkfriend, and your barn is on fire!",
+  "word_match": 1.0,
+  "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
  },
  {
   "id": "riley_st2_clear_01",
   "text": "The trail keeps going. Hang on, Twinkle Toes. I am coming.",
-  "heard": "The trail keeps going, hang on, twinkle toes, I am coming.",
-  "word_match": 1.0
+  "heard": "The trail keeps going! Hang on, Twinkle Toes! I am coming!",
+  "word_match": 1.0,
+  "checked_with": "faster-whisper medium.en, best of 4 paddings (2026-10-09)"
  }
 ]

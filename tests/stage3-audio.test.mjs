@@ -121,8 +121,11 @@ test('the ElevenLabs takes are recorded with their model, voice and hash, and St
     fade_split_01: 'Branok',
     fade_defeat_01: 'Branok',
   };
+  // Riley's lines were re-recorded with ElevenLabs DYLO on 2026-10-09 (approved by Jason F via Grok Bot).
+  for (const id of ['st3_story_03', 'st3_story_05', 'riley_escape_01', 'riley_st3_roof_01', 'riley_st3_glimpse_01',
+    'riley_counter_01', 'riley_st3_victory_01', 'riley_st3_clear_01']) elevenVoices[id] = 'DYLO - Dark Anime Hero';
   const elevenLines = man.lines.filter(l => l.source === 'elevenlabs');
-  assert.equal(elevenLines.length, 8);
+  assert.equal(elevenLines.length, 16);
   for (const l of elevenLines) {
     assert.equal(l.source, 'elevenlabs');
     assert.equal(l.model, 'eleven_v4');
@@ -139,13 +142,15 @@ test('the ElevenLabs takes are recorded with their model, voice and hash, and St
   assert.ok(prov.includes('## Stage 2: Baerlon and the Whitecloaks (TTS)'));
 });
 
-test('the Kokoro Stage 3 lines reuse the Stage 2 Riley and narrator casts', () => {
+test('the Kokoro Stage 3 lines reuse the Stage 2 narrator cast, and Riley shares one ElevenLabs cast', () => {
   const s2Man = JSON.parse(readFileSync(new URL('../assets/audio/stage2-voice-manifest.json', import.meta.url)));
   const s3Man = JSON.parse(readFileSync(new URL('../assets/audio/stage3-voice-manifest.json', import.meta.url)));
   assert.deepEqual(s3Man.cast.riley, s2Man.cast.riley);
   assert.deepEqual(s3Man.cast.narrator, s2Man.cast.narrator);
+  assert.equal(s3Man.cast.riley.engine, 'elevenlabs');
+  assert.equal(s3Man.cast.riley.voice_id, 'JjsQrIrIBD6TZ656NQfi');
   const kokoroLines = s3Man.lines.filter(l => l.source === 'kokoro');
-  assert.equal(kokoroLines.length, 10);
+  assert.equal(kokoroLines.length, 2);
   for (const l of kokoroLines) {
     const fileBytes = readFileSync(new URL('../' + l.asset_path, import.meta.url));
     const h = createHash('sha256').update(fileBytes).digest('hex');

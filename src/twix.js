@@ -7,7 +7,7 @@ export const TWIX_PANELS = 3;
 // Lines and speakers live in audio.js EXTRA_VOICE (captions + TTS files); this sets their order and painted panel.
 export const TWIX_SCRIPT = Object.freeze([
   // [voice id, panel, TTS clip seconds]
-  ['twix_01', 0, 3.02], ['twix_02', 1, 3.98], ['twix_03', 1, 4.73], ['twix_04', 1, 2.54], ['twix_05', 1, 4.15], ['twix_06', 1, 4.94], ['twix_07', 2, 2.88], ['twix_08', 2, 2.16], ['twix_09', 2, 1.73],
+  ['twix_01', 0, 4.20], ['twix_02', 1, 3.98], ['twix_03', 1, 4.73], ['twix_04', 1, 2.54], ['twix_05', 1, 4.15], ['twix_06', 1, 4.94], ['twix_07', 2, 3.77], ['twix_08', 2, 2.16], ['twix_09', 2, 3.00],
 ].map(([id, panel, voice]) => Object.freeze({ id, who: EXTRA_VOICE[id][0], text: EXTRA_VOICE[id][1], panel, voice })));
 // Reading time: captions stay up at least MIN_HOLD seconds, longer for long lines, and never cut off their voice
 // clip; a press can advance after GUARD.

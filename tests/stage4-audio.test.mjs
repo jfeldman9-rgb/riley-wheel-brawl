@@ -56,7 +56,8 @@ test('the voice manifest lists every Stage 4 line with speaker, text, file and e
     const voice = statSync(resolve(root, row.file));
     assert.ok(voice.size > 2048, row.file);
     assert.ok(voice.size < 200 * 1024, row.file);
-    if (row.speaker === 'RILEY' || row.speaker === 'LOIAL') assert.equal(row.engine, 'kokoro', row.id);
+    if (row.speaker === 'LOIAL') assert.equal(row.engine, 'kokoro', row.id);
+    if (row.speaker === 'RILEY') assert.equal(row.engine, 'elevenlabs', row.id);
     if (['DRAGHKAR', 'CULTIST', 'NARRATOR', 'MORDETH'].includes(row.speaker)) assert.equal(row.engine, 'elevenlabs', row.id);
   }
   const off = audio.lines.find(row => row.id === 'riley_fog_off_02');

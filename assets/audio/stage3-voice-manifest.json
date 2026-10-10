@@ -1,15 +1,13 @@
 {
-  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0 (Riley, narrator); ElevenLabs eleven_v4 (Basel Gill, cutthroat, Myrddraal)",
+  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0 (Riley, narrator); ElevenLabs eleven_v4 (Basel Gill, cutthroat, Myrddraal); Riley: ElevenLabs eleven_v4 DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot)",
   "model_revision_requested": "f3ff3571791e39611d31c381e3a41a3af07b4987",
   "cast": {
     "riley": {
-      "lang": "a",
-      "blend": {
-        "am_puck": 0.8,
-        "am_fenrir": 0.2
-      },
-      "speed": 1.04,
-      "pitch": 1.02
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     "narrator": {
       "lang": "b",
@@ -57,14 +55,21 @@
       "id": "st3_story_03",
       "who": "riley",
       "text": "Twinkle Toes' ribbon. He's here.",
-      "speech_input": "Twinkle Toes' ribbon. He's here.",
-      "phonemes": [
-        "twˈɪŋkᵊl tˈOz ɹˈɪbən. hˌiz hˈɪɹ."
-      ],
-      "duration_s": 1.536,
-      "sha256": "76baefd24fa607bbd9a9aeefa2f6f0f3a60c6290309df6a950df29ca11629266",
       "asset_path": "assets/audio/voice/st3_story_03.mp3",
-      "source": "kokoro"
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[serious] Twinkle Toes' ribbon. He's here.",
+      "bitrate": "64k",
+      "generation_id": "VB5azp7UkRZOEb7USAWV",
+      "duration_s": 2.76,
+      "bytes": 22316,
+      "sha256": "d6b4bf39a6d62e709be0c3d77e393fc51b4050b832a9bfbff6c4c91e799da8a9",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     {
       "id": "st3_story_04",
@@ -82,14 +87,21 @@
       "id": "st3_story_05",
       "who": "riley",
       "text": "I always do.",
-      "speech_input": "I always do.",
-      "phonemes": [
-        "ˌI ˈɔlwˌAz dˈu."
-      ],
-      "duration_s": 0.72,
-      "sha256": "cf45a37e52f109cd637b619a12bfdfd079f00e7bad1b1f7809920992d8309caa",
       "asset_path": "assets/audio/voice/st3_story_05.mp3",
-      "source": "kokoro"
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[cocky] I always do.",
+      "bitrate": "64k",
+      "generation_id": "BYaovaM7DnnhxJlPxXmq",
+      "duration_s": 1.8,
+      "bytes": 14636,
+      "sha256": "46c457729035a0d19b6f2f8f317b4f9a50976d6fbff1252534fcc70e098fecdd",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     {
       "id": "st3_story_06",
@@ -132,40 +144,61 @@
       "id": "riley_escape_01",
       "who": "riley",
       "text": "Off me!",
-      "speech_input": "Off me!",
-      "phonemes": [
-        "ˈɔf mˌi!"
-      ],
-      "duration_s": 0.576,
-      "sha256": "c0d138e2f4eef348da5a4a0067450f6fe7b7f2f16e643381d96ed3af29f12960",
       "asset_path": "assets/audio/voice/riley_escape_01.mp3",
-      "source": "kokoro"
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[shouting] Off me!",
+      "bitrate": "64k",
+      "generation_id": "6Zu7oDHrS8nsJ6VRGpUN",
+      "duration_s": 1.176,
+      "bytes": 9644,
+      "sha256": "18eef3fa8061afd01e92853517dc0eef116563126b6c601d5353982ca1bc367c",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     {
       "id": "riley_st3_roof_01",
       "who": "riley",
       "text": "Roof tiles. Great. Of course it's roof tiles.",
-      "speech_input": "Roof tiles. Great. Of course it's roof tiles.",
-      "phonemes": [
-        "ɹˈuf tˈIlz. ɡɹˈAt. ˌʌv kˈɔɹs ɪts ɹˈuf tˈIlz."
-      ],
-      "duration_s": 2.112,
-      "sha256": "1c2e45924e9785fb8fc0c7ca43c76949d429b0f4afde741e498f8fe57b87cef3",
       "asset_path": "assets/audio/voice/riley_st3_roof_01.mp3",
-      "source": "kokoro"
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[sarcastic] Roof tiles. Great. Of course it's roof tiles.",
+      "bitrate": "64k",
+      "generation_id": "6RDXjrEjjUi9uR7GoNgx",
+      "duration_s": 4.176,
+      "bytes": 33644,
+      "sha256": "2ca547c71647360c86d4b5f0c3f304cbc5a44e62a8ccc2a2a0406d984e2a1d4e",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     {
       "id": "riley_st3_glimpse_01",
       "who": "riley",
       "text": "There! On the far roof!",
-      "speech_input": "There! On the far roof!",
-      "phonemes": [
-        "ðˈɛɹ! ˌɔn ðə fˈɑɹ ɹˈuf!"
-      ],
-      "duration_s": 1.032,
-      "sha256": "1b07af6b3efdbc0d317ebdde2f062c1c62c52cdd18d533b4942805d11dc6ce93",
       "asset_path": "assets/audio/voice/riley_st3_glimpse_01.mp3",
-      "source": "kokoro"
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[shouting] There! On the far roof!",
+      "bitrate": "64k",
+      "generation_id": "MDwnPUpPXuAjBeicyEgW",
+      "duration_s": 2.304,
+      "bytes": 18668,
+      "sha256": "035e19a3fd46fb0e1912a4519a970ff51604e0d5996d698016e2c7ada1360d2a",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     {
       "id": "fade_intro_01",
@@ -207,14 +240,21 @@
       "id": "riley_counter_01",
       "who": "riley",
       "text": "That one!",
-      "speech_input": "That one!",
-      "phonemes": [
-        "ðˈæt wˈʌn!"
-      ],
-      "duration_s": 0.576,
-      "sha256": "919287bd2a6c0d5f3e6b72f2079128c4c754b8a55f8b5205df283d98a3df67d3",
       "asset_path": "assets/audio/voice/riley_counter_01.mp3",
-      "source": "kokoro"
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[shouting] That one!",
+      "bitrate": "64k",
+      "generation_id": "nO49qKVKvLGZX2UGHfED",
+      "duration_s": 1.128,
+      "bytes": 9260,
+      "sha256": "b601577ed4f3eb326e8c3f751f4025a0eb88b43374c36edbe413fa909111c123",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     {
       "id": "fade_defeat_01",
@@ -232,27 +272,41 @@
       "id": "riley_st3_victory_01",
       "who": "riley",
       "text": "Remember this, then.",
-      "speech_input": "Remember this, then.",
-      "phonemes": [
-        "ɹəmˈɛmbəɹ ðˈɪs, ðˈɛn."
-      ],
-      "duration_s": 0.936,
-      "sha256": "13bc7204b6a5c16ffabadf44bc4e3c2e226519a99a01de12f936f5de70c3bea3",
       "asset_path": "assets/audio/voice/riley_st3_victory_01.mp3",
-      "source": "kokoro"
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[serious] Remember this, then.",
+      "bitrate": "64k",
+      "generation_id": "saL3N9A9mgVBBjEH0J2j",
+      "duration_s": 1.872,
+      "bytes": 15212,
+      "sha256": "6f1ab75af7c064df6cd44a14bcfcada1bfecdd34eedae1e0ab0282f4c6937cbe",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     {
       "id": "riley_st3_clear_01",
       "who": "riley",
       "text": "Another ribbon. I'm coming, Twinkle Toes.",
-      "speech_input": "Another ribbon. I'm coming, Twinkle Toes.",
-      "phonemes": [
-        "ənˈʌðəɹ ɹˈɪbən. ˌIm kˈʌmɪŋ, twˈɪŋkᵊl tˈOz."
-      ],
-      "duration_s": 1.992,
-      "sha256": "97a1af5ee318e76265fd55b6834cfe0d9b056b9fd9da4c7e6a49e78a40f5a1f9",
       "asset_path": "assets/audio/voice/riley_st3_clear_01.mp3",
-      "source": "kokoro"
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[determined] Another ribbon. I'm coming, Twinkle Toes.",
+      "bitrate": "64k",
+      "generation_id": "v9dCI0aqa7p1W9nFllsj",
+      "duration_s": 3.072,
+      "bytes": 24812,
+      "sha256": "24a72ff43596f083edeea2be5b55536ea8fe760fde5954fde0b09c1e19cec05a",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     }
   ]
 }
