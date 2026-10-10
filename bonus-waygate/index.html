@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#080a12">
+  <title>Waygate Gauntlet — Riley Wheel Brawl</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%23080a12' width='32' height='32' rx='6'/%3E%3Cpath fill='%2372e7db' d='M7 26V9h4v13h10V9h4v17z'/%3E%3C/svg%3E">
+  <style>
+    :root{color-scheme:dark;--ink:#f0f3fb;--muted:#a1a9bd;--cyan:#72e7db;--red:#ff5266;--gold:#f1c976}
+    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080a12;color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none}
+    body{display:grid;place-items:center;background:radial-gradient(ellipse at 50% 35%,#151b2d,#080a12 70%)}
+    #game-wrap{position:relative;width:min(100vw,177.7778vh);height:min(100vh,56.25vw);max-width:100vw;max-height:100vh;overflow:hidden;background:#080a12;box-shadow:0 0 80px #000}
+    #game{position:absolute;inset:0}#game canvas{width:100%!important;height:100%!important;display:block;touch-action:none}
+    #hud{position:absolute;inset:0 0 auto 0;padding:12px 15px;display:flex;align-items:flex-start;gap:12px;pointer-events:none;background:linear-gradient(#080a12d9,transparent)}
+    .hud-card{border:1px solid #79849d55;background:#0b1020d9;border-radius:8px;padding:7px 10px;backdrop-filter:blur(4px);box-shadow:0 4px 16px #0005}
+    #hud-left{width:min(37%,330px)}#stage-name{font-size:11px;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase;font-weight:800}
+    #hero-stats{display:flex;align-items:center;gap:9px;margin-top:5px;font-size:11px;color:#e6e9f2}
+    .bar{height:8px;background:#263047;border-radius:5px;overflow:hidden;flex:1;min-width:65px}.bar>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#bc4056,#ff8e75);transition:width .14s}
+    #focus-fill{background:linear-gradient(90deg,#2798a7,#81f0d9)}#score-time{font-size:11px;line-height:1.55;color:#d8dfef;white-space:nowrap}
+    #boss-hud{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:min(38%,400px);display:none;text-align:center;pointer-events:none}
+    #boss-name{font:800 11px/1.4 system-ui;letter-spacing:.18em;text-transform:uppercase;color:#f6d8de;text-shadow:0 2px 12px #c51f42}
+    #boss-bar{height:10px;border:1px solid #bdb8c1;background:#1a1822;border-radius:7px;overflow:hidden;margin-top:4px}#boss-fill{height:100%;width:100%;background:linear-gradient(90deg,#64152c,#f05c67);transition:width .12s}
+    #pause-toggle{margin-left:auto;pointer-events:auto;border:1px solid #7f8aa4aa;background:#11182a;color:var(--ink);padding:8px 11px;border-radius:7px;font-weight:800;cursor:pointer;letter-spacing:.04em}
+    #toast{position:absolute;top:21%;left:50%;transform:translateX(-50%);padding:8px 14px;border-radius:6px;background:#080b14c9;border:1px solid #96a7c755;color:#e8f5fa;font:700 12px/1.3 system-ui;letter-spacing:.08em;text-align:center;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;text-shadow:0 0 12px #47ded2}
+    #overlay{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 42%,#080a12a8,#060811dc);padding:22px;z-index:8}
+    #overlay[hidden]{display:none}.panel{width:min(560px,94%);max-height:94%;overflow:auto;border:1px solid #93a7bf77;border-radius:14px;background:linear-gradient(145deg,#111b2cec,#090d17f4 70%);box-shadow:0 18px 80px #000b,0 0 38px #42d9d033;padding:clamp(18px,4vw,34px);text-align:center}
+    .eyebrow{color:var(--cyan);font-size:10px;font-weight:900;letter-spacing:.23em;text-transform:uppercase}.panel h1{font-size:clamp(28px,6vw,46px);line-height:1.02;letter-spacing:.045em;margin:11px 0 10px;text-shadow:0 0 26px #56ded1aa}
+    .panel h2{font-size:clamp(24px,5vw,34px);margin:10px 0}.panel p{color:#c0c9d9;font-size:14px;line-height:1.55;margin:9px auto;max-width:470px}
+    .control-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:17px 0;text-align:left}.control-grid div{border:1px solid #8290aa3d;background:#111827aa;border-radius:7px;padding:8px 10px;font-size:12px;color:#bfc9d8}.control-grid b{color:#fff}
+    .panel-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}.action{border:1px solid #a7eee2a8;background:linear-gradient(180deg,#247d7b,#135257);color:white;padding:12px 19px;border-radius:8px;font-weight:900;cursor:pointer;min-width:150px;letter-spacing:.04em}.action.secondary{border-color:#9ca9bf55;background:#182135}.action:hover{filter:brightness(1.16)}
+    .fine{font-size:11px!important;color:#909bad!important}.result{display:flex;justify-content:center;gap:18px;margin:14px 0;flex-wrap:wrap}.result strong{display:block;font-size:20px;color:#fff}.result span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#aeb9cb}.result .kills strong{font-size:32px;color:#ffd7b0;text-shadow:0 0 16px #ff8a4a88}
+    #loading{position:absolute;inset:0;display:grid;place-items:center;background:#080a12;color:#d6eee9;font:700 13px system-ui;z-index:10;letter-spacing:.12em}
+    body.touch #pause-toggle{display:none}
+    /* touch controls: only shown on touch devices (body.touch is set on the first real touch or a coarse pointer) */
+#touch{position:fixed;inset:0;pointer-events:none;display:none}
+body.touch #touch{display:block}
+#stick{position:absolute;left:calc(3vw + env(safe-area-inset-left,0px));bottom:calc(4vh + env(safe-area-inset-bottom,0px));width:min(30vh,200px);height:min(30vh,200px);border-radius:50%;border:2px solid rgba(255,255,255,.22);background:rgba(15,22,40,.28);pointer-events:auto}
+#knob{position:absolute;left:50%;top:50%;width:42%;height:42%;margin:-21% 0 0 -21%;border-radius:50%;background:rgba(200,215,255,.35);border:2px solid rgba(255,255,255,.4)}
+.tb{position:absolute;width:min(14vh,92px);height:min(14vh,92px);border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(20,30,50,.38);color:#fff;font:bold 13px system-ui;display:flex;align-items:center;justify-content:center;pointer-events:auto;letter-spacing:.05em}
+.tb.on{background:rgba(255,200,120,.45)}
+#tbA{right:calc(4vw + min(15vh,100px) + env(safe-area-inset-right,0px));bottom:calc(5vh + env(safe-area-inset-bottom,0px));border-color:rgba(255,120,110,.7)}
+#tbJ{right:calc(3vw + env(safe-area-inset-right,0px));bottom:calc(5vh + min(11vh,70px) + env(safe-area-inset-bottom,0px));border-color:rgba(120,180,255,.7)}
+#tbS{right:calc(4vw + min(15vh,100px) + env(safe-area-inset-right,0px));bottom:calc(6vh + min(16vh,108px) + env(safe-area-inset-bottom,0px));border-color:rgba(120,230,255,.7)}
+#tbP{right:calc(3vw + env(safe-area-inset-right,0px));top:calc(3vh + env(safe-area-inset-top,0px));width:52px;height:52px;font-size:16px}
+#tbB{right:calc(3vw + env(safe-area-inset-right,0px));bottom:calc(5vh + min(11vh,70px) + min(14vh,92px) + max(20px,4vh) + env(safe-area-inset-bottom,0px));width:max(48px,min(13vh,80px));height:max(48px,min(13vh,80px));font-size:12px;border-color:rgba(230,245,255,.8)}
+#tbL{right:calc(5vw + min(30vh,200px) + env(safe-area-inset-right,0px));bottom:calc(6vh + min(16vh,108px) + env(safe-area-inset-bottom,0px));width:max(44px,min(11vh,72px));height:max(44px,min(11vh,72px));font-size:12px;border-color:rgba(140,240,174,.8)}
+.tb.off{opacity:.35}
+.tb.ready{box-shadow:0 0 16px rgba(200,235,255,.9)}
+/* Upright phones: the 200px stick covers half the width, so shrink it; stack CALL above BALE in the right column
+   instead of beside FIRE (where it sat on the stick); move the Perf report opener to the top so it is clear of
+   the stick and KICK. Landscape layout is unchanged. */
+@media (orientation:portrait){
+#stick{width:min(38vw,30vh,200px);height:min(38vw,30vh,200px)}
+html body.touch #perf-open{top:max(12px,env(safe-area-inset-top));bottom:auto}
+#tbL{right:calc(3vw + env(safe-area-inset-right,0px));bottom:calc(5vh + min(11vh,70px) + min(14vh,92px) + max(20px,4vh) + max(48px,min(13vh,80px)) + max(16px,2.5vh) + env(safe-area-inset-bottom,0px))}
+}
+    @media(max-width:700px){#hud{padding:7px;gap:5px}.hud-card{padding:6px 7px}#hud-left{width:44%}#stage-name{font-size:9px}#hero-stats,#score-time{font-size:9px}#boss-hud{top:66px;width:46%}#pause-toggle{padding:7px;font-size:11px}}
+  </style>
+</head>
+<body>
+  <main id="game-wrap" aria-label="Waygate Gauntlet game">
+    <div id="game"></div>
+    <div id="loading">OPENING THE WAYS…</div>
+    <header id="hud" hidden>
+      <div id="hud-left" class="hud-card">
+        <div id="stage-name">THE WAYS · APPROACH</div>
+        <div id="hero-stats"><span>RILEY</span><div class="bar"><i id="hp-fill"></i></div><span id="lives">♥ ♥ ♥</span></div>
+        <div id="hero-stats"><span>SAIDIN</span><div class="bar"><i id="focus-fill"></i></div><span id="focus-text">60</span></div>
+      </div>
+      <div id="score-time" class="hud-card"><div>SCORE <b id="score">000000</b></div><div>KILLS <b id="kills">0</b></div><div>TIME <b id="clock">00:00</b></div></div>
+      <div id="boss-hud"><div id="boss-name">THE GRAY MAN</div><div id="boss-bar"><div id="boss-fill"></div></div></div>
+      <button id="pause-toggle" type="button" aria-label="Pause game">Ⅱ &nbsp; PAUSE</button>
+    </header>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <div id="touch"><div id="stick"><div id="knob"></div></div>
+<div class="tb" id="tbA">KICK</div><div class="tb" id="tbJ">JUMP</div><div class="tb" id="tbS">FIRE</div><div class="tb" id="tbP">II</div><div class="tb off" id="tbB">BALE</div><div class="tb" id="tbL">CALL</div></div>
+    <section id="overlay" aria-live="polite">
+      <div class="panel" id="panel-content"></div>
+    </section>
+  </main>
+  <script src="assets/animation-data.js"></script>
+  <script src="assets/atlas-inline.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+  <script src="logic.js"></script>
+  <script src="presentation.js"></script>
+  <script src="game.js"></script>
+  <script type="module" src="boot-input.js"></script>
+</body>
+</html>
