@@ -29,7 +29,7 @@ export function bossBannerBox() {
   const b = BOSS_BANNER, w = b.maxWidth + b.padX * 2, h = b.maxHeight + b.padY * 2;
   return Object.freeze({ x: b.x, y: b.y, w, h, left: b.x - w / 2, right: b.x + w / 2, top: b.y - h / 2, bottom: b.y + h / 2 });
 }
-export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS', 3: 'STAGE 3 · CAEMLYN — THE MYRDDRAAL', 4: 'STAGE 4 · SHADAR LOGOTH — THE DRAGHKAR', 5: 'STAGE 5 · THE BLIGHT — THE EYE OF THE WORLD', 6: 'STAGE 6 · TEAR — THE STONE OF TEAR' });
+export const STAGE_NAMES = Object.freeze({ 1: "STAGE 1 · EMOND'S FIELD — WINTERNIGHT", 2: 'STAGE 2 · BAERLON — THE WHITECLOAKS', 3: 'STAGE 3 · CAEMLYN — THE MYRDDRAAL', 4: 'STAGE 4 · SHADAR LOGOTH — THE DRAGHKAR', 5: 'STAGE 5 · THE BLIGHT — THE EYE OF THE WORLD' });
 // The perf readout is two 12px lines anchored at VH-8 and is on unless ?hud=0.
 // A tag at VH-30 sits inside that block.
 export const PLACEHOLDER_TAG_Y = VH - 56;

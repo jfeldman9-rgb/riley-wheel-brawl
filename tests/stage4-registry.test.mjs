@@ -11,11 +11,11 @@ const { STAGE_MUSIC } = await import('../src/music.js');
 
 const Q = s => new URLSearchParams(s);
 
-test('stages 1–5 stay enabled with no flags; s3 and s4 do not change stage 4 or 5 selection', () => {
+test('stages 1–6 stay enabled with no flags; s3 and s4 do not change stage 4, 5 or 6 selection', () => {
   for (const query of ['', 's3=1', 's4=1', 's3=1&s4=1']) {
     for (const n of [1, 2, 3, 4, 5]) assert.equal(stageEnabled(n, Q(query)), true, `${n} ${query}`);
-    assert.equal(stageEnabled(6, Q(query)), false, query);
-    assert.equal(maxStage(Q(query)), 5, query);
+    assert.equal(stageEnabled(6, Q(query)), true, query);
+    assert.equal(maxStage(Q(query)), 6, query);
   }
   assert.equal(stageFromQuery(Q('')), 1);
   assert.equal(stageFromQuery(Q('s4=1')), 1);
@@ -48,7 +48,7 @@ test('stage 4 registers its cast, music ids, and a title restart', () => {
   assert.equal(STAGE_MUSIC[5].stage, 'stage5');
   assert.equal(STAGE_MUSIC[5].boss, 'boss5');
   assert.equal(STAGES[5].boss.type, 'aginor');
-  assert.deepEqual(STAGES[5].next(), { stage: 1 });
+  assert.deepEqual(STAGES[5].next(), { stage: 6, fromStage5: true, autostart: true });
   const into4 = { stage: 4, fromStage3: true, autostart: true };
   assert.deepEqual(STAGES[3].next(Q('')), into4);
   assert.deepEqual(STAGES[3].next(Q('s4=1')), into4);

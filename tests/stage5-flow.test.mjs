@@ -16,7 +16,6 @@ const Q = s => new URLSearchParams(s);
 test('Stage 5 is on the title arrows and a clear of Stage 4 continues into it', () => {
   assert.equal(maxStage(Q('')), 6);
   assert.equal(maxStage(Q('s6=0')), 5);
-  assert.match(STAGE_NAMES[6], /STONE OF TEAR/);
   assert.equal(stageFromQuery(Q('stage=5')), 5);
   assert.match(STAGE_NAMES[5], /BLIGHT/);
   assert.match(clearPrompt(4, false, 5), /CONTINUE TO STAGE 5/);

@@ -35,7 +35,7 @@ function run(seed, noPower) {
     for (let frame = 0; frame < 60 * 15; frame++) h.step();
     assert.ok(h.resources().lights <= 10);
     s.inp.press('attack');
-    assert.deepEqual(h.observations.restartData, [{ stage: 1 }]);
+    assert.deepEqual(h.observations.restartData, [{ stage: 6, fromStage5: true, autostart: true }]);
   } finally { h.destroy(); }
 }
 
