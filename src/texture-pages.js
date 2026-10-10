@@ -9,6 +9,20 @@ export function usesCompactNormals(stageNo) {
   return COMPACT_STAGES.has(stageNo);
 }
 
+// Drop every clip that still points at a page being replaced, including clips copied
+// from it under another name (Stage 4's riley_grabbed / riley_escape). A stale clip
+// would hand a sprite a destroyed frame and stop the renderer.
+export function dropAnimsOnTextures(anims, keys) {
+  const map = anims?.anims, names = [];
+  const entries = map?.entries || {};
+  for (const name of Object.keys(entries)) {
+    const frames = entries[name]?.frames || [];
+    if (frames.some(f => keys.includes(f.textureKey ?? f.frame?.texture?.key))) names.push(name);
+  }
+  for (const name of names) anims.remove(name);
+  return names;
+}
+
 export function normalPageDir(scene, page, dir, meta) {
   const compact = usesCompactNormals(scene.loadedStage);
   let pages = variants.get(scene.textures);
@@ -20,6 +34,7 @@ export function normalPageDir(scene, page, dir, meta) {
   const previous = pages.has(page) ? pages.get(page) : url ? url.includes('/stage5/normals/') : compact;
   if (scene.textures.exists(page) && previous !== compact) {
     for (const a of meta.anims || []) if (scene.anims?.exists?.(a.name)) scene.anims.remove(a.name);
+    if (scene.anims?.remove) dropAnimsOnTextures(scene.anims, [page, page + '_nl']);
     for (const key of [page, page + '_nl']) if (scene.textures.exists(key)) scene.textures.remove(key);
   }
   pages.set(page, compact);
