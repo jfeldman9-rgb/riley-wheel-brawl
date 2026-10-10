@@ -61,6 +61,8 @@ export function createStage6View(scene) {
         const x = edges[i], w = Math.min(edges[i + 1] + (painted ? 0 : 100), WORLD_W + 100) - x;
         const tile = scene.add?.tileSprite?.(x, LANE_TOP - 16, painted ? w : 1900, VH - LANE_TOP + 30, key);
         tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40); lit(tile);
+        // Painted seams crossfade: the left floor runs on past the edge in strips that fade out over SEAM6 px.
+        if (painted && i > 0) floorSeam(scene, floorKeys[i - 1], edges[i - 1], x, VH - LANE_TOP + 30).forEach(lit);
       });
       rain = scene.add?.tileSprite?.(0, 0, VW, VH, 's6storm');
       rain?.setScrollFactor?.(0); rain?.setDepth?.(4200); rain?.setAlpha?.(0.18); rain?.setBlendMode?.('ADD');
@@ -131,3 +133,18 @@ export function createStage6View(scene) {
   return view;
 }
 function thisScene(scene) { return scene; }
+
+export const SEAM6 = 160;
+// Strips of the left floor's tileSprite continued past the seam at x, alpha stepping 1 -> 0 (no new textures).
+export function floorSeam(scene, key, x0, x, h, n = 16) {
+  const out = [], w = SEAM6 / n;
+  if (!isPainted(scene, key)) return out;
+  for (let k = 0; k < n; k++) {
+    const t = scene.add?.tileSprite?.(x + k * w, LANE_TOP - 16, w, h, key);
+    if (!t) continue;
+    t.setOrigin?.(0, 0); t.setDepth?.(-39.9); t.setAlpha?.(1 - (k + 0.5) / n);
+    t.tilePositionX = x + k * w - x0;
+    out.push(t);
+  }
+  return out;
+}

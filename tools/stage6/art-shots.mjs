@@ -32,7 +32,9 @@ try {
   const want = new Map([
     // Waits for the HUD title card to finish fading so the docks plate is not under it.
     ['zone0-docks', s => s.zoneI === 0 && s.enemies.some(e => e.alive) && !window.__game.scene.scenes.find(x => x.card)?.card?.list?.length],
-    ['zone1-seagate-defenders', s => s.zoneI === 1 && s.kit?.view && s.camX >= 1200],
+    ['zone1-seagate-defenders', s => s.zoneI === 1 && s.kit?.view && s.camX >= 1200 && !s.enemies.some(e => e.state === 'drop')],
+    // The quay/hall floor seam (Great Hall zone edge) near the middle of the screen.
+    ['floor-seam-greathall', s => { const e = s.kit?.stage?.zones?.[2]?.l ?? 2560; return s.camX >= e - 760 && s.camX <= e - 400; }],
     ['grayman', s => s.enemies.some(e => e.type === 'grayman' && e.alive && (e.state === 'attack' || e.state === 'lunge'))],
     ['zone2-greathall', s => s.zoneI === 2 && s.camX >= 2500],
     ['fadelt-attack', s => s.enemies.some(e => e.type === 'fadelt' && e.alive && e.state === 'attack')],
@@ -60,7 +62,8 @@ try {
       await page.evaluate(() => window.__game.step(window.__t, 0));
       const file = `${out}/${name}.png`;
       await page.screenshot({ path: file });
-      taken.add(name); log.shots.push({ name, file, zone: st.zone, phase: st.phase, camX: Math.round(st.camX) });
+      const actors = await page.evaluate(() => window.__stage.enemies.filter(e => e.alive).map(e => ({ type: e.type, state: e.state, x: Math.round(e.x), y: Math.round(e.y), z: Math.round(e.z || 0) })));
+      taken.add(name); log.shots.push({ name, file, zone: st.zone, phase: st.phase, camX: Math.round(st.camX), actors });
     }
     if (st.done) break;
   }

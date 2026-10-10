@@ -122,7 +122,7 @@ test('painted zone plates are world-locked per zone; missing plates keep the cod
 });
 test('painted floors meet at the zone edges and code floors keep the 1800 px layout', () => {
   const p = viewScene(new Set(['bg6floor', 'bg6floor2', 'bg6floor3'])); createStage6View(p.s).buildBackdrop();
-  assert.deepEqual(p.made.filter(m => /^bg6floor/.test(m.key)).map(m => [m.x, m.w]), [[0, STAGE6.zones[2].l], [STAGE6.zones[2].l, STAGE6.zones[3].l - STAGE6.zones[2].l], [STAGE6.zones[3].l, WORLD_W - STAGE6.zones[3].l]]);
+  assert.deepEqual(p.made.filter(m => /^bg6floor/.test(m.key) && m.depth === -40).map(m => [m.x, m.w]), [[0, STAGE6.zones[2].l], [STAGE6.zones[2].l, STAGE6.zones[3].l - STAGE6.zones[2].l], [STAGE6.zones[3].l, WORLD_W - STAGE6.zones[3].l]]);
   const c = viewScene(new Set()); createStage6View(c.s).buildBackdrop();
   assert.deepEqual(c.made.filter(m => /^bg6floor/.test(m.key)).map(m => m.x), [0, 1800, 3600]);
 });
@@ -160,4 +160,20 @@ test('Stage 6 boss-peak RGBA with the painted sheets and the reused crate stays 
   const fileMiB = files.reduce((n, f) => n + mib(f), 0);
   const canvasMiB = STAGE6_CANVASES.reduce((n, [, w, h]) => n + w * h * 4, 0) / 1048576;
   assert.ok(fileMiB + canvasMiB < 120, `measured ${(fileMiB + canvasMiB).toFixed(2)} MiB`);
+});
+
+test('painted floor seams crossfade: the left floor continues past each zone edge and fades to zero', async () => {
+  const { SEAM6 } = await import('../src/stage6-view.js');
+  const p = viewScene(new Set(['bg6floor', 'bg6floor2', 'bg6floor3'])), ts = p.s.add.tileSprite;
+  p.s.add.tileSprite = (...a) => { const o = ts(...a); o.setAlpha = v => { o.alpha = v; return o; }; return o; };
+  createStage6View(p.s).buildBackdrop();
+  for (const [left, x0, edge] of [['bg6floor', 0, STAGE6.zones[2].l], ['bg6floor2', STAGE6.zones[2].l, STAGE6.zones[3].l]]) {
+    const strips = p.made.filter(m => m.key === left && m.depth > -40).sort((a, b) => a.x - b.x);
+    assert.ok(strips.length >= 8, left);
+    assert.equal(strips[0].x, edge); assert.equal(strips.at(-1).x + strips.at(-1).w, edge + SEAM6);
+    for (const t of strips) assert.equal(t.tilePositionX, t.x - x0, 'strip continues the left floor texture');
+    const a = strips.map(t => t.alpha); assert.ok(a.every((v, i) => !i || v < a[i - 1]) && a[0] > 0.9 && a.at(-1) < 0.1, String(a));
+  }
+  const c = viewScene(new Set()); createStage6View(c.s).buildBackdrop();
+  assert.ok(!c.made.some(m => /^bg6floor/.test(m.key) && m.depth > -40), 'code floors have no seam strips');
 });
