@@ -691,6 +691,7 @@ export class Stage1 extends Phaser.Scene {
     if (fx.slowmo > 0) { fx.slowmo -= dt; dt *= 0.3; this.anims.globalTimeScale = 0.3; } else this.anims.globalTimeScale = this.timeScale;
     dt *= this.timeScale;
     if (this.started && !this.gameOver) R.update(dt, this.inp);
+    if (this.stageNo === 6 && (this.kit?.strike || this.cutscene)) return;
     R.physics(dt);
     for (const e of this.enemies) {
       e.update(dt); const wasEntering = e.entering;

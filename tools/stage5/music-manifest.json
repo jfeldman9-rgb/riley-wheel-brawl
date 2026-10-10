@@ -1,0 +1,35 @@
+{
+  "rendered": true,
+  "render": "python3 tools/stage5/compose_stage5.py OUT_DIR (tools/music/compose.py); loops checked with tools/music/check_loops.py",
+  "note": "Rendered loops replaced the silent stand-ins in place. Loop points match src/audio.js MUSIC.",
+  "stage5": {
+    "file": "music-stage5.mp3",
+    "title": "The Blight",
+    "target": "assets/audio/music-stage5.mp3",
+    "loopStart": 0.25,
+    "loopEnd": 40.25,
+    "gain": 1,
+    "doc": "Stage 5 exploration. Low brass drone, war drums, and distorted strings under a red sky. Hostile and open, not a march. Teen/adult dread.",
+    "bpm": 96,
+    "bars": 16,
+    "loopSeconds": 40.0,
+    "lufs": -16.0,
+    "peakDbfs": -3.5,
+    "bytes": 567997
+  },
+  "boss5": {
+    "file": "music-boss5.mp3",
+    "title": "The Eye",
+    "target": "assets/audio/music-boss5.mp3",
+    "loopStart": 0.25,
+    "loopEnd": 32,
+    "gain": 0.94,
+    "doc": "Stage 5 boss. A choir swell for the Eye and a heartbeat pulse. The fight uses this one loop the whole time, so the second half of the loop carries the faster pulse for phase 3.",
+    "bpm": 120.94488188976378,
+    "bars": 16,
+    "loopSeconds": 31.75,
+    "lufs": -15.2,
+    "peakDbfs": -1.9,
+    "bytes": 452432
+  }
+}

@@ -70,7 +70,7 @@ export class Bot {
     }
     return false;
   }
-  evadeLate() { return this.s.stageNo === 4 ? stage4Bot(this) : this.evadeStage3(); }
+  evadeLate() { return this.s.stageNo >= 4 ? stage4Bot(this) : this.evadeStage3(); }
   evadeStage3() {
     const s = this.s, R = s.riley, inp = s.inp, k = s.kit, go = (x, y) => { inp.demo = { x, y, run: false }; return true; };
     if (R.state === 'grabbed') {

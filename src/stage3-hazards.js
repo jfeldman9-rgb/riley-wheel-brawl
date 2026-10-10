@@ -37,7 +37,7 @@ export class Stage3Hazards extends Stage2Kit {
     });
     const dir = pick([-1, 1]);
     this.tiles.push({ bands, markers, t: 0, dir, x: null, img: null, hit: new Set(), frame: 0, dustT: 0 });
-    armTileCue(this, this.tiles.at(-1));
+    armTileCue(this, this.tiles[this.tiles.length - 1]);
     sfx.tileRattle?.();
     this.hint('tiles', 'ROOF TILES! CHANGE LANES!');
     if (!this.roofSaid) { this.roofSaid = true; say('riley_st3_roof_01', s.caption, false); }

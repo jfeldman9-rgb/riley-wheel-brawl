@@ -1,0 +1,196 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 147,
+    "w": 170,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 264,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 147,
+    "w": 170,
+    "x": 59,
+    "y": 108
+   },
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 224,
+    "w": 121,
+    "x": 172,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 264,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 224,
+    "w": 121,
+    "x": 75,
+    "y": 30
+   },
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 206,
+    "w": 244,
+    "x": 295,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 264,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 206,
+    "w": 244,
+    "x": 21,
+    "y": 48
+   },
+   "trimmed": true
+  },
+  "3": {
+   "frame": {
+    "h": 172,
+    "w": 129,
+    "x": 541,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 264,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 172,
+    "w": 129,
+    "x": 85,
+    "y": 82
+   },
+   "trimmed": true
+  },
+  "4": {
+   "frame": {
+    "h": 152,
+    "w": 216,
+    "x": 672,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 264,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 152,
+    "w": 216,
+    "x": 9,
+    "y": 102
+   },
+   "trimmed": true
+  },
+  "5": {
+   "frame": {
+    "h": 231,
+    "w": 152,
+    "x": 890,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 264,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 231,
+    "w": 152,
+    "x": 65,
+    "y": 23
+   },
+   "trimmed": true
+  },
+  "6": {
+   "frame": {
+    "h": 82,
+    "w": 270,
+    "x": 1044,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 264,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 82,
+    "w": 270,
+    "x": 5,
+    "y": 173
+   },
+   "trimmed": true
+  },
+  "7": {
+   "frame": {
+    "h": 242,
+    "w": 196,
+    "x": 1316,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 264,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 242,
+    "w": 196,
+    "x": 35,
+    "y": 12
+   },
+   "trimmed": true
+  },
+  "8": {
+   "frame": {
+    "h": 234,
+    "w": 176,
+    "x": 1514,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 264,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 234,
+    "w": 176,
+    "x": 46,
+    "y": 21
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage5/process_bosses.py",
+  "baseH": 176.0,
+  "format": "RGBA8888",
+  "image": "s5balt.webp",
+  "px": 1.5,
+  "scale": "1",
+  "size": {
+   "h": 242,
+   "w": 1690
+  }
+ }
+}

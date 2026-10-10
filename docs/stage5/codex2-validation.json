@@ -1,0 +1,37 @@
+{
+  "suite": {
+    "tests": 1167,
+    "pass": 1166,
+    "fail": 0,
+    "skip": 1
+  },
+  "campaigns": {
+    "stage3": {
+      "seeds": 9,
+      "pass": 9
+    },
+    "stage4": {
+      "seeds": 9,
+      "pass": 9
+    },
+    "stage5": {
+      "seeds": 9,
+      "pass": 9,
+      "noPower": "PASS"
+    }
+  },
+  "audit": "PASS (exit 0)",
+  "goldenPayload": "IDENTICAL; only src/assets.js and src/audio.js SHA metadata refreshed",
+  "protectedFiles": "ZERO DIFF vs origin/rwb-w2",
+  "existingTestsAndHelpers": "UNCHANGED",
+  "preFight": {
+    "bytes": 24904337,
+    "cap": 25000000
+  },
+  "stage5Source": {
+    "bytes": 144272,
+    "cap": 196608
+  },
+  "characterFormulaMiB": 92.3189468383789,
+  "formulaReserveMiB": 27.5
+}

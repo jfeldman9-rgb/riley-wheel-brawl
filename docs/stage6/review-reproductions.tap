@@ -1,0 +1,335 @@
+TAP version 13
+# Subtest: lethal Riley hit during Rand stagger completes erase and the real bossDown path exactly once
+not ok 1 - lethal Riley hit during Rand stagger completes erase and the real bossDown path exactly once
+  ---
+  duration_ms: 59.358139
+  location: '/workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:8:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    file:///workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:20:12
+    withSeed (file:///workspace/ag/codex-s6/tests/helpers/stage1-simulation.mjs:35:16)
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:8:108)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    node:internal/test_runner/harness:255:12
+    node:internal/process/task_queues:140:7
+    AsyncResource.runInAsyncScope (node:async_hooks:206:9)
+    AsyncResource.runMicrotask (node:internal/process/task_queues:137:8)
+  ...
+# Subtest: lethal counter preserves terminal states against temporary timers and repeated hits
+not ok 2 - lethal counter preserves terminal states against temporary timers and repeated hits
+  ---
+  duration_ms: 0.870201
+  location: '/workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:25:68'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'stagger'
+    - 'dead'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'dead'
+  actual: 'stagger'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:34:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: lethal channel break preserves terminal states against temporary timers and repeated hits
+not ok 3 - lethal channel break preserves terminal states against temporary timers and repeated hits
+  ---
+  duration_ms: 0.326887
+  location: '/workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:25:68'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'stagger'
+    - 'dead'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'dead'
+  actual: 'stagger'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:34:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: lethal ordinary hit preserves terminal states against temporary timers and repeated hits
+not ok 4 - lethal ordinary hit preserves terminal states against temporary timers and repeated hits
+  ---
+  duration_ms: 0.236946
+  location: '/workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:25:68'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'stagger'
+    - 'dead'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'dead'
+  actual: 'stagger'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:34:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: lunge tell aborts when Riley enters the left 140px wall zone
+not ok 5 - lunge tell aborts when Riley enters the left 140px wall zone
+  ---
+  duration_ms: 0.425568
+  location: '/workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:39:69'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'lunge'
+    - 'idle'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'idle'
+  actual: 'lunge'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:53:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: lunge active aborts when Riley enters the left 140px wall zone
+not ok 6 - lunge active aborts when Riley enters the left 140px wall zone
+  ---
+  duration_ms: 0.514584
+  location: '/workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:39:69'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 163.6904761904762
+    - 175
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 175
+  actual: 163.6904761904762
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:53:41)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: lunge tell aborts when Riley enters the right 140px wall zone
+not ok 7 - lunge tell aborts when Riley enters the right 140px wall zone
+  ---
+  duration_ms: 0.192076
+  location: '/workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:39:69'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'lunge'
+    - 'idle'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'idle'
+  actual: 'lunge'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:53:10)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: lunge active aborts when Riley enters the right 140px wall zone
+not ok 8 - lunge active aborts when Riley enters the right 140px wall zone
+  ---
+  duration_ms: 0.207488
+  location: '/workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:39:69'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 1036.3095238095239
+    - 1025
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1025
+  actual: 1036.3095238095239
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-combat.test.mjs:53:41)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: wall protection permits a lunge moving away from the pinned wall
+ok 9 - wall protection permits a lunge moving away from the pinned wall
+  ---
+  duration_ms: 0.33781
+  ...
+# Subtest: gamepad Start held after a Rand skip cannot leak a manual pause before the first resumed scene update
+not ok 10 - gamepad Start held after a Rand skip cannot leak a manual pause before the first resumed scene update
+  ---
+  duration_ms: 54.147686
+  location: '/workspace/ag/codex-s6/tests/stage6-review-input.test.mjs:9:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-input.test.mjs:23:12)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    node:internal/test_runner/harness:255:12
+    node:internal/process/task_queues:140:7
+    AsyncResource.runInAsyncScope (node:async_hooks:206:9)
+    AsyncResource.runMicrotask (node:internal/process/task_queues:137:8)
+  ...
+# Subtest: throwing sessionStorage getter at initial cannot strand a spent Rand call
+not ok 11 - throwing sessionStorage getter at initial cannot strand a spent Rand call
+  ---
+  duration_ms: 54.236862
+  location: '/workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:10:53'
+  failureType: 'testCodeFailure'
+  error: 'storage denied'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    Object.get [as sessionStorage] (file:///workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:14:106)
+    playCall (file:///workspace/ag/codex-s6/src/rand-call-cutscene.js:130:25)
+    callRand (file:///workspace/ag/codex-s6/src/stage6-lifecycle.js:101:8)
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:19:18)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    node:internal/test_runner/harness:255:12
+    node:internal/process/task_queues:140:7
+    AsyncResource.runInAsyncScope (node:async_hooks:206:9)
+  ...
+# Subtest: throwing sessionStorage getter at finish cannot strand a spent Rand call
+not ok 12 - throwing sessionStorage getter at finish cannot strand a spent Rand call
+  ---
+  duration_ms: 4.059645
+  location: '/workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:10:53'
+  failureType: 'testCodeFailure'
+  error: 'completion runs the strike'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:21:39)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: throwing sessionStorage getter at warm cannot strand a spent Rand call
+not ok 13 - throwing sessionStorage getter at warm cannot strand a spent Rand call
+  ---
+  duration_ms: 2.142939
+  location: '/workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:10:53'
+  failureType: 'testCodeFailure'
+  error: 'storage denied'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    Object.get [as sessionStorage] (file:///workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:14:106)
+    warmRand (file:///workspace/ag/codex-s6/src/rand-call-cutscene.js:47:25)
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:18:47)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: delayed bot memory follows current living enemies across replacement waves
+not ok 14 - delayed bot memory follows current living enemies across replacement waves
+  ---
+  duration_ms: 1.170315
+  location: '/workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:28:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    3 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 3
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/ag/codex-s6/tests/stage6-review-lifecycle.test.mjs:36:12)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 1
+# fail 13
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 319.382882

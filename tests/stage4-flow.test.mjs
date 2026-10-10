@@ -16,6 +16,8 @@ test('the walk to Shadar Logoth is six lines and the clear prompt continues only
   assert.match(clearPrompt(3, false, 4), /CONTINUE TO STAGE 4/);
   assert.match(clearPrompt(3, false, 1), /RETURN TO THE TITLE/);
   assert.match(clearPrompt(4, false, 1), /RETURN TO THE TITLE/);
+  assert.match(clearPrompt(4, false, 5), /CONTINUE TO STAGE 5/);
+  assert.match(clearPrompt(5, false, 1), /RETURN TO THE TITLE/);
   assert.match(clearPrompt(1, false, 2), /CONTINUE TO STAGE 2/);
 });
 

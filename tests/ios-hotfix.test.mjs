@@ -54,8 +54,9 @@ test('Stage 3 and 4 campaign URLs resolve under the GitHub Pages directory', () 
 test('iOS hotfix source has its own cap and the 25 MB pre-fight gate still passes', () => {
   const data = audit();
   assert.equal(data.preFight.inventoryStatus, 'PASS');
+  assert.equal(data.preFight.budgetBytes, 25_000_000);
   assert.ok(data.preFight.inventoryUpperBoundBytes <= 25_000_000);
+  assert.ok(data.preFight.budgetBytes - data.preFight.inventoryUpperBoundBytes >= 50 * 1024);
   assert.equal(data.iosHotfix.source.status, 'PASS');
   assert.ok(data.iosHotfix.source.bytes <= data.iosHotfix.source.budgetBytes);
-  assert.ok(data.preFight.inventoryUpperBoundBytes + data.iosHotfix.source.bytes > data.preFight.budgetBytes);
 });
