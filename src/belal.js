@@ -126,12 +126,18 @@ export class Belal {
     this.state = 'idle'; this.st = 0; this.cool = 0.7; this.counterUsed = false;
     return true;
   }
+  // A Netweaver snare (or its 0.4 s after-window) that lands after the tell began also cancels the lunge.
+  abortSnaredLunge() {
+    if (!snared(this.scene)) return false;
+    this.state = 'idle'; this.st = 0; this.cool = 0.7; this.counterUsed = false;
+    return true;
+  }
   lungeTell() {
-    if (this.st < BELAL.lungeTell || this.abortPinnedLunge()) return;
+    if (this.st < BELAL.lungeTell || this.abortPinnedLunge() || this.abortSnaredLunge()) return;
     this.state = 'lunge'; this.st = 0; this.hit = false; this.fromX = this.x; this.counterUsed = false;
   }
   lunge(dt) {
-    if (this.abortPinnedLunge()) return;
+    if (this.abortPinnedLunge() || this.abortSnaredLunge()) return;
     const R = this.scene.riley, dir = this.facing || 1;
     if (!this.counterUsed && this.facingRiley()) {
       this.counterUsed = true; this.state = 'stagger'; this.st = 0; this.hp -= 14; this.guard();

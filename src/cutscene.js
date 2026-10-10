@@ -47,6 +47,8 @@ export class CutscenePlayer {
     this.root = root; this.base = o.base ?? CLIP_BASE;
     this.startMs = o.startMs ?? START_MS; this.stallMs = o.stallMs ?? STALL_MS; this.maxMs = o.maxMs ?? MAX_CLIP_MS;
     this.tickMs = o.tickMs ?? TICK_MS; this.guardMs = o.guardMs ?? GUARD_MS; this.volume = o.volume ?? VOLUME;
+    // Wall-clock cap only for callers that pass maxMs (Rand: 11 s). Intro/stage clips keep the old behaviour.
+    this.capMs = Number.isFinite(o.maxMs) ? o.maxMs : null;
     this.srcOf = typeof o.src === 'function' ? o.src : null;
     this.video = null; this.run = null; this.blessed = false; this.log = [];
   }
@@ -133,7 +135,7 @@ export class CutscenePlayer {
     if (r.i >= 0) this.log.push(`${r.ids[r.i]}:${why}`);
     if (++r.i >= r.ids.length) return this.finish(r, why === 'skipped' ? 'skip' : 'end');
     const v = this.video, id = r.ids[r.i], over = (this.srcOf || this.srcFor)?.(id);
-    r.clipT0 = r.lastT = this.now(); r.lastTime = 0; r.started = false;
+    r.clipT0 = r.lastT = r.visT = this.now(); r.lastTime = 0; r.started = false; r.visMs = 0;
     try {
       v.poster = over?.poster || (this.base + id + '.jpg');
       v.src = over?.src || (this.base + id + '.mp4');
@@ -166,7 +168,11 @@ export class CutscenePlayer {
     if (pad && !r.padHeld && this.skip(r, 'pad')) return;
     r.padHeld = pad;
     const v = this.video, now = this.now();
-    if (this.root.document?.hidden) { r.lastT = now; return; }
+    if (this.root.document?.hidden) { r.lastT = r.visT = now; return; }
+    if (this.capMs !== null) {
+      r.visMs += now - (r.visT ?? now); r.visT = now;
+      if (r.visMs > this.capMs) return this.next(r, 'timeout');
+    }
     // iOS pauses inline video in the background; nudge it once a second after the page comes back
     if (v.paused && !v.ended && r.i >= 0 && now - (r.nudged || 0) > 1000) { r.nudged = now; this.start(r, v, r.ids[r.i]); }
     const t = +v.currentTime || 0;
