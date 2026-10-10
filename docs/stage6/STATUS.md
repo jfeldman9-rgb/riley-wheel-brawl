@@ -1,6 +1,6 @@
 # Stage 6 status
 
-Stone of Tear is behind `?s6=1`. It is not on by default. Art, clips, and voice files are not generated yet. The fight, Rand rules, and the clip hook run on code-drawn stand-ins and silent captions.
+Stone of Tear is behind `?s6=1`. It is not on by default. The painted sheets, backdrops and story panels (docs/stage6/ART.md), the 25 voice lines, both music loops and Rand clips R1–R3 are in. Any painted file that fails to load falls back to its code-drawn stand-in.
 
 ## Boss-peak memory
 
@@ -8,15 +8,16 @@ Live WebKit, `tools/stage5/texture-dump.mjs` with `RWB_STAGES=6` (the URL adds `
 
 | Sample | MiB |
 |---|---|
-| Boss-fight source peak (phase 3, clear shown) | **94.81** |
-| Run source peak | 94.87 |
-| GL wrappers (includes render targets) | 105.41 |
+| Boss-fight source peak (phase 3, clear shown), painted art | **110.91** |
+| Run source peak (title, story panels still resident) | 113.46 |
+| GL wrappers (includes render targets) | 124.00 |
+| Boss-fight source peak on code-drawn art (before the painted pass) | 94.81 |
 
 Clear reached. No page errors. Under 120 MiB. Stage 5 on the same tool is 108.96 MiB source.
 
 Stage 6 loads the compact normals in `assets/stage5/normals/` through `src/texture-pages.js` (riley, grunt, spear, hound, both `_n` and `_nl`). Colour atlases stay in `assets/chars`. Those four fighters' colour plus both compact normals are 82.97 MiB, down from 117.89 MiB on the full-size maps. Cutthroat stays colour only (8.18 MiB). Leaving Stage 6 for a stage other than 5 or 6 drops the compact pages and reloads the originals. Stage 5 into Stage 6 keeps them.
 
-The old 129.07 MiB figure was a static sum of the full-size normals. It is not the loaded-texture peak, and that style of sum undercounted versus this tool. Stage 6 still does not load Loial, the Fade atlas, cutthroat normals, Twix, `riley_lightning.png`, the crate/planks/ribbon files, or a ribbon texture file.
+The old 129.07 MiB figure was a static sum of the full-size normals. It is not the loaded-texture peak, and that style of sum undercounted versus this tool. Stage 6 still does not load Loial, the Fade atlas, cutthroat normals, Twix, `riley_lightning.png` or the planks file. It now loads the shared painted crate (`assets/props/prop-crate.webp`, colour only, 0.90 MiB) and its own painted ribbon (`s6ribbon`).
 
 ## Campaign
 
@@ -30,4 +31,4 @@ The same bot with a 250 ms reaction delay, and without the unseen Gray Man's att
 
 ## Not done
 
-Painted sheets and Grok Imagine clips. (Audio landed on `rwb-2-stage6-audio`: all 25 voice lines in `assets/audio/stage6-voice-manifest.json`, and `music-stage6` / `music-boss6` set on `MUSIC` in `src/stage6.js`; see `tools/stage6/voice-render.json` and `tools/stage6/music-manifest.json`.) Antigravity's art tasks (A1–A4) and Codex's hardening tests (C1–C4) are not in this build. The seams they need are in `docs/stage6/CONTRACT.md`. Also not done: an iPhone pass. `?nopower=1` seed 1 reaches phase 3 and dies with Be'lal near 115 HP. Going live stays behind `s6=1`.
+Rand clips R4/R5 (reserved). (Audio landed on `rwb-2-stage6-audio`: all 25 voice lines in `assets/audio/stage6-voice-manifest.json`, and `music-stage6` / `music-boss6` set on `MUSIC` in `src/stage6.js`; see `tools/stage6/voice-render.json` and `tools/stage6/music-manifest.json`.) Antigravity's art tasks (A1–A4) and Codex's hardening tests (C1–C4) are not in this build. The seams they need are in `docs/stage6/CONTRACT.md`. Also not done: an iPhone pass. `?nopower=1` seed 1 reaches phase 3 and dies with Be'lal near 115 HP. Going live stays behind `s6=1`.

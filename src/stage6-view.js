@@ -2,6 +2,17 @@
 import { VW, VH, LANE_TOP, WORLD_W } from './config.js';
 import { paintStage6Art } from './stage6-art.js';
 import { createStoneTells } from './stage6-tells.js';
+import { isPainted, s6Scale } from './stage6-paint.js';
+import { STAGE6 } from './stage6-def.js';
+
+export const PLATES6 = Object.freeze(['bg6mid', 'bg6mid2', 'bg6mid3', 'bg6mid4']);
+// Painted zone plate i: world-locked behind its zone, 48 px past each inner edge so the 96 px feathers cross-blend,
+// and 128 px past the world ends so the outer feathers stay off screen.
+export function plateRect(i, zones = STAGE6.zones) {
+  const l = zones[i].l, last = i + 1 >= zones.length, r = last ? WORLD_W : zones[i + 1].l;
+  const x = i ? l - 48 : -128;
+  return { x, w: r + (last ? 128 : 48) - x };
+}
 
 function img(scene, x, y, key) {
   const s = scene.add?.image ? scene.add.image(x, y, key) : null;
@@ -20,26 +31,48 @@ export function createStage6View(scene) {
       far?.setScrollFactor?.(0); far?.setDepth?.(-100); far?.setDisplaySize?.(VW, LANE_TOP + 8);
       if (far) owned.push(far);
       scene.backdropLit = scene.backdropLit || [];
+      const lit = o => { if (o) { o.setLighting?.(true); scene.backdropLit.push(o); owned.push(o); } };
+      const zones = STAGE6.zones;
+      const flat = [];
+      PLATES6.forEach((key, i) => {
+        if (!isPainted(scene, key)) { flat.push(i); return; }
+        const { x, w } = plateRect(i, zones), src = scene.textures.get(key).getSourceImage?.() || {};
+        const mid = scene.add?.image?.(x, LANE_TOP + 8, key);
+        mid?.setOrigin?.(0, 1); mid?.setDepth?.(-50 + i * 0.1); mid?.setScale?.(w / (src.width || 1024));
+        lit(mid);
+      });
+      // Zones without a painted plate keep the code-drawn tiles on the 0.4 parallax strip (below painted plates).
+      const seen = x => flat.some(i => {
+        const c0 = i ? zones[i - 1].l : 0, c1 = i + 1 < zones.length ? zones[i + 1].l : WORLD_W - VW;
+        return x + 560 > 0.4 * c0 && x < 0.4 * c1 + VW;
+      });
       for (let x = -40, i = 0; x < WORLD_W; x += 520, i++) {
+        if (!seen(x)) continue;
         const mid = scene.add?.image?.(x, LANE_TOP + 6, i % 2 ? 'bg6mid2' : 'bg6mid');
-        mid?.setOrigin?.(0, 1); mid?.setScrollFactor?.(0.4); mid?.setDepth?.(-50); mid?.setDisplaySize?.(560, 150); mid?.setLighting?.(true);
-        if (mid) { scene.backdropLit.push(mid); owned.push(mid); }
+        mid?.setOrigin?.(0, 1); mid?.setScrollFactor?.(0.4); mid?.setDepth?.(-51); mid?.setDisplaySize?.(560, 150);
+        lit(mid);
       }
-      ['bg6floor', 'bg6floor2', 'bg6floor3'].forEach((key, i) => {
-        const tile = scene.add?.tileSprite?.(i * 1800, LANE_TOP - 16, 1900, VH - LANE_TOP + 30, key);
-        tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40); tile?.setLighting?.(true);
-        if (tile) { scene.backdropLit.push(tile); owned.push(tile); }
+      // Painted floors meet at the zone edges (quay to the hall at the gate, the Heart's red stone from the boss
+      // zone); code-drawn floors keep the 1800 px layout.
+      const floorKeys = ['bg6floor', 'bg6floor2', 'bg6floor3'];
+      const painted = floorKeys.some(k => isPainted(scene, k));
+      const edges = painted ? [0, zones[2].l, zones[3].l, WORLD_W] : [0, 1800, 3600, WORLD_W];
+      floorKeys.forEach((key, i) => {
+        const x = edges[i], w = Math.min(edges[i + 1] + (painted ? 0 : 100), WORLD_W + 100) - x;
+        const tile = scene.add?.tileSprite?.(x, LANE_TOP - 16, painted ? w : 1900, VH - LANE_TOP + 30, key);
+        tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40); lit(tile);
       });
       rain = scene.add?.tileSprite?.(0, 0, VW, VH, 's6storm');
       rain?.setScrollFactor?.(0); rain?.setDepth?.(4200); rain?.setAlpha?.(0.18); rain?.setBlendMode?.('ADD');
       if (rain) owned.push(rain);
       for (let i = 0; i < 4; i++) {
         const d = scene.add?.sprite?.(1500 + i * 70, 640, 's6def', i % 3);
-        d?.setOrigin?.(0.5, 0.96); d?.setScale?.(3.2); d?.setDepth?.(980); d?.setAlpha?.(0.85);
+        d?.setOrigin?.(0.5, 0.96); d?.setScale?.(s6Scale(scene, 's6def', 3.2)); d?.setDepth?.(980); d?.setAlpha?.(0.85);
         if (d) { defs.push(d); owned.push(d); }
       }
       call = scene.add?.sprite?.(4560, 620, 's6call', 0);
-      call?.setOrigin?.(0.5, 0.96); call?.setScale?.(3.4); call?.setBlendMode?.('ADD'); call?.setDepth?.(1100); call?.setVisible?.(false);
+      // Painted Callandor is crystal, drawn in normal blend (ADD only suited the code stub).
+      call?.setOrigin?.(0.5, 0.96); call?.setScale?.(s6Scale(scene, 's6call', 3.4)); call?.setBlendMode?.(isPainted(scene, 's6call') ? 'NORMAL' : 'ADD'); call?.setDepth?.(1100); call?.setVisible?.(false);
       if (call) owned.push(call);
       if (scene.lights?.addLight) view.light = scene.lights.addLight(400, 520, 280, 0xffc878, 0.6, 40);
     },
@@ -61,7 +94,12 @@ export function createStage6View(scene) {
       const showDef = zone === 1;
       defs.forEach((d, i) => { d.setVisible?.(showDef); if (showDef) d.setFrame?.(Math.floor((kit?.s?.time?.now || 0) / 180 + i) % 3); });
       const boss = zone === 3 && kit?.s?.boss;
-      call?.setVisible?.(!!boss); call?.setAlpha?.(0.55 + 0.35 * Math.sin((kit?.s?.time?.now || 0) / 280));
+      const pulse = Math.sin((kit?.s?.time?.now || 0) / 280);
+      call?.setVisible?.(!!boss);
+      if (call && isPainted(scene, 's6call')) {
+        const flare = (kit?.s?.enemies || []).some(e => e.type === 'belal' && e.phase >= 3);
+        call.setFrame?.(flare ? 1 : 0); call.setAlpha?.(flare ? 0.9 + 0.1 * pulse : 0.82 + 0.1 * pulse);
+      } else call?.setAlpha?.(0.55 + 0.35 * pulse);
       if (boss && !rays.length && kit?.s?.add?.image) {
         for (let i = 0; i < 3; i++) {
           const r = kit.s.add.image(4300 + i * 180, 80, 's6ray');
@@ -78,14 +116,14 @@ export function createStage6View(scene) {
     },
     glimpse() {
       const g = img(thisScene(scene), (scene.camX || 0) + VW * 0.7, 180, 's6rand');
-      g?.setScrollFactor?.(0); g?.setDepth?.(3000); g?.setAlpha?.(0.9); g?.setScale?.(1.2);
+      g?.setScrollFactor?.(0); g?.setDepth?.(3000); g?.setAlpha?.(0.9); g?.setScale?.(s6Scale(scene, 's6rand', 1.2));
       if (g) owned.push(g);
       const timer = scene.time?.delayedCall?.(1600, () => g?.destroy?.());
       if (timer) timers.push(timer);
     },
     randSprite(x, y) {
       const s = scene.add?.sprite?.(x, y, 's6rand', 1);
-      s?.setOrigin?.(0.5, 0.96); s?.setScale?.(1.4); s?.setDepth?.(1400);
+      s?.setOrigin?.(0.5, 0.96); s?.setScale?.(s6Scale(scene, 's6rand', 1.4)); s?.setDepth?.(1400);
       return s;
     },
     destroy() { tells.destroy(); for (const t of timers) t.remove?.(); timers.length = 0; for (const o of owned) o?.destroy?.(); owned.length = 0; if (view.light) scene.lights?.removeLight?.(view.light); },

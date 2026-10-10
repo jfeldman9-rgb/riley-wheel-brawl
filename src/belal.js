@@ -1,5 +1,6 @@
 // Be'lal, the Netweaver. Three phases. He never takes Callandor. Rand cannot skip a gate or kill him.
 import { clamp, LANE_TOP, LANE_BOT } from './config.js';
+import { s6Scale, isPainted } from './stage6-paint.js';
 import { strikeRiley } from './stage6-hurt.js';
 import { substeps } from './stage5-clock.js';
 
@@ -192,12 +193,13 @@ export class Belal {
   sync() {
     const frame = this.state === 'attack' ? 1 + Math.min(2, this.hitI) : this.state === 'tell' || this.state === 'lunge' ? 4 : this.state === 'channel' ? 5 : this.state === 'stagger' ? 6 : this.state === 'erase' || this.state === 'dead' ? 7 : 0;
     this.sprite.x = this.x; this.sprite.y = this.y - (this.z || 0);
-    this.sprite.setOrigin?.(0.5, 0.96); this.sprite.setFrame?.(frame); this.sprite.setScale?.(3.1);
+    this.sprite.setOrigin?.(0.5, 0.96); this.sprite.setFrame?.(frame); this.sprite.setScale?.(s6Scale(this.scene, 's6belal', 3.1));
     this.sprite.flipX = this.facing < 0; this.sprite.setDepth?.(1000 + this.y);
     this.sprite.setAlpha?.(this.state === 'erase' ? Math.max(0, 1 - this.st) : 1);
     this.shadow?.setPosition?.(this.x, this.y + 2); this.shadow?.setAlpha?.(this.state === 'erase' ? 0 : 0.5); this.shadow?.setScale?.(2.4, 0.55);
     const show = this.state === 'tell' || this.state === 'lunge' || this.state === 'channel' || (this.state === 'attack' && this.st < BELAL.tells[this.hitI]);
-    this.streak?.setPosition?.(this.x + this.facing * 40, this.y - 70); this.streak?.setVisible?.(show); this.streak?.setAlpha?.(show ? 0.85 : 0); this.streak?.setScale?.(this.state === 'channel' ? 0.6 : 1.4, 0.35);
+    this.streak?.setPosition?.(this.x + this.facing * 40, this.y - 70); this.streak?.setVisible?.(show); this.streak?.setAlpha?.(show ? 0.85 : 0);
+    if (isPainted(this.scene, 's6streak')) this.streak?.setDisplaySize?.(this.state === 'channel' ? 40 : 96, 14); else this.streak?.setScale?.(this.state === 'channel' ? 0.6 : 1.4, 0.35);
   }
   destroy() { this.sprite?.destroy?.(); this.shadow?.destroy?.(); this.streak?.destroy?.(); this.alive = false; this.gone = true; }
 }

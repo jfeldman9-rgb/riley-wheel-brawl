@@ -2,6 +2,7 @@
 import { freezeStrike, thawStrike } from './stage6-freeze.js';
 import { stage4Delta } from './stage4-time.js';
 import { VW, LANE_TOP } from './config.js';
+import { s6Scale } from './stage6-paint.js';
 import { refuseReason, trySpend, eligibleTargets, allocateStrikes, randEffect, noteRileyKo, tickRand, RAND } from './rand-call.js';
 import { playCall, abortRandCall, dropBlob, warmRand } from './rand-call-cutscene.js';
 import { grayVisible } from './grayman.js';
@@ -35,7 +36,7 @@ function hatch(kit, type) {
     update() {}, physics() {}, sync() { this.sprite?.setPosition?.(this.x, this.y); }, takeHit() { return false; }, releaseHold() {}, face() {},
     destroy() { this.sprite?.destroy?.(); this.alive = false; this.gone = true; },
   };
-  h.sprite = s.add?.sprite?.(x, y, 's6hatch', 0); h.sprite?.setOrigin?.(0.5, 0.96); h.sprite?.setDepth?.(1000 + y);
+  h.sprite = s.add?.sprite?.(x, y, 's6hatch', 0); h.sprite?.setOrigin?.(0.5, 0.96); h.sprite?.setScale?.(s6Scale(s, 's6hatch', 1)); h.sprite?.setDepth?.(1000 + y);
   s.enemies.push(h); sfxCue('craneCreak');
   const timer = s.time?.delayedCall?.(1000, () => {
     if (!h.alive && h.gone) return;
@@ -112,7 +113,7 @@ function startStrike(kit) {
   sfxCue('randThunder');
   const x = (s.camX || 0) + 110, y = LANE_TOP + 16;
   kit.strike.rand = s.add?.sprite?.(x, y, 's6rand', 0);
-  kit.strike.rand?.setOrigin?.(0.5, 0.96); kit.strike.rand?.setScale?.(3.4); kit.strike.rand?.setDepth?.(1500);
+  kit.strike.rand?.setOrigin?.(0.5, 0.96); kit.strike.rand?.setScale?.(s6Scale(s, 's6rand', 3.4)); kit.strike.rand?.setDepth?.(1500);
   kit.strike.dim = s.add?.image?.((s.camX || 0) + VW / 2, 360, 'glow');
   kit.strike.dim?.setScrollFactor?.(0); kit.strike.dim?.setDepth?.(4500); kit.strike.dim?.setTint?.(0x05060c); kit.strike.dim?.setAlpha?.(0.7); kit.strike.dim?.setScale?.(40);
 }

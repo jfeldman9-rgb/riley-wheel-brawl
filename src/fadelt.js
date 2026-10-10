@@ -1,5 +1,6 @@
 // Myrddraal lieutenant. Stage 3 shadow-blink only: no fear, no split. Linked Trollocs reel when it dies.
 import { clamp, LANE_TOP, LANE_BOT } from './config.js';
+import { s6Scale, isPainted } from './stage6-paint.js';
 import { strikeRiley } from './stage6-hurt.js';
 import { substeps } from './stage5-clock.js';
 
@@ -137,8 +138,8 @@ export class Fadelt {
   sync() {
     const frame = this.state === 'attack' ? 2 + Math.min(2, this.hitI) : this.state === 'blink' ? 1 : this.state === 'down' || this.state === 'dead' ? 5 : 0;
     this.sprite.x = this.x; this.sprite.y = this.y - (this.z || 0);
-    this.sprite.setOrigin?.(0.5, 0.96); this.sprite.setFrame?.(frame); this.sprite.setScale?.(FADELT.scale);
-    this.sprite.flipX = this.facing < 0; this.sprite.setTint?.(0xcc3344);
+    this.sprite.setOrigin?.(0.5, 0.96); this.sprite.setFrame?.(frame); this.sprite.setScale?.(s6Scale(this.scene, 's6fade', FADELT.scale));
+    this.sprite.flipX = this.facing < 0; this.sprite.setTint?.(isPainted(this.scene, 's6fade') ? 0xffffff : 0xcc3344);
     this.sprite.setAlpha?.(this.state === 'blink' ? 0.25 : this.state === 'dead' ? Math.max(0, 1 - this.st) : 1);
     this.sprite.setDepth?.(1000 + this.y);
     this.shadow?.setPosition?.(this.x, this.y + 2); this.shadow?.setScale?.(2.2, 0.5); this.shadow?.setAlpha?.(this.state === 'dead' || this.state === 'blink' ? 0 : 0.5);

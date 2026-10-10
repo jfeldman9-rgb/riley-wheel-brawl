@@ -6,6 +6,7 @@ import { STAGE6, STAGE6_TEXTURES } from './stage6-def.js';
 import { createStone, threatsOf, bandY } from './stage6-arena.js';
 import { createStage6View } from './stage6-view.js';
 import { freeStory6 } from './stage6-art.js';
+import { queueStage6Painted } from './stage6-paint.js';
 import { preloadClips, releaseClips, MUSIC } from './audio.js';
 import { makeCharAnims, releaseChars } from './assets.js';
 import { STAGE6_VOICES, VOICE_FILES, stage6Say, sfxCue } from './stage6-voice.js';
@@ -33,6 +34,7 @@ export function queueStage6(scene) {
   if (!scene.textures.exists('cutthroat-0')) L.atlas('cutthroat-0', 'assets/stage3/chars/cutthroat-0.webp', 'assets/stage3/chars/cutthroat-0.json');
   if (!scene.cache?.json?.get?.('layout6')) L.json('layout6', 'assets/bg6/layout.json');
   queuePowerArt(scene, { twix: false });
+  queueStage6Painted(scene);
 }
 
 export class Stage6Kit {

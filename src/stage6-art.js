@@ -9,7 +9,7 @@ export const STAGE6_CANVASES = Object.freeze([
   ['s6gray', 192, 48], ['s6fade', 216, 56], ['s6belal', 320, 64], ['s6rand', 192, 48],
   ['randPortrait', 32, 32], ['belalPortrait', 32, 32], ['s6storm', 192, 32],
   ['s6net', 48, 24], ['s6lamp', 72, 28], ['s6oil', 64, 32], ['s6hatch', 64, 28],
-  ['s6call', 64, 48], ['s6ray', 16, 64], ['s6ribbon', 16, 16], ['s6crate', 24, 24],
+  ['s6call', 64, 48], ['s6ray', 16, 64], ['s6ribbon', 16, 16], ['crate', 120, 120],
   ['s6streak', 32, 8], ['s6def', 96, 40], ['s6planks', 32, 8], ['story6p1', 80, 45], ['story6p2', 80, 45], ['story6p3', 80, 45],
 ]);
 
@@ -86,7 +86,8 @@ export function paintStage6Art(scene) {
   sheet(scene, 's6call', 2, 32, 48, (g, i, w, h) => { g.fillStyle = i ? '#f4f8ff' : '#d8ecff'; g.fillRect(w * 0.42, 4, 5, h - 8); g.fillStyle = '#9fd0ff'; g.fillRect(w * 0.3, 8, w * 0.4, 6); });
   put('s6ray', 16, 64, (g, w, h) => { const grd = g.createLinearGradient(0, 0, 0, h); grd.addColorStop(0, 'rgba(220,236,255,0.85)'); grd.addColorStop(1, 'rgba(220,236,255,0)'); g.fillStyle = grd; g.fillRect(4, 0, 8, h); });
   put('s6ribbon', 16, 16, (g, w, h) => { g.fillStyle = '#e85a8a'; g.fillRect(2, 4, w - 4, 3); g.fillStyle = '#f7c2d4'; g.fillRect(2, 9, w - 6, 3); });
-  put('s6crate', 24, 24, (g, w, h) => { g.fillStyle = '#6a4a28'; g.fillRect(1, 1, w - 2, h - 2); g.strokeStyle = '#3a2814'; g.strokeRect(3, 3, w - 6, h - 6); });
+  // Fallback for the shared painted crate (src/stage6-paint.js CRATE6) when its file failed: drawn at addBarrel's 0.19.
+  put('crate', 120, 120, (g, w, h) => { g.fillStyle = '#6a4a28'; g.fillRect(4, 4, w - 8, h - 8); g.strokeStyle = '#3a2814'; g.lineWidth = 8; g.strokeRect(14, 14, w - 28, h - 28); g.beginPath(); g.moveTo(14, 14); g.lineTo(w - 14, h - 14); g.stroke(); });
   sheet(scene, 's6planks', 2, 16, 8, (g, i, w, h) => { g.fillStyle = i ? '#8a6230' : '#5a3e1c'; g.fillRect(0, 1, w, h - 2); });
   put('s6streak', 32, 8, (g, w, h) => { g.fillStyle = '#1a080c'; g.fillRect(0, 2, w, 4); g.fillStyle = '#ff6040'; g.fillRect(4, 3, w - 8, 2); });
   sheet(scene, 's6def', 3, 32, 40, (g, i, w, h) => { man(g, w, h, '#e8d0b8', i === 1 ? '#8a1c1c' : '#6a1418', '#c8c0a8'); });

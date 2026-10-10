@@ -1,5 +1,6 @@
 // Gray Man. A plain assassin the eye slides off. One live. No grab.
 import { clamp, LANE_TOP, LANE_BOT } from './config.js';
+import { s6Scale } from './stage6-paint.js';
 import { lightNear } from './myrddraal.js';
 import { strikeRiley } from './stage6-hurt.js';
 import { substeps } from './stage5-clock.js';
@@ -137,12 +138,13 @@ export class GrayMan {
     const vis = grayVisible(this), ash = this.state === 'dead';
     this.sprite.x = this.x; this.sprite.y = this.y - (this.z || 0);
     this.sprite.setOrigin?.(0.5, 0.96); this.sprite.setFrame?.(this.state === 'lunge' ? 3 : this.state === 'attack' ? 2 : this.state === 'down' || ash ? 5 : this.state === 'hurt' ? 4 : 1);
-    this.sprite.setScale?.(3.4); this.sprite.flipX = this.facing < 0;
+    const sc = s6Scale(this.scene, 's6gray', 3.4), k = sc === 3.4 ? 1 : 1.38;
+    this.sprite.setScale?.(sc); this.sprite.flipX = this.facing < 0;
     this.sprite.setAlpha?.(ash ? Math.max(0, 1 - this.st) : vis ? 1 : 0.18);
     this.sprite.setDepth?.(1000 + this.y);
     this.shadow?.setPosition?.(this.x, this.y + 2); this.shadow?.setAlpha?.(ash || !vis ? 0 : 0.45); this.shadow?.setScale?.(1.8, 0.45);
     const show = this.state === 'attack';
-    this.glint?.setPosition?.(this.x + this.facing * 28, this.y - 78);
+    this.glint?.setPosition?.(this.x + this.facing * 28 * k, this.y - 78 * k);
     this.glint?.setVisible?.(show); this.glint?.setAlpha?.(show ? 1 : 0); this.glint?.setScale?.(0.35);
     if (queryFlag(q, 'debug') && this.sprite.setTint) this.sprite.setTint(0x665544);
   }

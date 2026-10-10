@@ -1,11 +1,390 @@
 {
-  "version": 1,
-  "note": "Code-drawn stand-ins in src/stage6-art.js are the runtime art. Painted sheets are not in the queue. placeholder is false so the debug tag stays hidden. No player-visible placeholder text.",
-  "entries": [
-    { "id": "s6gray", "key": "s6gray", "files": [], "placeholder": false, "source": "code-drawn" },
-    { "id": "s6fade", "key": "s6fade", "files": [], "placeholder": false, "source": "code-drawn" },
-    { "id": "s6belal", "key": "s6belal", "files": [], "placeholder": false, "source": "code-drawn" },
-    { "id": "s6rand", "key": "s6rand", "files": [], "placeholder": false, "source": "code-drawn" },
-    { "id": "s6def", "key": "s6def", "files": [], "placeholder": false, "source": "code-drawn" }
-  ]
+ "version": 1,
+ "note": "Painted Stone of Tear art from ChatGPT collages (tools/stage6/process_art.py, docs/stage6/ART.md). Keys without files stay code-drawn by src/stage6-art.js. placeholder is false.",
+ "entries": [
+  {
+   "id": "belalPortrait",
+   "key": "belalPortrait",
+   "files": [
+    "assets/stage6/ui/belalPortrait.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/ui/belalPortrait.webp": "c8905ef5f40bd522160d465c28de0555c705b2c56f4ef618fc5a3e1bb2766c7d"
+   },
+   "size": [
+    136,
+    136
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/belal.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "randPortrait",
+   "key": "randPortrait",
+   "files": [
+    "assets/stage6/ui/randPortrait.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/ui/randPortrait.webp": "3ed4a1b02d31a811eac0a4d515e7ca9c59f86b8cbc0f916c2130a45194194da9"
+   },
+   "size": [
+    136,
+    136
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/randdef.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6belal",
+   "key": "s6belal",
+   "files": [
+    "assets/stage6/chars/s6belal.webp",
+    "assets/stage6/chars/s6belal.json"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/chars/s6belal.webp": "b9266098a01c7a975e75c6d116237fb3c05cf6ed74e852be53692185a2c0fc39",
+    "assets/stage6/chars/s6belal.json": "9353d7a0f80ca032c64e706bd25ef41b4b264671b32d5b0af4dfe18bae8ce4dd"
+   },
+   "size": [
+    1871,
+    283
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/belal.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6call",
+   "key": "s6call",
+   "files": [
+    "assets/stage6/props/s6call.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/props/s6call.webp": "c84fbbaecb4615981281496fc13709f2116a9a5263636b67b8b12653362ea357"
+   },
+   "size": [
+    320,
+    320
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/props.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6def",
+   "key": "s6def",
+   "files": [
+    "assets/stage6/chars/s6def.webp",
+    "assets/stage6/chars/s6def.json"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/chars/s6def.webp": "bfc28c013ee206dee4a5c4489cc043edce6d9a462866818ed98ee755a8ecc2e3",
+    "assets/stage6/chars/s6def.json": "f85e5ed928f1cf689918eec21534fd941f08647bb81568d95dc5175792642921"
+   },
+   "size": [
+    240,
+    203
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/randdef.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6fade",
+   "key": "s6fade",
+   "files": [
+    "assets/stage6/chars/s6fade.webp",
+    "assets/stage6/chars/s6fade.json"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/chars/s6fade.webp": "26c18da08565adcf34093b413cb0f3dddb504f7713662c24cf37f55f64b0ca0a",
+    "assets/stage6/chars/s6fade.json": "5a4bf114eff0bf41ff2861ad2755ff64c93421ebba5ec70430ec98ba83361ce6"
+   },
+   "size": [
+    1120,
+    257
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/grayfade.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6gray",
+   "key": "s6gray",
+   "files": [
+    "assets/stage6/chars/s6gray.webp",
+    "assets/stage6/chars/s6gray.json"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/chars/s6gray.webp": "c9860f4e77cbda59593ed6288733250a513ffc52c2370c978bd2690e3733a036",
+    "assets/stage6/chars/s6gray.json": "063488ab3ed0ee11c82b226266891f783e14b229a76affc813433b296ac52877"
+   },
+   "size": [
+    903,
+    206
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/grayfade.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6hatch",
+   "key": "s6hatch",
+   "files": [
+    "assets/stage6/props/s6hatch.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/props/s6hatch.webp": "124ac6963cb2f55dde99baa55d38a93cc738b5bb5e6f15ae02fc52ae8f3ba995"
+   },
+   "size": [
+    240,
+    60
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/props.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6lamp",
+   "key": "s6lamp",
+   "files": [
+    "assets/stage6/props/s6lamp.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/props/s6lamp.webp": "34d7a1edd9e7f81122180ee3ba0c949501440e5124f7f8a44324f9c1250c429a"
+   },
+   "size": [
+    576,
+    192
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/props.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6net",
+   "key": "s6net",
+   "files": [
+    "assets/stage6/props/s6net.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/props/s6net.webp": "9d11d1fe4affa12ff30b4d26514bdadd1eea68208eeae7ffb6b2499026029554"
+   },
+   "size": [
+    512,
+    64
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/props.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6oil",
+   "key": "s6oil",
+   "files": [
+    "assets/stage6/props/s6oil.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/props/s6oil.webp": "b7080e8490f1dae4604d020735752fc022f5ff130471c2c369b69ea6a540e6e5"
+   },
+   "size": [
+    384,
+    192
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/props.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6rand",
+   "key": "s6rand",
+   "files": [
+    "assets/stage6/chars/s6rand.webp",
+    "assets/stage6/chars/s6rand.json"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/chars/s6rand.webp": "2f6c267335c87d1cdb14e6a1a87c6dcae7caebe7b7b5cc2e5a21a3cad373c041",
+    "assets/stage6/chars/s6rand.json": "d3cdb788775ba4af8b8bb96d02da66fd90f3e1419bb202910819941fb9cc8c66"
+   },
+   "size": [
+    680,
+    264
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/randdef.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6ribbon",
+   "key": "s6ribbon",
+   "files": [
+    "assets/stage6/props/s6ribbon.webp"
+   ],
+   "placeholder": false,
+   "source": "reused-painted",
+   "sha256": {
+    "assets/stage6/props/s6ribbon.webp": "af584e07a6eafaedab8c1624a2253c96e531b4eb8ddbbe4253a38cb7ff2def24"
+   },
+   "size": [
+    48,
+    48
+   ],
+   "art": {
+    "sourceFile": "assets/props/item-ribbon.webp",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "s6streak",
+   "key": "s6streak",
+   "files": [
+    "assets/stage6/props/s6streak.webp"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/props/s6streak.webp": "74a53a6baa3e3c8929f9dda99923a265bc82f1c8a26423a822c5375e4ae9f29c"
+   },
+   "size": [
+    512,
+    48
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/props.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "story6p1",
+   "key": "story6p1",
+   "files": [
+    "assets/stage6/story/story6p1.jpg"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/story/story6p1.jpg": "4f1b1c654a41147cbca7daefef3e5d0e57bff5ce2172fba476581321584e09be"
+   },
+   "size": [
+    640,
+    360
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/story.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "story6p2",
+   "key": "story6p2",
+   "files": [
+    "assets/stage6/story/story6p2.jpg"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/story/story6p2.jpg": "198b2f5d8d14d18359909f2aa52432f9ec0f5b9ad6baefa8bf5a31115adc729a"
+   },
+   "size": [
+    640,
+    360
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/story.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  },
+  {
+   "id": "story6p3",
+   "key": "story6p3",
+   "files": [
+    "assets/stage6/story/story6p3.jpg"
+   ],
+   "placeholder": false,
+   "source": "chatgpt-image",
+   "sha256": {
+    "assets/stage6/story/story6p3.jpg": "b2ce046146f8a5793dc34be161d9dd0619151d2746c3679ba1e59a6e667f9c64"
+   },
+   "size": [
+    640,
+    360
+   ],
+   "art": {
+    "sourceFile": "art-in/stage6/story.src.png",
+    "tool": "tools/stage6/process_art.py",
+    "prompt": "/workspace/stage6art/CHATGPT_PROMPTS.md",
+    "review": "pending"
+   }
+  }
+ ]
 }
