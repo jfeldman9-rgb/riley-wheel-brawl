@@ -7,9 +7,9 @@ export function quietStage6(scene, state = 'silent') {
   if (!m) return;
   const from = m.state, hadTrack = m.track;
   m.state = state; m.track = null;
-  if (hadTrack !== null && typeof m.backend === 'function') {
-    const opts = { fade: 0, restart: false };
-    m.log?.push?.({ from, to: state, track: null, ...opts });
-    m.backend(null, opts);
-  }
+  if (typeof m.backend !== 'function') return;
+  // Always reach the backend: a victory/game-over fade leaves track null while the old loop is still fading out.
+  const opts = { fade: 0, restart: false };
+  if (hadTrack !== null) m.log?.push?.({ from, to: state, track: null, ...opts });
+  m.backend(null, opts);
 }
