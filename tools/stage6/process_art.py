@@ -43,11 +43,11 @@ BUDGET_MIB = {
     'belalPortrait': 0.08, 'randPortrait': 0.08,
     's6ribbon': 0.02, 's6hatch': 0.10, 's6oil': 0.30, 's6lamp': 0.45, 's6net': 0.15, 's6streak': 0.10, 's6call': 0.40,
     'bg6far': 1.85, 'bg6mid': 1.40, 'bg6mid2': 1.40, 'bg6mid3': 1.85, 'bg6mid4': 1.85,
-    'bg6floor': 0.55, 'bg6floor2': 0.55, 'bg6floor3': 0.90,
+    'bg6floor': 1.55, 'bg6floor2': 1.55, 'bg6floor3': 0.95,
     'story6p1': 3.60, 'story6p2': 3.60, 'story6p3': 3.60,
 }
 TRANSIENT = {'story6p1', 'story6p2', 'story6p3'}  # freed at stage start, not resident at the boss peak
-TOTAL_MIB = 17.0  # resident Stage 6 painted set at the boss peak
+TOTAL_MIB = 18.5  # resident painted set. Zone runtime stays under 120 MiB (floors are 1080x360 where that fits).
 
 OUT = {'chars': 'assets/stage6/chars', 'ui': 'assets/stage6/ui', 'props': 'assets/stage6/props',
        'story': 'assets/stage6/story', 'bg': 'assets/bg6'}
@@ -101,10 +101,12 @@ JOBS = {
         # flatten: the painted floors carry repeated vertical reflection streaks that would repeat every tile;
         # 65 percent of the horizontal brightness swing at streak scale is divided out, and a 160 px wrap crossfade
         # keeps the ghosted grout at the seam faint.
-        dict(key='bg6floor', size=(768, 180), seamless=160, flatten=0.65, fmt='jpg'),
-        dict(key='bg6floor2', size=(768, 180), seamless=160, flatten=0.65, fmt='jpg'),
-        # The Heart's floor has a ring inlay that cannot tile: one 1280 px image spans the boss zone exactly.
-        dict(key='bg6floor3', size=(1280, 180), flatten=0.65, fmt='jpg')]),
+        # 1080x360 matches the Stage 5 floor texel budget. flatten stays light so the lift can open the shadows.
+        dict(key='bg6floor', size=(1080, 360), seamless=160, flatten=0.35, lift=True, fmt='jpg'),
+        dict(key='bg6floor2', size=(1080, 360), seamless=160, flatten=0.35, lift=True, fmt='jpg'),
+        # The Heart's ring cannot tile, and zone 2 already holds floor2 at 1080x360. 1280x180 plus the lift
+        # is what still fits under the measured 120 MiB GL peak.
+        dict(key='bg6floor3', size=(1280, 180), flatten=0.35, lift=True, fmt='jpg')]),
     'story': dict(kind='panels', src='story.src.png', chroma='magenta', grid=(2, 2),
                   panels=[dict(key='story6p1'), dict(key='story6p2'), dict(key='story6p3')], size=(1280, 720)),
     # Reuse: Twinkle Toes' painted ribbon at pickup size (the shared 256 px file would draw 180 px at the pickup's
@@ -494,6 +496,12 @@ def fit_width(img, w):
     return resize(img, size=(w, max(1, round(img.shape[0] * w / img.shape[1]))))
 
 
+def lift_floor(img, gamma=0.72, gain=1.42, black=14):
+    """Open near-black stone. The painted floors read as a dark bar under the storm lights."""
+    x = np.clip((img.astype(np.float32) - black) / (255.0 - black), 0, 1)
+    return np.clip(np.power(x, gamma) * gain, 0, 1) * 255.0
+
+
 def flatten(img, amount, sigma=20):
     """Divide out part of the low-frequency horizontal brightness swing (reflection streaks) per row band."""
     L = img.mean(-1).astype(np.float32) + 1.0
@@ -560,6 +568,7 @@ def job_bands(name, job, src_dir, out_root, debug):
         holes = 0
         if b.get('seamless'):
             src = flatten(img, b['flatten']) if b.get('flatten') else img
+            if b.get('lift'): src = lift_floor(src)
             out = seamless(cover(src, (tw + b['seamless'], th)), b['seamless'])
         elif b.get('sky'):
             F, al = key(img, job['chroma'])
@@ -575,7 +584,9 @@ def job_bands(name, job, src_dir, out_root, debug):
             rgba = rgba[max(0, int(r[0]) - 2, rgba.shape[0] - b['max_h']):]
             out = feather(rgba, b['feather']) if b.get('feather') else rgba
         else:
-            out = cover(flatten(img, b['flatten']) if b.get('flatten') else img, (tw, th))
+            src = flatten(img, b['flatten']) if b.get('flatten') else img
+            if b.get('lift'): src = lift_floor(src)
+            out = cover(src, (tw, th))
             if b.get('feather'):
                 out = feather(np.concatenate([out, np.full(out.shape[:2] + (1,), 255.0)], -1), b['feather'])
         u8 = to_u8(out)

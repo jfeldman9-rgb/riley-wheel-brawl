@@ -20,9 +20,9 @@
     { "x": 3450, "y": 670, "zone": 2 }
   ],
   "trees": [
-    { "x": 760, "y": 630, "zone": 0, "show": true },
-    { "x": 1680, "y": 620, "zone": 1, "ribbon": true },
-    { "x": 2140, "y": 650, "zone": 1 }
+    { "x": 760, "y": 580, "zone": 0, "show": true },
+    { "x": 1680, "y": 580, "zone": 1, "ribbon": true },
+    { "x": 2140, "y": 580, "zone": 1 }
   ],
   "thorns": [
     { "x": 360, "w": 200, "zone": 0, "band": 0 },
@@ -36,31 +36,31 @@
     { "x": 3500, "y": 670, "zone": 2 }
   ],
   "deco": [
-    { "x": 160, "y": 650, "frame": "bones", "zone": 0 },
-    { "x": 300, "y": 618, "frame": "cauldron", "zone": 0 },
-    { "x": 420, "y": 668, "frame": "boulder", "zone": 0 },
-    { "x": 1040, "y": 648, "frame": "stones", "zone": 0 },
-    { "x": 1140, "y": 662, "frame": "log", "zone": 0 },
-    { "x": 1220, "y": 628, "frame": "thornbush", "zone": 0 },
-    { "x": 560, "y": 612, "frame": "banner", "zone": 0 },
-    { "x": 1320, "y": 648, "frame": "bones", "zone": 1 },
-    { "x": 1460, "y": 618, "frame": "banner", "zone": 1 },
-    { "x": 1880, "y": 655, "frame": "log", "zone": 1 },
-    { "x": 2360, "y": 650, "frame": "stones", "zone": 1 },
-    { "x": 2440, "y": 668, "frame": "boulder", "zone": 1 },
-    { "x": 2500, "y": 620, "frame": "cauldron", "zone": 1 },
-    { "x": 2060, "y": 630, "frame": "thornbush", "zone": 1 },
-    { "x": 2620, "y": 652, "frame": "bones", "zone": 2 },
-    { "x": 3080, "y": 668, "frame": "boulder", "zone": 2 },
-    { "x": 3180, "y": 640, "frame": "stones", "zone": 2 },
-    { "x": 3380, "y": 655, "frame": "log", "zone": 2 },
-    { "x": 3680, "y": 628, "frame": "thornbush", "zone": 2 },
-    { "x": 3800, "y": 618, "frame": "cauldron", "zone": 2 },
-    { "x": 2740, "y": 618, "frame": "banner", "zone": 2 }
+    { "x": 160, "y": 580, "frame": "bones", "zone": 0 },
+    { "x": 300, "y": 580, "frame": "cauldron", "zone": 0 },
+    { "x": 420, "y": 580, "frame": "boulder", "zone": 0 },
+    { "x": 1040, "y": 580, "frame": "stones", "zone": 0 },
+    { "x": 1140, "y": 580, "frame": "log", "zone": 0 },
+    { "x": 1220, "y": 580, "frame": "thornbush", "zone": 0 },
+    { "x": 560, "y": 580, "frame": "banner", "zone": 0 },
+    { "x": 1320, "y": 580, "frame": "bones", "zone": 1 },
+    { "x": 1460, "y": 580, "frame": "banner", "zone": 1 },
+    { "x": 1880, "y": 580, "frame": "log", "zone": 1 },
+    { "x": 2360, "y": 580, "frame": "stones", "zone": 1 },
+    { "x": 2440, "y": 580, "frame": "boulder", "zone": 1 },
+    { "x": 2500, "y": 580, "frame": "cauldron", "zone": 1 },
+    { "x": 2060, "y": 580, "frame": "thornbush", "zone": 1 },
+    { "x": 2620, "y": 580, "frame": "bones", "zone": 2 },
+    { "x": 3080, "y": 580, "frame": "boulder", "zone": 2 },
+    { "x": 3180, "y": 580, "frame": "stones", "zone": 2 },
+    { "x": 3380, "y": 580, "frame": "log", "zone": 2 },
+    { "x": 3680, "y": 580, "frame": "thornbush", "zone": 2 },
+    { "x": 3800, "y": 580, "frame": "cauldron", "zone": 2 },
+    { "x": 2740, "y": 580, "frame": "banner", "zone": 2 }
   ],
   "garden": [
-    { "x": 4300, "y": 620, "frame": "arch" },
-    { "x": 4680, "y": 640, "frame": "bloom" },
-    { "x": 5080, "y": 630, "frame": "bloom" }
+    { "x": 4300, "y": 580, "frame": "arch" },
+    { "x": 4680, "y": 580, "frame": "bloom" },
+    { "x": 5080, "y": 580, "frame": "bloom" }
   ]
 }

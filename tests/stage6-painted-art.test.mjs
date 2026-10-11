@@ -121,6 +121,11 @@ test('painted zone plates are world-locked per zone; missing plates keep the cod
   const half = viewScene(new Set(['bg6mid', 'bg6mid2'])); createStage6View(half.s).buildBackdrop();
   const tiles = half.made.filter(m => m.sf === 0.4); assert.ok(tiles.length > 0 && tiles.every(t => t.x + 560 > 0.4 * STAGE6.zones[1].l), 'tiles only where the interior zones can see them');
 });
+test('stage 6 tiling floors are 1080x360 and the Heart stays one zone wide', () => {
+  assert.deepEqual(dimensions(readFileSync('assets/bg6/bg6floor.jpg')), [1080, 360]);
+  assert.deepEqual(dimensions(readFileSync('assets/bg6/bg6floor2.jpg')), [1080, 360]);
+  assert.deepEqual(dimensions(readFileSync('assets/bg6/bg6floor3.jpg')), [1280, 180]);
+});
 test('painted floors meet at the zone edges and code floors keep the 1800 px layout', () => {
   const p = viewScene(new Set(['bg6floor', 'bg6floor2', 'bg6floor3'])); createStage6View(p.s).buildBackdrop();
   assert.deepEqual(p.made.filter(m => /^bg6floor/.test(m.key) && m.depth === -40).map(m => [m.x, m.w]), [[0, STAGE6.zones[2].l], [STAGE6.zones[2].l, STAGE6.zones[3].l - STAGE6.zones[2].l], [STAGE6.zones[3].l, WORLD_W - STAGE6.zones[3].l]]);

@@ -61,10 +61,11 @@ export function createStage6View(scene) {
       const edges = painted ? [0, zones[2].l, zones[3].l, WORLD_W] : [0, 1800, 3600, WORLD_W];
       floorKeys.forEach((key, i) => {
         const x = edges[i], w = Math.min(edges[i + 1] + (painted ? 0 : 100), WORLD_W + 100) - x;
-        const tile = scene.add?.tileSprite?.(x, LANE_TOP - 16, painted ? w : 1900, VH - LANE_TOP + 30, key);
-        tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40); lit(tile);
+        const tile = painted ? paintFloor(scene, key, x, w) : scene.add?.tileSprite?.(x, LANE_TOP - 16, 1900, FLOOR_H, key);
+        if (!painted) { tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40); }
+        lit(tile);
         // Painted seams crossfade: the left floor runs on past the edge in strips that fade out over SEAM6 px.
-        if (painted && i > 0) floorSeam(scene, floorKeys[i - 1], edges[i - 1], x, VH - LANE_TOP + 30).forEach(lit);
+        if (painted && i > 0) floorSeam(scene, floorKeys[i - 1], edges[i - 1], x, FLOOR_H).forEach(lit);
       });
       ensureRain(scene);
       if (scene.add?.particles && scene.textures?.exists?.('raindrop')) {
@@ -132,10 +133,10 @@ export function createStage6View(scene) {
       const painted = isPainted(scene, key);
       const edges = painted ? [0, zones[2].l, zones[3].l, WORLD_W] : [0, 1800, 3600, WORLD_W];
       const x = edges[fi], w = Math.min(edges[fi + 1] + (painted ? 0 : 100), WORLD_W + 100) - x;
-      const tile = scene.add?.tileSprite?.(x, LANE_TOP - 16, painted ? w : 1900, VH - LANE_TOP + 30, key);
-      tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40);
+      const tile = painted ? paintFloor(scene, key, x, w) : scene.add?.tileSprite?.(x, LANE_TOP - 16, 1900, FLOOR_H, key);
+      if (!painted) { tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40); }
       lit(tile);
-      if (painted && fi > 0) floorSeam(scene, FLOORS6[fi - 1], edges[fi - 1], x, VH - LANE_TOP + 30).forEach(lit);
+      if (painted && fi > 0) floorSeam(scene, FLOORS6[fi - 1], edges[fi - 1], x, FLOOR_H).forEach(lit);
     },
     setQuality(n) { view.quality = n | 0; },
     move(camX) { far?.setTint?.(bolt > 0 ? 0xb9c7e8 : 0xffffff); },
@@ -238,15 +239,32 @@ export function stage6LightBudget(kit) {
 }
 
 export const SEAM6 = 160;
+const FLOOR_H = VH - LANE_TOP + 30;
+// Uniform scale fits a tiling floor into the lane. The Heart is one image across its span.
+function floorScale(scene, key, span) {
+  const src = scene.textures?.get?.(key)?.source?.[0];
+  if (!src?.width || !src?.height) return null;
+  const sy = FLOOR_H / src.height;
+  return key === 'bg6floor3' ? [span / src.width, sy] : [sy, sy];
+}
+function paintFloor(scene, key, x, w) {
+  const tile = scene.add?.tileSprite?.(x, LANE_TOP - 16, w, FLOOR_H, key);
+  tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40);
+  const sc = floorScale(scene, key, w);
+  if (sc) tile?.setTileScale?.(sc[0], sc[1]);
+  return tile;
+}
 // Strips of the left floor's tileSprite continued past the seam at x, alpha stepping 1 -> 0 (no new textures).
 export function floorSeam(scene, key, x0, x, h, n = 16) {
   const out = [], w = SEAM6 / n;
   if (!isPainted(scene, key)) return out;
+  const sx = floorScale(scene, key, 1)?.[0] || 1;
   for (let k = 0; k < n; k++) {
     const t = scene.add?.tileSprite?.(x + k * w, LANE_TOP - 16, w, h, key);
     if (!t) continue;
     t.setOrigin?.(0, 0); t.setDepth?.(-39.9); t.setAlpha?.(1 - (k + 0.5) / n);
-    t.tilePositionX = x + k * w - x0;
+    t.setTileScale?.(sx, floorScale(scene, key, 1)?.[1] || sx);
+    t.tilePositionX = (x + k * w - x0) / sx;
     out.push(t);
   }
   return out;

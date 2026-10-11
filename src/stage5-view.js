@@ -11,6 +11,18 @@ import { isPainted, s5Scale } from './stage5-paint.js';
 
 const PLATES5 = ['bg5mid', 'bg5mid2', 'bg5mid3', 'bg5mid4'];
 const FLOORS5 = ['bg5floor', 'bg5floor2', 'bg5floor3'];
+// The boss garden's left feather sits on the tar plate. A locked camera at zone.l
+// (the whole boss viewport) is already past the blend, so the plate reads as one span.
+export const GARDEN_BLEND = 300;
+export function gardenPlateRect(zones) {
+  const z = zones[3];
+  const x = z.l - GARDEN_BLEND;
+  return { x, w: WORLD_W + 80 - x };
+}
+// Props sit on the far edge of the floor and always draw behind a fighter.
+const FAR_FOOT = LANE_TOP + 8;
+function dressFoot(frame, y) { return frame === 'lurk' ? y : Math.min(y, FAR_FOOT); }
+function dressDepth(y) { return 1000 + Math.min(y, LANE_TOP) - 2; }
 function keyOf(o) { return o?.texture?.key || o?.key; }
 function isCode(scene, key) {
   const src = scene.textures?.get?.(key)?.source?.[0];
@@ -150,10 +162,11 @@ function placePlates(scene, keep, owned) {
   const have = PLATES5.filter(k => keep.has(k) && scene.textures?.exists?.(k));
   const painted = have.filter(k => !isCode(scene, k));
   for (const key of painted) {
-    const rect = plateRect(PLATES5.indexOf(key), zones);
+    const i = PLATES5.indexOf(key);
+    const rect = key === 'bg5mid4' ? gardenPlateRect(zones) : plateRect(i, zones);
     const src = scene.textures.get(key).getSourceImage?.() || {};
     const mid = scene.add?.image?.(rect.x, LANE_TOP + 8, key);
-    mid?.setOrigin?.(0, 1); mid?.setDepth?.(-50); mid?.setScale?.(rect.w / (src.width || 640));
+    mid?.setOrigin?.(0, 1); mid?.setDepth?.(-50 + i * 0.1); mid?.setScale?.(rect.w / (src.width || 640));
     lit(mid);
   }
   const code = have.filter(k => isCode(scene, k));
@@ -212,8 +225,9 @@ function placeDressing(scene, kit, owned, view) {
   if (!view.trees && isPainted(scene, 's5tree') && add?.sprite) {
     view.trees = [];
     for (const t of lay.trees || []) {
-      const sp = add.sprite(t.x, t.y, 's5tree', 0);
-      sp.setOrigin?.(0.5, 1); sp.setDepth?.(960); sp.setLighting?.(true); sp._tree = t;
+      const y = dressFoot('tree', t.y);
+      const sp = add.sprite(t.x, y, 's5tree', 0);
+      sp.setOrigin?.(0.5, 1); sp.setDepth?.(dressDepth(y)); sp.setLighting?.(true); sp._tree = t;
       view.trees.push(sp); owned.push(sp);
     }
   }
@@ -228,22 +242,23 @@ function placeDressing(scene, kit, owned, view) {
       view[slot] = null;
     }
     if (view[slot]?.length || !isPainted(scene, key) || !add?.sprite || !bits.length) return;
-    view[slot] = bits.map(([x, y, frame, depth]) => {
-      const sp = add.sprite(x, y, key, frame);
+    view[slot] = bits.map(([x, y, frame]) => {
+      const fy = dressFoot(frame, y);
+      const sp = add.sprite(x, fy, key, frame);
       sp._key = key;
-      sp.setOrigin?.(0.5, 1); sp.setDepth?.(depth); sp.setLighting?.(true);
+      sp.setOrigin?.(0.5, 1); sp.setDepth?.(dressDepth(fy)); sp.setLighting?.(true);
       owned.push(sp);
       return sp;
     });
   };
   const decoBits = [];
   if (isPainted(scene, 's5deco')) {
-    for (const s of lay.lurks || []) decoBits.push([s.x, s.y, 'lurk', 900]);
-    (lay.deco || []).forEach((d, i) => decoBits.push([d.x, d.y, d.frame, 920 + (i % 5) * 12]));
+    for (const s of lay.lurks || []) decoBits.push([s.x, s.y, 'lurk']);
+    (lay.deco || []).forEach(d => decoBits.push([d.x, d.y, d.frame]));
   }
   placeBits('dress', 's5deco', decoBits);
   const gardenBits = [];
-  if (isPainted(scene, 's5garden')) (lay.garden || []).forEach((d, i) => gardenBits.push([d.x, d.y, d.frame, 930 + i]));
+  if (isPainted(scene, 's5garden')) (lay.garden || []).forEach(d => gardenBits.push([d.x, d.y, d.frame]));
   placeBits('garden', 's5garden', gardenBits);
 }
 function placeGlows(scene, kit, view) {

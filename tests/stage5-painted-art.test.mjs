@@ -8,7 +8,7 @@ import { dimensions } from '../tools/audit-stage1.mjs';
 import { PAINTED5, SCALE5 } from '../src/stage5-painted.js';
 import { sheetKeys, bootPaintRows, queueStage5Painted, isPainted, s5Scale, syncSheets } from '../src/stage5-paint.js';
 import { STAGE5, STAGE5_TEXTURES } from '../src/stage5-def.js';
-import { createStage5View } from '../src/stage5-view.js';
+import { createStage5View, gardenPlateRect, GARDEN_BLEND } from '../src/stage5-view.js';
 import { residentKeys, STREAMS, plateRect } from '../src/zone-stream.js';
 import { WORLD_W, LANE_TOP } from '../src/config.js';
 
@@ -190,6 +190,14 @@ test('painted plates are world-locked and a plate that arrives later is placed',
   late.keys.add('bg5mid'); late.keys.add('bg5mid2');
   lateView.layoutPlates(keep);
   assert.equal(late.made.filter(m => m.key === 'bg5mid' && m.sf === 1).length, 1);
+  const boss = viewScene(['bg5mid4']);
+  createStage5View(boss.s).layoutPlates(new Set(['bg5mid4']));
+  const g = boss.made.find(m => m.key === 'bg5mid4');
+  const rect = gardenPlateRect(STAGE5.zones);
+  assert.equal(g.x, rect.x);
+  assert.equal(g.scale, rect.w / 1024);
+  assert.ok(g.x + GARDEN_BLEND <= STAGE5.zones[3].l, 'the blend finishes at the boss zone');
+  assert.ok(g.x + g.scale * 1024 >= WORLD_W, 'the plate reaches the end of the world');
 });
 
 test('painted floors meet at the shared edges and the left floor fades across the seam', () => {
@@ -244,6 +252,9 @@ test('set dressing and the Green Man wait for their sheets, then use the painted
   view.sync(kit);
   const arch = made.find(m => m.key === 's5garden');
   assert.equal(arch.frame, 'arch'); assert.equal(arch.x, 4300); assert.deepEqual(arch.origin, [0.5, 1]);
+  assert.equal(arch.y, LANE_TOP + 8, 'garden props sit on the far edge of the floor');
+  assert.ok(arch.depth < 1000 + LANE_TOP, 'a floor prop stays behind every fighter');
+  assert.equal(made.find(m => m.key === 's5tree').y, LANE_TOP + 8);
   const green = made.find(m => m.key === 's5green');
   assert.equal(green.frame, 1); assert.ok(Math.abs(green.scale - SCALE5.s5green[1]) < 1e-9);
   kit.ribbonDropped = true;

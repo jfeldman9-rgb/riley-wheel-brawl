@@ -483,8 +483,104 @@ def job_image(name, job, src_dir, out_root, debug):
     return s6.job_image(name, job, src_dir, out_root, debug)
 
 
+# Must match gardenPlateRect / GARDEN_BLEND in src/stage5-view.js. The boss camera locks at zone.l,
+# so the blend lives entirely on the previous plate and the viewport is one continuous garden.
+GARDEN_BLEND = 300
+GARDEN_END = 80
+ZONE3_L = 3920
+WORLD_END = 5200
+BOSS_CAM = 3920
+PLATE_Y = 580  # LANE_TOP + 8
+FAR_DISPLAY = (1280, 592)
+# How far the tar plate fades under the garden, in world px. plateRect(2) is 1408 wide.
+TAR_RIGHT_BLEND = 260
+TAR_PLATE_W = 1408
+
+
+def _hermite(n, px):
+    t = np.clip((np.arange(n) + 0.5) / max(1, px), 0, 1)
+    return (t * t * (3 - 2 * t)).astype(np.float32)
+
+
+def _sample_far(far, fx, fy):
+    H, W = far.shape[:2]
+    fx = np.clip(fx, 0, W - 1); fy = np.clip(fy, 0, H - 1)
+    x0 = np.floor(fx).astype(int); y0 = np.floor(fy).astype(int)
+    x1 = np.clip(x0 + 1, 0, W - 1); y1 = np.clip(y0 + 1, 0, H - 1)
+    tx = (fx - x0)[..., None]; ty = (fy - y0)[..., None]
+    return (far[y0, x0] * (1 - tx) * (1 - ty) + far[y0, x1] * tx * (1 - ty)
+            + far[y1, x0] * (1 - tx) * ty + far[y1, x1] * tx * ty)
+
+
+def span_garden(rgba, far):
+    """Fill the keyed sky with the far sunset as it sits at the locked boss camera, then feather
+    the top and the sides. The left feather is GARDEN_BLEND world px, ending at the zone edge."""
+    H, W = rgba.shape[:2]
+    rect_x = ZONE3_L - GARDEN_BLEND
+    rect_w = WORLD_END + GARDEN_END - rect_x
+    scale = rect_w / W
+    disp_h = H * scale
+    px = np.arange(W)[None, :]; py = np.arange(H)[:, None]
+    world_x = rect_x + (px + 0.5) * scale
+    screen_x = world_x - BOSS_CAM
+    screen_y = PLATE_Y - (disp_h - (py + 0.5) * scale)
+    fx = screen_x / FAR_DISPLAY[0] * (far.shape[1] - 1)
+    fy = screen_y / FAR_DISPLAY[1] * (far.shape[0] - 1)
+    sky = _sample_far(far, fx, fy)
+    a = rgba[..., 3].astype(np.float32) / 255.0
+    rgb = rgba[..., :3].astype(np.float32) * a[..., None] + sky * (1 - a[..., None])
+    left = max(1, int(round(GARDEN_BLEND / scale)))
+    right = max(1, int(round(GARDEN_END / scale)))
+    top = 56
+    ramp = _hermite(H, top)[:, None] * (_hermite(W, left) * _hermite(W, right)[::-1])[None, :]
+    out = np.concatenate([rgb, ramp[..., None] * 255.0], -1)
+    return out
+
+
+def fade_right(rgba, world_px, plate_w):
+    H, W = rgba.shape[:2]
+    px = max(1, int(round(world_px / (plate_w / W))))
+    out = rgba.copy()
+    out[..., 3] = np.clip(out[..., 3].astype(np.float32) * _hermite(W, px)[::-1][None, :], 0, 255).astype(np.uint8)
+    return out
+
+
+def _rewrite_plate(path, rgba):
+    u8 = s6.to_u8(rgba.astype(np.float32))
+    s6.save(u8, path, 'webp')
+    return u8
+
+
 def job_bands(name, job, src_dir, out_root, debug):
-    return s6.job_bands(name, job, src_dir, out_root, debug)
+    report = s6.job_bands(name, job, src_dir, out_root, debug)
+    if name != 'plates-b':
+        return report
+    far_path = os.path.join(out_root, OUT['bg'], 'bg5far.jpg')
+    far = np.asarray(Image.open(far_path).convert('RGB')).astype(np.float32)
+    for key, finish in (('bg5mid4', lambda im: span_garden(im, far)),
+                        ('bg5mid3', lambda im: fade_right(im, TAR_RIGHT_BLEND, TAR_PLATE_W))):
+        if key not in report: continue
+        path = report[key]['files'][0]
+        im = np.asarray(Image.open(path).convert('RGBA'))
+        u8 = _rewrite_plate(path, finish(im))
+        report[key]['size'] = [u8.shape[1], u8.shape[0]]
+        report[key]['span'] = key == 'bg5mid4'
+    sample_lights(out_root)
+    refresh_plate_hashes(out_root, ('bg5mid3', 'bg5mid4'))
+    return report
+
+
+def refresh_plate_hashes(out_root, keys):
+    path = os.path.join(out_root, 'assets/stage5/ART_STATUS.json')
+    if not os.path.exists(path): return
+    st = json.load(open(path))
+    for e in st.get('entries', []):
+        if e.get('key') not in keys: continue
+        e['sha256'] = {f: sha(os.path.join(out_root, f)) for f in e['files']}
+        im = Image.open(os.path.join(out_root, e['files'][0]))
+        e['size'] = [im.size[0], im.size[1]]
+    with open(path, 'w') as f:
+        json.dump(st, f, indent=1); f.write('\n')
 
 
 KINDS = {'poses': job_poses, 'split': job_split, 'bands': job_bands, 'image': job_image, 'panel': job_panel}
@@ -636,11 +732,15 @@ def sample_lights(out_root):
         order = np.argsort(-sizes)
         l = zones[i]
         last = i == 3
-        r = 5200 if last else zones[i + 1]
-        bleedL = 128 if i == 0 else (0 if i == 2 else 48)
-        bleedR = 128 if last else (0 if i + 1 == 2 else 48)
-        rx = (l if i else 0) - bleedL
-        rw = r + bleedR - rx
+        if last:
+            rx = ZONE3_L - GARDEN_BLEND
+            rw = WORLD_END + GARDEN_END - rx
+        else:
+            r = 5200 if last else zones[i + 1]
+            bleedL = 128 if i == 0 else (0 if i == 2 else 48)
+            bleedR = 128 if last else (0 if i + 1 == 2 else 48)
+            rx = (l if i else 0) - bleedL
+            rw = r + bleedR - rx
         scale = rw / W
         taken = []
         for j in order[:8]:
