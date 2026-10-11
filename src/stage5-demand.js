@@ -1,11 +1,11 @@
 // Aginor, Balthamel, Loial and the grab atlas stay out of the zone 0 peak.
 import { queueCharPages, makeCharAnims } from './assets.js';
-import { queuePainted, paintBossFallback } from './stage5-art.js';
+import { canPaint, queuePainted, paintBossFallback } from './stage5-art.js';
 
 const BOSS_KEYS = ['s5agin', 's5balt', 'aginorPortrait'];
 
 export function paintBossIfIdle(scene) {
-  if (!scene || !BOSS_KEYS.some(k => !scene.textures?.exists?.(k))) return;
+  if (!canPaint(scene) || !BOSS_KEYS.some(k => !scene.textures.exists(k))) return;
   if (scene._s5bossArt && scene.load?.isLoading?.()) return;
   paintBossFallback(scene);
 }

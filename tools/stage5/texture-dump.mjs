@@ -25,6 +25,8 @@ function snapshot(label) {
     diagnostics: { gamePaused: game.isPaused, paused: scene.paused, pauseReasons: Array.from(scene.pauseReasons || []),
       hp: scene.riley.hp, state: scene.riley.state, x: scene.riley.x, y: scene.riley.y, bossHp: scene.boss?.hp,
       p2t: scene.boss?.p2t, beat: scene.kit?.arena?.beat, enemies: scene.enemies.map(e => ({ type: e.type, hp: e.hp, state: e.state, x: e.x, y: e.y })) },
+    heavy: entries.filter(e => /^(bg[56]|story[56]|s5agin|s5balt|aginorPortrait|loial-|riley3|crate)/.test(e.key)).map(e => ({
+      key: e.key, bytes: e.sources.reduce((n, s) => n + s.bytes, 0), canvas: e.sources.some(s => s.canvas) })),
     sourceBytes: entries.reduce((n, e) => n + e.sources.reduce((n, s) => n + s.bytes, 0), 0),
     colorBytes: entries.reduce((n, e) => n + e.sources.filter(s => s.kind === 'source').reduce((n, s) => n + s.bytes, 0), 0),
     glBytes: gl.reduce((n, s) => n + s.bytes, 0), gl, entries };
@@ -66,9 +68,12 @@ for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
       const bossPeak = bossSamples.reduce((a, b) => b.sourceBytes > a.sourceBytes ? b : a, bossSamples[0] || null);
       const run = { engine, stage, errors, progression: samples.map(({ entries, gl, ...s }) => s), peak, glPeak, bossPeak };
       result.runs.push(run);
+      const zones = samples.map(s => ({ label: s.label, sourceMiB: +(s.sourceBytes / 2 ** 20).toFixed(3),
+        heavyMiB: +((s.heavy || []).reduce((n, h) => n + h.bytes, 0) / 2 ** 20).toFixed(3),
+        keys: (s.heavy || []).map(h => h.key + (h.canvas ? '*' : '')).sort() }));
       console.log(JSON.stringify({ engine, stage, sourceMiB: peak.sourceBytes / 2 ** 20, colorMiB: peak.colorBytes / 2 ** 20,
         glMiB: glPeak.glBytes / 2 ** 20, bossSourceMiB: bossPeak ? bossPeak.sourceBytes / 2 ** 20 : null,
-        bossLabel: bossPeak?.label || null, reachedClear: samples.some(s => s.clearShown), errors }));
+        bossLabel: bossPeak?.label || null, reachedClear: samples.some(s => s.clearShown), errors, zones }));
       // Check restart residency in the same TextureManager rather than a fresh browser.
       if (stage === 4) {
         await page.evaluate(() => { window.__stage.scene.restart({ stage: 5, autostart: true, story: false }); window.__game.loop.start(window.__game.step.bind(window.__game)); });
