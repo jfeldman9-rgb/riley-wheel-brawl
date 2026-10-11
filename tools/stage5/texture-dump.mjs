@@ -57,7 +57,19 @@ for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
           const s = window.__stage;
           return { tag: `${s.zoneI}/${s.boss?.phase || 0}/${!!s.kit?.arena?.frozen}/${!!s.ended}`, done: s.clearShown };
         });
-        if (!seen.has(state.tag) || state.done) { seen.add(state.tag); samples.push(await page.evaluate(snapshot, state.tag)); }
+        if (!seen.has(state.tag) || state.done) {
+          seen.add(state.tag);
+          // The zone index moves after the kit streams. Let that sync, and any plate
+          // fetch it started, finish before the sample so the residency is settled.
+          await page.evaluate(async () => {
+            const s = window.__stage, L = s?.load;
+            const sync = () => s?.kit?.backdrops?.sync?.();
+            sync();
+            if (L?.isLoading?.()) await new Promise(resolve => { L.once('complete', resolve); setTimeout(resolve, 8000); });
+            sync();
+          });
+          samples.push(await page.evaluate(snapshot, state.tag));
+        }
         if (state.done) break;
       }
       samples.push(await page.evaluate(snapshot, 'final'));
@@ -69,6 +81,7 @@ for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
       const run = { engine, stage, errors, progression: samples.map(({ entries, gl, ...s }) => s), peak, glPeak, bossPeak };
       result.runs.push(run);
       const zones = samples.map(s => ({ label: s.label, sourceMiB: +(s.sourceBytes / 2 ** 20).toFixed(3),
+        glMiB: +(s.glBytes / 2 ** 20).toFixed(3),
         heavyMiB: +((s.heavy || []).reduce((n, h) => n + h.bytes, 0) / 2 ** 20).toFixed(3),
         keys: (s.heavy || []).map(h => h.key + (h.canvas ? '*' : '')).sort() }));
       console.log(JSON.stringify({ engine, stage, sourceMiB: peak.sourceBytes / 2 ** 20, colorMiB: peak.colorBytes / 2 ** 20,
