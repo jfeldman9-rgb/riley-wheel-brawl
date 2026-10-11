@@ -36,7 +36,7 @@ for (const to of [1, 2, 3, 4, 5, 6]) test(`6 → ${to}: variant restoration inva
   const compact = to >= 5, keys = new Set(['riley-0', 'riley-0_nl']), deleted = [], atlas = [], images = [], removedAnims = [];
   const scene = { loadedStage: to, cache: { json: { get: () => ({ pages: ['riley-0'], anims: [{ name: 'riley_walk' }] }) } },
     textures: { exists: k => keys.has(k), get: () => ({ dataSource: [{ image: { src: 'http://localhost/assets/stage5/normals/riley-0_n.webp' } }] }), remove(k) { keys.delete(k); deleted.push(k); } },
-    anims: { exists: () => true, remove: k => removedAnims.push(k) }, load: { atlas: row => atlas.push(row), image: (...a) => images.push(a) } };
+    anims: { exists: () => true, get: k => ({ destroy() { removedAnims.push(k); } }), remove: k => removedAnims.push(k) }, load: { atlas: row => atlas.push(row), image: (...a) => images.push(a) } };
   queueCharPages(scene, ['riley']);
   if (compact) { assert.deepEqual(deleted, []); assert.deepEqual(atlas, []); assert.deepEqual(images, []); assert.deepEqual(removedAnims, []); }
   else { assert.deepEqual(deleted, ['riley-0', 'riley-0_nl']); assert.deepEqual(removedAnims, ['riley_walk']); assert.equal(atlas.length, 1); assert.equal(images.length, 1); assert.equal(atlas[0].normalMap, 'assets/chars/riley-0_n.webp'); assert.equal(images[0][1], 'assets/chars/riley-0_nl.webp'); }

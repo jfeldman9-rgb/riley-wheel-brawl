@@ -62,7 +62,7 @@ export function queueStage3(scene) {
   const cleanup = () => {
     for (const [event, fn] of pending) L.off?.(event, fn);
     pending.length = 0;
-    L.off?.('complete', cleanup); L.off?.('loaderror', cleanup);
+    L.off?.('complete', cleanup);
     scene.events?.off('shutdown', cleanup);
     scene.stage3LoadCleanup = null;
   };
@@ -76,7 +76,7 @@ export function queueStage3(scene) {
   if (pending.length) {
     scene.stage3LoadCleanup = cleanup;
     scene.events?.once('shutdown', cleanup);
-    L.on?.('complete', cleanup); L.on?.('loaderror', cleanup);
+    L.on?.('complete', cleanup);
   }
 }
 

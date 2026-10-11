@@ -404,7 +404,7 @@ export function playTrack(id, opts = {}) {
   loadMusicBuffer(T).then(buf => { if (buf && tracks[id] === T && currentTrack === id && musicOn) startBuffer(T, prev ? fade : 0.4); });
 }
 /** what the backend is playing (or will play once decoded): for tests and the perf panel */
-export function musicState() { return { current: currentTrack, wanted: wantedTrack, on: musicOn, decoded: Object.keys(tracks).filter(k => tracks[k].buf) }; }
+export function musicState() { return { current: currentTrack, wanted: wantedTrack, on: musicOn, decoded: Object.keys(tracks).filter(k => tracks[k].buf), compressed: Object.keys(musicBytes) }; }
 /** after a user gesture: retry a stream element the browser refused to autoplay */
 function resumeMusic() {
   if (audioHidden) return;
@@ -490,7 +490,6 @@ function dropClip(id) {
 /** Drop decoded lines the next stage does not play. A line that is sounding or queued stays until it ends. Shared VOICE clips stay cached. */
 export function releaseClips(ids) { if (ids) for (const id of ids) dropClip(id); }
 export function residentClipIds() { return Object.keys(clips); }
-export function residentMusicIds() { return Object.keys(musicBytes); }
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
 export function say(id, onCaption, interrupt = true) {
   const cap = Object.prototype.hasOwnProperty.call(VOICE, id) ? VOICE[id] : Object.prototype.hasOwnProperty.call(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : moreVoice[id] || null;

@@ -22,7 +22,8 @@ export function silence(music) {
 export function installCutscenes({ root = globalThis, stages = STAGES, Scene = Stage1, query = q, player, seen } = {}) {
   if (!root?.document || root.__rwbCutscenes) return root?.__rwbCutscenes || null;
   player = player || new CutscenePlayer(root);
-  seen = seen || createSeen(root.sessionStorage);
+  let st; try { st = root.sessionStorage; } catch {}
+  seen = seen || createSeen(st);
   const api = root.__rwbCutscenes = { player, seen, plays: [] };
   const gesture = () => player.bless();
   for (const ev of ['touchend', 'click', 'keydown']) root.addEventListener?.(ev, gesture, true);
@@ -54,6 +55,9 @@ export function installCutscenes({ root = globalThis, stages = STAGES, Scene = S
       done: how => {
         if (stub.done) return;
         stub.done = true; scene.events?.off?.('shutdown', off);
+        // Game.step did not poll pads under the video. Consume a held Start while this
+        // clip still owns onPress, before that edge can toggle manual pause.
+        try { scene.inp?.pollPad?.(); } catch {}
         unpause();
         if (scene.cutscene === stub) scene.cutscene = null;
         scene.setPauseReason('cutscene', false);

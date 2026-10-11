@@ -9,6 +9,7 @@ import { freeStory6 } from './stage6-art.js';
 import { queueStage6Painted } from './stage6-paint.js';
 import { preloadClips, releaseClips, MUSIC } from './audio.js';
 import { makeCharAnims, releaseChars } from './assets.js';
+import { ensureStage4Anims } from './stage4-art-thug.js';
 import { STAGE6_VOICES, VOICE_FILES, stage6Say, sfxCue } from './stage6-voice.js';
 import { installStage6SceneHooks, restoreStage6Hooks, holdDown, randCtx, warmRand } from './stage6-lifecycle.js';
 import { installRandBless, removeRandBless } from './rand-call-cutscene.js';
@@ -70,6 +71,7 @@ export class Stage6Kit {
     this.s.fires = [];
     this.s.bands = VOLLEY_BANDS;
     if (this.s.metas && this.s.anims?.create) Object.assign(this.s.metas, makeCharAnims(this.s, ['cutthroat']));
+    ensureStage4Anims(this.s);
     installRandBless(this.s);
     if (this.s.hud) this._unbindRand = bindRandLabel(this.s.hud);
     if (q.get('nopower') === '1' || this.s.stageData?.noPower) this.s.noPower = true;

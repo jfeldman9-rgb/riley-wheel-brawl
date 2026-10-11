@@ -43,7 +43,7 @@ for (const stage of [1, 4, 5, 6]) test(`switch to Stage ${stage} evicts the oppo
   const rows = [];
   queueCharPages({ loadedStage: stage, cache: { json: { get: () => ({ pages: ['riley-0'], anims: [{ name: 'riley_walk' }] }) } },
     textures: { exists: k => keys.has(k), get: () => ({ dataSource: [{ image: { src: url } }] }), remove(k) { removed.push(k); keys.delete(k); } },
-    anims: { exists: k => anims.has(k), remove: k => anims.delete(k) }, load: { atlas: r => rows.push(r), image() {} } }, ['riley']);
+    anims: { exists: k => anims.has(k), get: k => (anims.has(k) ? { destroy() { anims.delete(k); } } : undefined), remove: k => anims.delete(k) }, load: { atlas: r => rows.push(r), image() {} } }, ['riley']);
   assert.deepEqual(removed, ['riley-0', 'riley-0_nl']);
   assert.equal(anims.size, 0, 'animations must not retain frames from the freed texture');
   assert.equal(rows[0].normalMap, `${compact ? 'assets/stage5/normals' : 'assets/chars'}/riley-0_n.webp`);

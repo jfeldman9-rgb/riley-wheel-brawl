@@ -412,3 +412,68 @@ test('stage 6: after the clip, the story panels drop the four lines it voices', 
   const src = readFileSync('src/stage6.js', 'utf8');
   assert.match(src, /startCutscene\(story6Script\(scene\.clipShown\)/);
 });
+
+test('Safari Block All Cookies: a throwing sessionStorage does not stop the opening clip', () => {
+  const e = env();
+  Object.defineProperty(e.root, 'sessionStorage', { configurable: true, get() { throw new Error('SecurityError'); } });
+  const calls = [];
+  const stages = { 2: { start: s => calls.push(['start', s.clipShown]) } };
+  let api;
+  assert.doesNotThrow(() => { api = installCutscenes({ root: e.root, stages, Scene: class {}, query: e.query }); });
+  const s = fakeScene(2);
+  stages[2].start(s);
+  assert.equal(e.video.src, clip('stage2'));
+  assert.equal(api.seen.has(2), true, 'seen memory still works without storage');
+  e.video.fire('ended');
+  assert.deepEqual(calls, [['start', null]]);
+  assert.equal(e.overlay(), undefined);
+});
+
+test('Start held through the boss video is consumed before resume and does not pause', async () => {
+  const { Input } = await import('../src/input.js');
+  const buttons = Array.from({ length: 16 }, () => ({ pressed: false }));
+  const pad = { id: 'boss-pad', index: 0, axes: [0, 0], buttons };
+  const pads = [pad];
+  const saved = { navigator: globalThis.navigator, document: globalThis.document, matchMedia: globalThis.matchMedia, addEventListener: globalThis.addEventListener };
+  globalThis.matchMedia = () => ({ matches: false });
+  globalThis.document = { getElementById: () => null, querySelectorAll: () => [], body: { classList: { add() {} } } };
+  globalThis.addEventListener = () => {};
+  Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { getGamepads: () => pads } });
+  try {
+    const inp = new Input();
+    inp.update(1 / 60);
+    const { e, Scene } = rig();
+    e.root.navigator.getGamepads = () => pads;
+    const s = fakeScene(1);
+    s.inp = inp;
+    s.onPress = function (a) {
+      if (this.cutscene) return this.cutscene.press(a);
+      if ((a === 'start' || a === 'pause') && this.started && !this.ended && !this.gameOver) this.setPauseReason('manual', !this.pauseReasons.has('manual'));
+    };
+    inp.on('press', a => s.onPress(a));
+    Scene.prototype.startBoss.call(s);
+    assert.equal(e.video.src, clip('stage1'));
+    assert.equal(s.game.isPaused, true);
+    e.playing(0.5);
+    e.advance(GUARD_MS + 20);
+    assert.ok(e.overlay(), 'still playing when Start goes down');
+    buttons[9].pressed = true;
+    e.playing(0.5);
+    e.advance(250);
+    assert.equal(s.cutscene, null);
+    assert.equal(s.game.isPaused, false);
+    assert.equal(s.pauseReasons.has('manual'), false, 'the skip edge must not pause the fight');
+    inp.update(1 / 60);
+    assert.equal(s.pauseReasons.has('manual'), false, 'the button is still held, but the edge was already consumed');
+    buttons[9].pressed = false;
+    inp.update(1 / 60);
+    buttons[9].pressed = true;
+    inp.update(1 / 60);
+    assert.equal(s.pauseReasons.has('manual'), true, 'a later Start press still pauses');
+  } finally {
+    globalThis.document = saved.document;
+    globalThis.matchMedia = saved.matchMedia;
+    globalThis.addEventListener = saved.addEventListener;
+    Object.defineProperty(globalThis, 'navigator', { configurable: true, value: saved.navigator });
+  }
+});

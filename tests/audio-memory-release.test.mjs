@@ -88,7 +88,7 @@ globalThis.fetch = async url => {
   return { ok: true, arrayBuffer: async () => ({ id }) };
 };
 
-const { preloadClips, releaseClips, residentClipIds, residentMusicIds, say, playTrack, musicState, unlock, installAudioLifecycle, stopSceneAudio } = await import('../src/audio.js');
+const { preloadClips, releaseClips, residentClipIds, say, playTrack, musicState, unlock, installAudioLifecycle, stopSceneAudio } = await import('../src/audio.js');
 const { Stage1 } = await import('../src/stage1.js');
 const { STAGE2_VOICES } = await import('../src/stage2.js');
 const { STAGE3_VOICES } = await import('../src/stage3.js');
@@ -145,31 +145,31 @@ test('decoded music drops its compressed fetch and can be decoded again after ev
   playTrack('title', { fade: 0 });
   await flush();
   assert.equal(count('music-title'), 1, 'in-flight decode shares one fetch');
-  assert.ok(residentMusicIds().includes('title'));
+  assert.ok(musicState().compressed.includes('title'));
   takeWait('music-title').ok();
   await flush();
   assert.equal(playingMusic('music-title').length, 1);
   assert.ok(musicState().decoded.includes('title'));
-  assert.ok(!residentMusicIds().includes('title'), 'compressed bytes released after decode');
+  assert.ok(!musicState().compressed.includes('title'), 'compressed bytes released after decode');
 
   playTrack('stage2', { fade: 0 });
   await flush(); takeWait('music-stage2').ok(); await flush();
   playTrack('boss2', { fade: 0 });
   await flush(); takeWait('music-boss2').ok(); await flush();
   assert.ok(!musicState().decoded.includes('title'), 'oldest decoded track was evicted');
-  assert.deepEqual(residentMusicIds(), [], 'settled tracks keep no compressed buffer');
+  assert.deepEqual(musicState().compressed, [], 'settled tracks keep no compressed buffer');
 
   const before = count('music-title');
   playTrack('title', { fade: 0 });
   playTrack('title', { fade: 0 });
   await flush();
   assert.equal(count('music-title'), before + 1, 'evicted track refetches once');
-  assert.ok(residentMusicIds().includes('title'));
+  assert.ok(musicState().compressed.includes('title'));
   takeWait('music-title').ok();
   await flush();
   assert.equal(playingMusic('music-title').length, 2, 'evicted track plays again');
   assert.ok(musicState().decoded.includes('title'));
-  assert.ok(!residentMusicIds().includes('title'));
+  assert.ok(!musicState().compressed.includes('title'));
 });
 
 test('a failed music decode releases the compressed buffer and a later play fetches again', async () => {
@@ -179,7 +179,7 @@ test('a failed music decode releases the compressed buffer and a later play fetc
   await flush();
   takeWait('music-boss3').fail();
   await flush();
-  assert.ok(!residentMusicIds().includes('boss3'));
+  assert.ok(!musicState().compressed.includes('boss3'));
   assert.ok(!musicState().decoded.includes('boss3'));
   playTrack('boss3', { fade: 0 });
   await flush();
@@ -187,7 +187,7 @@ test('a failed music decode releases the compressed buffer and a later play fetc
   takeWait('music-boss3').ok();
   await flush();
   assert.equal(playingMusic('music-boss3').length, 1);
-  assert.ok(!residentMusicIds().includes('boss3'));
+  assert.ok(!musicState().compressed.includes('boss3'));
 });
 
 test('a stale music decode cannot drop the compressed fetch of a new context', async () => {
@@ -198,22 +198,22 @@ test('a stale music decode cannot drop the compressed fetch of a new context', a
   const stale = takeWait('music-stage2');
   game.events.emit('destroy'); life.destroy();
   await flush();
-  assert.deepEqual(residentMusicIds(), []);
+  assert.deepEqual(musicState().compressed, []);
   game = { events: emitter() };
   life = installAudioLifecycle(game);
   unlock();
   playTrack('stage2', { fade: 0 });
   await flush();
   assert.equal(count('music-stage2'), 2);
-  assert.ok(residentMusicIds().includes('stage2'));
+  assert.ok(musicState().compressed.includes('stage2'));
   stale.ok();
   await flush();
   assert.equal(playingMusic('music-stage2').length, 0, 'stale decode stays stopped');
-  assert.ok(residentMusicIds().includes('stage2'), 'stale epoch must not delete the new fetch');
+  assert.ok(musicState().compressed.includes('stage2'), 'stale epoch must not delete the new fetch');
   takeWait('music-stage2').ok();
   await flush();
   assert.equal(playingMusic('music-stage2').length, 1);
-  assert.ok(!residentMusicIds().includes('stage2'));
+  assert.ok(!musicState().compressed.includes('stage2'));
 });
 
 test('leaving a stage releases idle Twix and power-up clips and keeps the stage lines that stay', async () => {
