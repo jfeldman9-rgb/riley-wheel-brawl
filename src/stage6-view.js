@@ -32,7 +32,7 @@ export function createStage6View(scene) {
       far?.setScrollFactor?.(0); far?.setDepth?.(-100); far?.setDisplaySize?.(VW, LANE_TOP + 8);
       if (far) owned.push(far);
       scene.backdropLit = scene.backdropLit || [];
-      const lit = o => { if (o) { o.setLighting?.(true); scene.backdropLit.push(o); owned.push(o); } };
+      const lit = o => { if (o) { o.setLighting?.(scene.backdropIsLit !== false); scene.backdropLit.push(o); owned.push(o); } };
       const zones = STAGE6.zones;
       const flat = [];
       PLATES6.forEach((key, i) => {
@@ -107,7 +107,7 @@ export function createStage6View(scene) {
     showBackdrop(key) {
       if (!scene.textures?.exists?.(key) || owned.some(o => keyOf(o) === key)) return;
       const zones = STAGE6.zones;
-      const lit = o => { if (o) { o.setLighting?.(true); scene.backdropLit = scene.backdropLit || []; scene.backdropLit.push(o); owned.push(o); } };
+      const lit = o => { if (o) { o.setLighting?.(scene.backdropIsLit !== false); scene.backdropLit = scene.backdropLit || []; scene.backdropLit.push(o); owned.push(o); } };
       const pi = PLATES6.indexOf(key);
       if (pi >= 0) {
         if (!isPainted(scene, key)) {
