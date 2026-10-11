@@ -1,7 +1,7 @@
 let ctx = null, master, music, sfxBus, voiceBus, duckG, comp, noiseBuf;
 let muted = false, musicOn = true, musicEl = null, musicSrc = null;
 const clips = Object.create(null), gates = Object.create(null), oneShots = new Map();
-let voiceSrc = null, voiceRequest = 0, voicePending = false;
+let voiceSrc = null, voiceRequest = 0, voicePending = false, voiceClip = null;
 let loopSrc = null, loopToken = 0, loopId = null;
 const moreVoice = Object.create(null);
 // Stage lines with no mp3 yet. say() still captions; loadClip does not fetch.
@@ -150,7 +150,7 @@ function disposeAudio() {
     if (T.el) { T.el.removeAttribute?.('src'); T.el.load?.(); }
     delete tracks[T.id];
   }
-  for (const cache of [clips, musicBytes]) for (const key of Object.keys(cache)) delete cache[key];
+  for (const key of Object.keys(clips)) delete clips[key];
   for (const node of [master, music, sfxBus, voiceBus, duckG, comp]) node?.disconnect();
   const oldContext = ctx; ctx = null;
   master = music = sfxBus = voiceBus = duckG = comp = noiseBuf = musicEl = musicSrc = null;
@@ -270,7 +270,7 @@ export const MUSIC = {
   stage5: { url: 'assets/audio/music-stage5.mp3', loopStart: 0.25, loopEnd: 40.25, gain: 1 },
   boss5: { url: 'assets/audio/music-boss5.mp3', loopStart: 0.25, loopEnd: 32, gain: 0.94 },
 };
-const tracks = Object.create(null), musicBytes = Object.create(null);
+const tracks = Object.create(null);
 let currentTrack = null, wantedTrack = 'stage1';
 /** equal-power fade on a GainNode, built from short linear ramps (works on every WebAudio implementation) */
 function fadeGain(param, to, secs) {
@@ -304,9 +304,11 @@ function loadMusicBuffer(T) {
   if (T.buf) return Promise.resolve(T.buf);
   if (T.loading) return T.loading;
   const audioContext = ctx, epoch = audioEpoch;
-  return (T.loading = (musicBytes[T.id] || (musicBytes[T.id] = fetch(T.M.url).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)))
-    .then(b => b ? new Promise(res => { const p = audioContext.decodeAudioData(b.slice ? b.slice(0) : b, res, () => res(null)); if (p && p.catch) p.catch(() => res(null)); }) : null)
-    .catch(() => null).then(buf => { T.loading = null; if (epoch !== audioEpoch) return null; if (!buf) delete musicBytes[T.id]; T.buf = buf; return buf; }));
+  // Only this chain holds the compressed bytes, and T.loading stops a second fetch from starting. They are dropped once
+  // the decode settles, so an evicted track is fetched again the next time it is selected.
+  return (T.loading = fetch(T.M.url).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)
+    .then(b => b ? new Promise(res => { const p = audioContext.decodeAudioData(b, res, () => res(null)); if (p && p.catch) p.catch(() => res(null)); }) : null)
+    .catch(() => null).then(buf => { T.loading = null; if (epoch !== audioEpoch) return null; T.buf = buf; return buf; }));
 }
 function startBuffer(T, fade) {
   if (!T.buf || T.playing || !ctx) return;
@@ -457,8 +459,10 @@ export function setVoiceFiles(all, present) {
   for (const id of all) if (on.has(id)) voiceOff.delete(id); else voiceOff.add(id);
 }
 export function withSfx(fn) { init(); if (ctx && sfxBus) fn(ctx, sfxBus); }
+// A clip is in use while it plays or is requested (a pending say line, or the active loop). Release never frees it.
+const clipInUse = id => id === loopId || (id === voiceClip && (voicePending || voiceSrc !== null));
 /** Drop decoded lines the next stage does not play. Shared VOICE clips stay cached. */
-export function releaseClips(ids) { if (ids) for (const id of ids) delete clips[id]; }
+export function releaseClips(ids) { if (ids) for (const id of ids) if (!clipInUse(id)) delete clips[id]; }
 export function residentClipIds() { return Object.keys(clips); }
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
 export function say(id, onCaption, interrupt = true) {
@@ -466,7 +470,7 @@ export function say(id, onCaption, interrupt = true) {
   if (!cap) return;
   if (!interrupt && (voiceSrc || voicePending)) return cap;
   const request = ++voiceRequest, shouldPlay = !muted;
-  voicePending = shouldPlay;
+  voicePending = shouldPlay; voiceClip = id;
   if (voiceSrc) { stopSource(voiceSrc); resetDuck(); }
   if (onCaption) onCaption(cap[0], cap[1]);
   if (!shouldPlay || muted || request !== voiceRequest) return cap;

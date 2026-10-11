@@ -27,6 +27,9 @@ const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
 const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
 const FIRES = [[0, 244, 382, 2.4, 700], [0, 2036, 446, 2.4, 700], [0, 1156, 573, 1.1, 420]];
 const ZONES = STAGES[1].zones;
+// Power-up and Twix lines (EXTRA_VOICE). dropPower loads them on demand; releaseStage frees them once the run leaves Stage 1.
+const TWIX_VOICES = Object.freeze(['riley_twix_01', ...TWIX_SCRIPT.map(l => l.id)]);
+const STAGE1_EXTRA_VOICES = Object.freeze([...TWIX_VOICES, ...Object.values(POWERS).map(p => p.voice).filter(Boolean)]);
 export const MOON_X = VW * 0.85, MOON_Y = 60;
 export function addMoon(lights) { return lights.addLight(MOON_X, MOON_Y, 1500, 0xa8c0ff, 1.25, 260); }
 export function placeMoon(moon, scrollX) { if (moon) moon.x = scrollX + MOON_X; }
@@ -123,6 +126,7 @@ export class Stage1 extends Phaser.Scene {
     if (toStage !== 2) releaseClips(STAGE2_VOICES);
     if (toStage !== 3) releaseClips(STAGE3_VOICES);
     if (toStage !== 4) releaseClips(STAGE4_VOICES);
+    if (toStage !== 1) releaseClips(STAGE1_EXTRA_VOICES);
   }
   create(data) {
     if (window.__rwbStartup?.failed) return;
@@ -539,7 +543,7 @@ export class Stage1 extends Phaser.Scene {
     const L = this.lights.addLight(x, y - 40, 200, P.color, 1.4, 80);
     const p = { x, y, kind, g, c, L, t: 0, power: true, z: twix ? TWIX_DROP_Z : 0, vz: 0, ready: !twix, pop: twix ? 1 : 0 };
     this.pickups.push(p);
-    preloadClips(twix ? ['riley_twix_01', ...TWIX_SCRIPT.map(l => l.id)] : [P.voice]);
+    preloadClips(twix ? TWIX_VOICES : [P.voice]);
     if (twix) { this.twixDropped = true; sfx.fall(); } else sfx.powerUp();
     this.powers?.dropped.push(kind);
     return p;
