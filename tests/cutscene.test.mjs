@@ -318,11 +318,11 @@ test('shipped clips: every clip the game can play exists, H.264/AAC MP4 with fas
     assert.ok(b.indexOf('avc1') > 0 && b.indexOf('mp4a') > 0, `${id}: H.264 + AAC`);
     const e = status.entries.find(x => x.id === id);
     assert.equal(e.source, 'grok-imagine'); assert.equal(e.placeholder, false);
-    assert.match(e.art.approvedBy, /Jason.*Grok Bot.*2026-10-07/);
+    assert.match(e.art.approvedBy, id === 'stage6' ? /Jason.*Grok Bot.*2026-10-10/ : /Jason.*Grok Bot.*2026-10-07/);
     assert.match(e.art.sourceSha256, /^[0-9a-f]{64}$/);
     assert.equal(e.bytes[mp4], size);
   }
-  assert.ok(total < 22_000_000, `total ${total}`);
+  assert.ok(total < 25_000_000, `total ${total}`);   // the audit's cutscenes.clips budget; Stage 6's clip took it past the old 22 MB margin
   assert.equal(existsSync('assets/cutscenes/stage5.mp4'), false, 'Stage 5 is not live: its clip does not ship yet');
   const a = audit();
   assert.equal(a.preFight.inventoryStatus, 'PASS');
@@ -366,4 +366,49 @@ test('the video sits on the game canvas rect (iPhone shell offset) and follows r
   e.video.fire('ended'); assert.equal((e.captured.resize || []).length, 0, 'resize listener removed');
   p.play(['stage4'], { frame: () => { throw new Error('no canvas'); } });
   assert.equal(e.video.style.width, '100%'); assert.equal(e.video.style.position, 'static');
+});
+
+// ---- Stage 6 opening clip (go-live) ----
+function rig6(query = '') {
+  const e = env({ query }); const calls = [];
+  const stages = { 6: { start: s => calls.push(['start', 6, s.clipShown, s.paused]) } };
+  const api = installCutscenes({ root: e.root, stages, Scene: class {}, query: e.query });
+  return { e, api, stages, calls };
+}
+
+test('stage 6: the opening clip plays before the story panels, skips on a press, and only once per session', () => {
+  assert.deepEqual(STAGE_CLIPS[6], ['stage6']);
+  const { e, api, stages, calls } = rig6();
+  const s = fakeScene(6); stages[6].start(s);
+  assert.equal(e.video.src, clip('stage6')); assert.equal(e.video.poster, 'assets/cutscenes/stage6.jpg');
+  assert.deepEqual(calls, []); assert.equal(s.paused, true);
+  for (let i = 0; i < 4; i++) { e.playing(); e.advance(250); }
+  s.onPress('attack');
+  assert.deepEqual(calls, [['start', 6, 6, false]], 'skipped after it played: the panels learn the clip was shown');
+  assert.equal(e.overlay(), undefined);
+  const again = fakeScene(6); stages[6].start(again);
+  assert.deepEqual(calls[1], ['start', 6, null, false], 'a restart goes straight to the panels with every line');
+  assert.deepEqual(api.plays, [6]);
+});
+
+test('stage 6: a clip that never decodes (404 / error / stall) counts as not shown, so the panels keep every line', () => {
+  for (const fail of ['error', 'stall']) {
+    const { e, stages, calls } = rig6();
+    stages[6].start(fakeScene(6));
+    if (fail === 'error') e.video.fire('error'); else e.advance(START_MS + 300);
+    assert.deepEqual(calls, [['start', 6, null, false]], fail);
+    assert.equal(e.overlay(), undefined); assert.equal(e.timers.size, 0);
+  }
+  const off = rig6('?demo=1'); off.stages[6].start(fakeScene(6));
+  assert.deepEqual(off.calls, [['start', 6, null, false]]); assert.equal(off.e.video, undefined, 'bots never get a video');
+});
+
+test('stage 6: after the clip, the story panels drop the four lines it voices', async () => {
+  const { STORY6_SCRIPT, STORY6_CLIP_LINES, story6Script } = await import('../src/stage6.js');
+  assert.deepEqual(story6Script(null), STORY6_SCRIPT);
+  assert.deepEqual(story6Script(4), STORY6_SCRIPT);
+  assert.deepEqual(story6Script(6).map(l => l.id), ['st6_story_05']);
+  for (const id of STORY6_CLIP_LINES) assert.ok(STORY6_SCRIPT.some(l => l.id === id), id);
+  const src = readFileSync('src/stage6.js', 'utf8');
+  assert.match(src, /startCutscene\(story6Script\(scene\.clipShown\)/);
 });

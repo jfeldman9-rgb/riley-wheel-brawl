@@ -252,6 +252,35 @@
     "likeness": "Riley appears only from behind; no real person's face is depicted.",
     "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-07"
    }
+  },
+  {
+   "id": "stage6",
+   "files": [
+    "assets/cutscenes/stage6.mp4",
+    "assets/cutscenes/stage6.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/stage6.mp4": "86b56a418ac0f1fc51fd63f010b9d194559e40a6e2bd4f09767a0b512c7abfc0",
+    "assets/cutscenes/stage6.jpg": "543995573edb4534dbace81c9c1686370c397c72a6c79fab5d8bc3c6bd6e505a"
+   },
+   "bytes": {
+    "assets/cutscenes/stage6.mp4": 2851099,
+    "assets/cutscenes/stage6.jpg": 25069
+   },
+   "durationSeconds": 22.549,
+   "placeholder": false,
+   "source": "grok-imagine",
+   "plays": "Stage 6 start, before the story panels (the panels then skip lines 01-04, which the clip voices)",
+   "shows": "The Stone of Tear in a storm, the covered barges at the Maule, Riley at the docks, Rand before Callandor.",
+   "art": {
+    "status": "photoreal generated video (Grok Imagine): four shots cut with 0.5 s crossfades, ElevenLabs voice lines st6_story_01-04 mixed in, encoded for the web",
+    "sourceFile": "stage6_intro.mp4 (cut from Grok Imagine shots s1-s4)",
+    "sourceSha256": "86b56a418ac0f1fc51fd63f010b9d194559e40a6e2bd4f09767a0b512c7abfc0",
+    "trimStartSeconds": 0,
+    "encode": "H.264 main 960x540 CRF 29, yuv420p, 24 fps, +faststart, AAC 96k, -14.9 LUFS",
+    "likeness": "Riley and Rand appear only from behind; no real person's face is depicted.",
+    "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-10"
+   }
   }
  ]
 }
