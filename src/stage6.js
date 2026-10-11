@@ -28,6 +28,12 @@ export const STORY6_SCRIPT = Object.freeze([
   { who: 'RILEY', text: "Just don't steal my kills.", panel: 2, id: 'st6_story_05' },
 ]);
 
+// The opening video (assets/cutscenes/stage6.mp4) voices lines 01-04. After it plays, the panels open on line 05.
+export const STORY6_CLIP_LINES = Object.freeze(['st6_story_01', 'st6_story_02', 'st6_story_03', 'st6_story_04']);
+export function story6Script(clipShown) {
+  return clipShown === 6 ? STORY6_SCRIPT.filter(l => !STORY6_CLIP_LINES.includes(l.id)) : STORY6_SCRIPT;
+}
+
 export function queueStage6(scene) {
   const L = scene.load;
   if (!scene.cache?.json?.get?.('cutthroat.A')) L.json('cutthroat.A', 'assets/stage3/chars/cutthroat.anims.json');
@@ -155,7 +161,7 @@ STAGE6.queue = queueStage6;
 STAGE6.start = scene => {
   scene.kit?.start();
   if (q.get('story') === '0' || scene.stageData?.story === false) { scene.music?.set('stage'); freeStory6(scene); return; }
-  const begun = scene.startCutscene(STORY6_SCRIPT, STORY6_PANELS, () => { scene.storyResult = 'end'; scene.music?.set('stage'); freeStory6(scene); });
+  const begun = scene.startCutscene(story6Script(scene.clipShown), STORY6_PANELS, () => { scene.storyResult = 'end'; scene.music?.set('stage'); freeStory6(scene); });
   if (begun === false) freeStory6(scene);
 };
 

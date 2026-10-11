@@ -1,5 +1,5 @@
 // Wires the video cutscenes into the game without touching the counted Stage 1 modules:
-// the intro sequence and the Stage 2-4 clips wrap STAGES[n].start (first title tap / stage entry,
+// the intro sequence and the Stage 2-4 and 6 clips wrap STAGES[n].start (first title tap / stage entry,
 // before the painted story panels); Stage 1's Chieftain clip wraps Stage1.startBoss.
 // While a clip plays the stage is paused through the existing 'cutscene' reason with a stand-in
 // scene.cutscene, so Stage1.onPress routes presses here and the freeze guard's watchdog covers it,
@@ -27,7 +27,8 @@ export function installCutscenes({ root = globalThis, stages = STAGES, Scene = S
   const gesture = () => player.bless();
   for (const ev of ['touchend', 'click', 'keydown']) root.addEventListener?.(ev, gesture, true);
 
-  /** Pause the stage and play `key`'s clips, then run then(). false: nothing played, the caller runs then() itself. */
+  /** Pause the stage and play `key`'s clips, then run then(how, shown). shown: the video actually advanced.
+   *  false: nothing played, the caller runs then() itself. */
   api.playFor = (scene, key, then) => {
     const ids = STAGE_CLIPS[key];
     if (!ids || !cutscenesEnabled(query, root.navigator) || seen.has(key) || player.active || scene.cutscene) return false;
@@ -56,7 +57,7 @@ export function installCutscenes({ root = globalThis, stages = STAGES, Scene = S
         unpause();
         if (scene.cutscene === stub) scene.cutscene = null;
         scene.setPauseReason('cutscene', false);
-        then(how);
+        then(how, stub.i > 0);
       },
     });
     return true;
@@ -64,9 +65,13 @@ export function installCutscenes({ root = globalThis, stages = STAGES, Scene = S
   const wrapStart = (n, key) => {
     const def = stages[n], orig = def?.start;
     if (typeof orig !== 'function' || orig.rwbVideo) return;
-    def.start = Object.assign(scene => { if (!api.playFor(scene, key, () => orig(scene))) return orig(scene); }, { rwbVideo: true });
+    // scene.clipShown tells the story panels which clip really played, so they can drop lines it already voiced.
+    def.start = Object.assign(scene => {
+      scene.clipShown = null;
+      if (!api.playFor(scene, key, (how, shown) => { scene.clipShown = shown ? key : null; orig(scene); })) return orig(scene);
+    }, { rwbVideo: true });
   };
-  wrapStart(1, 'intro'); wrapStart(2, 2); wrapStart(3, 3); wrapStart(4, 4);
+  wrapStart(1, 'intro'); wrapStart(2, 2); wrapStart(3, 3); wrapStart(4, 4); wrapStart(6, 6);
   const P = Scene?.prototype, startBoss = P?.startBoss;
   if (typeof startBoss === 'function' && !startBoss.rwbVideo) {
     P.startBoss = Object.assign(function (...a) {
