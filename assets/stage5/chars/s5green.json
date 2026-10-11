@@ -1,0 +1,141 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 237,
+    "w": 209,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 296,
+    "w": 544
+   },
+   "spriteSourceSize": {
+    "h": 237,
+    "w": 209,
+    "x": 172,
+    "y": 48
+   },
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 223,
+    "w": 367,
+    "x": 352,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 296,
+    "w": 544
+   },
+   "spriteSourceSize": {
+    "h": 223,
+    "w": 367,
+    "x": 170,
+    "y": 62
+   },
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 199,
+    "w": 274,
+    "x": 931,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 296,
+    "w": 544
+   },
+   "spriteSourceSize": {
+    "h": 199,
+    "w": 274,
+    "x": 120,
+    "y": 87
+   },
+   "trimmed": true
+  },
+  "3": {
+   "frame": {
+    "h": 275,
+    "w": 308,
+    "x": 1207,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 296,
+    "w": 544
+   },
+   "spriteSourceSize": {
+    "h": 275,
+    "w": 308,
+    "x": 109,
+    "y": 11
+   },
+   "trimmed": true
+  },
+  "4": {
+   "frame": {
+    "h": 240,
+    "w": 139,
+    "x": 211,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 296,
+    "w": 544
+   },
+   "spriteSourceSize": {
+    "h": 240,
+    "w": 139,
+    "x": 215,
+    "y": 45
+   },
+   "trimmed": true
+  },
+  "5": {
+   "frame": {
+    "h": 242,
+    "w": 208,
+    "x": 721,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 296,
+    "w": 544
+   },
+   "spriteSourceSize": {
+    "h": 242,
+    "w": 208,
+    "x": 170,
+    "y": 43
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage5/process_art.py",
+  "drawScale": 1.6102,
+  "format": "RGBA8888",
+  "image": "s5green.webp",
+  "origin": [
+   0.5,
+   0.96
+  ],
+  "res": 1.0,
+  "scale": "1",
+  "screenH": 380,
+  "size": {
+   "h": 275,
+   "w": 1515
+  }
+ }
+}

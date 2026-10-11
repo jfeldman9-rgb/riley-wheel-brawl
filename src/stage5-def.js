@@ -4,7 +4,7 @@ import { sfx } from './audio.js';
 import { stage5Say } from './stage5-voice.js';
 
 export const STAGE5_CHARS = Object.freeze(['riley', 'grunt', 'spear', 'hound']);
-export const STAGE5_TEXTURES = Object.freeze(['bg5far', 'bg5mid', 'bg5mid2', 'bg5mid3', 'bg5mid4', 'bg5floor', 'bg5floor2', 'bg5floor3', 's5flare', 's5stalk', 's5pod', 's5agin', 's5balt', 's5green', 'story5p1', 'story5p2', 'story5p3', 'aginorPortrait', 'crate', 'planks', 'ribbon']);
+export const STAGE5_TEXTURES = Object.freeze(['bg5far', 'bg5mid', 'bg5mid2', 'bg5mid3', 'bg5mid4', 'bg5floor', 'bg5floor2', 'bg5floor3', 's5flare', 's5mist', 's5stalk', 's5pod', 's5agin', 's5balt', 's5green', 's5tree', 's5deco', 's5garden', 's5thorn', 's5seep', 's5spore', 's5cloud', 's5tether', 's5hand', 's5ring', 'story5p1', 'story5p2', 'story5p3', 'aginorPortrait', 'crate', 'planks', 'ribbon']);
 
 export const LAYOUT5 = Object.freeze({
   sunKeys: Object.freeze([{ x: 0, ambient: 0x5c2820 }, { x: 1800, ambient: 0x3a1814 }, { x: 3900, ambient: 0x2a6848 }]),

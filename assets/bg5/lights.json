@@ -1,0 +1,46 @@
+{
+ "note": "Tar cracks (plate 2) and the cave mouth (plate 3). The view shows the nearest two.",
+ "capOnScreen": 2,
+ "lights": [
+  {
+   "plate": 2,
+   "x": 2911,
+   "y": 549,
+   "color": "0xff7040",
+   "r": 220,
+   "i": 0.9
+  },
+  {
+   "plate": 2,
+   "x": 3280,
+   "y": 451,
+   "color": "0xff7040",
+   "r": 220,
+   "i": 0.9
+  },
+  {
+   "plate": 2,
+   "x": 3528,
+   "y": 421,
+   "color": "0xff7040",
+   "r": 220,
+   "i": 0.9
+  },
+  {
+   "plate": 3,
+   "x": 4747,
+   "y": 539,
+   "color": "0xd8e080",
+   "r": 340,
+   "i": 1.15
+  },
+  {
+   "plate": 3,
+   "x": 4982,
+   "y": 397,
+   "color": "0xd8e080",
+   "r": 340,
+   "i": 1.15
+  }
+ ]
+}

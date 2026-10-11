@@ -54,7 +54,7 @@ export class Stage5Kit {
     return {
       sunKeys: (raw.sunKeys || LAYOUT5.sunKeys).map(k => ({ x: k.x, ambient: amb(k.ambient) })),
       lurks: raw.lurks || LAYOUT5.lurks, pods: raw.pods || LAYOUT5.pods,
-      trees: raw.trees, thorns: raw.thorns || LAYOUT5.thorns, seeps: raw.seeps || LAYOUT5.seeps,
+      trees: raw.trees, thorns: raw.thorns || LAYOUT5.thorns, seeps: raw.seeps || LAYOUT5.seeps, deco: raw.deco || [], garden: raw.garden || [],
     };
   }
   build() {

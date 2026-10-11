@@ -1,0 +1,59 @@
+{
+ "frames": {
+  "arch": {
+   "frame": {
+    "h": 129,
+    "w": 280,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 133,
+    "w": 284
+   },
+   "spriteSourceSize": {
+    "h": 129,
+    "w": 280,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  },
+  "bloom": {
+   "frame": {
+    "h": 151,
+    "w": 273,
+    "x": 282,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 155,
+    "w": 277
+   },
+   "spriteSourceSize": {
+    "h": 151,
+    "w": 273,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage5/process_art.py",
+  "drawScale": 1,
+  "format": "RGBA8888",
+  "image": "s5garden.webp",
+  "origin": [
+   0.5,
+   1
+  ],
+  "scale": "1",
+  "size": {
+   "h": 151,
+   "w": 555
+  }
+ }
+}

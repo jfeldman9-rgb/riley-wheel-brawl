@@ -6,6 +6,8 @@ import { ensureStage4Anims } from './stage4-art-thug.js';
 import { releaseChars } from './assets.js';
 import { createPlateStream } from './zone-stream.js';
 import { finishGrab, queueBossArt, queueLoial } from './stage5-demand.js';
+import { queuePlate, syncSheets } from './stage5-paint.js';
+import { paintCast } from './stage5-art-cast.js';
 
 export function clearStage5Hazards(kit) {
   const s = kit.s;
@@ -44,13 +46,17 @@ function hook(kit, object, key, wrap) {
 }
 export function bootStage5Memory(kit) {
   ensureStage4Anims(kit.s);
-  kit.backdrops = createPlateStream(kit.s, 5, kit.view, null);
+  kit.backdrops = createPlateStream(kit.s, 5, kit.view, (key, done) => queuePlate(kit.s, key, done));
   kit.backdrops.sync();
+  syncSheets(kit.s);
+  paintCast(kit.s);
 }
 export function installStage5SceneHooks(kit) {
   const s = kit.s;
   hook(kit, kit, 'update', original => function(dt) {
     this.backdrops?.sync?.();
+    syncSheets(this.s);
+    paintCast(this.s);
     if (this.s.zoneI === 3) queueBossArt(this.s);
     finishGrab(this.s);
     if (!this.arena?.frozen) return original.call(this, dt);

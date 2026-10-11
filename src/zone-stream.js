@@ -85,7 +85,18 @@ export function createPlateStream(scene, stageNo, view, load) {
       if (T?.exists && T.remove) {
         for (const key of plateKeyList(plan)) if (!keep.has(key) && T.exists(key)) T.remove(key);
       }
-      if (view?.layoutPlates) return;
+      if (view?.layoutPlates) {
+        for (const key of keep) {
+          if (T?.exists?.(key) || wait.has(key)) continue;
+          const queued = load?.(key, ok => {
+            wait.delete(key);
+            if (!ok) view.paintBackdrop?.(key);
+            api.sync();
+          });
+          if (queued) wait.add(key);
+        }
+        return;
+      }
       for (const key of keep) {
         if (T?.exists?.(key)) { view?.showBackdrop?.(key); continue; }
         if (wait.has(key)) continue;

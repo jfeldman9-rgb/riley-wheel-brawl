@@ -2,6 +2,7 @@
 // docs/stage5/ART-NEEDED.md. sheet() leaves an existing key alone, so a
 // PAINTED row in src/stage5-art.js still replaces these.
 import { tex, sheet } from './stage4-art.js';
+import { PAINTED5 } from './stage5-painted.js';
 
 const STALK = { lurk: 0, stalk: 1, attack: 2, recover: 2, hurt: 3, down: 4, dead: 5, gone: 5 };
 const POD = { emerge: 0, idle: 1, attack: 2, hurt: 3, dead: 4, gone: 4 };
@@ -403,10 +404,14 @@ function panel(g, w, h, n) {
   }
 }
 
+function fileComing(scene, key) {
+  const row = PAINTED5.find(r => r.key === key);
+  return !!(row?.present && !scene?._s5miss?.has(key) && !scene?.textures?.exists?.(key));
+}
 export function paintCast(scene) {
-  sheet(scene, 's5stalk', 6, 96, 64, (g, i) => stalk(g, 96, 64, i));
-  sheet(scene, 's5pod', 5, 80, 80, (g, i) => pod(g, 80, 80, i));
-  sheet(scene, 's5green', 4, 120, 180, (g, i, w, h) => greenMan(g, w, h, i));
+  if (!fileComing(scene, 's5stalk')) sheet(scene, 's5stalk', 6, 96, 64, (g, i) => stalk(g, 96, 64, i));
+  if (!fileComing(scene, 's5pod')) sheet(scene, 's5pod', 5, 80, 80, (g, i) => pod(g, 80, 80, i));
+  if (!fileComing(scene, 's5green')) sheet(scene, 's5green', 4, 120, 180, (g, i, w, h) => greenMan(g, w, h, i));
 }
 // Code stand-in used only when the painted sheet is still missing at spawn.
 export function paintBossFallback(scene) {

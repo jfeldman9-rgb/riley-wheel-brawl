@@ -1,10 +1,13 @@
 // Blight backdrop. Procedural art, one sun, and the Eye / oak lights.
 import { VW, VH, LANE_TOP, LANE_BOT, WORLD_W } from './config.js';
 import { paintStage5Art, greenFrame } from './stage5-art.js';
-import { paintBackdrop } from './stage5-art-bg.js';
+import { paintBackdrop as paintBg } from './stage5-art-bg.js';
+import { paintCast } from './stage5-art-cast.js';
+import { PAINTED5 } from './stage5-painted.js';
 import { LAYOUT5, STAGE5 } from './stage5-def.js';
 import { createStage5Effects } from './stage5-effects.js';
 import { plateRect, STREAMS, residentKeys } from './zone-stream.js';
+import { isPainted, s5Scale } from './stage5-paint.js';
 
 const PLATES5 = ['bg5mid', 'bg5mid2', 'bg5mid3', 'bg5mid4'];
 const FLOORS5 = ['bg5floor', 'bg5floor2', 'bg5floor3'];
@@ -39,24 +42,23 @@ export function createStage5View(scene) {
       scene.backdropLit = scene.backdropLit || [];
       view.layoutPlates(keep);
       view.sun = scene.lights?.addLight?.(VW * 0.8, 70, 1400, 0xffb070, 1.3, 200) || null;
-      const n = scene.fx?.quality >= 2 ? 8 : 16;
       haze = [];
-      for (let i = 0; i < n; i++) {
-        const p = scene.add?.image?.(i * 340, 180 + (i % 3) * 30, 's5flare');
-        p?.setAlpha?.(0.15); p?.setScrollFactor?.(0.2); p?.setDepth?.(-60);
-        if (p) haze.push(p);
-      }
+      const wash = scene.add?.image?.(VW * 0.5, 160, 's5mist');
+      wash?.setOrigin?.(0.5, 0.5); wash?.setScrollFactor?.(0.15); wash?.setDepth?.(-60); wash?.setAlpha?.(0.65); wash?.setDisplaySize?.(VW, 280);
+      if (wash) haze.push(wash);
     },
     sync(kit) {
       if (!effects) effects = createStage5Effects(scene);
       effects.sync(kit);
+      placeDressing(scene, kit, owned, view);
+      placeGlows(scene, kit, view);
       const beat = kit?.arena;
       const showGreen = !!(beat?.green && beat.frozen);
       if (!showGreen) green?.setVisible?.(false);
       else {
         if (!green && scene.add?.sprite) {
           green = scene.add.sprite(beat.centre, 630, 's5green', 0);
-          green.setOrigin?.(0.5, 0.96); green.setScale?.(2.75); green.setLighting?.(true);
+          green.setOrigin?.(0.5, 0.96); green.setLighting?.(true);
           owned.push(green);
         }
         if (green) {
@@ -65,6 +67,7 @@ export function createStage5View(scene) {
           green.setPosition?.(beat.centre + face * 72, 630);
           green.setFlipX?.(face < 0);
           green.setFrame?.(greenFrame(beat.green.state));
+          green.setScale?.(s5Scale(scene, 's5green', 2.75));
           green.setDepth?.(1000 + LANE_BOT + 24);
         }
       }
@@ -99,10 +102,11 @@ export function createStage5View(scene) {
       });
     },
     layoutPlates(keep) {
-      const sig = [...keep].filter(k => k !== 'bg5far').sort().join(',');
+      const plates = new Set([...PLATES5, ...FLOORS5]);
+      const have = [...keep].filter(k => plates.has(k) && scene.textures?.exists?.(k)).sort().join(',');
+      const sig = [...keep].filter(k => k !== 'bg5far').sort().join(',') + '|' + have;
       if (sig === view._plateSig) return;
       view._plateSig = sig;
-      const plates = new Set([...PLATES5, ...FLOORS5]);
       for (let i = owned.length - 1; i >= 0; i--) {
         const o = owned[i], k = keyOf(o);
         if (!plates.has(k)) continue;
@@ -112,10 +116,12 @@ export function createStage5View(scene) {
         const j = lit?.indexOf?.(o) ?? -1;
         if (j >= 0) lit.splice(j, 1);
       }
-      const missing = [...keep].filter(k => plates.has(k) && !scene.textures?.exists?.(k));
-      if (missing.length) paintBackdrop(scene, new Set(missing));
+      const coming = k => { const row = PAINTED5.find(r => r.key === k); return !!(row?.present && !scene._s5miss?.has(k)); };
+      const missing = [...keep].filter(k => plates.has(k) && !scene.textures?.exists?.(k) && !coming(k));
+      if (missing.length) paintBg(scene, new Set(missing));
       placePlates(scene, keep, owned);
     },
+    paintBackdrop(key) { paintBg(scene, new Set([key])); paintCast(scene); },
     moveSun(camX) { if (view.sun) view.sun.x = camX + VW * 0.8; },
     ensureBossLights() {},
     glimpse() {
@@ -128,7 +134,8 @@ export function createStage5View(scene) {
     destroy() {
       glimpseTimer?.remove?.(); glimpse?.destroy?.(); green = null; effects?.destroy();
       for (const p of [...owned, ...haze]) p.destroy?.();
-      for (const L of new Set([view.sun, view.eye, view.oakLight, view.flare, ...(view.hazards || [])])) if (L) scene.lights?.removeLight?.(L);
+      for (const L of new Set([view.sun, view.eye, view.oakLight, view.flare, ...(view.hazards || []), ...(view.glows || [])])) if (L) scene.lights?.removeLight?.(L);
+      view.glows = null;
       view.hazards = null;
       scene.backdropLit = (scene.backdropLit || []).filter(p => !owned.includes(p));
       owned.length = 0; view.sun = view.eye = view.oakLight = view.flare = null; haze = [];
@@ -175,5 +182,84 @@ function placePlates(scene, keep, owned) {
     const tile = scene.add?.tileSprite?.(x, LANE_TOP - 20, w, VH - LANE_TOP + 40, key);
     tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40);
     lit(tile);
+    // The seam keeps using the left floor. Skip it once that floor has left the resident set, or the strips outlive the texture.
+    if (i > 0 && keep.has(FLOORS5[i - 1]) && !isCode(scene, FLOORS5[i - 1])) floorSeam(scene, FLOORS5[i - 1], edges[i - 1], x, VH - LANE_TOP + 40).forEach(lit);
+  });
+}
+
+function floorSeam(scene, key, x0, x, h, n = 12) {
+  const out = [], w = 96 / n;
+  for (let k = 0; k < n; k++) {
+    const t = scene.add?.tileSprite?.(x + k * w, LANE_TOP - 20, w, h, key);
+    if (!t) continue;
+    t.setOrigin?.(0, 0); t.setDepth?.(-39.9); t.setAlpha?.(1 - (k + 0.5) / n);
+    t.tilePositionX = x + k * w - x0;
+    out.push(t);
+  }
+  return out;
+}
+
+function layOf(scene, kit) {
+  return kit?.lay || scene.cache?.json?.get?.('layout5') || LAYOUT5;
+}
+function placeDressing(scene, kit, owned, view) {
+  const lay = layOf(scene, kit);
+  const add = scene.add;
+  if (view.trees && !scene.textures?.exists?.('s5tree')) {
+    for (const sp of view.trees) sp.destroy?.();
+    view.trees = null;
+  }
+  if (!view.trees && isPainted(scene, 's5tree') && add?.sprite) {
+    view.trees = [];
+    for (const t of lay.trees || []) {
+      const sp = add.sprite(t.x, t.y, 's5tree', 0);
+      sp.setOrigin?.(0.5, 1); sp.setDepth?.(960); sp.setLighting?.(true); sp._tree = t;
+      view.trees.push(sp); owned.push(sp);
+    }
+  }
+  for (const sp of view.trees || []) {
+    const t = sp._tree;
+    const frame = t.ribbon && kit?.ribbonDropped ? 2 : t.lashed ? 1 : 0;
+    sp.setFrame?.(frame);
+  }
+  const placeBits = (slot, key, bits) => {
+    if (view[slot] && !scene.textures?.exists?.(key)) {
+      for (const sp of view[slot]) sp.destroy?.();
+      view[slot] = null;
+    }
+    if (view[slot]?.length || !isPainted(scene, key) || !add?.sprite || !bits.length) return;
+    view[slot] = bits.map(([x, y, frame, depth]) => {
+      const sp = add.sprite(x, y, key, frame);
+      sp._key = key;
+      sp.setOrigin?.(0.5, 1); sp.setDepth?.(depth); sp.setLighting?.(true);
+      owned.push(sp);
+      return sp;
+    });
+  };
+  const decoBits = [];
+  if (isPainted(scene, 's5deco')) {
+    for (const s of lay.lurks || []) decoBits.push([s.x, s.y, 'lurk', 900]);
+    (lay.deco || []).forEach((d, i) => decoBits.push([d.x, d.y, d.frame, 920 + (i % 5) * 12]));
+  }
+  placeBits('dress', 's5deco', decoBits);
+  const gardenBits = [];
+  if (isPainted(scene, 's5garden')) (lay.garden || []).forEach((d, i) => gardenBits.push([d.x, d.y, d.frame, 930 + i]));
+  placeBits('garden', 's5garden', gardenBits);
+}
+function placeGlows(scene, kit, view) {
+  const list = scene.cache?.json?.get?.('lights5')?.lights;
+  if (!list?.length || !scene.lights?.addLight) return;
+  if (!isPainted(scene, 'bg5mid3') && !isPainted(scene, 'bg5mid4')) return;
+  if (!view.glows) view.glows = [0, 1].map(() => scene.lights.addLight(0, 0, 220, 0xff7040, 0, 40));
+  const cam = kit?.s?.camX || 0;
+  const near = list.filter(L => L.x > cam - 160 && L.x < cam + VW + 160)
+    .sort((a, b) => Math.abs(a.x - cam - VW * 0.45) - Math.abs(b.x - cam - VW * 0.45));
+  view.glows.forEach((L, i) => {
+    const h = near[i];
+    L.intensity = h ? h.i : 0;
+    if (!h) return;
+    L.x = h.x; L.y = h.y; L.radius = h.r;
+    const c = typeof h.color === 'number' ? h.color : parseInt(h.color, 16);
+    L.setColor?.(c);
   });
 }

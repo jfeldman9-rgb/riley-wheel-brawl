@@ -25,7 +25,7 @@ function snapshot(label) {
     diagnostics: { gamePaused: game.isPaused, paused: scene.paused, pauseReasons: Array.from(scene.pauseReasons || []),
       hp: scene.riley.hp, state: scene.riley.state, x: scene.riley.x, y: scene.riley.y, bossHp: scene.boss?.hp,
       p2t: scene.boss?.p2t, beat: scene.kit?.arena?.beat, enemies: scene.enemies.map(e => ({ type: e.type, hp: e.hp, state: e.state, x: e.x, y: e.y })) },
-    heavy: entries.filter(e => /^(bg[56]|story[56]|s5agin|s5balt|aginorPortrait|loial-|riley3|crate)/.test(e.key)).map(e => ({
+    heavy: entries.filter(e => /^(bg[56]|story[56]|s5|aginorPortrait|loial-|riley3|crate)/.test(e.key)).map(e => ({
       key: e.key, bytes: e.sources.reduce((n, s) => n + s.bytes, 0), canvas: e.sources.some(s => s.canvas) })),
     sourceBytes: entries.reduce((n, e) => n + e.sources.reduce((n, s) => n + s.bytes, 0), 0),
     colorBytes: entries.reduce((n, e) => n + e.sources.filter(s => s.kind === 'source').reduce((n, s) => n + s.bytes, 0), 0),
@@ -63,7 +63,12 @@ for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
           // fetch it started, finish before the sample so the residency is settled.
           await page.evaluate(async () => {
             const s = window.__stage, L = s?.load;
-            const sync = () => s?.kit?.backdrops?.sync?.();
+            const sync = () => {
+              s?.kit?.backdrops?.sync?.();
+              // Stage 5 drops the previous zone's character sheets in kit.update, which a
+              // zero dt still reaches. The transition frame would otherwise keep them.
+              if (s?.stageNo === 5) s.kit?.update?.(0);
+            };
             sync();
             if (L?.isLoading?.()) await new Promise(resolve => { L.once('complete', resolve); setTimeout(resolve, 8000); });
             sync();

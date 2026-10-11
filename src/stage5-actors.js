@@ -7,6 +7,7 @@ import { stage4Delta } from './stage4-time.js';
 import { stalkFrame, podFrame, aginFrame, baltFrame } from './stage5-art-cast.js';
 import { paintBossIfIdle } from './stage5-demand.js';
 import { scaleFor, PAINTED } from './stage5-art.js';
+import { s5Scale } from './stage5-paint.js';
 const BASE_H = Object.fromEntries(PAINTED.map(r => [r.key, r.baseH]));
 import { LAYOUT5 } from './stage5-def.js';
 import { safeStage5Spot } from './stage5-spawn.js';
@@ -17,11 +18,14 @@ function body(e, scene, key, shadowW) {
   e.def = e.def || { shadowW, team: 1 };
   const add = scene.add;
   e.shadow = add?.image ? add.image(e.x, e.y, 'shadow') : stub();
+  e.spriteKey = key;
   e.sprite = add?.sprite ? add.sprite(e.x, e.y, key, 0) : stub();
   e.shadow.setDepth?.(900); e.sprite.setDepth?.(1000 + e.y);
 }
 function paint(e, frame, scale, baseH) {
   if (!e.sprite) return;
+  // The sheet can arrive after the sprite was built. Phaser keeps __MISSING until setTexture.
+  if (e.spriteKey && e.sprite.texture?.key !== e.spriteKey && e.scene?.textures?.exists?.(e.spriteKey)) e.sprite.setTexture?.(e.spriteKey);
   e.sprite.x = e.x; e.sprite.y = e.y - (e.z || 0); e.sprite.setDepth?.(1000 + e.y);
   e.sprite.setOrigin?.(0.5, 0.96); e.sprite.setFrame?.(frame(e.state));
   e.sprite.setScale?.(scaleFor(e.sprite.frame, scale, baseH));
@@ -45,7 +49,7 @@ export class StalkerActor extends Stalker {
     body(this, scene, 's5stalk', 130);
   }
   update(dt) { this.entering = false; const prev = this.state; super.update(dt); this.scene.kit?.noteStalk?.(this, prev); }
-  sync() { paint(this, stalkFrame, 1.15); }
+  sync() { paint(this, stalkFrame, s5Scale(this.scene, 's5stalk', 1.15)); }
   destroy() { super.destroy(); this.sprite?.destroy?.(); this.shadow?.destroy?.(); }
   die() { this.finish(); this.gone = true; }
 }
@@ -59,7 +63,7 @@ export class SporepodActor extends Sporepod {
     this.place(safeStage5Spot(this.scene, spot, 'pods'));
   }
   update(dt) { const prev = this.state; super.update(dt); this.scene.kit?.notePod?.(this, prev); }
-  sync() { paint(this, podFrame, 1.1); }
+  sync() { paint(this, podFrame, s5Scale(this.scene, 's5pod', 1.1)); }
   destroy() { super.destroy(); this.sprite?.destroy?.(); this.shadow?.destroy?.(); }
   die() { this.alive = false; this.gone = true; this.state = 'dead'; }
 }

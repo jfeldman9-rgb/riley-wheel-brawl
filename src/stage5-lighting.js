@@ -18,6 +18,7 @@ export function stage5LightBudget(kit) {
   add(kit, kit.view?.oakLight);
   add(kit, kit.view?.flare);
   for (const L of kit.view?.hazards || EMPTY) add(kit, L);
+  for (const L of kit.view?.glows || EMPTY) add(kit, L);
   let count = 0, candidates = 0;
   for (const L of active) {
     const on = s.lightsOn !== false && L.intensity > 0;
