@@ -44,7 +44,7 @@ BUDGET_MIB = {
     's6ribbon': 0.02, 's6hatch': 0.10, 's6oil': 0.30, 's6lamp': 0.45, 's6net': 0.15, 's6streak': 0.10, 's6call': 0.40,
     'bg6far': 1.85, 'bg6mid': 1.40, 'bg6mid2': 1.40, 'bg6mid3': 1.85, 'bg6mid4': 1.85,
     'bg6floor': 0.55, 'bg6floor2': 0.55, 'bg6floor3': 0.90,
-    'story6p1': 0.90, 'story6p2': 0.90, 'story6p3': 0.90,
+    'story6p1': 3.60, 'story6p2': 3.60, 'story6p3': 3.60,
 }
 TRANSIENT = {'story6p1', 'story6p2', 'story6p3'}  # freed at stage start, not resident at the boss peak
 TOTAL_MIB = 17.0  # resident Stage 6 painted set at the boss peak
@@ -106,7 +106,7 @@ JOBS = {
         # The Heart's floor has a ring inlay that cannot tile: one 1280 px image spans the boss zone exactly.
         dict(key='bg6floor3', size=(1280, 180), flatten=0.65, fmt='jpg')]),
     'story': dict(kind='panels', src='story.src.png', chroma='magenta', grid=(2, 2),
-                  panels=[dict(key='story6p1'), dict(key='story6p2'), dict(key='story6p3')], size=(640, 360)),
+                  panels=[dict(key='story6p1'), dict(key='story6p2'), dict(key='story6p3')], size=(1280, 720)),
     # Reuse: Twinkle Toes' painted ribbon at pickup size (the shared 256 px file would draw 180 px at the pickup's
     # 0.7 scale and cost 0.25 MiB; this is 48 px, 9 KiB). Source is a repo asset, not a collage.
     'ribbon': dict(kind='derive', src='../../assets/props/item-ribbon.webp', key='s6ribbon', box=48),

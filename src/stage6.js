@@ -4,9 +4,10 @@ import { VOLLEY_BANDS, STAGE_TEXTURES, STAGE_CHARS } from './stages.js';
 import { queuePowerArt } from './powers.js';
 import { STAGE6, STAGE6_TEXTURES } from './stage6-def.js';
 import { createStone, threatsOf, bandY } from './stage6-arena.js';
-import { createStage6View } from './stage6-view.js';
+import { createStage6View, stage6LightBudget } from './stage6-view.js';
 import { freeStory6 } from './stage6-art.js';
-import { queueStage6Painted } from './stage6-paint.js';
+import { queueStage6Painted, queuePlate, PAINTED6_ROWS } from './stage6-paint.js';
+import { STREAMS, deferredPlateKeys, createPlateStream } from './zone-stream.js';
 import { preloadClips, releaseClips, MUSIC } from './audio.js';
 import { makeCharAnims, releaseChars } from './assets.js';
 import { ensureStage4Anims } from './stage4-art-thug.js';
@@ -41,7 +42,10 @@ export function queueStage6(scene) {
   if (!scene.textures.exists('cutthroat-0')) L.atlas('cutthroat-0', 'assets/stage3/chars/cutthroat-0.webp', 'assets/stage3/chars/cutthroat-0.json');
   if (!scene.cache?.json?.get?.('layout6')) L.json('layout6', 'assets/bg6/layout.json');
   queuePowerArt(scene, { twix: false });
-  queueStage6Painted(scene);
+  const defer = new Set(deferredPlateKeys(STREAMS[6]));
+  const storyOff = q.get('story') === '0' || scene.stageData?.story === false;
+  queueStage6Painted(scene, PAINTED6_ROWS.filter(r => !defer.has(r.key) && !(storyOff && /^story6p/.test(r.key))));
+  if (!scene.cache?.json?.get?.('lights6')) L.json('lights6', 'assets/bg6/lights.json');
 }
 
 export class Stage6Kit {
@@ -50,8 +54,17 @@ export class Stage6Kit {
     this.rand = createRand(); this.bossTime = 0; this.quality = 0; this.stats = { hints: 0, glimpses: 0, ribbon: 0, calls: 0 };
     this._said = new Set();
   }
-  get ambient() { return this.s?.zoneI >= 3 ? 0x2a2418 : 0x1a2438; }
-  get ambientUnlit() { return 0x3a342c; }
+  get ambient() {
+    const cfg = this.s?.cache?.json?.get?.('lights6');
+    const hex = n => typeof n === 'number' ? n : parseInt(String(n || '').replace(/^0x/, ''), 16);
+    if (this.s?.zoneI >= 3) return hex(cfg?.ambientBoss) || 0x6a5840;
+    return hex(cfg?.ambient) || 0x6a7a90;
+  }
+  get ambientUnlit() {
+    const raw = this.s?.cache?.json?.get?.('lights6')?.ambientUnlit;
+    const n = parseInt(String(raw || '').replace(/^0x/, ''), 16);
+    return Number.isFinite(n) ? n : 0x242830;
+  }
   randCtx() { return randCtx(this); }
   setQuality(level) {
     this.quality = level | 0;
@@ -66,6 +79,8 @@ export class Stage6Kit {
     this.view = createStage6View(this.s);
     this.view.quality = this.quality;
     this.view.buildBackdrop();
+    this.backdrops = createPlateStream(this.s, 6, this.view, (key, again) => queuePlate(this.s, key, again));
+    this.backdrops.sync();
     this.stone = createStone();
     this.stone.setQuality(this.quality);
     this.s.fires = [];
@@ -104,8 +119,10 @@ export class Stage6Kit {
     this._rst = R.state;
     holdDown(this, dt);
     this.rays(dt, R);
+    this.backdrops?.sync?.();
     this.view?.sync?.(this);
     this.view?.move?.(s.camX || 0);
+    stage6LightBudget(this);
     s.ambient = s.backdropIsLit === false ? this.ambientUnlit : this.ambient;
     if (s.lightsOn !== false) s.lights?.setAmbientColor?.(s.ambient);
   }
@@ -149,6 +166,7 @@ export class Stage6Kit {
   collectRibbon() { this.ribbons++; this.stats.ribbon++; this.s.riley.score += 1000; this.s.hud?.flashText("TWINKLE TOES' RIBBON!"); }
   clearHazards() { this.stone?.dispose(); if (this.s.riley) this.s.riley.fogSlow = 0; }
   threats() { return threatsOf(this.stone || { nets: [], lamps: [], pools: [], lines: [], rays: [] }, this.s.zoneI < 0 ? 0 : this.s.zoneI); }
+  applyLightBudget() { stage6LightBudget(this); }
   destroy() {
     this.clearHazards(); this.view?.destroy(); restoreStage6Hooks(this); removeRandBless(); this._unbindRand?.();
     if (this.s.riley) { this.s.riley.fogSlow = 0; this.s.riley.loialReady = true; }

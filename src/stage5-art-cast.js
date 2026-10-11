@@ -406,11 +406,20 @@ function panel(g, w, h, n) {
 export function paintCast(scene) {
   sheet(scene, 's5stalk', 6, 96, 64, (g, i) => stalk(g, 96, 64, i));
   sheet(scene, 's5pod', 5, 80, 80, (g, i) => pod(g, 80, 80, i));
+  sheet(scene, 's5green', 4, 120, 180, (g, i, w, h) => greenMan(g, w, h, i));
+}
+// Code stand-in used only when the painted sheet is still missing at spawn.
+export function paintBossFallback(scene) {
   sheet(scene, 's5agin', 7, 120, 180, (g, i) => agin(g, 120, 180, i));
   sheet(scene, 's5balt', 9, 110, 170, (g, i) => balt(g, 110, 170, i));
-  sheet(scene, 's5green', 4, 120, 180, (g, i, w, h) => greenMan(g, w, h, i));
   tex(scene, 'aginorPortrait', 256, 256, portrait);
-  tex(scene, 'story5p1', 640, 360, (g, w, h) => panel(g, w, h, 1));
-  tex(scene, 'story5p2', 640, 360, (g, w, h) => panel(g, w, h, 2));
-  tex(scene, 'story5p3', 640, 360, (g, w, h) => panel(g, w, h, 3));
+}
+// One story panel. The other two are dropped so a full-size set is not resident together.
+export function paintStoryPanel(scene, n) {
+  if (n < 1 || n > 3) return;
+  const key = 'story5p' + n;
+  tex(scene, key, 640, 360, (g, w, h) => panel(g, w, h, n));
+  const T = scene.textures;
+  if (!T?.remove) return;
+  for (let i = 1; i <= 3; i++) if (i !== n && T.exists('story5p' + i)) T.remove('story5p' + i);
 }

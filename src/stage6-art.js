@@ -27,10 +27,12 @@ function man(g, w, h, skin, coat, helm) {
   if (helm) { g.fillStyle = helm; g.fillRect(w * 0.34, h * 0.06, w * 0.32, h * 0.12); }
 }
 
-export function paintStage6Art(scene) {
+export function paintStage6Art(scene, skip) {
   if (!scene?.textures || typeof document === 'undefined') return [];
   const made = [];
   const put = (key, w, h, draw) => {
+    if (skip?.has?.(key)) return;
+    if (q.get('story') === '0' && String(key).startsWith('story6')) return;
     if (scene.textures.exists(key)) return;
     tex(scene, key, w, h, (g, W, H) => { draw(g, W, H); hatch(g, W, H); });
     made.push(key);

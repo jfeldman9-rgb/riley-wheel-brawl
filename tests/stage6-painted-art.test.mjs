@@ -114,7 +114,8 @@ test('painted zone plates are world-locked per zone; missing plates keep the cod
   }
   assert.ok(!all.made.some(m => m.sf === 0.4), 'no code tiles under four painted plates');
   assert.equal(plateRect(0).x < -96, true); assert.ok(plateRect(3).x + plateRect(3).w > WORLD_W + 96);
-  for (let i = 1; i < 4; i++) assert.ok(plateRect(i - 1).x + plateRect(i - 1).w - plateRect(i).x >= 96, `plates ${i - 1}/${i} overlap a full feather`);
+  const feather = [96, 0, 96];
+  for (let i = 1; i < 4; i++) assert.equal(plateRect(i - 1).x + plateRect(i - 1).w - plateRect(i).x, feather[i - 1], `plates ${i - 1}/${i}`);
   const none = viewScene(new Set()); createStage6View(none.s).buildBackdrop();
   assert.ok(none.made.filter(m => m.sf === 0.4).length >= 6); assert.ok(!none.made.some(m => PLATES6.includes(m.key) && m.sf === 1));
   const half = viewScene(new Set(['bg6mid', 'bg6mid2'])); createStage6View(half.s).buildBackdrop();

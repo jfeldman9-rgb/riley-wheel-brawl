@@ -1,18 +1,16 @@
 // Stone backdrop: rain sheen, window flicker, Defenders, Callandor. Lights stay scarce.
-import { VW, VH, LANE_TOP, WORLD_W } from './config.js';
-import { paintStage6Art } from './stage6-art.js';
+import { VW, VH, LANE_TOP, WORLD_W, q } from './config.js';
+import { paintStage6Art, STAGE6_CANVASES } from './stage6-art.js';
 import { createStoneTells } from './stage6-tells.js';
 import { isPainted, s6Scale } from './stage6-paint.js';
 import { STAGE6 } from './stage6-def.js';
+import { plateRect as plateRectOf, STREAMS, residentKeys, plateKeyList } from './zone-stream.js';
 
 export const PLATES6 = Object.freeze(['bg6mid', 'bg6mid2', 'bg6mid3', 'bg6mid4']);
-// Painted zone plate i: world-locked behind its zone, 48 px past each inner edge so the 96 px feathers cross-blend,
-// and 128 px past the world ends so the outer feathers stay off screen.
-export function plateRect(i, zones = STAGE6.zones) {
-  const l = zones[i].l, last = i + 1 >= zones.length, r = last ? WORLD_W : zones[i + 1].l;
-  const x = i ? l - 48 : -128;
-  return { x, w: r + (last ? 128 : 48) - x };
-}
+const FLOORS6 = ['bg6floor', 'bg6floor2', 'bg6floor3'];
+const BACK6 = new Set(['bg6far', ...PLATES6, ...FLOORS6]);
+export function plateRect(i, zones = STAGE6.zones) { return plateRectOf(i, zones); }
+function keyOf(o) { return o?.texture?.key || o?.key; }
 
 function img(scene, x, y, key) {
   const s = scene.add?.image ? scene.add.image(x, y, key) : null;
@@ -26,7 +24,10 @@ export function createStage6View(scene) {
   const view = {
     light: null, quality: 0,
     buildBackdrop() {
-      paintStage6Art(scene);
+      const keep = residentKeys(scene, STREAMS[6]);
+      const skip = new Set(plateKeyList(STREAMS[6]).filter(k => !keep.has(k)));
+      if (q.get('story') === '0') for (const n of [1, 2, 3]) skip.add('story6p' + n);
+      paintStage6Art(scene, skip);
       far = img(scene, 0, 0, 'bg6far');
       far?.setScrollFactor?.(0); far?.setDepth?.(-100); far?.setDisplaySize?.(VW, LANE_TOP + 8);
       if (far) owned.push(far);
@@ -65,9 +66,12 @@ export function createStage6View(scene) {
         // Painted seams crossfade: the left floor runs on past the edge in strips that fade out over SEAM6 px.
         if (painted && i > 0) floorSeam(scene, floorKeys[i - 1], edges[i - 1], x, VH - LANE_TOP + 30).forEach(lit);
       });
-      rain = scene.add?.tileSprite?.(0, 0, VW, VH, 's6storm');
-      rain?.setScrollFactor?.(0); rain?.setDepth?.(4200); rain?.setAlpha?.(0.18); rain?.setBlendMode?.('ADD');
-      if (rain) owned.push(rain);
+      ensureRain(scene);
+      if (scene.add?.particles && scene.textures?.exists?.('raindrop')) {
+        rain = scene.add.particles(0, 0, 'raindrop', { x: { min: -100, max: VW + 300 }, y: -40, lifespan: 900, speedY: { min: 900, max: 1200 }, speedX: { min: -180, max: -120 }, rotate: 12, scaleY: { min: 0.7, max: 1.1 }, alpha: { min: 0.25, max: 0.45 }, frequency: 18 });
+        rain.setScrollFactor?.(0); rain.setDepth?.(4200);
+        if (rain) owned.push(rain);
+      }
       for (let i = 0; i < 4; i++) {
         const d = scene.add?.sprite?.(1500 + i * 70, 640, 's6def', i % 3);
         d?.setOrigin?.(0.5, 0.96); d?.setScale?.(s6Scale(scene, 's6def', 3.2)); d?.setDepth?.(980); d?.setAlpha?.(0.85);
@@ -77,7 +81,61 @@ export function createStage6View(scene) {
       // Painted Callandor is crystal, drawn in normal blend (ADD only suited the code stub).
       call?.setOrigin?.(0.5, 0.96); call?.setScale?.(s6Scale(scene, 's6call', 3.4)); call?.setBlendMode?.(isPainted(scene, 's6call') ? 'NORMAL' : 'ADD'); call?.setDepth?.(1100); call?.setVisible?.(false);
       if (call) owned.push(call);
-      if (scene.lights?.addLight) view.light = scene.lights.addLight(400, 520, 280, 0xffc878, 0.6, 40);
+      if (scene.lights?.addLight) {
+        view.torches = [];
+        view.light = scene.lights.addLight(400, 520, 280, 0xffc878, 0.6, 40);
+        view.torches.push(view.light);
+        for (let i = 0; i < 2; i++) view.torches.push(scene.lights.addLight(0, 0, 260, 0xffb45e, 0, 40));
+      }
+    },
+    dropBackdrop(keep) {
+      for (let i = owned.length - 1; i >= 0; i--) {
+        const o = owned[i], k = keyOf(o);
+        if (!BACK6.has(k) || keep.has(k)) continue;
+        o.destroy?.();
+        owned.splice(i, 1);
+        const lit = scene.backdropLit, j = lit?.indexOf?.(o) ?? -1;
+        if (j >= 0) lit.splice(j, 1);
+      }
+    },
+    paintBackdrop(key) {
+      const skip = new Set(STAGE6_CANVASES.map(row => row[0]));
+      skip.delete(key);
+      paintStage6Art(scene, skip);
+    },
+    showBackdrop(key) {
+      if (!scene.textures?.exists?.(key) || owned.some(o => keyOf(o) === key)) return;
+      const zones = STAGE6.zones;
+      const lit = o => { if (o) { o.setLighting?.(true); scene.backdropLit = scene.backdropLit || []; scene.backdropLit.push(o); owned.push(o); } };
+      const pi = PLATES6.indexOf(key);
+      if (pi >= 0) {
+        if (!isPainted(scene, key)) {
+          const mid = scene.add?.image?.(0, LANE_TOP + 6, key);
+          mid?.setOrigin?.(0, 1); mid?.setScrollFactor?.(0.4); mid?.setDepth?.(-51); mid?.setDisplaySize?.(560, 150);
+          lit(mid);
+          return;
+        }
+        const { x, w } = plateRect(pi, zones), src = scene.textures.get(key).getSourceImage?.() || {};
+        const mid = scene.add?.image?.(x, LANE_TOP + 8, key);
+        mid?.setOrigin?.(0, 1); mid?.setDepth?.(-50 + pi * 0.1); mid?.setScale?.(w / (src.width || 1024));
+        lit(mid);
+        return;
+      }
+      if (key === 'bg6far') {
+        far = img(scene, 0, 0, 'bg6far');
+        far?.setScrollFactor?.(0); far?.setDepth?.(-100); far?.setDisplaySize?.(VW, LANE_TOP + 8);
+        if (far) owned.push(far);
+        return;
+      }
+      const fi = FLOORS6.indexOf(key);
+      if (fi < 0) return;
+      const painted = isPainted(scene, key);
+      const edges = painted ? [0, zones[2].l, zones[3].l, WORLD_W] : [0, 1800, 3600, WORLD_W];
+      const x = edges[fi], w = Math.min(edges[fi + 1] + (painted ? 0 : 100), WORLD_W + 100) - x;
+      const tile = scene.add?.tileSprite?.(x, LANE_TOP - 16, painted ? w : 1900, VH - LANE_TOP + 30, key);
+      tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40);
+      lit(tile);
+      if (painted && fi > 0) floorSeam(scene, FLOORS6[fi - 1], edges[fi - 1], x, VH - LANE_TOP + 30).forEach(lit);
     },
     setQuality(n) { view.quality = n | 0; },
     move(camX) { far?.setTint?.(bolt > 0 ? 0xb9c7e8 : 0xffffff); },
@@ -85,11 +143,7 @@ export function createStage6View(scene) {
       tells.sync(kit?.stone);
       const q = view.quality || kit?.quality || kit?.s?.fx?.quality || 0;
       const zone = kit?.s?.zoneI ?? -1;
-      if (rain) {
-        const show = q < 2 && zone <= 0;
-        rain.setVisible?.(show);
-        if (show && rain.tilePositionX !== undefined) rain.tilePositionX = (kit?.s?.camX || 0) * 0.3;
-      }
+      if (rain) rain.setVisible?.(q < 2 && zone <= 0);
       flicker -= 1 / 60;
       if (flicker <= 0) { flicker = (q >= 2 ? 12 : 6) + Math.random() * 4; bolt = q >= 2 ? 0.08 : 0.16; }
       if (bolt > 0) bolt -= 1 / 60;
@@ -114,10 +168,17 @@ export function createStage6View(scene) {
       }
       const on = kit?.stone?.rays || [];
       rays.forEach((r, i) => r.setVisible?.(!!boss && !!on.find(x => x.band === i && x.on)));
-      if (view.light) {
-        view.light.x = boss ? 4560 : 640 + (kit?.s?.camX || 0) * 0.2;
-        view.light.intensity = kit?.s?.lightsOn === false ? 0 : boss ? 1.1 : 0.55;
-      }
+      const spots = scene.cache?.json?.get?.('lights6')?.lights || [];
+      const cam = kit?.s?.camX || 0;
+      const near = spots.filter(p => p.x > cam - 120 && p.x < cam + VW + 120)
+        .sort((a, b) => Math.abs(a.x - cam - VW * 0.5) - Math.abs(b.x - cam - VW * 0.5));
+      const litOn = kit?.s?.lightsOn !== false;
+      (view.torches || []).forEach((L, i) => {
+        if (boss && i === 0) { L.x = 4560; L.y = 520; L.radius = 280; L.intensity = litOn ? 1.1 : 0; return; }
+        const spot = near[i];
+        if (!spot || !litOn) { L.intensity = 0; return; }
+        L.x = spot.x; L.y = spot.y; L.radius = spot.r || 260; L.intensity = spot.i || 1.2;
+      });
     },
     glimpse() {
       const g = img(thisScene(scene), (scene.camX || 0) + VW * 0.7, 180, 's6rand');
@@ -131,11 +192,50 @@ export function createStage6View(scene) {
       s?.setOrigin?.(0.5, 0.96); s?.setScale?.(s6Scale(scene, 's6rand', 1.4)); s?.setDepth?.(1400);
       return s;
     },
-    destroy() { tells.destroy(); for (const t of timers) t.remove?.(); timers.length = 0; for (const o of owned) o?.destroy?.(); owned.length = 0; if (view.light) scene.lights?.removeLight?.(view.light); },
+    destroy() {
+      tells.destroy(); for (const t of timers) t.remove?.(); timers.length = 0;
+      for (const o of owned) o?.destroy?.(); owned.length = 0;
+      for (const L of view.torches || []) scene.lights?.removeLight?.(L);
+      view.torches = []; view.light = null;
+    },
   };
   return view;
 }
+function ensureRain(scene) {
+  if (scene.textures?.exists?.('raindrop') || !scene.textures?.createCanvas) return;
+  const c = scene.textures.createCanvas('raindrop', 4, 40);
+  if (!c?.getContext) return;
+  const x = c.getContext();
+  const g = x.createLinearGradient(0, 0, 0, 40);
+  g.addColorStop(0, 'rgba(210,225,255,0)');
+  g.addColorStop(1, 'rgba(225,235,255,0.9)');
+  x.fillStyle = g; x.fillRect(1, 0, 2, 40); c.refresh?.();
+}
 function thisScene(scene) { return scene; }
+
+const EMPTY = [];
+export function stage6LightBudget(kit) {
+  const s = kit?.s; if (!s) return;
+  const list = [];
+  const add = L => { if (L && !list.includes(L)) list.push(L); };
+  add(s.heroLight);
+  for (const L of s.beam?.lights || EMPTY) add(L);
+  add(s.powers?.shield?.L);
+  for (const b of s.powers?.bolts || EMPTY) add(b.L);
+  for (const f of s.fireballs || EMPTY) add(f.light);
+  add(s.fx?.hitLight);
+  for (const b of s.fx?.booms || EMPTY) add(b.L);
+  for (const p of s.patches || EMPTY) add(p.L);
+  for (const p of s.pickups || EMPTY) add(p.L);
+  for (const L of kit.view?.torches || EMPTY) add(L);
+  let n = 0;
+  for (const L of list) {
+    const on = s.lightsOn !== false && L.intensity > 0;
+    const visible = on && n < 10;
+    L.setVisible?.(visible);
+    if (visible) n++;
+  }
+}
 
 export const SEAM6 = 160;
 // Strips of the left floor's tileSprite continued past the seam at x, alpha stepping 1 -> 0 (no new textures).

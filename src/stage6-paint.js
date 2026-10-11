@@ -38,6 +38,24 @@ export function queueStage6Painted(scene, rows = PAINTED6_ROWS) {
   return wanted;
 }
 
+// One plate after boot. A miss leaves the key absent so the view can paint a canvas.
+export function queuePlate(scene, key, done) {
+  const row = PAINTED6_ROWS.find(r => r.key === key);
+  if (!row?.present || !row.url || scene.textures?.exists?.(key)) return false;
+  const wanted = queueStage6Painted(scene, [row]);
+  if (!wanted?.size) return false;
+  const L = scene.load;
+  const fin = () => {
+    L.off?.('complete', fin);
+    scene.events?.off?.('shutdown', fin);
+    done?.(!!scene.textures?.exists?.(key));
+  };
+  L.once?.('complete', fin);
+  scene.events?.once?.('shutdown', fin);
+  if (typeof L.isLoading !== 'function' || !L.isLoading()) L.start?.();
+  return true;
+}
+
 /** True when key is a loaded painted file, not a code canvas. */
 export function isPainted(scene, key) {
   const T = scene?.textures;

@@ -7,7 +7,7 @@ import { Aginor } from '../src/aginor.js';
 import { createArena } from '../src/stage5-arena.js';
 import { AginorActor, BalthamelActor } from '../src/stage5-actors.js';
 import { clearStage5Zone, installStage5SceneHooks, restoreStage5Hooks } from '../src/stage5-lifecycle.js';
-import { queuePainted, paintStage5Art, freeStory5 } from '../src/stage5-art.js';
+import { queuePainted, paintStage5Art, paintBossFallback, freeStory5 } from '../src/stage5-art.js';
 import { bark } from '../src/stage5-voice.js';
 
 const run = fn => withSeed(1, () => { const h = stage5Simulation({ mode: null }); try { fn(h, h.s); } finally { h.destroy(); } });
@@ -147,7 +147,11 @@ test('a painted load error drops that key and the painter fills it', () => {
   for (const key of ['s5agin', 's5balt', 'aginorPortrait']) assert.equal(keys.has(key), false, key);
   const prev = globalThis.document.createElement;
   globalThis.document.createElement = () => fakeCanvas();
-  try { paintStage5Art(scene); }
+  try {
+    paintStage5Art(scene);
+    for (const key of ['s5agin', 's5balt', 'aginorPortrait']) assert.equal(keys.has(key), false, key);
+    paintBossFallback(scene);
+  }
   finally { if (prev) globalThis.document.createElement = prev; else delete globalThis.document.createElement; }
   for (const key of ['s5agin', 's5balt', 'aginorPortrait']) assert.equal(keys.has(key), true, key);
   loadEvents.emit('complete');

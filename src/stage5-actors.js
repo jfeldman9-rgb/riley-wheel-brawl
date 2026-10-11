@@ -5,6 +5,7 @@ import { Aginor } from './aginor.js';
 import { Balthamel } from './balthamel.js';
 import { stage4Delta } from './stage4-time.js';
 import { stalkFrame, podFrame, aginFrame, baltFrame } from './stage5-art-cast.js';
+import { paintBossIfIdle } from './stage5-demand.js';
 import { scaleFor, PAINTED } from './stage5-art.js';
 const BASE_H = Object.fromEntries(PAINTED.map(r => [r.key, r.baseH]));
 import { LAYOUT5 } from './stage5-def.js';
@@ -81,6 +82,7 @@ export class AginorActor extends Aginor {
       },
     });
     this.deps.left = b.l; this.deps.right = b.r;
+    if (!scene.textures?.exists?.('s5agin')) paintBossIfIdle(scene);
     body(this, scene, 's5agin', 170);
   }
   update(dt) {
@@ -99,6 +101,7 @@ export class BalthamelActor extends Balthamel {
   constructor(scene, x, y) {
     super(scene, x, y, { frozen: () => !!scene.kit?.arena?.frozen });
     this.z = 220; this.vz = 0; this.entering = false;
+    if (!scene.textures?.exists?.('s5balt')) paintBossIfIdle(scene);
     body(this, scene, 's5balt', 150);
   }
   update(dt) {
