@@ -1,23 +1,5 @@
 {
  "elevenlabs_takes": {
-  "st5_story_01": {
-   "generation_id": "rFpaB8pXhyoFYP0HXNem",
-   "prompt": "[gravely] Loy-ahl led him through the Ways. In the dark, a wind whispered Rye-lee's name.",
-   "credits": 88.99999999999999,
-   "model": "eleven_v4",
-   "dur": 6.08,
-   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
-   "voice_name": "George - Warm, Captivating Storyteller"
-  },
-  "st5_story_04": {
-   "generation_id": "bnN19E82HoVk599YyihD",
-   "prompt": "[quietly] Past the hills, something old was waiting.",
-   "credits": 52.0,
-   "model": "eleven_v4",
-   "dur": 3.28,
-   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
-   "voice_name": "George - Warm, Captivating Storyteller"
-  },
   "aginor_intro_01": {
    "generation_id": "Ifuoce8cLKgyyaok6VxA",
    "prompt": "[old, hungry, amused] A channeler. [slowly] Untrained. [menacing] Delicious.",
@@ -222,13 +204,36 @@
    "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
   }
  },
+ "jason_narrator": {
+  "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+  "engine": "cosyvoice",
+  "model": "Fun-CosyVoice3-0.5B",
+  "license": "Apache-2.0",
+  "processing": "-18 LUFS mono 24 kHz 96 kbps",
+  "note": "real-person clone of the owner's own voice with consent; VoiceStudio CosyVoice 3 zero-shot; Whisper medium.en checked",
+  "st5_story_01": {
+   "file": "assets/audio/voice/st5_story_01.mp3",
+   "duration_s": 5.184,
+   "bytes": 62540,
+   "sha256": "423153e9dde65339c6152b8e2c78dc48513c2564483f9e9f5e2bbe05a87c9752",
+   "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)"
+  },
+  "st5_story_04": {
+   "file": "assets/audio/voice/st5_story_04.mp3",
+   "duration_s": 2.688,
+   "bytes": 32588,
+   "sha256": "13102605ee579dae2f275d6171ca0fc826bab38fdfd1de772e2154060470e3da",
+   "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)"
+  }
+ },
  "kokoro": "tools/stage5/render_kokoro_stage5.py (Stage 4 Loial cast, tools/stage4 to_mp3 chain). Riley: tools/stage5/render_riley_stage5.py (ElevenLabs DYLO eleven_v4, re-recorded 2026-10-09, approved by Jason F via Grok Bot)",
  "elevenlabs_processing": "loudnorm I=-16 TP=-2 LRA=7 + alimiter 0.75, mono 44.1 kHz 128 kbps",
  "stt_check_whisper_medium_en": {
   "st5_story_01": {
    "text": "Loial led him through the Ways. In the dark, a wind whispered Riley's name.",
    "heard": "Loyal led him through the ways. In the dark, a wind whispered Riley's name.",
-   "word_match": 0.929
+   "word_match": 0.929,
+   "checked_with": "Whisper medium.en on the Jason CosyVoice take"
   },
   "st5_story_02": {
    "text": "The trail runs north. Into the Blight.",

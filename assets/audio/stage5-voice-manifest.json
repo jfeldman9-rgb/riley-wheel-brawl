@@ -22,5 +22,25 @@
     "greenman_arrive_01",
     "greenman_fall_01"
   ],
-  "note": "present is the ids whose mp3 is in assets/audio/voice/. The stage 5 audio test requires this list to match the files on disk. An id left out is a caption and is not fetched. Add the id in the same change as its mp3."
+  "note": "present is the ids whose mp3 is in assets/audio/voice/. The stage 5 audio test requires this list to match the files on disk. An id left out is a caption and is not fetched. Add the id in the same change as its mp3.",
+  "jason_narrator": {
+    "st5_story_01": {
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+      "file": "assets/audio/voice/st5_story_01.mp3",
+      "duration_s": 5.184,
+      "bytes": 62540,
+      "sha256": "423153e9dde65339c6152b8e2c78dc48513c2564483f9e9f5e2bbe05a87c9752",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps"
+    },
+    "st5_story_04": {
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+      "file": "assets/audio/voice/st5_story_04.mp3",
+      "duration_s": 2.688,
+      "bytes": 32588,
+      "sha256": "13102605ee579dae2f275d6171ca0fc826bab38fdfd1de772e2154060470e3da",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps"
+    }
+  }
 }

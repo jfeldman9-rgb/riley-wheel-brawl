@@ -142,20 +142,32 @@ test('the ElevenLabs takes are recorded with their model, voice and hash, and St
   assert.ok(prov.includes('## Stage 2: Baerlon and the Whitecloaks (TTS)'));
 });
 
-test('the Kokoro Stage 3 lines reuse the Stage 2 narrator cast, and Riley shares one ElevenLabs cast', () => {
+test('Stage 3 narrator lines are the Jason CosyVoice clone, and Riley shares the Stage 2 ElevenLabs cast', () => {
   const s2Man = JSON.parse(readFileSync(new URL('../assets/audio/stage2-voice-manifest.json', import.meta.url)));
   const s3Man = JSON.parse(readFileSync(new URL('../assets/audio/stage3-voice-manifest.json', import.meta.url)));
+  const speaker = 'NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)';
   assert.deepEqual(s3Man.cast.riley, s2Man.cast.riley);
   assert.deepEqual(s3Man.cast.narrator, s2Man.cast.narrator);
+  assert.equal(s3Man.cast.narrator.engine, 'cosyvoice');
+  assert.equal(s3Man.cast.narrator.speaker, speaker);
   assert.equal(s3Man.cast.riley.engine, 'elevenlabs');
   assert.equal(s3Man.cast.riley.voice_id, 'JjsQrIrIBD6TZ656NQfi');
-  const kokoroLines = s3Man.lines.filter(l => l.source === 'kokoro');
-  assert.equal(kokoroLines.length, 2);
-  for (const l of kokoroLines) {
+  const narr = s3Man.lines.filter(l => l.id === 'st3_story_01' || l.id === 'st3_story_06');
+  assert.equal(narr.length, 2);
+  for (const l of narr) {
+    assert.equal(l.speaker, speaker, l.id);
+    assert.equal(l.source, 'cosyvoice', l.id);
     const fileBytes = readFileSync(new URL('../' + l.asset_path, import.meta.url));
-    const h = createHash('sha256').update(fileBytes).digest('hex');
-    assert.equal(l.sha256, h, `hash matches file for ${l.id}`);
+    assert.equal(l.bytes, fileBytes.length, l.id);
+    assert.equal(l.sha256, createHash('sha256').update(fileBytes).digest('hex'), l.id);
+    assert.ok(l.duration_s > 0.25, l.id);
   }
+  assert.equal(s3Man.lines.filter(l => l.source === 'kokoro').length, 0);
+  const s2 = s2Man.lines.find(l => l.id === 'st2_story_01');
+  const s2Bytes = readFileSync(new URL('../' + s2.asset_path, import.meta.url));
+  assert.equal(s2.speaker, speaker);
+  assert.equal(s2.bytes, s2Bytes.length);
+  assert.equal(s2.sha256, createHash('sha256').update(s2Bytes).digest('hex'));
 });
 
 test('Stage 3 music files exist with loop points inside the file, a loudness entry and recorded provenance', () => {

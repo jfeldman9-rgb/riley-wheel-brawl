@@ -38,8 +38,14 @@ export const STAGE4 = {
   next: () => ({ stage: 5, fromStage4: true, autostart: true }),
   onBossPhase: (scene, c, ph) => {
     const L = STAGE4.phaseLines[ph];
-    if (L) { scene.caption?.(L.who, L.text); scene.fx.trauma = 0.5; scene.hud?.flashText(L.flash); }
-    if (ph === 3) say('draghkar_garden_01', scene.caption, false);
+    if (L) {
+      scene.fx.trauma = 0.5;
+      scene.hud?.flashText(L.flash);
+      if (ph === 3) say('st4_mashadar_01', scene.caption);
+      else scene.caption?.(L.who, L.text);
+    }
+    // Mashadar is 1.7 s. The Draghkar line starts after it so the two voices do not overlap.
+    if (ph === 3) scene.time?.delayedCall?.(1800, () => say('draghkar_garden_01', scene.caption));
     if (ph === scene.bossDrop.phase && scene.powerDrops) scene.powerDrops.push({ kind: scene.bossDrop.kind, t: 0.6 });
   },
   bossDown: (scene) => {

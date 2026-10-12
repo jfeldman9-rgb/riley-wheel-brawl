@@ -2,6 +2,8 @@
 
 > **Riley update (2026-10-09):** every Riley line is now an ElevenLabs `eleven_v4` take (voice DYLO). The Kokoro Riley cast below is kept as history. See "Riley re-recorded with ElevenLabs" at the end.
 
+> **Jason narrator preview:** eleven narrator lines (Stages 1–6, including new `st4_mashadar_01`) are a consented clone of Jason F's own voice. Filenames and in-game voice keys are unchanged. Kokoro and ElevenLabs narrator notes below are the previous takes. See "Jason narrator" at the end. Stage 6 still skips `st6_story_01` and `st6_story_03` after `stage6.mp4` plays, so those takes do not double the clip.
+
 The game's original synthetic voices for Riley, Twinkle Toes, Moiraine, Loial and Be'lal were generated locally with Kokoro-82M v1.0 using the approved audition cast. No real-child recordings, real-person voice cloning, actor impersonation or paid TTS API were used. The characters' suggested ages are creative direction, not an assertion about the source stock voices.
 
 ## Sources and license
@@ -177,3 +179,29 @@ in Stage 1 (including the angreal and Twix lines), Stage 2, Stage 3 and Stage 4.
 | `riley_bridge_01` | There, on the bridge! | `[shouting] There, on the bridge!` | DYLO | `VD9AGzsETIIHQcMrJ9zS` | 64k | `0b5e6301bf83bc8c…` |
 | `riley_light_01` | Light it up. | `[cocky] Light it up.` | DYLO | `rVD1iGpjbZHJbiqglFlf` | 64k | `869034bf7daabb84…` |
 | `riley_st4_victory_01` | Sing to the ash. | `[serious] Sing to the ash.` | DYLO | `LjnrE5ZhqasYcKEQZi7Z` | 64k | `1720e6b5dacdd111…` |
+
+## Jason narrator
+
+Preview of the narrator, approved by Jason F. This is a real-person clone of the owner's own voice, recorded and used with his consent. It is not a stock library voice and not an impersonation of someone else.
+
+- Engine: VoiceStudio CosyVoice 3, model Fun-CosyVoice3-0.5B, Apache-2.0, zero-shot.
+- Processing: about -18 LUFS, mono, 24 kHz, 96 kbps.
+- Check: Whisper medium.en on all 11 takes (11/11 pass on a names-tolerant word match). Invented names are still imperfect ("Caemlyn" heard as "Caimland", "Mashadar" as "Masjidar", "Tarwin's" as "Tarban's").
+- Filenames and in-game voice keys are unchanged. In-game captions still say `NARRATOR`. The manifest `speaker` field is `NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)`.
+- `st4_mashadar_01` is new. Stage 4 boss phase 3 speaks it, then `draghkar_garden_01` about 1.8 s later so the two lines do not overlap.
+- Stage 6: `STORY6_CLIP_LINES` still drops `st6_story_01` through `st6_story_04` after `stage6.mp4` plays, so `st6_story_01` and `st6_story_03` are not spoken on top of the clip.
+
+| Line | Duration | Bytes | SHA-256 |
+| --- | ---: | ---: | --- |
+| `st1_narrator_01` | 5.712 | 68876 | `9c8a888da86457ae2ce32e2802c6fe7b46ea25340afc4ed1fa1fef3e6a457713` |
+| `st2_story_01` | 5.208 | 62828 | `a1e604c801f408e8457aeec42f00d5171219bf9308659d77a88b2379f7612b51` |
+| `st3_story_01` | 4.392 | 53036 | `a53974f106911c5ffc4e83539a3fb0661bad5aa4ca3435e721084c6cdc69e63d` |
+| `st3_story_06` | 3.936 | 47564 | `39de7e84dbadab2d03e9a8ab0ae982a19a1ec33fd1dad054a2f50727134dad01` |
+| `st4_story_01` | 5.544 | 66860 | `d7d19a1053a18f959d06e0c80b06e1ec0e8ba89a0f61415ccec47c0a4e7a12c9` |
+| `st4_story_05` | 1.800 | 21932 | `cd58d2fcd26f1e437152116b6547989eee7aea99b9c43085a2bc9f200e340c71` |
+| `st4_mashadar_01` | 1.704 | 20780 | `355d69d4d79b2c8e38988ab11889996de3b55bf8b1c64e4c277e89d2fcdb074b` |
+| `st5_story_01` | 5.184 | 62540 | `423153e9dde65339c6152b8e2c78dc48513c2564483f9e9f5e2bbe05a87c9752` |
+| `st5_story_04` | 2.688 | 32588 | `13102605ee579dae2f275d6171ca0fc826bab38fdfd1de772e2154060470e3da` |
+| `st6_story_01` | 5.856 | 70604 | `fa5722201745dc2b28b559275421208508a0c19fe001363db73cb8a85d903307` |
+| `st6_story_03` | 3.576 | 43244 | `293b4a5f0d401e54db13e8abde60ac8ca80061b0931545e8fe0b3f9232171167` |
+

@@ -1,0 +1,299 @@
+[
+ {
+  "id": "st1_narrator_01",
+  "stage": 1,
+  "where": "Stage 1 start (say() in src/stage1.js)",
+  "text": "Emond's Field, on Winternight. The Two Rivers sleeps, but the Shadow is on the road.",
+  "current_audio": "assets/audio/voice/st1_narrator_01.mp3",
+  "current_duration_s": 6.36,
+  "current_voice": "unknown narrator voice (original Stage 1 pass; not in any provenance file; mp3 24 kHz 48k)",
+  "skip_in_game_if_clip": false,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st1_narrator_01.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st1_narrator_01.wav",
+  "jason_duration_s": 5.71,
+  "take": "t23",
+  "attempts": 3,
+  "gen_secs": 45.0,
+  "text_sent_to_tts": "Emond's Field, on Winternight. The Two Rivers sleeps, but the Shadow is on the road.",
+  "whisper": {
+   "heard": "Emond's Field on winter night. The Two Rivers sleeps but the shadow is on the road.",
+   "wer_strict": 0.133,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.866,
+   "heldout_seg1": 0.749
+  }
+ },
+ {
+  "id": "st2_story_01",
+  "stage": 2,
+  "where": "Stage 2 story panel 1",
+  "text": "The Fade's trail led north, through the rain, to the walled town of Baerlon.",
+  "current_audio": "assets/audio/voice/st2_story_01.mp3",
+  "current_duration_s": 3.77,
+  "current_voice": "Kokoro bm_fable (British), VOICE_PROVENANCE.md Stage 2",
+  "skip_in_game_if_clip": false,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st2_story_01.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st2_story_01.wav",
+  "jason_duration_s": 5.21,
+  "take": "t0",
+  "attempts": 1,
+  "gen_secs": 64.8,
+  "text_sent_to_tts": "The Fade's trail led north, through the rain, to the walled town of Bear-lon.",
+  "whisper": {
+   "heard": "The Fades Trail led north through the rain to the walled town of Bearlawn.",
+   "wer_strict": 0.071,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.836,
+   "heldout_seg1": 0.708
+  }
+ },
+ {
+  "id": "st3_story_01",
+  "stage": 3,
+  "where": "Stage 3 story panel 1",
+  "text": "The trail led south, to Caemlyn, the great white city of the Queen.",
+  "current_audio": "assets/audio/voice/st3_story_01.mp3",
+  "current_duration_s": 3.58,
+  "current_voice": "Kokoro bm_fable (British)",
+  "skip_in_game_if_clip": false,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st3_story_01.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st3_story_01.wav",
+  "jason_duration_s": 4.39,
+  "take": "t0",
+  "attempts": 1,
+  "gen_secs": 35.5,
+  "text_sent_to_tts": "The trail led south, to Came-lin, the great white city of the Queen.",
+  "whisper": {
+   "heard": "The trail led south to Caimland, the great white city of the Queen.",
+   "wer_strict": 0.077,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.823,
+   "heldout_seg1": 0.717
+  }
+ },
+ {
+  "id": "st3_story_06",
+  "stage": 3,
+  "where": "Stage 3 story panel 3",
+  "text": "As the sun went down over the palace, Riley went up onto the roofs.",
+  "current_audio": "assets/audio/voice/st3_story_06.mp3",
+  "current_duration_s": 3.41,
+  "current_voice": "Kokoro bm_fable (British)",
+  "skip_in_game_if_clip": false,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st3_story_06.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st3_story_06.wav",
+  "jason_duration_s": 3.94,
+  "take": "t11",
+  "attempts": 3,
+  "gen_secs": 34.7,
+  "text_sent_to_tts": "As the sun went down over the palace, Riley went up onto the roofs.",
+  "whisper": {
+   "heard": "As the sun went down over the palace, Riley went up onto the roofs.",
+   "wer_strict": 0.0,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.848,
+   "heldout_seg1": 0.731
+  }
+ },
+ {
+  "id": "st4_story_01",
+  "stage": 4,
+  "where": "Stage 4 story panel 1 (shown as two captions, one audio file)",
+  "text": "The Fade fled Caemlyn by night. Its trail ran east, to a city no map still names.",
+  "current_audio": "assets/audio/voice/st4_story_01.mp3",
+  "current_duration_s": 7.0,
+  "current_voice": "ElevenLabs eleven_v4 narrator (tools/stage4/audio-manifest.json; voice name not recorded)",
+  "skip_in_game_if_clip": false,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st4_story_01.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st4_story_01.wav",
+  "jason_duration_s": 5.54,
+  "take": "t0",
+  "attempts": 1,
+  "gen_secs": 39.5,
+  "text_sent_to_tts": "The Fade fled Came-lin by night. Its trail ran east, to a city no map still names.",
+  "whisper": {
+   "heard": "The Fade fled, Caimland by night. Its trail ran east to a city no map still names.",
+   "wer_strict": 0.059,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.843,
+   "heldout_seg1": 0.741
+  }
+ },
+ {
+  "id": "st4_story_05",
+  "stage": 4,
+  "where": "Stage 4 story panel 3",
+  "text": "Riley walked in.",
+  "current_audio": "assets/audio/voice/st4_story_05.mp3",
+  "current_duration_s": 1.96,
+  "current_voice": "ElevenLabs eleven_v4 narrator (tools/stage4/audio-manifest.json)",
+  "skip_in_game_if_clip": false,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st4_story_05.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st4_story_05.wav",
+  "jason_duration_s": 1.8,
+  "take": "t0",
+  "attempts": 1,
+  "gen_secs": 36.4,
+  "text_sent_to_tts": "Riley walked in.",
+  "whisper": {
+   "heard": "Riley walked in.",
+   "wer_strict": 0.0,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.722,
+   "heldout_seg1": 0.598
+  }
+ },
+ {
+  "id": "st4_mashadar_01",
+  "stage": 4,
+  "where": "Stage 4 boss phase 3 caption (stage4-def.js phaseLines[3]); text-only, no id/audio today",
+  "text": "Mashadar closes in.",
+  "current_audio": null,
+  "current_duration_s": null,
+  "current_voice": "none (text-only caption)",
+  "skip_in_game_if_clip": false,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st4_mashadar_01.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st4_mashadar_01.wav",
+  "jason_duration_s": 1.7,
+  "take": "t0",
+  "attempts": 1,
+  "gen_secs": 28.0,
+  "text_sent_to_tts": "Mashadar closes in.",
+  "whisper": {
+   "heard": "Masjidar closes in.",
+   "wer_strict": 0.333,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.563,
+   "heldout_seg1": 0.457
+  }
+ },
+ {
+  "id": "st5_story_01",
+  "stage": 5,
+  "where": "Stage 5 story panel 1",
+  "text": "Loial led him through the Ways. In the dark, a wind whispered Riley's name.",
+  "current_audio": "assets/audio/voice/st5_story_01.mp3",
+  "current_duration_s": 6.11,
+  "current_voice": "ElevenLabs George - Warm, Captivating Storyteller (tools/stage5/voice-render.json)",
+  "skip_in_game_if_clip": false,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st5_story_01.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st5_story_01.wav",
+  "jason_duration_s": 5.18,
+  "take": "t0",
+  "attempts": 1,
+  "gen_secs": 37.1,
+  "text_sent_to_tts": "Loial led him through the Ways. In the dark, a wind whispered Riley's name.",
+  "whisper": {
+   "heard": "Loyal led him through the ways. In the dark, a wind whispered Riley's name.",
+   "wer_strict": 0.071,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.814,
+   "heldout_seg1": 0.69
+  }
+ },
+ {
+  "id": "st5_story_04",
+  "stage": 5,
+  "where": "Stage 5 story panel 3",
+  "text": "Past the hills, something old was waiting.",
+  "current_audio": "assets/audio/voice/st5_story_04.mp3",
+  "current_duration_s": 3.32,
+  "current_voice": "ElevenLabs George (tools/stage5/voice-render.json)",
+  "skip_in_game_if_clip": false,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st5_story_04.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st5_story_04.wav",
+  "jason_duration_s": 2.69,
+  "take": "t0",
+  "attempts": 1,
+  "gen_secs": 29.4,
+  "text_sent_to_tts": "Past the hills, something old was waiting.",
+  "whisper": {
+   "heard": "Past the hills, something old was waiting.",
+   "wer_strict": 0.0,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.755,
+   "heldout_seg1": 0.668
+  }
+ },
+ {
+  "id": "st6_story_01",
+  "stage": 6,
+  "where": "Stage 6 story panel 1; VOICED BY stage6.mp4 when the clip plays (panels then skip 01-04); file used only on the no-clip path",
+  "text": "Tarwin's Gap held. But the Fade's trail ran south, to the greatest fortress in the world.",
+  "current_audio": "assets/audio/voice/st6_story_01.mp3",
+  "current_duration_s": 7.1,
+  "current_voice": "ElevenLabs George (tools/stage6/voice-render.json); also voiced inside cutscene stage6.mp4",
+  "skip_in_game_if_clip": true,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st6_story_01.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st6_story_01.wav",
+  "jason_duration_s": 5.86,
+  "take": "t0",
+  "attempts": 1,
+  "gen_secs": 45.0,
+  "text_sent_to_tts": "Tarwin's Gap held. But the Fade's trail ran south, to the greatest fortress in the world.",
+  "whisper": {
+   "heard": "Tarban's Gap held, but the Fade's trail ran south, to the greatest fortress in the world.",
+   "wer_strict": 0.062,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.865,
+   "heldout_seg1": 0.764
+  }
+ },
+ {
+  "id": "st6_story_03",
+  "stage": 6,
+  "where": "Stage 6 story panel 2; VOICED BY stage6.mp4 when the clip plays; file used only on the no-clip path",
+  "text": "That night, the barges at the Maule were not carrying grain.",
+  "current_audio": "assets/audio/voice/st6_story_03.mp3",
+  "current_duration_s": 4.32,
+  "current_voice": "ElevenLabs George; also voiced inside cutscene stage6.mp4",
+  "skip_in_game_if_clip": true,
+  "jason_take": "/workspace/jasonvoice/narration/out_mp3/st6_story_03.mp3",
+  "jason_wav": "/workspace/jasonvoice/narration/final/st6_story_03.wav",
+  "jason_duration_s": 3.58,
+  "take": "t0",
+  "attempts": 1,
+  "gen_secs": 35.0,
+  "text_sent_to_tts": "That night, the barges at the Maule were not carrying grain.",
+  "whisper": {
+   "heard": "That night the barges at the mall were not carrying grain.",
+   "wer_strict": 0.091,
+   "wer_names_tolerant": 0.0,
+   "pass_": true
+  },
+  "similarity": {
+   "memo": 0.809,
+   "heldout_seg1": 0.704
+  }
+ }
+]

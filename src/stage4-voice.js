@@ -9,6 +9,7 @@ export const LINES = {
   st4_story_03: ['RILEY', 'He went in.'],
   st4_story_04: ['MORDETH', 'Stay... and be welcome... forever.'],
   st4_story_05: ['NARRATOR', 'Riley walked in.'],
+  st4_mashadar_01: ['NARRATOR', 'Mashadar closes in.'],
   st4_clear_01: ['RILEY', 'The trail goes underground. A Waygate.'],
   st4_clear_02: ['LOIAL', 'Riley, the Ways are dark. Nobody goes into the Ways.'],
   st4_clear_03: ['RILEY', 'Then show me how.'],
