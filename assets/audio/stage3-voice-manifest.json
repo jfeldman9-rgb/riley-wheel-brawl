@@ -1,5 +1,5 @@
 {
-  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0 (Riley, narrator); ElevenLabs eleven_v4 (Basel Gill, cutthroat, Myrddraal); Riley: ElevenLabs eleven_v4 DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot)",
+  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0 (historical Riley cast); ElevenLabs eleven_v4 (Basel Gill, cutthroat, Myrddraal); Riley: ElevenLabs eleven_v4 DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot); Narrator: VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) clone of Jason F, own voice, consented",
   "model_revision_requested": "f3ff3571791e39611d31c381e3a41a3af07b4987",
   "cast": {
     "riley": {
@@ -10,12 +10,11 @@
       "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     "narrator": {
-      "lang": "b",
-      "blend": {
-        "bm_fable": 1.0
-      },
-      "speed": 0.95,
-      "pitch": 0.97
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+      "engine": "cosyvoice",
+      "model": "Fun-CosyVoice3-0.5B",
+      "license": "Apache-2.0",
+      "note": "real-person clone of the owner's own voice with consent; VoiceStudio CosyVoice 3 zero-shot; -18 LUFS mono 24 kHz 96k; Whisper medium.en checked"
     }
   },
   "pronunciation": {
@@ -29,15 +28,16 @@
     {
       "id": "st3_story_01",
       "who": "narrator",
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
       "text": "The trail led south, to Caemlyn, the great white city of the Queen.",
-      "speech_input": "The trail led south, to [Caemlyn](/kˈeɪmlɪn/), the great white city of the Queen.",
-      "phonemes": [
-        "ðə tɹˈAl lˈɛd sˈWθ, tə kˈeɪmlɪn, ðə ɡɹˈAt wˈIt sˈɪti ɒv ðə kwˈiːn."
-      ],
-      "duration_s": 3.576,
-      "sha256": "5fb66348eb709e3d4b2aeefd6990f3efada6f62ec4878ccd0630d3f259d05f4f",
       "asset_path": "assets/audio/voice/st3_story_01.mp3",
-      "source": "kokoro"
+      "duration_s": 4.392,
+      "bytes": 53036,
+      "sha256": "a53974f106911c5ffc4e83539a3fb0661bad5aa4ca3435e721084c6cdc69e63d",
+      "source": "cosyvoice",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps",
+      "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) zero-shot."
     },
     {
       "id": "st3_story_02",
@@ -106,15 +106,16 @@
     {
       "id": "st3_story_06",
       "who": "narrator",
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
       "text": "As the sun went down over the palace, Riley went up onto the roofs.",
-      "speech_input": "As the sun went down over the palace, Riley went up onto the roofs.",
-      "phonemes": [
-        "ˌaz ðə sˈʌn wˈɛnt dˌWn ˈQvə ðə pˈalɪs, ɹˈIli wˈɛnt ˌʌp ˈɒntuː ðə ɹˈuːfs."
-      ],
-      "duration_s": 3.408,
-      "sha256": "93c2e5cbb087c0c4446daca0d15163076214f11c177183385852ab08565ca79e",
       "asset_path": "assets/audio/voice/st3_story_06.mp3",
-      "source": "kokoro"
+      "duration_s": 3.936,
+      "bytes": 47564,
+      "sha256": "39de7e84dbadab2d03e9a8ab0ae982a19a1ec33fd1dad054a2f50727134dad01",
+      "source": "cosyvoice",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps",
+      "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) zero-shot."
     },
     {
       "id": "cutthroat_intro_01",

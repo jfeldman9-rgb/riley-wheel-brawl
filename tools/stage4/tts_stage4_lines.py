@@ -3,7 +3,8 @@
 
 Loial uses Kokoro, the same shape as tools/tts-stage2-lines.py.
 Riley uses ElevenLabs DYLO eleven_v4 through tools/riley_voice.py (re-recorded 2026-10-09,
-approved by Jason F via Grok Bot). The Draghkar, cultists, the narrator and Mordeth use ElevenLabs (Q3).
+approved by Jason F via Grok Bot). The Draghkar, cultists and Mordeth use ElevenLabs (Q3).
+Narrator lines with engine cosyvoice are the shipped Jason preview and are left untouched.
 
 If Kokoro or ELEVENLABS_API_KEY is missing, this exits before writing any audio.
 It will not invent a silent or stand-in voice file.
@@ -104,6 +105,8 @@ def main():
     for row in lines:
         mp3 = out / f"{row['id']}.mp3"
         text = row['text']
+        if row['engine'] == 'cosyvoice':
+            continue
         if row['engine'] == 'kokoro':
             wav = out / f"_{row['id']}.wav"
             kokoro_synth(row['who'], text, wav)

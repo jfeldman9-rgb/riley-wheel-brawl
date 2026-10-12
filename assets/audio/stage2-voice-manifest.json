@@ -1,5 +1,5 @@
 {
-  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0; Riley: ElevenLabs eleven_v4 DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot)",
+  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0; Riley: ElevenLabs eleven_v4 DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot); Narrator story line: VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) clone of Jason F, own voice, consented",
   "model_revision_requested": "f3ff3571791e39611d31c381e3a41a3af07b4987",
   "cast": {
     "riley": {
@@ -10,12 +10,11 @@
       "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
     },
     "narrator": {
-      "lang": "b",
-      "blend": {
-        "bm_fable": 1.0
-      },
-      "speed": 0.95,
-      "pitch": 0.97
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+      "engine": "cosyvoice",
+      "model": "Fun-CosyVoice3-0.5B",
+      "license": "Apache-2.0",
+      "note": "real-person clone of the owner's own voice with consent; VoiceStudio CosyVoice 3 zero-shot; -18 LUFS mono 24 kHz 96k; Whisper medium.en checked"
     },
     "byar": {
       "lang": "b",
@@ -46,14 +45,16 @@
     {
       "id": "st2_story_01",
       "who": "narrator",
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
       "text": "The Fade's trail led north, through the rain, to the walled town of Baerlon.",
-      "speech_input": "The Fade's trail led north, through the rain, to the walled town of [Baerlon](/bˈɛɹlɑn/).",
-      "phonemes": [
-        "ðə fˈAdz tɹˈAl lˈɛd nˈɔːθ, θɹuː ðə ɹˈAn, tə ðə wˈɔːld tˈWn ɒv bˈɛɹlɑn."
-      ],
-      "duration_s": 3.768,
-      "sha256": "56f06967f96fad28181bd8e1a5e3dc5e3269a66b762d3d302c7bef277570f400",
-      "asset_path": "assets/audio/voice/st2_story_01.mp3"
+      "asset_path": "assets/audio/voice/st2_story_01.mp3",
+      "duration_s": 5.208,
+      "bytes": 62828,
+      "sha256": "a1e604c801f408e8457aeec42f00d5171219bf9308659d77a88b2379f7612b51",
+      "source": "cosyvoice",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps",
+      "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) zero-shot."
     },
     {
       "id": "st2_story_02",

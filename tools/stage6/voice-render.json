@@ -25,9 +25,11 @@
    ]
   },
   "NARRATOR": {
-   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
-   "voice_name": "George",
-   "why": "same narrator as Stage 5"
+   "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+   "engine": "cosyvoice",
+   "model": "Fun-CosyVoice3-0.5B",
+   "license": "Apache-2.0",
+   "why": "real-person clone of the owner's own voice with consent; VoiceStudio CosyVoice 3 zero-shot; -18 LUFS mono 24 kHz 96k; Whisper medium.en checked"
   },
   "MOIRAINE": {
    "engine": "kokoro",
@@ -58,29 +60,24 @@
  },
  "lines": {
   "st6_story_01": {
-   "engine": "elevenlabs",
-   "model": "eleven_v4",
-   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
-   "voice_name": "George",
-   "prompt": "[gravely] Tarwin's Gap held. But the Fade's trail ran south... to the greatest fortress in the world.",
-   "generation_id": "7b5dE4RTPzvlneos0k7Q",
-   "session_id": "GAFRAKPhKFlXrkPhpBzl",
-   "credits": 101,
-   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
-   "speaker": "NARRATOR",
+   "engine": "cosyvoice",
+   "model": "Fun-CosyVoice3-0.5B",
+   "processing": "-18 LUFS mono 24 kHz 96 kbps",
+   "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
    "text": "Tarwin's Gap held. But the Fade's trail ran south, to the greatest fortress in the world.",
    "file": "assets/audio/voice/st6_story_01.mp3",
-   "bytes": 57068,
-   "duration_s": 7.104,
-   "sha256": "6b9bee5486c38d4c9287406205aeda25afa7dc66ad6f6f1ba1d0524e31174ee5",
+   "bytes": 70604,
+   "duration_s": 5.856,
+   "sha256": "fa5722201745dc2b28b559275421208508a0c19fe001363db73cb8a85d903307",
+   "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. Played only when stage6.mp4 did not already voice this line.",
    "whisper": {
     "small.en": {
      "match": 1.0,
      "heard": "Tarwin's gap held, but the Fades trail ran south, to the greatest fortress in the world."
     },
     "medium.en": {
-     "match": 1.0,
-     "heard": "Tarwin's Gap held but the Fade's trail ran south to the greatest fortress in the world."
+     "match": 0.938,
+     "heard": "Tarban's Gap held, but the Fade's trail ran south, to the greatest fortress in the world."
     }
    }
   },
@@ -112,29 +109,24 @@
    }
   },
   "st6_story_03": {
-   "engine": "elevenlabs",
-   "model": "eleven_v4",
-   "voice_id": "JBFqnCBsd6RMkjVDRZzb",
-   "voice_name": "George",
-   "prompt": "[ominous] That night, the barges at the Maule were not carrying grain.",
-   "generation_id": "k8UPPDVpVWN05Qw9ApHE",
-   "session_id": "sMmfVWUd6rTHlJ0ic4Vj",
-   "credits": 70,
-   "processing": "riley-voice-manifest-stage5.json chain, mono 24 kHz 64k",
-   "speaker": "NARRATOR",
+   "engine": "cosyvoice",
+   "model": "Fun-CosyVoice3-0.5B",
+   "processing": "-18 LUFS mono 24 kHz 96 kbps",
+   "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
    "text": "That night, the barges at the Maule were not carrying grain.",
    "file": "assets/audio/voice/st6_story_03.mp3",
-   "bytes": 34796,
-   "duration_s": 4.32,
-   "sha256": "f6f95c8172370036d5d31c35b36d3d2e90ac83ba2531363510baf03e39c74a27",
+   "bytes": 43244,
+   "duration_s": 3.576,
+   "sha256": "293b4a5f0d401e54db13e8abde60ac8ca80061b0931545e8fe0b3f9232171167",
+   "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. Played only when stage6.mp4 did not already voice this line.",
    "whisper": {
     "small.en": {
      "match": 0.91,
      "heard": "That night the barges at the mall were not carrying grain."
     },
     "medium.en": {
-     "match": 0.91,
-     "heard": "That night, the barges at the mall were not carrying grain."
+     "match": 0.909,
+     "heard": "That night the barges at the mall were not carrying grain."
     }
    }
   },

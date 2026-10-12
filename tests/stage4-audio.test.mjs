@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { STAGE4_CUES, playStage4Sfx } from '../src/stage4-sfx.js';
@@ -33,6 +34,7 @@ const QUOTES = [
   'He went in.',
   'Stay... and be welcome... forever.',
   'Riley walked in.',
+  'Mashadar closes in.',
   'The trail goes underground. A Waygate.',
   'Riley, the Ways are dark. Nobody goes into the Ways.',
   'Then show me how.',
@@ -50,7 +52,8 @@ test('the voice manifest lists every Stage 4 line with speaker, text, file and e
     assert.equal(typeof row.text, 'string');
     assert.ok(row.text.length > 0, row.id);
     assert.match(row.file, /^assets\/audio\/voice\/.+\.mp3$/);
-    assert.ok(row.engine === 'kokoro' || row.engine === 'elevenlabs', row.id);
+    const jasonNarrator = row.speaker === 'NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)';
+    assert.ok(row.engine === 'kokoro' || row.engine === 'elevenlabs' || (jasonNarrator && row.engine === 'cosyvoice'), row.id);
     assert.ok(!ids.has(row.id), row.id);
     ids.add(row.id);
     const voice = statSync(resolve(root, row.file));
@@ -58,7 +61,13 @@ test('the voice manifest lists every Stage 4 line with speaker, text, file and e
     assert.ok(voice.size < 200 * 1024, row.file);
     if (row.speaker === 'LOIAL') assert.equal(row.engine, 'kokoro', row.id);
     if (row.speaker === 'RILEY') assert.equal(row.engine, 'elevenlabs', row.id);
-    if (['DRAGHKAR', 'CULTIST', 'NARRATOR', 'MORDETH'].includes(row.speaker)) assert.equal(row.engine, 'elevenlabs', row.id);
+    if (['DRAGHKAR', 'CULTIST', 'MORDETH'].includes(row.speaker)) assert.equal(row.engine, 'elevenlabs', row.id);
+    if (jasonNarrator) {
+      assert.equal(row.engine, 'cosyvoice', row.id);
+      assert.equal(row.bytes, voice.size, row.id);
+      assert.equal(createHash('sha256').update(readFileSync(resolve(root, row.file))).digest('hex'), row.sha256, row.id);
+      assert.equal(typeof row.duration_s, 'number', row.id);
+    }
   }
   const off = audio.lines.find(row => row.id === 'riley_fog_off_02');
   assert.equal(off.variantOf, 'riley_fog_off_01');

@@ -1,5 +1,5 @@
 {
-  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0 (Riley, Loial); ElevenLabs eleven_v4 (Draghkar, cultist, narrator, Mordeth); Riley: ElevenLabs eleven_v4 DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot)",
+  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0 (Loial); ElevenLabs eleven_v4 (Draghkar, cultist, Mordeth); Riley: ElevenLabs eleven_v4 DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot); Narrator: VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) clone of Jason F, own voice, consented",
   "model_revision_requested": "f3ff3571791e39611d31c381e3a41a3af07b4987",
   "cast": {
     "riley": {
@@ -327,19 +327,16 @@
     {
       "id": "st4_story_01",
       "who": "narrator",
-      "speaker": "NARRATOR",
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
       "text": "The Fade fled Caemlyn by night. Its trail ran east, to a city no map still names.",
       "asset_path": "assets/audio/voice/st4_story_01.mp3",
-      "duration_s": 7.001,
-      "bytes": 112474,
-      "sha256": "5ca93f76296ab27e18ea276188218a63c536c83128cf6a93ade9985e2587e009",
-      "source": "elevenlabs",
-      "engine": "eleven_v4",
-      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
-      "voice_name": "George - Warm, Captivating Storyteller",
-      "prompt": "[gravely] The Fade fled Caemlyn by night. Its trail ran east, to a city no map still names.",
-      "generation_id": "Qj87DOCg13jvGKYZypBW",
-      "processing": "loudnorm -16 LUFS + limiter"
+      "duration_s": 5.544,
+      "bytes": 66860,
+      "sha256": "d7d19a1053a18f959d06e0c80b06e1ec0e8ba89a0f61415ccec47c0a4e7a12c9",
+      "source": "cosyvoice",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps",
+      "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) zero-shot."
     },
     {
       "id": "st4_story_02",
@@ -405,19 +402,30 @@
     {
       "id": "st4_story_05",
       "who": "narrator",
-      "speaker": "NARRATOR",
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
       "text": "Riley walked in.",
       "asset_path": "assets/audio/voice/st4_story_05.mp3",
-      "duration_s": 1.959,
-      "bytes": 31807,
-      "sha256": "005e292ca11cc622a3314033bea31b2e328b21b9be430431d3ee074fd4e94311",
-      "source": "elevenlabs",
-      "engine": "eleven_v4",
-      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
-      "voice_name": "George - Warm, Captivating Storyteller",
-      "prompt": "[gravely] Riley walked in.",
-      "generation_id": "DZLWZvzrSyNppEvTrPhu",
-      "processing": "loudnorm -16 LUFS + limiter"
+      "duration_s": 1.8,
+      "bytes": 21932,
+      "sha256": "cd58d2fcd26f1e437152116b6547989eee7aea99b9c43085a2bc9f200e340c71",
+      "source": "cosyvoice",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps",
+      "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) zero-shot."
+    },
+    {
+      "id": "st4_mashadar_01",
+      "who": "narrator",
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+      "text": "Mashadar closes in.",
+      "asset_path": "assets/audio/voice/st4_mashadar_01.mp3",
+      "duration_s": 1.704,
+      "bytes": 20780,
+      "sha256": "355d69d4d79b2c8e38988ab11889996de3b55bf8b1c64e4c277e89d2fcdb074b",
+      "source": "cosyvoice",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps",
+      "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) zero-shot. Boss phase 3."
     },
     {
       "id": "st4_clear_01",

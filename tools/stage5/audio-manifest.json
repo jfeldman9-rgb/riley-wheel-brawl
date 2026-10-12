@@ -5,13 +5,14 @@
   "playback": "assets/audio/stage5-voice-manifest.json present[] is the on-disk subset. src/stage5-voice.js reads it into VOICE_FILES.",
   "engines": {
     "kokoro": "Kokoro-82M, the Loial cast from tools/stage4/tts_stage4_lines.py. Riley moved to ElevenLabs DYLO eleven_v4 (re-recorded 2026-10-09, approved by Jason F via Grok Bot; tools/stage5/render_riley_stage5.py)",
-    "elevenlabs": "Riley (DYLO), narrator, Aginor, Balthamel, and the Green Man. No voice file is written when the key is missing."
+    "elevenlabs": "Riley (DYLO), Aginor, Balthamel, and the Green Man. No voice file is written when the key is missing.",
+    "cosyvoice": "Narrator preview: VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0), a clone of Jason F, own voice, consented."
   },
   "lines": [
-    {"id": "st5_story_01", "speaker": "NARRATOR", "who": "narrator", "text": "Loial led him through the Ways. In the dark, a wind whispered Riley's name.", "file": "assets/audio/voice/st5_story_01.mp3", "engine": "elevenlabs"},
+    {"id": "st5_story_01", "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)", "who": "narrator", "text": "Loial led him through the Ways. In the dark, a wind whispered Riley's name.", "file": "assets/audio/voice/st5_story_01.mp3", "engine": "cosyvoice", "duration_s": 5.184, "bytes": 62540, "sha256": "423153e9dde65339c6152b8e2c78dc48513c2564483f9e9f5e2bbe05a87c9752"},
     {"id": "st5_story_02", "speaker": "RILEY", "who": "riley", "text": "The trail runs north. Into the Blight.", "file": "assets/audio/voice/st5_story_02.mp3", "engine": "elevenlabs"},
     {"id": "st5_story_03", "speaker": "LOIAL", "who": "loial", "text": "Nothing grows right here, Riley. Not even the trees.", "file": "assets/audio/voice/st5_story_03.mp3", "engine": "kokoro"},
-    {"id": "st5_story_04", "speaker": "NARRATOR", "who": "narrator", "text": "Past the hills, something old was waiting.", "file": "assets/audio/voice/st5_story_04.mp3", "engine": "elevenlabs"},
+    {"id": "st5_story_04", "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)", "who": "narrator", "text": "Past the hills, something old was waiting.", "file": "assets/audio/voice/st5_story_04.mp3", "engine": "cosyvoice", "duration_s": 2.688, "bytes": 32588, "sha256": "13102605ee579dae2f275d6171ca0fc826bab38fdfd1de772e2154060470e3da"},
     {"id": "st5_story_05", "speaker": "RILEY", "who": "riley", "text": "Good. I'm in a mood.", "file": "assets/audio/voice/st5_story_05.mp3", "engine": "elevenlabs"},
     {"id": "st5_clear_01", "speaker": "RILEY", "who": "riley", "text": "She's not here. The Fade went south.", "file": "assets/audio/voice/st5_clear_01.mp3", "engine": "elevenlabs"},
     {"id": "st5_clear_02", "speaker": "LOIAL", "who": "loial", "text": "South is Tarwin's Gap. Every Trolloc in the Blight is going there.", "file": "assets/audio/voice/st5_clear_02.mp3", "engine": "kokoro"},
