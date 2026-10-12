@@ -19,7 +19,7 @@ export function dropAnimsOnTextures(anims, keys) {
     const frames = entries[name]?.frames || [];
     if (frames.some(f => keys.includes(f.textureKey ?? f.frame?.texture?.key))) names.push(name);
   }
-  for (const name of names) anims.remove(name);
+  for (const name of names) anims.get(name)?.destroy();
   return names;
 }
 
@@ -33,7 +33,7 @@ export function normalPageDir(scene, page, dir, meta) {
   // so a peak cannot retain both resolutions, and so leaving 5 or 6 restores the originals.
   const previous = pages.has(page) ? pages.get(page) : url ? url.includes('/stage5/normals/') : compact;
   if (scene.textures.exists(page) && previous !== compact) {
-    for (const a of meta.anims || []) if (scene.anims?.exists?.(a.name)) scene.anims.remove(a.name);
+    for (const a of meta.anims || []) scene.anims?.get?.(a.name)?.destroy();
     if (scene.anims?.remove) dropAnimsOnTextures(scene.anims, [page, page + '_nl']);
     for (const key of [page, page + '_nl']) if (scene.textures.exists(key)) scene.textures.remove(key);
   }

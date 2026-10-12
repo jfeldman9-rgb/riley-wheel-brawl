@@ -99,7 +99,8 @@ test('painted keys draw at the painted scale; code canvases keep the code scale'
 function viewScene(painted) {
   const made = [];
   const make = (x, y, a, b, c) => { const key = typeof a === 'string' ? a : c; const o = { x, y, key, frame: typeof b === 'number' ? b : undefined, blend: null, scale: null, depth: 0, sf: 1, w: typeof a === 'number' ? a : undefined, visible: true, destroy() {} };
-    for (const k of ['setOrigin', 'setDisplaySize', 'setAlpha', 'setTint', 'setLighting']) o[k] = () => o;
+    for (const k of ['setOrigin', 'setDisplaySize', 'setAlpha', 'setTint']) o[k] = () => o;
+    o.setLighting = v => { o.lighting = v; return o; };
     o.setDepth = d => { o.depth = d; return o; }; o.setScale = v => { o.scale = v; return o; }; o.setScrollFactor = v => { o.sf = v; return o; };
     o.setBlendMode = m => { o.blend = m; return o; }; o.setFrame = f => { o.frame = f; return o; }; o.setVisible = v => { o.visible = v; return o; };
     made.push(o); return o; };
@@ -114,11 +115,27 @@ test('painted zone plates are world-locked per zone; missing plates keep the cod
   }
   assert.ok(!all.made.some(m => m.sf === 0.4), 'no code tiles under four painted plates');
   assert.equal(plateRect(0).x < -96, true); assert.ok(plateRect(3).x + plateRect(3).w > WORLD_W + 96);
-  for (let i = 1; i < 4; i++) assert.ok(plateRect(i - 1).x + plateRect(i - 1).w - plateRect(i).x >= 96, `plates ${i - 1}/${i} overlap a full feather`);
+  const feather = [96, 0, 96];
+  for (let i = 1; i < 4; i++) assert.equal(plateRect(i - 1).x + plateRect(i - 1).w - plateRect(i).x, feather[i - 1], `plates ${i - 1}/${i}`);
   const none = viewScene(new Set()); createStage6View(none.s).buildBackdrop();
   assert.ok(none.made.filter(m => m.sf === 0.4).length >= 6); assert.ok(!none.made.some(m => PLATES6.includes(m.key) && m.sf === 1));
   const half = viewScene(new Set(['bg6mid', 'bg6mid2'])); createStage6View(half.s).buildBackdrop();
   const tiles = half.made.filter(m => m.sf === 0.4); assert.ok(tiles.length > 0 && tiles.every(t => t.x + 560 > 0.4 * STAGE6.zones[1].l), 'tiles only where the interior zones can see them');
+});
+test('a floor that arrives after the backdrop lights go out stays unlit', () => {
+  const p = viewScene(new Set(['bg6floor2']));
+  p.s.backdropIsLit = false;
+  createStage6View(p.s).showBackdrop('bg6floor2');
+  const tile = p.made.find(m => m.key === 'bg6floor2' && m.depth === -40);
+  assert.equal(tile.lighting, false);
+  const on = viewScene(new Set(['bg6floor']));
+  createStage6View(on.s).showBackdrop('bg6floor');
+  assert.equal(on.made.find(m => m.key === 'bg6floor' && m.depth === -40).lighting, true);
+});
+test('stage 6 tiling floors are 1080x360 and the Heart stays one zone wide', () => {
+  assert.deepEqual(dimensions(readFileSync('assets/bg6/bg6floor.jpg')), [1080, 360]);
+  assert.deepEqual(dimensions(readFileSync('assets/bg6/bg6floor2.jpg')), [1080, 360]);
+  assert.deepEqual(dimensions(readFileSync('assets/bg6/bg6floor3.jpg')), [1280, 180]);
 });
 test('painted floors meet at the zone edges and code floors keep the 1800 px layout', () => {
   const p = viewScene(new Set(['bg6floor', 'bg6floor2', 'bg6floor3'])); createStage6View(p.s).buildBackdrop();

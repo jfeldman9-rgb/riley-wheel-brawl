@@ -1,0 +1,179 @@
+{
+ "frames": {
+  "banner": {
+   "frame": {
+    "h": 181,
+    "w": 142,
+    "x": 194,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 185,
+    "w": 146
+   },
+   "spriteSourceSize": {
+    "h": 181,
+    "w": 142,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  },
+  "bones": {
+   "frame": {
+    "h": 65,
+    "w": 192,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 69,
+    "w": 196
+   },
+   "spriteSourceSize": {
+    "h": 65,
+    "w": 192,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  },
+  "boulder": {
+   "frame": {
+    "h": 110,
+    "w": 187,
+    "x": 840,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 114,
+    "w": 191
+   },
+   "spriteSourceSize": {
+    "h": 110,
+    "w": 187,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  },
+  "cauldron": {
+   "frame": {
+    "h": 89,
+    "w": 141,
+    "x": 1208,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 93,
+    "w": 145
+   },
+   "spriteSourceSize": {
+    "h": 89,
+    "w": 141,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  },
+  "log": {
+   "frame": {
+    "h": 64,
+    "w": 177,
+    "x": 1029,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 68,
+    "w": 181
+   },
+   "spriteSourceSize": {
+    "h": 64,
+    "w": 177,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  },
+  "lurk": {
+   "frame": {
+    "h": 53,
+    "w": 128,
+    "x": 540,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 57,
+    "w": 132
+   },
+   "spriteSourceSize": {
+    "h": 53,
+    "w": 128,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  },
+  "stones": {
+   "frame": {
+    "h": 161,
+    "w": 200,
+    "x": 338,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 165,
+    "w": 204
+   },
+   "spriteSourceSize": {
+    "h": 161,
+    "w": 200,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  },
+  "thornbush": {
+   "frame": {
+    "h": 92,
+    "w": 168,
+    "x": 670,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 96,
+    "w": 172
+   },
+   "spriteSourceSize": {
+    "h": 92,
+    "w": 168,
+    "x": 2,
+    "y": 0
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage5/process_art.py",
+  "drawScale": 1,
+  "format": "RGBA8888",
+  "image": "s5deco.webp",
+  "origin": [
+   0.5,
+   1
+  ],
+  "scale": "1",
+  "size": {
+   "h": 181,
+   "w": 1349
+  }
+ }
+}

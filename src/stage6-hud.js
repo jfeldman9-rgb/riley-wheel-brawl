@@ -36,7 +36,11 @@ export function bindRandLabel(hud) {
     this._randKey = key;
     this._randSets = (this._randSets || 0) + 1;
     this.loialT?.setText(label)?.setColor(col);
-    if (this.loialPic && s.textures?.exists?.('randPortrait')) this.loialPic.setTexture('randPortrait')?.setDisplaySize?.(30, 30);
+    if (this.loialPic && s.textures?.exists?.('randPortrait')) {
+      const pic = this.loialPic.setTexture('randPortrait');
+      pic?.setDisplaySize?.(44, 44);
+      pic?.setPosition?.(207, 83);
+    }
     this.loialPic?.setAlpha?.(dim);
     void R;
   };
@@ -45,6 +49,8 @@ export function bindRandLabel(hud) {
     if (own) hud.updateLoialLabel = prev; else delete hud.updateLoialLabel;
     hud._randBind = 0; hud._randKey = '';
     if (hud.loialPic?.setTexture) hud.loialPic.setTexture(prevTex);
+    hud.loialPic?.setDisplaySize?.(30, 30);
+    hud.loialPic?.setPosition?.(214, 83);
   };
   return hud._randUnbind;
 }

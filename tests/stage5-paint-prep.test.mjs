@@ -56,7 +56,7 @@ test('Balthamel flinches standing (frame 8); only down lies flat; the painter ha
 });
 
 test('only sampled Stage 5 textures are made; bg5far is the half-size gradient', () => {
-  const dead = ['s5lash', 's5thorn', 's5seep', 's5gout', 's5spore', 's5ring', 's5tether', 's5hand', 's5oak', 's5ash', 's5tree'];
+  const dead = ['s5lash', 's5gout', 's5oak', 's5ash'];
   const src = readdirSync('src').filter(f => f.endsWith('.js')).map(f => readFileSync(`src/${f}`, 'utf8')).join('\n');
   for (const k of dead) {
     assert.ok(!STAGE5_TEXTURES.includes(k), k);

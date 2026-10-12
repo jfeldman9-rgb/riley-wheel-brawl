@@ -2,6 +2,12 @@
 import { drainHum } from './stage5-voice.js';
 import { stage4Delta } from './stage4-time.js';
 import { releaseBeatClock, thawBeat } from './stage5-beat.js';
+import { ensureStage4Anims } from './stage4-art-thug.js';
+import { releaseChars } from './assets.js';
+import { createPlateStream } from './zone-stream.js';
+import { finishGrab, queueBossArt, queueLoial } from './stage5-demand.js';
+import { queuePlate, syncSheets } from './stage5-paint.js';
+import { paintCast } from './stage5-art-cast.js';
 
 export function clearStage5Hazards(kit) {
   const s = kit.s;
@@ -38,9 +44,21 @@ function hook(kit, object, key, wrap) {
     if (own) object[key] = original; else delete object[key];
   });
 }
+export function bootStage5Memory(kit) {
+  ensureStage4Anims(kit.s);
+  kit.backdrops = createPlateStream(kit.s, 5, kit.view, (key, done) => queuePlate(kit.s, key, done));
+  kit.backdrops.sync();
+  syncSheets(kit.s);
+  paintCast(kit.s);
+}
 export function installStage5SceneHooks(kit) {
   const s = kit.s;
   hook(kit, kit, 'update', original => function(dt) {
+    this.backdrops?.sync?.();
+    syncSheets(this.s);
+    paintCast(this.s);
+    if (this.s.zoneI === 3) queueBossArt(this.s);
+    finishGrab(this.s);
     if (!this.arena?.frozen) return original.call(this, dt);
     dt = stage4Delta(dt);
     if (!dt || this.s.paused || this.s.cutscene) return;
@@ -70,7 +88,25 @@ export function installStage5SceneHooks(kit) {
     if (this.riley) this.riley.held = null;
     return original.call(this);
   });
-  hook(kit, s, 'callLoial', original => function() { const called = original.call(this); if (called) this.riley?.grabbedBy?.releaseHold?.('break'); return called; });
+  hook(kit, s, 'callLoial', original => function() {
+    if (!this.metas?.loial) {
+      const R = this.riley;
+      if (!this.started || this.gameOver || this.ended || this.victoryPending || this.paused) return false;
+      if (!R?.loialReady || this.loial) return original.call(this);
+      this._loialWanted = true;
+      queueLoial(this);
+      return false;
+    }
+    const called = original.call(this);
+    if (called) this.riley?.grabbedBy?.releaseHold?.('break');
+    return called;
+  });
+  hook(kit, s, 'updateLoial', original => function(dt) {
+    const had = this.loial;
+    const out = original.call(this, dt);
+    if (had && !this.loial) releaseChars(this, ['loial']);
+    return out;
+  });
 }
 export function installStage5RileyHook(kit) {
   hook(kit, kit.s.riley, 'setState', original => function(state, anim, ts) {

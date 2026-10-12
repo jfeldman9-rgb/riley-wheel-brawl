@@ -12,7 +12,7 @@ function loaderScene() {
   return { load, events, metas, pages, textures: { exists: () => false }, cache: { json: { get: k => metas.get(k) } } };
 }
 
-for (const end of ['shutdown', 'complete', 'loaderror']) {
+for (const end of ['shutdown', 'complete']) {
   test(`Stage 3 atlas callbacks are detached on ${end} before retrying`, () => {
     const s = loaderScene();
     for (let attempt = 0; attempt < 10; attempt++) {
@@ -34,6 +34,23 @@ for (const end of ['shutdown', 'complete', 'loaderror']) {
     assert.equal(s.stage3LoadCleanup, null);
   });
 }
+
+test('an unrelated image loaderror leaves riley3, cutthroat and fade listeners in place', () => {
+  const s = loaderScene();
+  queueStage3(s);
+  s.load.emit('loaderror', { key: 'crate' });
+  s.load.emit('loaderror', { key: 'far3_day' });
+  for (const k of STAGE3_ATLASES) assert.equal(s.load.listenerCount('filecomplete-json-' + k + '.A'), 1, k);
+  for (const k of STAGE3_ATLASES) {
+    s.metas.set(k + '.A', JSON.parse(readFileSync(`assets/stage3/chars/${k}.anims.json`)));
+    s.load.emit('filecomplete-json-' + k + '.A');
+  }
+  assert.ok(s.pages.length > 0);
+  assert.equal(s.pages.length, new Set(s.pages).size, 'one atlas request per page');
+  s.load.emit('complete');
+  assert.deepEqual(s.load.eventNames(), []);
+  assert.equal(s.stage3LoadCleanup, null);
+});
 
 test('requeueing Stage 3 before a previous load ends replaces its listeners', () => {
   const s = loaderScene();

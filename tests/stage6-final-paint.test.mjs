@@ -82,7 +82,8 @@ test('clamped camera never exposes world plate ends; floor seams are contiguous 
   for (let cam = 0; cam <= WORLD_W - VW; cam += 1) {
     const rects = [0,1,2,3].map(i => plateRect(i));
     assert.ok(rects[0].x < cam); assert.ok(rects[3].x + rects[3].w > cam + VW);
-    for (let i = 1; i < rects.length; i++) assert.equal(rects[i-1].x + rects[i-1].w - rects[i].x, 96);
+    const feather = [96, 0, 96];
+    for (let i = 1; i < rects.length; i++) assert.equal(rects[i-1].x + rects[i-1].w - rects[i].x, feather[i - 1]);
   }
   const strips = floorSeam(s, 'bg6floor', 0, 2560, 180);
   assert.equal(strips.length, 16);

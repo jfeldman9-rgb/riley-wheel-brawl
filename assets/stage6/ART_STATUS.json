@@ -329,11 +329,11 @@
    "placeholder": false,
    "source": "chatgpt-image",
    "sha256": {
-    "assets/stage6/story/story6p1.jpg": "4f1b1c654a41147cbca7daefef3e5d0e57bff5ce2172fba476581321584e09be"
+    "assets/stage6/story/story6p1.jpg": "7ae5d9b38f2b828f7df1548a2998f3d695233a1f71f4ee61aa0a96387f05b2d1"
    },
    "size": [
-    640,
-    360
+    1280,
+    720
    ],
    "art": {
     "sourceFile": "art-in/stage6/story.src.png",
@@ -351,11 +351,11 @@
    "placeholder": false,
    "source": "chatgpt-image",
    "sha256": {
-    "assets/stage6/story/story6p2.jpg": "198b2f5d8d14d18359909f2aa52432f9ec0f5b9ad6baefa8bf5a31115adc729a"
+    "assets/stage6/story/story6p2.jpg": "42a150a582d9edfde8f538756611548795489696df5dafda0de1dca6b07c5567"
    },
    "size": [
-    640,
-    360
+    1280,
+    720
    ],
    "art": {
     "sourceFile": "art-in/stage6/story.src.png",
@@ -373,11 +373,11 @@
    "placeholder": false,
    "source": "chatgpt-image",
    "sha256": {
-    "assets/stage6/story/story6p3.jpg": "b2ce046146f8a5793dc34be161d9dd0619151d2746c3679ba1e59a6e667f9c64"
+    "assets/stage6/story/story6p3.jpg": "9b80334e341fcc7829fa41ade2c58304e98c4d9cb3ae23d99569254baeea889a"
    },
    "size": [
-    640,
-    360
+    1280,
+    720
    ],
    "art": {
     "sourceFile": "art-in/stage6/story.src.png",

@@ -1,5 +1,6 @@
 // Stage 5 readouts inside the existing HUD. Drawn from the Stage 4 meter hook.
 import { clamp } from './config.js';
+import { isPainted } from './stage5-paint.js';
 const u = v => clamp(v, 0, 1);
 
 export function surgeArc(s) {
@@ -46,7 +47,7 @@ export function drawStage5Meters(s, g) {
     g.strokePath?.();
   }
   const line = tetherLine(s);
-  if (line) {
+  if (line && !isPainted(s, 's5tether')) {
     g.lineStyle?.(3, 0x8fbf78, line.locked ? 0.95 : 0.4);
     g.beginPath?.();
     g.moveTo?.(line.x0 - cam, line.y0);

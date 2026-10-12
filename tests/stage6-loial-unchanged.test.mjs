@@ -9,7 +9,9 @@ test('stages 1-5 still call Loial and do not queue Rand', () => {
   for (const n of [1, 2, 3, 4, 5]) assert.equal(callInFor(n), 'loial', n);
   assert.equal(callInFor(6), 'rand');
   assert.equal(callInFor(7), 'rand');
-  for (const n of [1, 5]) assert.ok(STAGE_CHARS[n].includes('loial'), n);
+  assert.ok(STAGE_CHARS[1].includes('loial'));
+  assert.ok(!STAGE_CHARS[5].includes('loial'), 'stage 5 loads Loial on the call');
+  assert.ok(!STAGE_CHARS[5].includes('riley3'), 'stage 5 loads the grab atlas in the boss zone');
   assert.ok(!STAGE_CHARS[6].includes('loial'));
   const urls = [];
   const note = (...args) => args.flat(2).forEach(a => { if (typeof a === 'string' && a.startsWith('assets/')) urls.push(a); });

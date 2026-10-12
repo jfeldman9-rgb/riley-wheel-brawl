@@ -39,7 +39,7 @@ export function makeCharAnims(scene, keys = CHARS) {
 export function releaseChars(scene, keys) {
   for (const k of keys) {
     const m = scene.cache.json.get(k + '.A'); if (!m) continue;
-    for (const a of m.anims) if (scene.anims.exists(a.name)) scene.anims.remove(a.name);
+    for (const a of m.anims) scene.anims.get?.(a.name)?.destroy();
     for (const p of m.pages) { for (const t of [p, p + '_nl']) if (scene.textures.exists(t)) scene.textures.remove(t); delete NML[p]; }
   }
 }

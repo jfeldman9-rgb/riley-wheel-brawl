@@ -23,6 +23,8 @@ import { MusicDirector } from './music.js';
 export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS, ...MYRDDRAAL, ...STAGE4_ACTORS });
 
 const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
+// On-demand lines from dropPower (power voices and the Twix script). Freed on stage leave; a later drop preloads them again.
+const DROP_VOICES = ['riley_twix_01', ...TWIX_SCRIPT.map(l => l.id), ...Object.values(POWERS).map(p => p.voice).filter(Boolean)];
 
 const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
 const FIRES = [[0, 244, 382, 2.4, 700], [0, 2036, 446, 2.4, 700], [0, 1156, 573, 1.1, 420]];
@@ -123,6 +125,7 @@ export class Stage1 extends Phaser.Scene {
     if (toStage !== 2) releaseClips(STAGE2_VOICES);
     if (toStage !== 3) releaseClips(STAGE3_VOICES);
     if (toStage !== 4) releaseClips(STAGE4_VOICES);
+    releaseClips(DROP_VOICES);
   }
   create(data) {
     if (window.__rwbStartup?.failed) return;

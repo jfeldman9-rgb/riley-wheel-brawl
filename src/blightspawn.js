@@ -26,6 +26,7 @@ export class Stalker {
     this.leaping = this.counterUsed = false; this.leapLeft = this.daze = 0; this.gone = false;
     this.team = 1; this.def = { shadowW: 130, team: 1 };
     this.T = { speed: 160, score: STALKER.score, boss: false, name: 'BLIGHT STALKER' };
+    this.name = this.T.name;
     join(scene, this, STALKER.cap, stalkerCount(scene));
   }
   get target() { return this.scene.riley; }
@@ -106,6 +107,7 @@ export class Sporepod {
     this.hp = this.maxHp = SPOREPOD.hp; this.alive = true; this.state = 'emerge'; this.st = 0; this.facing = -1;
     this.cool = 0.4; this.gone = false; this.team = 1; this.def = { shadowW: 120, team: 1 };
     this.T = { speed: 0, score: SPOREPOD.score, boss: false, name: 'SPOREPOD' };
+    this.name = this.T.name;
     scene.spores = scene.spores || []; join(scene, this, SPOREPOD.cap, podCount(scene));
   }
   get target() { return this.scene.riley; }

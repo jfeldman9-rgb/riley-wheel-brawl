@@ -1,7 +1,8 @@
 let ctx = null, master, music, sfxBus, voiceBus, duckG, comp, noiseBuf;
 let muted = false, musicOn = true, musicEl = null, musicSrc = null;
 const clips = Object.create(null), gates = Object.create(null), oneShots = new Map();
-let voiceSrc = null, voiceRequest = 0, voicePending = false;
+const clipDrop = new Set();
+let voiceSrc = null, voiceRequest = 0, voicePending = false, voiceId = null;
 let loopSrc = null, loopToken = 0, loopId = null;
 const moreVoice = Object.create(null);
 // Stage lines with no mp3 yet. say() still captions; loadClip does not fetch.
@@ -142,6 +143,7 @@ export function installAudioLifecycle(game) {
 function disposeAudio() {
   audioHidden = true; audioEpoch++; unlocked = false; musicWanted = false; currentTrack = null;
   stopSceneAudio();
+  clipDrop.clear(); voiceId = null;
   // Finish old rain/track cleanup immediately, cancelling all wall-clock polling.
   for (const timer of [...audioTimers]) timer.finish();
   if (rainNodes) { disposeRain(rainNodes); rainNodes = null; }
@@ -164,7 +166,12 @@ function trackSource(source, ...nodes) {
     if (!oneShots.delete(source)) return;
     source.onended = null; source.disconnect();
     for (const node of nodes) node.disconnect();
-    if (voiceSrc === source) voiceSrc = null;
+    if (voiceSrc === source) {
+      voiceSrc = null;
+      // A replacement line may already own voiceId. Only a natural end clears it.
+      if (!voicePending && voiceId === source.clipId) voiceId = null;
+    }
+    settleClip(source.clipId);
   };
   oneShots.set(source, cleanup); source.onended = cleanup;
 }
@@ -178,10 +185,11 @@ function resetDuck() {
 }
 /** Cancel scene-owned speech and one-shots; keep cached clips, music and user preferences. */
 export function stopSceneAudio() {
-  voiceRequest++; voicePending = false; stopLoop();
+  voiceRequest++; voicePending = false; voiceId = null; stopLoop();
   for (const source of oneShots.keys()) stopSource(source);
   for (const name of Object.keys(gates)) delete gates[name];
   resetDuck();
+  for (const id of [...clipDrop]) settleClip(id);
 }
 function tone(o) {
   if (!ctx || muted) return; const t0 = ctx.currentTime + (o.delay || 0), osc = ctx.createOscillator(), g = ctx.createGain(), d = o.dur || 0.1;
@@ -304,9 +312,19 @@ function loadMusicBuffer(T) {
   if (T.buf) return Promise.resolve(T.buf);
   if (T.loading) return T.loading;
   const audioContext = ctx, epoch = audioEpoch;
-  return (T.loading = (musicBytes[T.id] || (musicBytes[T.id] = fetch(T.M.url).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)))
+  // musicBytes holds the in-flight compressed fetch only. Once this decode settles, drop that
+  // promise so the ArrayBuffer can be collected. A disposed context may already have stored a
+  // newer fetch under the same id; never delete that one, and never delete across audioEpoch.
+  const compressed = musicBytes[T.id] || (musicBytes[T.id] = fetch(T.M.url).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null));
+  return (T.loading = compressed
     .then(b => b ? new Promise(res => { const p = audioContext.decodeAudioData(b.slice ? b.slice(0) : b, res, () => res(null)); if (p && p.catch) p.catch(() => res(null)); }) : null)
-    .catch(() => null).then(buf => { T.loading = null; if (epoch !== audioEpoch) return null; if (!buf) delete musicBytes[T.id]; T.buf = buf; return buf; }));
+    .catch(() => null).then(buf => {
+      T.loading = null;
+      if (epoch !== audioEpoch) return null;
+      if (buf) T.buf = buf;
+      if (musicBytes[T.id] === compressed) delete musicBytes[T.id];
+      return buf;
+    }));
 }
 function startBuffer(T, fade) {
   if (!T.buf || T.playing || !ctx) return;
@@ -386,7 +404,7 @@ export function playTrack(id, opts = {}) {
   loadMusicBuffer(T).then(buf => { if (buf && tracks[id] === T && currentTrack === id && musicOn) startBuffer(T, prev ? fade : 0.4); });
 }
 /** what the backend is playing (or will play once decoded): for tests and the perf panel */
-export function musicState() { return { current: currentTrack, wanted: wantedTrack, on: musicOn, decoded: Object.keys(tracks).filter(k => tracks[k].buf) }; }
+export function musicState() { return { current: currentTrack, wanted: wantedTrack, on: musicOn, decoded: Object.keys(tracks).filter(k => tracks[k].buf), compressed: Object.keys(musicBytes) }; }
 /** after a user gesture: retry a stream element the browser refused to autoplay */
 function resumeMusic() {
   if (audioHidden) return;
@@ -436,16 +454,19 @@ function loadClip(id) {
   init(); if (!ctx) return Promise.resolve(null);
   if (clips[id]) return clips[id];
   const audioContext = ctx, epoch = audioEpoch;
-  return (clips[id] = fetch(`assets/audio/voice/${id}.mp3`).then(r => r.ok ? r.arrayBuffer() : null)
+  const pending = fetch(`assets/audio/voice/${id}.mp3`).then(r => r.ok ? r.arrayBuffer() : null)
     .then(b => b ? new Promise(res => {
       // Some implementations expose both callbacks and a rejecting decode promise.
-      const pending = audioContext.decodeAudioData(b, res, () => res(null));
-      if (pending && pending.catch) pending.catch(() => res(null));
+      const decode = audioContext.decodeAudioData(b, res, () => res(null));
+      if (decode && decode.catch) decode.catch(() => res(null));
     }) : null).catch(() => null).then(buf => {
       if (epoch !== audioEpoch) return null;
-      if (!buf) delete clips[id]; // A temporary load/decode failure must not poison the cache.
+      // Only this load may clear itself. A replay can already own clips[id].
+      if (!buf && clips[id] === pending) delete clips[id];
       return buf;
-    }));
+    });
+  clips[id] = pending;
+  return pending;
 }
 export function preloadVoices() { Object.keys(VOICE).forEach(loadClip); }
 /** on-demand preload for EXTRA_VOICE lines (power pickups and the Twix cutscene) */
@@ -457,8 +478,17 @@ export function setVoiceFiles(all, present) {
   for (const id of all) if (on.has(id)) voiceOff.delete(id); else voiceOff.add(id);
 }
 export function withSfx(fn) { init(); if (ctx && sfxBus) fn(ctx, sfxBus); }
-/** Drop decoded lines the next stage does not play. Shared VOICE clips stay cached. */
-export function releaseClips(ids) { if (ids) for (const id of ids) delete clips[id]; }
+function clipBusy(id) { return id === loopId || (id === voiceId && (voicePending || voiceSrc)); }
+function settleClip(id) {
+  if (!id || !clipDrop.has(id) || clipBusy(id)) return;
+  clipDrop.delete(id); delete clips[id];
+}
+function dropClip(id) {
+  if (clipBusy(id)) clipDrop.add(id);
+  else { clipDrop.delete(id); delete clips[id]; }
+}
+/** Drop decoded lines the next stage does not play. A line that is sounding or queued stays until it ends. Shared VOICE clips stay cached. */
+export function releaseClips(ids) { if (ids) for (const id of ids) dropClip(id); }
 export function residentClipIds() { return Object.keys(clips); }
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
 export function say(id, onCaption, interrupt = true) {
@@ -467,14 +497,15 @@ export function say(id, onCaption, interrupt = true) {
   if (!interrupt && (voiceSrc || voicePending)) return cap;
   const request = ++voiceRequest, shouldPlay = !muted;
   voicePending = shouldPlay;
+  voiceId = shouldPlay ? id : null;
   if (voiceSrc) { stopSource(voiceSrc); resetDuck(); }
   if (onCaption) onCaption(cap[0], cap[1]);
   if (!shouldPlay || muted || request !== voiceRequest) return cap;
   loadClip(id).then(buf => {
-    if (request !== voiceRequest) return;
+    if (request !== voiceRequest) { settleClip(id); return; }
     voicePending = false;
-    if (!buf || muted || !ctx) return;
-    const s = ctx.createBufferSource(); s.buffer = buf; s.connect(voiceBus); trackSource(s); voiceSrc = s; s.start();
+    if (!buf || muted || !ctx) { if (voiceId === id) voiceId = null; settleClip(id); return; }
+    const s = ctx.createBufferSource(); s.buffer = buf; s.clipId = id; s.connect(voiceBus); trackSource(s); voiceSrc = s; s.start();
     duck(0.45, buf.duration, 0.4);
   });
   return cap;
@@ -486,11 +517,11 @@ export function playLoop(id) {
   if (!ctx || muted) { loopId = null; return; }
   loadClip(id).then(buf => {
     if (token !== loopToken || !buf || muted || !ctx) return;
-    const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.connect(voiceBus); trackSource(s); loopSrc = s; s.start();
+    const s = ctx.createBufferSource(); s.buffer = buf; s.clipId = id; s.loop = true; s.connect(voiceBus); trackSource(s); loopSrc = s; s.start();
   });
 }
 export function stopLoop() {
-  loopToken++; loopId = null;
-  if (!loopSrc) return;
-  const s = loopSrc; loopSrc = null; stopSource(s);
+  loopToken++; const id = loopId; loopId = null;
+  if (loopSrc) { const s = loopSrc; loopSrc = null; stopSource(s); }
+  else settleClip(id);
 }

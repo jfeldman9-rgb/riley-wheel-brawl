@@ -7,7 +7,8 @@ import { createBlight, meleeTrunk, burnTrunk } from './stage5-blight.js';
 import { createArena } from './stage5-arena.js';
 import { createStage5View, sunAmbient } from './stage5-view.js';
 import { updateSpores } from './stage5-spores.js';
-import { freeStory5 } from './stage5-art.js';
+import { armStory5, freeStory5 } from './stage5-art.js';
+import { bootStage5Memory } from './stage5-lifecycle.js';
 import { preloadClips, releaseClips, MUSIC } from './audio.js';
 import { STAGE5_VOICES, VOICE_FILES, stage5Say, bark, drainHum, sfxCue } from './stage5-voice.js';
 import { clearStage5Hazards, clearStage5Zone, installStage5SceneHooks, installStage5RileyHook, restoreStage5Hooks } from './stage5-lifecycle.js';
@@ -53,7 +54,7 @@ export class Stage5Kit {
     return {
       sunKeys: (raw.sunKeys || LAYOUT5.sunKeys).map(k => ({ x: k.x, ambient: amb(k.ambient) })),
       lurks: raw.lurks || LAYOUT5.lurks, pods: raw.pods || LAYOUT5.pods,
-      trees: raw.trees, thorns: raw.thorns || LAYOUT5.thorns, seeps: raw.seeps || LAYOUT5.seeps,
+      trees: raw.trees, thorns: raw.thorns || LAYOUT5.thorns, seeps: raw.seeps || LAYOUT5.seeps, deco: raw.deco || [], garden: raw.garden || [],
     };
   }
   build() {
@@ -66,6 +67,7 @@ export class Stage5Kit {
     this.arena = null;
     s.fires = []; s.spores = []; s.clouds = []; s.bands = VOLLEY_BANDS; this.bands = VOLLEY_BANDS;
     if (q.get('nopower') === '1' || s.stageData?.noPower) s.noPower = true;
+    bootStage5Memory(this);
   }
   start() { installStage5RileyHook(this); preloadClips(VOICE_FILES); this.s.music?.set('stage'); }
   bump(key) { this.stats[key] = (this.stats[key] || 0) + 1; }
@@ -213,6 +215,7 @@ STAGE5.queue = queueStage5;
 STAGE5.start = scene => {
   scene.kit?.start();
   if (q.get('story') === '0' || scene.stageData?.story === false) { scene.music?.set('stage'); freeStory5(scene); return; }
+  armStory5(scene);
   const begun = scene.startCutscene(STORY5_SCRIPT, STORY5_PANELS, () => { scene.storyResult = 'end'; scene.music?.set('stage'); freeStory5(scene); });
   if (begun === false) freeStory5(scene);
 };

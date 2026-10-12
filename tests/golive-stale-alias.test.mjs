@@ -13,7 +13,7 @@ function fakeScene(stage, srcUrl) {
   return {
     removed, entries, loadedStage: stage,
     textures: { exists: k => tex.has(k), get: k => tex.get(k), remove: k => { tex.delete(k); removed.push(k); } },
-    anims: { anims: { entries }, exists: k => k in entries, remove: k => { delete entries[k]; } },
+    anims: { anims: { entries }, exists: k => k in entries, get: k => (k in entries ? { destroy() { delete entries[k]; } } : undefined), remove: k => { delete entries[k]; } },
   };
 }
 
@@ -37,7 +37,7 @@ test('no swap when the normal variant already matches: clips and pages stay', ()
 
 test('dropAnimsOnTextures matches by frame texture when textureKey is absent and tolerates bare managers', () => {
   const entries = { a: { frames: [{ frame: { texture: { key: 'p' } } }] }, b: { frames: [{ textureKey: 'q' }] } };
-  const anims = { anims: { entries }, remove: k => delete entries[k] };
+  const anims = { anims: { entries }, get: k => (k in entries ? { destroy() { delete entries[k]; } } : undefined), remove: k => delete entries[k] };
   assert.deepEqual(dropAnimsOnTextures(anims, ['p']), ['a']);
   assert.deepEqual(Object.keys(entries), ['b']);
   assert.deepEqual(dropAnimsOnTextures({ remove() {} }, ['p']), []);

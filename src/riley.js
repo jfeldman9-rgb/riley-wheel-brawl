@@ -18,7 +18,7 @@ const ATK = {
 // the sustain frames; Riley is invulnerable for 1.5 s as in 1.1.
 export const BALEFIRE = Object.freeze({ cost: 100, fireFrame: 3, releaseFrame: 6, invuln: 1.5 });
 // Held by a Darkfriend cutthroat (Stage 3): presses that count as mash; the shove beat lands on escape frame 1.
-export const GRABBED = Object.freeze({ mashKeys: Object.freeze(['attack', 'jump', 'special', 'power']), shoveFrame: 1 });
+export const GRABBED = Object.freeze({ mashKeys: Object.freeze(['attack', 'jump', 'special', 'power']), shoveFrame: 1, escapeLimit: 1.25 });
 export class Riley extends Fighter {
   constructor(scene, x, y) {
     super(scene, RILEY_DEF, x, y);
@@ -211,7 +211,9 @@ export class Riley extends Fighter {
     }
     // 0.45 s matches the cutthroat lunge window: a coil already in the air cannot
     // chain-grab the frame the escape ends, and a new coil is still a full tell.
-    if (this.done) { this.setState('idle', 'idle'); if (c && c.alive) this.face(Math.sign(c.x - this.x)); this.lastGrabber = null; this.inv = Math.max(this.inv, 0.45); }
+    // 1.25 s is past the knockdown stand-in, so a real clip still ends on its last
+    // frame. A missing or looping clip cannot hold the controls past that.
+    if (this.done || this.st >= GRABBED.escapeLimit) { this.setState('idle', 'idle'); if (c && c.alive) this.face(Math.sign(c.x - this.x)); this.lastGrabber = null; this.inv = Math.max(this.inv, 0.45); }
   }
   /** called by the scene when an enemy strike connects */
   takeHit(h, from) {

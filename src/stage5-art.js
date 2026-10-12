@@ -2,7 +2,9 @@
 import { canPaint, tex, sheet } from './stage4-art.js';
 import { paintBackdrop } from './stage5-art-bg.js';
 import { paintFx } from './stage5-art-fx.js';
-import { paintCast } from './stage5-art-cast.js';
+import { paintCast, paintStoryPanel } from './stage5-art-cast.js';
+import { PAINTED5, queueStage5Painted } from './stage5-paint.js';
+export { paintBossFallback, paintStoryPanel } from './stage5-art-cast.js';
 export { canPaint, tex, sheet };
 export { stalkFrame, podFrame, aginFrame, baltFrame, greenFrame } from './stage5-art-cast.js';
 
@@ -51,9 +53,42 @@ export function scaleFor(frame, scale, baseH) {
   const fh = frame?.realHeight || frame?.height || 0;
   return baseH && fh > baseH ? scale * baseH / fh : scale;
 }
-export function paintStage5Art(scene) {
+export function paintStage5Art(scene, only) {
   if (!canPaint(scene)) return;
-  paintBackdrop(scene); paintFx(scene); paintCast(scene);
+  paintBackdrop(scene, only); paintFx(scene); paintCast(scene);
+}
+// Panel 0 is ready before the HUD opens the cutscene. Later lines swap to that panel and free the rest.
+function showStory(scene, n) {
+  const key = 'story5p' + n;
+  const row = PAINTED5.find(r => r.key === key);
+  const T = scene.textures;
+  const drop = () => { for (let i = 1; i <= 3; i++) if (i !== n && T?.exists?.('story5p' + i)) T.remove('story5p' + i); };
+  if (T?.exists?.(key)) { drop(); return; }
+  if (row?.present && scene.load?.image) {
+    const wanted = queueStage5Painted(scene, [row]);
+    if (wanted?.size) {
+      const fin = () => {
+        scene.load.off?.('complete', fin);
+        if (scene.textures?.exists?.(key)) drop(); else paintStoryPanel(scene, n);
+      };
+      scene.load.once?.('complete', fin);
+      if (typeof scene.load.isLoading !== 'function' || !scene.load.isLoading()) scene.load.start?.();
+      return;
+    }
+  }
+  paintStoryPanel(scene, n);
+}
+export function armStory5(scene) {
+  showStory(scene, 1);
+  const hud = scene?.hud;
+  if (!hud || hud._s5story) return;
+  const prev = hud.cutsceneLine;
+  hud.cutsceneLine = function (line) {
+    showStory(scene, (line?.panel | 0) + 1);
+    return prev?.apply(this, arguments);
+  };
+  hud._s5story = 1;
+  hud._s5line = prev;
 }
 // The three 640x360 story canvases (2.6 MiB) are only read by the HUD cutscene. STAGE5.start frees them once it is
 // over, or at once when the story is skipped. A call that lands while a cutscene is still up retries from the
@@ -66,6 +101,11 @@ export function freeStory5(scene) {
     return 0;
   }
   scene._s5freeStory = null;
+  const hud = scene.hud;
+  if (hud?._s5story) {
+    if (hud._s5line) hud.cutsceneLine = hud._s5line; else delete hud.cutsceneLine;
+    hud._s5story = 0; hud._s5line = null;
+  }
   let n = 0;
   for (const key of ['story5p1', 'story5p2', 'story5p3']) if (T.exists(key)) { T.remove(key); n++; }
   return n;
