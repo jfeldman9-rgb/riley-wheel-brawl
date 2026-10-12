@@ -48,6 +48,7 @@ test('cold all-file failures create code canvases for every painted key includin
 
 test('one failed interior plate uses code tiles rather than rescaling resident painted exterior plates', () => canvas(() => {
   const s = scene(PAINTED6_ROWS.map(r => r.key).filter(k => k !== 'bg6mid3'));
+  s.textures.addCanvas('bg6mid3'); // the code fallback canvas that replaces a failed plate
   const v = createStage6View(s); v.buildBackdrop();
   const tiles = s.made.filter(o => o.scrollFactor === 0.4);
   assert.ok(tiles.length > 0);

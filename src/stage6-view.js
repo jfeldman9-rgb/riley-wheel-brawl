@@ -36,6 +36,8 @@ export function createStage6View(scene) {
       const zones = STAGE6.zones;
       const flat = [];
       PLATES6.forEach((key, i) => {
+        // A plate still streaming in is added by showBackdrop once it lands.
+        if (!scene.textures?.exists?.(key)) return;
         if (!isPainted(scene, key)) { flat.push(i); return; }
         const { x, w } = plateRect(i, zones), src = scene.textures.get(key).getSourceImage?.() || {};
         const mid = scene.add?.image?.(x, LANE_TOP + 8, key);
@@ -60,6 +62,7 @@ export function createStage6View(scene) {
       const painted = floorKeys.some(k => isPainted(scene, k));
       const edges = painted ? [0, zones[2].l, zones[3].l, WORLD_W] : [0, 1800, 3600, WORLD_W];
       floorKeys.forEach((key, i) => {
+        if (!scene.textures?.exists?.(key)) return;
         const x = edges[i], w = Math.min(edges[i + 1] + (painted ? 0 : 100), WORLD_W + 100) - x;
         const tile = painted ? paintFloor(scene, key, x, w) : scene.add?.tileSprite?.(x, LANE_TOP - 16, 1900, FLOOR_H, key);
         if (!painted) { tile?.setOrigin?.(0, 0); tile?.setDepth?.(-40); }
