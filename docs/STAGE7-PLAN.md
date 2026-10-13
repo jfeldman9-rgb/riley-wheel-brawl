@@ -115,8 +115,13 @@ Call, and I'll come."* Stage 7 picks the trail up there:
 3. Riley enters Rhuidean's fog.
 4. In the glass-column plaza he catches the gleeman who has been leading the Shadowspawn: Asmodean.
 5. Asmodean is beaten, not killed. Moiraine shields him and Lan puts a sword at his throat. Asmodean gives up
-   the sister clue: *"North. Past the Wells. To a tower that is all black."* That sets up the Dumai's Wells and
-   Black Tower stages in `plan/LEVELS.md`.
+   the sister clue: the Fades sold her to "women in shawls", a Tower embassy riding for **Cairhien**. That sets up
+   Stage 8 (Cairhien) and the **Dumai's Wells finale (Stage 9)**. The campaign now ends at Dumai's Wells; see
+   `docs/CAMPAIGN-ARC-PLAN.md`. The Black Tower stage in `plan/LEVELS.md` row 10 is parked for a possible later
+   game.
+6. **Why Moiraine and Lan, not Rand, from Stage 7 on.** Rand stays behind holding Tear, and later Cairhien. In
+   Stage 8 he is kidnapped, and in Stage 9 he is a captive the player has to rescue. Moiraine and Lan are the
+   call-ins for all three stages. Rand returns as a call-in only for the last phase of the finale.
 
 **Why Asmodean stays, and what changes from the Haiku draft.** Keep these parts:
 - the harp notes;
@@ -146,9 +151,9 @@ already know how to interrupt.
 
 | id | Who | Line |
 |---|---|---|
-| `st7_clear_01` | ASMODEAN | "Enough! Enough… I yield. The girl went north — past the Wells, to a tower that is all black." |
+| `st7_clear_01` | ASMODEAN | "Enough! Enough… I yield. The Fades sold the girl to women in shawls — a Tower embassy, riding for Cairhien." |
 | `st7_clear_02` | MOIRAINE | "He will keep. A shielded Forsaken is still worth more than a dead one." |
-| `st7_clear_03` | LAN | "North, then. We ride at dawn." |
+| `st7_clear_03` | LAN | "Cairhien, then. We ride at dawn." |
 | `riley_st7_victory_01` | RILEY | "Hold on. I'm coming." |
 
 ---
@@ -746,4 +751,4 @@ before the hit. A tell must be visible in at least 9 of 10.
 | D4 | Helper choice: automatic (`pickHelper`) or alternating? | **Automatic** |
 | D5 | Clips play on every call (like Rand), skippable? | **Yes** |
 | D6 | Optional Stage 7 intro clip S7? | **Yes**, if T14 has budget left |
-| D7 | Stage 7 → next: loop to Stage 1 until Stage 8 exists? | **Yes** (`next: () => ({ stage: 1 })`) |
+| D7 | Stage 7 → next: loop to Stage 1 until Stage 8 exists, then `next` → 8 behind `s8=1` (`docs/CAMPAIGN-ARC-PLAN.md`)? | **Yes** |
