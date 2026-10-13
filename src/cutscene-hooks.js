@@ -75,7 +75,7 @@ export function installCutscenes({ root = globalThis, stages = STAGES, Scene = S
       if (!api.playFor(scene, key, (how, shown) => { scene.clipShown = shown ? key : null; orig(scene); })) return orig(scene);
     }, { rwbVideo: true });
   };
-  wrapStart(1, 'intro'); wrapStart(2, 2); wrapStart(3, 3); wrapStart(4, 4); wrapStart(6, 6);
+  wrapStart(1, 'intro'); wrapStart(2, 2); wrapStart(3, 3); wrapStart(4, 4); wrapStart(6, 6); wrapStart(7, 7);
   const P = Scene?.prototype, startBoss = P?.startBoss;
   if (typeof startBoss === 'function' && !startBoss.rwbVideo) {
     P.startBoss = Object.assign(function (...a) {

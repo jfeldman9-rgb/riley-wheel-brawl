@@ -15,6 +15,7 @@ export const STREAMS = {
   },
   6: {
     far: 'bg6far',
+    bleed: [128, 48, 0, 48, 128],
     zones: [
       { plate: 'bg6mid', floor: 'bg6floor' },
       { plate: 'bg6mid2', floor: 'bg6floor' },
@@ -22,16 +23,27 @@ export const STREAMS = {
       { plate: 'bg6mid4', floor: 'bg6floor3' },
     ],
   },
+  7: {
+    far: 'bg7far',
+    bleed: [128, 48, 48, 48, 128],
+    zones: [
+      { plate: 'bg7mid', floor: 'bg7floor' },
+      { plate: 'bg7mid2', floor: 'bg7floor' },
+      { plate: 'bg7mid3', floor: 'bg7floor2' },
+      { plate: 'bg7mid4', floor: 'bg7floor3' },
+    ],
+  },
 };
 
-// Plate i sits on its zone. Neighbours share a 96 px feather, except the sea-gate
-// and the Great Hall, which meet on the zone edge so the hall cannot show through.
-export function plateRect(i, zones) {
+// Default bleed is the Stage 6 sea-gate (0 where the hall meets the quay).
+const BLEED6 = [128, 48, 0, 48, 128];
+export function plateRect(i, zones, bleed = BLEED6) {
   const l = zones[i].l;
   const last = i + 1 >= zones.length;
   const r = last ? WORLD_W : zones[i + 1].l;
-  const bleedL = i === 0 ? 128 : (i === 2 ? 0 : 48);
-  const bleedR = last ? 128 : (i + 1 === 2 ? 0 : 48);
+  const b = bleed || BLEED6;
+  const bleedL = b[i];
+  const bleedR = b[i + 1];
   const x = (i ? l : 0) - bleedL;
   return { x, w: r + bleedR - x };
 }

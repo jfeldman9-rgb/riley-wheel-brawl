@@ -60,6 +60,8 @@ export class Stage6Kit {
     if (this.s?.zoneI >= 3) return hex(cfg?.ambientBoss) || 0x6a5840;
     return hex(cfg?.ambient) || 0x6a7a90;
   }
+  freezesRiley() { return !!(this.strike || this.s?.cutscene); }
+  freezesWorld() { return !!(this.strike || this.s?.cutscene); }
   get ambientUnlit() {
     const raw = this.s?.cache?.json?.get?.('lights6')?.ambientUnlit;
     const n = parseInt(String(raw || '').replace(/^0x/, ''), 16);
