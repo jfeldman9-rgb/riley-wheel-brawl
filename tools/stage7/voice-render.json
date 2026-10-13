@@ -1,0 +1,12 @@
+{
+  "status": "not-rendered",
+  "note": "Captions ship now. mp3s are listed in docs/STAGE7-ASSETS-NEEDED.md. Do not edit assets/audio/riley-voice-manifest.json or the Jason narrator line list for these ids.",
+  "lines": [
+    "st7_story_01", "st7_story_02", "riley_st7_story_01", "st7_story_03", "st7_story_04",
+    "st7_storm_01", "riley_st7_storm_01", "st7_veil_01", "riley_st7_street_01",
+    "st7_asmo_intro_01", "st7_asmo_p2_01", "st7_asmo_p3_01", "st7_asmo_hurt_01", "riley_st7_reflect_01",
+    "riley_st7_call_01", "riley_st7_call_02", "riley_st7_call_03",
+    "st7_moi_call_01", "st7_moi_call_02", "st7_lan_call_01", "st7_lan_call_02", "st7_duo_call_01",
+    "st7_clear_01", "st7_clear_02", "st7_clear_03", "riley_st7_victory_01"
+  ]
+}

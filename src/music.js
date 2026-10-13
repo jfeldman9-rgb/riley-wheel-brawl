@@ -2,17 +2,18 @@
 // and the director picks the track and crossfade; the audio backend (audio.js playTrack) does the WebAudio work.
 // Pure logic with an injectable backend so the transitions are unit-tested without a browser.
 export const STAGE_MUSIC = Object.freeze({ 1: Object.freeze({ stage: 'stage1', boss: 'boss1' }), 2: Object.freeze({ stage: 'stage2', boss: 'boss2' }), 3: Object.freeze({ stage: 'stage3', boss: 'boss3' }), 4: Object.freeze({ stage: 'stage4', boss: 'boss4' }), 5: Object.freeze({ stage: 'stage5', boss: 'boss5' }), 6: Object.freeze({ stage: 'stage6', boss: 'boss6' }) });
+const musicRow = n => STAGE_MUSIC[n] || (n === 7 && { stage: 'stage7', boss: 'boss7' });
 // seconds for each kind of change
 export const FADES = Object.freeze({ toBoss: 1.2, toCutscene: 1.0, fromCutscene: 1.4, toStage: 2.0, toTitle: 2.0, victory: 2.5, gameOver: 1.5, resume: 1.0 });
 export const MUSIC_STATES = Object.freeze(['silent', 'title', 'stage', 'boss', 'cutscene', 'victory', 'clear', 'gameover']);
 export class MusicDirector {
   /** backend(trackId | null, { fade, restart }) */
   constructor(backend, stageNo = 1) {
-    this.backend = backend; this.stageNo = STAGE_MUSIC[stageNo] ? stageNo : 1;
+    this.backend = backend; this.stageNo = musicRow(stageNo) ? stageNo : 1;
     this.state = 'silent'; this.track = undefined; this.fightState = null; this.log = [];
   }
   trackFor(state) {
-    const m = STAGE_MUSIC[this.stageNo];
+    const m = musicRow(this.stageNo);
     switch (state) {
       case 'title': case 'cutscene': case 'clear': return 'title';   // "The Wheel Turns": menus, story beats, the Twix campfire
       case 'stage': return m.stage;
@@ -42,5 +43,5 @@ export class MusicDirector {
   }
   /** the stage's fight music again (after a cutscene or a continue) */
   resumeFight() { return this.set(this.fightState || 'stage'); }
-  setStage(n) { if (STAGE_MUSIC[n]) this.stageNo = n; }
+  setStage(n) { if (musicRow(n)) this.stageNo = n; }
 }

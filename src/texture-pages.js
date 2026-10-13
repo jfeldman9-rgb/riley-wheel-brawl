@@ -1,6 +1,6 @@
 // Compact lighting pages shared by Stages 5 and 6. Same UVs, colour atlases and frames.
 // Any other stage reloads the original normals, so leaving 5 or 6 drops the small pages.
-const COMPACT_STAGES = new Set([5, 6]);
+const COMPACT_STAGES = new Set([5, 6, 7]);
 // Phaser decodes its XHR images through blob URLs, which hide the asset directory.
 const variants = new WeakMap();
 export const COMPACT_NORMAL_DIR = 'assets/stage5/normals';

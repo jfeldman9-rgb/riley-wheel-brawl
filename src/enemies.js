@@ -14,10 +14,11 @@ export const TYPES = {
     atk: { anim: 'chop', active: [2, 3], x0: 20, x1: 300, z0: 0, z1: 260, dmg: 16, kind: 'heavy', kb: 380, down: true, sfx: 'blade' } },
 };
 let NEXT_ID = 1;
+export function nextFighterId() { return NEXT_ID++; }
 export class Enemy extends Fighter {
   constructor(scene, type, x, y) {
     const T = TYPES[type]; super(scene, T.def, x, y);
-    this.T = T; this.type = type; this.id = NEXT_ID++; this.name = T.name; this.cool = rand(0.6, 1.4); this.juggle = 0; this.hitsTaken = 0; this.slotOff = rand(-14, 14);
+    this.T = T; this.type = type; this.id = nextFighterId(); this.name = T.name; this.cool = rand(0.6, 1.4); this.juggle = 0; this.hitsTaken = 0; this.slotOff = rand(-14, 14);
     this.setState('approach', 'walk'); this.face(-1);
   }
   get target() { return this.scene.riley; }

@@ -2,6 +2,7 @@
 import { LANE_TOP, LANE_BOT } from './config.js';
 import { stage5Bot } from './bot-stage5.js';
 import { stage6Bot } from './bot-stage6.js';
+import { stage7Bot } from './bot-stage7.js';
 
 const go = (bot, x, y, run = false) => { bot.s.inp.demo = { x, y, run }; return true; };
 const press = (bot, key, gap) => {
@@ -10,6 +11,7 @@ const press = (bot, key, gap) => {
 
 export function stage4Bot(bot) {
   const s = bot.s, R = s.riley, k = s.kit;
+  if (s.stageNo === 7) return stage7Bot(bot);
   if (s.stageNo === 6) return stage6Bot(bot);
   if (s.stageNo === 5) return stage5Bot(bot);
   if (!k || s.stageNo !== 4) return false;

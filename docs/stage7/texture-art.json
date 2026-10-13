@@ -1,0 +1,11 @@
+{
+  "method": "code-drawn estimate, not a texture-dump measurement",
+  "paintedResidentMiB": 0,
+  "bossPeakSourceMiB": 78,
+  "atlasMiB": 67,
+  "sharedMiB": 6,
+  "canvasMiB": 5,
+  "paintedCapMiB": 12,
+  "bossPeakCapMiB": 105,
+  "note": "No painted Stage 7 sheets are resident. The boss-peak figure is the Stage 6 atlas set plus compact normals plus the small code-drawn canvases. It is not a GL dump."
+}

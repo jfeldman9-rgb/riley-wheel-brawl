@@ -1,0 +1,11 @@
+{
+  "note": "No painted sheets yet. The game code-draws every key. placeholder true means the file is not on disk.",
+  "entries": [
+    {"id": "bg7far", "placeholder": true, "files": []},
+    {"id": "s7dancer", "placeholder": true, "files": []},
+    {"id": "s7veiled", "placeholder": true, "files": []},
+    {"id": "s7asmo", "placeholder": true, "files": []},
+    {"id": "s7moir", "placeholder": true, "files": []},
+    {"id": "s7lan", "placeholder": true, "files": []}
+  ]
+}

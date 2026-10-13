@@ -30,7 +30,7 @@ export const STAGE6 = {
   boss: Object.freeze({ type: 'belal', name: "BE'LAL", portrait: 'belalPortrait', introVoice: 'belal_intro_01' }),
   music: Object.freeze({ stage: 'stage6', boss: 'boss6' }),
   kit: null,
-  next: () => ({ stage: 1 }),
+  next: q => (q?.get?.('s7') === '1' ? { stage: 7, fromStage6: true, autostart: true } : { stage: 1 }),
   onBossPhase: (scene, c, ph) => {
     if (ph === 2) { stage6Say('belal_net_01', scene.caption, false); scene.fx.trauma = 0.5; scene.hud?.flashText('THE NETWEAVER DRAWS HIS LINES'); }
     if (ph === 3) { stage6Say('belal_mid_01', scene.caption, false); scene.hud?.flashText('CALLANDOR FLARES'); }
