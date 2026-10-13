@@ -9,6 +9,7 @@ import { createStage5View, sunAmbient } from './stage5-view.js';
 import { updateSpores } from './stage5-spores.js';
 import { armStory5, freeStory5 } from './stage5-art.js';
 import { bootStage5Memory } from './stage5-lifecycle.js';
+import { resetStage5Visit } from './stage5-demand.js';
 import { preloadClips, releaseClips, MUSIC } from './audio.js';
 import { STAGE5_VOICES, VOICE_FILES, stage5Say, bark, drainHum, sfxCue } from './stage5-voice.js';
 import { clearStage5Hazards, clearStage5Zone, installStage5SceneHooks, installStage5RileyHook, restoreStage5Hooks } from './stage5-lifecycle.js';
@@ -59,6 +60,7 @@ export class Stage5Kit {
   }
   build() {
     const s = this.s;
+    resetStage5Visit(s);
     installStage5SceneHooks(this);
     this.view = createStage5View(s);
     this.view.buildBackdrop();

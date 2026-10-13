@@ -41,10 +41,14 @@ for (const to of [1, 2, 3, 4, 5, 6]) test(`6 → ${to}: variant restoration inva
   if (compact) { assert.deepEqual(deleted, []); assert.deepEqual(atlas, []); assert.deepEqual(images, []); assert.deepEqual(removedAnims, []); }
   else { assert.deepEqual(deleted, ['riley-0', 'riley-0_nl']); assert.deepEqual(removedAnims, ['riley_walk']); assert.equal(atlas.length, 1); assert.equal(images.length, 1); assert.equal(atlas[0].normalMap, 'assets/chars/riley-0_n.webp'); assert.equal(images[0][1], 'assets/chars/riley-0_nl.webp'); }
 });
-test('C3 audit includes all Stage 6 sibling modules and excludes them from the pre-fight budget', () => {
+test('C3 audit caps Stage 6 source on its own line and also counts it in the pre-fight sum', () => {
   const a = audit(); assert.ok(a.preFight.inventoryUpperBoundBytes < 25_000_000);
   const siblings = readdirSync('src').filter(f => /^(stage6|rand-call|belal|grayman|fadelt|bot-stage6).*\.js$/.test(f));
-  for (const f of siblings) { assert.ok(a.stage6.source.files.includes('src/' + f), f); assert.ok(!a.preFight.files.includes('src/' + f), f); }
+  for (const f of siblings) {
+    assert.ok(a.stage6.source.files.includes('src/' + f), f);
+    assert.ok(a.preFight.files.includes('src/' + f), f);
+    assert.ok(!a.preFight.files.some(p => p.startsWith('assets/stage6/') || p.startsWith('assets/bg6/')), f);
+  }
   assert.equal(a.stage6.source.status, 'PASS');
 });
 test('the production Stage 6 bot clears without powers', () => withSeed(1, () => {

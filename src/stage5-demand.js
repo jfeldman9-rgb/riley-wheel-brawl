@@ -4,6 +4,17 @@ import { canPaint, queuePainted, paintBossFallback } from './stage5-art.js';
 
 const BOSS_KEYS = ['s5agin', 's5balt', 'aginorPortrait'];
 
+/** The Stage 1 scene is reused. A later visit must load painted bosses and the grab atlas again. */
+export function resetStage5Visit(scene) {
+  if (!scene) return;
+  scene._s5bossArt = 0;
+  scene._s5grab = 0;
+  scene._s5grabWait = 0;
+  scene._s5loial = 0;
+  scene._loialWanted = false;
+  scene._s5miss = new Set();
+}
+
 export function paintBossIfIdle(scene) {
   if (!canPaint(scene) || !BOSS_KEYS.some(k => !scene.textures.exists(k))) return;
   if (scene._s5bossArt && scene.load?.isLoading?.()) return;

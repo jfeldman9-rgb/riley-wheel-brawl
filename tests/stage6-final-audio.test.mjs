@@ -46,7 +46,7 @@ function audio() {
 function hooks(h) {
   const { quietStage6 } = vm.runInNewContext(source('stage6-audio') + '\n({ quietStage6 })', { stopSceneAudio: h.a.stopSceneAudio });
   return vm.runInNewContext(source('stage6-lifecycle') + '\n({ installStage6SceneHooks, restoreStage6Hooks })', {
-    quietStage6,
+    quietStage6, stopSceneAudio: h.a.stopSceneAudio,
     abortRandCall() {}, dropBlob() {}, warmRand() {}, linkTrollocs() {}, noteRileyKo() {},
   });
 }

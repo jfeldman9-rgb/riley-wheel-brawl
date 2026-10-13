@@ -1,7 +1,7 @@
 // Deterministic shipped-content audit. Reports open acceptance gaps; it never lowers gates.
 import { readFileSync, statSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { resolve, dirname } from 'node:path';
+import { resolve, dirname, join, normalize } from 'node:path';
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = p => readFileSync(resolve(ROOT, p));
 const json = p => JSON.parse(read(p));
@@ -32,6 +32,33 @@ export function dimensions(b) {
   }
   throw Error('Unsupported image header');
 }
+/** Static import, dynamic import(), and re-export. Side-effect `import './x.js'` counts. */
+function bootSourceFiles() {
+  const seen = new Set();
+  const stack = ['src/bootstrap.js'];
+  const re = /(?:^|\n)\s*(?:import\s+(?:[^"\n]*?\s+from\s+)?|import\s*\(\s*|export\s+(?:\{[^}]*\}|\*)\s+from\s+)['"](\.[^'"]+)['"]/g;
+  while (stack.length) {
+    const rel = stack.pop();
+    if (seen.has(rel)) continue;
+    seen.add(rel);
+    let text;
+    try { text = readFileSync(resolve(ROOT, rel), 'utf8'); } catch { continue; }
+    for (const m of text.matchAll(re)) {
+      let spec = m[1];
+      if (!spec.endsWith('.js')) spec += '.js';
+      const next = normalize(join(dirname(rel), spec));
+      if (next.startsWith('src/') && !next.split('/').includes('..')) stack.push(next);
+    }
+  }
+  return [...seen].sort();
+}
+
+// Stage 2 pages, props, and voices live in the shared folders but Stage 1's preload never asks for them.
+// anims json stays: queueCharJson fetches every character's clip list at boot. Twix panels stay too.
+const STAGE2_VOICE = /^(st2_|byar_|zealot_|archer_|riley_st2|riley_ribbon|riley_mud)/;
+const STAGE2_PROP = /^(?:fx-arrow|fx-torch|item-ribbon|planks|prop-beam(?:_n)?|prop-crate(?:_n)?)\.(?:webp|json)$/;
+const STAGE2_CHAR_PAGE = /^(?:archer|byar|zealot)-/;
+
 export function audit() {
   const characters = ['riley','grunt','spear','hound','chief','loial'].map(key => {
     const m = json(`assets/chars/${key}.anims.json`);
@@ -65,6 +92,7 @@ export function audit() {
   // the first fight. Their own budget line, same split as restartHotfix (the clips are under cutscenes.clips).
   const CUTSCENE_SRC = new Set(['cutscene.js', 'cutscene-hooks.js']);
   const cutsceneSourceFiles = [];
+  const notFetched = new Set();
   // Stage 3 FX stand-ins (painted over the labelled prop/FX cards at Stage 3 entry): their own line under stage3.
   const STAGE3_SRC = new Set(['stage3-fx-art.js']);
   const stage3SourceFiles = [];
@@ -81,14 +109,18 @@ export function audit() {
     else if (IOS_SRC.has(name)) iosSourceFiles.push(`src/${name}`);
     else files.add(`src/${name}`);
   }
-  for (const group of ['chars','bg','props','ui','powers']) for (const name of readdirSync(resolve(ROOT,'assets',group))) if (!name.endsWith('.md')) files.add(`assets/${group}/${name}`);
+  for (const group of ['chars','bg','props','ui','powers']) for (const name of readdirSync(resolve(ROOT,'assets',group))) {
+    if (name.endsWith('.md')) continue;
+    const path = `assets/${group}/${name}`;
+    if ((group === 'chars' && STAGE2_CHAR_PAGE.test(name)) || (group === 'props' && STAGE2_PROP.test(name))) notFetched.add(path);
+    else files.add(path);
+  }
   files.add('assets/audio/music-main.mp3');
   // The freeze guard is a hotfix module too (kept apart from IOS_SRC so this edit cherry-picks onto Stage 5).
   if (files.delete('src/guard.js')) iosSourceFiles.push('src/guard.js');
-  // Stage 1's 25 MB gate counts every voice Stage 1 and Stage 2 ship (rwb-w2 counted
-  // the whole voice folder). Stage 3 lines are preloaded only with s3=1. Folding
-  // them into this sum exceeds 25 MB, so they have their own budget below instead
-  // of being dropped from the Stage 1 gate along with Stage 2.
+  // Stage 1 preloads VOICE at the first fight and fetches power/Twix lines when those pickups appear.
+  // Stage 2 voices load with Stage 2 (preloadClips(STAGE2_VOICES)), not before that fight.
+  // Stage 3–6 lines have their own caps below and are not hidden inside this gate.
   const stage3Voice = /^(st3_|cutthroat_|fade_|riley_st3_|riley_escape_|riley_counter_)/;
   const stage4Voice = /^(st4_|draghkar_|cultist_|riley_fog_|riley_tower_|riley_bridge_|riley_light_|riley_st4_)/;
   const stage5Voice = /^(st5_|aginor_|balthamel_|greenman_|riley_st5_)/;
@@ -100,8 +132,15 @@ export function audit() {
     else if (stage4Voice.test(name)) { stage4VoiceBytes += bytes; stage4VoiceCount++; }
     else if (stage5Voice.test(name)) { stage5VoiceBytes += bytes; stage5VoiceCount++; }
     else if (stage6Voice.test(name)) { stage6VoiceBytes += bytes; stage6VoiceCount++; }
+    else if (STAGE2_VOICE.test(name)) notFetched.add(path);
     else { files.add(path); countedVoiceBytes += bytes; }
   }
+  // Modules the boot graph loads that this gate used to leave on the per-stage source lines.
+  const bootModules = [];
+  for (const path of bootSourceFiles()) if (!files.has(path)) { files.add(path); bootModules.push(path); }
+  const bootModuleBytes = bootModules.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const notFetchedFiles = [...notFetched].sort();
+  const notFetchedBytes = notFetchedFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
   const stage3MusicFiles = ['assets/audio/music-stage3.mp3', 'assets/audio/music-boss3.mp3'];
   const stage3MusicBytes = stage3MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
@@ -168,21 +207,25 @@ export function audit() {
   return { characters, preFight: { files:[...files].sort(), inventoryUpperBoundBytes:preFightUpperBoundBytes, budgetBytes:25_000_000,
       inventoryStatus:preFightUpperBoundBytes <= 25_000_000 ? 'PASS' : 'FAIL',
       countedVoiceBytes,
-      note:'Stage 1 and Stage 2 static inventory, including music-main and every voice those stages ship. Stage 3 and Stage 4 voices and music are under stage3 and stage4 (they are not loaded before the first fight, and they do not fit this 25 MB gate). The iOS hotfix modules are under iosHotfix for the same reason. Actual transfer/cold-load timing requires browser resource evidence.' },
+      notFetched: { files: notFetchedFiles, bytes: notFetchedBytes,
+        note: 'Stage 2 character pages (not their anims json), Stage 2 props, and Stage 2 voices. Stage 1 never requests them. Twix panels stay in the sum because queuePowerArt loads them.' },
+      bootModules: { files: bootModules, bytes: bootModuleBytes,
+        note: 'Source reachable from src/bootstrap.js (static import, import(), and export-from) that used to sit only on the stage and hotfix lines. Counted in this sum and still capped on those lines. page-base.js loads through the debug-flag re-export.' },
+      note:'Stage 1 boot and first-fight bytes: shared code the boot graph actually imports, Stage 1 assets, music-main, and the voices Stage 1 can fetch (fight lines plus power and Twix). Stage 2 pages, props, and voices are under notFetched. Stage 3–6 assets, voices, music, and clips stay on their own lines. Actual transfer timing needs browser evidence.' },
     iosHotfix: {
       source: { files: iosSourceFiles, bytes: iosSourceBytes, budgetBytes: iosSourceBudget,
         status: iosSourceBytes <= iosSourceBudget ? 'PASS' : 'FAIL',
-        note: 'Viewport, Pages base, debug flag, Stage 3 plate stand-in and freeze guard. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
+        note: 'Viewport, Pages base, debug flag, Stage 3 plate stand-in and freeze guard. Their source is in the pre-fight sum because bootstrap loads it. This line is the separate cap.' },
     },
     restartHotfix: {
       source: { files: restartSourceFiles, bytes: restartSourceBytes, budgetBytes: restartSourceBudget,
         status: restartSourceBytes <= restartSourceBudget ? 'PASS' : 'FAIL',
-        note: 'Quality governor and freeze-guard resume. Not folded into the 25 MB pre-fight sum, the same split as iosHotfix.' },
+        note: 'Quality governor and freeze-guard resume. Their source is in the pre-fight sum because main.js imports it. This line is the separate cap.' },
     },
     cutscenes: {
       source: { files: cutsceneSourceFiles, bytes: cutsceneSourceBytes, budgetBytes: cutsceneSourceBudget,
         status: cutsceneSourceBytes <= cutsceneSourceBudget ? 'PASS' : 'FAIL',
-        note: 'Video cutscene controller and hooks. Not folded into the 25 MB pre-fight sum, the same split as restartHotfix.' },
+        note: 'Video cutscene controller and hooks. Their source is in the pre-fight sum because main.js imports it. This line is the separate cap. The clips stay outside the sum.' },
       clips: { files: cutsceneClips, bytes: cutsceneClipBytes, budgetBytes: cutsceneClipBudget,
         status: cutsceneClipBytes <= cutsceneClipBudget ? 'PASS' : 'FAIL',
         note: 'Streamed one at a time through a temporary <video> when a cutscene starts; nothing is preloaded, so they are outside the pre-fight sum.' },
@@ -193,7 +236,7 @@ export function audit() {
     stage3: {
       source: { files: stage3SourceFiles, bytes: stage3SourceBytes, budgetBytes: stage3SourceBudget,
         status: stage3SourceBytes <= stage3SourceBudget ? 'PASS' : 'FAIL',
-        note: 'Code-drawn stand-ins for the labelled Stage 3 prop/FX sheets, run at Stage 3 entry. Not part of the Stage 1 pre-fight sum.' },
+        note: 'Code-drawn stand-ins for the labelled Stage 3 prop/FX sheets, run at Stage 3 entry. The source is in the pre-fight sum because the boot graph imports it. This line is the separate cap.' },
       voices: { count: stage3VoiceCount, bytes: stage3VoiceBytes, budgetBytes: stage3VoiceBudget,
         status: stage3VoiceBytes <= stage3VoiceBudget ? 'PASS' : 'FAIL',
         note: 'STAGE3_VOICES only. Each line is capped at 200 KB; the total cap is 18 times that.' },
@@ -204,7 +247,7 @@ export function audit() {
     stage4: {
       source: { files: stage4SourceFiles, bytes: stage4SourceBytes, budgetBytes: stage4SourceBudget,
         status: stage4SourceBytes <= stage4SourceBudget ? 'PASS' : 'FAIL',
-        note: 'Stage 4 modules only. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
+        note: 'Stage 4 modules. Their source is in the pre-fight sum because stages.js imports it. This line is the separate cap. Stage 4 assets, voices, and music stay outside the sum.' },
       voices: { count: stage4VoiceCount, bytes: stage4VoiceBytes, budgetBytes: stage4VoiceBudget,
         status: stage4VoiceBytes <= stage4VoiceBudget ? 'PASS' : 'FAIL',
         note: 'Stage 4 voice lines only. Each line is capped at 200 KB; the total cap is 23 times that.' },
@@ -215,7 +258,7 @@ export function audit() {
     stage5: {
       source: { files: stage5SourceFiles, bytes: stage5SourceBytes, budgetBytes: stage5SourceBudget,
         status: stage5SourceBytes <= stage5SourceBudget ? 'PASS' : 'FAIL',
-        note: 'Stage 5 modules only. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
+        note: 'Stage 5 modules. Their source is in the pre-fight sum because stages.js imports it. This line is the separate cap. Stage 5 assets, voices, and music stay outside the sum.' },
       voices: { count: stage5VoiceCount, bytes: stage5VoiceBytes, budgetBytes: stage5VoiceBudget,
         status: stage5VoiceBytes <= stage5VoiceBudget ? 'PASS' : 'FAIL',
         note: 'Stage 5 voice lines only, when the files exist. Each line is capped at 200 KB; the total cap is 23 times that.' },
@@ -226,7 +269,7 @@ export function audit() {
     stage6: {
       source: { files: stage6SourceFiles, bytes: stage6SourceBytes, budgetBytes: stage6SourceBudget,
         status: stage6SourceBytes <= stage6SourceBudget ? 'PASS' : 'FAIL',
-        note: 'Stage 6 modules only. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
+        note: 'Stage 6 modules. Their source is in the pre-fight sum because stages.js imports it. This line is the separate cap. Stage 6 assets, voices, music, and art stay outside the sum.' },
       voices: { count: stage6VoiceCount, bytes: stage6VoiceBytes, budgetBytes: stage6VoiceBudget,
         status: stage6VoiceBytes <= stage6VoiceBudget ? 'PASS' : 'FAIL',
         note: 'Stage 6 voice lines only, when the files exist. Each line is capped at 200 KB; the total cap is 24 times that.' },

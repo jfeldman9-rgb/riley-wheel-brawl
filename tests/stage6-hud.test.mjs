@@ -65,5 +65,15 @@ test('the Rand slot reports ready, counting, and spent without touching the butt
     hud.stage.textures.exists = k => k === 'belalPortrait';
     hud.update(0, 16);
     assert.equal(hud.bossName.text, "BE'LAL");
+    // A second visit recreates the HUD widgets but the old latch used to skip the rewrite.
+    hud._s6boss = "BE'LAL";
+    hud._s6n = 6;
+    hud.bossName.text = 'TROLLOC CHIEFTAIN';
+    hud.bossPic = { texture: { key: 'bossPortrait' }, setTexture(k) { this.texture.key = k; return this; }, setDisplaySize() { return this; } };
+    hud.titleStageT = { text: "EMOND'S FIELD", setText(t) { this.text = t; return this; } };
+    hud.update(96, 16);
+    assert.equal(hud.bossName.text, "BE'LAL");
+    assert.equal(hud.bossPic.texture.key, 'belalPortrait');
+    assert.equal(hud.titleStageT.text, 'THE STONE OF TEAR');
   } finally { globalThis.document = prevDoc; }
 });

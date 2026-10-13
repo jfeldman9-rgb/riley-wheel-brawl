@@ -263,7 +263,7 @@ export class Stage1 extends Phaser.Scene {
     if (this.cutscene) {
       for (const reason of this.pauseReasons) if (reason !== 'cutscene') {
         if (reason === 'manual' && (a === 'pause' || a === 'start')) this.setPauseReason('manual', false);
-        this.inp.clear(); return;
+        this.inp.flushPresses?.(); return;
       }
       this.cutscene.press(a); return;
     }
@@ -272,7 +272,7 @@ export class Stage1 extends Phaser.Scene {
       if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) this.setPauseReason('manual', !this.pauseReasons.has('manual'));
       return;
     }
-    if (this.paused) { this.inp.clear(); return; }
+    if (this.paused) { this.inp.flushPresses?.(); return; }
     unlock();
     if (!this.started && !this.ended && (a === 'left' || a === 'right' || a === 'up' || a === 'down')) { if (a === 'left' || a === 'right') this.selectStage(a === 'left' ? -1 : 1); return; }
     if (!this.started && !this.ended) return this.start();
@@ -283,7 +283,9 @@ export class Stage1 extends Phaser.Scene {
     if (paused) this.pauseReasons.add(reason); else this.pauseReasons.delete(reason);
     perf.setSuspended(reason, paused);
     const next = this.pauseReasons.size > 0;
-    this.inp.clear();
+    // Drop the press that paused or resumed. Held keys stay: keydown ignores repeats, so wiping
+    // keysDown leaves a direction dead until the player releases it and presses again.
+    this.inp.flushPresses?.();
     if (next === this.paused) return;
     this.paused = next;
     this.kit?.onPause?.(next);

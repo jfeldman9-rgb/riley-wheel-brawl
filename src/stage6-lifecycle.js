@@ -3,6 +3,7 @@ import { freezeStrike, thawStrike } from './stage6-freeze.js';
 import { stage4Delta } from './stage4-time.js';
 import { VW, LANE_TOP } from './config.js';
 import { s6Scale } from './stage6-paint.js';
+import { stopSceneAudio } from './audio.js';
 import { quietStage6 } from './stage6-audio.js';
 import { refuseReason, trySpend, eligibleTargets, allocateStrikes, randEffect, noteRileyKo, tickRand, RAND } from './rand-call.js';
 import { playCall, abortRandCall, dropBlob, warmRand } from './rand-call-cutscene.js';
@@ -92,7 +93,9 @@ export function installStage6SceneHooks(kit) {
     return original.call(this);
   });
   hook(kit, s, 'continueGame', original => function() {
-    quietStage6(this); kit.deathAudio = false;
+    // Speech stops. The director stays on gameover so resumeFight keeps the boss loop's place
+    // instead of treating a silent state as a fresh boss intro.
+    stopSceneAudio(); kit.deathAudio = false;
     return original.call(this);
   });
   hook(kit, s, 'spawnFireball', original => function(R) {

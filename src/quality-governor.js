@@ -1,7 +1,7 @@
 // Quality governor (moved out of main.js for the restart fix). If frames run long over 2 s windows, step down:
 // bloom off -> fewer particles -> lower render scale -> unlit backdrop (sprites stay lit) -> render scale 1.
 // Software WebGL (SwiftShader/llvmpipe) starts at level 4. ?q=fixed disables it, ?q=N pins a starting level.
-// Kept out of the Stage 1 pre-fight sum; tools/audit-stage1.mjs counts it under restartHotfix.
+// In the Stage 1 pre-fight sum (main.js imports it) and capped again under restartHotfix.
 import { releaseIdleRenderTargets } from './render-resources.js';
 
 export const WINDOW_MS = 2000, SLOW_AVG_MS = 21, MAX_SAMPLE_MS = 100;

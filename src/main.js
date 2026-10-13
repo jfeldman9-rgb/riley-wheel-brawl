@@ -23,6 +23,9 @@ const explicitRs = q.has('rs') && +q.get('rs') > 0;
 const bootRs = explicitRs || bootFloor < 3 ? RS0 : tierScale(bootFloor, RS0);
 const game = window.__game = new Phaser.Game({
   type: Phaser.WEBGL, parent: 'game', backgroundColor: '#05070d', width: VW * bootRs, height: VH * bootRs,
+  // Game audio is its own AudioContext. noAudio selects Phaser's silent manager; disableWebAudio
+  // keeps a second context from being constructed on iOS, where WebAudio exists.
+  audio: { noAudio: true, disableWebAudio: true },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   render: { antialias: true, maxLights: +q.get('ml') || 10, powerPreference: 'high-performance', preserveDrawingBuffer: !!q.get('capture') },
   fps: { target: 60 }, scene: [Boot, Stage1, HUD],

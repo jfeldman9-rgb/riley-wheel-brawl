@@ -57,18 +57,21 @@ export function bindRandLabel(hud) {
 
 function paint(hud, s) {
   const n = s.titleSel || s.stageNo;
-  if (n === 6 && hud.titleStageT && hud._s6n !== 6) { hud._s6n = 6; hud.titleStageT.setText(NAME); }
+  // The HUD scene is recreated on a revisit, but these latches live on the old instance's
+  // replacement only if create() cleared them. Compare the live text, not just the latch.
+  if (n === 6 && hud.titleStageT && hud.titleStageT.text !== NAME) { hud._s6n = 6; hud.titleStageT.setText(NAME); }
   fixHelp(hud, n >= 6);
   fixBoss(hud, s);
 }
 
 function fixBoss(hud, s) {
-  const name = s.stageDef?.boss?.name;
-  if (!name || !hud.bossName || hud._s6boss === name) return;
+  const boss = s.stageDef?.boss, name = boss?.name;
+  if (!name || !hud.bossName) return;
+  const pic = boss.portrait, havePic = !pic || hud.bossPic?.texture?.key === pic;
+  if (hud._s6boss === name && hud.bossName.text === name && havePic) return;
   hud._s6boss = name;
-  hud.bossName.setText(name);
-  const pic = s.stageDef.boss.portrait;
-  if (pic && s.textures?.exists?.(pic)) hud.bossPic?.setTexture?.(pic)?.setDisplaySize?.(68, 68);
+  if (hud.bossName.text !== name) hud.bossName.setText(name);
+  if (pic && s.textures?.exists?.(pic) && hud.bossPic?.texture?.key !== pic) hud.bossPic.setTexture(pic)?.setDisplaySize?.(68, 68);
 }
 
 function fixHelp(hud, on) {
