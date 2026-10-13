@@ -142,6 +142,8 @@ engine/                       # no game names, no game assets (enforced, §7)
   media/     cutscene-player.js music.js voice.js sfx.js
   hud/       hud-kit.js
   bot/       bot-core.js
+  meta/      save.js run-stats.js scorecard.js rewards.js shop.js skins.js soundtrack.js meta-scene.js   (§12)
+  modes/     arena-rules.js arena-score.js run-record.js replay.mjs (arena-kit.js after E4)             (§13)
   test/      phaser-stub.mjs sim.mjs seeds.mjs *.test.mjs
 tools/engine/
   budget.mjs  texture-dump.mjs  art.py  encode_clips.sh  gen-anim-pivots.mjs
@@ -473,6 +475,9 @@ These are kept out to keep the engine small:
 - An assist/call-in system with cutscene playback that never blocks gameplay.
 - Byte and GPU budget gates, an art processor with caps, clip encoding, and voice/narrator pipelines.
 - A headless, seeded simulation harness with bot clears as the acceptance gate.
+- Meta-progression (§12): scorecard with letter grades, coins, a shop for skins and soundtracks, and a local
+  save. No real-money purchases.
+- Arena mode (§13): endless scaled waves on any shipped stage, with replayable, leaderboard-ready run records.
 
 What Cheeseville writes itself:
 - its manifest;
@@ -484,7 +489,330 @@ What Cheeseville writes itself:
 
 ---
 
-## 11. Decisions for Jason (defaults apply if no answer)
+## 11. Where meta-progression and Arena mode fit
+
+Meta-progression (§12) and Arena mode (§13) are **engine features written engine-first**.
+- Their rules live in `engine/meta/` and `engine/modes/` from the first commit, and pass the denylist and boundary
+  test from day one (§7.1).
+- RWB is their first user. Thin adapters in `src/` connect them.
+- Cheeseville gets them unchanged after E7.
+
+Build order across every workstream: `docs/CAMPAIGN-ARC-PLAN.md` §4. In short:
+1. Stage 7.
+2. E0 (it may start earlier, see J4).
+3. M1–M8.
+4. A1–A9.
+5. Stages 8 and 9.
+6. E1–E8.
+
+**Shared rules for M and A tasks** (on top of the §9.1 rules):
+- **Zero pre-fight bytes beyond a ≤ 1 KB installer.**
+  - Meta and arena code is loaded with dynamic `import()`, either on the first stage clear or when the player opens
+    the shop or arena.
+  - New audit line `meta.source`† (`engine/meta/**`, `engine/modes/**`, `src/meta-*.js`, `src/arena-*.js`), budget
+    64 KB.
+  - Test `engine/test/lazy.test.mjs`† parses static imports from `src/bootstrap.js` and fails if any static chain
+    reaches those files.
+- **Campaign behaviour is untouched.** The golden logic snapshot (§6.4) stays empty with meta installed. The
+  tracker only observes; it never changes a number.
+- **The protected files stay protected.**
+  - The UI is a separate Phaser scene, `MetaScene`†. The installer adds it at runtime with
+    `game.scene.add('meta', MetaScene, true)`, drawn above the HUD.
+  - It never edits `src/hud.js` or `index.html`.
+  - Menus use the existing `game.inp` actions (move, attack = confirm, jump = back, pause) plus pointer taps. They
+    add no new keys and no DOM buttons.
+- **No real money, ever.**
+  - No payment APIs, no network calls, no ads.
+  - Test `engine/test/no-iap.test.mjs`† fails on `PaymentRequest`, `fetch(`/`XMLHttpRequest` to any absolute URL,
+    or any StoreKit or billing bridge string in `engine/meta/**`, `engine/modes/**`, `src/meta-*` or
+    `src/arena-*`.
+
+---
+
+## 12. Meta-progression module (`engine/meta/`)
+
+### 12.1 What the player sees
+1. **End-of-level scorecard.** It appears after each stage clear, and after a campaign clear or an arena run ends.
+   - A letter grade **S/A/B/C/D** with a per-category breakdown: time, damage taken, best combo, clean run.
+   - Coins earned, with a count-up, and the new coin total.
+   - It is drawn by `MetaScene` as a side panel at the right of the screen, so it never overlaps the existing
+     stage-clear card text in `src/hud.js:305-312`, which is centred.
+2. **Shop.** Reached from a `SHOP` button `MetaScene` draws on the title card, and from the scorecard.
+   - The player buys and equips **skins** and **soundtracks** with coins only.
+   - It shows owned/equipped state, and an "export / import save" panel (§12.5).
+
+### 12.2 Modules
+
+| File † | Kind | Responsibility |
+|---|---|---|
+| `engine/meta/save.js` | pure; storage injected | Load, validate, migrate and write the save. Falls back to memory when storage fails (§12.5) |
+| `engine/meta/run-stats.js` | scene adapter (hooks) | Observes one run: time, damage taken, hits landed, KOs, max combo, deaths, continues, call-ins used, secrets (ribbons). Read-only hooks via `core/hook.js` |
+| `engine/meta/scorecard.js` | pure | `grade(stats, rubric)` → `{letter, points, parts: {time, damage, combo, clean}}` |
+| `engine/meta/rewards.js` | pure | `coinsFor({letter, firstBest, mode, score, wave})`, per-mode caps |
+| `engine/meta/shop.js` | pure | `buy(save, catalog, id)`, `equip(save, id)`, `owned(save, id)`. Returns a new save or `{error}` |
+| `engine/meta/skins.js` | adapter | Applies the equipped skin: a tint tier or a page-swap tier (§12.4) |
+| `engine/meta/soundtrack.js` | adapter | Maps equipped tracks onto the game's music keys before playback |
+| `engine/meta/meta-scene.js` | Phaser scene | Scorecard view, shop view, title `SHOP` button, coin badge. Neutral styling; font, colours and strings come from the game manifest |
+| `src/meta-rwb.js` | RWB content | RWB catalog, per-stage rubrics, strings, installer (≤ 1 KB static, the rest lazy) |
+
+The game manifest (§4.2) gains a `meta` block:
+
+```js
+meta: {
+  storagePrefix: 'rwb',                       // save key: 'rwb-save'
+  rubric: { 1: { parTime: 210, comboTarget: 20, damageBudget: 240 }, /* … per stage … */ },
+  catalog: [
+    { id: 'tint-ember', kind: 'skin', tier: 'tint', price: 150, tint: [0xffd2a0, 0xff9a60] },
+    { id: 'skin-warder', kind: 'skin', tier: 'pages', price: 400, pages: 'assets/skins/warder/riley' },
+    { id: 'ost-boss6-alt', kind: 'music', price: 250, track: 'assets/audio/alt/boss6-alt.mp3', slot: 'boss6' },
+  ],
+  coins: { S: 120, A: 80, B: 50, C: 30, D: 15, firstBestBonus: 0.5, arenaCap: 120 },
+}
+```
+
+### 12.3 Grading (pure, deterministic, unit-tested)
+
+| Part | Weight | 100 points when | 0 points when |
+|---|---|---|---|
+| Time | 30 | time ≤ `parTime` | time ≥ 2 × `parTime` (linear between) |
+| Damage taken | 35 | 0 damage | damage ≥ `damageBudget` (linear) |
+| Best combo | 20 | maxCombo ≥ `comboTarget` | 0 (linear) |
+| Clean | 15 | 0 deaths | 50 points off per death (floor 0) |
+
+**Letter:**
+- **S** needs ≥ 95 points **and** 0 deaths.
+- **A** ≥ 85, **B** ≥ 70, **C** ≥ 50, otherwise **D**.
+- **Any continue caps the grade at C.**
+
+**Calibration.** `parTime` = 1.1 × the median bot clear time, and `damageBudget` = 1.5 × the median bot damage
+taken, over `FULL_STAGE_SEEDS`. `tools/engine/calibrate-rubric.mjs`† generates them from the simulation harness and
+writes `src/meta-rwb.js` rubric values. Recalibrate whenever a stage's balance changes.
+
+**Stats sources in RWB.**
+- `Stage1.stats()` (`src/stage1.js:381`) already gives score, max combo, time, lives and ribbons.
+- `run-stats.js` adds the rest by wrapping:
+  - `riley.takeHit` (`src/riley.js:219`) for damage;
+  - `onEnemyDie` (`src/stage1.js:368`) for KOs;
+  - `rileyDied` (`:382`) for deaths;
+  - `continueGame` (`:390`) for continues;
+  - `callLoial` for call-ins.
+
+  Every wrapper calls the original first and returns its result untouched, and all are restored on stage release.
+  A test asserts function identity after release.
+- **Engine code never names these methods.** `run-stats.js` takes a hook map, e.g.
+  `{ hurt: [player, 'takeHit'], ko: [scene, 'onEnemyDie'], … }`. `src/meta-rwb.js` supplies RWB's names
+  (`riley`, `callLoial`), so the denylist (§7.1) stays clean.
+
+### 12.4 Coins, skins and soundtracks
+
+**Coins.**
+- Stage clear: by letter, using the `coins` table. **+50%** the first time a new best letter is reached on that
+  stage.
+- Campaign complete (Stage 9 clear): +300 once.
+- Arena: §13.4.
+- Prices: tint skins 150, page skins 400, soundtracks 250.
+- **Pacing target:** a full campaign at B grades (about 9 × 50 + 300 = 750 coins) buys 2–3 items. The whole RWB
+  catalog (about 3 tints, 2 page skins, 4 tracks ≈ 2,250 coins) takes about 2 campaign runs plus some arena
+  play. Tune by changing prices, never by changing grading.
+
+**Skins, in two tiers sized to the iPhone budget.**
+1. **Tint tier: zero texture memory.**
+   - `setTint(top, bottom)` on the player sprite, a multiply on the lit pipeline.
+   - **M6 must verify** that the Phaser 4 lit pipeline honours tint with normal maps on. Check it with an art-shot
+     diff before shipping any tint skin.
+2. **Page tier: memory-neutral.**
+   - Alternative **colour** pages for the player atlas (`riley-0.webp`, `riley-1.webp`) are loaded **in place of**
+     the default colour pages, under the same texture key.
+   - The frame JSON, anim JSON and normal maps (`_n`/`_nl`) are reused unchanged.
+   - **Decoded cost is identical:** Riley's colour pages are 32.49 MiB either way, and the two are never resident
+     together.
+   - **Disk:** Riley's colour pages are 2,079,478 + 144,436 = 2,223,914 bytes. Each page skin must be ≤ that, so
+     the pre-fight inventory upper bound cannot grow when a skin replaces the default.
+   - New audit line `skins`† (`assets/skins/**`), 9,000,000 bytes, outside the pre-fight gate.
+   - `tools/engine/skin.py`† recolours the default pages with a hue/value map, keeps alpha **byte-identical**, and
+     fails if any page's dimensions differ from the default.
+   - Test: `texture-dump` with a page skin equipped is within ±0.1 MiB of default.
+   - Never ship a skin as a second resident atlas. That would cost +32 MiB, and the Stage 6 peak is already
+     110.91 MiB.
+
+**Soundtracks.**
+- Unlockable tracks in `assets/audio/alt/`† are ≤ 1,200,000 bytes each, with a new audit line `music.alt`†.
+- They play through the existing streamed `<audio>` element path (`src/audio.js:303`, `new Audio(url)`), so there
+  is **no decoded-PCM memory cost**.
+- Equipping a track overrides one music slot (e.g. `boss6`), applied by swapping the `MUSIC[key]` url before
+  playback. That is the same mutation pattern `src/stage6.js` already uses to register `stage6`/`boss6`.
+- The title screen gets a **jukebox** row listing owned tracks.
+
+### 12.5 Local save
+
+- **Key:** `${storagePrefix}-save` (RWB: `rwb-save`; Cheeseville: `cv-save`) in `localStorage`. Example:
+
+  ```json
+  { "v": 1, "coins": 0, "owned": [], "equipped": { "skin": null, "music": {} },
+    "best": { "6": { "letter": "A", "score": 48210, "time": 231.4 } },
+    "arena": { "boards": { "rwb-6": [ { "score": 0, "wave": 0, "date": "2026-10-13", "seed": 0 } ] } },
+    "stats": { "clears": 0, "campaignComplete": false }, "sum": "crc32" }
+  ```
+
+- **Writes** happen only on clear, purchase, equip and arena end. Never per frame.
+- `sum` is a CRC to detect **corruption**, not cheating. A corrupt save is renamed to `-save-bad`, never deleted,
+  and the game starts a fresh save.
+- **Migrations:** `migrate[v]` functions chained up to the current version, each with a fixture test.
+- **Failure modes.** In Safari private mode or when the quota is exceeded, `setItem` throws. Fall back to an
+  in-memory save and show a one-line notice on the scorecard: "Progress can't be saved in this browser mode." The
+  game never blocks on storage.
+- **Safari storage eviction.** iOS Safari may delete script-written storage for a site that hasn't been visited
+  in 7 days. Installed home-screen web apps are exempt. Mitigations:
+  - call `navigator.storage.persist()` when it's available;
+  - provide **export/import save codes** (base64 of the JSON plus its CRC) in the shop's settings panel;
+  - the shop shows a hint to add the game to the home screen.
+- **Existing rules that still hold.** `tests/freeze-guard.test.mjs:154-156` asserts that `hud.js`, `perf.js`,
+  `perf-panel.js`, `debug-flag.js`, `main.js` and `guard.js` never touch storage. The save lives only in
+  `engine/meta/save.js`, so this still holds.
+
+### 12.6 Build tasks (Grok 4.7, sequential, after E0)
+
+| # | Task | Acceptance |
+|---|---|---|
+| M1 | `save.js`: schema v1, CRC, migrate chain, memory fallback, export/import codes; storage injected | Unit: round-trip; a corrupt save is kept as `-bad`; a throwing `setItem` falls back to memory; a code import rejects a bad CRC; boundary/denylist clean |
+| M2 | `scorecard.js` and `rewards.js` | Table tests at every letter boundary; a continue caps at C; S needs 0 deaths; the first-best bonus applies once; deterministic |
+| M3 | `run-stats.js` plus `src/meta-rwb.js` hooks (no UI); `tools/engine/calibrate-rubric.mjs` writes rubrics for Stages 1–7 | Golden logic snapshot empty with the tracker on; hooks restored on release (identity test); harness stats equal hand-counted values on seed 1 |
+| M4 | `MetaScene` plus scorecard view after every clear; coins credited and saved; lazy import | Pre-fight ≤ +1 KB; `lazy.test` green; scorecard never overlaps the clear-card text (bounds test); touch, keyboard and pad all dismiss it |
+| M5 | `shop.js`, RWB catalog, shop view from the title `SHOP` button, buy/equip/owned, jukebox row | Unit: can't buy without coins, can't buy twice, equip only owned items; `no-iap.test` green; works with pointer only and with pad only |
+| M6 | Skins: tint tier plus page tier; `tools/engine/skin.py`; one tint and one page skin for RWB | Art-shot diff shows the tint under lighting; page skin ≤ 2,223,914 bytes, dimensions identical, alpha identical; `texture-dump` equipped is within ±0.1 MiB of default; `skins` line PASS |
+| M7 | Soundtracks: 2 alt tracks, slot override, jukebox playback | Each ≤ 1.2 MB, `check_loops.py` passes; `music.alt` line PASS; override reverts when unequipped |
+| M8 | Hardening: private mode, quota, eviction (export/import), `persist()`, iPhone browser pass; migration v1→v2 scaffold test | No console errors in 5 runs; save survives a reload; memory-fallback notice appears when storage throws |
+
+---
+
+## 13. Arena mode (main game engine)
+
+Arena mode is built on the **main game**:
+- `Stage1` scene, kits and `Fighter`/`Enemy`;
+- the stage's own enemy types, art and backdrops;
+- the call-in rules.
+
+It is not a separate mini-game. It reuses one existing stage's content per arena, so its memory is bounded by
+that stage's already-measured budget.
+
+### 13.1 What the player sees
+- **Entry.** An `ARENA` button on the title card (drawn by `MetaScene`) lists unlocked arenas. An arena for
+  Stage N unlocks after Stage N is cleared once. `?arena=N` always works, for testing.
+- **Play.** Endless waves on one locked screen of Stage N's backdrop. There is no story, no cutscenes and no
+  clips.
+  - **3 lives, no continues.**
+  - The call-in uses the stage's own provider with arena rules (§13.3).
+- **End.** A results panel shows wave reached, score, kills, best combo, coins earned, and the **local top 10** for
+  that arena. It also offers a **daily seed** run: the same waves for everyone that day, which makes leaderboards
+  meaningful later.
+
+### 13.2 Modules
+
+| File † | Kind | Responsibility |
+|---|---|---|
+| `engine/modes/arena-rules.js` | pure | `waveFor(n, pool, rng)` → `[[type, side, delay], …]`; scaling; caps; elite and boss-lite cadence; drop and heal cadence |
+| `engine/modes/arena-score.js` | pure | Score from events (kills, combo, waves, time); anti-farm rules |
+| `engine/modes/run-record.js` | pure | Leaderboard-ready run record, input log (RLE), digest |
+| `engine/modes/replay.mjs` | node tool via the sim | Replays a run record headlessly and recomputes the score |
+| `src/arena-kit.js` | RWB adapter | `ArenaKit` and `arenaDef(N)`: wraps Stage N's kit for visuals only (`build`, `ambient`, `applyLightBudget`, `setQuality`, `destroy`) and disables its zone-driven hazards and story |
+| `src/arena-rwb.js` | RWB content | Per-arena pools, elite/boss-lite choices, which plate is the arena screen, strings |
+
+`ArenaKit` is generalised into `engine/modes/arena-kit.js` once `BrawlScene` exists (E4).
+
+### 13.3 Rules (all numbers in `arena-rules.js`, unit-tested)
+
+- **Arena screen:** one zone of the base stage, e.g. Stage 6 zone 1 (`bg6mid2` plus `bg6floor`). The camera is
+  locked at that zone's `l`–`r`, and only that plate, its floor and the far plate are resident (`STREAMS[N]`
+  restricted to one zone).
+- **Enemy pool:** only types that already appear in Stage N's waves and are already in its char or texture lists.
+  The arena **never loads a type its stage doesn't**.
+- **Wave n (1-based):**
+  - spawn count = `min(3 + floor(n / 2), 10)`, with **at most 6 alive at once**; the rest queue;
+  - HP × `min(1 + 0.06 (n−1), 2.5)`;
+  - damage × `min(1 + 0.03 (n−1), 1.6)`;
+  - speed × `min(1 + 0.02 (n−1), 1.3)`.
+- **Never scaled:** attack tokens (always ≤ 2, the hardening rule), tell durations (never shorter than the base
+  type's), and grab break rules. Difficulty comes from numbers and mixes, never from unfair reads.
+- **Every 5th wave:** one elite (the stage's elite, e.g. `fadelt` on Stages 6–9), and +25 HP to Riley.
+- **Every 10th wave:** **boss-lite**, the stage boss with 40% HP, phase 1 only, and no story lines.
+  - It needs an `arenaLite` option on each boss class. The campaign never sets that option, and the golden
+    snapshot proves that.
+  - The boss sheet is loaded on demand with `pump()` before wave 10, then released after.
+- **Drops:** one power pickup every 3 waves, from the stage's own `drops` kinds.
+- **Call-in:** 1 charge, recharged after 15 KOs **and** 60 s. There is no per-stage maximum. `bossFrac` applies to
+  boss-lite only.
+- **Determinism:** all randomness comes from a seeded RNG (`core/math.js`). Daily seed = hash of `YYYY-MM-DD` and
+  the arena id.
+
+### 13.4 Scoring and coins (leaderboard-ready)
+
+**Score.**
+- Σ(kill value × combo multiplier) + 250 × n per wave cleared + 500 for a no-damage wave + 10 per second survived.
+- Kill values come from the existing enemy `score` fields.
+- Combo multiplier = `1 + min(combo, 50) / 25`, so at most 3×.
+- **Anti-farm:** an enemy alive for more than 25 s without attacking despawns with no score. A wave's time bonus
+  stops after 90 s.
+
+**Run record** (`run-record.js`):
+
+```json
+{ "schema": 1, "game": "rwb", "mode": "arena", "arena": "rwb-6", "build": "<rwb-build meta + git sha>",
+  "seed": 2026101306, "daily": true, "durationMs": 412345, "wave": 14, "score": 98210, "kills": 77,
+  "maxCombo": 31, "inputs": "<base64 RLE of the per-step action bitmask>", "digest": "sha256(...)" }
+```
+
+- **Fixed step.** Arena logic runs on a fixed 60 Hz accumulator, using the existing `stage4Delta`/`substeps`
+  clocks, so a recorded input log replays exactly.
+- **Input log size.** The action bitmask covers the `src/input.js` actions. RLE of a 10-minute run is typically
+  10–40 KB. It is stored only for the **best 3** runs per arena, to keep the save small.
+- **Replay check.** `engine/modes/replay.mjs` replays the record through `engine/test/sim.mjs` and must reproduce
+  `score`, `wave` and `kills` exactly. That is what a future server-side leaderboard would run. **There is no
+  server now** and no network code (`no-iap.test`).
+- **Local boards:** top 10 per arena, plus a separate daily board, in the save (§12.5).
+
+**Coins.** 5 per wave cleared plus 1 per 2,000 score, **capped at 120 per run**. The first daily-seed run each day
+earns × 2.
+
+### 13.5 Memory and performance
+
+**Texture memory.**
+- An arena run's peak must be **≤ its base stage's measured peak**. It uses a subset of the stage's assets, and
+  one plate instead of two.
+- Boss-lite is the only spike. It loads at wave 9 or 10 and is released after.
+- Gate per arena: ≤ the base stage's peak and ≤ 105 MiB, using `texture-dump` with `RWB_STAGES=N` and `arena=1`.
+
+**First arenas.**
+- **Stage 6** (110.91 MiB campaign peak, so the arena must measure lower).
+- **Stage 7** (an estimated 89 MiB).
+
+**Later arenas.**
+- Stages 1–5 get arenas only after each is measured in arena mode, because those stages load full normals.
+- Stages 8 and 9 get arenas when they ship.
+
+**Performance.**
+- At most 6 enemies alive and ≤ 10 lights.
+- 60 fps p95 at wave 20, measured on WebKit with the iPhone profile, using a forced-spawn bot.
+
+### 13.6 Build tasks (Grok 4.7, sequential, after M3; needs Stage 7 T1)
+
+| # | Task | Acceptance |
+|---|---|---|
+| A1 | `arena-rules.js`: `waveFor`, scaling curves, caps, cadences | Table tests: counts/HP/damage/speed per wave and caps; tokens ≤ 2 and tells unscaled for every n ≤ 100; same seed gives the same waves |
+| A2 | `arena-score.js` and `run-record.js` (RLE, digest) | Unit: combo multiplier caps at 3×; anti-farm despawn earns no score; RLE round-trip; digest stable |
+| A3 | `ArenaKit` plus `arenaDef(6)`: one-zone lock, single-plate stream, pool spawns, 3 lives with no continue, results hand-off; `?arena=6` | Boots and runs 10 waves in the harness; campaign golden snapshot empty; Stage 6 kit hazards never tick in the arena (spy test); stage release leaves no arena keys |
+| A4 | Fixed-step arena loop, input recording, `replay.mjs` | Record a bot run on 3 seeds, replay: identical score/wave/kills; replay is independent of render frame rate (run at 30/60/120 fps in the harness) |
+| A5 | Elites, boss-lite (`arenaLite` on `belal.js` first), drops, heal; deferred boss sheet load and release | Campaign golden snapshot unchanged (`arenaLite` off); boss sheet released after the boss-lite wave (texture-key assertion); boss-lite P1 only, 40% HP |
+| A6 | Arena HUD (wave and multiplier, via a HUD patch like `stage6-hud.js`), results panel in `MetaScene`, local and daily boards, coins | Coins capped at 120 per run; daily ×2 once per day (date injected in tests); boards keep top 10 sorted; the save stores inputs for the best 3 only |
+| A7 | Memory and performance: `texture-dump` for arena 6; 6-alive cap; 60 fps p95 at wave 20 | Arena 6 peak ≤ Stage 6 peak and ≤ 105 MiB; fps evidence in the PR |
+| A8 | `arenaDef(7)`; unlock rule (stage cleared once); title `ARENA` list | Locked arenas are hidden (or greyed out) unless `?arena=`; Stage 7 arena memory ≤ Stage 7 peak |
+| A9 | Arena bot plus difficulty tuning; hardening (pause, governor drop, tab hide/restore mid-wave, death during boss-lite) | Bot's median death wave between 8 and 20 on 9 seeds (the tuning target); no console errors in 5 runs; iPhone pass |
+
+**For Cheeseville.** `arena-rules`, `arena-score`, `run-record`, `replay` and the meta modules work unchanged.
+Cheeseville supplies its pools, boss-lite choices and catalog in its manifest.
+
+---
+
+## 14. Decisions for Jason (defaults apply if no answer)
 
 | # | Question | Default |
 |---|---|---|
@@ -493,3 +821,7 @@ What Cheeseville writes itself:
 | J3 | One-time test-update exception for text-reading tests (§6.3), so `guard.js`/`audio.js` can delegate to the engine? | **No.** RWB keeps its copies and Cheeseville uses the engine's |
 | J4 | Start E0 before Stage 7 ships? | **Yes**, but only E0–E1 (no shared files with Stage 7). E2+ waits for Stage 7 T1; E4 waits for Stage 7 T15 |
 | J5 | CI: also run on PRs into `rwb-w2`? | **Yes** (E0) |
+| J6 | Meta-progression in RWB too (scorecard, coins, shop), or only in commercial games? | **Both.** RWB is the proving ground; it's a lazy-loaded side panel that changes no campaign numbers |
+| J7 | Grade letters S/A/B/C/D with a continue capping the grade at C | **Yes** |
+| J8 | First arenas: Stages 6 and 7 only (measured budgets); Stages 1–5 later after arena memory runs | **Yes** |
+| J9 | Daily-seed arena runs (the same waves for everyone each day) | **Yes**: free leaderboard fairness later, and no server needed now |
