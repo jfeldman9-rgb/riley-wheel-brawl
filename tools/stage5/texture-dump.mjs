@@ -109,11 +109,22 @@ for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
           samples.push(await page.evaluate(snapshot, state.tag));
         }
         // Loial's atlas is demand-loaded at the Stage 5 boss and overlaps that peak only while he is summoned.
+        // The loader advances on a scene step. A zero dt still ticks it and does not move the fight.
         if (stage === 5 && state.phase >= 1 && !loialDone) {
           loialDone = true;
-          const loialBase = samples[samples.length - 1].sourceBytes;
+          await page.evaluate(async () => {
+            const s = window.__stage, g = window.__game;
+            const deadline = Date.now() + 15000;
+            while (s.load?.isLoading?.() && Date.now() < deadline) {
+              g.headlessStep(window.__dumpTime, 0);
+              await new Promise(resolve => setTimeout(resolve, 20));
+            }
+            g.step(window.__dumpTime, 0);
+          });
+          const base = await page.evaluate(snapshot, 'boss-art');
+          samples.push(base);
           const loaded = await page.evaluate(async () => {
-            const s = window.__stage;
+            const s = window.__stage, g = window.__game;
             if (!s.textures.exists('loial-0')) {
               s.riley.loialReady = true;
               s.callLoial();
@@ -121,19 +132,18 @@ for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
               s.riley.loialReady = false;
               const deadline = Date.now() + 20000;
               while (!s.textures.exists('loial-0') && Date.now() < deadline) {
-                const L = s.load;
-                if (L?.isLoading?.()) await new Promise(resolve => { L.once('complete', resolve); setTimeout(resolve, 8000); });
-                else await new Promise(resolve => setTimeout(resolve, 40));
+                g.headlessStep(window.__dumpTime, 0);
+                await new Promise(resolve => setTimeout(resolve, 20));
               }
             }
             s._loialWanted = false;
             s.riley.loialReady = true;
-            window.__game.step(window.__dumpTime, 0);
+            g.step(window.__dumpTime, 0);
             return !!s.textures.exists('loial-0');
           });
           if (loaded) {
             const loial = await page.evaluate(snapshot, 'loial');
-            loial.loialAddedBytes = loial.sourceBytes - loialBase;
+            loial.loialAddedBytes = loial.sourceBytes - base.sourceBytes;
             samples.push(loial);
             await page.evaluate(() => {
               const s = window.__stage;
