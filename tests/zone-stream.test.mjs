@@ -1,7 +1,8 @@
 import './helpers/install-location.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { STREAMS, plateRect, residentKeys, deferredPlateKeys } from '../src/zone-stream.js';
+import { VW } from '../src/config.js';
+import { STREAMS, plateRect, residentZones, residentKeys, deferredPlateKeys } from '../src/zone-stream.js';
 import { STAGE5 } from '../src/stage5-def.js';
 import { STAGE6 } from '../src/stage6-def.js';
 import { Stalker, Sporepod } from '../src/blightspawn.js';
@@ -41,6 +42,45 @@ test('the sea-gate meets the Great Hall on the zone edge', () => {
   }
   assert.ok(plateRect(0, STAGE6.zones).x < -96);
   assert.ok(plateRect(3, STAGE6.zones).x + plateRect(3, STAGE6.zones).w > 5200 + 96);
+});
+
+function uncovered(camX, zoneI, stage) {
+  const plates = residentZones({ zoneI, camX, stageDef: stage }).map(i => plateRect(i, stage.zones));
+  const viewR = camX + VW;
+  let x = camX, gap = 0;
+  for (const p of plates.slice().sort((a, b) => a.x - b.x)) {
+    const right = p.x + p.w;
+    if (right <= x) continue;
+    if (p.x > viewR) break;
+    if (p.x > x) gap += Math.min(p.x, viewR) - x;
+    x = Math.max(x, right);
+    if (x >= viewR) break;
+  }
+  if (x < viewR) gap += viewR - x;
+  return gap;
+}
+
+test('the previous plate stays until the camera reaches the new plate, and the view stays covered', () => {
+  for (const stage of [STAGE5, STAGE6]) {
+    for (let z = 1; z < stage.zones.length; z++) {
+      const edge = plateRect(z, stage.zones).x;
+      const behind = edge - 232;
+      const scene = { zoneI: z, camX: behind, stageDef: stage };
+      assert.ok(residentZones(scene).includes(z - 1), `${stage.no} zone ${z} keeps ${z - 1} at cam ${behind}`);
+      assert.ok(uncovered(behind, z, stage) <= 1, `${stage.no} zone ${z} gap ${uncovered(behind, z, stage)}`);
+      let camX = behind;
+      const target = stage.zones[z].l;
+      for (let frame = 0; frame < 180; frame++) {
+        camX += (target - camX) * Math.min(1, (1 / 60) * 5);
+        const gap = uncovered(camX, z, stage);
+        assert.ok(gap <= 1, `${stage.no} zone ${z} frame ${frame} cam ${camX.toFixed(2)} gap ${gap.toFixed(2)}`);
+      }
+      const caught = { zoneI: z, camX: edge - 1, stageDef: stage };
+      assert.equal(residentZones(caught).includes(z - 1), false, `${stage.no} zone ${z} drops the previous plate once the camera arrives`);
+      assert.ok(uncovered(edge - 1, z, stage) <= 1);
+    }
+  }
+  assert.equal(residentZones({ zoneI: 2, stageDef: STAGE6 }).includes(1), false, 'a zone index alone still drops the previous plate');
 });
 
 test('Blight Stalker and Sporepod publish the name the HUD reads', () => {

@@ -108,6 +108,7 @@ export function createStage6View(scene) {
       paintStage6Art(scene, skip);
     },
     showBackdrop(key) {
+      if (scene.sys?.isActive?.() === false) return;
       if (!scene.textures?.exists?.(key) || owned.some(o => keyOf(o) === key)) return;
       const zones = STAGE6.zones;
       const lit = o => { if (o) { o.setLighting?.(scene.backdropIsLit !== false); scene.backdropLit = scene.backdropLit || []; scene.backdropLit.push(o); owned.push(o); } };

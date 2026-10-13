@@ -67,7 +67,11 @@ export class CutscenePlayer {
   bless() {
     try {
       const v = this.element(), r = this.run;
-      if (r && r.muted) { v.muted = false; r.muted = false; this.log.push('unmuted'); return; }
+      if (r && r.muted) {
+        v.muted = false; r.muted = false;
+        if (r.hint) r.hint.textContent = r.touch ? 'TAP TO SKIP ▶▶' : 'PRESS ANY BUTTON TO SKIP ▶▶';
+        this.log.push('unmuted'); return;
+      }
       if (r || this.blessed) return;
       this.blessed = true;
       const p = v.play(); p?.catch?.(() => { });
@@ -97,11 +101,19 @@ export class CutscenePlayer {
       letterSpacing: '0.04em', pointerEvents: 'none', opacity: '0.9' });
     hint.id = 'rwb-cutscene-hint'; hint.textContent = touch ? 'TAP TO SKIP ▶▶' : 'PRESS ANY BUTTON TO SKIP ▶▶';
     overlay.appendChild(v); overlay.appendChild(hint);
-    const r = this.run = { ids: [...ids], i: -1, done, progress, overlay, hint, muted: false, ended: false, ticks: 0, t0: this.now(), how: null, timer: null };
+    const r = this.run = { ids: [...ids], i: -1, done, progress, overlay, hint, touch: !!touch, muted: false, ended: false, ticks: 0, t0: this.now(), how: null, timer: null, swallowClickUntil: 0 };
     r.padHeld = this.padDown(); r.frame = frame;
     const relayout = () => this.layout(r);
     this.layout(r);
-    const tap = e => { if (e?.type === 'touchend') e.preventDefault?.(); this.skip(r, 'tap'); };
+    const tap = e => {
+      if (e?.type === 'touchend') e.preventDefault?.();
+      // iOS plays the intro muted when sound was not allowed. The first tap
+      // blesses the element. Skipping here would throw away the clip that can
+      // now be heard. The click that follows that touchend is the same gesture.
+      if (r.muted) { this.bless(); r.swallowClickUntil = this.now() + 700; return; }
+      if (e?.type === 'click' && this.now() < (r.swallowClickUntil || 0)) return;
+      this.skip(r, 'tap');
+    };
     const onEnded = () => this.next(r, 'ended'), onError = () => this.next(r, 'error');
     r.unbind = () => {
       overlay.removeEventListener('touchend', tap); overlay.removeEventListener('click', tap);
@@ -152,7 +164,7 @@ export class CutscenePlayer {
   refused(r, v, id, e) {
     if (r.ended || r.ids[r.i] !== id) return;
     if (e?.name === 'NotAllowedError' && !v.muted) {   // autoplay with sound blocked: play muted instead
-      r.muted = true; v.muted = true; this.log.push(`${id}:muted`);
+      r.muted = true; v.muted = true; if (r.hint) r.hint.textContent = 'TAP FOR SOUND'; this.log.push(`${id}:muted`);
       return this.start(r, v, id);
     }
     if (e?.name !== 'AbortError') this.next(r, 'refused');

@@ -101,6 +101,7 @@ export class Stage6Kit {
     const s = this.s, R = s.riley;
     if (s.hud && !s.hud._randBind) this._unbindRand = bindRandLabel(s.hud);
     if (R) syncRandReady(s);
+    this.releaseCutthroats();
     dt = stage4Delta(dt);
     if (!dt || s.paused || s.cutscene || this.strike) return;
     if (!R) return;
@@ -167,7 +168,16 @@ export class Stage6Kit {
   clearHazards() { this.stone?.dispose(); if (this.s.riley) this.s.riley.fogSlow = 0; }
   threats() { return threatsOf(this.stone || { nets: [], lamps: [], pools: [], lines: [], rays: [] }, this.s.zoneI < 0 ? 0 : this.s.zoneI); }
   applyLightBudget() { stage6LightBudget(this); }
+  releaseCutthroats() {
+    if (this._cutthroatFreed || (this.s?.zoneI | 0) < 2) return;
+    const s = this.s;
+    if ((s.enemies || []).some(e => e?.type === 'cutthroat' && !e.gone)) return;
+    if ((s.pending || []).some(p => p?.type === 'cutthroat')) return;
+    this._cutthroatFreed = true;
+    releaseChars(s, ['cutthroat']);
+  }
   destroy() {
+    this.backdrops?.destroy?.();
     this.clearHazards(); this.view?.destroy(); restoreStage6Hooks(this); removeRandBless(); this._unbindRand?.();
     if (this.s.riley) { this.s.riley.fogSlow = 0; this.s.riley.loialReady = true; }
   }

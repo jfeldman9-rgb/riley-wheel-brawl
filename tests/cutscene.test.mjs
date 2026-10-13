@@ -158,6 +158,33 @@ test('autoplay with sound blocked falls back to muted, and a later gesture unmut
   assert.deepEqual(d2, ['end']); assert.equal(e2.overlay(), undefined);
 });
 
+test('a muted intro unmutes on the first tap and skips on the next', async () => {
+  const e = env({ playResult: ({ muted }) => muted ? null : Object.assign(new Error('gesture'), { name: 'NotAllowedError' }) });
+  const p = new CutscenePlayer(e.root); const done = [];
+  p.play(['intro'], { done: how => done.push(how), touch: true });
+  await e.flush();
+  assert.equal(e.video.muted, true);
+  assert.equal(e.overlay().children.find(c => c.id === 'rwb-cutscene-hint').textContent, 'TAP FOR SOUND');
+  e.advance(GUARD_MS + 20);
+  const src = e.video.src;
+  e.overlay().fire('touchend');
+  assert.equal(e.video.muted, false, 'first tap unmutes');
+  assert.equal(e.video.src, src, 'first tap does not skip');
+  assert.ok(p.log.includes('unmuted'));
+  assert.equal(p.log.some(l => String(l).startsWith('skip:')), false);
+  e.overlay().fire('click');
+  assert.equal(e.video.src, src, 'the click after that touchend is the same gesture');
+  e.overlay().fire('touchend');
+  assert.deepEqual(done, ['skip'], 'the second tap skips');
+  const e2 = env({ playResult: ({ muted }) => muted ? null : Object.assign(new Error('gesture'), { name: 'NotAllowedError' }) });
+  const p2 = new CutscenePlayer(e2.root); const d2 = [];
+  const h2 = p2.play(['intro'], { done: how => d2.push(how) });
+  await e2.flush();
+  e2.advance(GUARD_MS + 20);
+  assert.equal(h2.skip('press'), true, 'a button skip still leaves a muted clip');
+  assert.deepEqual(d2, ['skip']);
+});
+
 test('bless before any clip calls play() once on the bare element (iOS sound unlock) and never throws', async () => {
   const e = env(), p = new CutscenePlayer(e.root);
   p.bless(); p.bless();

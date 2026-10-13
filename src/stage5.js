@@ -194,7 +194,7 @@ export class Stage5Kit {
     if (i === 2 && !this.stats.glimpses) { this.bump('glimpses'); this.view?.glimpse?.(); this.s.hud?.flashText('THERE, ON THE RIDGE'); }
   }
   clearHazards() { clearStage5Hazards(this); }
-  destroy() { drainHum(false); this.clearHazards(); this.view?.destroy(); restoreStage5Hooks(this); if (this.s.riley) this.s.riley.fogSlow = 0; }
+  destroy() { this.backdrops?.destroy?.(); drainHum(false); this.clearHazards(); this.view?.destroy(); restoreStage5Hooks(this); if (this.s.riley) this.s.riley.fogSlow = 0; }
   threats() {
     const z = this.s.zoneI < 0 ? 0 : this.s.zoneI, b = this.blight, a = this.arena;
     return {

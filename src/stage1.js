@@ -1,4 +1,5 @@
-import { VW, VH, LANE_TOP, LANE_BOT, WORLD_W, q, clamp, rand, pick, DEBUG } from './config.js';
+import { VW, VH, LANE_TOP, LANE_BOT, WORLD_W, q, clamp, rand, pick, DEBUG, coarsePointer, bloomOnByDefault } from './config.js';
+import { mountVignetteOverlay } from './vignette-overlay.js';
 import { perf } from './perf.js';
 import { FX } from './fx.js';
 import { Riley, BALEFIRE } from './riley.js';
@@ -150,6 +151,25 @@ export class Stage1 extends Phaser.Scene {
     this.lights.enable().setAmbientColor(0x39425f);
     this.fx = new FX(this);
     this.plates = this.cache.json.get('plates') || {};
+    // Registered before kit.build so this runs ahead of plate-loader listeners.
+    // Those listeners must see the kit already dead; a shutdown completion would
+    // paint a canvas stand-in into a display list Phaser has just emptied.
+    let removeKey = () => {}, removePress = () => {};
+    this.events.once('shutdown', () => {
+      removeKey(); removePress(); this.inp.clear();
+      if (this.vignette?.overlay) this.vignette.destroy();
+      if (this.cutscene) {
+        this.cutscene.done = true;
+        this.cutscene.onLine = this.cutscene.onEnd = () => {};
+      }
+      this.cutscene = this.cutsceneAfter = null;
+      stopSceneAudio();
+      if (this.bot && this.bot.destroy) this.bot.destroy();
+      if (this.kit) this.kit.destroy();
+      for (const reason of this.pauseReasons) perf.setSuspended(reason, false);
+      this.scene.stop('hud');
+      perf.reset();
+    });
     if (this.kit) { this.ambient = this.kit.ambient; this.lights.setAmbientColor(this.ambient); this.kit.build(); }
     else this.buildBackdrop();
     this.enemies = []; this.fireballs = []; this.carts = []; this.patches = []; this.pickups = []; this.barrels = [];
@@ -165,32 +185,24 @@ export class Stage1 extends Phaser.Scene {
     if (!this.kit) this.snowFront = this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: -20, lifespan: 6000, speedY: { min: 80, max: 130 }, speedX: { min: -50, max: -10 }, scale: { min: 0.5, max: 0.9 }, alpha: { min: 0.5, max: 0.9 }, frequency: 80 }).setDepth(5000).setScrollFactor(0);
     this.zoneI = -1; this.zone = null; this.wave = -1; this.pending = []; this.locked = false; this.camX = 0; this.camMax = 0;
     this.bounds = { l: 0, r: VW }; this.maxTokens = 2; this.started = false; this.ended = false; this.time0 = 0; this.timeScale = 1; this.lightsOn = true;
-    this.bloom = null; if (q.get('bloom') !== '0') this.setBloom(true);
-    this.vignette = q.get('vig') !== '0' ? cam.filters.external.addVignette(0.5, 0.5, 0.95, 0.35) : null;
+    const touch = coarsePointer();
+    this.bloom = null; if (bloomOnByDefault(q, touch)) this.setBloom(true);
+    // The filter vignette is a full-screen camera target. Touch, and any run with
+    // bloom already off, uses one 256×144 overlay instead. A mouse with bloom on
+    // keeps the filter, so the desktop picture stays the same.
+    if (q.get('vig') === '0') this.vignette = null;
+    else if (this.bloom && !touch) this.vignette = cam.filters.external.addVignette(0.5, 0.5, 0.95, 0.35);
+    else this.vignette = mountVignetteOverlay(this);
     if (q.get('lit') === '0') this.setBackdropLit(false);
     this.caption = (who, text) => this.hud && this.hud.caption(who, text);
     this.scene.launch('hud'); this.hud = this.scene.get('hud'); this.hud.stage = this;
-    const removeKey = this.inp.on('key', code => {
+    removeKey = this.inp.on('key', code => {
       if (this.paused) return;
       if (code === 'Digit1') this.toggleLights(); if (code === 'Digit2') this.setBloom(!this.bloom);
       if (code === 'Digit3') this.timeScale = this.timeScale === 1 ? 0.25 : 1; if (code === 'KeyM') toggleMusic(); if (code === 'KeyN') toggleMute();
       if (code === 'KeyH') this.hud.togglePerf();
     });
-    const removePress = this.inp.on('press', a => this.onPress(a));
-    this.events.once('shutdown', () => {
-      removeKey(); removePress(); this.inp.clear();
-      if (this.cutscene) {
-        this.cutscene.done = true;
-        this.cutscene.onLine = this.cutscene.onEnd = () => {};
-      }
-      this.cutscene = this.cutsceneAfter = null;
-      stopSceneAudio();
-      if (this.bot && this.bot.destroy) this.bot.destroy();
-      if (this.kit) this.kit.destroy();
-      for (const reason of this.pauseReasons) perf.setSuspended(reason, false);
-      this.scene.stop('hud');
-      perf.reset();
-    });
+    removePress = this.inp.on('press', a => this.onPress(a));
     this.god = !!q.get('god');
     if (q.get('skip') === 'boss') { const k = this.stageDef.skipBoss; this.zoneI = k.zoneI; this.riley.x = k.x; this.camX = this.camMax = k.camX; this.bounds = { l: this.camX, r: this.camX + VW }; }
     if (q.get('demo')) { this.bot = new Bot(this); }
@@ -237,7 +249,12 @@ export class Stage1 extends Phaser.Scene {
     if (on && !this.bloom) { const pf = this.bloom = cam.filters.internal.addParallelFilters(); pf.top.addThreshold(0.62, 1); pf.top.addBlur(1, 2, 2, 1.2); pf.blend.blendMode = Phaser.BlendModes.ADD; pf.blend.amount = 0.5; }
   }
   setBackdropLit(on) { for (const o of this.backdropLit || []) o.setLighting(on); this.backdropIsLit = on; const ambient = on ? this.kit?.ambient : this.kit?.ambientUnlit; this.ambient = Number.isFinite(ambient) ? ambient : on ? 0x39425f : 0x5a6482; if (this.lightsOn !== false) this.lights.setAmbientColor(this.ambient); }
-  dropVignette() { if (this.vignette) { this.cameras.main.filters.external.remove(this.vignette); this.vignette = null; } }
+  dropVignette() {
+    if (!this.vignette) return;
+    if (this.vignette.overlay) this.vignette.destroy();
+    else this.cameras.main.filters.external.remove(this.vignette);
+    this.vignette = null;
+  }
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
   // ---------- flow ----------
   onPress(a) {

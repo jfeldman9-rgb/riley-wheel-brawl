@@ -90,7 +90,9 @@ cannot do alpha; they are drawn with additive blending).
 - **fx_fireshield.png**: `Game effect sprite of a flat ellipse ring of magical fire seen from a low side-on angle, as if lying on the ground around a fighter's waist, orange and yellow flames with ember sparks, painted fantasy style; top row only the far (back) half of the ring, bottom row only the near (front) half, both rows aligned to the same ellipse, fully transparent background, no figure, no text.`
 - **fx_airwhip.png**: `Horizontal game effect strip of a lash of wind, a translucent pale-cyan and white twisting ribbon of air with faint swirl lines, thin at the left, thicker and curling into a hook at the right end, running edge to edge in a long 10:1 strip, painted fantasy style, fully transparent background, no text.`
 
-## 4. Riley lightning-cast frames (used once you **flip `ready`** in `src/powers.js` `ART.rileyLightning`; until then Riley uses his fireball cast)
+## 4. Riley lightning-cast frames
+
+The game plays these 6 frames from Riley's atlas page `riley-1` (anim `riley_lightning`). The reference sheet is `art-in/powers/riley_lightning.png`. It is not under `assets/powers/`, so the pre-fight audit does not ship it. `queuePowerArt` never loads it.
 
 | File | Size | Transparent | Frames | Layout |
 | --- | --- | --- | --- | --- |

@@ -37,7 +37,7 @@ test('compact colour plus BOTH normal sets fit the Stage 5 resident budget with 
   assert.ok(bytes + 27.5 * 2 ** 20 < 120 * 2 ** 20, `${bytes / 2 ** 20} MiB character sources`);
 });
 for (const stage of [1, 4, 5, 6]) test(`switch to Stage ${stage} evicts the opposite normal variant and its cached animation frames`, () => {
-  const compact = stage === 5 || stage === 6;
+  const compact = stage >= 4;
   const url = compact ? 'assets/chars/riley-0_n.webp' : 'assets/stage5/normals/riley-0_n.webp';
   const keys = new Set(['riley-0', 'riley-0_nl']), removed = [], anims = new Set(['riley_walk']);
   const rows = [];

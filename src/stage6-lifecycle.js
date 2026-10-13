@@ -39,13 +39,20 @@ function hatch(kit, type) {
   };
   h.sprite = s.add?.sprite?.(x, y, 's6hatch', 0); h.sprite?.setOrigin?.(0.5, 0.96); h.sprite?.setScale?.(s6Scale(s, 's6hatch', 1)); h.sprite?.setDepth?.(1000 + y);
   s.enemies.push(h); sfxCue('craneCreak');
+  let fade = null;
+  const teardown = () => { timer?.remove?.(); fade?.remove?.(); h.destroy(); };
   const timer = s.time?.delayedCall?.(1000, () => {
     if (!h.alive && h.gone) return;
     h.alive = false; h.gone = true; h.sprite?.setFrame?.(1);
     const e = kit._spawn?.(type, 'R');
     if (e) { e.x = x; e.y = y; e.entering = false; }
+    fade = s.time?.delayedCall?.(600, () => {
+      h.sprite?.destroy?.(); h.sprite = null;
+      const hooks = kit.hooks, i = hooks?.indexOf(teardown) ?? -1;
+      if (i >= 0) hooks.splice(i, 1);
+    });
   });
-  (kit.hooks || (kit.hooks = [])).push(() => { timer?.remove?.(); h.destroy(); });
+  (kit.hooks || (kit.hooks = [])).push(teardown);
   return h;
 }
 

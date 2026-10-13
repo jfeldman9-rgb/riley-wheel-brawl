@@ -74,7 +74,7 @@ test('death, game over, then Continue restarts exactly one fight loop', async ()
   k.s.rileyDied(); assert.equal(h.started().filter(n => n.loop).length, 0);
   k.s.music.set('gameover'); h.flush();
   // Base Stage1.continueGame calls music.resumeFight(); the hook's early deathAudio clear does not block it.
-  k.s.continueGame(); await settle(); k.s.update(); await settle();
+  k.s.continueGame(); await h.decode('music-stage6');
   assert.equal(k.s.music.state, 'stage'); assert.equal(h.started().filter(n => n.loop).length, 1);
 });
 

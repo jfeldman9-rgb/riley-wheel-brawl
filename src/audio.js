@@ -367,8 +367,10 @@ function stopTrack(T, fade) {
     if (T.el) T.el.pause();
     if (T.src) { try { T.src.stop(); } catch (e) { } T.src.disconnect(); T.src = null; }
     T.playing = false;
-    // keep at most the current and one previous decoded track resident (about 20 MB each on an iPad)
-    for (const k in tracks) if (k !== currentTrack && k !== T.id && tracks[k].buf && !tracks[k].playing) tracks[k].buf = null;
+    // The source has stopped, so this buffer is no longer playing. Drop every
+    // decoded track except the one that is current or still sounding. The next
+    // play of a dropped track decodes again from the HTTP cache.
+    for (const k in tracks) if (k !== currentTrack && tracks[k].buf && !tracks[k].playing) tracks[k].buf = null;
   };
   if (T.fallback || !(fade > 0)) { if (!T.fallback) fadeGain(T.gain.gain, 0, 0); halt(); return; }
   fadeGain(T.gain.gain, 0, fade);

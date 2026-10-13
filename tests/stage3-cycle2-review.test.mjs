@@ -129,6 +129,6 @@ test('Stage 1 pre-fight budget keeps Stage 2 voices and Stage 3 has its own cap'
   assert.equal(data.stage4.music.status, 'PASS');
   assert.ok(data.stage4.music.bytes > 0);
   assert.equal(data.stage4.source.status, 'PASS');
-  assert.ok(data.preFight.inventoryUpperBoundBytes + data.stage4.voices.bytes > data.preFight.budgetBytes,
-    'Stage 4 voices do not fit the Stage 1 gate; they must not be hidden inside it');
+  assert.ok(!stage4Names.some(name => data.preFight.files.includes(`assets/audio/voice/${name}`)),
+    'Stage 4 voices stay on their own line, outside the Stage 1 gate');
 });

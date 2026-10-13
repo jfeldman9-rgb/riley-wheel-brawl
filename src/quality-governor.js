@@ -5,6 +5,23 @@
 import { releaseIdleRenderTargets } from './render-resources.js';
 
 export const WINDOW_MS = 2000, SLOW_AVG_MS = 21, MAX_SAMPLE_MS = 100;
+// A lost WebGL context writes this so the next boot does not allocate the full canvas again.
+export const QUALITY_FLOOR_KEY = 'rwb-q-floor';
+
+export function readQualityFloor(storage) {
+  try {
+    const store = storage === undefined ? globalThis.sessionStorage : storage;
+    const n = +store?.getItem?.(QUALITY_FLOOR_KEY);
+    return n >= 1 && n <= 5 ? n | 0 : 0;
+  } catch (e) { return 0; }
+}
+
+function writeQualityFloor(level, storage) {
+  try {
+    const store = storage === undefined ? globalThis.sessionStorage : storage;
+    store?.setItem?.(QUALITY_FLOOR_KEY, String(level | 0));
+  } catch (e) { /* cookie-blocked boots keep the floor in memory only */ }
+}
 
 /**
  * Render scale for a quality tier, from the device's starting scale: tiers 3 and 4 are 0.5 lower, tier 5 is 1.
@@ -34,9 +51,20 @@ export function createWindow() {
 }
 
 /** Installs game.setRS and game.governor(dt). stage1 calls the governor once per update. */
-export function installGovernor(game, { q, rs0, vw, vh, meter, log = (...a) => console.log(...a) }) {
+export function installGovernor(game, { q, rs0, vw, vh, meter, floor = 0, log = (...a) => console.log(...a) }) {
   const win = createWindow();
   let level = 0, inited = false, appliedRun = null;
+  let storedFloor = floor | 0;
+  // apply=false records the floor during context loss (GL is dead). apply=true, on restorewebgl,
+  // turns bloom off and lowers the scale, and a later boot reads the same floor.
+  game.keepLoweredQuality = (apply = true) => {
+    storedFloor = Math.max(storedFloor, 3);
+    writeQualityFloor(storedFloor);
+    if (!apply) return storedFloor;
+    const st = game.scene.getScene('stage1');
+    if (st && storedFloor > level) applyLevel(st, storedFloor);
+    return storedFloor;
+  };
   game.setRS = rs => {
     if (game.rs === rs) return;
     game.rs = rs; game.scale.resize(vw * rs, vh * rs);
@@ -73,6 +101,7 @@ export function installGovernor(game, { q, rs0, vw, vh, meter, log = (...a) => c
       meter.software = /swiftshader|llvmpipe|software|basic render/i.test(meter.renderer || '');
       if (q.get('q') !== 'fixed' && meter.software) applyLevel(st, 4);
       if (q.get('q') && /^\d$/.test(q.get('q'))) applyLevel(st, +q.get('q'));
+      else if (q.get('q') !== 'fixed' && storedFloor > level) applyLevel(st, storedFloor);
     }
     if (q.get('q') === 'fixed' || !st.started) return;
     const avg = win.add(meter.lastSampleMs);

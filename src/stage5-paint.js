@@ -59,13 +59,25 @@ export function queuePlate(scene, key, done) {
   const wanted = queueStage5Painted(scene, [row]);
   if (!wanted?.size) return false;
   const L = scene.load;
+  let settled = false;
   const fin = () => {
+    if (settled) return;
+    settled = true;
     L.off?.('complete', fin);
-    scene.events?.off?.('shutdown', fin);
+    scene.events?.off?.('shutdown', detach);
     done?.(!!scene.textures?.exists?.(key));
   };
+  // Shutdown is not a failed load. The loader has already reset, so calling
+  // done(false) paints a canvas stand-in under the real key and a restart
+  // then keeps that stand-in forever.
+  const detach = () => {
+    if (settled) return;
+    settled = true;
+    L.off?.('complete', fin);
+    scene.events?.off?.('shutdown', detach);
+  };
   L.once?.('complete', fin);
-  scene.events?.once?.('shutdown', fin);
+  scene.events?.once?.('shutdown', detach);
   if (typeof L.isLoading !== 'function' || !L.isLoading()) L.start?.();
   return true;
 }

@@ -8,6 +8,8 @@ const { webkit, chromium } = createRequire(import.meta.url)('playwright');
 const base = process.env.RWB_URL || 'http://127.0.0.1:8765/';
 const output = process.env.RWB_TEXTURE_OUTPUT || 'docs/stage5/texture-dump.json';
 const scale = Number(process.env.RWB_RS || 1);
+// Extra query flags, for example RWB_EXTRA=touch=1 (iPhone path: bloom off, vignette overlay).
+const extra = (process.env.RWB_EXTRA || '').replace(/^[?&]+/, '').replace(/^&+|&+$/g, '');
 const stages = (process.env.RWB_STAGES || '4,5').split(',').map(Number);
 const engines = (process.env.RWB_ENGINES || 'webkit,chromium').split(',');
 const result = { method: 'RGBA base levels: all Texture.source + Texture.dataSource; renderer glTextureWrappers separately (includes render targets). No process-RSS claim.', viewport: [1280, 720], deviceScaleFactor: scale, renderScale: scale, runs: [] };
@@ -21,6 +23,7 @@ function snapshot(label) {
     bytes: t.width * t.height * 4, minFilter: t.minFilter, magFilter: t.magFilter, format: t.format, type: t.type }));
   return { label, stage: scene.stageNo, zone: scene.zoneI, phase: scene.boss?.phase, state: scene.boss?.state,
     started: scene.started, ended: scene.ended, clearShown: scene.clearShown, rs: game.rs,
+    bloom: !!scene.bloom, vignetteOverlay: !!scene.vignette?.overlay,
     rendererConfig: { mipmapFilter: game.config.mipmapFilter, mipmapRegeneration: game.config.mipmapRegeneration },
     diagnostics: { gamePaused: game.isPaused, paused: scene.paused, pauseReasons: Array.from(scene.pauseReasons || []),
       hp: scene.riley.hp, state: scene.riley.state, x: scene.riley.x, y: scene.riley.y, bossHp: scene.boss?.hp,
@@ -40,7 +43,8 @@ for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
       const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: scale });
       const errors = []; page.on('pageerror', e => errors.push(e.message));
       const flag = stage >= 6 ? 's6=1&' : '';
-      await page.goto(`${base}?${flag}stage=${stage}&demo=1&story=0&debug=1&rs=${scale}`, { waitUntil: 'load' });
+      const extraQ = extra ? `&${extra}` : '';
+      await page.goto(`${base}?${flag}stage=${stage}&demo=1&story=0&debug=1&rs=${scale}${extraQ}`, { waitUntil: 'load' });
       await page.waitForFunction(() => window.__stage?.riley, null, { timeout: 60000 });
       const samples = [await page.evaluate(snapshot, 'title')];
       await page.waitForFunction(() => window.__stage?.started, null, { timeout: 60000 });
