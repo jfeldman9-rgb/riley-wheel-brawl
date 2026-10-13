@@ -1,0 +1,370 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "key": "s6fade",
+      "url": "assets/stage6/chars/s6fade.webp",
+      "atlas": "assets/stage6/chars/s6fade.json",
+      "present": true
+    },
+    {
+      "key": "s7dancer",
+      "url": "assets/stage7/chars/s7dancer.webp",
+      "atlas": "assets/stage7/chars/s7dancer.json",
+      "decodedCapBytes": 1310720,
+      "fileCapBytes": 60000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7veiled",
+      "url": "assets/stage7/chars/s7veiled.webp",
+      "atlas": "assets/stage7/chars/s7veiled.json",
+      "decodedCapBytes": 1205862,
+      "fileCapBytes": 55000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7asmo",
+      "url": "assets/stage7/chars/s7asmo.webp",
+      "atlas": "assets/stage7/chars/s7asmo.json",
+      "decodedCapBytes": 2202009,
+      "fileCapBytes": 120000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7moir",
+      "url": "assets/stage7/chars/s7moir.webp",
+      "atlas": "assets/stage7/chars/s7moir.json",
+      "decodedCapBytes": 838860,
+      "fileCapBytes": 45000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7lan",
+      "url": "assets/stage7/chars/s7lan.webp",
+      "atlas": "assets/stage7/chars/s7lan.json",
+      "decodedCapBytes": 1017118,
+      "fileCapBytes": 50000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7note",
+      "url": "assets/stage7/props/s7note.webp",
+      "decodedCapBytes": 98304,
+      "fileCapBytes": 8000,
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7column",
+      "url": "assets/stage7/props/s7column.webp",
+      "decodedCapBytes": 688128,
+      "fileCapBytes": 30000,
+      "frameWidth": 128,
+      "frameHeight": 448,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7shard",
+      "url": "assets/stage7/props/s7shard.webp",
+      "decodedCapBytes": 131072,
+      "fileCapBytes": 10000,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7earth",
+      "url": "assets/stage7/props/s7earth.webp",
+      "decodedCapBytes": 393216,
+      "fileCapBytes": 20000,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7shield",
+      "url": "assets/stage7/props/s7shield.webp",
+      "decodedCapBytes": 262144,
+      "fileCapBytes": 12000,
+      "frameWidth": 128,
+      "frameHeight": 256,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7dust",
+      "url": "assets/stage7/props/s7dust.webp",
+      "decodedCapBytes": 524288,
+      "fileCapBytes": 25000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7ring",
+      "url": "assets/stage7/props/s7ring.webp",
+      "decodedCapBytes": 82944,
+      "fileCapBytes": 6000,
+      "frameWidth": 144,
+      "frameHeight": 72,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7portal",
+      "url": "assets/stage7/props/s7portal.webp",
+      "decodedCapBytes": 262144,
+      "fileCapBytes": 12000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7crate",
+      "url": "assets/stage7/props/s7crate.webp",
+      "decodedCapBytes": 65536,
+      "fileCapBytes": 6000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7planks",
+      "url": "assets/stage7/props/s7planks.webp",
+      "decodedCapBytes": 65536,
+      "fileCapBytes": 4000,
+      "frameWidth": 32,
+      "frameHeight": 64,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7ribbon",
+      "url": "assets/stage7/props/s7ribbon.webp",
+      "decodedCapBytes": 9216,
+      "fileCapBytes": 4000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7arrow",
+      "url": "assets/stage7/props/s7arrow.webp",
+      "decodedCapBytes": 2048,
+      "fileCapBytes": 4000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7veil",
+      "url": "assets/stage7/props/s7veil.webp",
+      "decodedCapBytes": 131072,
+      "fileCapBytes": 12000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "s7streak",
+      "url": "assets/stage7/props/s7streak.webp",
+      "decodedCapBytes": 12288,
+      "fileCapBytes": 4000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "moiPortrait",
+      "url": "assets/stage7/ui/moiPortrait.webp",
+      "decodedCapBytes": 73984,
+      "fileCapBytes": 4000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "lanPortrait",
+      "url": "assets/stage7/ui/lanPortrait.webp",
+      "decodedCapBytes": 73984,
+      "fileCapBytes": 4000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "asmoPortrait",
+      "url": "assets/stage7/ui/asmoPortrait.webp",
+      "decodedCapBytes": 73984,
+      "fileCapBytes": 4000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "bg7far",
+      "url": "assets/bg7/bg7far.jpg",
+      "decodedCapBytes": 1900544,
+      "fileCapBytes": 130000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "bg7mid",
+      "url": "assets/bg7/bg7mid.webp",
+      "decodedCapBytes": 1900544,
+      "fileCapBytes": 130000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "bg7mid2",
+      "url": "assets/bg7/bg7mid2.webp",
+      "decodedCapBytes": 1900544,
+      "fileCapBytes": 130000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "bg7mid3",
+      "url": "assets/bg7/bg7mid3.webp",
+      "decodedCapBytes": 1900544,
+      "fileCapBytes": 130000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "bg7mid4",
+      "url": "assets/bg7/bg7mid4.webp",
+      "decodedCapBytes": 1900544,
+      "fileCapBytes": 130000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "bg7floor",
+      "url": "assets/bg7/bg7floor.jpg",
+      "decodedCapBytes": 1555200,
+      "fileCapBytes": 130000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "bg7floor2",
+      "url": "assets/bg7/bg7floor2.jpg",
+      "decodedCapBytes": 1555200,
+      "fileCapBytes": 130000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "bg7floor3",
+      "url": "assets/bg7/bg7floor3.jpg",
+      "decodedCapBytes": 921600,
+      "fileCapBytes": 130000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "story7p1",
+      "url": "assets/stage7/story/story7p1.jpg",
+      "decodedCapBytes": 3686400,
+      "fileCapBytes": 220000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "story7p2",
+      "url": "assets/stage7/story/story7p2.jpg",
+      "decodedCapBytes": 3686400,
+      "fileCapBytes": 220000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    },
+    {
+      "key": "story7p3",
+      "url": "assets/stage7/story/story7p3.jpg",
+      "decodedCapBytes": 3686400,
+      "fileCapBytes": 220000,
+      "present": false,
+      "placeholder": true,
+      "fallback": "src/stage7-paint.js",
+      "review": "pending"
+    }
+  ],
+  "clips": {
+    "M1": "missing",
+    "M2": "missing",
+    "L1": "missing",
+    "L2": "missing",
+    "D1": "missing",
+    "D2": "missing",
+    "S7": "optional, missing"
+  },
+  "clipReview": "No clips shipped. Rear-view-only Riley review required before activation."
+}

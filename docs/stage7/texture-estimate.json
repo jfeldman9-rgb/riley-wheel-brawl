@@ -1,0 +1,86 @@
+{
+  "kind": "static source RGBA upper bound; includes every fallback plate and story panel concurrently",
+  "atlasBytes": 70463024,
+  "fallbackBytes": 7977472,
+  "reusedFadeBytes": 1151360,
+  "sharedAllowance": 8388608,
+  "paintedBytes": 2485120,
+  "totalBytes": 87980464,
+  "sourceGateBytes": 110100480,
+  "paintedGateBytes": 12582912,
+  "physicalDevice": "UNMEASURED",
+  "pages": [
+    {
+      "path": "assets/chars/riley-0.webp",
+      "w": 4080,
+      "h": 1936,
+      "bytes": 31595520
+    },
+    {
+      "path": "assets/stage5/normals/riley-0_n.webp",
+      "w": 680,
+      "h": 323,
+      "bytes": 878560
+    },
+    {
+      "path": "assets/stage5/normals/riley-0_nl.webp",
+      "w": 680,
+      "h": 323,
+      "bytes": 878560
+    },
+    {
+      "path": "assets/chars/riley-1.webp",
+      "w": 1884,
+      "h": 328,
+      "bytes": 2471808
+    },
+    {
+      "path": "assets/stage5/normals/riley-1_n.webp",
+      "w": 314,
+      "h": 55,
+      "bytes": 69080
+    },
+    {
+      "path": "assets/stage5/normals/riley-1_nl.webp",
+      "w": 314,
+      "h": 55,
+      "bytes": 69080
+    },
+    {
+      "path": "assets/chars/grunt-0.webp",
+      "w": 4076,
+      "h": 1212,
+      "bytes": 19760448
+    },
+    {
+      "path": "assets/stage5/normals/grunt-0_n.webp",
+      "w": 680,
+      "h": 202,
+      "bytes": 549440
+    },
+    {
+      "path": "assets/stage5/normals/grunt-0_nl.webp",
+      "w": 680,
+      "h": 202,
+      "bytes": 549440
+    },
+    {
+      "path": "assets/chars/spear-0.webp",
+      "w": 3792,
+      "h": 852,
+      "bytes": 12923136
+    },
+    {
+      "path": "assets/stage5/normals/spear-0_n.webp",
+      "w": 632,
+      "h": 142,
+      "bytes": 358976
+    },
+    {
+      "path": "assets/stage5/normals/spear-0_nl.webp",
+      "w": 632,
+      "h": 142,
+      "bytes": 358976
+    }
+  ]
+}

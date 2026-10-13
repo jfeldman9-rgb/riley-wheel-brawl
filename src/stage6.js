@@ -65,6 +65,8 @@ export class Stage6Kit {
     const n = parseInt(String(raw || '').replace(/^0x/, ''), 16);
     return Number.isFinite(n) ? n : 0x242830;
   }
+  freezesRiley() { return !!(this.strike || this.s.cutscene); }
+  freezesWorld() { return this.freezesRiley(); }
   randCtx() { return randCtx(this); }
   setQuality(level) {
     this.quality = level | 0;

@@ -1,0 +1,27 @@
+{
+  "runtime": "Node 20.19.2",
+  "raw": {
+    "command": "node --test tests/*.test.mjs",
+    "files": 199,
+    "pass": 190,
+    "fail": 9
+  },
+  "fileCapturedSubprocesses": {
+    "command": "node --import /tmp/stage7-file-stdio.mjs --test tests/*.test.mjs",
+    "files": 199,
+    "pass": 198,
+    "fail": 1,
+    "note": "Temporary environment-only adapter runs real subprocesses with stdout/stderr files because pipe creation returns EPERM. Assertions/tests unchanged."
+  },
+  "newTests": {
+    "files": 7,
+    "pass": 7,
+    "fail": 0
+  },
+  "golden": {
+    "earlierStageSeedCombinations": 54,
+    "differences": 0
+  },
+  "remainingFailure": "tests/stage6-loial-unchanged.test.mjs:12 expects callInFor(7) to be rand, contrary to the Stage 7 helper requirement. Existing tests are protected and remain untouched.",
+  "browser": "Blocked by environment socket/Chromium launch restrictions; device performance and GL memory unmeasured."
+}

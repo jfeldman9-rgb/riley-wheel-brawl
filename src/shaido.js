@@ -1,0 +1,68 @@
+import { Stage7Fighter } from './stage7-fighter.js';
+import { clamp, LANE_TOP, LANE_BOT } from './config.js';
+import { substeps } from './stage5-clock.js';
+import { strikeRiley } from './stage6-hurt.js';
+import { sfx7 } from './stage7-voice.js';
+export const SHAIDO = Object.freeze({ dancer: Object.freeze({ hp: 60, speed: 210, tell: 0.45, lunge: 300, score: 450 }), veiled: Object.freeze({ hp: 40, speed: 120, tell: 0.6, spacing: 0.6, score: 350 }) });
+export class Shaido extends Stage7Fighter {
+  constructor(scene, x, y, type = 'dancer') {
+    const t = SHAIDO[type]; super(scene, type === 'dancer' ? 's7dancer' : 's7veiled', t.hp, x, y, t.score, 'SHAIDO ' + (type === 'dancer' ? 'SPEAR-DANCER' : 'ARCHER'), t.speed);
+    this.type = type; this.cool = 0.7; this.counterUsed = false; this.flank = scene.koCount % 2 ? -1 : 1;
+  }
+  update(dt) {
+    if (this.scene.paused || this.scene.cutscene || this.scene.kit?.strike || this.entering || this.silhouette > 0) return;
+    substeps(this, dt, d => this.step(d));
+  }
+  step(dt) {
+    this.st += dt; this.cool = Math.max(0, this.cool - dt);
+    if (!this.alive) { if (this.st >= 0.8) this.gone = true; return; }
+    if (this.assistDown > 0) { this.assistDown = Math.max(0, this.assistDown - dt); this.state = 'down'; this.st = 0; return; }
+    if (this.state === 'down' || this.state === 'hurt') { if (this.st >= (this.state === 'down' ? 0.8 : 0.24)) this.setState('idle'); return; }
+    const R = this.scene.riley; if (!R?.alive) return;
+    if (this.state === 'attack') {
+      if (this.st < SHAIDO[this.type].tell) return;
+      if (this.type === 'veiled') {
+        const k = this.scene.kit;
+        if ((k?.clock || 0) < (k?.arrowAt || 0)) return;
+        if (k) { k.arrowAt = k.clock + 0.6; k.fireArrow?.(this); }
+        this.setState('idle'); this.cool = 3.0;
+      } else { this.setState('lunge'); this.fromX = this.x; }
+      return;
+    }
+    if (this.state === 'lunge') {
+      this.x += this.facing * 1000 * dt;
+      if (!this.counterUsed && Math.abs(R.x - this.x) < 70 && Math.abs(R.y - this.y) < 32) {
+        this.counterUsed = true; if (R.z < 30) strikeRiley(this.scene, 9, { fromX: this.x });
+      }
+      if (this.st >= 0.3 || Math.abs(this.x - this.fromX) >= 300) { this.setState('idle'); this.cool = 2.2; }
+      return;
+    }
+    const dx = R.x - this.x, dy = R.y - this.y, tokens = this.scene.attackTokens?.() || 0;
+    this.face(Math.sign(dx) || this.facing);
+    if (this.type === 'veiled') {
+      const move = Math.abs(dx) < 420 ? -Math.sign(dx) : Math.abs(dx) > 620 ? Math.sign(dx) : 0;
+      this.x += move * 120 * dt; this.y = clamp(this.y + Math.sign(dy) * Math.min(Math.abs(dy), 70 * dt), LANE_TOP, LANE_BOT);
+      if (!this.cool && Math.abs(dy) < 25 && tokens < 2 && (this.scene.kit?.clock || 0) >= (this.scene.kit?.arrowAt || 0)) this.startAttack();
+    } else {
+      // Circling has no token. Pick the side without a committed attacker.
+      const attackers = (this.scene.enemies || []).filter(e => e !== this && e.alive && ['attack','lunge'].includes(e.state));
+      if (attackers.length) this.flank = -Math.sign(attackers[0].x - R.x) || this.flank;
+      const goal = R.x + this.flank * 180;
+      this.x += Math.sign(goal - this.x) * Math.min(Math.abs(goal - this.x), 210 * dt);
+      this.y += Math.sign(dy) * Math.min(Math.abs(dy), 100 * dt);
+      this.state = 'walk';
+      if (!this.cool && Math.abs(dx) < 330 && Math.abs(dy) < 22 && tokens < 2) this.startAttack();
+    }
+  }
+  startAttack() { this.setState('attack'); this.counterUsed = false; sfx7(this.type === 'dancer' ? 'shout' : 'shout2'); }
+  takeHit(h = {}) {
+    if (!this.canBeHit) return false;
+    this.hp -= Math.max(0, h.dmg || 0);
+    if (this.hp <= 0) this.yield(); else { this.setState(h.down ? 'down' : 'hurt'); this.vx = h.kb || 0; }
+    return true;
+  }
+  yield() { if (!this.alive) return; this.hp = Math.max(1, this.hp); this.alive = false; this.setState('yield'); this.vx = 0; this.scene.onEnemyDie?.(this); }
+  die() { this.yield(); }
+}
+export class Dancer extends Shaido { constructor(s,x,y) { super(s,x,y,'dancer'); } }
+export class Veiled extends Shaido { constructor(s,x,y) { super(s,x,y,'veiled'); } }

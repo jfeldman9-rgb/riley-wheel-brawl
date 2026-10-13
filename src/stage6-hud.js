@@ -8,7 +8,7 @@ export function randReady(st, strike) {
 /** Mirror readiness onto Riley so hud.js can toggle #tbL without a source edit. */
 export function syncRandReady(s) {
   const R = s?.riley, st = s?.kit?.rand;
-  if (!R || !st || (s.stageNo || 0) < 6) return;
+  if (!R || !st || s.stageNo !== 6) return;
   s.loial = null;
   R.loialReady = randReady(st, s.kit.strike);
 }
@@ -30,7 +30,7 @@ export function bindRandLabel(hud) {
   const prevTex = pic?.texture?.key || 'loialPortrait';
   hud.updateLoialLabel = function (s, R) {
     const st = s?.kit?.rand;
-    if (!st || (s.stageNo || 0) < 6) return prev?.call(this, s, R);
+    if (!st || s.stageNo !== 6) return prev?.call(this, s, R);
     const [key, label, col, dim] = randLabel(st, s.kit.strike);
     if (this._randKey === key) return;
     this._randKey = key;
@@ -58,7 +58,7 @@ export function bindRandLabel(hud) {
 function paint(hud, s) {
   const n = s.titleSel || s.stageNo;
   if (n === 6 && hud.titleStageT && hud._s6n !== 6) { hud._s6n = 6; hud.titleStageT.setText(NAME); }
-  fixHelp(hud, n >= 6);
+  fixHelp(hud, n === 6);
   fixBoss(hud, s);
 }
 
@@ -88,7 +88,7 @@ export function installStage6Hud() {
     p.update = function(time, delta) {
       const out = update.apply(this, arguments);
       const s = this.stage;
-      if (s && s.stageNo >= 6) paint(this, s);
+      if (s && s.stageNo === 6) paint(this, s);
       return out;
     };
     p.titleSelect = function(n) { const out = title.apply(this, arguments); if (n === 6 && this.titleStageT) { this._s6n = 6; this.titleStageT.setText(NAME); } fixHelp(this, n === 6); return out; };

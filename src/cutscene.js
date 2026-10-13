@@ -14,6 +14,7 @@ export const STAGE_CLIPS = Object.freeze({
   3: Object.freeze(['stage3']),
   4: Object.freeze(['stage4']),
   6: Object.freeze(['stage6']),
+  7: Object.freeze([]), // Optional stage7/S7 clip awaits the rear-view review.
 });
 /** Game actions that skip the current clip. Stick directions and run do not. Start/pause (Enter, Esc) skip the whole sequence. */
 export const SKIP_ACTIONS = Object.freeze(new Set(['attack', 'jump', 'special', 'power', 'assist', 'start', 'pause']));
