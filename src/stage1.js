@@ -19,11 +19,12 @@ import { queueStage4, STORY4_SCRIPT, STORY4_PANELS, STAGE4_VOICES } from './stag
 import { STAGE4_ACTORS } from './stage4-actors.js';
 import { cultistHoldsToken } from './cultists.js';
 import { MusicDirector } from './music.js';
+import { installPressOwnership, pressConsumed, consumePress } from './press-ownership.js';
 
 export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS, ...MYRDDRAAL, ...STAGE4_ACTORS });
 
 const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
-// On-demand lines from dropPower (power voices and the Twix script). Freed on stage leave; a later drop preloads them again.
+// Drop-power voices and Twix lines stream on demand; stage leave frees them for the next drop.
 const DROP_VOICES = ['riley_twix_01', ...TWIX_SCRIPT.map(l => l.id), ...Object.values(POWERS).map(p => p.voice).filter(Boolean)];
 
 const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
@@ -142,7 +143,7 @@ export class Stage1 extends Phaser.Scene {
     this.clearShown = false; this.victoryPending = false; this.boss = null; this.bot = null;
     this.hudReady = false; this.startRequested = false;
     this.backdropLit = []; this.ambient = undefined; this.fireCap = FIRE_LIGHT_CAP;
-    this.inp = this.game.inp; this.inp.clear();
+    this.inp = this.game.inp; installPressOwnership(this.inp); this.inp.clear();
     const b = document.getElementById('boot'); if (b) b.remove();
     patchFlippedNormals();
     this.metas = makeCharAnims(this, this.stageDef.chars); makePowerAnims(this);
@@ -242,12 +243,14 @@ export class Stage1 extends Phaser.Scene {
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
   // Flow
   onPress(a) {
+    if (pressConsumed(this.inp, a)) return;
     if (!this.started && !this.ended && performance.now() < this.titleLock) {
       this.titleLock = performance.now() + 500; this.inp.clear(); return;
     }
     const blurOnly = this.pauseReasons.size === 1 && this.pauseReasons.has('window-blur');
     if (this.pauseReasons.has('window-blur')) this.setPauseReason('window-blur', false);
     if (this.cutscene) {
+      consumePress(this.inp, a);
       for (const reason of this.pauseReasons) if (reason !== 'cutscene') {
         if (reason === 'manual' && (a === 'pause' || a === 'start')) this.setPauseReason('manual', false);
         this.inp.clear(); return;
@@ -256,7 +259,7 @@ export class Stage1 extends Phaser.Scene {
     }
     if (a === 'pause' || (a === 'start' && this.started && !this.ended && !this.gameOver)) {
       if (blurOnly) return;
-      if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) this.setPauseReason('manual', !this.pauseReasons.has('manual'));
+      if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) { consumePress(this.inp, a); this.setPauseReason('manual', !this.pauseReasons.has('manual')); }
       return;
     }
     if (this.paused) { this.inp.clear(); return; }
@@ -455,10 +458,10 @@ export class Stage1 extends Phaser.Scene {
     for (let y = 0; y < H; y++) { const d = Math.abs(y - (H - 1) / 2) / (H / 2); const a = Math.max(0, 1 - d * d); g.fillStyle(d < 0.28 ? 0xffffff : d < 0.6 ? 0xd8f0ff : 0x7cc4ff, a); g.fillRect(0, y, 8, 1); }
     g.generateTexture('beam', 8, H); g.destroy();
   }
-  /** is there a foe on screen that a strike could hit right now? Balefire and Loial are refused (nothing spent) without one. */
+  /** Balefire and Loial need a target before spending. */
   hasHittableFoe() { return this.enemies.some(e => e.canBeHit && e.x > this.camX - 60 && e.x < this.camX + VW + 60); }
   canBalefire() { return this.started && !this.gameOver && !this.ended && !this.victoryPending && !this.paused && !this.beam && this.hasHittableFoe(); }
-  /** thrust frame: a white-hot beam to the screen edge in Riley's facing direction; every enemy in front is struck once */
+  /** The thrust beam hits each foe ahead once, out to the screen edge. */
   fireBalefire(R) {
     const dir = R.facing, x0 = R.x + dir * 95, y = R.y - R.z - 138;
     const edge = dir > 0 ? this.camX + VW + 160 : this.camX - 160, len = Math.max(60, Math.abs(edge - x0));
@@ -612,7 +615,7 @@ export class Stage1 extends Phaser.Scene {
     cs.begin();
     return true;
   }
-  /** a story cutscene on painted panels (Stage 2's opening beat); same pause / skip / HUD path as the Twix scene */
+  /** Painted story panels share the Twix pause and HUD path. */
   startCutscene(script, panels, after) {
     if (this.cutscene) return false;
     this.cutsceneAfter = after;
@@ -626,7 +629,7 @@ export class Stage1 extends Phaser.Scene {
     cs.begin();
     return true;
   }
-  /** ticked by the HUD scene (which keeps running while Stage1 is paused); other pauses freeze it too */
+  /** HUD ticks scenes during gameplay pause; other pauses freeze them. */
   tickCutscene(dt) {
     const cs = this.cutscene; if (!cs) return;
     for (const r of this.pauseReasons) if (r !== 'cutscene') return;

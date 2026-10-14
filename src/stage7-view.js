@@ -7,6 +7,7 @@ import { bandY } from "./stage7-street.js";
 import { frame7, earthFrame7 } from "./stage7-frames.js";
 import { isPainted } from "./stage6-paint.js";
 import { paintedScale } from "./stage7-fighter.js";
+import { ASMODEAN } from "./asmodean.js";
 const CELL = {
   s7column: [128, 448],
   s7shield: [128, 256],
@@ -299,7 +300,7 @@ export function createStage7View(s) {
             "s7streak",
             b.x - 80,
             b.y - 230,
-            160 * clamp(b.st / 1.8, 0, 1),
+            160 * clamp(b.st / ASMODEAN.channel, 0, 1),
             12,
             1,
             1750,

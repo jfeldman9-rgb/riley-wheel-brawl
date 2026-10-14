@@ -94,3 +94,15 @@ NODE_PATH=/home/box/.local/lib/node_modules RWB_CHROMIUM=/opt/google/chrome/chro
 ```
 
 Commit only the fixes, new tests, status/estimate/measurement evidence and this report. `.fixinput/` and `run.log` are excluded. No push or merge is authorized or performed.
+
+## Esc ownership and channel follow-up (8658505)
+
+Chrome traced Esc through window capture gesture handlers, the document capture Perf handler, Phaser's window bubble listener, then `Input.keydown → Input.press → Stage1.onPress`. The stock single-event immediate double pause was not reproduced locally. Confirmed gaps: `Input.keydown` restores `keysDown/held` **after** dismissal clears input; action fan-out has no consumption token; the 350 ms echo guard expires independently of physical release. Direct `onPress` tests missed these paths.
+
+`src/press-ownership.js` now tracks consumption across DOM dispatch, duplicate action listeners, input clearing and subsequent frames until keyup. It stops later DOM listeners and removes the late held/buffer write. All stages' story/video routing uses it, as does Asmodean's caption. A fresh keyboard press after release bypasses the touch echo timeout; each pause press toggles once.
+
+The channel intentionally completes after **1.8 gameplay seconds**, emits one shockwave, then permits movement (STAGE7-PLAN, “The Key”). Neither normal nor T-forced channels ended early in the running-scene tests. Three hits/throw interruption and cooldown remain intact. Chrome did reproduce an **old banner fade hiding a new channel banner while still channeling** with the original HUD binding. Stage 7 now cancels old fades and keeps the banner until channel state ends; the cast bar uses the same duration constant.
+
+Added 15 regressions in `tests/stage7-press-ownership.test.mjs`: DOM capture/bubble registration order, duplicate listeners, 120 held frames beyond the echo timeout, immediate fresh presses, stories in Stages 1–7, video stubs, rendered caption, normal/T channel duration and stationary position, one completion shockwave, and banner lifetime/cleanup. Chrome verified story/caption dismissal and fresh pause, channel samples at 1.0/1.5/1.78 seconds, and the overlapping-banner fix with zero page errors. Stage 1 simulation evidence was regenerated with unchanged outcomes. The shared repair is charged to Stage 7's source budget; shorter Stage 1 comments retain the **24,948,791-byte** pre-fight inventory. No existing tests, protected input/HUD files, commits or pushes were changed.
+
+Final validation: `node --test tests/*.test.mjs` — **1,567 tests, 1,565 passed, 0 failed, 2 existing skips** (196.25 s). `node --test tests/stage7-campaign.test.mjs tests/stage7-fixes-campaign.test.mjs` — **4 passed, 0 failed**. `git diff --check` passes. No commit or push performed.

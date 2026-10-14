@@ -2,6 +2,7 @@ import { canCall, pickHelper } from "./moilan-call.js";
 import { call7Context, cycleHelper7 } from "./stage7-lifecycle.js";
 import { q } from "./config.js";
 import { syncStage7Phone } from "./stage7-phone.js";
+import { CHANNEL_BANNER } from "./asmodean.js";
 export function bindStage7Hud(hud, k) {
   if (!hud || hud._s7bind) return () => {};
   const prev = hud.updateLoialLabel,
@@ -11,6 +12,16 @@ export function bindStage7Hud(hud, k) {
   let at = -1,
     last = "";
   const choose = () => cycleHelper7(k);
+  const flash = hud.flashText,
+    ownsFlash = Object.prototype.hasOwnProperty.call(hud, "flashText");
+  if (typeof flash === "function") hud.flashText = function (text) {
+    // A previous phase/debug banner's fade must not erase a new channel tell.
+    this.tweens?.killTweensOf?.(this.flashPair || this.flash);
+    const out = flash.call(this, text);
+    this._s7channelBanner = text === CHANNEL_BANNER;
+    if (this._s7channelBanner) this.tweens?.killTweensOf?.(this.flash);
+    return out;
+  };
   pic?.setInteractive?.({ useHandCursor: true });
   pic?.on?.("pointerdown", choose);
   hud.updateLoialLabel = function (s, R) {
@@ -47,6 +58,9 @@ export function bindStage7Hud(hud, k) {
     pic?.disableInteractive?.();
     if (own) hud.updateLoialLabel = prev;
     else delete hud.updateLoialLabel;
+    if (ownsFlash) hud.flashText = flash;
+    else delete hud.flashText;
+    delete hud._s7channelBanner;
     hud._s7bind = false;
     pic?.setTexture?.(texture)?.setDisplaySize?.(30, 30);
   };
@@ -69,6 +83,10 @@ export function paintStage7Hud(hud, s) {
   syncStage7Phone(s);
   if (s.stageNo === 7 && s.kit && !hud._s7bind)
     s.kit.cleanups?.push(bindStage7Hud(hud, s.kit));
+  if (hud._s7channelBanner && s.boss?.state !== "channel") {
+    hud._s7channelBanner = false;
+    hud.tweens?.add?.({ targets: hud.flash, alpha: 0, duration: 600 });
+  }
   const n = s.titleSel || s.stageNo;
   if (n === 7 && hud.titleStageT?.text !== "RHUIDEAN — THE AIEL WASTE")
     hud.titleStageT?.setText?.("RHUIDEAN — THE AIEL WASTE");

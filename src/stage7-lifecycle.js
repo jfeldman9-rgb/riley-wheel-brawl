@@ -18,6 +18,7 @@ import { syncStage7Phone } from "./stage7-phone.js";
 import { guardLoop7 } from "./stage7-audio.js";
 import { installDebug7 } from "./stage7-debug.js";
 import { stopSceneAudio } from "./audio.js";
+import { consumePress, pressConsumed, freshKeyboardPress } from "./press-ownership.js";
 export function hook7(kit, object, key, wrap) {
   const original = object?.[key];
   if (typeof original !== "function") return;
@@ -277,11 +278,13 @@ export function installStage7Hooks(k) {
   // One gesture can hit both the II button and the story SKIP. The second pause/start
   // would skip and then toggle manual pause, or resume and immediately pause again.
   hook7(k, s, "onPress", (original) => function (action) {
+    if (pressConsumed(this.inp, action)) return;
     const bossCaption = this.hud?.capWho
       ? this.hud.capT > 0 && this.hud.capWho.text === "ASMODEAN"
       : k.bossCaptionUntil > k.clock;
     if (action === "pause" && !this.cutscene && !this.paused &&
         bossCaption) {
+      consumePress(this.inp, action);
       k.echo = performance.now();
       k.bossCaptionUntil = 0;
       if (this.hud) {
@@ -296,7 +299,7 @@ export function installStage7Hooks(k) {
     }
     const now = performance.now();
     const key = action === "pause" || action === "start";
-    if (key && k.echo && now - k.echo < 350) {
+    if (key && !freshKeyboardPress(this.inp) && k.echo && now - k.echo < 350) {
       this.inp?.clear?.();
       return;
     }

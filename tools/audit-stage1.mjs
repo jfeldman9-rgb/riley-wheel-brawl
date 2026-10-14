@@ -56,6 +56,8 @@ export function audit() {
   for (const name of ['stage5-balthamel.js', 'stage5-beat.js', 'stage5-spawn.js', 'stage5-effects.js', 'stage5-bot-combat.js', 'texture-pages.js', 'stage5-load.js', 'stage5-demand.js', 'zone-stream.js', 'stage5-paint.js', 'stage5-painted.js']) STAGE5_SRC.add(name);
   const STAGE6_SRC = new Set(['stage6.js','stage6-def.js','stage6-hud.js','stage6-arena.js','stage6-view.js','stage6-art.js','stage6-voice.js','stage6-sfx.js','stage6-audio.js','stage6-lifecycle.js','stage6-actors.js','stage6-bot-escape.js','stage6-freeze.js','stage6-hurt.js','stage6-tells.js','stage6-paint.js','stage6-painted.js','rand-call.js','rand-call-cutscene.js','belal.js','grayman.js','fadelt.js','bot-stage6.js']);
   const STAGE7_SRC = new Set(readdirSync(resolve(ROOT, 'src')).filter(n => /^(stage7.*|moilan-call|call7-cutscene|shaido|asmodean|bot-stage7)\.js$/.test(n)));
+  // Stage 7's shared dialog-input repair also applies to earlier stages.
+  STAGE7_SRC.add('press-ownership.js');
   // The Stage 1 gate has a few hundred bytes of headroom. These hotfix modules
   // do not fit in it. They are counted on their own line, the same way Stage 4 is.
   const IOS_SRC = new Set(['viewport.js', 'page-base.js', 'debug-flag.js', 'stage3-art.js']);

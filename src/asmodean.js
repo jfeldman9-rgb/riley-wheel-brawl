@@ -16,6 +16,7 @@ export const ASMODEAN = Object.freeze({
   breakCooldown: 4,
   channelEvery: 6,
 });
+export const CHANNEL_BANNER = "BREAK THE CHANNEL — THREE HITS OR A THROW";
 export class Asmodean extends Stage7Fighter {
   constructor(s, x, y) {
     super(s, "s7asmo", 600, x, y, 8000, "ASMODEAN", 88, true);
@@ -134,8 +135,8 @@ export class Asmodean extends Stage7Fighter {
     this.setState("channel");
     this.channelHits = 0;
     this.counterUsed = false;
-    this.channelAt = this.clock + 6;
-    this.scene.hud?.flashText?.("BREAK THE CHANNEL — THREE HITS OR A THROW");
+    this.channelAt = this.clock + ASMODEAN.channelEvery;
+    this.scene.hud?.flashText?.(CHANNEL_BANNER);
   }
   stagger(duration = 1.4) {
     if (!this.alive || this.beat) return;
@@ -153,7 +154,7 @@ export class Asmodean extends Stage7Fighter {
     if (channel && this.alive && !this.beat && !h.assist) {
       this.channelHits++;
       if (
-        this.channelHits >= 3 ||
+        this.channelHits >= ASMODEAN.hits ||
         h.throw ||
         h.kind === "throw" ||
         h.thrown ||
