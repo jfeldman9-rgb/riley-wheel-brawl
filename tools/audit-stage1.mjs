@@ -55,6 +55,7 @@ export function audit() {
   const STAGE5_SRC = new Set(['stage5.js','stage5-def.js','stage5-hud.js','stage5-blight.js','stage5-sfx.js','stage5-actors.js','stage5-arena.js','stage5-view.js','stage5-art.js','stage5-art-bg.js','stage5-art-fx.js','stage5-art-cast.js','stage5-voice.js','blightspawn.js','aginor.js','balthamel.js','bot-stage5.js','stage5-lifecycle.js','stage5-clock.js','stage5-hurt.js','stage5-lighting.js','stage5-spores.js']);
   for (const name of ['stage5-balthamel.js', 'stage5-beat.js', 'stage5-spawn.js', 'stage5-effects.js', 'stage5-bot-combat.js', 'texture-pages.js', 'stage5-load.js', 'stage5-demand.js', 'zone-stream.js', 'stage5-paint.js', 'stage5-painted.js']) STAGE5_SRC.add(name);
   const STAGE6_SRC = new Set(['stage6.js','stage6-def.js','stage6-hud.js','stage6-arena.js','stage6-view.js','stage6-art.js','stage6-voice.js','stage6-sfx.js','stage6-audio.js','stage6-lifecycle.js','stage6-actors.js','stage6-bot-escape.js','stage6-freeze.js','stage6-hurt.js','stage6-tells.js','stage6-paint.js','stage6-painted.js','rand-call.js','rand-call-cutscene.js','belal.js','grayman.js','fadelt.js','bot-stage6.js']);
+  const STAGE7_SRC = new Set(['stage7.js','stage7-def.js','stage7-hud.js','stage7-arena.js','stage7-view.js','stage7-art.js','stage7-voice.js','stage7-sfx.js','stage7-audio.js','stage7-lifecycle.js','stage7-actors.js','stage7-freeze.js','stage7-hurt.js','stage7-tells.js','stage7-paint.js','stage7-painted.js','stage7-storm.js','stage7-street.js','stage7-notes.js','stage7-load.js','moilan-call.js','call7-cutscene.js','shaido.js','asmodean.js','bot-stage7.js']);
   // The Stage 1 gate has a few hundred bytes of headroom. These hotfix modules
   // do not fit in it. They are counted on their own line, the same way Stage 4 is.
   const IOS_SRC = new Set(['viewport.js', 'page-base.js', 'debug-flag.js', 'stage3-art.js']);
@@ -68,7 +69,7 @@ export function audit() {
   // Stage 3 FX stand-ins (painted over the labelled prop/FX cards at Stage 3 entry): their own line under stage3.
   const STAGE3_SRC = new Set(['stage3-fx-art.js']);
   const stage3SourceFiles = [];
-  const stage4SourceFiles = [], stage5SourceFiles = [], stage6SourceFiles = [];
+  const stage4SourceFiles = [], stage5SourceFiles = [], stage6SourceFiles = [], stage7SourceFiles = [];
   const iosSourceFiles = [];
   const restartSourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
@@ -78,6 +79,7 @@ export function audit() {
     else if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);
     else if (STAGE5_SRC.has(name)) stage5SourceFiles.push(`src/${name}`);
     else if (STAGE6_SRC.has(name)) stage6SourceFiles.push(`src/${name}`);
+    else if (STAGE7_SRC.has(name)) stage7SourceFiles.push(`src/${name}`);
     else if (IOS_SRC.has(name)) iosSourceFiles.push(`src/${name}`);
     else files.add(`src/${name}`);
   }
@@ -93,13 +95,15 @@ export function audit() {
   const stage4Voice = /^(st4_|draghkar_|cultist_|riley_fog_|riley_tower_|riley_bridge_|riley_light_|riley_st4_)/;
   const stage5Voice = /^(st5_|aginor_|balthamel_|greenman_|riley_st5_)/;
   const stage6Voice = /^(st6_|rand_|belal_|grayman_|defender_|riley_st6_)/;
-  let countedVoiceBytes = 0, stage3VoiceBytes = 0, stage3VoiceCount = 0, stage4VoiceBytes = 0, stage4VoiceCount = 0, stage5VoiceBytes = 0, stage5VoiceCount = 0, stage6VoiceBytes = 0, stage6VoiceCount = 0;
+  const stage7Voice = /^(st7_|riley_st7_)/;
+  let countedVoiceBytes = 0, stage3VoiceBytes = 0, stage3VoiceCount = 0, stage4VoiceBytes = 0, stage4VoiceCount = 0, stage5VoiceBytes = 0, stage5VoiceCount = 0, stage6VoiceBytes = 0, stage6VoiceCount = 0, stage7VoiceBytes = 0, stage7VoiceCount = 0;
   for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) {
     const path = `assets/audio/voice/${name}`, bytes = statSync(resolve(ROOT, path)).size;
     if (stage3Voice.test(name)) { stage3VoiceBytes += bytes; stage3VoiceCount++; }
     else if (stage4Voice.test(name)) { stage4VoiceBytes += bytes; stage4VoiceCount++; }
     else if (stage5Voice.test(name)) { stage5VoiceBytes += bytes; stage5VoiceCount++; }
     else if (stage6Voice.test(name)) { stage6VoiceBytes += bytes; stage6VoiceCount++; }
+    else if (stage7Voice.test(name)) { stage7VoiceBytes += bytes; stage7VoiceCount++; }
     else { files.add(path); countedVoiceBytes += bytes; }
   }
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
@@ -132,6 +136,11 @@ export function audit() {
   const stage6VoiceBudget = 24 * 200 * 1024, stage6MusicBudget = 2 * 1_200_000;
   const stage6MusicFiles = ['assets/audio/music-stage6.mp3', 'assets/audio/music-boss6.mp3'].filter(p => existsSync(resolve(ROOT, p)));
   const stage6MusicBytes = stage6MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const stage7SourceBytes = stage7SourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const stage7SourceBudget = 192 * 1024;
+  const stage7VoiceBudget = 24 * 200 * 1024, stage7MusicBudget = 2 * 1_200_000;
+  const stage7MusicFiles = ['assets/audio/music-stage7.mp3', 'assets/audio/music-boss7.mp3'].filter(p => existsSync(resolve(ROOT, p)));
+  const stage7MusicBytes = stage7MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const walkBytes = dir => {
     const base = resolve(ROOT, dir);
     if (!existsSync(base)) return { files: [], bytes: 0 };
@@ -155,6 +164,18 @@ export function audit() {
   const randCallFiles = existsSync(randDir) ? readdirSync(randDir).filter(n => /\.(mp4|jpg)$/.test(n)).sort().map(n => `assets/cutscenes/rand/${n}`) : [];
   const randCallBytes = randCallFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const randCallBudget = 7_500_000;
+  const stage7Art = [walkBytes('assets/stage7'), walkBytes('assets/bg7')];
+  const stage7ArtFiles = stage7Art.flatMap(a => a.files);
+  const stage7ArtBytes = stage7Art.reduce((n, a) => n + a.bytes, 0);
+  const stage7ArtBudget = 6_000_000;
+  const call7Walk = walkBytes('assets/cutscenes/call7');
+  const call7Files = call7Walk.files.filter(p => /\.(mp4|jpg)$/.test(p));
+  const call7Bytes = call7Files.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const call7Budget = 9_000_000;
+  const stage7ClipWalk = walkBytes('assets/cutscenes/stage7');
+  const stage7ClipFiles = stage7ClipWalk.files.filter(p => /\.(mp4|jpg)$/.test(p));
+  const stage7ClipBytes = stage7ClipFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const stage7ClipBudget = 2_000_000;
   const rgbaBytes = images.reduce((n,x)=>n+x.rgbaBytes,0);
   const rileyAnimations = json('assets/chars/riley.anims.json').anims;
   // These are the shipped attack-animation mappings, not a claim that every
@@ -189,6 +210,12 @@ export function audit() {
       randCalls: { files: randCallFiles, bytes: randCallBytes, budgetBytes: randCallBudget,
         status: randCallBytes <= randCallBudget ? 'PASS' : 'FAIL',
         note: 'Rand call clips in assets/cutscenes/rand. Streamed one at a time. Not part of the 25 MB clip line or the pre-fight sum. readdir of assets/cutscenes is not recursive, so this line is required.' },
+      callIns7: { files: call7Files, bytes: call7Bytes, budgetBytes: call7Budget,
+        status: call7Bytes <= call7Budget ? 'PASS' : 'FAIL',
+        note: 'Moiraine/Lan call clips in assets/cutscenes/call7. Streamed one at a time. Not part of the 25 MB clip line or the pre-fight sum.' },
+      stage7: { files: stage7ClipFiles, bytes: stage7ClipBytes, budgetBytes: stage7ClipBudget,
+        status: stage7ClipBytes <= stage7ClipBudget ? 'PASS' : 'FAIL',
+        note: 'Stage 7 intro clip in assets/cutscenes/stage7. Streamed on demand. Not part of the 25 MB clip line or the pre-fight sum.' },
     },
     stage3: {
       source: { files: stage3SourceFiles, bytes: stage3SourceBytes, budgetBytes: stage3SourceBudget,
@@ -236,6 +263,20 @@ export function audit() {
       art: { files: stage6ArtFiles, bytes: stage6ArtBytes, budgetBytes: stage6ArtBudget,
         status: stage6ArtBytes <= stage6ArtBudget ? 'PASS' : 'FAIL',
         note: 'Disk bytes under assets/stage6 and assets/bg6. Not part of the Stage 1 pre-fight sum.' },
+    },
+    stage7: {
+      source: { files: stage7SourceFiles, bytes: stage7SourceBytes, budgetBytes: stage7SourceBudget,
+        status: stage7SourceBytes <= stage7SourceBudget ? 'PASS' : 'FAIL',
+        note: 'Stage 7 modules only. They do not fit the leftover Stage 1 headroom, so they are not folded into the 25 MB pre-fight sum.' },
+      voices: { count: stage7VoiceCount, bytes: stage7VoiceBytes, budgetBytes: stage7VoiceBudget,
+        status: stage7VoiceBytes <= stage7VoiceBudget ? 'PASS' : 'FAIL',
+        note: 'Stage 7 voice lines only, when the files exist. Each line is capped at 200 KB; the total cap is 24 times that.' },
+      music: { files: stage7MusicFiles, bytes: stage7MusicBytes, budgetBytes: stage7MusicBudget,
+        status: stage7MusicBytes <= stage7MusicBudget ? 'PASS' : 'FAIL',
+        note: 'Two decoded loops, each under 1.2 MB, counted only when the file is on disk. Not part of the Stage 1 pre-fight sum.' },
+      art: { files: stage7ArtFiles, bytes: stage7ArtBytes, budgetBytes: stage7ArtBudget,
+        status: stage7ArtBytes <= stage7ArtBudget ? 'PASS' : 'FAIL',
+        note: 'Disk bytes under assets/stage7 and assets/bg7. Not part of the Stage 1 pre-fight sum.' },
     },
     playerAttackDensity: { minimumFrames:5, attacks:playerAttacks,
       densityStatus:playerAttacks.every(a=>a.densityStatus==='PASS')?'PASS':'FAIL',

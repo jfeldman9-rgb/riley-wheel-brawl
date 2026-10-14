@@ -6,6 +6,7 @@ import { WORLD_W } from './config.js';
 export const STREAMS = {
   5: {
     far: 'bg5far',
+    bleed: [128, 48, 0, 48, 128],
     zones: [
       { plate: 'bg5mid', floor: 'bg5floor' },
       { plate: 'bg5mid2', floor: 'bg5floor' },
@@ -15,6 +16,7 @@ export const STREAMS = {
   },
   6: {
     far: 'bg6far',
+    bleed: [128, 48, 0, 48, 128],
     zones: [
       { plate: 'bg6mid', floor: 'bg6floor' },
       { plate: 'bg6mid2', floor: 'bg6floor' },
@@ -22,16 +24,29 @@ export const STREAMS = {
       { plate: 'bg6mid4', floor: 'bg6floor3' },
     ],
   },
+  7: {
+    far: 'bg7far',
+    bleed: [128, 48, 48, 48, 128],
+    zones: [
+      { plate: 'bg7mid', floor: 'bg7floor' },
+      { plate: 'bg7mid2', floor: 'bg7floor' },
+      { plate: 'bg7mid3', floor: 'bg7floor2' },
+      { plate: 'bg7mid4', floor: 'bg7floor3' },
+    ],
+  },
 };
 
-// Plate i sits on its zone. Neighbours share a 96 px feather, except the sea-gate
-// and the Great Hall, which meet on the zone edge so the hall cannot show through.
-export function plateRect(i, zones) {
+// Plate i sits on its zone. Neighbours share a feather from STREAMS[n].bleed
+// (edge array, length zones+1). Stages 5-6 keep the sea-gate zero so the hall
+// cannot show through; Stage 7 feathers every seam. Default is the 5-6 shape.
+const BLEED56 = [128, 48, 0, 48, 128];
+export function plateRect(i, zones, bleed) {
+  const edges = Array.isArray(bleed) && bleed.length >= zones.length + 1 ? bleed : BLEED56;
   const l = zones[i].l;
   const last = i + 1 >= zones.length;
   const r = last ? WORLD_W : zones[i + 1].l;
-  const bleedL = i === 0 ? 128 : (i === 2 ? 0 : 48);
-  const bleedR = last ? 128 : (i + 1 === 2 ? 0 : 48);
+  const bleedL = edges[i] ?? 48;
+  const bleedR = edges[i + 1] ?? 48;
   const x = (i ? l : 0) - bleedL;
   return { x, w: r + bleedR - x };
 }

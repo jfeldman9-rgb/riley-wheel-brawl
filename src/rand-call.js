@@ -1,5 +1,5 @@
-// Rand al'Thor call-in rules (Stage 6+). Pure: charges, eligibility, the damage table.
-// Stages 1–5 stay on Loial. callInFor is the only switch.
+// Rand al'Thor call-in rules (Stage 6). Pure: charges, eligibility, the damage table.
+// Stages 1–5 stay on Loial, Stage 7+ on Moiraine/Lan. callInFor is the only switch.
 import { VW } from './config.js';
 
 export const RAND = Object.freeze({
@@ -11,7 +11,7 @@ export const RAND = Object.freeze({
 const TROLLOC = new Set(['grunt', 'spear', 'hound']);
 const HUMAN = new Set(['cutthroat', 'grayman']);
 
-export function callInFor(stageNo) { return stageNo >= 6 ? 'rand' : 'loial'; }
+export function callInFor(stageNo) { return stageNo >= 7 ? 'moilan' : stageNo === 6 ? 'rand' : 'loial'; }
 
 export function createRand() {
   return { charges: RAND.charges, calls: 0, kos: 0, since: RAND.recharge, phaseCalls: Object.create(null), on: false };

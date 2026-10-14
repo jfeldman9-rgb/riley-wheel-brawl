@@ -1,40 +1,44 @@
-// Stage table and unified registry. Stages 1–4 register in STAGES[n].
+// Stage table and unified registry.
 import { DROPS, BOSS_DROP } from './powers.js';
 import { sfx, say } from './audio.js';
 import { LANE_TOP, LANE_BOT } from './config.js';
 import { STAGE4, STAGE4_CHARS, STAGE4_TEXTURES } from './stage4-def.js';
 import { STAGE5, STAGE5_CHARS, STAGE5_TEXTURES } from './stage5-def.js';
 import { STAGE6, STAGE6_CHARS, STAGE6_TEXTURES } from './stage6-def.js';
+import { STAGE7, STAGE7_CHARS, STAGE7_TEXTURES } from './stage7-def.js';
 import './stage5.js';
 import './stage6.js';
+import './stage7.js';
 export const STAGE_COUNT = 2;
+export const MAX_STAGE = 7;
 
-/** Stages 1–6 are playable by default. ?s3=1 to ?s6=1 stay valid and change nothing; ?s6=0 hides Stage 6. */
+/** Stages 1-6 on by default (?s6=0 hides 6); 7 needs ?s7=1. */
 export function stageEnabled(n, q) {
+  if (n === 7) return q?.get?.('s7') === '1';
   if (n === 6) return q?.get?.('s6') !== '0';
-  return n === 1 || n === 2 || n === 3 || n === 4 || n === 5;
+  return n >= 1 && n <= 5;
 }
 
-/** Title select offers every shipped stage (Stage 5 is the last one under ?s6=0). */
 export function maxStage(q) {
+  if (stageEnabled(7, q)) return 7;
   return stageEnabled(6, q) ? 6 : 5;
 }
 
-/** ?stage=2 through ?stage=6 (not 6 under ?s6=0). Anything else is Stage 1. */
+/** ?stage=2..7 (7 needs ?s7=1); anything else is Stage 1. */
 export function stageFromQuery(q) {
   const n = q && q.get ? +q.get('stage') : 0;
-  if (n > 1 && n < 7 && stageEnabled(n, q)) return n;
+  if (Number.isInteger(n) && n > 1 && n <= MAX_STAGE && stageEnabled(n, q)) return n;
   return 1;
 }
 
 /** scene data (restart({ stage })) wins over the URL */
 export function resolveStage(data, q) {
   const n = data && data.stage;
-  if (n > 0 && n < 7 && stageEnabled(n, q)) return n;
+  if (Number.isInteger(n) && n > 0 && n <= MAX_STAGE && stageEnabled(n, q)) return n;
   return stageFromQuery(q);
 }
 
-// Characters whose atlas pages each stage needs resident (anims.json for all of them load at boot; they are tiny).
+// Atlas pages each stage needs resident (anims.json load at boot; tiny).
 export const STAGE_CHARS = Object.freeze({
   1: Object.freeze(['riley', 'grunt', 'spear', 'hound', 'chief', 'loial']),
   2: Object.freeze(['riley', 'zealot', 'archer', 'hound', 'byar', 'loial']),
@@ -42,6 +46,7 @@ export const STAGE_CHARS = Object.freeze({
   4: STAGE4_CHARS,
   5: STAGE5_CHARS,
   6: STAGE6_CHARS,
+  7: STAGE7_CHARS,
 });
 
 // Textures that each stage owns, plus textures shared between stages.
@@ -53,6 +58,7 @@ export const STAGE_TEXTURES = Object.freeze({
   4: STAGE4_TEXTURES,
   5: STAGE5_TEXTURES,
   6: STAGE6_TEXTURES,
+  7: STAGE7_TEXTURES,
   shared: SHARED_TEXTURES,
 });
 
@@ -232,7 +238,9 @@ STAGE5.chars = STAGE5_CHARS;
 STAGE5.textures = STAGE5_TEXTURES;
 STAGE6.chars = STAGE6_CHARS;
 STAGE6.textures = STAGE6_TEXTURES;
-export { STAGE4, STAGE5, STAGE6 };
+STAGE7.chars = STAGE7_CHARS;
+STAGE7.textures = STAGE7_TEXTURES;
+export { STAGE4, STAGE5, STAGE6, STAGE7 };
 export const STAGES = Object.freeze({
   1: STAGE1,
   2: STAGE2,
@@ -240,5 +248,6 @@ export const STAGES = Object.freeze({
   4: STAGE4,
   5: STAGE5,
   6: STAGE6,
+  7: STAGE7,
 });
 

@@ -1,0 +1,59 @@
+{
+ "version": 1,
+ "stage": 7,
+ "date": null,
+ "status": "not rendered yet — lines ship as captions until the mp3s land (src/stage7-voice.js)",
+ "note": "Render plan from docs/STAGE7-PLAN.md section 6. Every id starts with st7_ or riley_st7_ so the audit prefix /^(st7_|riley_st7_)/ keeps them out of the 25 MB pre-fight gate. Audit cap: 4,915,200 bytes total (the plan says 24 lines but its table and src/stage7-voice.js list 26 ids, so keep each file <= 200 KB and the average under ~189 KB).",
+ "cast": {
+  "RILEY": {
+   "voice_id": "JjsQrIrIBD6TZ656NQfi",
+   "voice_name": "DYLO - Dark Anime Hero",
+   "engine": "eleven_v4 via tools/riley_voice.py",
+   "processing": "trim, highpass 70 Hz, loudnorm I=-17.5 TP=-2, mono 24 kHz 64 kbps"
+  },
+  "NARRATOR": {
+   "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+   "engine": "cosyvoice",
+   "model": "Fun-CosyVoice3-0.5B",
+   "license": "Apache-2.0",
+   "processing": "-16 to -18 LUFS, mono 24 kHz 96 kbps; Whisper medium.en must transcribe to script (re-roll up to 5 seeds)"
+  },
+  "MOIRAINE": {
+   "engine": "kokoro",
+   "voice": "bf_emma",
+   "why": "her established voice from Stage 1 and st6_moiraine_01 (plan decision D3)"
+  },
+  "LAN": {
+   "engine": "elevenlabs voice design",
+   "voice_id": null,
+   "design_prompt": "Deep, quiet, clipped male voice, late 40s, Borderland accent hint, calm and dangerous, few words."
+  },
+  "ASMODEAN": {
+   "engine": "elevenlabs voice design",
+   "voice_id": null,
+   "design_prompt": "Smooth, theatrical male tenor, a performer's diction, condescending, turns brittle when afraid."
+  }
+ },
+ "pronunciation": {
+  "Rhuidean": "Rye-DEE-an",
+  "Chaendaer": "Shan-DARE",
+  "Aiel": "Eye-EEL",
+  "Shaido": "SHY-doh",
+  "Asmodean": "Az-MOH-dee-an",
+  "Avendesora": "Ah-ven-deh-SOR-ah",
+  "Imre": "IM-ray",
+  "note": "Phonetic hints go in the CosyVoice/TTS text only, never in captions. Jason confirms by ear before render closes."
+ },
+ "lines": [
+  "st7_story_01", "st7_story_02", "riley_st7_story_01", "st7_story_03", "st7_story_04",
+  "st7_storm_01", "riley_st7_storm_01", "st7_veil_01", "riley_st7_street_01",
+  "st7_asmo_intro_01", "st7_asmo_p2_01", "st7_asmo_p3_01", "st7_asmo_hurt_01", "riley_st7_reflect_01",
+  "riley_st7_call_01", "riley_st7_call_02", "riley_st7_call_03",
+  "st7_moi_call_01", "st7_moi_call_02", "st7_lan_call_01", "st7_lan_call_02", "st7_duo_call_01",
+  "st7_clear_01", "st7_clear_02", "st7_clear_03", "riley_st7_victory_01"
+ ],
+ "music": {
+  "music-stage7.mp3": "not composed yet — desert hand drums + low flute, 96 BPM, 2:00 loop; src/stage7.js reuses music-stage6.mp3 until then",
+  "music-boss7.mp3": "not composed yet — harp-led, 96 BPM so the phrase clock sits on the beat, 2:00 loop; src/stage7.js reuses music-boss6.mp3 until then"
+ }
+}

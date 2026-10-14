@@ -66,6 +66,8 @@ export class Stage6Kit {
     return Number.isFinite(n) ? n : 0x242830;
   }
   randCtx() { return randCtx(this); }
+  freezesRiley() { return !!(this.strike || this.s?.cutscene); }
+  freezesWorld() { return !!(this.strike || this.s?.cutscene); }
   setQuality(level) {
     this.quality = level | 0;
     if (this.s?.fx) this.s.fx.quality = level;
