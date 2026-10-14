@@ -7,7 +7,7 @@ export function createArena7() {
     step(dt, s, boss) {
       if (!boss?.alive || boss.entering || boss.beat) return;
       this.t += dt;
-      if (boss.phase === 2 && !this.rain && this.t >= this.next) {
+      if (boss.state !== 'stagger' && boss.phase === 2 && !this.rain && this.t >= this.next) {
         this.rain = { x: COLUMNS[this.index++ % 5], t: 0, phase: 'tell', counterUsed: false, hits: new Set() }; this.next = this.t + 3.2; sfx7('hum');
       }
       if (this.rain) {

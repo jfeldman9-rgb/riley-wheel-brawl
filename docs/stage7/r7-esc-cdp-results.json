@@ -1,0 +1,1118 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "check": "liveBossDialog",
+      "run": 1,
+      "holdMs": 0,
+      "pass": true,
+      "before": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 5.655,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 8,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEsc",
+      "run": 1,
+      "holdMs": 0,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    },
+    {
+      "check": "liveBossDialog",
+      "run": 2,
+      "holdMs": 0,
+      "pass": true,
+      "before": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 5.655,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 8,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEsc",
+      "run": 2,
+      "holdMs": 0,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    },
+    {
+      "check": "liveBossDialog",
+      "run": 3,
+      "holdMs": 0,
+      "pass": true,
+      "before": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 5.655,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 9,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEsc",
+      "run": 3,
+      "holdMs": 0,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    },
+    {
+      "check": "liveBossDialog",
+      "run": 1,
+      "holdMs": 120,
+      "pass": true,
+      "before": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 5.655,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 14,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEsc",
+      "run": 1,
+      "holdMs": 120,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    },
+    {
+      "check": "liveBossDialog",
+      "run": 2,
+      "holdMs": 120,
+      "pass": true,
+      "before": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 5.655,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 14,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEsc",
+      "run": 2,
+      "holdMs": 120,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    },
+    {
+      "check": "liveBossDialog",
+      "run": 3,
+      "holdMs": 120,
+      "pass": true,
+      "before": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 5.655,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 15,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEsc",
+      "run": 3,
+      "holdMs": 120,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "ASMODEAN",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    },
+    {
+      "check": "openingStoryEsc",
+      "atMs": 2500,
+      "holdMs": 0,
+      "pass": true,
+      "before": {
+        "paused": true,
+        "manual": false,
+        "cutscene": true,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 9,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "cutscene",
+              false
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEscAfterStory",
+      "atMs": 2500,
+      "holdMs": 0,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "cutscene",
+              false
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    },
+    {
+      "check": "openingStoryEsc",
+      "atMs": 2500,
+      "holdMs": 120,
+      "pass": true,
+      "before": {
+        "paused": true,
+        "manual": false,
+        "cutscene": true,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 13,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "cutscene",
+              false
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEscAfterStory",
+      "atMs": 2500,
+      "holdMs": 120,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "cutscene",
+              false
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    },
+    {
+      "check": "openingStoryEsc",
+      "atMs": 6000,
+      "holdMs": 0,
+      "pass": true,
+      "before": {
+        "paused": true,
+        "manual": false,
+        "cutscene": true,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 10,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "cutscene",
+              false
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEscAfterStory",
+      "atMs": 6000,
+      "holdMs": 0,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "cutscene",
+              false
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    },
+    {
+      "check": "openingStoryEsc",
+      "atMs": 6000,
+      "holdMs": 120,
+      "pass": true,
+      "before": {
+        "paused": true,
+        "manual": false,
+        "cutscene": true,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": []
+      },
+      "after": {
+        "paused": false,
+        "manual": false,
+        "cutscene": false,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": false,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 13,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "cutscene",
+              false
+            ],
+            "event": "keydown",
+            "phase": 1
+          }
+        ]
+      }
+    },
+    {
+      "check": "freshGameplayEscAfterStory",
+      "atMs": 6000,
+      "holdMs": 120,
+      "pass": true,
+      "after": {
+        "paused": true,
+        "manual": true,
+        "cutscene": false,
+        "capT": 0,
+        "who": "",
+        "pauseLabel": true,
+        "held": false,
+        "buffered": false,
+        "phaser": {
+          "down": false,
+          "justDown": false,
+          "queue": 0
+        },
+        "observedFrames": 0,
+        "frameFailures": [],
+        "trace": [
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "cutscene",
+              false
+            ],
+            "event": "keydown",
+            "phase": 1
+          },
+          {
+            "method": "phaserEsc"
+          },
+          {
+            "method": "onPress",
+            "args": [
+              "pause"
+            ],
+            "event": "keydown",
+            "phase": 3
+          },
+          {
+            "method": "setPauseReason",
+            "args": [
+              "manual",
+              true
+            ],
+            "event": "keydown",
+            "phase": 3
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

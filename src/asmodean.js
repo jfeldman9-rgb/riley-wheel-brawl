@@ -1,14 +1,14 @@
 import { Stage7Fighter } from "./stage7-fighter.js";
 import { substeps } from "./stage5-clock.js";
 import { clamp, LANE_TOP, LANE_BOT } from "./config.js";
-import { strikeRiley, damageAllowed } from "./stage6-hurt.js";
+import { strikeRiley } from "./stage6-hurt.js";
 export const ASMODEAN = Object.freeze({
   hp: 600,
   speed: 88,
   reach: 175,
   score: 8000,
   gates: Object.freeze([0.66, 0.33]),
-  bashTell: 0.55,
+  bashTell: 0.7,
   bashDmg: 12,
   parry: 0.2,
   shadowW: 190,
@@ -41,6 +41,18 @@ export class Asmodean extends Stage7Fighter {
   get name() {
     return "ASMODEAN";
   }
+  setState(state) {
+    // Hits, helper effects and idle resets cannot shorten a channel break.
+    if (this.alive && this.clock < this.staggerUntil && state !== "bound") return;
+    super.setState(state);
+  }
+  physics(dt) {
+    if (this.clock < this.staggerUntil) {
+      this.vx = this.vy = this.vz = 0;
+      return;
+    }
+    super.physics(dt);
+  }
   update(dt) {
     if (
       this.scene.paused ||
@@ -59,15 +71,21 @@ export class Asmodean extends Stage7Fighter {
       return;
     }
     this.clock += dt;
+    if (this.clock < this.staggerUntil) {
+      this.state = "stagger";
+      this.vx = this.vy = this.vz = 0;
+      return;
+    }
+    if (this.state === "stagger") {
+      this.staggerUntil = 0;
+      this.setState("idle");
+      return;
+    }
     if (this.beat) {
       if (this.st >= 0.55) {
         this.invuln = this.beat = false;
         this.setState("idle");
       }
-      return;
-    }
-    if (this.state === "stagger") {
-      if (this.st >= this.staggerFor) this.setState("idle");
       return;
     }
     if (this.state === "hurt" || this.state === "down") {
@@ -137,6 +155,10 @@ export class Asmodean extends Stage7Fighter {
     this.y = clamp(this.y, LANE_TOP, LANE_BOT);
   }
   startChannel() {
+    // Explicit casts (including debug T) can replace ordinary hit stun, but
+    // a broken channel always owns its full recovery window.
+    if (this.clock < this.channelStaggerUntil) return;
+    this.staggerUntil = 0;
     this.setState("channel");
     this.channelHits = 0;
     this.counterUsed = false;
@@ -145,9 +167,13 @@ export class Asmodean extends Stage7Fighter {
   }
   stagger(duration = 1.4) {
     if (!this.alive || this.beat) return;
+    const until = Math.max(this.staggerUntil || 0, this.clock + duration);
     this.setState("stagger");
+    this.state = "stagger";
+    this.staggerUntil = until;
     this.staggerFor = duration;
     this.counterUsed = true;
+    this.vx = this.vy = this.vz = 0;
   }
   takeHit(h = {}, from) {
     if (!this.canBeHit) return false;
@@ -168,6 +194,7 @@ export class Asmodean extends Stage7Fighter {
         from?.state === "thrown"
       ) {
         this.stagger(ASMODEAN.stun);
+        this.channelStaggerUntil = this.staggerUntil;
         this.channelAt = Math.max(this.channelAt, this.clock + ASMODEAN.breakCooldown);
         this.scene.hud?.flashText?.("CHANNEL BROKEN");
       }
@@ -213,13 +240,6 @@ export class Asmodean extends Stage7Fighter {
 // The bash goes through Riley's own hit reaction (hurt flinch, knockback, sound),
 // under the same damage gates as every Stage 5-7 hazard.
 export function bashRiley(boss) {
-  const s = boss.scene, R = s.riley;
-  if (!damageAllowed(s)) return false;
-  if (typeof R.takeHit === "function") {
-    const before = R.hp;
-    R.takeHit({ dmg: ASMODEAN.bashDmg, kb: 220 }, boss);
-    if (R.hp < before) R.inv = Math.max(R.inv || 0, 0.5);
-    return R.hp < before;
-  }
-  return strikeRiley(s, ASMODEAN.bashDmg, { fromX: boss.x });
+  return strikeRiley(boss.scene, ASMODEAN.bashDmg,
+    { fromX: boss.x, from: boss, hit: { kb: 220 } });
 }

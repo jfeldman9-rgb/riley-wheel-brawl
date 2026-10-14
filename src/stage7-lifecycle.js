@@ -19,6 +19,42 @@ import { guardLoop7 } from "./stage7-audio.js";
 import { installDebug7 } from "./stage7-debug.js";
 import { stopSceneAudio } from "./audio.js";
 import { consumePress, pressConsumed, freshKeyboardPress } from "./press-ownership.js";
+import { damageAllowed } from "./stage6-hurt.js";
+import { LINES } from "./stage7-voice.js";
+function dialog7(k) {
+  const hud = k.s.hud;
+  return hud?.capWho
+    ? hud.capT > 0 && (hud.capWho.text === "ASMODEAN" ||
+      (hud.capWho.text === "MOIRAINE" && hud.capText?.text === LINES.st7_veil_01[1]))
+    : k.bossCaptionUntil > k.clock;
+}
+export function clearDialogKeys7(s) {
+  const keyboard = s.input?.keyboard;
+  for (const code of [27, 80, 13]) keyboard?.keys?.[code]?.reset?.();
+  const queue = keyboard?.manager?.queue;
+  if (queue) for (let i = queue.length - 1; i >= 0; i--)
+    if ([27, 80, 13].includes(queue[i].keyCode)) queue.splice(i, 1);
+  for (const action of ["pause", "start"]) {
+    delete s.inp?.buf?.[action];
+    delete s.inp?.held?.[action];
+  }
+}
+export function installDialogKeys7(k, root = globalThis) {
+  // Capture owns the edge before Phaser can queue it, set JustDown, or emit
+  // scene keyboard events. The shared ownership guard handles repeats/keyup.
+  const onDown = event => {
+    if (event.defaultPrevented || k.destroyed ||
+        event.target?.closest?.('button,input,textarea,select,a[href],[contenteditable]')) return;
+    const action = event.code === "Enter" ? "start" :
+      ["Escape", "KeyP"].includes(event.code) ? "pause" : null;
+    const s = k.s;
+    if (!action || (!s.cutscene && !(dialog7(k) && !s.paused))) return;
+    s.onPress(action);
+    clearDialogKeys7(s);
+  };
+  root.addEventListener?.("keydown", onDown, true);
+  k.cleanups.push(() => root.removeEventListener?.("keydown", onDown, true));
+}
 export function hook7(kit, object, key, wrap) {
   const original = object?.[key];
   if (typeof original !== "function") return;
@@ -279,11 +315,8 @@ export function installStage7Hooks(k) {
   // would skip and then toggle manual pause, or resume and immediately pause again.
   hook7(k, s, "onPress", (original) => function (action) {
     if (pressConsumed(this.inp, action)) return;
-    const bossCaption = this.hud?.capWho
-      ? this.hud.capT > 0 && this.hud.capWho.text === "ASMODEAN"
-      : k.bossCaptionUntil > k.clock;
-    if (action === "pause" && !this.cutscene && !this.paused &&
-        bossCaption) {
+    if ((action === "pause" || action === "start") && !this.cutscene && !this.paused &&
+        dialog7(k)) {
       consumePress(this.inp, action);
       k.echo = performance.now();
       k.bossCaptionUntil = 0;
@@ -295,6 +328,7 @@ export function installStage7Hooks(k) {
       }
       stopSceneAudio();
       this.inp?.clear?.();
+      clearDialogKeys7(this);
       return;
     }
     const now = performance.now();
@@ -420,11 +454,24 @@ export function cycleHelper7(k) {
 export function installBossCaption7(k) {
   if (k.captionBound) return;
   k.captionBound = true;
+  // Scene-owned listeners and damage hooks disappear on shutdown. The logic
+  // harness has no Phaser keyboard; its Input ownership remains unchanged.
+  if (k.s.input?.keyboard) installDialogKeys7(k);
+  hook7(k, k.s.riley, "takeHit", original => function (hit, from) {
+    if (!damageAllowed(k.s)) return false;
+    const landed = original.call(this, hit, from);
+    if (landed) this.inv = Math.max(this.inv || 0, 0.5);
+    return landed;
+  });
   // Stage1 creates its caption callback after kit.build, before kit.start.
   hook7(k, k.s, "caption", (original) => function (who, text) {
     k.bossCaptionUntil = who === "ASMODEAN"
       ? k.clock + Math.max(2.2, text.length * 0.065) : 0;
-    return original.call(this, who, text);
+    const out = original.call(this, who, text);
+    // The veil warning is an ambient, skippable beat while Riley walks.
+    if (who === "MOIRAINE" && text === LINES.st7_veil_01[1] && k.s.hud)
+      k.s.hud.capT = Math.min(k.s.hud.capT || 1.2, 1.2);
+    return out;
   });
   hook7(k, k.s.riley, "sync", (original) => function () {
     const out = original.apply(this, arguments);

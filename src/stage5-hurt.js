@@ -11,6 +11,9 @@ export function strikeRiley(scene, dmg, opts = {}) {
   if (!damageAllowed(scene, opts)) return false;
   R.grabbedBy?.releaseHold?.('break');
   if (!opts.throughVuln && R.vulnerable === false && !opts.dot) return false;
+  // Opt-in melee reaction, with the same gates as direct hazard damage.
+  if (opts.hit && typeof R.takeHit === 'function')
+    return R.takeHit({ ...opts.hit, dmg }, opts.from || { x: opts.fromX ?? R.x - 1 });
   R.hp = Math.max(0, (R.hp || 0) - dmg);
   if (opts.down) {
     const dir = opts.dir || Math.sign((R.x || 0) - (opts.fromX ?? R.x - 1)) || 1;
