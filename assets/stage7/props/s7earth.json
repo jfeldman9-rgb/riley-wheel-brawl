@@ -1,0 +1,152 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 128,
+    "w": 128,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 128,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 128,
+    "w": 128,
+    "x": 0,
+    "y": 0
+   },
+   "state": "crack",
+   "trimmed": false
+  },
+  "1": {
+   "frame": {
+    "h": 128,
+    "w": 128,
+    "x": 128,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 128,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 128,
+    "w": 128,
+    "x": 0,
+    "y": 0
+   },
+   "state": "grow1",
+   "trimmed": false
+  },
+  "2": {
+   "frame": {
+    "h": 128,
+    "w": 128,
+    "x": 256,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 128,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 128,
+    "w": 128,
+    "x": 0,
+    "y": 0
+   },
+   "state": "grow2",
+   "trimmed": false
+  },
+  "3": {
+   "frame": {
+    "h": 128,
+    "w": 128,
+    "x": 384,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 128,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 128,
+    "w": 128,
+    "x": 0,
+    "y": 0
+   },
+   "state": "grow3",
+   "trimmed": false
+  },
+  "4": {
+   "frame": {
+    "h": 128,
+    "w": 128,
+    "x": 512,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 128,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 128,
+    "w": 128,
+    "x": 0,
+    "y": 0
+   },
+   "state": "full_spike",
+   "trimmed": false
+  },
+  "5": {
+   "frame": {
+    "h": 128,
+    "w": 128,
+    "x": 640,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 128,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 128,
+    "w": 128,
+    "x": 0,
+    "y": 0
+   },
+   "state": "crumble",
+   "trimmed": false
+  }
+ },
+ "meta": {
+  "app": "/workspace/stage7-art/build_earth.py",
+  "format": "RGBA8888",
+  "frameCount": 6,
+  "frameHeight": 128,
+  "frameStates": [
+   "crack",
+   "grow1",
+   "grow2",
+   "grow3",
+   "full_spike",
+   "crumble"
+  ],
+  "frameWidth": 128,
+  "groundY": 125,
+  "image": "s7earth.webp",
+  "scale": "1",
+  "size": {
+   "h": 128,
+   "w": 768
+  }
+ }
+}

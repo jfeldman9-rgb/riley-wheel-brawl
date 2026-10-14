@@ -1,22 +1,22 @@
-# Stage 7 assets still needed
+# Stage 7 painted assets and remaining media
 
-Gameplay works without any new painted or recorded files. All new art below currently uses deterministic canvas art in `src/stage7-paint.js`; the gallery at [stage7/evidence/fallback-art.png](stage7/evidence/fallback-art.png) is a canvas-only inspection, not a Phaser screenshot. No generated video is shipped. Riley is shown only from behind in every story panel.
+All 33 painted assets below now ship with their JSON metadata. Deterministic canvas art in `src/stage7-paint.js` remains available for missing or failed loads; the gallery at [stage7/evidence/fallback-art.png](stage7/evidence/fallback-art.png) shows those fallbacks. Voice, music and video still need the production passes listed below. No generated video is shipped. Riley is shown only from behind in every story panel.
 
 ## Painted art
 
-Every row is **still needed**. Paths are the loader contract. Atlas fighters are drawn without normals; keep the combined painted resident set within 12 MiB and measured total source textures within 105 MiB. `tools/stage7/process_art.py --write-status` validates available file/decoded caps and generates `src/stage7-painted.js` plus `assets/stage7/ART_STATUS.json`. `--build --src …` reuses the Stage 6 processor for pose sheets, backgrounds and panels; props/portraits accept reviewed final exports. Pose index order must match the runtime animation states before enabling a replacement.
+Every row is **shipped and wired**. Paths are the loader contract. Atlas fighters are drawn without normals; keep the combined painted resident set within 12 MiB and measured total source textures within 105 MiB. `tools/stage7/process_art.py --write-status` validates available file/decoded caps and generates `src/stage7-painted.js` plus `assets/stage7/ART_STATUS.json`. `--build --src …` reuses the Stage 6 processor for pose sheets, backgrounds and panels; props/portraits accept reviewed final exports. Pose index order must match the runtime animation states before enabling a replacement.
 
-| Key | Art needed | Destination | Current placeholder |
+| Key | Painted art | Destination | Missing-file fallback |
 |---|---|---|---|
 | `s7dancer` | Shaido spear-dancer, 13 poses; kneeling yield | `assets/stage7/chars/s7dancer.webp` | Eight-cell geometric figure sheet |
 | `s7veiled` | Veiled archer, 11 poses; kneeling yield | `assets/stage7/chars/s7veiled.webp` | Eight-cell geometric figure sheet |
-| `s7asmo` | Asmodean with harp/access key, 18 poses; bound defeat | `assets/stage7/chars/s7asmo.webp` | Eight-cell geometric figure sheet |
+| `s7asmo` | Asmodean with harp/access key, 17 poses; bound defeat | `assets/stage7/chars/s7asmo.webp` | Eight-cell geometric figure sheet |
 | `s7moir` | Moiraine, 5 casting poses | `assets/stage7/chars/s7moir.webp` | Eight-cell geometric figure sheet |
 | `s7lan` | Lan, 7 dash/slash/point poses | `assets/stage7/chars/s7lan.webp` | Eight-cell geometric figure sheet |
 | `s7note` | Normal/gold harp notes and bursts | `assets/stage7/props/s7note.webp` | Code-drawn shape/gradient effect |
 | `s7column` | Glass column, three glow states | `assets/stage7/props/s7column.webp` | Code-drawn shape/gradient effect |
 | `s7shard` | Four shards/grit variants | `assets/stage7/props/s7shard.webp` | Code-drawn shape/gradient effect |
-| `s7earth` | Earth-heave and fire strip | `assets/stage7/props/s7earth.webp` | Code-drawn shape/gradient effect |
+| `s7earth` | Six 128×128 cells: crack, grow1–3, full spike, crumble | `assets/stage7/props/s7earth.webp` | Code-drawn shape/gradient effect |
 | `s7shield` | Two blue shield-ring states | `assets/stage7/props/s7shield.webp` | Code-drawn shape/gradient effect |
 | `s7dust` | Tiling sandstorm overlay | `assets/stage7/props/s7dust.webp` | Code-drawn shape/gradient effect |
 | `s7ring` | Two waking-street shimmer states | `assets/stage7/props/s7ring.webp` | Code-drawn shape/gradient effect |
@@ -42,7 +42,7 @@ Every row is **still needed**. Paths are the loader contract. Atlas fighters are
 | `story7p2` | Waste/Imre Stand; Riley from behind | `assets/stage7/story/story7p2.jpg` | Rear-view black-coated Riley over code-drawn scenery |
 | `story7p3` | Rhuidean veil/city; Riley from behind | `assets/stage7/story/story7p3.jpg` | Rear-view black-coated Riley over code-drawn scenery |
 
-The cast sheets also need their matching `.json` atlas files. Existing Riley, grunt and spear atlases, their Stage 5 compact normals, Stage 6 `s6fade` art, and shared powers/HUD textures are reused as finished assets. No hound atlas is loaded. No new normal maps are needed. `s7arrow`, `s7veil`, `s7streak` and `s7ribbon` make explicit the small supporting art that the plan uses without separate rows.
+The cast sheets include their matching `.json` atlas files; each frame’s `state` field defines its pose. The earth strip also includes JSON metadata, while the loader uses its six fixed 128×128 cells. Existing Riley, grunt and spear atlases, their Stage 5 compact normals, Stage 6 `s6fade` art, and shared powers/HUD textures are reused as finished assets. No hound atlas is loaded. No new normal maps are needed. `s7arrow`, `s7veil`, `s7streak` and `s7ribbon` make explicit the small supporting art that the plan uses without separate rows.
 
 ## Voice recordings
 

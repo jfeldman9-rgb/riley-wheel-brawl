@@ -4,6 +4,7 @@ import { STAGE7 } from "./stage7-def.js";
 import { demand7 } from "./stage7-load.js";
 import { COLUMNS } from "./stage7-arena.js";
 import { bandY } from "./stage7-street.js";
+import { frame7, earthFrame7 } from "./stage7-frames.js";
 export function createStage7View(s) {
   const nodes = new Map(),
     fx = new Map();
@@ -259,7 +260,9 @@ export function createStage7View(s) {
         const st = k.strike,
           x = (s.camX || 0) + 100;
         if (st.helper !== "lan")
-          show("moi", "s7moir", x, 390, 192, 192, 1, 1800)?.setFrame?.(4);
+          show("moi", "s7moir", x, 390, 192, 192, 1, 1800)?.setFrame?.(
+            frame7(s, "s7moir", st.t < 0.25 ? "idle" : st.t < 0.65 ? "raise" : "attack", st.t < 0.65 ? Math.max(0, st.t - 0.25) : st.t - 0.65, 4),
+          );
         if (st.helper !== "moiraine")
           show(
             "lan",
@@ -270,7 +273,9 @@ export function createStage7View(s) {
             192,
             1,
             1800,
-          )?.setFrame?.(3);
+          )?.setFrame?.(
+            frame7(s, "s7lan", st.t < 0.3 ? "run" : st.t < 0.45 ? "draw" : "attack", st.t < 0.45 ? st.t : st.t - 0.45, 3),
+          );
         for (const [i, e] of st.targets.entries())
           show(
             "callfx" + i,
@@ -285,16 +290,16 @@ export function createStage7View(s) {
             100,
             0.85,
             1800,
-          );
+          )?.setFrame?.(st.helper === "moiraine" ? earthFrame7(s, st.t, st.duration) : 0);
       }
       if (k.outro && s.boss) {
         const b = s.boss;
         show("bound", "s7shield", b.x - 75, b.y - 160, 150, 160, 0.8);
         show("lanEnd", "s7lan", b.x - 220, b.y - 185, 192, 192, 1)?.setFrame?.(
-          3,
+          frame7(s, "s7lan", "point", 0, 3),
         );
         show("moiEnd", "s7moir", b.x - 380, b.y - 185, 192, 192, 1)?.setFrame?.(
-          4,
+          frame7(s, "s7moir", "idle", 0, 4),
         );
       }
       for (const [id, o] of fx)

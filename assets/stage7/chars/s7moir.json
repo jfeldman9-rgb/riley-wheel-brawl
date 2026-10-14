@@ -1,0 +1,133 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 200,
+    "w": 95,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 245,
+    "w": 184
+   },
+   "spriteSourceSize": {
+    "h": 200,
+    "w": 95,
+    "x": 44,
+    "y": 35
+   },
+   "state": "stand_idle",
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 192,
+    "w": 173,
+    "x": 97,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 245,
+    "w": 184
+   },
+   "spriteSourceSize": {
+    "h": 192,
+    "w": 173,
+    "x": 5,
+    "y": 43
+   },
+   "state": "raise1",
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 217,
+    "w": 134,
+    "x": 272,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 245,
+    "w": 184
+   },
+   "spriteSourceSize": {
+    "h": 217,
+    "w": 134,
+    "x": 25,
+    "y": 18
+   },
+   "state": "raise2_attack",
+   "trimmed": true
+  },
+  "3": {
+   "frame": {
+    "h": 182,
+    "w": 176,
+    "x": 408,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 245,
+    "w": 184
+   },
+   "spriteSourceSize": {
+    "h": 182,
+    "w": 176,
+    "x": 4,
+    "y": 53
+   },
+   "state": "cast1_attack",
+   "trimmed": true
+  },
+  "4": {
+   "frame": {
+    "h": 231,
+    "w": 132,
+    "x": 586,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 245,
+    "w": 184
+   },
+   "spriteSourceSize": {
+    "h": 231,
+    "w": 132,
+    "x": 26,
+    "y": 4
+   },
+   "state": "cast2_attack",
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "/workspace/stage7-art/build_p345.py (stage6 keyer)",
+  "drawScale": 1.0,
+  "format": "RGBA8888",
+  "frameStates": [
+   "stand_idle",
+   "raise1",
+   "raise2_attack",
+   "cast1_attack",
+   "cast2_attack"
+  ],
+  "image": "s7moir.webp",
+  "origin": [
+   0.5,
+   0.96
+  ],
+  "res": 1.0,
+  "scale": "1",
+  "screenH": 200,
+  "size": {
+   "h": 231,
+   "w": 718
+  }
+ }
+}

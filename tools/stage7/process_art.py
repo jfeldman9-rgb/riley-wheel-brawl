@@ -6,7 +6,7 @@ Build mode requires the Stage 6 processor's numpy/opencv/Pillow/scipy dependenci
 """
 import argparse, importlib.util, json, pathlib, sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-CAST = {'s7dancer': (13, 1.25, 60000), 's7veiled': (11, 1.15, 55000), 's7asmo': (18, 2.10, 120000), 's7moir': (5, .80, 45000), 's7lan': (7, .97, 50000)}
+CAST = {'s7dancer': (13, 1.25, 60000), 's7veiled': (11, 1.15, 55000), 's7asmo': (17, 2.10, 120000), 's7moir': (5, .80, 45000), 's7lan': (7, .97, 50000)}
 PROPS = {'s7note':(384,64,8000),'s7column':(384,448,30000),'s7shard':(512,64,10000),'s7earth':(768,128,20000),'s7shield':(256,256,12000),'s7dust':(512,256,25000),'s7ring':(288,72,6000),'s7portal':(256,256,12000),'s7crate':(128,128,6000),'s7planks':(256,64,4000),'s7ribbon':(48,48,4000),'s7arrow':(64,8,4000),'s7veil':(128,256,12000),'s7streak':(128,24,4000)}
 JOBS = {}
 ROWS = []
