@@ -323,12 +323,6 @@ export class Stage7Kit {
         }
       });
     }
-    if (phase === 3) {
-      const open = (this.s.enemies || []).some(
-        (e) => e !== b && e.alive && e.grabbable && e.type !== "asmodean",
-      );
-      if (!open && !this.outro) this.s.spawn("dancer", "L");
-    }
   }
   onZoneClear(i) {
     this.cleared.add(i);

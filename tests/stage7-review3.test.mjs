@@ -121,12 +121,12 @@ test("a second pause or start in the same gesture does not also toggle pause", (
     s.started = true;
     s.ended = false;
     s.gameOver = false;
-    s.kit.echo = Date.now() - 400;
+    s.kit.echo = performance.now() - 400;
     s.onPress("pause");
     assert.equal(s.pauseReasons.has("manual"), true);
     s.onPress("pause");
     assert.equal(s.pauseReasons.has("manual"), true);
-    s.kit.echo = Date.now() - 400;
+    s.kit.echo = performance.now() - 400;
     s.onPress("pause");
     assert.equal(s.pauseReasons.has("manual"), false);
   }));
@@ -150,16 +150,6 @@ test("the first column crack waits 3.2s into phase 2", () =>
     assert.equal(s.kit.arena.rain, null);
     s.kit.arena.step(0.25, s, b);
     assert.ok(s.kit.arena.rain);
-  }));
-
-test("phase 3 still has a body Riley can throw", () =>
-  scene((s) => {
-    const b = new Asmodean(s, 4800, 630);
-    s.boss = b;
-    s.enemies = [b];
-    b.phase = 3;
-    s.kit.onAsmodeanPhase(b, 3);
-    assert.ok(s.enemies.some((e) => e !== b && e.type === "dancer" && e.alive));
   }));
 
 test("storm captions are said once", () =>

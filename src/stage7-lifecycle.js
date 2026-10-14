@@ -255,7 +255,7 @@ export function installStage7Hooks(k) {
   // One gesture can hit both the II button and the story SKIP. The second pause/start
   // would skip and then toggle manual pause, or resume and immediately pause again.
   hook7(k, s, "onPress", (original) => function (action) {
-    const now = Date.now();
+    const now = performance.now();
     const key = action === "pause" || action === "start";
     if (key && k.echo && now - k.echo < 350) {
       this.inp?.clear?.();
