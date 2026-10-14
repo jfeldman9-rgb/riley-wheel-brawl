@@ -20,6 +20,7 @@ import {
   installStage7Hooks,
   restoreStage7Hooks,
   call7Context,
+  installBossCaption7,
 } from "./stage7-lifecycle.js";
 import { installStage7Hud, bindStage7Hud } from "./stage7-hud.js";
 import { releaseStage7Phone, syncStage7Phone } from "./stage7-phone.js";
@@ -154,6 +155,7 @@ export class Stage7Kit {
     this.video = createCall7Video(this.s);
   }
   start() {
+    installBossCaption7(this);
     preloadClips(VOICE_FILES);
     this.s.music?.set("stage");
   }

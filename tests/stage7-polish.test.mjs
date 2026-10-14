@@ -488,7 +488,7 @@ test("three aligned animated melee hits break the real channel; attacks in a dif
   assert.equal(b.state, "stagger");
 }));
 
-test("Escape skips an actual Stage 7 story cutscene, while a live boss caption pauses combat", () => scene((s, h) => {
+test("Escape skips Stage 7 story and boss dialogue, then pauses combat after dismissal", () => scene((s, h) => {
   const begun = s.startCutscene([{ who: "ASMODEAN", text: "Test line", panel: 0 }], [{ key: "story7p1" }], () => {});
   assert.notEqual(begun, false);
   s.onPress("pause");
@@ -499,6 +499,9 @@ test("Escape skips an actual Stage 7 story cutscene, while a live boss caption p
   for (let i = 0; i < 60; i++) h.step();
   assert.ok(s.boss);
   assert.equal(s.cutscene, null, "boss introduction is a caption over live combat");
+  s.onPress("pause");
+  assert.equal(s.pauseReasons.has("manual"), false);
+  assert.equal(s.kit.bossCaptionUntil, 0);
   s.onPress("pause");
   assert.equal(s.pauseReasons.has("manual"), true);
 }));

@@ -23,6 +23,7 @@ export const CALL7 = Object.freeze({
   }),
 });
 export function pickHelper(ctx = {}) {
+  if (ctx.helper === "moiraine" || ctx.helper === "lan") return ctx.helper;
   if (ctx.boss) return "duo";
   if (ctx.spawnOnScreen >= 3) return "moiraine";
   if (ctx.eliteOnScreen || ctx.humansOnScreen >= 1) return "lan";
@@ -114,7 +115,7 @@ export function allocateStrikes(list, helper, y) {
   let n = 0,
     cap = helper === "lan" ? CALL7.lan.kos : CALL7.moiraine.kos;
   return touched.filter(
-    (e) => human(e) || e.type === "fadelt" || (shadowspawn(e) && n++ < cap),
+    (e) => e.type === "asmodean" || human(e) || e.type === "fadelt" || (shadowspawn(e) && n++ < cap),
   );
 }
 function down(e) {
@@ -128,7 +129,7 @@ function down(e) {
 export function callEffect(e, helper) {
   if (!e?.alive || e.canBeHit === false) return null;
   if (e.type === "asmodean") {
-    if (helper !== "duo" || e.invuln || e.beat) return null;
+    if (!["duo", "moiraine", "lan"].includes(helper) || e.invuln || e.beat) return null;
     const floor =
       e.phase >= 3 ? 1 : Math.floor(e.maxHp * CALL7.gates[(e.phase || 1) - 1]);
     const dmg = Math.max(0, Math.min(e.maxHp * CALL7.bossFrac, e.hp - floor));

@@ -1,5 +1,5 @@
 import { canCall, pickHelper } from "./moilan-call.js";
-import { call7Context } from "./stage7-lifecycle.js";
+import { call7Context, cycleHelper7 } from "./stage7-lifecycle.js";
 import { q } from "./config.js";
 import { syncStage7Phone } from "./stage7-phone.js";
 export function bindStage7Hud(hud, k) {
@@ -10,6 +10,9 @@ export function bindStage7Hud(hud, k) {
     texture = pic?.texture?.key || "loialPortrait";
   let at = -1,
     last = "";
+  const choose = () => cycleHelper7(k);
+  pic?.setInteractive?.({ useHandCursor: true });
+  pic?.on?.("pointerdown", choose);
   hud.updateLoialLabel = function (s, R) {
     if (s.stageNo !== 7) return prev?.call(this, s, R);
     const ready = canCall(k.call, call7Context(k));
@@ -40,6 +43,8 @@ export function bindStage7Hud(hud, k) {
   };
   hud._s7bind = true;
   return () => {
+    pic?.off?.("pointerdown", choose);
+    pic?.disableInteractive?.();
     if (own) hud.updateLoialLabel = prev;
     else delete hud.updateLoialLabel;
     hud._s7bind = false;

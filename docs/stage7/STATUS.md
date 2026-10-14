@@ -2,6 +2,18 @@
 
 Stage 7 remains opt-in with `?stage=7&s7=1`. Stage 6 continues to it when enabled; Stage 7 continues to Stage 1. Moiraine and Lan are the only Stage 7 call-ins. The fallback story panels show Riley from behind and no unreviewed video is enabled.
 
+Press **O** or tap/click the call portrait to cycle **Auto → Moiraine → Lan**. Auto retains the original
+crowd/lane selection and boss duo; either solo helper can now be requested in the boss arena with
+the same charge, phase gates and damage cap. Esc dismisses visible Asmodean dialogue before pausing.
+
+For channel/throw testing, use `?stage=7&s7=1&skip=boss&story=0&s7debug=1` and start the game.
+Once Asmodean has arrived, press **T** (or call `window.__stage.kit.debug.forceChannel()`).
+This clears hazards, sets a vulnerable phase-3 channel, grounds Riley, and puts a hurt, grabbable
+Trolloc immediately to his right. Walk right to grab, then press Jump to throw left into Asmodean.
+For three-hit testing, press T again, move left to Asmodean, and attack in his depth lane.
+The ordinary 1.8 s channel window and combat collision rules apply. The debug hook and T listener
+are absent without `s7debug=1` and removed on stage exit; it does not enable god mode.
+
 The combined #55 review fixes and per-finding evidence are recorded in [FIXES-S7.md](../../FIXES-S7.md). The new tests exercise scene behavior, animated throws, loader/video/audio failures, touch bracing, HUD state, bot helpers, lag campaigns and warning timing. `?call7=1` retains the boss-assist benchmark; `?call7=all` enables calls throughout the campaign and note/channel counter tactics.
 
 The earlier statement that no existing test had been edited was incorrect: the input branch already changed `tests/stage6-loial-unchanged.test.mjs` to expect `moilan` for Stage 7. This fix commit additionally corrects the video-wait expectation in `tests/stage7-lifecycle.test.mjs`. No other existing test, protected control/HUD file, pinned Phaser file or entrypoint is edited by these fixes.

@@ -15,6 +15,9 @@ import { demand7, HELPERS7 } from "./stage7-load.js";
 import { linkTrollocs } from "./fadelt.js";
 import { reflectNote } from "./stage7-notes.js";
 import { syncStage7Phone } from "./stage7-phone.js";
+import { guardLoop7 } from "./stage7-audio.js";
+import { installDebug7 } from "./stage7-debug.js";
+import { stopSceneAudio } from "./audio.js";
 export function hook7(kit, object, key, wrap) {
   const original = object?.[key];
   if (typeof original !== "function") return;
@@ -31,7 +34,7 @@ export function call7Context(k) {
   const s = k.s,
     b = s.boss,
     list = eligibleTargets(s.enemies, s.camX || 0);
-  const context = helperContext(list, s.zoneI === 3);
+  const context = { ...helperContext(list, s.zoneI === 3), helper: k.helperChoice };
   return {
     ...context,
     paused: !!s.paused,
@@ -176,6 +179,15 @@ function silhouette(e) {
 }
 export function installStage7Hooks(k) {
   const s = k.s;
+  hook7(k, s.music, "backend", (original) => function (id, options) {
+    guardLoop7(id);
+    return original.call(this, id, options);
+  });
+  const keyOff = s.inp?.on?.("key", (code) => {
+    if (code === "KeyO") cycleHelper7(k);
+  });
+  if (keyOff) k.cleanups.push(keyOff);
+  installDebug7(k);
   hook7(
     k,
     s,
@@ -265,6 +277,22 @@ export function installStage7Hooks(k) {
   // One gesture can hit both the II button and the story SKIP. The second pause/start
   // would skip and then toggle manual pause, or resume and immediately pause again.
   hook7(k, s, "onPress", (original) => function (action) {
+    const bossCaption = this.hud?.capWho
+      ? this.hud.capT > 0 && this.hud.capWho.text === "ASMODEAN"
+      : k.bossCaptionUntil > k.clock;
+    if (action === "pause" && !this.cutscene && !this.paused &&
+        bossCaption) {
+      k.bossCaptionUntil = 0;
+      if (this.hud) {
+        this.hud.capT = 0;
+        this.hud.pendingCap = null;
+        for (const node of [this.hud.capWho, this.hud.capText, this.hud.capBg])
+          node?.setAlpha?.(0);
+      }
+      stopSceneAudio();
+      this.inp?.clear?.();
+      return;
+    }
     const now = performance.now();
     const key = action === "pause" || action === "start";
     if (key && k.echo && now - k.echo < 350) {
@@ -375,6 +403,35 @@ export function installStage7Hooks(k) {
         return original.call(this, att, a);
       },
   );
+}
+export function cycleHelper7(k) {
+  const s = k.s;
+  if (!s.started || s.paused || s.cutscene || s.gameOver || s.ended ||
+      k.outro || k.strike || k.call.on) return false;
+  const choices = [undefined, "moiraine", "lan"];
+  k.helperChoice = choices[(choices.indexOf(k.helperChoice) + 1) % choices.length];
+  s.hud?.flashText?.("CALL: " + (k.helperChoice?.toUpperCase() || "AUTO") + " — O / TAP PORTRAIT TO CHANGE");
+  return true;
+}
+export function installBossCaption7(k) {
+  if (k.captionBound) return;
+  k.captionBound = true;
+  // Stage1 creates its caption callback after kit.build, before kit.start.
+  hook7(k, k.s, "caption", (original) => function (who, text) {
+    k.bossCaptionUntil = who === "ASMODEAN"
+      ? k.clock + Math.max(2.2, text.length * 0.065) : 0;
+    return original.call(this, who, text);
+  });
+  hook7(k, k.s.riley, "sync", (original) => function () {
+    const out = original.apply(this, arguments);
+    if (k.outro) {
+      // Existing atlas pivot is viewed from behind; idle shows Riley's face.
+      this.sprite?.anims?.stop?.();
+      this.sprite?.setTexture?.("riley-0", "riley_combo3_01");
+      this.sprite?.setAlpha?.(1);
+    }
+    return out;
+  });
 }
 export function restoreStage7Hooks(k) {
   releaseHolds7(k.s);

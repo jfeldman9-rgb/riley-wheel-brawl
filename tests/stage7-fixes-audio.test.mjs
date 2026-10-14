@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { stage7Simulation } from "./helpers/stage7-harness.mjs";
 import { Dancer } from "../src/shaido.js";
 import { callMoilan, stepStrike7 } from "../src/stage7-lifecycle.js";
-import { playTrack, setVoiceFiles, stopSceneAudio } from "../src/audio.js";
+import { MUSIC, playTrack, setVoiceFiles, stopSceneAudio } from "../src/audio.js";
 
 const sources = [],
   fetches = [];
@@ -26,7 +26,8 @@ function node() {
     release: param,
     connect() {},
     disconnect() {},
-    start() {
+    start(when, offset) {
+      if (this.loop) assert.ok(Number.isFinite(offset), "finite loop offset");
       this.started = true;
     },
     stop() {
@@ -132,6 +133,22 @@ test("actual audio backend starts a finite boss loop and helper speech never cut
     assert.ok(loop);
     assert.equal(loop.loopStart, 0.25);
     assert.equal(loop.loopEnd, 72.977279);
+    const earlier = JSON.stringify(Object.fromEntries(Object.entries(MUSIC).filter(([id]) => !id.endsWith("7"))));
+    for (const [state, id, start, end] of [
+      ["boss", "boss7", NaN, Infinity],
+      ["stage", "stage7", Infinity, undefined],
+      ["boss", "boss7", 80, -Infinity],
+    ]) {
+      playTrack(null, { fade: 0 });
+      MUSIC[id].loopStart = start;
+      MUSIC[id].loopEnd = end;
+      s.music.set(state);
+      await settle();
+      const n = sources.filter(n => n.loop && n.started).at(-1);
+      assert.equal(n.loopStart, 0.25);
+      assert.equal(n.loopEnd, id === "boss7" ? 72.977279 : 40.25);
+    }
+    assert.equal(JSON.stringify(Object.fromEntries(Object.entries(MUSIC).filter(([id]) => !id.endsWith("7")))), earlier);
   } finally {
     stopSceneAudio();
     h.destroy();

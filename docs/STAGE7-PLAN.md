@@ -298,9 +298,13 @@ camera passes it, the fog plate fades. There is no gameplay effect.
 
 ### 3.1 How the call works
 
-There is one `CALL` button and **one shared charge**. The game picks the helper from the situation, so touch
-players never need a second button. The choice is a pure function, which makes it testable and lets the bot
-predict it.
+There is one `CALL` button and **one shared charge**. Auto picks the helper from the situation.
+Press **O** or tap/click the helper portrait to cycle **Auto → Moiraine → Lan → Auto**.
+The selection persists until changed or the stage restarts. It cannot change during a call, story,
+pause, game over or victory. The HUD previews the selected helper; the existing CALL action spends
+the charge. This preserves the original automatic crowd/lane rules and boss duo while letting the
+player request either helper alone, including against Asmodean. Choice avoids consuming a precious
+charge merely to alternate to the desired helper; the shared recharge and phase limits still apply.
 
 `src/moilan-call.js`† is a pure module, the same shape as `src/rand-call.js`:
 
@@ -313,6 +317,7 @@ export const CALL7 = Object.freeze({
   lan: Object.freeze({ kos: 3, eliteFrac: 1.0, eliteFracHealthy: 0.75, dash: 0.45 }),
 });
 export function pickHelper(ctx) {
+  if (ctx.helper === 'moiraine' || ctx.helper === 'lan') return ctx.helper;
   if (ctx.boss) return 'duo';
   if (ctx.spawnOnScreen >= 3) return 'moiraine';
   if (ctx.eliteOnScreen || ctx.humansOnScreen >= 1) return 'lan';
@@ -341,6 +346,11 @@ export function pickHelper(ctx) {
 | Can it skip a boss gate? | n/a | n/a | **No.** Damage is clamped at the next gate, like `RAND.bossFrac` |
 | In-game time | 1.6 s strike, with the world frozen | 0.9 s strike | 1.8 s strike |
 | FX (code-drawn first, painted later) | rock spikes plus fire bloom (`s7earth`† strip) | white slash streak (reuse `s6streak` tinted) | blue ring (`s7shield`†) plus slash |
+
+An explicitly selected solo helper also hits Asmodean for **6% max HP**, clamped at the next phase
+gate (or 1 HP in phase 3), plus a 1 s stagger. Lan requires less than 40 px depth separation;
+Moiraine reaches every lane. Solo calls keep their existing add effects and do not perform the duo's
+screen-wide hazard clear. The solo helper's own art/caption plays; Lan never requires Moiraine to appear.
 
 ### 3.3 Charges and HUD
 
