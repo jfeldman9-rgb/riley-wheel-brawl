@@ -72,7 +72,7 @@ export function drawStage5Meters(s, g) {
   }
   const hint = mashHint(s), hud = s.hud;
   if (hint && hud?.add?.text) {
-    if (!hud.s5Hint) hud.s5Hint = hud.add.text(640, 86, hint, { fontFamily: 'sans-serif', fontSize: '16px', color: '#d8ff6a', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5).setScrollFactor(0).setDepth(5000);
+    if (!hud.s5Hint) hud.s5Hint = hud.add.text(640, 86, hint, { fontFamily: 'sans-serif', fontSize: '16px', color: '#d8ff6a', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5).setScrollFactor(0).setDepth(90);
     hud.s5Hint.setText(hint).setVisible(true);
   } else hud?.s5Hint?.setVisible?.(false);
 }

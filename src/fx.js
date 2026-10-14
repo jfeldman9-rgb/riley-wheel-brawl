@@ -38,6 +38,7 @@ export class FX {
   }
   /** a landed hit: freeze, shake, sparks, light. dir = +1 if the hit travels right */
   impact(kind, x, y, dir = 1) {
+    if (!HITSTOP[kind]) kind = 'medium';
     this.hitstop = Math.max(this.hitstop, HITSTOP[kind] / 60);
     this.trauma = Math.min(1, this.trauma + SHAKE[kind]);
     const n = { light: 9, medium: 14, heavy: 24, finisher: 34 }[kind] >> (this.quality >= 2 ? 1 : 0);

@@ -39,10 +39,13 @@ function paint(e, frameOf, scale, baseH) {
   e.sprite.setScale?.(fh > baseH ? scale * baseH / fh : scale);
   e.sprite.setLighting?.(true);
   const ash = e.state === 'defeated' || e.state === 'ash';
-  e.sprite.setAlpha?.(ash ? Math.max(0, 1 - (e.st || 0) * 0.65) : 1);
+  // Cultist KO/flee exits fade on the Whitecloak schedule (dead 1.3/0.6, flee 1.6/0.6) instead of vanishing at gone.
+  const fade = e.state === 'ko' ? ((e.st || 0) > 1.3 ? Math.max(0, 1 - ((e.st || 0) - 1.3) / 0.6) : 1)
+    : e.state === 'flee' ? ((e.st || 0) > 1.6 ? Math.max(0, 1 - ((e.st || 0) - 1.6) / 0.6) : 1) : null;
+  e.sprite.setAlpha?.(ash ? Math.max(0, 1 - (e.st || 0) * 0.65) : fade ?? 1);
   e.shadow?.setPosition?.(e.x, e.y + 2);
   e.shadow?.setScale?.(e.type === 'draghkar' ? 1.4 : 0.8, 0.35);
-  e.shadow?.setAlpha?.(ash ? 0 : 0.55);
+  e.shadow?.setAlpha?.(ash ? 0 : fade !== null ? fade * 0.8 : 0.55);
 }
 function slide(e, dt, freeX) {
   dt = stage4Delta(dt);

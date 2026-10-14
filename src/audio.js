@@ -191,18 +191,19 @@ export function stopSceneAudio() {
   resetDuck();
   for (const id of [...clipDrop]) settleClip(id);
 }
+const N = (v, d) => isFinite(v) && v ? v : d;
 function tone(o) {
-  if (!ctx || muted) return; const t0 = ctx.currentTime + (o.delay || 0), osc = ctx.createOscillator(), g = ctx.createGain(), d = o.dur || 0.1;
-  osc.type = o.type || 'square'; osc.frequency.setValueAtTime(o.f0 || 440, t0); if (o.f1 !== undefined) osc.frequency.exponentialRampToValueAtTime(Math.max(20, o.f1), t0 + d);
-  g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(o.vol || 0.3, t0 + (o.attack || 0.005)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+  if (!ctx || muted) return; const t0 = ctx.currentTime + N(o.delay, 0), osc = ctx.createOscillator(), g = ctx.createGain(), d = N(o.dur, 0.1);
+  osc.type = o.type || 'square'; osc.frequency.setValueAtTime(N(o.f0, 440), t0); if (isFinite(o.f1)) osc.frequency.exponentialRampToValueAtTime(Math.max(20, o.f1), t0 + d);
+  g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(N(o.vol, 0.3), t0 + N(o.attack, 0.005)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
   osc.connect(g); g.connect(sfxBus); trackSource(osc, g); osc.start(t0); osc.stop(t0 + d + 0.02);
 }
 function noise(o) {
   if (!ctx || muted) return;
   if (!noiseBuf) { const n = ctx.sampleRate * 1.5; noiseBuf = ctx.createBuffer(1, n, ctx.sampleRate); const c = noiseBuf.getChannelData(0); for (let i = 0; i < n; i++) c[i] = Math.random() * 2 - 1; }
-  const t0 = ctx.currentTime + (o.delay || 0), s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(), d = o.dur || 0.2;
-  s.buffer = noiseBuf; f.type = o.filter || 'lowpass'; f.frequency.setValueAtTime(o.f0 || 1000, t0); if (o.f1 !== undefined) f.frequency.exponentialRampToValueAtTime(Math.max(30, o.f1), t0 + d); f.Q.value = o.q || 1;
-  g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(o.vol || 0.3, t0 + (o.attack || 0.005)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+  const t0 = ctx.currentTime + N(o.delay, 0), s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(), d = N(o.dur, 0.2);
+  s.buffer = noiseBuf; f.type = o.filter || 'lowpass'; f.frequency.setValueAtTime(N(o.f0, 1000), t0); if (isFinite(o.f1)) f.frequency.exponentialRampToValueAtTime(Math.max(30, o.f1), t0 + d); f.Q.value = o.q || 1;
+  g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(N(o.vol, 0.3), t0 + N(o.attack, 0.005)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
   s.connect(f); f.connect(g); g.connect(sfxBus); trackSource(s, f, g); s.start(t0, Math.random()); s.stop(t0 + d + 0.02);
 }
 function duck(depth = 0.5, hold = 0.18, rel = 0.45) {
@@ -312,9 +313,7 @@ function loadMusicBuffer(T) {
   if (T.buf) return Promise.resolve(T.buf);
   if (T.loading) return T.loading;
   const audioContext = ctx, epoch = audioEpoch;
-  // musicBytes holds the in-flight compressed fetch only. Once this decode settles, drop that
-  // promise so the ArrayBuffer can be collected. A disposed context may already have stored a
-  // newer fetch under the same id; never delete that one, and never delete across audioEpoch.
+  // musicBytes: in-flight fetch only; drop it once decoded, but never a newer one or across audioEpoch.
   const compressed = musicBytes[T.id] || (musicBytes[T.id] = fetch(T.M.url).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null));
   return (T.loading = compressed
     .then(b => b ? new Promise(res => { const p = audioContext.decodeAudioData(b.slice ? b.slice(0) : b, res, () => res(null)); if (p && p.catch) p.catch(() => res(null)); }) : null)

@@ -9,7 +9,7 @@ import { createTowers, TOWER } from './stage4-towers.js';
 import { createArena } from './stage4-arena.js';
 import { LAYOUT, createStage4View, moonAmbient, stage4Placeholder } from './stage4-view.js';
 import { updateFogBolts, cultistHoldsToken } from './cultists.js';
-import { preloadClips, say } from './audio.js';
+import { preloadClips, say, sfx } from './audio.js';
 import { STAGE4_VOICES, bark, croon, sfxCue, fogOffId } from './stage4-voice.js';
 import { clearStage4Hazards, clearStage4Zone, installStage4SceneHooks, installStage4RileyHook, restoreStage4Hooks } from './stage4-lifecycle.js';
 import { stage4Delta } from './stage4-time.js';
@@ -230,9 +230,9 @@ export class Stage4Kit {
     const key = s.textures.exists('ribbon') ? 'ribbon' : 's4tip';
     const g = s.add.image(x, y - 34, 'glow'); const c = s.add.image(x, y - 34, key);
     const L = s.lights.addLight(x, y - 40, 160, 0xd8ff6a, 1.1, 70);
-    s.pickups.push({ x, y, kind: 'ribbon', g, c, L, t: 0 });
+    s.pickups.push({ x, y, kind: 'ribbon', g, c, L, t: 0 }); sfx.fall();
   }
-  collectRibbon() { this.ribbons++; this.stats.ribbon++; this.s.riley.score += 1000; this.s.hud?.flashText("TWINKLE TOES' RIBBON!"); this.s.hud?.ribbon?.(this.ribbons); }
+  collectRibbon() { this.ribbons++; this.stats.ribbon++; this.s.riley.score += 1000; sfx.pickup(); this.s.hud?.flashText("TWINKLE TOES' RIBBON!"); this.s.hud?.ribbon?.(this.ribbons); }
   onZoneClear(i) {
     clearStage4Zone(this, i);
     if (i === 2 && !this.stats.glimpses) { this.stats.glimpses++; this.view.glimpse(); this.s.hud?.flashText('THERE, ON THE BRIDGE!'); bark(this.s, 'bridge', 'riley_bridge_01'); }

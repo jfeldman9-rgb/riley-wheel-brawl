@@ -80,7 +80,7 @@ export function createStage5View(scene) {
           green.setFlipX?.(face < 0);
           green.setFrame?.(greenFrame(beat.green.state));
           green.setScale?.(s5Scale(scene, 's5green', 2.75));
-          green.setDepth?.(1000 + LANE_BOT + 24);
+          green.setDepth?.(1000 + 630);
         }
       }
       const q = kit?.s?.fx?.quality ?? 5;
