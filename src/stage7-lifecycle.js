@@ -282,6 +282,7 @@ export function installStage7Hooks(k) {
       : k.bossCaptionUntil > k.clock;
     if (action === "pause" && !this.cutscene && !this.paused &&
         bossCaption) {
+      k.echo = performance.now();
       k.bossCaptionUntil = 0;
       if (this.hud) {
         this.hud.capT = 0;

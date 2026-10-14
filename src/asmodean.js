@@ -13,6 +13,7 @@ export const ASMODEAN = Object.freeze({
   channel: 1.8,
   hits: 3,
   stun: 1.4,
+  breakCooldown: 4,
   channelEvery: 6,
 });
 export class Asmodean extends Stage7Fighter {
@@ -158,7 +159,8 @@ export class Asmodean extends Stage7Fighter {
         h.thrown ||
         from?.state === "thrown"
       ) {
-        this.stagger(1.4);
+        this.stagger(ASMODEAN.stun);
+        this.channelAt = Math.max(this.channelAt, this.clock + ASMODEAN.breakCooldown);
         this.scene.hud?.flashText?.("CHANNEL BROKEN");
       }
     }

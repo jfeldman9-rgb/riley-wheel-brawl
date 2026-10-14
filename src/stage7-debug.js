@@ -3,6 +3,7 @@ import { q } from "./config.js";
 export function installDebug7(k) {
   if (q.get("s7debug") !== "1") return;
   const s = k.s;
+  let debugTrolloc = null;
   const forceChannel = () => {
     const b = s.boss, r = s.riley;
     if (k.destroyed || !s.started || s.paused || s.cutscene || s.ended ||
@@ -22,7 +23,8 @@ export function installDebug7(k) {
     r.z = r.vz = r.vx = 0;
     r.facing = 1;
     r.setState("idle", "idle");
-    const trolloc = s.spawn("grunt", "R");
+    const trolloc = debugTrolloc?.alive ? debugTrolloc : s.spawn("grunt", "R");
+    debugTrolloc = trolloc;
     trolloc.x = r.x + 92;
     trolloc.y = r.y;
     trolloc.z = trolloc.vz = trolloc.vx = 0;

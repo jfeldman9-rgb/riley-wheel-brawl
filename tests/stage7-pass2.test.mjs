@@ -32,7 +32,7 @@ const captionNode = () => ({ text: "", alpha: 0,
   setText(t) { this.text = t; return this; },
   setAlpha(a) { this.alpha = a; return this; } });
 
-test("Esc dismisses the rendered boss caption, clears buffered presses, and next Esc pauses", () => scene((s, h) => {
+test("Esc dismisses the rendered boss caption, clears buffered presses, and Esc after the echo window pauses", () => scene((s, h) => {
   Object.assign(s.hud, { caption: HUD.prototype.caption,
     capWho: captionNode(), capText: captionNode(), capBg: captionNode(),
     drawCaptionBackground() { this.capWho.alpha = this.capText.alpha = this.capBg.alpha = 1; } });
@@ -44,6 +44,9 @@ test("Esc dismisses the rendered boss caption, clears buffered presses, and next
   for (const node of [s.hud.capWho, s.hud.capText, s.hud.capBg]) assert.equal(node.alpha, 0);
   assert.equal(s.inp.peek("pause"), false);
   h.step();
+  s.inp.press("pause");
+  assert.equal(s.paused, false);
+  s.kit.echo = performance.now() - 351;
   s.inp.press("pause");
   assert.equal(s.paused, true);
 }));

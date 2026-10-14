@@ -503,6 +503,9 @@ test("Escape skips Stage 7 story and boss dialogue, then pauses combat after dis
   assert.equal(s.pauseReasons.has("manual"), false);
   assert.equal(s.kit.bossCaptionUntil, 0);
   s.onPress("pause");
+  assert.equal(s.pauseReasons.has("manual"), false);
+  s.kit.echo = performance.now() - 351;
+  s.onPress("pause");
   assert.equal(s.pauseReasons.has("manual"), true);
 }));
 

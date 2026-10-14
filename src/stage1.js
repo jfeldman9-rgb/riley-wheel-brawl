@@ -132,6 +132,7 @@ export class Stage1 extends Phaser.Scene {
     this.runId = (this.runId || 0) + 1;
     const sd = data && Object.keys(data).length ? data : (this.sys && this.sys.settings && this.sys.settings.data) || {};
     this.stageNo = resolveStage(sd, q); this.stageData = sd;
+    this.titleLock = sd.stage7Return ? performance.now() + 500 : 0;
     this.stageDef = STAGES[this.stageNo] || STAGES[1];
     this.zones = this.stageDef.zones; this.drops = this.stageDef.drops; this.bossDrop = this.stageDef.bossDrop;
     this.music = new MusicDirector((id, o) => playTrack(id, o), this.stageNo);
@@ -239,8 +240,11 @@ export class Stage1 extends Phaser.Scene {
   setBackdropLit(on) { for (const o of this.backdropLit || []) o.setLighting(on); this.backdropIsLit = on; const ambient = on ? this.kit?.ambient : this.kit?.ambientUnlit; this.ambient = Number.isFinite(ambient) ? ambient : on ? 0x39425f : 0x5a6482; if (this.lightsOn !== false) this.lights.setAmbientColor(this.ambient); }
   dropVignette() { if (this.vignette) { this.cameras.main.filters.external.remove(this.vignette); this.vignette = null; } }
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
-  // ---------- flow ----------
+  // Flow
   onPress(a) {
+    if (!this.started && !this.ended && performance.now() < this.titleLock) {
+      this.titleLock = performance.now() + 500; this.inp.clear(); return;
+    }
     const blurOnly = this.pauseReasons.size === 1 && this.pauseReasons.has('window-blur');
     if (this.pauseReasons.has('window-blur')) this.setPauseReason('window-blur', false);
     if (this.cutscene) {
@@ -273,9 +277,9 @@ export class Stage1 extends Phaser.Scene {
     if (next) this.scene.pause(); else this.scene.resume();
     if (this.hud && this.hud.pauseLabel) this.hud.pauseLabel.setVisible(this.showPauseLabel());
   }
-  /** PAUSED card: any pause except the cutscene (which draws its own screen) */
+  /** Cutscenes draw their own pause screen. */
   showPauseLabel() { return this.paused && [...this.pauseReasons].some(r => r !== 'cutscene'); }
-  /** title stage select: the HUD shows the choice; starting a different stage reloads the scene with its assets */
+  /** Reload the selected stage and its assets. */
   selectStage(dir) {
     if (this.started || this.ended) return;
     unlock(); this.music?.set('title');
