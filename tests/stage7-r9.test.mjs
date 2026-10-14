@@ -230,7 +230,7 @@ for (const debug of [false, true])
           ]) {
             const line = logs.find((entry) => entry.startsWith(prefix));
             assert.ok(line, prefix);
-            assert.match(line, / t=\d+\.\d{3} until=\d+\.\d{3}$/);
+            assert.match(line, / t=\d+\.\d{3} bc=\d+\.\d{3} dmgUntil=\d+\.\d{3} staggerUntil=\d+\.\d{3}$/);
           }
           for (const name of [
             "channel start",
@@ -240,8 +240,8 @@ for (const debug of [false, true])
           ]) {
             const line = logs.find((entry) => entry.startsWith(`[s7dbg] ${name} t=`));
             assert.ok(line, name);
-            assert.match(line, /combat=\d+\.\d{3}/);
-            assert.match(line, /until=\d+\.\d{3}/);
+            assert.match(line, / t=\d+\.\d{3} bc=\d+\.\d{3}/);
+            assert.match(line, /dmgUntil=\d+\.\d{3} staggerUntil=\d+\.\d{3}/);
           }
           for (const name of ["stagger start", "stagger end"]) {
             const line = logs.find((entry) => entry.startsWith(`[s7dbg] ${name} `));
@@ -280,11 +280,15 @@ test("debug KeyY force-channels and lands the three-hit break", () => {
       assert.ok(b.channelStaggerUntil >= b.clock + ASMODEAN.stun - 1e-6);
       const start = logs.find((line) => line.startsWith("[s7dbg] stagger start "));
       const endAt = b.staggerUntil;
-      assert.match(start, /until=\d+\.\d{3} dur=1\.400/);
+      const hp = b.hp;
+      s.inp.emit("key", "KeyY");
+      assert.equal(b.hp, hp, "repeated KeyY cannot reset HP or deal plain hits during a break");
+      assert.equal(b.staggerUntil, endAt);
+      assert.match(start, /staggerUntil=\d+\.\d{3} dur=1\.400/);
       for (let i = 0; i < 20 && b.state === "stagger"; i++) h.step(0.1);
       assert.notEqual(b.state, "stagger");
       const end = logs.find((line) => line.startsWith("[s7dbg] stagger end "));
-      assert.match(end, new RegExp(`until=${endAt.toFixed(3)} dur=1\\.400`));
+      assert.match(end, new RegExp(`staggerUntil=${endAt.toFixed(3)} dur=1\\.400`));
     }, true);
   } finally { console.log = savedLog; }
 });
@@ -314,3 +318,20 @@ test('100ms: a completed live channel owns a 12 HP shockwave', () => fixture((s,
   assert.ok(s.kit.arena.shock?.source === 'asmodean.shockwave');
   assert.equal(s.kit.arena.shock.counterUsed, true);
 }));
+
+test('debug clocks have the same explicit meaning on damage and state events', () => {
+  const savedLog = console.log, logs = [];
+  console.log = (...args) => logs.push(args.join(' '));
+  try {
+    fixture((s, h) => {
+      const b = liveBoss(s, h);
+      b.clock = 7; s.kit.combatClock = 20; s.kit.damageUntil = 20.5;
+      b.startChannel();
+      s.riley.hp -= 1;
+      for (const name of ['channel start', 'dmg']) {
+        const line = logs.filter(x => x.startsWith(`[s7dbg] ${name} `)).pop();
+        assert.match(line, /t=20\.000 bc=7\.000 dmgUntil=20\.500 staggerUntil=0\.000$/);
+      }
+    }, true);
+  } finally { console.log = savedLog; }
+});

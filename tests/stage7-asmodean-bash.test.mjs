@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { stage7Simulation } from './helpers/stage7-harness.mjs';
-import { Asmodean, ASMODEAN, ASMO_FX, CHANNEL_BANNER } from '../src/asmodean.js';
+import { Asmodean, ASMODEAN, ASMO_FX, CHANNEL_BANNER, bashLane } from '../src/asmodean.js';
 import { paintedScale } from '../src/stage7-fighter.js';
 import { callEffect, CALL7 } from '../src/moilan-call.js';
 
@@ -102,13 +102,14 @@ test('an assist on a channeling boss is a channel break, not a one-second stagge
     b.channelAt = b.clock + 1;
     callEffect(b, 'duo');
     assert.equal(b.state, 'stagger');
-    assert.equal(b.staggerFor, CALL7.stagger);
-    assert.ok(b.staggerUntil >= b.clock + CALL7.stagger - 1e-6);
-    assert.ok(b.channelStaggerUntil >= b.clock + CALL7.stagger - 1e-6);
+    assert.equal(b.staggerFor, ASMODEAN.stun);
+    assert.ok(b.staggerUntil >= b.clock + ASMODEAN.stun - 1e-6);
+    assert.ok(b.channelStaggerUntil >= b.clock + ASMODEAN.stun - 1e-6);
     assert.ok(b.channelAt >= b.clock + ASMODEAN.breakCooldown - 1e-6);
     assert.ok(b.breakFlash > 0);
     assert.ok(texts.includes('CHANNEL BROKEN'));
     assert.ok(texts.includes(CHANNEL_BANNER));
+    assert.match(CHANNEL_BANNER, /OR A CALL$/);
     b.startChannel();
     assert.equal(b.state, 'stagger', 'the break window still owns the cast');
     b.channelStaggerUntil = 0;
@@ -156,3 +157,65 @@ test('Asmodean is boss-sized with a matching hurtbox', () => {
     assert.ok(ASMODEAN.shadowW > 130);
   } finally { h.destroy(); }
 });
+
+for (const dt of [0.05, 0.1, 0.35]) {
+  for (const facing of [-1, 1]) {
+    test(`bash/parry share the front-side boundary at dt=${dt}, facing=${facing}`, () => {
+      const { h, b, R } = setup();
+      try {
+        b.face(facing);
+        for (const offset of [-80, -ASMODEAN.bashBack, -ASMODEAN.bashBack + 1, 100]) {
+          b.staggerUntil = 0;
+          b.setState('attack'); b.counterUsed = false;
+          R.x = b.x + facing * offset;
+          // End the rendered update inside the parry window for every dt.
+          b.st = ASMODEAN.bashTell - ASMODEAN.parry / 2 - dt;
+          b.update(dt);
+          const hp = b.hp;
+          b.takeHit({ dmg: 1 }, R);
+          assert.equal(b.hp, hp - 1, 'behind hits still deal ordinary damage');
+          assert.equal(b.state, offset > -ASMODEAN.bashBack ? 'stagger' : 'attack');
+          assert.equal(b.counterUsed, offset > -ASMODEAN.bashBack);
+        }
+      } finally { h.destroy(); }
+    });
+  }
+  test(`the solid lane footprint and actual bash agree at edges and corners, dt=${dt}`, () => {
+    const { h, s, b, R } = setup();
+    try {
+      for (const facing of [-1, 1]) {
+        b.face(facing);
+        const lane = bashLane(b);
+        assert.equal(lane.w, 215); assert.equal(lane.h, 80);
+        for (const x of [lane.x - 1, lane.x, lane.x + 1, lane.x + lane.w - 1, lane.x + lane.w, lane.x + lane.w + 1]) {
+          for (const y of [lane.y - 1, lane.y, lane.y + 1, lane.y + lane.h - 1, lane.y + lane.h, lane.y + lane.h + 1]) {
+            b.setState('attack'); b.counterUsed = false;
+            b.st = ASMODEAN.bashTell - dt / 2;
+            R.x = x; R.y = y; R.z = 0; R.inv = 0; R.hp = 100;
+            R.setState('idle', 'idle'); s.kit.damageUntil = 0;
+            b.update(dt);
+            assert.equal(b.counterUsed, true);
+            assert.notEqual(b.parryCue, 1, 'landed or missed, impact cannot leave a gold cue');
+            const inside = x > lane.x && x < lane.x + lane.w && y > lane.y && y < lane.y + lane.h;
+            assert.equal(R.hp, inside ? 100 - ASMODEAN.bashDmg : 100, JSON.stringify({facing,x,y,lane}));
+          }
+        }
+      }
+    } finally { h.destroy(); }
+  });
+  test(`assist channel break holds the full stun at dt=${dt}`, () => {
+    const { h, b } = setup();
+    try {
+      b.phase = 3; b.hp = 190; b.startChannel();
+      callEffect(b, 'duo');
+      const until = b.clock + ASMODEAN.stun;
+      assert.equal(b.staggerUntil, until);
+      while (b.clock + dt < until - 1e-6) {
+        b.update(dt);
+        assert.equal(b.state, 'stagger');
+      }
+      b.update(dt + 1 / 120);
+      assert.notEqual(b.state, 'stagger');
+    } finally { h.destroy(); }
+  });
+}

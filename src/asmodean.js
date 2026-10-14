@@ -3,7 +3,6 @@ import { substeps } from "./stage5-clock.js";
 import { stage4Delta } from "./stage4-time.js";
 import { clamp, LANE_TOP, LANE_BOT, q } from "./config.js";
 import { strikeRiley } from "./stage6-hurt.js";
-import { CALL7 } from "./moilan-call.js";
 export const ASMODEAN = Object.freeze({
   hp: 600,
   speed: 88,
@@ -12,6 +11,10 @@ export const ASMODEAN = Object.freeze({
   gates: Object.freeze([0.66, 0.33]),
   bashTell: 0.7,
   bashDmg: 12,
+  bashBack: 40,
+  bashHalfHeight: 40,
+  bashFlash: 0.2,
+  bashReadyLead: 0.1,
   parry: 0.2,
   shadowW: 190,
   channel: 1.8,
@@ -20,7 +23,7 @@ export const ASMODEAN = Object.freeze({
   breakCooldown: 4,
   channelEvery: 6,
 });
-export const CHANNEL_BANNER = "BREAK THE CHANNEL — THREE HITS OR A THROW";
+export const CHANNEL_BANNER = "BREAK THE CHANNEL — THREE HITS OR A THROW OR A CALL";
 // Readability tints. The bash tell warms and flickers faster as it nears the
 // hit, then holds solid gold for the parry window; stagger reads cool/dazed.
 export const ASMO_FX = Object.freeze({
@@ -43,6 +46,22 @@ export function calm7() {
       : null;
   }
   return q.get("flash") === "0" || !!reducedMotion?.matches;
+}
+// Shared world-space footprint: both the visible rectangle and damage use it.
+export function bashLane(boss) {
+  return {
+    x: boss.x - (boss.facing < 0 ? ASMODEAN.reach : ASMODEAN.bashBack),
+    y: boss.y - ASMODEAN.bashHalfHeight,
+    w: ASMODEAN.reach + ASMODEAN.bashBack,
+    h: ASMODEAN.bashHalfHeight * 2,
+  };
+}
+export function bashFront(boss, target) {
+  return !!target && (target.x - boss.x) * boss.facing > -ASMODEAN.bashBack;
+}
+export function bashParryOpen(boss) {
+  return boss.state === "attack" && !boss.counterUsed &&
+    boss.st >= ASMODEAN.bashTell - ASMODEAN.parry && boss.st < ASMODEAN.bashTell;
 }
 export class Asmodean extends Stage7Fighter {
   constructor(s, x, y) {
@@ -154,20 +173,21 @@ export class Asmodean extends Stage7Fighter {
     const R = this.scene.riley;
     if (!R?.alive) return;
     if (this.state === "attack") {
-      // Arm one rendered gold frame even if this update jumps past the window.
+      // A skipped window must never advertise a parry after impact.
       if (
-        this.st >= ASMODEAN.bashTell - ASMODEAN.parry &&
+        bashParryOpen(this) &&
         !this.parryCueSeen &&
         this.parryCue !== 2
       )
         this.parryCue = 1;
       if (!this.counterUsed && this.st >= ASMODEAN.bashTell) {
         this.counterUsed = true;
-        const dx = (R.x - this.x) * this.facing;
+        this.parryCue = 2;
+        const lane = bashLane(this);
         if (
-          dx > -40 &&
-          Math.abs(R.x - this.x) < ASMODEAN.reach &&
-          Math.abs(R.y - this.y) < 40 &&
+          bashFront(this, R) &&
+          R.x > lane.x && R.x < lane.x + lane.w &&
+          R.y > lane.y && R.y < lane.y + lane.h &&
           (R.z || 0) < 35
         )
           bashRiley(this);
@@ -242,8 +262,8 @@ export class Asmodean extends Stage7Fighter {
     if (!this.canBeHit) return false;
     const channel = this.state === "channel";
     // Only a hit in the last instant of the tell parries the bash; mashing through it does not.
-    const counter = this.state === "attack" && !this.counterUsed && !h.assist &&
-      this.st >= ASMODEAN.bashTell - ASMODEAN.parry;
+    const counter = bashParryOpen(this) && !h.assist &&
+      bashFront(this, this.scene.riley);
     this.hp -= Math.max(0, h.dmg || 0);
     // Visible reaction on every landed hit, without cancelling a bash or channel.
     this.hitFlash = ASMO_FX.hitFlash;
@@ -256,13 +276,12 @@ export class Asmodean extends Stage7Fighter {
       if (h.assist) this.channelHits = ASMODEAN.hits;
       else this.channelHits++;
       if (h.assist || this.channelHits >= ASMODEAN.hits || thrown) {
-        // Assist keeps its one-second punish window, but the break is scheduled
-        // like a channel break instead of a silent plain stagger.
-        this.stagger(h.assist ? CALL7.stagger : ASMODEAN.stun);
+        // Every channel break grants the same full punish window.
+        this.stagger(ASMODEAN.stun);
         this.channelStaggerUntil = this.staggerUntil;
         this.channelAt = Math.max(this.channelAt, this.clock + ASMODEAN.breakCooldown);
         this.breakFlash = ASMO_FX.breakFlash;
-        if (this.scene.fx)
+        if (this.scene.fx && !calm7())
           this.scene.fx.trauma = Math.max(this.scene.fx.trauma || 0, 0.45);
         this.scene.hud?.flashText?.("CHANNEL BROKEN");
       }
@@ -294,7 +313,7 @@ export class Asmodean extends Stage7Fighter {
     return this.st < t - ASMODEAN.parry ? 0 : this.st < t ? 1 / 8 : 2 / 8;
   }
   sync() {
-    const flinch = this.alive && this.hitFlash > 0 &&
+    const flinch = !calm7() && this.alive && this.hitFlash > 0 &&
       (this.state === "idle" || this.state === "walk");
     const state = this.state;
     if (flinch) this.state = "hurt";
@@ -302,8 +321,8 @@ export class Asmodean extends Stage7Fighter {
     const sp = this.sprite;
     if (!sp) return;
     const tell = this.alive && state === "attack" && this.st < ASMODEAN.bashTell;
-    const parry = this.st >= ASMODEAN.bashTell - ASMODEAN.parry;
-    const goldHold = this.alive && state === "attack" && this.parryCue === 1;
+    const parry = bashParryOpen(this);
+    const goldHold = this.alive && parry && this.parryCue === 1;
     // The tell and the parry gold stay readable; a hit during them is only a flinch.
     if (tell || goldHold) {
       const k = Math.min(1, this.st / ASMODEAN.bashTell);
@@ -317,7 +336,7 @@ export class Asmodean extends Stage7Fighter {
     } else sp.clearTint?.();
     const dazed = this.alive && state === "stagger" && !calm7();
     sp.setAngle?.(dazed ? Math.sin(this.st * 9) * 3.5 : 0);
-    if (flinch || (this.alive && this.hitFlash > 0)) {
+    if (!calm7() && (flinch || (this.alive && this.hitFlash > 0))) {
       const off = this.flinchDir * ASMO_FX.flinch * (this.hitFlash / ASMO_FX.hitFlash);
       sp.setPosition?.(this.x + off, this.y - this.z);
     }

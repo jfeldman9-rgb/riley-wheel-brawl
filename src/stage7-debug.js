@@ -6,14 +6,13 @@ export function installDebug7(k) {
   let debugTrolloc = null;
   const fmt = (n) => (Number.isFinite(+n) ? +n : 0).toFixed(3);
   const event = (name, time, extra) => {
-    const until = extra && extra.until != null ? extra.until : k.damageUntil;
     const parts = [
-      `[s7dbg] ${name} t=${fmt(time)}`,
-      `combat=${fmt(k.combatClock)}`,
-      `until=${fmt(until)}`,
+      `[s7dbg] ${name} t=${fmt(k.combatClock)}`,
+      `bc=${fmt(time)}`,
+      `dmgUntil=${fmt(k.damageUntil)}`,
+      `staggerUntil=${fmt(extra?.until ?? s.boss?.staggerUntil)}`,
     ];
     if (extra && extra.dur != null) parts.push(`dur=${fmt(extra.dur)}`);
-    if (extra && extra.until != null) parts.push(`dmgUntil=${fmt(k.damageUntil)}`);
     console.log(parts.join(" "));
   };
   const watchHp = () => {
@@ -27,7 +26,7 @@ export function installDebug7(k) {
         if (value !== hp) {
           // Covers even a future direct HP writer outside strikeRiley/takeHit.
           const source = k.damageSource || 'direct';
-          console.log(`[s7dbg] dmg src=${source} amt=${hp - value} hp=${value} t=${fmt(k.combatClock)} until=${fmt(k.damageUntil)}`);
+          console.log(`[s7dbg] dmg src=${source} amt=${hp - value} hp=${value} t=${fmt(k.combatClock)} bc=${fmt(s.boss?.clock)} dmgUntil=${fmt(k.damageUntil)} staggerUntil=${fmt(s.boss?.staggerUntil)}`);
         }
         hp = value;
       },
@@ -59,7 +58,8 @@ export function installDebug7(k) {
   const forceChannel = () => {
     const b = s.boss, r = s.riley;
     if (k.destroyed || !s.started || s.paused || s.cutscene || s.ended ||
-        s.gameOver || k.strike || !b?.alive || !r?.alive) return false;
+        s.gameOver || k.strike || !b?.alive || !r?.alive ||
+        b.clock < b.channelStaggerUntil) return false;
     r.held?.release?.();
     r.held = null;
     r.grabbedBy?.releaseHold?.("break");
@@ -90,7 +90,7 @@ export function installDebug7(k) {
   const off = s.inp?.on?.("key", (code) => {
     if (code === "KeyT") forceChannel();
     if (code === "KeyB") jumpBossIntro();
-    if (code === "KeyY" && forceChannel())
+    if (code === "KeyY" && forceChannel() && s.boss?.state === "channel")
       for (let i = 0; i < 3; i++) s.boss?.takeHit?.({ dmg: 1 }, s.riley);
   });
   k.cleanups.push(() => { off?.(); delete k.debug; });

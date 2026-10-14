@@ -3,9 +3,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { stage7Simulation, withSeed, FULL_STAGE_SEEDS } from "./helpers/stage7-harness.mjs";
-import { Asmodean, ASMODEAN, ASMO_FX } from "../src/asmodean.js";
+import { Asmodean, ASMODEAN, ASMO_FX, bashLane } from "../src/asmodean.js";
 import { createStage7View } from "../src/stage7-view.js";
 import { Stage7Kit } from "../src/stage7.js";
+import { q } from "../src/config.js";
 
 function spriteFixture() {
   const made = [];
@@ -106,7 +107,7 @@ test("a landed hit flashes white and flinches away from Riley without cancelling
   b.takeHit({ dmg: 4 }, { x: 4700 });
   b.sync();
   assert.equal(b.state, "attack");
-  assert.equal(b.sprite.tint, ASMO_FX.parry);
+  assert.equal(b.sprite.tint, ASMO_FX.tell, "a consumed counter cannot advertise a parry");
   assert.equal(b.sprite.fill, false);
   b.destroy();
 });
@@ -130,7 +131,7 @@ test("view: bash shows a danger lane over the real reach and a marker above his 
   view.sync(s.kit);
   const ready = live(made, "s7streak").find((o) => o.h === 92);
   assert.ok(ready, "get-ready outline before the parry window");
-  assert.equal(ready.tint, 0xffd27a);
+  assert.equal(ready.tint, ASMO_FX.tell);
   b.st = ASMODEAN.bashTell + 0.05;
   view.sync(s.kit);
   assert.equal(live(made, "s7note").length, 0, "marker gone once the bash resolves");
@@ -138,7 +139,10 @@ test("view: bash shows a danger lane over the real reach and a marker above his 
   assert.ok(lane.alpha > 0, "flash is still up just after the hit");
   b.st = ASMODEAN.bashTell + 0.1;
   view.sync(s.kit);
-  assert.equal(lane.alpha, 0, "white flash ends just after st=0.7");
+  assert.ok(lane.alpha >= 0.49, "white flash remains clear at 10 fps");
+  b.st = ASMODEAN.bashTell + ASMODEAN.bashFlash + 0.01;
+  view.sync(s.kit);
+  assert.equal(lane.alpha, 0, "white flash ends after its configured duration");
   b.facing = 1;
   b.st = 0.3;
   view.sync(s.kit);
@@ -168,30 +172,80 @@ test("view: stagger shows orbiting stun stars above the boss; cast bar and outro
   view.destroy();
 });
 
-test("a skipped parry window still paints gold for one rendered frame", () => {
+for (const dt of [0.05, 0.1, 0.35])
+  test(`a frame crossing impact shows white, never late parry gold, dt=${dt}`, () => {
+    const { s, made } = spriteFixture();
+    const view = createStage7View(s);
+    const b = new Asmodean(s, 4800, 630);
+    s.riley.alive = true;
+    s.riley.x = b.x - 400;
+    s.enemies = [b]; s.boss = b;
+    b.setState("attack");
+    b.st = ASMODEAN.bashTell - dt * 0.6;
+    b.update(dt);
+    assert.ok(b.st >= ASMODEAN.bashTell);
+    assert.equal(b.counterUsed, true);
+    assert.notEqual(b.parryCue, 1);
+    b.sync(); view.sync(s.kit);
+    assert.notEqual(b.sprite.tint, ASMO_FX.parry);
+    assert.equal(b.parryCueSeen, false, "no rendered gold frame after impact");
+    const lane = live(made, "__WHITE")[0];
+    assert.equal(lane.tint, ASMO_FX.hit);
+    assert.ok(lane.alpha > 0.25, `visible strike flash: ${lane.alpha}`);
+    assert.equal(live(made, "s7note").length, 0);
+    // Even a stale cue cannot override the strike flash in either renderer.
+    b.parryCue = 1;
+    b.hitFlash = ASMO_FX.hitFlash;
+    b.sync(); view.sync(s.kit);
+    assert.equal(b.sprite.tint, ASMO_FX.hit);
+    assert.equal(b.sprite.fill, true);
+    assert.equal(lane.tint, ASMO_FX.hit);
+    assert.equal(b.parryCueSeen, false);
+    view.destroy(); b.destroy();
+  });
+
+test("only boss sync acknowledges a visible parry, and the solid lane uses shared geometry", () => {
   const { s, made } = spriteFixture();
   const view = createStage7View(s);
   const b = new Asmodean(s, 4800, 630);
-  s.riley.alive = true;
-  s.riley.x = b.x - 400;
-  s.enemies = [b];
-  s.boss = b;
-  b.setState("attack");
-  b.update(0.8);
-  assert.ok(b.st >= ASMODEAN.bashTell);
-  assert.equal(b.parryCue, 1);
+  s.enemies = [b]; s.boss = b;
+  b.setState("attack"); b.st = ASMODEAN.bashTell - ASMODEAN.parry / 2;
+  b.parryCue = 1;
+  for (const facing of [-1, 1]) {
+    b.face(facing); view.sync(s.kit);
+    const lane = live(made, "__WHITE")[0], rect = bashLane(b);
+    assert.deepEqual({x:lane.x,y:lane.y,w:lane.w,h:lane.h}, rect);
+    assert.equal(lane.tint, ASMO_FX.parry);
+    const decoration = live(made, "s7streak").find(o => o.h === rect.h);
+    assert.ok(decoration.depth > lane.depth);
+  }
+  assert.equal(b.parryCueSeen, false, "view must not mutate gameplay cue state");
   b.sync();
-  view.sync(s.kit);
+  assert.equal(b.parryCueSeen, true);
   assert.equal(b.sprite.tint, ASMO_FX.parry);
-  assert.equal(b.sprite.fill, false);
-  const lane = live(made, "s7streak").find((o) => o.h === 80);
-  assert.equal(lane.tint, 0xffd27a);
-  b.update(0.05);
-  b.sync();
-  view.sync(s.kit);
+  b.counterUsed = true;
+  b.sync(); view.sync(s.kit);
   assert.notEqual(b.sprite.tint, ASMO_FX.parry);
-  view.destroy();
-  b.destroy();
+  assert.notEqual(live(made, "__WHITE")[0].tint, ASMO_FX.parry);
+  view.destroy(); b.destroy();
+});
+
+test("10 fps: impact flash survives the next 100 ms rendered frame", () => {
+  const { s, made } = spriteFixture();
+  const view = createStage7View(s);
+  const b = new Asmodean(s, 4800, 630);
+  s.riley.alive = true; s.riley.x = b.x - 400;
+  s.enemies = [b]; s.boss = b;
+  b.setState("attack"); b.st = ASMODEAN.bashTell - 0.09;
+  for (let i = 0; i < 2; i++) {
+    b.update(0.1); b.sync(); view.sync(s.kit);
+    const lane = live(made, "__WHITE")[0];
+    assert.equal(lane.tint, ASMO_FX.hit);
+    assert.ok(lane.alpha > 0.4);
+  }
+  b.update(0.1); view.sync(s.kit);
+  assert.equal(live(made, "__WHITE")[0].alpha, 0);
+  view.destroy(); b.destroy();
 });
 
 test("reduced motion freezes stun stars and caches the media query", () => {
@@ -295,3 +349,30 @@ test("fairness: 3 s standing next to Asmodean costs a noticeable but survivable 
         assert.ok(r.alive);
       });
 });
+
+for (const mode of ['normal', 'media', 'flash=0'])
+  test(`channel break shake and hit flinch respect calm7: ${mode}`, () => {
+    const { s } = spriteFixture();
+    const savedMedia = globalThis.matchMedia, savedFlash = q.get('flash');
+    globalThis.matchMedia = () => ({ matches: mode === 'media' });
+    q.set('flash', mode === 'flash=0' ? '0' : '1');
+    const b = new Asmodean(s, 4800, 630);
+    s.fx = { trauma: 0 };
+    try {
+      b.sync();
+      const idleFrame = b.sprite.frame;
+      b.takeHit({ dmg: 1 }, { x: b.x - 100 }); b.sync();
+      if (mode === 'normal') assert.notEqual(b.sprite.frame, idleFrame);
+      else assert.equal(b.sprite.frame, idleFrame, 'calm mode also skips the hurt pose flinch');
+      b.phase = 3; b.hp = 190; b.startChannel();
+      for (let i = 0; i < ASMODEAN.hits; i++) b.takeHit({ dmg: 1 }, { x: b.x - 100 });
+      b.sync();
+      assert.equal(b.state, 'stagger');
+      assert.equal(b.breakFlash, ASMO_FX.breakFlash, 'static feedback remains');
+      assert.equal(s.fx.trauma, mode === 'normal' ? 0.45 : 0);
+      assert.equal(b.sprite.x, mode === 'normal' ? b.x + ASMO_FX.flinch : b.x);
+    } finally {
+      b.destroy(); globalThis.matchMedia = savedMedia;
+      savedFlash === null ? q.delete('flash') : q.set('flash', savedFlash);
+    }
+  });

@@ -7,7 +7,7 @@ import { bandY } from "./stage7-street.js";
 import { frame7, earthFrame7 } from "./stage7-frames.js";
 import { isPainted } from "./stage6-paint.js";
 import { paintedScale } from "./stage7-fighter.js";
-import { ASMODEAN, calm7 } from "./asmodean.js";
+import { ASMODEAN, ASMO_FX, bashLane, bashParryOpen, calm7 } from "./asmodean.js";
 const CELL = {
   s7column: [128, 448],
   s7shield: [128, 256],
@@ -225,22 +225,18 @@ export function createStage7View(s) {
               960,
             );
           else if (e.type === "asmodean") {
-            // Danger lane matches the one-sided bash: reach in front, 40px
-            // behind, and ±40 on y. White strike flash ends just after st=0.7.
+            // The solid base fills the exact damage footprint; the streak is decoration.
             const tell = ASMODEAN.bashTell,
               k = clamp(e.st / tell, 0, 1),
-              hold = e.parryCue === 1,
-              struck = e.st >= tell && !hold,
-              parry = hold || (!struck && e.st >= tell - ASMODEAN.parry),
-              facing = e.facing < 0 ? -1 : 1,
-              x0 = facing < 0 ? e.x - ASMODEAN.reach : e.x,
-              // Facing right, the 40px slack is to the left: x0-40*facing.
-              // Facing left, that slack is to the right, so the left edge stays x0.
-              laneX = x0 - 40 * Math.max(facing, 0),
-              laneW = ASMODEAN.reach + 40,
-              flash = 0.08;
-            if (hold) e.parryCueSeen = true;
-            if (!struck && e.st >= 0.4 && !parry)
+              struck = e.st >= tell || e.counterUsed,
+              parry = bashParryOpen(e),
+              lane = bashLane(e),
+              laneX = lane.x,
+              laneW = lane.w,
+              alpha = struck ? clamp(1 - (e.st - tell) / ASMODEAN.bashFlash, 0, 1) : 0.25 + 0.55 * k,
+              tint = struck ? ASMO_FX.hit : parry ? ASMO_FX.parry : ASMO_FX.tell;
+            show("tellBase" + e.id, "__WHITE", lane.x, lane.y, lane.w, lane.h, alpha, 960, tint);
+            if (!struck && e.st >= tell - ASMODEAN.parry - ASMODEAN.bashReadyLead && !parry)
               show(
                 "tellReady" + e.id,
                 "s7streak",
@@ -250,18 +246,18 @@ export function createStage7View(s) {
                 92,
                 0.9,
                 959,
-                0xffd27a,
+                ASMO_FX.tell,
               );
             show(
               "tellLane" + e.id,
               "s7streak",
               laneX,
-              e.y - 40,
+              lane.y,
               laneW,
-              80,
-              struck ? clamp(1 - (e.st - tell) / flash, 0, 1) : 0.25 + 0.55 * k,
-              960,
-              struck ? 0xffffff : parry ? 0xffd27a : 0xff6a3d,
+              lane.h,
+              alpha,
+              961,
+              tint,
             );
             if (!struck) {
               const size = 40 + 16 * k;
