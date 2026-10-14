@@ -20,7 +20,7 @@ export function createStreet() {
       if (r.t >= STREET.tell) r.phase = 'strike';
       if (r.phase === 'strike') {
         if (!r.counterUsed && Math.abs(R.x - r.x) <= STREET.radius && Math.abs(R.y - r.y) < 24 && R.z < 30) {
-          r.counterUsed = true; strikeRiley(s, STREET.dmg, { down: true, kb: 90, launch: 180, fromX: r.x });
+          r.counterUsed = true; strikeRiley(s, STREET.dmg, { source: 'street.floor', down: true, kb: 90, launch: 180, fromX: r.x });
         }
         for (const e of s.enemies || []) if (e.alive && !e.entering && !r.hits.has(e) && Math.abs(e.x - r.x) <= STREET.radius && Math.abs(e.y - r.y) < 24) {
           r.hits.add(e); e.takeHit?.({ dmg: STREET.enemyDmg, down: true, hazard: true }, r);

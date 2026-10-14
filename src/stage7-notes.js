@@ -100,7 +100,7 @@ export function createNotes() {
           Math.abs(R.y - n.y) < 22
         ) {
           n.counterUsed = true;
-          strikeRiley(s, NOTES.dmg, { fromX: n.x });
+          strikeRiley(s, NOTES.dmg, { source: 'asmodean.note', fromX: n.x });
         }
       }
       this.notes = this.notes.filter((n) => n.age < 5 && !n.counterUsed);

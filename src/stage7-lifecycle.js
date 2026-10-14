@@ -21,7 +21,7 @@ import { stopSceneAudio } from "./audio.js";
 import { consumePress, pressConsumed, freshKeyboardPress } from "./press-ownership.js";
 import { damageAllowed } from "./stage6-hurt.js";
 import { LINES } from "./stage7-voice.js";
-import { recordDamage7 } from "./stage7-hurt.js";
+import { recordDamage7, damageSource7, capDamage7 } from "./stage7-hurt.js";
 function dialog7(k) {
   const hud = k.s.hud;
   return hud?.capWho
@@ -240,6 +240,14 @@ function silhouette(e) {
 }
 export function installStage7Hooks(k) {
   const s = k.s;
+  // Phaser's 120-frame startup smoothing clamps 100ms frames to 16.7ms.
+  // Use real elapsed time for Stage 7's scene, animation and HUD clocks.
+  const loop = s.game?.loop;
+  if (loop) {
+    const smoothStep = loop.smoothStep;
+    loop.smoothStep = false;
+    k.cleanups.push(() => { loop.smoothStep = smoothStep; });
+  }
   hook7(k, s.music, "backend", (original) => function (id, options) {
     guardLoop7(id);
     return original.call(this, id, options);
@@ -490,12 +498,23 @@ export function cycleHelper7(k) {
 export function installBossCaption7(k) {
   if (k.captionBound) return;
   k.captionBound = true;
+  k.debug?.watchHp();
+  for (const [method, source] of [['respawn', 'respawn'], ['updatePickups', 'pickup.heal'],
+    ['updateCarts', 'ground.cart']]) {
+    const object = method === 'respawn' ? k.s.riley : k.s;
+    hook7(k, object, method, original => function (...args) {
+      return damageSource7(k.s, source, () => original.apply(this, args));
+    });
+  }
   // Scene-owned listeners and damage hooks disappear on shutdown. The logic
   // harness has no Phaser keyboard; its Input ownership remains unchanged.
   if (k.s.input?.keyboard) installDialogKeys7(k);
   hook7(k, k.s.riley, "takeHit", original => function (hit, from) {
     if (!damageAllowed(k.s)) return false;
-    const landed = original.call(this, hit, from);
+    const source = k.damageSource || (from?.type === 'asmodean' ? 'asmodean.contact' :
+      (from?.type || (from === this.grabbedBy ? 'grab' : 'environment')) + '.melee');
+    const landed = damageSource7(k.s, source,
+      () => original.call(this, { ...hit, dmg: capDamage7(k.s, hit.dmg, source) }, from));
     if (landed) recordDamage7(k.s);
     return landed;
   });
@@ -505,7 +524,9 @@ export function installBossCaption7(k) {
       ? k.clock + Math.max(2.2, text.length * 0.065) : 0;
     const out = original.call(this, who, text);
     // The veil warning is an ambient, skippable beat while Riley walks.
-    if (who === "MOIRAINE" && text === LINES.st7_veil_01[1] && k.s.hud)
+    k.veilCaptionUntil = who === "MOIRAINE" && text === LINES.st7_veil_01[1]
+      ? k.clock + 1.2 : 0;
+    if (k.veilCaptionUntil && k.s.hud)
       k.s.hud.capT = Math.min(k.s.hud.capT || 1.2, 1.2);
     return out;
   });

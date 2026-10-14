@@ -15,7 +15,7 @@ export function createArena7() {
         if (a.t >= 1 && a.phase === 'tell') { a.phase = 'strike'; sfx7('glass'); }
         if (a.phase === 'strike') {
           const R = s.riley;
-          if (!a.counterUsed && R && Math.abs(R.x - a.x) < 110) { a.counterUsed = true; strikeRiley(s, 12, { down: true, fromX: a.x }); }
+          if (!a.counterUsed && R && Math.abs(R.x - a.x) < 110) { a.counterUsed = true; strikeRiley(s, 12, { source: 'asmodean.glass', down: true, fromX: a.x }); }
           for (const e of s.enemies || []) if (e !== boss && e.alive && !e.entering && !a.hits.has(e) && Math.abs(e.x - a.x) < 110) { a.hits.add(e); e.takeHit?.({ dmg: 30, down: true, hazard: true }, a); }
         }
         if (a.t >= 1.9) this.rain = null;
@@ -23,11 +23,14 @@ export function createArena7() {
       if (this.shock) {
         const a = this.shock, old = a.radius; a.t += dt; a.radius = a.t * 520;
         const R = s.riley, distance = R ? Math.hypot(R.x - a.x, R.y - a.y) : Infinity;
-        if (!a.counterUsed && distance >= old - 28 && distance <= a.radius + 28 && R?.z < 30) { a.counterUsed = true; strikeRiley(s, 16, { down: true, fromX: a.x }); }
+        if (!a.counterUsed && distance >= old - 28 && distance <= a.radius + 28 && R?.z < 30) { a.counterUsed = true; strikeRiley(s, 16, { source: a.source, down: true, fromX: a.x }); }
         if (a.t >= 0.5) this.shock = null;
       }
     },
-    wave(boss) { this.shock = { x: boss.x, y: boss.y, t: 0, radius: 0, counterUsed: false }; sfx7('shield'); },
+    // The origin gives geometry; the caster supplies ownership. Standalone
+    // arena waves keep their existing contract, while channel casts share
+    // Asmodean's damage cap and deadline with his bash and notes.
+    wave(origin, source = 'arena.shockwave') { this.shock = { x: origin.x, y: origin.y, source, t: 0, radius: 0, counterUsed: false }; sfx7('shield'); },
     clear() { this.rain = null; this.shock = null; },
   };
 }

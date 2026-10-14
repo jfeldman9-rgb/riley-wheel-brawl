@@ -177,7 +177,7 @@ export class Shaido extends Stage7Fighter {
         Math.abs(R.y - this.y) < 32
       ) {
         this.counterUsed = true;
-        if (R.z < 30) strikeRiley(this.scene, 6, { fromX: this.x });
+        if (R.z < 30) strikeRiley(this.scene, 6, { source: this.type + '.melee', fromX: this.x });
       }
       if (this.st >= 0.3 || Math.abs(this.x - this.fromX) >= 300) {
         this.setState("idle");

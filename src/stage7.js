@@ -207,6 +207,14 @@ export class Stage7Kit {
   step(dt) {
     const s = this.s;
     this.clock += dt;
+    if (this.veilCaptionUntil && this.clock + 1e-9 >= this.veilCaptionUntil) {
+      this.veilCaptionUntil = 0;
+      const hud = s.hud;
+      if (hud?.capWho?.text === 'MOIRAINE' && hud.capText?.text === LINES.st7_veil_01[1]) {
+        hud.capT = 0; hud.pendingCap = null;
+        for (const node of [hud.capWho, hud.capText, hud.capBg]) node?.setAlpha?.(0);
+      }
+    }
     for (const task of this.tasks.slice())
       if (task.at <= this.clock) {
         this.tasks.splice(this.tasks.indexOf(task), 1);
@@ -271,7 +279,7 @@ export class Stage7Kit {
         Math.abs(R.y - a.y) < 22
       ) {
         a.hit = true;
-        strikeRiley(s, 7, { fromX: a.x });
+        strikeRiley(s, 7, { source: 'veiled.arrow', fromX: a.x });
       }
     }
     this.arrows = this.arrows.filter((a) => !a.hit && a.t < 4);

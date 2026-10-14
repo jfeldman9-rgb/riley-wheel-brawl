@@ -44,6 +44,10 @@ export class Asmodean extends Stage7Fighter {
   setState(state) {
     // Hits, helper effects and idle resets cannot shorten a channel break.
     if (this.alive && this.clock < this.staggerUntil && state !== "bound") return;
+    if (this.state === 'channel' && state !== 'channel')
+      this.scene.kit?.debug?.event('channel end', this.clock);
+    if (this.state === 'stagger' && state !== 'stagger')
+      this.scene.kit?.debug?.event('stagger end', this.clock);
     super.setState(state);
   }
   physics(dt) {
@@ -97,7 +101,7 @@ export class Asmodean extends Stage7Fighter {
     if (this.state === "channel") {
       if (this.st >= ASMODEAN.channel) {
         this.counterUsed = true;
-        this.scene.kit?.arena.wave(this);
+        this.scene.kit?.arena.wave(this, 'asmodean.shockwave');
         this.setState("idle");
       }
       return;
@@ -161,6 +165,7 @@ export class Asmodean extends Stage7Fighter {
     if (this.clock < this.channelStaggerUntil) return;
     this.staggerUntil = 0;
     this.setState("channel");
+    this.scene.kit?.debug?.event('channel start', this.clock);
     this.channelHits = 0;
     this.counterUsed = false;
     this.channelAt = this.clock + ASMODEAN.channelEvery;
@@ -169,6 +174,7 @@ export class Asmodean extends Stage7Fighter {
   stagger(duration = 1.4) {
     if (!this.alive || this.beat) return;
     const until = Math.max(this.staggerUntil || 0, this.clock + duration);
+    if (this.state !== 'stagger') this.scene.kit?.debug?.event('stagger start', this.clock);
     this.setState("stagger");
     this.state = "stagger";
     this.staggerUntil = until;
@@ -242,5 +248,5 @@ export class Asmodean extends Stage7Fighter {
 // under the same damage gates as every Stage 5-7 hazard.
 export function bashRiley(boss) {
   return strikeRiley(boss.scene, ASMODEAN.bashDmg,
-    { fromX: boss.x, from: boss, hit: { kb: 220 } });
+    { source: 'asmodean.bash', fromX: boss.x, from: boss, hit: { kb: 220 } });
 }

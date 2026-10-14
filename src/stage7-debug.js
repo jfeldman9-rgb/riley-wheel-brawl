@@ -4,6 +4,47 @@ export function installDebug7(k) {
   if (q.get("s7debug") !== "1") return;
   const s = k.s;
   let debugTrolloc = null;
+  const event = (name, time) => console.log(`[s7dbg] ${name} t=${time.toFixed(3)}`);
+  const watchHp = () => {
+    const r = s.riley;
+    const descriptor = Object.getOwnPropertyDescriptor(r, 'hp');
+    let hp = r.hp;
+    Object.defineProperty(r, 'hp', {
+      configurable: true, enumerable: true,
+      get: () => hp,
+      set(value) {
+        if (value !== hp) {
+          // Covers even a future direct HP writer outside strikeRiley/takeHit.
+          const source = k.damageSource || 'direct';
+          console.log(`[s7dbg] dmg src=${source} amt=${hp - value} hp=${value}`);
+        }
+        hp = value;
+      },
+    });
+    k.cleanups.push(() => Object.defineProperty(r, 'hp', { ...descriptor, value: hp }));
+  };
+  const jumpBossIntro = () => {
+    if (k.destroyed || !s.started || s.ended || s.gameOver ||
+        k.strike || !s.riley?.alive || s.boss || k.debugBossPending) return false;
+    if (s.cutscene) s.cutscene.skip();
+    if (s.paused) return false;
+    k.debugBossPending = true;
+    s.riley.grabbedBy?.releaseHold?.('break');
+    s.riley.held?.release?.();
+    s.riley.held = null;
+    for (const enemy of s.enemies) enemy.destroy?.();
+    s.enemies = []; s.pending = []; k.tasks.length = 0;
+    k.clearHazards();
+    s.zoneI = k._zone = 3; s.zone = s.zones[3]; s.locked = true;
+    s.camX = s.camMax = s.zone.l;
+    s.bounds = { l: s.zone.l, r: s.zone.r };
+    Object.assign(s.riley, { x: 4680, y: 630, z: 0, vz: 0, vx: 0, vy: 0 });
+    s.riley.setState('idle', 'idle');
+    delete s.inp.buf.power; delete s.inp.held.power; s.inp.keysDown?.delete('KeyB');
+    // Keep the loader, spawn timer, arrival and intro voice on the real path.
+    s.startBoss();
+    return true;
+  };
   const forceChannel = () => {
     const b = s.boss, r = s.riley;
     if (k.destroyed || !s.started || s.paused || s.cutscene || s.ended ||
@@ -34,9 +75,10 @@ export function installDebug7(k) {
     s.inp.clear();
     return trolloc;
   };
-  k.debug = { forceChannel };
+  k.debug = { forceChannel, jumpBossIntro, event, watchHp };
   const off = s.inp?.on?.("key", (code) => {
     if (code === "KeyT") forceChannel();
+    if (code === "KeyB") jumpBossIntro();
   });
   k.cleanups.push(() => { off?.(); delete k.debug; });
 }
