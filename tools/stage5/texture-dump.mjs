@@ -34,12 +34,13 @@ function snapshot(label) {
 
 for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
   if (!engines.includes(engine)) continue;
-  const browser = await launcher.launch({ headless: true });
+  const browser = await launcher.launch({ headless: true,
+    ...(engine === 'chromium' && process.env.RWB_CHROMIUM ? { executablePath: process.env.RWB_CHROMIUM } : {}) });
   try {
     for (const stage of stages) {
       const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: scale });
       const errors = []; page.on('pageerror', e => errors.push(e.message));
-      const flag = stage >= 6 ? 's6=1&' : '';
+      const flag = stage === 7 ? 's7=1&' : stage === 6 ? 's6=1&' : '';
       await page.goto(`${base}?${flag}stage=${stage}&demo=1&story=0&debug=1&rs=${scale}`, { waitUntil: 'load' });
       await page.waitForFunction(() => window.__stage?.riley, null, { timeout: 60000 });
       const samples = [await page.evaluate(snapshot, 'title')];

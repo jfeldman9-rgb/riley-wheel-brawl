@@ -48,9 +48,9 @@ test('strike damage timing is identical for missing, playing and stalled clips',
     try{
       s.zoneI=0;s.zone=s.zones[0];s.bounds=s.zone;s.riley.x=400;s.started=true;
       const e=s.spawn('dancer','R');e.x=500;e.y=s.riley.y;e.entering=false;
-      k.video.destroy();k.video={play(){return state!=='missing';},active:state!=='missing',destroy(){this.active=false;}};
+      k.video.destroy();k.video={play(){return state!=='missing';},active:state!=='missing',abort(){this.active=false;},destroy(){this.active=false;}};
       assert.equal(callMoilan(k),true);stepStrike7(k,.44);assert.notEqual(e.state,'down');stepStrike7(k,.02);assert.equal(e.state,'down');
-      stepStrike7(k,.5);assert.equal(!!k.strike,state!=='missing');k.video.active=false;stepStrike7(k,.01);assert.equal(k.strike,null);assert.ok(s.riley.inv>=2);
+      stepStrike7(k,.5);assert.equal(k.strike,null);assert.equal(k.video.active,false);assert.ok(s.riley.inv>=2);
     }finally{h.destroy();}
   });
 });
