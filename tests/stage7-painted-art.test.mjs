@@ -92,7 +92,8 @@ test('production fighters select painted tell, lunge, draw, release, hurt and de
     for (const [state, sequence] of Object.entries(states)) {
       actor.setState(state);
       for (let i = 0; i < sequence.length; i++) {
-        actor.st = i / 8;
+        // Asmodean's bash holds its wind-up pose until the parry window, then strikes at the tell.
+        actor.st = Actor === Asmodean && state === 'attack' ? [0.3, 0.6, 0.75][i] : i / 8;
         actor.sync();
         assert.equal(actor.sprite.frame, sequence[i], `${actor.def.key} ${state}`);
         assert.equal(actor.sprite.scale, paintedScale(actor.def.key));

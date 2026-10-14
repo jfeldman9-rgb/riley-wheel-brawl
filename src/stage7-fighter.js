@@ -23,11 +23,13 @@ export class Stage7Fighter extends Fighter {
   face(dir) { if (dir) { this.facing = dir; this.sprite.flipX = dir < 0; } }
   setState(state) { this.state = state; this.st = 0; this.hitIds.clear(); }
   releaseHold() {}
+  // Elapsed time used to pick the painted frame; bosses can hold a wind-up pose.
+  frameTime() { return this.st; }
   sync() {
     const frame = this.state === 'yield' || this.state === 'bound' ? 7 : this.state === 'down' ? 6 : this.state === 'hurt' || this.state === 'stagger' ? 5 : this.state === 'channel' ? 4 : this.state === 'attack' || this.state === 'lunge' ? 3 : this.state === 'walk' ? 1 + Math.floor(this.st * 10) % 2 : 0;
     const painted=isPainted(this.scene,this.def.key);
     const state = this.def.key === 's7asmo' && this.state === 'idle' && this.scene.kit?.notes?.pending?.length ? 'play' : this.state;
-    const shown=frame7(this.scene,this.def.key,state,this.st,frame);
+    const shown=frame7(this.scene,this.def.key,state,this.frameTime(state),frame);
     this.sprite.anims?.stop?.();
     this.sprite.setPosition?.(this.x, this.y - this.z); this.sprite.setFrame?.(shown); this.sprite.setOrigin?.(0.5, 0.96);
     this.sprite.setScale?.(painted ? paintedScale(this.def.key) : 3);

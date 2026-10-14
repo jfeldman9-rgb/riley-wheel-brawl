@@ -1,6 +1,6 @@
 import { Stage7Fighter } from "./stage7-fighter.js";
 import { substeps } from "./stage5-clock.js";
-import { clamp, LANE_TOP, LANE_BOT } from "./config.js";
+import { clamp, LANE_TOP, LANE_BOT, q } from "./config.js";
 import { strikeRiley } from "./stage6-hurt.js";
 export const ASMODEAN = Object.freeze({
   hp: 600,
@@ -19,6 +19,20 @@ export const ASMODEAN = Object.freeze({
   channelEvery: 6,
 });
 export const CHANNEL_BANNER = "BREAK THE CHANNEL — THREE HITS OR A THROW";
+// Readability tints. The bash tell warms and flickers faster as it nears the
+// hit, then holds solid gold for the parry window; stagger reads cool/dazed.
+export const ASMO_FX = Object.freeze({
+  hitFlash: 0.12,
+  breakFlash: 0.22,
+  flinch: 7,
+  tell: 0xff8a5c,
+  parry: 0xffd27a,
+  stagger: 0xaab8ff,
+  hit: 0xffffff,
+});
+const calm7 = () =>
+  q.get("flash") === "0" ||
+  !!globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 export class Asmodean extends Stage7Fighter {
   constructor(s, x, y) {
     super(s, "s7asmo", 600, x, y, 8000, "ASMODEAN", 88, true);
@@ -34,6 +48,9 @@ export class Asmodean extends Stage7Fighter {
     this.channelAt = 6;
     this.bashAt = 3;
     this.channelHits = 0;
+    this.hitFlash = 0;
+    this.breakFlash = 0;
+    this.flinchDir = 0;
   }
   get canBeHit() {
     return this.alive && !this.entering && !this.invuln && !this.beat;
@@ -70,6 +87,8 @@ export class Asmodean extends Stage7Fighter {
   }
   step(dt) {
     this.st += dt;
+    this.hitFlash = Math.max(0, (this.hitFlash || 0) - dt);
+    this.breakFlash = Math.max(0, (this.breakFlash || 0) - dt);
     if (this.phase >= 3 && this.hp <= 0) this.die();
     if (!this.alive || this.state === "bound") {
       this.vx = this.vy = 0;
@@ -189,6 +208,9 @@ export class Asmodean extends Stage7Fighter {
     const counter = this.state === "attack" && !this.counterUsed && !h.assist &&
       this.st >= ASMODEAN.bashTell - ASMODEAN.parry;
     this.hp -= Math.max(0, h.dmg || 0);
+    // Visible reaction on every landed hit, without cancelling a bash or channel.
+    this.hitFlash = ASMO_FX.hitFlash;
+    this.flinchDir = Math.sign(this.x - (from?.x ?? this.x - (this.facing || 1))) || 1;
     this.guard();
     if (counter && this.alive && !this.beat) this.stagger(0.8);
     if (channel && this.alive && !this.beat && !h.assist) {
@@ -203,6 +225,9 @@ export class Asmodean extends Stage7Fighter {
         this.stagger(ASMODEAN.stun);
         this.channelStaggerUntil = this.staggerUntil;
         this.channelAt = Math.max(this.channelAt, this.clock + ASMODEAN.breakCooldown);
+        this.breakFlash = ASMO_FX.breakFlash;
+        if (this.scene.fx)
+          this.scene.fx.trauma = Math.max(this.scene.fx.trauma || 0, 0.45);
         this.scene.hud?.flashText?.("CHANNEL BROKEN");
       }
     }
@@ -224,6 +249,40 @@ export class Asmodean extends Stage7Fighter {
         this.scene.onBossPhase?.(this, this.phase);
       }
     } else if (this.hp <= 0) this.die();
+  }
+  // Hold the wind-up pose (bash1) for most of the tell, step to bash2 for the
+  // parry window, and only show the strike pose (bash3) when the hit resolves.
+  frameTime(state) {
+    if (state !== "attack") return this.st;
+    const t = ASMODEAN.bashTell;
+    return this.st < t - ASMODEAN.parry ? 0 : this.st < t ? 1 / 8 : 2 / 8;
+  }
+  sync() {
+    const flinch = this.alive && this.hitFlash > 0 &&
+      (this.state === "idle" || this.state === "walk");
+    const state = this.state;
+    if (flinch) this.state = "hurt";
+    try { super.sync(); } finally { this.state = state; }
+    const sp = this.sprite;
+    if (!sp) return;
+    const tell = this.alive && state === "attack" && this.st < ASMODEAN.bashTell;
+    if (this.alive && (this.hitFlash > 0 || this.breakFlash > 0)) {
+      sp.setTintFill?.(ASMO_FX.hit);
+    } else if (tell) {
+      const parry = this.st >= ASMODEAN.bashTell - ASMODEAN.parry;
+      const k = this.st / ASMODEAN.bashTell;
+      // Flicker rate rises as the hit approaches (steady under ?flash=0 / reduced motion).
+      const on = calm7() || Math.floor(k * k * 12) % 2 === 0;
+      sp.setTint?.(parry ? ASMO_FX.parry : on ? ASMO_FX.tell : 0xffffff);
+    } else if (this.alive && state === "stagger") {
+      sp.setTint?.(ASMO_FX.stagger);
+    } else sp.clearTint?.();
+    const dazed = this.alive && state === "stagger" && !calm7();
+    sp.setAngle?.(dazed ? Math.sin(this.st * 9) * 3.5 : 0);
+    if (flinch || (this.alive && this.hitFlash > 0)) {
+      const off = this.flinchDir * ASMO_FX.flinch * (this.hitFlash / ASMO_FX.hitFlash);
+      sp.setPosition?.(this.x + off, this.y - this.z);
+    }
   }
   die() {
     if (!this.alive) return;

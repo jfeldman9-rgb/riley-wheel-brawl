@@ -16,6 +16,8 @@ const CELL = {
   s7moir: [184, 245],
   s7lan: [254, 236],
 };
+// Asmodean's painted idle is ~145px tall at 1.8x; overlays sit above his head.
+const BOSS_TOP = 280;
 export function createStage7View(s) {
   const nodes = new Map(),
     fx = new Map();
@@ -222,7 +224,41 @@ export function createStage7View(s) {
               0.5,
               960,
             );
-          else
+          else if (e.type === "asmodean") {
+            // Danger lane: exactly the bash reach in front of him, warming
+            // up through the tell and flashing white on the strike.
+            const tell = ASMODEAN.bashTell,
+              k = clamp(e.st / tell, 0, 1),
+              struck = e.st >= tell,
+              parry = !struck && e.st >= tell - ASMODEAN.parry,
+              x0 = e.facing < 0 ? e.x - ASMODEAN.reach : e.x;
+            show(
+              "tellLane" + e.id,
+              "s7streak",
+              x0,
+              e.y - 10,
+              ASMODEAN.reach,
+              20,
+              struck ? clamp(1 - (e.st - tell) / 0.3, 0, 1) : 0.25 + 0.55 * k,
+              960,
+              struck ? 0xffffff : parry ? 0xffd27a : 0xff6a3d,
+            );
+            if (!struck) {
+              const size = 40 + 16 * k;
+              show(
+                "tell" + e.id,
+                "s7note",
+                e.x,
+                e.y - BOSS_TOP - 20 - size,
+                size,
+                size,
+                parry ? 1 : 0.6 + 0.4 * k,
+                1760,
+                parry ? 0xffd27a : 0xff8a5c,
+                "native",
+              );
+            }
+          } else
             show(
               "tell" + e.id,
               "s7note",
@@ -233,6 +269,25 @@ export function createStage7View(s) {
               1,
             );
         }
+      const sb = s.boss;
+      if (sb?.alive && sb.state === "stagger" && s.textures?.exists?.("flake")) {
+        // Stun stars: four glints orbiting above his head for the whole stagger.
+        for (let i = 0; i < 4; i++) {
+          const a = (sb.st || 0) * 5 + (i * Math.PI) / 2,
+            size = 22 + 6 * Math.max(0, Math.sin(a));
+          show(
+            "stun" + i,
+            "flake",
+            sb.x + Math.cos(a) * 58 - size / 2,
+            sb.y - BOSS_TOP + Math.sin(a) * 14 - size / 2,
+            size,
+            size,
+            0.95,
+            Math.sin(a) > 0 ? 1000 + sb.y + 1 : 1000 + sb.y - 1,
+            0xffe066,
+          );
+        }
+      }
       if (s.zoneI >= 3) {
         if (!moonLight)
           moonLight = s.lights?.addLight?.(4560, 260, 700, 0xbcd8ff, 0.45, 30);
@@ -294,12 +349,12 @@ export function createStage7View(s) {
           );
         const b = s.boss;
         if (b?.state === "channel") {
-          show("castBack", "s7streak", b.x - 80, b.y - 230, 160, 12, 0.3);
+          show("castBack", "s7streak", b.x - 80, b.y - BOSS_TOP - 40, 160, 12, 0.3);
           show(
             "cast",
             "s7streak",
             b.x - 80,
-            b.y - 230,
+            b.y - BOSS_TOP - 40,
             160 * clamp(b.st / ASMODEAN.channel, 0, 1),
             12,
             1,
@@ -337,14 +392,16 @@ export function createStage7View(s) {
               : st.helper === "duo"
                 ? "s7shield"
                 : "s7streak";
-          const wide = fxKey === "s7streak";
+          const wide = fxKey === "s7streak",
+            tall = fxKey === "s7shield" && e.type === "asmodean",
+            top = tall ? BOSS_TOP + 30 : 150;
           show(
             "callfx" + i,
             fxKey,
             wide ? e.x - 80 : e.x,
-            e.y - (wide ? 80 : 150),
-            wide ? 160 : fxKey === "s7shield" ? 140 : 150,
-            wide ? 16 : fxKey === "s7shield" ? 280 : 150,
+            e.y - (wide ? 80 : top),
+            wide ? 160 : fxKey === "s7shield" ? (tall ? 180 : 140) : 150,
+            wide ? 16 : fxKey === "s7shield" ? (tall ? 360 : 280) : 150,
             0.85,
             1800,
             null,
@@ -355,7 +412,7 @@ export function createStage7View(s) {
       if (k.outro && s.boss) {
         const b = s.boss,
           cam = s.camX || 0;
-        show("bound", "s7shield", Math.min(b.x, cam + VW - 280), b.y - 200, 160, 320, 0.8, 1700, null, "native");
+        show("bound", "s7shield", Math.min(b.x, cam + VW - 280), b.y - BOSS_TOP - 30, 160, 320, 0.8, 1700, null, "native");
         show("lanEnd", "s7lan", cam + 460, b.y, 0, 0, 1, 1800, null, "actor")?.setFrame?.(
           frame7(s, "s7lan", "point", 0, 3),
         );
