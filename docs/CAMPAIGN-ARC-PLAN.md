@@ -6,8 +6,12 @@ changes. Names marked **†** are new.*
 **Input from Jason's nephew, folded in here:**
 1. **Dumai's Wells is the finale and the stopping point.** Tarmon Gai'don is a possible later game.
 2. **At Dumai's Wells, Rand (an ally) has been kidnapped.** The player fights to rescue him.
-3. **A big Shadow villain, "TDOG", is there too** and is the final boss.
+3. **TDOG (Twinkle Toes / Kenzie) is rescued in the finale.** **Mazrim Taim** is the final Shadow boss.
 4. **Moiraine and Lan are the call-ins while Rand is captive.**
+
+**Name note:** TDOG = **Tiny Dancer of Gilbert** = **Twinkle Toes** = **Kenzie**, Riley's little sister
+(age ~8, a competitive dancer, her color is blue). She is a character rescued in the finale, not a boss or an
+item. Show her from behind or in silhouette unless Jason says yes to showing her face (decision A3).
 
 This doc covers Stages 8 and 9 at the same depth `docs/STAGE7-PLAN.md` uses for Stage 7, plus one build order
 across every workstream:
@@ -37,12 +41,12 @@ Every rule in `docs/STAGE7-PLAN.md` §0 applies to Stages 8 and 9 unchanged:
 | 6 | The Stone of Tear | Be'lal | **Rand** | live |
 | 7 | Rhuidean and the Aiel Waste | Asmodean (bound, not killed) | **Moiraine / Lan** | planned (`docs/STAGE7-PLAN.md`) |
 | 8† | **Cairhien**: the Shaido siege | **Couladin** (yields) | **Moiraine / Lan** | this doc §2 |
-| 9† | **Dumai's Wells**: the rescue (**finale**) | **Galina Casban** (Z2 mid-boss), then **TDOG** (final) | **Moiraine / Lan**, then **Rand** for the last phase | this doc §3 |
+| 9† | **Dumai's Wells**: the rescue (**finale**) | **Galina Casban** (Z2 mid-boss), then **Mazrim Taim** (final) | **Moiraine / Lan**, then **Rand** for the last phase | this doc §3 |
 
 **The sister thread** (Twinkle Toes, carried off by the Fade in Stage 1, with a ribbon found each stage):
 1. Stage 7: Asmodean says the Fades sold her to a Tower embassy riding for Cairhien.
 2. Stage 8: Riley breaks the siege, but the embassy has already shielded **Rand** and left with **both** prisoners.
-3. Stage 9: Riley frees Rand at the wells, then beats TDOG. **Twinkle Toes is rescued in the finale** (decision
+3. Stage 9: Riley frees Rand at the wells, then beats Mazrim Taim. **Twinkle Toes is rescued in the finale** (decision
    A2), which closes the campaign's opening promise.
 
 ### 1.1 Canon used, and where the game departs from it
@@ -60,13 +64,10 @@ Checked against The Fires of Heaven and Lord of Chaos chapter recaps (Dragonmoun
 - **Moiraine.** In canon she disappears through the redstone doorway at the end of *The Fires of Heaven*, before
   Dumai's Wells, and Lan leaves. Riley's story keeps both of them through the finale, because that's what the
   nephew asked for. Their captions never claim book events they weren't present for.
-- **TDOG.** This plan reads "TDOG" as **Mazrim Taim**: "T" for Taim, and he is the big Shadow figure physically
-  present at Dumai's Wells. In canon he arrives as Rand's rescuer and is only later shown to be a Darkfriend. The
+- **Mazrim Taim.** In canon he arrives as Rand's rescuer and is only later shown to be a Darkfriend. The
   game puts him in the open early: he "rescues" Rand only to take him for the Shadow. **Taim escapes through a
-  gateway** and is not killed, which leaves him for a possible Tarmon Gai'don game.
-  - If the nephew meant someone else, only the boss sheet, voice and lines change. The mechanics in §3.4 are
-    generic "channeler" mechanics.
-  - In game, Riley calls him **"TDOG"** and captions name him **MAZRIM TAIM** (decision A1).
+  gateway** and is not killed, which leaves him for a possible Tarmon Gai'don game. Riley and captions name him
+  **Mazrim Taim**; TDOG is Riley's sister (decision A1).
 - **Twinkle Toes at Dumai's Wells.** She isn't in canon. It's the game's own thread.
 
 ---
@@ -158,7 +159,8 @@ These use the same brief format as `docs/STAGE7-PLAN.md` §8.1. The integration 
   weak: *"Riley. …Thank you. She's here too — your sister. In the last wagon."* Then **gateways open on the
   ridge** and Mazrim Taim steps through.
 - **Out:** Taim retreats through a gateway: *"Another day, boy. The Last Battle is coming for all of us."* Riley
-  opens the last wagon: **Twinkle Toes**, seen from behind Riley with her face lit (she may be shown).
+  opens the last wagon: **Twinkle Toes (TDOG / Kenzie)**, rescued and seen from behind or in silhouette
+  unless Jason says yes to showing her face (decision A3).
   - Final narrator line: *"The Wheel turns. And one day it will turn toward Tarmon Gai'don…"*
   - Then the credits. The clear card reads **CAMPAIGN COMPLETE**, which feeds the meta scorecard.
 
@@ -169,7 +171,7 @@ These use the same brief format as `docs/STAGE7-PLAN.md` §8.1. The integration 
 | Z0 | 260 / 0–1280 | The grass hills | `[[dancer,L,0],[veiled,R,0.6]]`, `[[grunt,R,0],[dancer,L,0.5],[torch,R,1.2]]` | Shaido ambush out of the grass (the Stage 7 silhouette tell is reused, with no storm) |
 | Z1 | 1500 / 1240–2520 | The wagon circle | `[[sister†,R,0],[dancer,L,0.6]]`, `[[sister†,T,0],[veiled,R,0.4],[spear,L,1.0]]` | `T` = a wagon roof. **Weave shield**: sisters block fireball and balefire (§3.3) |
 | Z2 | 2800 / 2560–3840 | The wells | `[[grayman(s6gray),R,0],[sister†,L,0.6]]`, then **Galina mid-boss** (kit-driven, like the Stage 6 elite pattern) | Galina (§3.4). Rand's chest is a prop at the right edge |
-| Z3 | 4140 / 3920–5200 | The ridge above the wells | boss | **TDOG** (§3.5) |
+| Z3 | 4140 / 3920–5200 | The ridge above the wells | boss | **Mazrim Taim** (§3.5) |
 
 ### 3.3 New regular enemy: `sister`† (Black Ajah sister, painted)
 
@@ -195,7 +197,7 @@ These use the same brief format as `docs/STAGE7-PLAN.md` §8.1. The integration 
 - **Defeat:** she is shielded by Moiraine and Lan holds her, as in Stage 7. Then the Rand-freed beat plays: the
   `stage9-rand`† clip, or a caption-only version if the clip is missing.
 
-### 3.5 Final boss: TDOG (Mazrim Taim)
+### 3.5 Final boss: Mazrim Taim
 
 - HP 720, speed 100, gates `[0.66, 0.33]`. Score 12,000.
 
@@ -214,7 +216,7 @@ These use the same brief format as `docs/STAGE7-PLAN.md` §8.1. The integration 
 **Defeat:** Taim gateways out (he is not killed). Then the outro and credits.
 
 **Call-in rules in Stage 9.**
-- Moiraine/Lan `CALL7` rules (`docs/STAGE7-PLAN.md` §3) apply in Z0–Z2 and TDOG P1–P2.
+- Moiraine/Lan `CALL7` rules (`docs/STAGE7-PLAN.md` §3) apply in Z0–Z2 and Mazrim Taim P1–P2.
 - In P3 the provider becomes `rand`.
 - Both keep `maxCalls` 3 per stage in total.
 - `callInFor(9)` stays `'moilan'`. The kit switches provider on phase 3, so the switch is a single pure function
@@ -234,10 +236,11 @@ These use the same brief format as `docs/STAGE7-PLAN.md` §8.1. The integration 
 - `stage9-rand`†. Riley's gloved hands, from behind, wrench open a chest lid. Light breaks out as a shield
   shatters. Rand (red-gold hair, ragged) rises in the background. 8 s.
 - `stage9-finale`†. Behind Riley at sunset by the wells: he opens a wagon door. A small girl's silhouette runs
-  toward him, and the camera holds on his back as she hugs him. 10 s. **The face rule applies to Riley only. Show
-  Twinkle Toes's face only with Jason's sign-off** (decision A3).
+  toward him, and the camera holds on his back as she hugs him. 10 s. **Riley stays from behind; show
+  Twinkle Toes (TDOG / Kenzie) from behind or in silhouette unless Jason says yes to showing her face**
+  (decision A3).
 
-**Voices.** New designs for Taim/TDOG (*"commanding, sardonic, heavy baritone, menace held in check"*) and the
+**Voices.** New designs for Mazrim Taim (*"commanding, sardonic, heavy baritone, menace held in check"*) and the
 sister barks (2 lines, Kokoro stock). Galina's design comes from Stage 8, and Rand uses his existing design
 `4KhtxLynQ7oUlA9AtWmc`.
 
@@ -251,9 +254,9 @@ The integration branch is `rwb-w2-stage9`†.
 | S9-T2 | `sister` enemy: weave shield, pop and reopen, air bind through the grab system, 1 binder at a time | Fireball and balefire absorbed while the shield is up; bind always breakable; `releaseHold('break')` on call/death/stage switch; 9/9 |
 | S9-T3 | Galina mid-boss in Z2: kit elite with HP bar, weave-sever windows (powers disabled and greyed), binds, P2 | The sever window never starts during a cutscene or strike; HUD greyed state matches; the gate at 50% can't be skipped |
 | S9-T4 | Rand-freed beat: chest prop, `stage9-rand` hook (caption-only fallback), Galina sheet released, Taim sheet deferred-loaded | Galina and Taim never both resident (texture-key assertion); missing clip doesn't stall |
-| S9-T5 | TDOG P1–P2: sky bolts, volleys, gateway slit lines, blinks, adds | Free-band invariant; every hazard has a tell ≥ 0.5 s; freeze-frame ≥ 9/10 |
-| S9-T6 | TDOG P3: provider switch to Rand (pure function), fresh charge, saidin clash (hold 2.0 s in 4.0 s) | Unit: switch only at the P3 gate; lag bot passes the clash ≥ 8/9; Rand clips reused from `assets/cutscenes/rand/` (no new bytes) |
-| S9-T7 | Finale: Taim escape, finale clip, Twinkle Toes reveal, credits roll (code-drawn text on a scroll, skippable), `CAMPAIGN COMPLETE` | Credits skippable by any `SKIP_ACTIONS` key; returns to title; the meta scorecard (`ENGINE-EXTRACTION-PLAN.md` §12) gets `campaignComplete: true` |
+| S9-T5 | Mazrim Taim P1–P2: sky bolts, volleys, gateway slit lines, blinks, adds | Free-band invariant; every hazard has a tell ≥ 0.5 s; freeze-frame ≥ 9/10 |
+| S9-T6 | Mazrim Taim P3: provider switch to Rand (pure function), fresh charge, saidin clash (hold 2.0 s in 4.0 s) | Unit: switch only at the P3 gate; lag bot passes the clash ≥ 8/9; Rand clips reused from `assets/cutscenes/rand/` (no new bytes) |
+| S9-T7 | Finale: Taim escape, finale clip, Twinkle Toes (TDOG / Kenzie) rescue reveal (from behind/silhouette unless Jason says yes), credits roll (code-drawn text on a scroll, skippable), `CAMPAIGN COMPLETE` | Credits skippable by any `SKIP_ACTIONS` key; returns to title; the meta scorecard (`ENGINE-EXTRACTION-PLAN.md` §12) gets `campaignComplete: true` |
 | S9-T8 | Bot `stage9Bot` | 9/9, lag bot ≥ 8/9, call fairness 70–102% (in both provider eras) |
 | S9-T9 | Audio: 24 lines, 2 loops plus the credits track | As S8-T6 |
 | S9-T10 | Painted art | Peak ≤ 105 MiB, painted ≤ 12 MiB |
@@ -290,7 +293,7 @@ and tool configs:
 
 | # | Question | Default |
 |---|---|---|
-| A1 | Is "TDOG" Mazrim Taim? Riley calls him TDOG, and captions say MAZRIM TAIM | **Yes**, pending the nephew's confirmation |
+| A1 | TDOG = Tiny Dancer of Gilbert = Twinkle Toes = Kenzie, Riley's little sister; Mazrim Taim is the final boss by name | **Confirmed**: TDOG is rescued in the finale, not a boss or an item |
 | A2 | Twinkle Toes is rescued at Dumai's Wells, so the sister thread closes in the finale | **Yes** |
 | A3 | May Twinkle Toes's face be shown in the finale clip? | **No** (from behind or in silhouette) unless Jason says yes |
 | A4 | Keep Moiraine and Lan through the finale even though canon removes Moiraine earlier | **Yes** (the nephew's request) |
