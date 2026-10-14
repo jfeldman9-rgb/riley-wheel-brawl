@@ -3,6 +3,7 @@ import { STAGE7, STAGE7_TEXTURES } from "./stage7-def.js";
 import { STAGE_TEXTURES, VOLLEY_BANDS } from "./stages.js";
 import { queuePowerArt } from "./powers.js";
 import { MUSIC, releaseClips, preloadClips } from "./audio.js";
+import { guardLoop7 } from "./stage7-audio.js";
 import { stage4Delta } from "./stage4-time.js";
 import { substeps } from "./stage5-clock.js";
 import { strikeRiley } from "./stage6-hurt.js";
@@ -41,6 +42,10 @@ MUSIC.boss7 = {
   loopEnd: 72.977279,
   gain: 0.94,
 };
+// The shared audio backend calls this after decode, immediately before its
+// loopStart/loopEnd setters. Only Stage 7 opts in; earlier tracks are unchanged.
+for (const id of ["stage7", "boss7"])
+  MUSIC[id].validateLoop = (metadata, duration) => guardLoop7(id, metadata, duration);
 export const STORY7_PANELS = Object.freeze(
   [1, 2, 3].map((n) => Object.freeze({ key: "story7p" + n })),
 );

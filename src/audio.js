@@ -328,6 +328,7 @@ function loadMusicBuffer(T) {
 }
 function startBuffer(T, fade) {
   if (!T.buf || T.playing || !ctx) return;
+  T.M.validateLoop?.(T.M, T.buf.duration);
   const s = ctx.createBufferSource(); s.buffer = T.buf; s.loop = true; s.loopStart = T.M.loopStart; s.loopEnd = T.M.loopEnd; s.connect(T.gain);
   const off = Math.min(Math.max(T.pos, T.M.loopStart), T.M.loopEnd - 0.01);
   s.start(0, off); T.src = s; T.t0 = ctx.currentTime - off; T.playing = true;
@@ -374,7 +375,7 @@ function stopTrack(T, fade) {
   fadeGain(T.gain.gain, 0, fade);
   T.stopTimer = afterAudioTime(fade, halt);
 }
-/** Crossfade to a music track. opts.fade seconds (default 1.5); opts.restart starts the new track from its top. */
+/** Fade to music. fade defaults to 1.5s; restart starts at loop top. */
 export function playTrack(id, opts = {}) {
   if (id !== null && !MUSIC[id]) return;
   musicWanted = true; wantedTrack = id; init(); if (!ctx || !musicOn) return;

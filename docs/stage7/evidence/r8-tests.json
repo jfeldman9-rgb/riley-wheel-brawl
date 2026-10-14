@@ -1,0 +1,252 @@
+{
+  "baseCommit": "28a4e6e",
+  "tests": {
+    "command": "node --test tests/*.test.mjs",
+    "total": 1610,
+    "pass": 1608,
+    "fail": 0,
+    "skipped": 2
+  },
+  "campaign": {
+    "base": [
+      {
+        "seed": 1,
+        "calls": 0,
+        "boss": 68.26666666666706,
+        "seconds": 206.61666666664308,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 2,
+        "calls": 0,
+        "boss": 72.07500000000343,
+        "seconds": 215.66666666663485,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 3,
+        "calls": 0,
+        "boss": 18.358333333332933,
+        "seconds": 175.4333333333381,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 4,
+        "calls": 0,
+        "boss": 37.27499999999853,
+        "seconds": 186.03333333332847,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 5,
+        "calls": 0,
+        "boss": 34.47499999999869,
+        "seconds": 183.62499999999733,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 10,
+        "calls": 0,
+        "boss": 41.12499999999831,
+        "seconds": 179.26666666666796,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 20,
+        "calls": 0,
+        "boss": 56.25833333333078,
+        "seconds": 198.88333333331678,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 100,
+        "calls": 0,
+        "boss": 68.4416666666672,
+        "seconds": 213.78333333330323,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 97,
+        "calls": 0,
+        "boss": 61.41666666666382,
+        "seconds": 211.30833333330548,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      }
+    ],
+    "assisted": [
+      {
+        "seed": 1,
+        "calls": 1,
+        "boss": 66.77499999999921,
+        "seconds": 205.1333333333111,
+        "stormDeaths": 0,
+        "z1Deaths": 0,
+        "ratio": 0.9781494140624828
+      },
+      {
+        "seed": 2,
+        "calls": 1,
+        "boss": 71.10833333333599,
+        "seconds": 214.69999999996907,
+        "stormDeaths": 0,
+        "z1Deaths": 0,
+        "ratio": 0.9865880448606675
+      },
+      {
+        "seed": 3,
+        "calls": 1,
+        "boss": 17.88333333333296,
+        "seconds": 174.96666666667187,
+        "stormDeaths": 0,
+        "z1Deaths": 0,
+        "ratio": 0.9741261915569687
+      },
+      {
+        "seed": 4,
+        "calls": 1,
+        "boss": 36.39999999999858,
+        "seconds": 185.1666666666626,
+        "stormDeaths": 0,
+        "z1Deaths": 0,
+        "ratio": 0.9765258215962446
+      },
+      {
+        "seed": 5,
+        "calls": 1,
+        "boss": 31.92499999999883,
+        "seconds": 181.07499999999965,
+        "stormDeaths": 0,
+        "z1Deaths": 0,
+        "ratio": 0.92603335750544
+      },
+      {
+        "seed": 10,
+        "calls": 1,
+        "boss": 41.67499999999828,
+        "seconds": 179.81666666666746,
+        "stormDeaths": 0,
+        "z1Deaths": 0,
+        "ratio": 1.0133738601823705
+      },
+      {
+        "seed": 20,
+        "calls": 1,
+        "boss": 55.69166666666415,
+        "seconds": 198.3083333333173,
+        "stormDeaths": 0,
+        "z1Deaths": 0,
+        "ratio": 0.9899274181602726
+      },
+      {
+        "seed": 100,
+        "calls": 1,
+        "boss": 63.73333333333036,
+        "seconds": 209.0833333333075,
+        "stormDeaths": 0,
+        "z1Deaths": 0,
+        "ratio": 0.9312066236453894
+      },
+      {
+        "seed": 97,
+        "calls": 1,
+        "boss": 54.141666666664236,
+        "seconds": 204.0333333333121,
+        "stormDeaths": 0,
+        "z1Deaths": 0,
+        "ratio": 0.8815468113975589
+      }
+    ],
+    "lag": [
+      {
+        "seed": 1,
+        "calls": 0,
+        "boss": 45.14166666666475,
+        "seconds": 167.80833333334505,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 2,
+        "calls": 0,
+        "boss": 21.883333333332732,
+        "seconds": 155.9500000000225,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 3,
+        "calls": 0,
+        "boss": 25.43333333333253,
+        "seconds": 181.19999999999953,
+        "stormDeaths": 0,
+        "z1Deaths": 1
+      },
+      {
+        "seed": 4,
+        "calls": 0,
+        "boss": 38.61666666666512,
+        "seconds": 159.10833333335296,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 5,
+        "calls": 0,
+        "boss": 20.1249999999995,
+        "seconds": 144.19166666669986,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 10,
+        "calls": 0,
+        "boss": 46.299999999998015,
+        "seconds": 187.90833333332677,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 20,
+        "calls": 0,
+        "boss": 40.124999999998366,
+        "seconds": 189.4083333333254,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 100,
+        "calls": 0,
+        "boss": 22.30833333333271,
+        "seconds": 154.2333333333574,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      },
+      {
+        "seed": 97,
+        "calls": 0,
+        "boss": 28.791666666665673,
+        "seconds": 156.57500000002193,
+        "stormDeaths": 0,
+        "z1Deaths": 0
+      }
+    ],
+    "fail": []
+  },
+  "cdp": {
+    "pass": true,
+    "bossQuick": 10,
+    "storyQuick": 5,
+    "freshGameplayPause": 15,
+    "errors": [],
+    "warnings": []
+  }
+}

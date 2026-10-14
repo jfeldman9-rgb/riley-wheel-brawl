@@ -21,6 +21,7 @@ import { stopSceneAudio } from "./audio.js";
 import { consumePress, pressConsumed, freshKeyboardPress } from "./press-ownership.js";
 import { damageAllowed } from "./stage6-hurt.js";
 import { LINES } from "./stage7-voice.js";
+import { recordDamage7 } from "./stage7-hurt.js";
 function dialog7(k) {
   const hud = k.s.hud;
   return hud?.capWho
@@ -40,20 +41,43 @@ export function clearDialogKeys7(s) {
   }
 }
 export function installDialogKeys7(k, root = globalThis) {
-  // Capture owns the edge before Phaser can queue it, set JustDown, or emit
-  // scene keyboard events. The shared ownership guard handles repeats/keyup.
-  const onDown = event => {
-    if (event.defaultPrevented || k.destroyed ||
-        event.target?.closest?.('button,input,textarea,select,a[href],[contenteditable]')) return;
-    const action = event.code === "Enter" ? "start" :
-      ["Escape", "KeyP"].includes(event.code) ? "pause" : null;
-    const s = k.s;
-    if (!action || (!s.cutscene && !(dialog7(k) && !s.paused))) return;
-    s.onPress(action);
-    clearDialogKeys7(s);
+  // Own both physical edges at capture time. Phaser can retain and replay its
+  // keyboard queue until POST_STEP, even after a quick keyup before that frame.
+  const owned = new Set();
+  const actionOf = event => event.code === "Enter" ? "start" :
+    ["Escape", "KeyP"].includes(event.code) ? "pause" : null;
+  const stop = event => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    clearDialogKeys7(k.s);
   };
+  const onDown = event => {
+    if (k.destroyed ||
+        event.target?.closest?.('button,input,textarea,select,a[href],[contenteditable]')) return;
+    const action = actionOf(event), s = k.s;
+    if (!action) return;
+    if (owned.has(event.code)) { stop(event); return; }
+    if (event.defaultPrevented) return;
+    // Route fresh pause edges here too: a gameplay Esc still pauses, and a
+    // later subscriber never gets to reinterpret the edge after dialog close.
+    owned.add(event.code);
+    s.onPress(action);
+    stop(event);
+  };
+  const onUp = event => {
+    if (!owned.delete(event.code)) return;
+    stop(event);
+  };
+  const onBlur = () => { owned.clear(); clearDialogKeys7(k.s); };
   root.addEventListener?.("keydown", onDown, true);
-  k.cleanups.push(() => root.removeEventListener?.("keydown", onDown, true));
+  root.addEventListener?.("keyup", onUp, true);
+  root.addEventListener?.("blur", onBlur);
+  k.cleanups.push(() => {
+    root.removeEventListener?.("keydown", onDown, true);
+    root.removeEventListener?.("keyup", onUp, true);
+    root.removeEventListener?.("blur", onBlur);
+    owned.clear();
+  });
 }
 export function hook7(kit, object, key, wrap) {
   const original = object?.[key];
@@ -327,7 +351,6 @@ export function installStage7Hooks(k) {
           node?.setAlpha?.(0);
       }
       stopSceneAudio();
-      this.inp?.clear?.();
       clearDialogKeys7(this);
       return;
     }
@@ -361,7 +384,20 @@ export function installStage7Hooks(k) {
           this.inp?.flushPresses?.();
         }
         if (!k.strike) {
-          const out = original.call(this, time, delta);
+          // Earlier stages retain Stage1's 50ms frame policy. Stage 7 catches
+          // up the whole scene in bounded steps, so Riley, boss and hazards
+          // advance together instead of dropping half of a 10fps frame.
+          const elapsed = stage4Delta(delta / 1000) * 1000;
+          const count = Math.max(1, Math.ceil(elapsed / 50));
+          const slice = elapsed / count;
+          let out;
+          for (let i = 0; i < count; i++) {
+            if (this.paused || this.cutscene || k.strike || k.destroyed) break;
+            if (this.started && !this.gameOver && !(this.fx?.hitstop > 0))
+              k.combatClock = (k.combatClock || 0) + slice / 1000 *
+                (this.timeScale || 1) * (this.fx?.slowmo > 0 ? 0.3 : 1);
+            out = original.call(this, time - elapsed + (i + 1) * slice, slice);
+          }
           if (
             this.inp?.isTouch &&
             this.locked &&
@@ -385,7 +421,7 @@ export function installStage7Hooks(k) {
           delta <= 0
         )
           return;
-        stepStrike7(k, stage4Delta(Math.min(delta, 50) / 1000));
+        stepStrike7(k, stage4Delta(delta / 1000));
         this.riley?.sync?.();
         for (const e of this.enemies || []) e.sync?.();
       },
@@ -460,7 +496,7 @@ export function installBossCaption7(k) {
   hook7(k, k.s.riley, "takeHit", original => function (hit, from) {
     if (!damageAllowed(k.s)) return false;
     const landed = original.call(this, hit, from);
-    if (landed) this.inv = Math.max(this.inv || 0, 0.5);
+    if (landed) recordDamage7(k.s);
     return landed;
   });
   // Stage1 creates its caption callback after kit.build, before kit.start.

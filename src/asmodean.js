@@ -47,7 +47,7 @@ export class Asmodean extends Stage7Fighter {
     super.setState(state);
   }
   physics(dt) {
-    if (this.clock < this.staggerUntil) {
+    if (this.staggerFrame || this.clock < this.staggerUntil) {
       this.vx = this.vy = this.vz = 0;
       return;
     }
@@ -61,6 +61,7 @@ export class Asmodean extends Stage7Fighter {
       this.entering
     )
       return;
+    this.staggerFrame = this.clock < this.staggerUntil;
     substeps(this, dt, (d) => this.step(d));
   }
   step(dt) {

@@ -9,10 +9,36 @@ export const HELPERS7 = Object.freeze([
 ]);
 export function queueStage7Painted(s, keys, rows = PAINTED7) {
   s._s7q ||= new Set();
+  // Guard at the cache boundary as well as queue time: a timeout fallback or
+  // restarted scene may populate the key while the file is still processing.
+  const guardFile = file => {
+    const target = file?.multiFile || file;
+    if (!target || target._s7cacheGuard || typeof target.addToCache !== "function") return;
+    target._s7cacheGuard = true;
+    const add = target.addToCache;
+    target.addToCache = function (...args) {
+      if (s.textures?.exists?.(this.key || file.key)) {
+        this.complete = true;
+        return;
+      }
+      return add.apply(this, args);
+    };
+  };
   const fresh = rows.filter(
     (r) => keys.includes(r.key) && !s._s7q.has(r.key),
   );
   const wanted = queueStage6Painted(s, fresh);
+  for (const collection of [s.load?.list, s.load?.inflight, s.load?.queue])
+    collection?.forEach?.(file => { if (wanted.has(file.key)) guardFile(file); });
+  if (wanted.size) {
+    const forget = () => {
+      for (const key of wanted) s._s7q.delete(key);
+      s.load?.off?.("complete", forget);
+      s.events?.off?.("shutdown", forget);
+    };
+    s.load?.once?.("complete", forget);
+    s.events?.once?.("shutdown", forget);
+  }
   for (const key of wanted) s._s7q.add(key);
   return wanted;
 }
