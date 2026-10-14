@@ -231,7 +231,7 @@ function play(bot, s, R, k) {
     return go(bot, 0, 0);
   if (
     (bot.useCall || q.get("call7") === "1" || q.get("call7") === "all") &&
-    !R.busy &&
+    (!R.busy || (s.boss?.phase >= 3 && s.boss?.state === "channel")) &&
     (bot.callEverywhere ||
       q.get("call7") === "all" ||
       (s.boss?.phase >= 3 && s.boss?.state === "channel")) &&

@@ -68,6 +68,19 @@ export function paintStage7Hud(hud, s) {
   if (n === 7 && hud.titleStageT?.text !== "RHUIDEAN — THE AIEL WASTE")
     hud.titleStageT?.setText?.("RHUIDEAN — THE AIEL WASTE");
   help(hud, n === 7);
+  const title = !s.started && !s.ended && (s.stageNo === 7 || s.stageData?.stage7Return);
+  if (title) {
+    const saved = hud._s7titleNodes ||= new Map();
+    for (const node of hud.children?.list || []) {
+      if (node === hud.card || !node.setVisible) continue;
+      if (!saved.has(node)) saved.set(node, node.visible !== false);
+      node.setVisible(false);
+    }
+  } else if (hud._s7titleNodes) {
+    for (const [node, visible] of hud._s7titleNodes)
+      if (node.active !== false) node.setVisible?.(visible);
+    delete hud._s7titleNodes;
+  }
   if (s.stageNo === 7 && hud.bossName && hud._s7boss !== hud.bossName) {
     hud._s7boss = hud.bossName;
     hud.bossName.setText?.("ASMODEAN");

@@ -47,8 +47,11 @@ export function createNotes() {
     reflected: 0,
     step(dt, s, boss) {
       if (!boss?.alive || boss.entering) return;
-      this.clock += dt;
-      if (!boss.beat && this.clock >= this.next) {
+      const interrupted = ["stagger", "channel"].includes(boss.state);
+      // Pause the phrase clock, not existing projectiles. Resuming preserves
+      // each tell's remaining duration instead of releasing overdue notes.
+      if (!interrupted) this.clock += dt;
+      if (!interrupted && !boss.beat && this.clock >= this.next) {
         const bands = pick(PHRASES),
           gold = pick([0, 1, 2, 3]);
         this.phrase = bands;
@@ -63,7 +66,7 @@ export function createNotes() {
       }
       for (let i = this.pending.length - 1; i >= 0; i--) {
         const p = this.pending[i];
-        if (boss.beat || this.clock < p.fire) continue;
+        if (interrupted || boss.beat || this.clock < p.fire) continue;
         this.notes.push({
           x: boss.x,
           y: bandY(p.band),
@@ -92,7 +95,7 @@ export function createNotes() {
         if (
           !n.counterUsed &&
           R &&
-          R.z < 35 &&
+          R.z < 115 &&
           Math.abs(R.x - n.x) < 32 &&
           Math.abs(R.y - n.y) < 22
         ) {

@@ -3,9 +3,15 @@
 export const STAGE7_PHONE_CSS = `
 body.stage-7 #game canvas { margin-top: 0 !important; margin-bottom: 0 !important; }
 body.stage-7.s7-story #touch { visibility: hidden !important; }
+body.stage-7.s7-call #touch { visibility: hidden !important; }
 @media (orientation: portrait) {
   body.stage-7 #stick { width: min(34vw, 26vh, 168px); height: min(34vw, 26vh, 168px); }
-  body.stage-7 .tb { width: min(12vh, 72px); height: min(12vh, 72px); }
+  body.stage-7 .tb:not(#tbP) { width: max(44px, min(14vw, 64px)); height: max(44px, min(14vw, 64px)); }
+  body.stage-7 #tbA, body.stage-7 #tbS { right: calc(6vw + max(44px, min(14vw, 64px)) + env(safe-area-inset-right, 0px)); }
+  body.stage-7 #tbJ, body.stage-7 #tbB, body.stage-7 #tbL { right: calc(3vw + env(safe-area-inset-right, 0px)); }
+  body.stage-7 #tbA, body.stage-7 #tbJ { bottom: calc(4vh + env(safe-area-inset-bottom, 0px)); }
+  body.stage-7 #tbS, body.stage-7 #tbB { bottom: calc(4vh + max(44px, min(14vw, 64px)) + 12px + env(safe-area-inset-bottom, 0px)); }
+  body.stage-7 #tbL { bottom: calc(4vh + 2 * max(44px, min(14vw, 64px)) + 24px + env(safe-area-inset-bottom, 0px)); }
 }
 `;
 
@@ -102,12 +108,13 @@ export function syncStage7Phone(scene) {
   const on = scene?.stageNo === 7;
   doc.body.classList.toggle("stage-7", !!on);
   doc.body.classList.toggle("s7-story", !!(on && scene.cutscene));
+  doc.body.classList.toggle("s7-call", !!(on && scene.kit?.strike));
   if (on) bindKnob(doc);
 }
 
 export function releaseStage7Phone() {
   const doc = globalThis.document;
   if (!doc?.body?.classList) return;
-  doc.body.classList.remove("stage-7", "s7-story");
+  doc.body.classList.remove("stage-7", "s7-story", "s7-call");
   resetKnob(doc.getElementById?.("knob"));
 }

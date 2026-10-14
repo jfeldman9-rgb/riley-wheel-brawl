@@ -131,8 +131,23 @@ export class Shaido extends Stage7Fighter {
     }
     const R = this.scene.riley;
     if (!R?.alive) return;
+    const early = this.scene.zoneI < 3;
+    // Street archers must stay reachable when Riley advances the scroll edge.
+    // Re-enter the playable band before aiming, including after a continue.
+    if (this.type === "veiled" && early && this.scene.bounds) {
+      const b = this.scene.bounds;
+      const inside = clamp(this.x, b.l + 160, b.r - 160);
+      if (inside !== this.x) {
+        this.setState("walk");
+        this.x += Math.sign(inside - this.x) * Math.min(Math.abs(inside - this.x), 120 * dt);
+        this.cool = Math.max(this.cool, 0.8);
+        this.face(Math.sign(R.x - this.x));
+        return;
+      }
+    }
     if (this.state === "attack" || this.state === "aim") {
-      if (this.state === "attack" && this.st < SHAIDO[this.type].tell) return;
+      const tell = this.type === "veiled" && early ? 0.8 : SHAIDO[this.type].tell;
+      if (this.state === "attack" && this.st < tell) return;
       if (this.type === "veiled") {
         const k = this.scene.kit;
         if (
@@ -143,11 +158,11 @@ export class Shaido extends Stage7Fighter {
           return;
         }
         if (k) {
-          k.arrowAt = k.clock + 0.6;
+          k.arrowAt = k.clock + (early ? 0.9 : 0.6);
           k.fireArrow?.(this);
         }
         this.setState("idle");
-        this.cool = 3.8;
+        this.cool = early ? 4.8 : 3.8;
       } else {
         this.setState("lunge");
         this.fromX = this.x;
@@ -182,6 +197,8 @@ export class Shaido extends Stage7Fighter {
             ? Math.sign(dx)
             : 0;
       this.x += move * 120 * dt;
+      if (early && this.scene.bounds)
+        this.x = clamp(this.x, this.scene.bounds.l + 160, this.scene.bounds.r - 160);
       this.y = clamp(
         this.y + Math.sign(dy) * Math.min(Math.abs(dy), 70 * dt),
         LANE_TOP,

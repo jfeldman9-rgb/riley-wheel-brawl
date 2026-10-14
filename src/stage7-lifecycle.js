@@ -14,6 +14,7 @@ import { stage7Say, sfx7 } from "./stage7-voice.js";
 import { demand7, HELPERS7 } from "./stage7-load.js";
 import { linkTrollocs } from "./fadelt.js";
 import { reflectNote } from "./stage7-notes.js";
+import { syncStage7Phone } from "./stage7-phone.js";
 export function hook7(kit, object, key, wrap) {
   const original = object?.[key];
   if (typeof original !== "function") return;
@@ -82,6 +83,7 @@ export function callMoilan(k) {
       resolved: false,
     };
     freezeStrike(k);
+    syncStage7Phone(s);
     k.video?.play(helper);
     k.stats.calls++;
   });
@@ -94,6 +96,7 @@ export function endStrike7(k, grant = true) {
     k.s.riley.inv = Math.max(k.s.riley.inv || 0, CALL7.inv);
   k.call.on = false;
   k.strike = null;
+  syncStage7Phone(k.s);
   thawStrike(k);
   k.view?.sync(k);
 }
@@ -113,6 +116,13 @@ export function stepStrike7(k, dt) {
       k.notes.clear();
       k.arena.clear();
       k.arrows.length = 0;
+      // Moiraine clears the Shadowspawn adds; Lan puts the Shaido down while
+      // the existing duo effect still respects Asmodean's phase gates.
+      for (const e of allocateStrikes(
+        eligibleTargets(k.s.enemies, k.s.camX || 0), "moiraine", k.s.riley?.y || 0,
+      ))
+        if (e.type !== "asmodean")
+          callEffect(e, e.type === "dancer" || e.type === "veiled" ? "lan" : "moiraine");
     }
     for (const e of st.targets) callEffect(e, st.helper);
     sfx7(

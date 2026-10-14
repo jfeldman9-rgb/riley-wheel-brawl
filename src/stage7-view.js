@@ -34,6 +34,12 @@ export function createStage7View(s) {
       o?.setDepth?.(depth);
       if (o) fx.set(id, o);
     }
+    // A demand-loaded effect may have been created with __MISSING. Rebind
+    // after the texture arrives and recalculate sizing against its real cells.
+    if (o?.texture?.key !== key && s.textures?.exists?.(key)) {
+      o?.setTexture?.(key);
+      if (o) { delete o._dw; delete o._dh; }
+    }
     o?.setPosition?.(x, y);
     o?.setAlpha?.(alpha);
     o?.setDepth?.(depth);
@@ -242,7 +248,10 @@ export function createStage7View(s) {
           if (s.boss?.alive && s.boss.hp <= s.boss.maxHp * 0.1)
             alpha *= 0.35 + 0.65 * Math.abs(Math.sin(k.clock * 18 + i));
           if (k.outro) alpha *= clamp(1 - (k.outroT - i * 0.5) / 0.5, 0, 1);
-          show("col" + i, "s7column", x, 230, 200, 400, alpha, -15, null, "native")?.setFrame?.(glow);
+          // A timed-out/failed sheet has a single code-drawn frame. Asking it
+          // for glow cells 1/2 renders a missing frame instead of the column.
+          const frame = s.textures?.get?.("s7column")?.has?.(glow) === false ? 0 : glow;
+          show("col" + i, "s7column", x, 230, 200, 400, alpha, -15, null, "native")?.setFrame?.(frame);
         });
         const a = k.arena.rain;
         if (a) {

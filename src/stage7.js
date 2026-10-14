@@ -23,6 +23,7 @@ import {
 } from "./stage7-lifecycle.js";
 import { installStage7Hud, bindStage7Hud } from "./stage7-hud.js";
 import { releaseStage7Phone, syncStage7Phone } from "./stage7-phone.js";
+import { installStage7Quality } from "./stage7-quality.js";
 import {
   LINES,
   STAGE7_VOICES,
@@ -110,10 +111,10 @@ export class Stage7Kit {
     return 0x727b8d;
   }
   freezesRiley() {
-    return !!(this.strike || this.s.cutscene);
+    return !!(this.strike || this.s.cutscene || this.outro);
   }
   freezesWorld() {
-    return this.freezesRiley();
+    return !!(this.strike || this.s.cutscene);
   }
   setQuality(n) {
     this.quality = n | 0;
@@ -124,6 +125,7 @@ export class Stage7Kit {
   build() {
     if (typeof globalThis.Phaser !== "undefined") installStage7Hud();
     installStage7Hooks(this);
+    installStage7Quality(this);
     this.s.fires = [];
     this.s.bands = VOLLEY_BANDS;
     const keep = residentKeys(this.s, STREAMS[7]);
@@ -257,7 +259,7 @@ export class Stage7Kit {
       const R = s.riley;
       if (
         !a.hit &&
-        R?.z < 30 &&
+        R?.z < 95 &&
         Math.abs(R.x - a.x) < 30 &&
         Math.abs(R.y - a.y) < 22
       ) {
@@ -355,6 +357,8 @@ export class Stage7Kit {
     if (s.riley) {
       s.riley.x = Math.min(Math.max(s.riley.x, cam + 220), cam + VW - 380);
       s.riley.vx = 0;
+      s.riley.vz = s.riley.z = 0;
+      s.riley.setState?.("idle", "idle");
     }
     demand7(this, HELPERS7);
   }
