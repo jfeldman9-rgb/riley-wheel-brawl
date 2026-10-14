@@ -10,8 +10,8 @@ export const STAGE7_TEXTURES = Object.freeze([
 export const STAGE7 = {
   no: 7, key: 'rhuidean', title: 'RHUIDEAN — THE AIEL WASTE', loading: 'Loading Rhuidean…',
   zones: Object.freeze([
-    { at: 260, l: 0, r: 1280, waves: [[['grunt','L',0],['grunt','R',1]], [['spear','R',0],['dancer','L',0.8],['grunt','R',1.6]]] },
-    { at: 1500, l: 1240, r: 2520, waves: [[['dancer','R',0],['veiled','L',0.6]], [['grunt','L',0],['dancer','R',0.5],['veiled','R',1.2],['spear','L',1.8]]] },
+    { at: 260, l: 0, r: 1280, waves: [[['grunt','L',0],['grunt','R',1.4]], [['spear','R',0],['dancer','L',1.6],['grunt','R',2.6]]] },
+    { at: 1500, l: 1240, r: 2520, waves: [[['dancer','R',0],['veiled','L',1.4]], [['grunt','L',0],['dancer','R',1.5],['veiled','R',2.8],['spear','L',3.8]]] },
     { at: 2800, l: 2560, r: 3840, waves: [[['fadelt','R',0],['grunt','L',0.4],['dancer','R',0.9]], [['veiled','T',0],['spear','L',0.5],['grunt','R',1],['dancer','L',1.6]]] },
     { at: 4140, l: 3920, r: 5200, boss: true },
   ].map(Object.freeze)),

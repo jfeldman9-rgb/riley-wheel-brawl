@@ -6,6 +6,7 @@ import { EventEmitter } from 'node:events';
 import { dimensions, audit } from '../tools/audit-stage1.mjs';
 import { PAINTED7 } from '../src/stage7-painted.js';
 import { FRAMES7 } from '../src/stage7-frames.js';
+import { paintedScale } from '../src/stage7-fighter.js';
 import { Dancer, Veiled } from '../src/shaido.js';
 import { Asmodean } from '../src/asmodean.js';
 import { createStage7View } from '../src/stage7-view.js';
@@ -94,7 +95,7 @@ test('production fighters select painted tell, lunge, draw, release, hurt and de
         actor.st = i / 8;
         actor.sync();
         assert.equal(actor.sprite.frame, sequence[i], `${actor.def.key} ${state}`);
-        assert.equal(actor.sprite.scale, 1);
+        assert.equal(actor.sprite.scale, paintedScale(actor.def.key));
       }
     }
     actor.destroy();

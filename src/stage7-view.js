@@ -5,6 +5,16 @@ import { demand7 } from "./stage7-load.js";
 import { COLUMNS } from "./stage7-arena.js";
 import { bandY } from "./stage7-street.js";
 import { frame7, earthFrame7 } from "./stage7-frames.js";
+import { isPainted } from "./stage6-paint.js";
+import { paintedScale } from "./stage7-fighter.js";
+const CELL = {
+  s7column: [128, 448],
+  s7shield: [128, 256],
+  s7earth: [128, 128],
+  s7note: [64, 64],
+  s7moir: [184, 245],
+  s7lan: [254, 236],
+};
 export function createStage7View(s) {
   const nodes = new Map(),
     fx = new Map();
@@ -17,16 +27,40 @@ export function createStage7View(s) {
     o?.setDepth?.(depth);
     return o;
   }
-  function effect(id, key, x, y, w, h, alpha = 1, depth = 1700, tint) {
+  function effect(id, key, x, y, w, h, alpha = 1, depth = 1700, tint, fit) {
     let o = fx.get(id);
     if (!o) {
-      o = image(key, x, y, w, h, depth);
+      o = s.add?.image?.(x, y, key);
+      o?.setDepth?.(depth);
       if (o) fx.set(id, o);
     }
     o?.setPosition?.(x, y);
-    o?.setDisplaySize?.(w, h);
     o?.setAlpha?.(alpha);
-    if (tint) o?.setTint?.(tint);
+    o?.setDepth?.(depth);
+    if (tint != null) o?.setTint?.(tint);
+    else o?.clearTint?.();
+    if (fit === "actor") {
+      o?.setOrigin?.(0.5, 0.96);
+      o?.setScale?.(isPainted(s, key) ? paintedScale(key) : 3);
+    } else if (fit === "native") {
+      const cell = CELL[key] || [w, h];
+      const sc = Math.min(w / cell[0], h / cell[1]);
+      const dw = cell[0] * sc,
+        dh = cell[1] * sc;
+      o?.setOrigin?.(0.5, 0);
+      if (o && (o._dw !== dw || o._dh !== dh)) {
+        o._dw = dw;
+        o._dh = dh;
+        o.setDisplaySize?.(dw, dh);
+      }
+    } else {
+      o?.setOrigin?.(0, 0);
+      if (o && (o._dw !== w || o._dh !== h)) {
+        o._dw = w;
+        o._dh = h;
+        o.setDisplaySize?.(w, h);
+      }
+    }
     return o;
   }
   const api = {
@@ -89,7 +123,7 @@ export function createStage7View(s) {
         portalLight.intensity =
           s.zoneI <= 0 && s.wave < 1 && k.quality < 3 ? 0.7 : 0;
       }
-      if (s.zoneI === 1 && k.storm.phase !== "idle") {
+      if (s.zoneI === 1 && k.storm.phase !== "idle" && (k.quality | 0) < 2) {
         const gust = k.storm.phase === "gust";
         show(
           "dust",
@@ -140,14 +174,15 @@ export function createStage7View(s) {
         show(
           "note" + i,
           "s7note",
-          n.x - 20,
+          n.x,
           n.y - 65,
-          40,
-          40,
+          48,
+          48,
           1,
           1750,
-          n.gold ? 0xffcc44 : 0x8fe3ff,
-        );
+          null,
+          "native",
+        )?.setFrame?.(n.reflected ? 4 : n.gold ? 2 + (Math.floor(n.age * 8) % 2) : Math.floor(n.age * 8) % 2);
       for (const [i, n] of k.notes.tells().entries())
         show(
           "band" + i,
@@ -197,26 +232,31 @@ export function createStage7View(s) {
         if (moonLight) moonLight.intensity = k.quality >= 3 ? 0 : 0.45;
         COLUMNS.forEach((x, i) => {
           let alpha = 0.25;
+          let glow = 0;
+          if (k.arena.rain?.x === x)
+            glow = k.arena.rain.phase === "tell" ? 1 : 2;
+          else if (s.boss?.alive && s.boss.hp <= s.boss.maxHp * 0.1)
+            glow = 1 + (Math.floor(k.clock * 8 + i) % 2);
           if (k.arena.rain?.x === x)
             alpha = k.arena.rain.phase === "tell" ? 1 : 0.6;
           if (s.boss?.alive && s.boss.hp <= s.boss.maxHp * 0.1)
             alpha *= 0.35 + 0.65 * Math.abs(Math.sin(k.clock * 18 + i));
           if (k.outro) alpha *= clamp(1 - (k.outroT - i * 0.5) / 0.5, 0, 1);
-          show("col" + i, "s7column", x - 32, 230, 64, 345, alpha, -15);
+          show("col" + i, "s7column", x, 230, 200, 400, alpha, -15, null, "native")?.setFrame?.(glow);
         });
         const a = k.arena.rain;
         if (a) {
           show(
             "rainBand",
-            "s7shield",
-            a.x - 110,
+            "s7streak",
+            a.x - 160,
             LANE_TOP,
-            220,
-            120,
+            320,
+            16,
             a.phase === "tell" ? 0.3 : 0.6,
             940,
           );
-          if (a.phase === "strike")
+          if (a.phase === "strike" && (k.quality | 0) < 3)
             for (let i = 0; i < 7; i++)
               show(
                 "rain" + i,
@@ -233,12 +273,14 @@ export function createStage7View(s) {
           show(
             "shock",
             "s7shield",
-            shock.x - shock.radius,
+            shock.x,
             shock.y - shock.radius,
-            shock.radius * 2,
-            shock.radius * 2,
+            Math.max(8, shock.radius * 4),
+            Math.max(8, shock.radius * 2),
             0.8,
             980,
+            null,
+            "native",
           );
         const b = s.boss;
         if (b?.state === "channel") {
@@ -260,45 +302,54 @@ export function createStage7View(s) {
         const st = k.strike,
           x = (s.camX || 0) + 100;
         if (st.helper !== "lan")
-          show("moi", "s7moir", x, 390, 192, 192, 1, 1800)?.setFrame?.(
+          show("moi", "s7moir", x + 80, 630, 0, 0, 1, 1800, null, "actor")?.setFrame?.(
             frame7(s, "s7moir", st.t < 0.25 ? "idle" : st.t < 0.65 ? "raise" : "attack", st.t < 0.65 ? Math.max(0, st.t - 0.25) : st.t - 0.65, 4),
           );
         if (st.helper !== "moiraine")
           show(
             "lan",
             "s7lan",
-            x + 100 + Math.min(st.t / 0.45, 1) * 500,
-            410,
-            192,
-            192,
+            x + 180 + Math.min(st.t / 0.45, 1) * 420,
+            630,
+            0,
+            0,
             1,
             1800,
+            null,
+            "actor",
           )?.setFrame?.(
             frame7(s, "s7lan", st.t < 0.3 ? "run" : st.t < 0.45 ? "draw" : "attack", st.t < 0.45 ? st.t : st.t - 0.45, 3),
           );
-        for (const [i, e] of st.targets.entries())
-          show(
-            "callfx" + i,
+        for (const [i, e] of st.targets.entries()) {
+          const fxKey =
             st.helper === "moiraine"
               ? "s7earth"
               : st.helper === "duo"
                 ? "s7shield"
-                : "s7streak",
-            e.x - 90,
-            e.y - 100,
-            180,
-            100,
+                : "s7streak";
+          const wide = fxKey === "s7streak";
+          show(
+            "callfx" + i,
+            fxKey,
+            wide ? e.x - 80 : e.x,
+            e.y - (wide ? 80 : 150),
+            wide ? 160 : fxKey === "s7shield" ? 140 : 150,
+            wide ? 16 : fxKey === "s7shield" ? 280 : 150,
             0.85,
             1800,
+            null,
+            wide ? undefined : "native",
           )?.setFrame?.(st.helper === "moiraine" ? earthFrame7(s, st.t, st.duration) : 0);
+        }
       }
       if (k.outro && s.boss) {
-        const b = s.boss;
-        show("bound", "s7shield", b.x - 75, b.y - 160, 150, 160, 0.8);
-        show("lanEnd", "s7lan", b.x - 220, b.y - 185, 192, 192, 1)?.setFrame?.(
+        const b = s.boss,
+          cam = s.camX || 0;
+        show("bound", "s7shield", Math.min(b.x, cam + VW - 280), b.y - 200, 160, 320, 0.8, 1700, null, "native");
+        show("lanEnd", "s7lan", cam + 460, b.y, 0, 0, 1, 1800, null, "actor")?.setFrame?.(
           frame7(s, "s7lan", "point", 0, 3),
         );
-        show("moiEnd", "s7moir", b.x - 380, b.y - 185, 192, 192, 1)?.setFrame?.(
+        show("moiEnd", "s7moir", cam + 250, b.y, 0, 0, 1, 1800, null, "actor")?.setFrame?.(
           frame7(s, "s7moir", "idle", 0, 4),
         );
       }

@@ -1,6 +1,7 @@
 import { canCall, pickHelper } from "./moilan-call.js";
 import { call7Context } from "./stage7-lifecycle.js";
 import { q } from "./config.js";
+import { syncStage7Phone } from "./stage7-phone.js";
 export function bindStage7Hud(hud, k) {
   if (!hud || hud._s7bind) return () => {};
   const prev = hud.updateLoialLabel,
@@ -60,6 +61,9 @@ function help(hud, on) {
 }
 export function paintStage7Hud(hud, s) {
   if (!s) return;
+  syncStage7Phone(s);
+  if (s.stageNo === 7 && s.kit && !hud._s7bind)
+    s.kit.cleanups?.push(bindStage7Hud(hud, s.kit));
   const n = s.titleSel || s.stageNo;
   if (n === 7 && hud.titleStageT?.text !== "RHUIDEAN — THE AIEL WASTE")
     hud.titleStageT?.setText?.("RHUIDEAN — THE AIEL WASTE");
@@ -75,12 +79,16 @@ export function fixClear7(hud, stats) {
   const next = s?.stageDef?.next?.(q)?.stage;
   if (!((stats.stage === 6 && next === 7) || stats.stage === 7)) return;
   const verb = hud.game?.inp?.isTouch ? "TAP KICK" : "PRESS ATTACK";
+  const line =
+    stats.stage === 7
+      ? verb + " TO RETURN TO THE TITLE"
+      : verb + " TO CONTINUE TO STAGE " + next;
   for (const node of hud.card?.list || [])
     if (
       typeof node.text === "string" &&
       /^(PRESS ATTACK|TAP KICK) TO /.test(node.text)
     )
-      node.setText(verb + " TO CONTINUE TO STAGE " + next);
+      node.setText(line);
 }
 export function installStage7Hud() {
   return import("./hud.js").then(({ HUD }) => {

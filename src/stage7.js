@@ -22,6 +22,7 @@ import {
   call7Context,
 } from "./stage7-lifecycle.js";
 import { installStage7Hud, bindStage7Hud } from "./stage7-hud.js";
+import { releaseStage7Phone, syncStage7Phone } from "./stage7-phone.js";
 import {
   LINES,
   STAGE7_VOICES,
@@ -136,6 +137,8 @@ export class Stage7Kit {
             (q.get("story") !== "0" && this.s.stageData?.story !== false)),
       ),
     );
+    syncStage7Phone(this.s);
+    this.cleanups.push(() => releaseStage7Phone());
     this.view = createStage7View(this.s);
     this.view.quality = this.quality;
     this.view.build();
@@ -171,6 +174,8 @@ export class Stage7Kit {
     if (s.hud && !s.hud._s7bind) this.cleanups.push(bindStage7Hud(s.hud, this));
     substeps(this, dt, (d) => this.step(d));
     if (s.riley) s.riley.loialReady = canCall(this.call, call7Context(this));
+    if (this.call.on && s.riley)
+      s.riley.inv = Math.max(s.riley.inv || 0, 0.4);
     if (this.call.charges && s.riley?.alive) {
       if (!this.helpersRequested) {
         this.helpersRequested = true;
@@ -219,6 +224,7 @@ export class Stage7Kit {
         e.silhouette = Math.max(0, e.silhouette - dt);
         e.sprite?.setAlpha?.(e.silhouette > 0 ? 0.4 : 1);
       }
+      if (e.grabOpen > 0) e.grabOpen = Math.max(0, e.grabOpen - dt);
       if (e.alive && (e.randDown > 0 || e.daze > 0)) {
         e._s7down = true;
         if (e.state !== "down") {
@@ -282,7 +288,12 @@ export class Stage7Kit {
       ? "HOLD STICK CENTRED TO BRACE"
       : "HOLD RUN WHILE STILL TO BRACE";
     this.s.hud?.flashText?.((st.dir > 0 ? "WIND → " : "← WIND — ") + brace);
-    stage7Say(st.gusts ? "riley_st7_storm_01" : "st7_storm_01", this.s.caption);
+    const id = st.gusts ? "riley_st7_storm_01" : "st7_storm_01";
+    this.saidLines ||= new Set();
+    if (!this.saidLines.has(id)) {
+      this.saidLines.add(id);
+      stage7Say(id, this.s.caption);
+    }
   }
   streetTell() {
     sfx7("glass");
@@ -300,6 +311,9 @@ export class Stage7Kit {
     this.notes.next = this.notes.clock + 0.625;
     this.arena.clear();
     if (phase === 2) {
+      this.arena.t = 0;
+      this.arena.next = 3.2;
+      this.arena.index = 0;
       this.s.spawn("dancer", "L");
       this.s.spawn("grunt", "R");
       this.later(5, () => {
@@ -308,6 +322,12 @@ export class Stage7Kit {
           this.s.spawn("dancer", "L");
         }
       });
+    }
+    if (phase === 3) {
+      const open = (this.s.enemies || []).some(
+        (e) => e !== b && e.alive && e.grabbable && e.type !== "asmodean",
+      );
+      if (!open && !this.outro) this.s.spawn("dancer", "L");
     }
   }
   onZoneClear(i) {
@@ -332,6 +352,16 @@ export class Stage7Kit {
     this.outroT = 0;
     this.tasks.length = 0;
     this.clearHazards();
+    const s = this.s,
+      cam = s.camX || 0;
+    if (s.boss) {
+      s.boss.x = Math.min(Math.max(s.boss.x, cam + 640), cam + VW - 300);
+      s.boss.vx = 0;
+    }
+    if (s.riley) {
+      s.riley.x = Math.min(Math.max(s.riley.x, cam + 220), cam + VW - 380);
+      s.riley.vx = 0;
+    }
     demand7(this, HELPERS7);
   }
   threats() {

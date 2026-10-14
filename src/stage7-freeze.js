@@ -1,4 +1,4 @@
-// Rand's strike advances on the scene update while Phaser-owned clocks stay still.
+// A Moiraine / Lan call-in advances on the scene update while Phaser-owned clocks stay still.
 export function freezeStrike(kit) {
   if (kit.freezeState) return;
   const s = kit.s;

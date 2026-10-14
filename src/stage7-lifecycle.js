@@ -61,6 +61,8 @@ export function callMoilan(k) {
     "riley_st7_call_0" + (helper === "moiraine" ? 1 : helper === "lan" ? 2 : 3),
     s.caption,
   );
+  // Cover the load gap. Enemy melee checks Riley's i-frames, not the later strike flag.
+  if (s.riley) s.riley.inv = Math.max(s.riley.inv || 0, CALL7.inv);
   const list = eligibleTargets(s.enemies, s.camX || 0);
   const request = (k.callRequest = (k.callRequest || 0) + 1);
   demand7(k, HELPERS7, () => {
@@ -101,6 +103,12 @@ export function stepStrike7(k, dt) {
   st.t += dt;
   if (!st.resolved && st.t >= (st.helper === "lan" ? 0.45 : 0.65)) {
     st.resolved = true;
+    const live = allocateStrikes(
+      eligibleTargets(k.s.enemies, k.s.camX || 0),
+      st.helper,
+      k.s.riley?.y || 0,
+    );
+    if (live.length) st.targets = live;
     if (st.helper === "duo") {
       k.notes.clear();
       k.arena.clear();
@@ -180,6 +188,16 @@ export function installStage7Hooks(k) {
         if (e) {
           silhouette(e);
           e.silhouette = 0;
+          if (!e._s7grab && typeof e.takeHit === "function") {
+            e._s7grab = true;
+            const take = e.takeHit;
+            e.takeHit = function (h, from) {
+              const ok = take.call(this, h, from);
+              if (ok && this.alive !== false && this.type !== "asmodean")
+                this.grabOpen = Math.max(this.grabOpen || 0, 1.05);
+              return ok;
+            };
+          }
           if (k.storm.phase === "gust") {
             if (e.entering) e._s7arrival = true;
             else e.silhouette = 0.6;
@@ -211,6 +229,51 @@ export function installStage7Hooks(k) {
         return original.call(this, e);
       },
   );
+  // Wider than Stages 1–6, and open for a moment after a hit so a jab-then-walk connects.
+  hook7(k, s, "grabCandidate", (original) => function (R) {
+    let best = null,
+      bestDx = 1e9;
+    for (const e of this.enemies || []) {
+      if (!e?.grabbable || (e.z || 0) > 0) continue;
+      if (e.type === "asmodean" || e.T?.boss) continue;
+      const dy = Math.abs(e.y - R.y);
+      const dx = (e.x - R.x) * (R.facing || 1);
+      if (!(dy < 36 && dx > 20 && dx < 168)) continue;
+      const open =
+        e.state === "hurt" ||
+        e.state === "stagger" ||
+        (e.cool || 0) > 0.2 ||
+        (e.grabOpen || 0) > 0;
+      if (!open) continue;
+      if (dx < bestDx) {
+        best = e;
+        bestDx = dx;
+      }
+    }
+    return best || original.call(this, R);
+  });
+  // One gesture can hit both the II button and the story SKIP. The second pause/start
+  // would skip and then toggle manual pause, or resume and immediately pause again.
+  hook7(k, s, "onPress", (original) => function (action) {
+    const now = Date.now();
+    const key = action === "pause" || action === "start";
+    if (key && k.echo && now - k.echo < 350) {
+      this.inp?.clear?.();
+      return;
+    }
+    const cut = !!this.cutscene;
+    const manual = !!this.pauseReasons?.has?.("manual");
+    const out = original.call(this, action);
+    if (
+      key &&
+      (cut ||
+        manual ||
+        this.cutscene ||
+        this.pauseReasons?.has?.("manual"))
+    )
+      k.echo = now;
+    return out;
+  });
   hook7(
     k,
     s,
@@ -221,7 +284,24 @@ export function installStage7Hooks(k) {
           k.flushInp = 0;
           this.inp?.flushPresses?.();
         }
-        if (!k.strike) return original.call(this, time, delta);
+        if (!k.strike) {
+          const out = original.call(this, time, delta);
+          if (
+            this.inp?.isTouch &&
+            this.locked &&
+            this.zone &&
+            this.riley &&
+            this.started &&
+            !this.cutscene &&
+            !this.gameOver &&
+            !this.ended &&
+            !k.outro
+          ) {
+            const limit = this.zone.r - 300;
+            if (this.riley.x > limit) this.riley.x = limit;
+          }
+          return out;
+        }
         if (
           this.paused ||
           this.cutscene ||
@@ -240,6 +320,13 @@ export function installStage7Hooks(k) {
     "rileyDied",
     (original) =>
       function () {
+        const R = this.riley;
+        if (R && R.alive === false && R.state !== "down" && R.state !== "dead") {
+          R.vx = 0;
+          R.vz = 0;
+          if (R.setState) R.setState("down", "knockdown");
+          else R.state = "down";
+        }
         k.video?.abort();
         endStrike7(k, false);
         k.call.on = false;

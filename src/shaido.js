@@ -6,7 +6,7 @@ import { sfx7 } from "./stage7-voice.js";
 export const SHAIDO = Object.freeze({
   dancer: Object.freeze({
     hp: 60,
-    speed: 210,
+    speed: 150,
     tell: 0.45,
     lunge: 300,
     score: 450,
@@ -125,7 +125,7 @@ export class Shaido extends Stage7Fighter {
       return;
     }
     if (this.state === "down" || this.state === "hurt") {
-      if (this.st >= (this.state === "down" ? 0.8 : 0.24))
+      if (this.st >= (this.state === "down" ? 0.8 : 0.85))
         this.setState("idle");
       return;
     }
@@ -147,7 +147,7 @@ export class Shaido extends Stage7Fighter {
           k.fireArrow?.(this);
         }
         this.setState("idle");
-        this.cool = 3.0;
+        this.cool = 3.8;
       } else {
         this.setState("lunge");
         this.fromX = this.x;
@@ -162,11 +162,11 @@ export class Shaido extends Stage7Fighter {
         Math.abs(R.y - this.y) < 32
       ) {
         this.counterUsed = true;
-        if (R.z < 30) strikeRiley(this.scene, 9, { fromX: this.x });
+        if (R.z < 30) strikeRiley(this.scene, 6, { fromX: this.x });
       }
       if (this.st >= 0.3 || Math.abs(this.x - this.fromX) >= 300) {
         this.setState("idle");
-        this.cool = 2.2;
+        this.cool = 3.1;
       }
       return;
     }
@@ -203,7 +203,8 @@ export class Shaido extends Stage7Fighter {
         this.flank = -Math.sign(attackers[0].x - R.x) || this.flank;
       const goal = R.x + this.flank * 180;
       this.x +=
-        Math.sign(goal - this.x) * Math.min(Math.abs(goal - this.x), 210 * dt);
+        Math.sign(goal - this.x) *
+        Math.min(Math.abs(goal - this.x), SHAIDO.dancer.speed * dt);
       this.y += Math.sign(dy) * Math.min(Math.abs(dy), 100 * dt);
       this.state = "walk";
       if (!this.cool && Math.abs(dx) < 330 && Math.abs(dy) < 22 && tokens < 2)
@@ -218,6 +219,7 @@ export class Shaido extends Stage7Fighter {
   takeHit(h = {}) {
     if (!this.canBeHit) return false;
     this.hp -= Math.max(0, h.dmg || 0);
+    if (this.alive) this.grabOpen = Math.max(this.grabOpen || 0, 1.05);
     if (this.hp <= 0) this.yield();
     else {
       this.setState(h.down ? "down" : "hurt");

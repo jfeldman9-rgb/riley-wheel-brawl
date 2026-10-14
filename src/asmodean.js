@@ -46,7 +46,11 @@ export class Asmodean extends Stage7Fighter {
   }
   step(dt) {
     this.st += dt;
-    if (!this.alive) return;
+    if (this.phase >= 3 && this.hp <= 0) this.die();
+    if (!this.alive || this.state === "bound") {
+      this.vx = this.vy = 0;
+      return;
+    }
     this.clock += dt;
     if (this.beat) {
       if (this.st >= 0.55) {
@@ -188,8 +192,10 @@ export class Asmodean extends Stage7Fighter {
     this.hp = 0;
     this.alive = false;
     this.invuln = true;
+    this.vx = this.vy = this.vz = 0;
     this.setState("bound");
-    this.vx = 0;
+    this.sprite?.anims?.stop?.();
+    this.sync?.();
     this.scene.onEnemyDie?.(this);
   }
 }

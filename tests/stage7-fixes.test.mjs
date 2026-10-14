@@ -737,13 +737,12 @@ test("clear-card wrapper reports the actual 6→7 and 7→1 destinations", async
           }),
       };
       hud.stageClear({ stage, score: 0, combo: 0, time: 0 });
-      assert.ok(
-        nodes.some(
-          (n) =>
-            n.text ===
-            `${touch ? "TAP KICK" : "PRESS ATTACK"} TO CONTINUE TO STAGE ${next}`,
-        ),
-      );
+      const verb = touch ? "TAP KICK" : "PRESS ATTACK";
+      const line =
+        stage === 7
+          ? `${verb} TO RETURN TO THE TITLE`
+          : `${verb} TO CONTINUE TO STAGE ${next}`;
+      assert.ok(nodes.some((n) => n.text === line));
     }
 });
 
