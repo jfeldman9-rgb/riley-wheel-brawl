@@ -133,8 +133,12 @@ export function callEffect(e, helper) {
     const floor =
       e.phase >= 3 ? 1 : Math.floor(e.maxHp * CALL7.gates[(e.phase || 1) - 1]);
     const dmg = Math.max(0, Math.min(e.maxHp * CALL7.bossFrac, e.hp - floor));
-    e.takeHit?.({ dmg, assist: true });
-    if (!e.beat) e.stagger?.(CALL7.stagger);
+    const channeling = e.state === "channel";
+    const accepted = e.takeHit?.({ dmg, assist: true });
+    // A channel break already owns the stun, cooldown and banner. Don't cover it
+    // with the ordinary one-second assist stagger.
+    if (!e.beat && !(channeling && accepted && e.state === "stagger"))
+      e.stagger?.(CALL7.stagger);
     return { dmg, killed: false };
   }
   if (human(e)) {

@@ -429,7 +429,10 @@ export function installStage7Hooks(k) {
           delta <= 0
         )
           return;
-        stepStrike7(k, stage4Delta(delta / 1000));
+        const strikeDt = stage4Delta(delta / 1000);
+        // The strike branch never calls enemy update, so boss flashes would freeze.
+        for (const e of this.enemies || []) e.decayFlash?.(strikeDt);
+        stepStrike7(k, strikeDt);
         this.riley?.sync?.();
         for (const e of this.enemies || []) e.sync?.();
       },

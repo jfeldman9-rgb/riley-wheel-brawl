@@ -63,7 +63,7 @@ for (const dt of [0.1, 0.15]) {
   });
 
   test(`${dt * 1000}ms: one bash swing costs at most 12 HP without god mode`, () => fixture((s, b, h) => {
-    b.setState('attack'); b.counterUsed = false; s.god = false;
+    b.face(-1); b.setState('attack'); b.counterUsed = false; s.god = false;
     for (let elapsed = 0; elapsed < 1.2; elapsed += dt) {
       s.riley.x = b.x - 100; s.riley.y = b.y;
       h.step(dt); assert.ok(s.riley.hp >= 88);

@@ -4,7 +4,7 @@ import { stage7Simulation, withSeed } from "./helpers/stage7-harness.mjs";
 import { q } from "../src/config.js";
 import { HUD } from "../src/hud.js";
 import { LINES } from "../src/stage7-voice.js";
-import { bashRiley } from "../src/asmodean.js";
+import { bashRiley, ASMODEAN } from "../src/asmodean.js";
 import { strikeRiley } from "../src/stage6-hurt.js";
 import { installStage7Hooks } from "../src/stage7-lifecycle.js";
 import { STORY7_SCRIPT, STORY7_PANELS } from "../src/stage7.js";
@@ -223,21 +223,30 @@ for (const debug of [false, true])
         b.startChannel();
         for (let i = 0; i < 20; i++) h.step(0.1);
         if (debug) {
-          assert.ok(
-            logs.includes("[s7dbg] dmg src=asmodean.bash amt=12 hp=88"),
-          );
-          assert.ok(logs.includes("[s7dbg] dmg src=direct amt=1 hp=87"));
-          assert.ok(logs.includes("[s7dbg] dmg src=respawn amt=-13 hp=100"));
+          for (const prefix of [
+            "[s7dbg] dmg src=asmodean.bash amt=12 hp=88 ",
+            "[s7dbg] dmg src=direct amt=1 hp=87 ",
+            "[s7dbg] dmg src=respawn amt=-13 hp=100 ",
+          ]) {
+            const line = logs.find((entry) => entry.startsWith(prefix));
+            assert.ok(line, prefix);
+            assert.match(line, / t=\d+\.\d{3} until=\d+\.\d{3}$/);
+          }
           for (const name of [
             "channel start",
             "channel end",
             "stagger start",
             "stagger end",
-          ])
-            assert.ok(
-              logs.some((line) => line.startsWith(`[s7dbg] ${name} t=`)),
-              name,
-            );
+          ]) {
+            const line = logs.find((entry) => entry.startsWith(`[s7dbg] ${name} t=`));
+            assert.ok(line, name);
+            assert.match(line, /combat=\d+\.\d{3}/);
+            assert.match(line, /until=\d+\.\d{3}/);
+          }
+          for (const name of ["stagger start", "stagger end"]) {
+            const line = logs.find((entry) => entry.startsWith(`[s7dbg] ${name} `));
+            assert.match(line, /dur=\d+\.\d{3}/);
+          }
           assert.equal(
             logs.filter((line) => line.startsWith("[s7dbg] stagger start"))
               .length,
@@ -257,6 +266,28 @@ for (const debug of [false, true])
       console.log = savedLog;
     }
   });
+
+test("debug KeyY force-channels and lands the three-hit break", () => {
+  const savedLog = console.log, logs = [];
+  console.log = (...args) => logs.push(args.join(" "));
+  try {
+    fixture((s, h) => {
+      const b = liveBoss(s, h);
+      s.inp.emit("key", "KeyY");
+      assert.equal(b.state, "stagger");
+      assert.equal(b.channelHits, ASMODEAN.hits);
+      assert.ok(b.breakFlash > 0);
+      assert.ok(b.channelStaggerUntil >= b.clock + ASMODEAN.stun - 1e-6);
+      const start = logs.find((line) => line.startsWith("[s7dbg] stagger start "));
+      const endAt = b.staggerUntil;
+      assert.match(start, /until=\d+\.\d{3} dur=1\.400/);
+      for (let i = 0; i < 20 && b.state === "stagger"; i++) h.step(0.1);
+      assert.notEqual(b.state, "stagger");
+      const end = logs.find((line) => line.startsWith("[s7dbg] stagger end "));
+      assert.match(end, new RegExp(`until=${endAt.toFixed(3)} dur=1\\.400`));
+    }, true);
+  } finally { console.log = savedLog; }
+});
 
 test("debug KeyB skips the story through its normal completion before startBoss", () =>
   fixture((s, h) => {

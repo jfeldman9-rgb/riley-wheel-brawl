@@ -29,7 +29,7 @@ function captions(s) {
 }
 
 for (const dt of [1 / 120, 1 / 60, 0.25]) test(`one telegraphed bash hits once with ${dt}s frames`, () => fixture((s, b) => {
-  b.setState('attack'); b.counterUsed = false;
+  b.face(-1); b.setState('attack'); b.counterUsed = false;
   let elapsed = 0;
   while (elapsed < ASMODEAN.bashTell - dt - 1e-6) {
     b.update(dt); elapsed += dt; assert.equal(s.riley.hp, 100);

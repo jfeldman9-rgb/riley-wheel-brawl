@@ -1,6 +1,7 @@
 import { LANE_TOP, LANE_BOT, q } from "./config.js";
 import { canCall } from "./moilan-call.js";
 import { call7Context } from "./stage7-lifecycle.js";
+import { ASMODEAN } from "./asmodean.js";
 
 import { perceive7 } from "./stage7-perception.js";
 
@@ -174,6 +175,19 @@ function beam(bot, R, e) {
   return go(bot, 0, 0);
 }
 
+// A one-sided bash misses anyone who crosses behind during the tell. The
+// airkick keeps jump speed from the takeoff, so cancel only the part that
+// would carry Riley out through the back of a swing he was already in.
+function holdBashLane(R, e) {
+  if (!e || e.state !== "attack" || e.st >= ASMODEAN.bashTell) return;
+  const facing = e.facing || 1;
+  if ((R.x - e.x) * facing <= -40) return;
+  const kick = R.state === "airkick" ? (R.facing || 1) * 80 : 0;
+  const drift = (R.jumpVx || 0) + kick;
+  if (drift * facing >= 0) return;
+  R.jumpVx = -kick;
+}
+
 function bossPlan(bot, s, R, e) {
   const x = adx(R, e),
     side = Math.sign(e.x - R.x) || 1,
@@ -229,6 +243,7 @@ function play(bot, s, R, k) {
     !R.alive
   )
     return go(bot, 0, 0);
+  holdBashLane(R, s.boss);
   if (
     (bot.useCall || q.get("call7") === "1" || q.get("call7") === "all") &&
     (!R.busy || (s.boss?.phase >= 3 && s.boss?.state === "channel")) &&

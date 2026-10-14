@@ -1,7 +1,9 @@
 import { Stage7Fighter } from "./stage7-fighter.js";
 import { substeps } from "./stage5-clock.js";
+import { stage4Delta } from "./stage4-time.js";
 import { clamp, LANE_TOP, LANE_BOT, q } from "./config.js";
 import { strikeRiley } from "./stage6-hurt.js";
+import { CALL7 } from "./moilan-call.js";
 export const ASMODEAN = Object.freeze({
   hp: 600,
   speed: 88,
@@ -30,9 +32,18 @@ export const ASMO_FX = Object.freeze({
   stagger: 0xaab8ff,
   hit: 0xffffff,
 });
-const calm7 = () =>
-  q.get("flash") === "0" ||
-  !!globalThis.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+// Cache the media query. calm7() runs from every boss sync and stun star.
+let reducedMedia, reducedMotion;
+export function calm7() {
+  const media = globalThis.matchMedia;
+  if (media !== reducedMedia) {
+    reducedMedia = media;
+    reducedMotion = typeof media === "function"
+      ? media("(prefers-reduced-motion: reduce)")
+      : null;
+  }
+  return q.get("flash") === "0" || !!reducedMotion?.matches;
+}
 export class Asmodean extends Stage7Fighter {
   constructor(s, x, y) {
     super(s, "s7asmo", 600, x, y, 8000, "ASMODEAN", 88, true);
@@ -51,6 +62,8 @@ export class Asmodean extends Stage7Fighter {
     this.hitFlash = 0;
     this.breakFlash = 0;
     this.flinchDir = 0;
+    this.parryCue = 0;
+    this.parryCueSeen = false;
   }
   get canBeHit() {
     return this.alive && !this.entering && !this.invuln && !this.beat;
@@ -64,8 +77,22 @@ export class Asmodean extends Stage7Fighter {
     if (this.state === 'channel' && state !== 'channel')
       this.scene.kit?.debug?.event('channel end', this.clock);
     if (this.state === 'stagger' && state !== 'stagger')
-      this.scene.kit?.debug?.event('stagger end', this.clock);
+      this.scene.kit?.debug?.event('stagger end', this.clock, {
+        until: this.staggerUntil,
+        dur: this.staggerFor,
+      });
     super.setState(state);
+    if (state === "attack") {
+      this.parryCue = 0;
+      this.parryCueSeen = false;
+    }
+  }
+  // Visual flashes keep moving through a helper strike. Gameplay clocks do not.
+  decayFlash(dt) {
+    const d = stage4Delta(dt);
+    this.hitFlash = Math.max(0, (this.hitFlash || 0) - d);
+    this.breakFlash = Math.max(0, (this.breakFlash || 0) - d);
+    if (this.parryCue === 1 && this.parryCueSeen) this.parryCue = 2;
   }
   physics(dt) {
     if (this.staggerFrame || this.clock < this.staggerUntil) {
@@ -75,6 +102,7 @@ export class Asmodean extends Stage7Fighter {
     super.physics(dt);
   }
   update(dt) {
+    this.decayFlash(dt);
     if (
       this.scene.paused ||
       this.scene.cutscene ||
@@ -87,8 +115,6 @@ export class Asmodean extends Stage7Fighter {
   }
   step(dt) {
     this.st += dt;
-    this.hitFlash = Math.max(0, (this.hitFlash || 0) - dt);
-    this.breakFlash = Math.max(0, (this.breakFlash || 0) - dt);
     if (this.phase >= 3 && this.hp <= 0) this.die();
     if (!this.alive || this.state === "bound") {
       this.vx = this.vy = 0;
@@ -101,8 +127,8 @@ export class Asmodean extends Stage7Fighter {
       return;
     }
     if (this.state === "stagger") {
-      this.staggerUntil = 0;
       this.setState("idle");
+      this.staggerUntil = 0;
       return;
     }
     if (this.beat) {
@@ -128,9 +154,18 @@ export class Asmodean extends Stage7Fighter {
     const R = this.scene.riley;
     if (!R?.alive) return;
     if (this.state === "attack") {
+      // Arm one rendered gold frame even if this update jumps past the window.
+      if (
+        this.st >= ASMODEAN.bashTell - ASMODEAN.parry &&
+        !this.parryCueSeen &&
+        this.parryCue !== 2
+      )
+        this.parryCue = 1;
       if (!this.counterUsed && this.st >= ASMODEAN.bashTell) {
         this.counterUsed = true;
+        const dx = (R.x - this.x) * this.facing;
         if (
+          dx > -40 &&
           Math.abs(R.x - this.x) < ASMODEAN.reach &&
           Math.abs(R.y - this.y) < 40 &&
           (R.z || 0) < 35
@@ -193,13 +228,15 @@ export class Asmodean extends Stage7Fighter {
   stagger(duration = 1.4) {
     if (!this.alive || this.beat) return;
     const until = Math.max(this.staggerUntil || 0, this.clock + duration);
-    if (this.state !== 'stagger') this.scene.kit?.debug?.event('stagger start', this.clock);
+    const starting = this.state !== "stagger";
     this.setState("stagger");
     this.state = "stagger";
     this.staggerUntil = until;
     this.staggerFor = duration;
     this.counterUsed = true;
     this.vx = this.vy = this.vz = 0;
+    if (starting)
+      this.scene.kit?.debug?.event("stagger start", this.clock, { until, dur: duration });
   }
   takeHit(h = {}, from) {
     if (!this.canBeHit) return false;
@@ -210,19 +247,18 @@ export class Asmodean extends Stage7Fighter {
     this.hp -= Math.max(0, h.dmg || 0);
     // Visible reaction on every landed hit, without cancelling a bash or channel.
     this.hitFlash = ASMO_FX.hitFlash;
-    this.flinchDir = Math.sign(this.x - (from?.x ?? this.x - (this.facing || 1))) || 1;
+    this.flinchDir = Math.sign(this.x - (from?.x ?? this.x + (this.facing || 1))) || 1;
     this.guard();
     if (counter && this.alive && !this.beat) this.stagger(0.8);
-    if (channel && this.alive && !this.beat && !h.assist) {
-      this.channelHits++;
-      if (
-        this.channelHits >= ASMODEAN.hits ||
-        h.throw ||
-        h.kind === "throw" ||
-        h.thrown ||
-        from?.state === "thrown"
-      ) {
-        this.stagger(ASMODEAN.stun);
+    if (channel && this.alive && !this.beat) {
+      const thrown = h.throw || h.kind === "throw" || h.thrown || from?.state === "thrown";
+      // A helper strike on a live channel is a break, not one more hit toward three.
+      if (h.assist) this.channelHits = ASMODEAN.hits;
+      else this.channelHits++;
+      if (h.assist || this.channelHits >= ASMODEAN.hits || thrown) {
+        // Assist keeps its one-second punish window, but the break is scheduled
+        // like a channel break instead of a silent plain stagger.
+        this.stagger(h.assist ? CALL7.stagger : ASMODEAN.stun);
         this.channelStaggerUntil = this.staggerUntil;
         this.channelAt = Math.max(this.channelAt, this.clock + ASMODEAN.breakCooldown);
         this.breakFlash = ASMO_FX.breakFlash;
@@ -266,14 +302,16 @@ export class Asmodean extends Stage7Fighter {
     const sp = this.sprite;
     if (!sp) return;
     const tell = this.alive && state === "attack" && this.st < ASMODEAN.bashTell;
-    if (this.alive && (this.hitFlash > 0 || this.breakFlash > 0)) {
-      sp.setTintFill?.(ASMO_FX.hit);
-    } else if (tell) {
-      const parry = this.st >= ASMODEAN.bashTell - ASMODEAN.parry;
-      const k = this.st / ASMODEAN.bashTell;
-      // Flicker rate rises as the hit approaches (steady under ?flash=0 / reduced motion).
+    const parry = this.st >= ASMODEAN.bashTell - ASMODEAN.parry;
+    const goldHold = this.alive && state === "attack" && this.parryCue === 1;
+    // The tell and the parry gold stay readable; a hit during them is only a flinch.
+    if (tell || goldHold) {
+      const k = Math.min(1, this.st / ASMODEAN.bashTell);
       const on = calm7() || Math.floor(k * k * 12) % 2 === 0;
-      sp.setTint?.(parry ? ASMO_FX.parry : on ? ASMO_FX.tell : 0xffffff);
+      sp.setTint?.((parry || goldHold) ? ASMO_FX.parry : on ? ASMO_FX.tell : 0xffffff);
+      if (goldHold) this.parryCueSeen = true;
+    } else if (this.alive && (this.hitFlash > 0 || this.breakFlash > 0)) {
+      sp.setTintFill?.(ASMO_FX.hit);
     } else if (this.alive && state === "stagger") {
       sp.setTint?.(ASMO_FX.stagger);
     } else sp.clearTint?.();

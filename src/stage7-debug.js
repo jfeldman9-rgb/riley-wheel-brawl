@@ -4,7 +4,18 @@ export function installDebug7(k) {
   if (q.get("s7debug") !== "1") return;
   const s = k.s;
   let debugTrolloc = null;
-  const event = (name, time) => console.log(`[s7dbg] ${name} t=${time.toFixed(3)}`);
+  const fmt = (n) => (Number.isFinite(+n) ? +n : 0).toFixed(3);
+  const event = (name, time, extra) => {
+    const until = extra && extra.until != null ? extra.until : k.damageUntil;
+    const parts = [
+      `[s7dbg] ${name} t=${fmt(time)}`,
+      `combat=${fmt(k.combatClock)}`,
+      `until=${fmt(until)}`,
+    ];
+    if (extra && extra.dur != null) parts.push(`dur=${fmt(extra.dur)}`);
+    if (extra && extra.until != null) parts.push(`dmgUntil=${fmt(k.damageUntil)}`);
+    console.log(parts.join(" "));
+  };
   const watchHp = () => {
     const r = s.riley;
     const descriptor = Object.getOwnPropertyDescriptor(r, 'hp');
@@ -16,7 +27,7 @@ export function installDebug7(k) {
         if (value !== hp) {
           // Covers even a future direct HP writer outside strikeRiley/takeHit.
           const source = k.damageSource || 'direct';
-          console.log(`[s7dbg] dmg src=${source} amt=${hp - value} hp=${value}`);
+          console.log(`[s7dbg] dmg src=${source} amt=${hp - value} hp=${value} t=${fmt(k.combatClock)} until=${fmt(k.damageUntil)}`);
         }
         hp = value;
       },
@@ -79,6 +90,8 @@ export function installDebug7(k) {
   const off = s.inp?.on?.("key", (code) => {
     if (code === "KeyT") forceChannel();
     if (code === "KeyB") jumpBossIntro();
+    if (code === "KeyY" && forceChannel())
+      for (let i = 0; i < 3; i++) s.boss?.takeHit?.({ dmg: 1 }, s.riley);
   });
   k.cleanups.push(() => { off?.(); delete k.debug; });
 }
