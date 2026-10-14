@@ -3,10 +3,10 @@ import { Fighter } from './fighter.js';
 import { isPainted } from './stage6-paint.js';
 import { frame7 } from './stage7-frames.js';
 // Constant scale from the painted cell, so a trimmed frame is not stretched
-// into a square. Dancers and Asmodean read near Riley's height (~180px).
+// into a square. Dancers read near Riley's height; Asmodean is boss-sized (~261px, like Belal).
 export function paintedScale(key) {
   if (key === 's7dancer') return 1.5;
-  if (key === 's7asmo') return 1.24;
+  if (key === 's7asmo') return 1.8; // ~261px idle, Belal-sized (251px)
   if (key === 's7veiled') return 1.05;
   return 1;
 }

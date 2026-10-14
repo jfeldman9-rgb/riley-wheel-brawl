@@ -1,15 +1,17 @@
 import { Stage7Fighter } from "./stage7-fighter.js";
 import { substeps } from "./stage5-clock.js";
 import { clamp, LANE_TOP, LANE_BOT } from "./config.js";
-import { strikeRiley } from "./stage6-hurt.js";
+import { strikeRiley, damageAllowed } from "./stage6-hurt.js";
 export const ASMODEAN = Object.freeze({
   hp: 600,
   speed: 88,
-  reach: 150,
+  reach: 175,
   score: 8000,
   gates: Object.freeze([0.66, 0.33]),
   bashTell: 0.55,
-  bashDmg: 8,
+  bashDmg: 12,
+  parry: 0.2,
+  shadowW: 190,
   channel: 1.8,
   hits: 3,
   stun: 1.4,
@@ -21,6 +23,9 @@ export class Asmodean extends Stage7Fighter {
   constructor(s, x, y) {
     super(s, "s7asmo", 600, x, y, 8000, "ASMODEAN", 88, true);
     this.type = "asmodean";
+    // Boss-sized body: hurtbox and shadow follow the larger painted sprite.
+    this.def.shadowW = ASMODEAN.shadowW;
+    this.shadow?.setScale?.(ASMODEAN.shadowW / 64, ASMODEAN.shadowW * 0.22 / 64);
     this.phase = 1;
     this.counterUsed = false;
     this.invuln = false;
@@ -84,11 +89,11 @@ export class Asmodean extends Stage7Fighter {
       if (!this.counterUsed && this.st >= ASMODEAN.bashTell) {
         this.counterUsed = true;
         if (
-          Math.abs(R.x - this.x) < 150 &&
-          Math.abs(R.y - this.y) < 34 &&
-          R.z < 35
+          Math.abs(R.x - this.x) < ASMODEAN.reach &&
+          Math.abs(R.y - this.y) < 40 &&
+          (R.z || 0) < 35
         )
-          strikeRiley(this.scene, 8, { fromX: this.x });
+          bashRiley(this);
       }
       if (this.st >= 1.1) {
         this.setState("idle");
@@ -104,7 +109,7 @@ export class Asmodean extends Stage7Fighter {
     this.face(Math.sign(dx) || -1);
     if (this.clock >= this.bashAt && (this.scene.attackTokens?.() || 0) < 2) {
       if (
-        Math.abs(dx) <= 160 &&
+        Math.abs(dx) <= ASMODEAN.reach + 10 &&
         Math.abs(R.y - this.y) < 26 &&
         !this.scene.kit?.notes.pending.length
       ) {
@@ -147,7 +152,9 @@ export class Asmodean extends Stage7Fighter {
   takeHit(h = {}, from) {
     if (!this.canBeHit) return false;
     const channel = this.state === "channel";
-    const counter = this.state === "attack" && !this.counterUsed && !h.assist;
+    // Only a hit in the last instant of the tell parries the bash; mashing through it does not.
+    const counter = this.state === "attack" && !this.counterUsed && !h.assist &&
+      this.st >= ASMODEAN.bashTell - ASMODEAN.parry;
     this.hp -= Math.max(0, h.dmg || 0);
     this.guard();
     if (counter && this.alive && !this.beat) this.stagger(0.8);
@@ -201,4 +208,18 @@ export class Asmodean extends Stage7Fighter {
     this.sync?.();
     this.scene.onEnemyDie?.(this);
   }
+}
+
+// The bash goes through Riley's own hit reaction (hurt flinch, knockback, sound),
+// under the same damage gates as every Stage 5-7 hazard.
+export function bashRiley(boss) {
+  const s = boss.scene, R = s.riley;
+  if (!damageAllowed(s)) return false;
+  if (typeof R.takeHit === "function") {
+    const before = R.hp;
+    R.takeHit({ dmg: ASMODEAN.bashDmg, kb: 220 }, boss);
+    if (R.hp < before) R.inv = Math.max(R.inv || 0, 0.5);
+    return R.hp < before;
+  }
+  return strikeRiley(s, ASMODEAN.bashDmg, { fromX: boss.x });
 }
