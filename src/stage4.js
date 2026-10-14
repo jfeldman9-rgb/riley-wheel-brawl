@@ -1,3 +1,4 @@
+import { normalizeCrate } from './crate-texture.js';
 // Shadar Logoth. Fog, towers and the Draghkar are siblings; this file is the kit and the load.
 import { q } from './config.js';
 import { queueCharPages } from './assets.js';
@@ -28,6 +29,7 @@ export { STAGE4_VOICES };
 export { cultistHoldsToken };
 
 export function queueStage4(scene) {
+  normalizeCrate(scene, true);
   const L = scene.load, has = k => scene.textures.exists(k);
   if (!has('crate')) L.image('crate', ['assets/props/prop-crate.webp', 'assets/props/prop-crate_n.webp']);
   if (!has('planks')) L.atlas('planks', 'assets/props/planks.webp', 'assets/props/planks.json');

@@ -1,3 +1,4 @@
+import { onRunLoad } from './run-load.js';
 // Boot art for the Blight. Painted sheets in assets/stage5/ win when present.
 import { canPaint, tex, sheet } from './stage4-art.js';
 import { paintBackdrop } from './stage5-art-bg.js';
@@ -68,10 +69,9 @@ function showStory(scene, n) {
     const wanted = queueStage5Painted(scene, [row]);
     if (wanted?.size) {
       const fin = () => {
-        scene.load.off?.('complete', fin);
         if (scene.textures?.exists?.(key)) drop(); else paintStoryPanel(scene, n);
       };
-      scene.load.once?.('complete', fin);
+      onRunLoad(scene, 'complete', fin);
       if (typeof scene.load.isLoading !== 'function' || !scene.load.isLoading()) scene.load.start?.();
       return;
     }

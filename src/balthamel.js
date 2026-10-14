@@ -1,3 +1,4 @@
+import { actorId } from './actor-id.js';
 import { flail, balthPhysics } from './stage5-balthamel.js';
 import { clamp, rand } from './config.js';
 import { substeps } from './stage5-clock.js';
@@ -11,7 +12,7 @@ export class Balthamel {
     this.hp = this.maxHp = BALTH.hp; this.alive = true; this.state = 'drop'; this.st = 0; this.team = 1; this.accum = 0;
     this.def = { shadowW: 150, team: 1 }; this.T = { speed: 150, score: BALTH.score, boss: false, name: 'BALTHAMEL' };
     this.cool = 1.2; this.embraceCool = 2; this.grabLock = this.mashN = 0; this.since = 'flail'; this.counterUsed = this.hitOnce = false;
-    scene.koCount = (scene.koCount || 0) + 1; this.id = scene.koCount;
+    scene.koCount = (scene.koCount || 0) + 1; this.id = actorId();
     if (scene.enemies && !scene.enemies.includes(this)) scene.enemies.push(this);
   }
   get target() { return this.scene.riley; }

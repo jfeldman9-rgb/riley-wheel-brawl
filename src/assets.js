@@ -5,7 +5,7 @@
 // Every character's small anims.json loads at boot (ALL_CHARS); only the current stage's atlas pages are fetched.
 export const CHARS = ['riley', 'grunt', 'spear', 'hound', 'chief', 'loial'];
 export const ALL_CHARS = [...CHARS, 'zealot', 'archer', 'byar'];
-import { normalPageDir } from './texture-pages.js';
+import { normalPageDir, flatCharacterNormals } from './texture-pages.js';
 const NML = {};
 export function queueCharJson(scene) {
   for (const k of ALL_CHARS) scene.load.json(k + '.A', `assets/chars/${k}.anims.json`);
@@ -18,8 +18,8 @@ export function queueCharPages(scene, keys = CHARS) {
       const normalDir = normalPageDir(scene, p, dir, m);
       // Textures survive a scene restart. Phaser skips their cached images but
       // would still fetch uncached atlas JSON and create a partial MultiFile.
-      if (!scene.textures.exists(p)) scene.load.atlas({ key: p, textureURL: `${dir}/${p}.webp`, normalMap: `${normalDir}/${p}_n.webp`, atlasURL: `${dir}/${p}.json` });
-      if (!scene.textures.exists(p + '_nl')) scene.load.image(p + '_nl', `${normalDir}/${p}_nl.webp`);
+      if (!scene.textures.exists(p)) scene.load.atlas({ key: p, textureURL: `${dir}/${p}.webp`, ...(flatCharacterNormals(scene) ? {} : { normalMap: `${normalDir}/${p}_n.webp` }), atlasURL: `${dir}/${p}.json` });
+      if (!flatCharacterNormals(scene) && !scene.textures.exists(p + '_nl')) scene.load.image(p + '_nl', `${normalDir}/${p}_nl.webp`);
     }
   }
 }
@@ -27,7 +27,7 @@ export function makeCharAnims(scene, keys = CHARS) {
   const metas = {};
   for (const k of keys) {
     const m = scene.cache.json.get(k + '.A'); if (!m) continue; metas[k] = m;
-    for (const p of m.pages) if (scene.textures.exists(p + '_nl')) NML[p] = scene.textures.get(p + '_nl').source[0];
+    for (const p of m.pages) { if (scene.textures.exists(p + '_nl')) NML[p] = scene.textures.get(p + '_nl').source[0]; else delete NML[p]; }
     for (const a of m.anims) {
       if (scene.anims.exists(a.name)) continue;
       scene.anims.create({ key: a.name, frames: a.frames.map((f, i) => ({ key: m.pages[a.pages[i]], frame: f, duration: a.holds[i] })), repeat: a.loop ? -1 : 0 });

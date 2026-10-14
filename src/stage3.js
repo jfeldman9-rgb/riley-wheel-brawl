@@ -1,3 +1,4 @@
+import { normalizeCrate } from './crate-texture.js';
 // Caemlyn lighting and loading; inherited combat hooks come from Stage2Kit.
 import { VW, VH, LANE_TOP, WORLD_W, clamp } from './config.js';
 import { sfx, preloadClips, EXTRA_VOICE } from './audio.js';
@@ -43,6 +44,7 @@ export function timeOfDay(camX, keys, out = {}) {
 }
 
 export function queueStage3(scene) {
+  normalizeCrate(scene, true);
   scene.stage3LoadCleanup?.();
   const L = scene.load, has = k => scene.textures.exists(k), B = 'assets/bg3/';
   const img = (k, u) => { if (!has(k)) L.image(k, u); };

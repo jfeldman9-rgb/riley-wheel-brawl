@@ -100,6 +100,8 @@ export class Stage1 extends Phaser.Scene {
       const b = document.createElement('div'); b.id = 'boot'; b.className = 'boot-reload'; document.body.appendChild(b);
     }
     this.loadedStage = stageNo;
+    this.mobileNormals = coarsePointer();
+    this.stageData = this.sys?.settings?.data || {};
     const stageDef = STAGES[stageNo] || STAGES[1];
     queueCharPages(this, stageDef.chars);
     if (stageDef.queue) stageDef.queue(this);
@@ -136,6 +138,7 @@ export class Stage1 extends Phaser.Scene {
     this.stageDef = STAGES[this.stageNo] || STAGES[1];
     this.zones = this.stageDef.zones; this.drops = this.stageDef.drops; this.bossDrop = this.stageDef.bossDrop;
     this.music = new MusicDirector((id, o) => playTrack(id, o), this.stageNo);
+    this.zoneI = -1; this.zone = null; this.wave = -1; this.pending = []; this.locked = false; this.camX = 0; this.camMax = 0;
     this.kit = this.stageDef.kit ? new this.stageDef.kit(this) : null;
     this.koCount = 0; this.titleSel = this.stageNo;
     this.pauseReasons = new Set(); this.paused = false; this.gameOver = false;
@@ -159,6 +162,7 @@ export class Stage1 extends Phaser.Scene {
       removeKey(); removePress(); this.inp.clear();
       if (this.vignette?.overlay) this.vignette.destroy();
       if (this.cutscene) {
+        this.cutscene.abort?.();
         this.cutscene.done = true;
         this.cutscene.onLine = this.cutscene.onEnd = () => {};
       }
@@ -183,7 +187,6 @@ export class Stage1 extends Phaser.Scene {
     this.heroLight.y = this.riley.y - 300 - this.riley.z;
     for (const [x, y] of this.stageDef.crates) this.addBarrel(x, y, this.stageDef.crateProp, this.stageDef.cratePlanks);
     if (!this.kit) this.snowFront = this.add.particles(0, 0, 'flake', { x: { min: -100, max: VW + 300 }, y: -20, lifespan: 6000, speedY: { min: 80, max: 130 }, speedX: { min: -50, max: -10 }, scale: { min: 0.5, max: 0.9 }, alpha: { min: 0.5, max: 0.9 }, frequency: 80 }).setDepth(5000).setScrollFactor(0);
-    this.zoneI = -1; this.zone = null; this.wave = -1; this.pending = []; this.locked = false; this.camX = 0; this.camMax = 0;
     this.bounds = { l: 0, r: VW }; this.maxTokens = 2; this.started = false; this.ended = false; this.time0 = 0; this.timeScale = 1; this.lightsOn = true;
     const touch = coarsePointer();
     this.bloom = null; if (bloomOnByDefault(q, touch)) this.setBloom(true);
@@ -399,7 +402,7 @@ export class Stage1 extends Phaser.Scene {
   }
   stats() { const R = this.riley; return { score: R.score, combo: R.maxCombo, time: (this.time.now - this.time0) / 1000, lives: R.lives, stage: this.stageNo, ribbons: this.kit ? this.kit.ribbons : undefined }; }
   rileyDied() {
-    const R = this.riley; R.lives--; this.powers?.clearAll();
+    const R = this.riley; R.releaseHeld?.(); R.lives--; this.powers?.clearAll();
     this.time.delayedCall(1600, () => {
       if (R !== this.riley || this.victoryPending || this.ended) return;
       if (R.lives > 0) { R.respawn(); for (const e of this.enemies) if (e.alive && Math.abs(e.x - R.x) < 260) e.vx = Math.sign(e.x - R.x) * 500; }

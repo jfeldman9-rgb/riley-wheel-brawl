@@ -79,9 +79,11 @@ export function installGovernor(game, { q, rs0, vw, vh, meter, floor = 0, log = 
     while (level < lv) {
       level++; st.fx.quality = level;
       if (level === 1) { st.setBloom(false); removedBloom = true; }
-      if (level === 2) { if (st.snowFront) st.snowFront.frequency = 240; if (typeof st.kit?.setQuality === 'function') st.kit.setQuality(level); }
+      if (level === 2) { if (st.snowFront) st.snowFront.frequency = 240; }
       if (level === 4) st.setBackdropLit(false);
     }
+    st.fx.quality = level;
+    st.kit?.setQuality?.(level);
     // The scale follows the tier, so a scene restart that replays the tiers lands on the same scale.
     game.setRS(tierScale(level, rs0));
     if (removedBloom) releaseIdleRenderTargets(game);

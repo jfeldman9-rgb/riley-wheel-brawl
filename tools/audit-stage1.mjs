@@ -141,6 +141,11 @@ export function audit() {
   const bootModuleBytes = bootModules.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const notFetchedFiles = [...notFetched].sort();
   const notFetchedBytes = notFetchedFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
+  const introDeclaration = read('src/cutscene.js').toString().match(/intro:\s*Object\.freeze\(\[([^\]]+)\]/);
+  if (!introDeclaration) throw new Error('Cannot inventory the shipped intro sequence');
+  const introFiles = [...introDeclaration[1].matchAll(/'([^']+)'/g)].flatMap(m => ['mp4', 'jpg'].map(ext => `assets/cutscenes/${m[1]}.${ext}`));
+  const coldFiles = [...new Set([...files, ...introFiles])].sort();
+  const coldBytes = coldFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
   const stage3MusicFiles = ['assets/audio/music-stage3.mp3', 'assets/audio/music-boss3.mp3'];
   const stage3MusicBytes = stage3MusicFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
@@ -204,7 +209,10 @@ export function audit() {
     const namedFrames = new Set(data?.frames || []).size;
     return { action, animation:name, namedFrames, minimumFrames:5, densityStatus:namedFrames>=5?'PASS':'FAIL' };
   });
-  return { characters, preFight: { files:[...files].sort(), inventoryUpperBoundBytes:preFightUpperBoundBytes, budgetBytes:25_000_000,
+  return { characters, coldStartThroughCombat: {
+      files: coldFiles, inventoryUpperBoundBytes: coldBytes, introFiles,
+      budgetBytes: 25_000_000, inventoryStatus: coldBytes <= 25_000_000 ? 'PASS' : 'FAIL',
+      note: 'Conservative resource-body inventory with the normal four-clip intro enabled, unioned with the first-fight category. Not wire bytes: caches, compression and video ranges require a browser capture. The historical preFight category excludes streamed media and cannot certify this combined gate.' }, preFight: { files:[...files].sort(), inventoryUpperBoundBytes:preFightUpperBoundBytes, budgetBytes:25_000_000,
       inventoryStatus:preFightUpperBoundBytes <= 25_000_000 ? 'PASS' : 'FAIL',
       countedVoiceBytes,
       notFetched: { files: notFetchedFiles, bytes: notFetchedBytes,

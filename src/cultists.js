@@ -85,7 +85,7 @@ export class Cultist {
     this.gone = false;
     this.vx = 0;
     scene.koCount = (scene.koCount || 0) + 1;
-    this.id = scene.koCount;
+    this.id = deps.actorId?.() ?? scene.koCount;
     this.fleeOnKO = scene.koCount % 2 === 0;
     scene.fogBolts = scene.fogBolts || [];
     if (scene.enemies && !scene.enemies.includes(this)) scene.enemies.push(this);

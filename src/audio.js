@@ -321,7 +321,7 @@ function loadMusicBuffer(T) {
     .catch(() => null).then(buf => {
       T.loading = null;
       if (epoch !== audioEpoch) return null;
-      if (buf) T.buf = buf;
+      if (buf && (currentTrack === T.id || T.playing)) T.buf = buf;
       if (musicBytes[T.id] === compressed) delete musicBytes[T.id];
       return buf;
     }));
@@ -425,10 +425,14 @@ export function toggleMusic() {
   else if (!musicOn) for (const k in tracks) { const T = tracks[k]; T.pos = trackPos(T); if (T.el) T.el.pause(); if (T.src) { try { T.src.stop(); } catch (e) { } T.src.disconnect(); T.src = null; } T.playing = false; }
   return musicOn;
 }
+const muteListeners = new Set();
+export function isMuted() { return muted; }
+export function onMuteChange(fn) { muteListeners.add(fn); return () => muteListeners.delete(fn); }
 export function toggleMute() {
   muted = !muted; if (master) master.gain.value = muted ? 0 : 0.8;
   for (const k in tracks) if (tracks[k].el) tracks[k].el.muted = muted;
   if (muted) stopSceneAudio();
+  for (const fn of muteListeners) fn(muted);
   return muted;
 }
 // ---------- rain ambience (Stage 2): two looping filtered-noise beds, no file ----------

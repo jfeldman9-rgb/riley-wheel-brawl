@@ -1,3 +1,4 @@
+import { normalizeCrate } from './crate-texture.js';
 // Stage 2 kit: Baerlon at a rainy dusk. Painted backdrop + lanterns (lights.json), rain and lightning, the stable's
 // falling beams, Whitecloak arrows and lobbed arrows, Jaret Byar's archer volleys (whole lane bands, dodged by
 // changing lane), his torches and the burning barn, Twinkle Toes' ribbon and the story-beat cutscene.
@@ -25,6 +26,7 @@ export const STAGE2_VOICES = Object.freeze(Object.keys(EXTRA_VOICE).filter(id =>
 // textures each stage owns (released when the other stage loads, so an iPad never holds both backdrops)
 export { STAGE_TEXTURES, SHARED_TEXTURES };
 export function queueStage2(scene) {
+  normalizeCrate(scene, true);
   const L = scene.load, has = k => scene.textures.exists(k);
   if (!has('far2')) L.image('far2', 'assets/bg2/bg2-far.jpg');
   if (!has('mid2a')) L.image('mid2a', ['assets/bg2/bg2-mid.webp', 'assets/bg2/bg2-mid_n.webp']);

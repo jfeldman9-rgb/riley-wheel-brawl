@@ -22,6 +22,7 @@ export function strikeRiley(scene, dmg, opts = {}) {
     R.st = 0;
   }
   if (R.hp <= 0 && R.alive) {
+    R.releaseHeld?.();
     R.alive = false;
     R.grabbedBy?.releaseHold?.('break');
     scene.rileyDied?.();
