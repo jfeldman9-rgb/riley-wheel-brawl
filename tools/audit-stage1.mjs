@@ -55,6 +55,9 @@ export function audit() {
   const STAGE5_SRC = new Set(['stage5.js','stage5-def.js','stage5-hud.js','stage5-blight.js','stage5-sfx.js','stage5-actors.js','stage5-arena.js','stage5-view.js','stage5-art.js','stage5-art-bg.js','stage5-art-fx.js','stage5-art-cast.js','stage5-voice.js','blightspawn.js','aginor.js','balthamel.js','bot-stage5.js','stage5-lifecycle.js','stage5-clock.js','stage5-hurt.js','stage5-lighting.js','stage5-spores.js']);
   for (const name of ['stage5-balthamel.js', 'stage5-beat.js', 'stage5-spawn.js', 'stage5-effects.js', 'stage5-bot-combat.js', 'texture-pages.js', 'stage5-load.js', 'stage5-demand.js', 'zone-stream.js', 'stage5-paint.js', 'stage5-painted.js']) STAGE5_SRC.add(name);
   const STAGE6_SRC = new Set(['stage6.js','stage6-def.js','stage6-hud.js','stage6-arena.js','stage6-view.js','stage6-art.js','stage6-voice.js','stage6-sfx.js','stage6-audio.js','stage6-lifecycle.js','stage6-actors.js','stage6-bot-escape.js','stage6-freeze.js','stage6-hurt.js','stage6-tells.js','stage6-paint.js','stage6-painted.js','rand-call.js','rand-call-cutscene.js','belal.js','grayman.js','fadelt.js','bot-stage6.js']);
+  const STAGE7_SRC = new Set(readdirSync(resolve(ROOT, 'src')).filter(n => /^(stage7.*|moilan-call|call7-cutscene|shaido|asmodean|bot-stage7)\.js$/.test(n)));
+  // Stage 7's shared dialog-input repair also applies to earlier stages.
+  STAGE7_SRC.add('press-ownership.js');
   // The Stage 1 gate has a few hundred bytes of headroom. These hotfix modules
   // do not fit in it. They are counted on their own line, the same way Stage 4 is.
   const IOS_SRC = new Set(['viewport.js', 'page-base.js', 'debug-flag.js', 'stage3-art.js']);
@@ -63,12 +66,12 @@ export function audit() {
   const RESTART_SRC = new Set(['quality-governor.js', 'recovery.js']);
   // Video cutscenes: the controller and its hooks load with main.js but the clips stream on demand, never before
   // the first fight. Their own budget line, same split as restartHotfix (the clips are under cutscenes.clips).
-  const CUTSCENE_SRC = new Set(['cutscene.js', 'cutscene-hooks.js']);
+  const CUTSCENE_SRC = new Set(['cutscene.js', 'cutscene-hooks.js', 'cutscene-scene.js', 'twix-video.js']);
   const cutsceneSourceFiles = [];
   // Stage 3 FX stand-ins (painted over the labelled prop/FX cards at Stage 3 entry): their own line under stage3.
   const STAGE3_SRC = new Set(['stage3-fx-art.js']);
   const stage3SourceFiles = [];
-  const stage4SourceFiles = [], stage5SourceFiles = [], stage6SourceFiles = [];
+  const stage4SourceFiles = [], stage5SourceFiles = [], stage6SourceFiles = [], stage7SourceFiles = [];
   const iosSourceFiles = [];
   const restartSourceFiles = [];
   for (const name of readdirSync(resolve(ROOT,'src'))) if (name.endsWith('.js')) {
@@ -78,6 +81,7 @@ export function audit() {
     else if (STAGE4_SRC.has(name)) stage4SourceFiles.push(`src/${name}`);
     else if (STAGE5_SRC.has(name)) stage5SourceFiles.push(`src/${name}`);
     else if (STAGE6_SRC.has(name)) stage6SourceFiles.push(`src/${name}`);
+    else if (STAGE7_SRC.has(name)) stage7SourceFiles.push(`src/${name}`);
     else if (IOS_SRC.has(name)) iosSourceFiles.push(`src/${name}`);
     else files.add(`src/${name}`);
   }
@@ -93,6 +97,8 @@ export function audit() {
   const stage4Voice = /^(st4_|draghkar_|cultist_|riley_fog_|riley_tower_|riley_bridge_|riley_light_|riley_st4_)/;
   const stage5Voice = /^(st5_|aginor_|balthamel_|greenman_|riley_st5_)/;
   const stage6Voice = /^(st6_|rand_|belal_|grayman_|defender_|riley_st6_)/;
+  const stage7Voice = /^(st7_|riley_st7_)/;
+  let stage7VoiceBytes = 0, stage7VoiceCount = 0;
   let countedVoiceBytes = 0, stage3VoiceBytes = 0, stage3VoiceCount = 0, stage4VoiceBytes = 0, stage4VoiceCount = 0, stage5VoiceBytes = 0, stage5VoiceCount = 0, stage6VoiceBytes = 0, stage6VoiceCount = 0;
   for (const name of readdirSync(resolve(ROOT,'assets/audio/voice'))) if (name.endsWith('.mp3')) {
     const path = `assets/audio/voice/${name}`, bytes = statSync(resolve(ROOT, path)).size;
@@ -100,6 +106,7 @@ export function audit() {
     else if (stage4Voice.test(name)) { stage4VoiceBytes += bytes; stage4VoiceCount++; }
     else if (stage5Voice.test(name)) { stage5VoiceBytes += bytes; stage5VoiceCount++; }
     else if (stage6Voice.test(name)) { stage6VoiceBytes += bytes; stage6VoiceCount++; }
+    else if (stage7Voice.test(name)) { stage7VoiceBytes += bytes; stage7VoiceCount++; }
     else { files.add(path); countedVoiceBytes += bytes; }
   }
   const preFightUpperBoundBytes = [...files].reduce((n,p)=>n+statSync(resolve(ROOT,p)).size,0);
@@ -116,12 +123,14 @@ export function audit() {
   const restartSourceBytes = restartSourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const restartSourceBudget = 16 * 1024;
   const cutsceneSourceBytes = cutsceneSourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
-  const cutsceneSourceBudget = 20 * 1024;
+  // Shared event-video lifecycle and Twix fallback/debug wiring join the original player/hooks.
+  const cutsceneSourceBudget = 24 * 1024;
   const stage3SourceBytes = stage3SourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const stage3SourceBudget = 8 * 1024;
   const cutsceneClips = existsSync(resolve(ROOT, 'assets/cutscenes')) ? readdirSync(resolve(ROOT, 'assets/cutscenes')).filter(n => /\.(mp4|jpg)$/.test(n)).sort().map(n => `assets/cutscenes/${n}`) : [];
   const cutsceneClipBytes = cutsceneClips.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
-  const cutsceneClipBudget = 25_000_000;
+  // Existing 25 MB allowance plus the supplied T-Rex (4.36 MB) and Twix (3.03 MB) files.
+  const cutsceneClipBudget = 32_400_000;
   const stage4SourceBudget = 192 * 1024;
   const stage5SourceBudget = 192 * 1024;
   const stage3VoiceBudget = 18 * 200 * 1024, stage3MusicBudget = 2 * 1_200_000;
@@ -147,6 +156,8 @@ export function audit() {
     }
     return { files: out.sort(), bytes: out.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0) };
   };
+  const budgetLine = (files, budgetBytes) => { const bytes = files.reduce((n,p) => n + statSync(resolve(ROOT,p)).size,0); return { files, bytes, budgetBytes, status: bytes <= budgetBytes ? 'PASS' : 'FAIL' }; };
+  const stage7Art = [...walkBytes('assets/stage7').files, ...walkBytes('assets/bg7').files];
   const stage6Art = [walkBytes('assets/stage6'), walkBytes('assets/bg6')];
   const stage6ArtFiles = stage6Art.flatMap(a => a.files);
   const stage6ArtBytes = stage6Art.reduce((n, a) => n + a.bytes, 0);
@@ -186,6 +197,8 @@ export function audit() {
       clips: { files: cutsceneClips, bytes: cutsceneClipBytes, budgetBytes: cutsceneClipBudget,
         status: cutsceneClipBytes <= cutsceneClipBudget ? 'PASS' : 'FAIL',
         note: 'Streamed one at a time through a temporary <video> when a cutscene starts; nothing is preloaded, so they are outside the pre-fight sum.' },
+      callIns7: budgetLine(walkBytes('assets/cutscenes/call7').files, 9_000_000),
+      stage7: budgetLine(walkBytes('assets/cutscenes/stage7').files, 2_000_000),
       randCalls: { files: randCallFiles, bytes: randCallBytes, budgetBytes: randCallBudget,
         status: randCallBytes <= randCallBudget ? 'PASS' : 'FAIL',
         note: 'Rand call clips in assets/cutscenes/rand. Streamed one at a time. Not part of the 25 MB clip line or the pre-fight sum. readdir of assets/cutscenes is not recursive, so this line is required.' },
@@ -236,6 +249,12 @@ export function audit() {
       art: { files: stage6ArtFiles, bytes: stage6ArtBytes, budgetBytes: stage6ArtBudget,
         status: stage6ArtBytes <= stage6ArtBudget ? 'PASS' : 'FAIL',
         note: 'Disk bytes under assets/stage6 and assets/bg6. Not part of the Stage 1 pre-fight sum.' },
+    },
+    stage7: {
+      source: budgetLine(stage7SourceFiles, 192 * 1024),
+      voices: { count: stage7VoiceCount, bytes: stage7VoiceBytes, budgetBytes: 4_915_200, status: stage7VoiceBytes <= 4_915_200 ? 'PASS' : 'FAIL' },
+      music: budgetLine(['assets/audio/music-stage7.mp3', 'assets/audio/music-boss7.mp3'].filter(p => existsSync(resolve(ROOT,p))), 2_400_000),
+      art: budgetLine(stage7Art, 6_000_000),
     },
     playerAttackDensity: { minimumFrames:5, attacks:playerAttacks,
       densityStatus:playerAttacks.every(a=>a.densityStatus==='PASS')?'PASS':'FAIL',

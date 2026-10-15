@@ -11,7 +11,7 @@ export const RAND = Object.freeze({
 const TROLLOC = new Set(['grunt', 'spear', 'hound']);
 const HUMAN = new Set(['cutthroat', 'grayman']);
 
-export function callInFor(stageNo) { return stageNo >= 6 ? 'rand' : 'loial'; }
+export function callInFor(stageNo) { return stageNo >= 7 ? 'moilan' : stageNo === 6 ? 'rand' : 'loial'; }
 
 export function createRand() {
   return { charges: RAND.charges, calls: 0, kos: 0, since: RAND.recharge, phaseCalls: Object.create(null), on: false };

@@ -32,7 +32,7 @@ export function installCutscenes({ root = globalThis, stages = STAGES, Scene = S
    *  false: nothing played, the caller runs then() itself. */
   api.playFor = (scene, key, then) => {
     const ids = STAGE_CLIPS[key];
-    if (!ids || !cutscenesEnabled(query, root.navigator) || seen.has(key) || player.active || scene.cutscene) return false;
+    if (!ids?.length || !cutscenesEnabled(query, root.navigator) || seen.has(key) || player.active || scene.cutscene) return false;
     if (!scene.started || scene.ended || scene.gameOver || scene.victoryPending) return false;
     seen.add(key);
     let h = null;
@@ -75,7 +75,7 @@ export function installCutscenes({ root = globalThis, stages = STAGES, Scene = S
       if (!api.playFor(scene, key, (how, shown) => { scene.clipShown = shown ? key : null; orig(scene); })) return orig(scene);
     }, { rwbVideo: true });
   };
-  wrapStart(1, 'intro'); wrapStart(2, 2); wrapStart(3, 3); wrapStart(4, 4); wrapStart(6, 6);
+  wrapStart(1, 'intro'); wrapStart(2, 2); wrapStart(3, 3); wrapStart(4, 4); wrapStart(6, 6); wrapStart(7, 7);
   const P = Scene?.prototype, startBoss = P?.startBoss;
   if (typeof startBoss === 'function' && !startBoss.rwbVideo) {
     P.startBoss = Object.assign(function (...a) {

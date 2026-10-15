@@ -1,4 +1,4 @@
-// Stage table and unified registry. Stages 1–4 register in STAGES[n].
+// Campaign registry.
 import { DROPS, BOSS_DROP } from './powers.js';
 import { sfx, say } from './audio.js';
 import { LANE_TOP, LANE_BOT } from './config.js';
@@ -7,30 +7,34 @@ import { STAGE5, STAGE5_CHARS, STAGE5_TEXTURES } from './stage5-def.js';
 import { STAGE6, STAGE6_CHARS, STAGE6_TEXTURES } from './stage6-def.js';
 import './stage5.js';
 import './stage6.js';
+import { STAGE7, STAGE7_CHARS, STAGE7_TEXTURES } from './stage7-def.js';
+import './stage7.js';
+export const MAX_STAGE = 7;
 export const STAGE_COUNT = 2;
 
-/** Stages 1–6 are playable by default. ?s3=1 to ?s6=1 stay valid and change nothing; ?s6=0 hides Stage 6. */
+/** Stage 7 is opt-in pending playtest signoff. */
 export function stageEnabled(n, q) {
+  if (n === 7) return q?.get?.('s7') === '1';
   if (n === 6) return q?.get?.('s6') !== '0';
   return n === 1 || n === 2 || n === 3 || n === 4 || n === 5;
 }
 
-/** Title select offers every shipped stage (Stage 5 is the last one under ?s6=0). */
+/** Title stage limit. */
 export function maxStage(q) {
-  return stageEnabled(6, q) ? 6 : 5;
+  return stageEnabled(7, q) ? 7 : stageEnabled(6, q) ? 6 : 5;
 }
 
-/** ?stage=2 through ?stage=6 (not 6 under ?s6=0). Anything else is Stage 1. */
+/** Resolve enabled URL stage. */
 export function stageFromQuery(q) {
   const n = q && q.get ? +q.get('stage') : 0;
-  if (n > 1 && n < 7 && stageEnabled(n, q)) return n;
+  if (n > 1 && n <= MAX_STAGE && stageEnabled(n, q)) return n;
   return 1;
 }
 
 /** scene data (restart({ stage })) wins over the URL */
 export function resolveStage(data, q) {
   const n = data && data.stage;
-  if (n > 0 && n < 7 && stageEnabled(n, q)) return n;
+  if (n > 0 && n <= MAX_STAGE && stageEnabled(n, q)) return n;
   return stageFromQuery(q);
 }
 
@@ -42,6 +46,7 @@ export const STAGE_CHARS = Object.freeze({
   4: STAGE4_CHARS,
   5: STAGE5_CHARS,
   6: STAGE6_CHARS,
+  7: STAGE7_CHARS,
 });
 
 // Textures that each stage owns, plus textures shared between stages.
@@ -53,6 +58,7 @@ export const STAGE_TEXTURES = Object.freeze({
   4: STAGE4_TEXTURES,
   5: STAGE5_TEXTURES,
   6: STAGE6_TEXTURES,
+  7: STAGE7_TEXTURES,
   shared: SHARED_TEXTURES,
 });
 
@@ -240,5 +246,6 @@ export const STAGES = Object.freeze({
   4: STAGE4,
   5: STAGE5,
   6: STAGE6,
+  7: STAGE7,
 });
 

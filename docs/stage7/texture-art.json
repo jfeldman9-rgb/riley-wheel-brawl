@@ -1,0 +1,6873 @@
+{
+  "method": "RGBA base levels: all Texture.source + Texture.dataSource; renderer glTextureWrappers separately (includes render targets). No process-RSS claim.",
+  "viewport": [
+    1280,
+    720
+  ],
+  "deviceScaleFactor": 1,
+  "renderScale": 1,
+  "runs": [
+    {
+      "engine": "chromium",
+      "stage": 7,
+      "errors": [],
+      "progression": [
+        {
+          "label": "title",
+          "stage": 7,
+          "zone": -1,
+          "started": false,
+          "ended": false,
+          "clearShown": false,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 100,
+            "state": "idle",
+            "x": 180,
+            "y": 630,
+            "enemies": []
+          },
+          "heavy": [],
+          "sourceBytes": 77552116,
+          "colorBytes": 75696060,
+          "glBytes": 81238516
+        },
+        {
+          "label": "0/0/false/false",
+          "stage": 7,
+          "zone": 0,
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 100,
+            "state": "run",
+            "x": 190.9090149298305,
+            "y": 598.7499999999994,
+            "enemies": [
+              {
+                "type": "grunt",
+                "hp": 32,
+                "state": "down",
+                "x": 40,
+                "y": 633.3324316977514
+              },
+              {
+                "type": "grunt",
+                "hp": 42,
+                "state": "approach",
+                "x": 997.033333333349,
+                "y": 619.1149665140503
+              }
+            ]
+          },
+          "heavy": [],
+          "sourceBytes": 78079076,
+          "colorBytes": 76223020,
+          "glBytes": 81765476
+        },
+        {
+          "label": "1/0/false/false",
+          "stage": 7,
+          "zone": 1,
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 70,
+            "state": "run",
+            "x": 2024.583333333336,
+            "y": 623.7499999999999,
+            "enemies": [
+              {
+                "type": "dancer",
+                "hp": 60,
+                "state": "walk",
+                "x": 2433.5,
+                "y": 618.6666524700487
+              },
+              {
+                "type": "veiled",
+                "hp": 40,
+                "state": "idle",
+                "x": 1170,
+                "y": 624.1547828580375
+              }
+            ]
+          },
+          "heavy": [],
+          "sourceBytes": 77882648,
+          "colorBytes": 76026592,
+          "glBytes": 81569048
+        },
+        {
+          "label": "2/0/false/false",
+          "stage": 7,
+          "zone": 2,
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 100,
+            "state": "walk",
+            "x": 2851.3721612887584,
+            "y": 604.9999999999995,
+            "enemies": [
+              {
+                "type": "grunt",
+                "hp": 42,
+                "state": "attack",
+                "x": 2730.826666666684,
+                "y": 648.3474196431996
+              },
+              {
+                "type": "dancer",
+                "hp": 60,
+                "state": "walk",
+                "x": 3326.5,
+                "y": 604.1666666666663
+              }
+            ]
+          },
+          "heavy": [],
+          "sourceBytes": 77770328,
+          "colorBytes": 75914272,
+          "glBytes": 81456728
+        },
+        {
+          "label": "3/1/false/false",
+          "stage": 7,
+          "zone": 3,
+          "phase": 1,
+          "state": "walk",
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 90,
+            "state": "squat",
+            "x": 5156.583333254382,
+            "y": 644.5833333333336,
+            "bossHp": 589,
+            "enemies": [
+              {
+                "type": "asmodean",
+                "hp": 589,
+                "state": "walk",
+                "x": 5010.533333333343,
+                "y": 635.3638390774788
+              }
+            ]
+          },
+          "heavy": [],
+          "sourceBytes": 77290888,
+          "colorBytes": 75434832,
+          "glBytes": 80977288
+        },
+        {
+          "label": "3/2/false/false",
+          "stage": 7,
+          "zone": 3,
+          "phase": 2,
+          "state": "walk",
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 90,
+            "state": "walk",
+            "x": 5002.8000000000275,
+            "y": 624,
+            "bossHp": 385,
+            "enemies": [
+              {
+                "type": "asmodean",
+                "hp": 385,
+                "state": "walk",
+                "x": 5064.8000000000275,
+                "y": 634.0833333333329
+              },
+              {
+                "type": "dancer",
+                "hp": 30,
+                "state": "walk",
+                "x": 4239.600000000001,
+                "y": 628.5833333333329
+              },
+              {
+                "type": "grunt",
+                "hp": 42,
+                "state": "attack",
+                "x": 5159.999999999997,
+                "y": 660.9736198589532
+              }
+            ]
+          },
+          "heavy": [],
+          "sourceBytes": 77216296,
+          "colorBytes": 75360240,
+          "glBytes": 80902696
+        },
+        {
+          "label": "3/3/false/false",
+          "stage": 7,
+          "zone": 3,
+          "phase": 3,
+          "state": "channel",
+          "started": true,
+          "ended": false,
+          "clearShown": false,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 100,
+            "state": "cast",
+            "x": 4484.882420693638,
+            "y": 665.0416666666672,
+            "bossHp": 198,
+            "enemies": [
+              {
+                "type": "asmodean",
+                "hp": 198,
+                "state": "channel",
+                "x": 4992.2000000000035,
+                "y": 674.2083333333342
+              },
+              {
+                "type": "veiled",
+                "hp": 14,
+                "state": "attack",
+                "x": 4903.999999999997,
+                "y": 665.0416666666672
+              },
+              {
+                "type": "dancer",
+                "hp": 30,
+                "state": "walk",
+                "x": 4222.5,
+                "y": 665.0416666666672
+              }
+            ]
+          },
+          "heavy": [],
+          "sourceBytes": 77267848,
+          "colorBytes": 75411792,
+          "glBytes": 80954248
+        },
+        {
+          "label": "3/3/false/true",
+          "stage": 7,
+          "zone": 3,
+          "phase": 3,
+          "state": "bound",
+          "started": true,
+          "ended": true,
+          "clearShown": false,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 100,
+            "state": "idle",
+            "x": 5159.999999999997,
+            "y": 631.7083333333331,
+            "bossHp": 0,
+            "enemies": [
+              {
+                "type": "asmodean",
+                "hp": 0,
+                "state": "bound",
+                "x": 4649.7333333332235,
+                "y": 612.5416666666664
+              }
+            ]
+          },
+          "heavy": [],
+          "sourceBytes": 77523432,
+          "colorBytes": 75667376,
+          "glBytes": 81209832
+        },
+        {
+          "label": "3/3/false/true",
+          "stage": 7,
+          "zone": 3,
+          "phase": 3,
+          "state": "bound",
+          "started": true,
+          "ended": true,
+          "clearShown": true,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 100,
+            "state": "idle",
+            "x": 5159.999999999997,
+            "y": 631.7083333333331,
+            "bossHp": 0,
+            "enemies": [
+              {
+                "type": "asmodean",
+                "hp": 0,
+                "state": "bound",
+                "x": 4649.7333333332235,
+                "y": 612.5416666666664
+              }
+            ]
+          },
+          "heavy": [],
+          "sourceBytes": 77523432,
+          "colorBytes": 75667376,
+          "glBytes": 81209832
+        },
+        {
+          "label": "final",
+          "stage": 7,
+          "zone": 3,
+          "phase": 3,
+          "state": "bound",
+          "started": true,
+          "ended": true,
+          "clearShown": true,
+          "rs": 1,
+          "rendererConfig": {
+            "mipmapFilter": "",
+            "mipmapRegeneration": false
+          },
+          "diagnostics": {
+            "gamePaused": false,
+            "paused": false,
+            "pauseReasons": [],
+            "hp": 100,
+            "state": "idle",
+            "x": 5159.999999999997,
+            "y": 631.7083333333331,
+            "bossHp": 0,
+            "enemies": [
+              {
+                "type": "asmodean",
+                "hp": 0,
+                "state": "bound",
+                "x": 4649.7333333332235,
+                "y": 612.5416666666664
+              }
+            ]
+          },
+          "heavy": [],
+          "sourceBytes": 77523432,
+          "colorBytes": 75667376,
+          "glBytes": 81209832
+        }
+      ],
+      "peak": {
+        "label": "0/0/false/false",
+        "stage": 7,
+        "zone": 0,
+        "started": true,
+        "ended": false,
+        "clearShown": false,
+        "rs": 1,
+        "rendererConfig": {
+          "mipmapFilter": "",
+          "mipmapRegeneration": false
+        },
+        "diagnostics": {
+          "gamePaused": false,
+          "paused": false,
+          "pauseReasons": [],
+          "hp": 100,
+          "state": "run",
+          "x": 190.9090149298305,
+          "y": 598.7499999999994,
+          "enemies": [
+            {
+              "type": "grunt",
+              "hp": 32,
+              "state": "down",
+              "x": 40,
+              "y": 633.3324316977514
+            },
+            {
+              "type": "grunt",
+              "hp": 42,
+              "state": "approach",
+              "x": 997.033333333349,
+              "y": 619.1149665140503
+            }
+          ]
+        },
+        "heavy": [],
+        "sourceBytes": 78079076,
+        "colorBytes": 76223020,
+        "glBytes": 81765476,
+        "gl": [
+          {
+            "width": 1,
+            "height": 1,
+            "bytes": 4,
+            "minFilter": 9728,
+            "magFilter": 9728,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1884,
+            "height": 328,
+            "bytes": 2471808,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3792,
+            "height": 852,
+            "bytes": 12923136,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 192,
+            "bytes": 393216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 384,
+            "height": 320,
+            "bytes": 491520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1120,
+            "height": 257,
+            "bytes": 1151360,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4076,
+            "height": 1212,
+            "bytes": 19760448,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4080,
+            "height": 1936,
+            "bytes": 31595520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 16,
+            "height": 16,
+            "bytes": 1024,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 40,
+            "height": 6,
+            "bytes": 960,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 14,
+            "height": 5,
+            "bytes": 280,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 96,
+            "bytes": 98304,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 128,
+            "bytes": 49152,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 8,
+            "bytes": 1024,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 24,
+            "height": 24,
+            "bytes": 2304,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 8,
+            "bytes": 2048,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 256,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 24,
+            "bytes": 12288,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 8,
+            "height": 64,
+            "bytes": 2048,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 47,
+            "height": 21,
+            "bytes": 3948,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 17,
+            "height": 16,
+            "bytes": 1088,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 102,
+            "height": 21,
+            "bytes": 8568,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 7,
+            "height": 60,
+            "bytes": 1680,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 88,
+            "height": 16,
+            "bytes": 5632,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 143,
+            "height": 16,
+            "bytes": 9152,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 153,
+            "height": 16,
+            "bytes": 9792,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 16,
+            "bytes": 2112,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 73,
+            "height": 16,
+            "bytes": 4672,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 58,
+            "height": 16,
+            "bytes": 3712,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 235,
+            "height": 30,
+            "bytes": 28200,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 69,
+            "height": 38,
+            "bytes": 10488,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 286,
+            "height": 26,
+            "bytes": 29744,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 370,
+            "height": 34,
+            "bytes": 50320,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 94,
+            "height": 16,
+            "bytes": 6016,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 548,
+            "height": 104,
+            "bytes": 227968,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 420,
+            "height": 58,
+            "bytes": 97440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 215,
+            "height": 21,
+            "bytes": 18060,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 456,
+            "height": 42,
+            "bytes": 76608,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 46,
+            "bytes": 6072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 46,
+            "bytes": 6072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 233,
+            "height": 26,
+            "bytes": 24232,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1122,
+            "height": 40,
+            "bytes": 179520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1280,
+            "height": 720,
+            "bytes": 3686400,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 64,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          }
+        ],
+        "entries": [
+          {
+            "key": "__NORMAL",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1,
+                "height": 1,
+                "bytes": 4,
+                "canvas": false,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "__DEFAULT",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAABVJREFUeF7NwIEAAAAAgKD9qdeocAMAoAABm3DkcAAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__MISSING",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJ9JREFUeNq01ssOwyAMRFG46v//Mt1ESmgh+DFmE2GPOBARKb2NVjo+17PXLD8a1+pl5+A+wSgFygymWYHBb0FtsKhJDdZlncG2IzJ4ayoMDv20wTmSMzClEgbWYNTAkQ0Z+OJ+A/eWnAaR9+oxCF4Os0H8htsMUp+pwcgBBiMNnAwF8GqIgL2hAzaGFFgZauDPKABmowZ4GL369/0rwACp2yA/ttmvsQAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__WHITE",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABdJREFUeNpi/P//PwMMMDEgAdwcgAADAJZuAwXJYZOzAAAAAElFTkSuQmCC"
+              }
+            ]
+          },
+          {
+            "key": "bossPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c83e3ba3-695f-4951-82cd-45ed44e1a51c"
+              }
+            ]
+          },
+          {
+            "key": "portrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4976afaf-6b9e-407d-9ed4-4b332ef09595"
+              }
+            ]
+          },
+          {
+            "key": "loialPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b92e769d-aa4c-443c-af4c-a02d3d8dd906"
+              }
+            ]
+          },
+          {
+            "key": "byarPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/7a7e81ce-f0f1-42cc-ad19-a190c7b84551"
+              }
+            ]
+          },
+          {
+            "key": "riley-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/31feb9f0-9941-4244-a881-51a461d57967"
+              }
+            ]
+          },
+          {
+            "key": "riley-1",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1884,
+                "height": 328,
+                "bytes": 2471808,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/30204065-d048-428c-93e3-8d456f15f787"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/d86ac4a9-6c3a-4449-bb8c-8dc6b2921475"
+              }
+            ]
+          },
+          {
+            "key": "riley-1_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/e1a737a2-0d4f-49aa-990e-10253ae19a3b"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/292745a5-dc99-4673-ae0a-dd09973432d6"
+              }
+            ]
+          },
+          {
+            "key": "spear-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3792,
+                "height": 852,
+                "bytes": 12923136,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/6f58ff0f-4d83-42b2-993d-7f96fa26626c"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4885b08b-81ed-4e18-b3c6-37fa7af69e17"
+              }
+            ]
+          },
+          {
+            "key": "spear-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/18a0f78d-daf4-4ab2-8c93-0f3aabc7e870"
+              }
+            ]
+          },
+          {
+            "key": "pu_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/7d0dbf14-a36b-4787-a8b2-36e068d8e8f9"
+              }
+            ]
+          },
+          {
+            "key": "pu_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/556e26b4-e388-41a8-bf29-b16046036bdc"
+              }
+            ]
+          },
+          {
+            "key": "pu_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/8ac5dac1-2204-48b7-9e81-4e095bda3961"
+              }
+            ]
+          },
+          {
+            "key": "pu_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/cebbf4a3-afa5-48b0-8dce-71589596d2fd"
+              }
+            ]
+          },
+          {
+            "key": "pu_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/76be6d48-1411-4cb0-8345-22554f318419"
+              }
+            ]
+          },
+          {
+            "key": "hud_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/1b3d9dbe-cc42-4d90-a067-8642a6225ced"
+              }
+            ]
+          },
+          {
+            "key": "hud_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/7a4928ce-6ec9-4f4c-9410-a42c70358820"
+              }
+            ]
+          },
+          {
+            "key": "hud_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/1c26908a-30d1-4a1f-92f6-82391e3f8c03"
+              }
+            ]
+          },
+          {
+            "key": "hud_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/8b9d775e-49a7-408b-91a1-356bfdbf69e9"
+              }
+            ]
+          },
+          {
+            "key": "hud_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/53b72cec-8e5d-4ac1-90ca-7c04213442ca"
+              }
+            ]
+          },
+          {
+            "key": "fx_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 192,
+                "bytes": 393216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/e527631c-5bc8-4928-b1e1-2add79532344"
+              }
+            ]
+          },
+          {
+            "key": "fx_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 384,
+                "height": 320,
+                "bytes": 491520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b57f7afd-037a-4677-92bc-8038fd20f378"
+              }
+            ]
+          },
+          {
+            "key": "fx_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/6411cb7c-82a6-4481-82a9-cdec21a3b70c"
+              }
+            ]
+          },
+          {
+            "key": "s6fade",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1120,
+                "height": 257,
+                "bytes": 1151360,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/0f149362-9bbd-493e-95e7-125c8ced6cbf"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4076,
+                "height": 1212,
+                "bytes": 19760448,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c50439f0-c6cc-4ae3-9ebb-fa6841354ee6"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b2100ed6-9ac7-40ba-a9a7-2d7a3c5d445c"
+              }
+            ]
+          },
+          {
+            "key": "riley-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4080,
+                "height": 1936,
+                "bytes": 31595520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/f37299b2-f0dd-4b76-9add-d59cadc978f8"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/18cfc59d-b089-498c-8195-82e04618d8c5"
+              }
+            ]
+          },
+          {
+            "key": "flake",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 16,
+                "height": 16,
+                "bytes": 1024,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "glow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "core",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ember",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "shadow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dust",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "smoke",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "streak",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 40,
+                "height": 6,
+                "bytes": 960,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dot",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "chip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 14,
+                "height": 5,
+                "bytes": 280,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "px",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7far",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7mid",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7mid2",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7floor",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 96,
+                "bytes": 98304,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7dancer",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7veiled",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "moiPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "lanPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "asmoPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7note",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7portal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 128,
+                "bytes": 49152,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7crate",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7planks",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 8,
+                "bytes": 1024,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7ribbon",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 24,
+                "height": 24,
+                "bytes": 2304,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7arrow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 8,
+                "bytes": 2048,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7veil",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 256,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7streak",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 24,
+                "bytes": 12288,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "beam",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 8,
+                "height": 64,
+                "bytes": 2048,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "9663274c-a115-43c4-9a42-1020ae9ef265",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 47,
+                "height": 21,
+                "bytes": 3948,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "64774f34-68bc-45d7-ac91-23df60b3d5f4",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 17,
+                "height": 16,
+                "bytes": 1088,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "b53e5dcd-8951-4120-b19d-ba9d778f6fc9",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 102,
+                "height": 21,
+                "bytes": 8568,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "c12e8095-6085-4f1d-a9cf-f59327f4dd51",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 7,
+                "height": 60,
+                "bytes": 1680,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "c6c3d31e-6ff3-4214-b220-8c2c827e7ef4",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 88,
+                "height": 16,
+                "bytes": 5632,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "918de8e0-743f-4e2e-9465-28927a892e5e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 143,
+                "height": 16,
+                "bytes": 9152,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "c98f1793-625d-4687-8d6d-5cf7c83ca60e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ebfa5ed7-9922-4b91-8d77-a961bf35bdfb",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "442384d5-87ee-428d-a0fb-be2eb9b959ee",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 153,
+                "height": 16,
+                "bytes": 9792,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "2740dcaf-fe74-4cce-9b91-93e69ed1e3a0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 16,
+                "bytes": 2112,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "d10fc00c-6aa5-4caf-a88d-2bd63de3d30e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 73,
+                "height": 16,
+                "bytes": 4672,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "25d35aa4-400a-4c80-9dff-07dddd5e0bed",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 58,
+                "height": 16,
+                "bytes": 3712,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dd566b78-514d-4835-970e-5cf748760db7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 235,
+                "height": 30,
+                "bytes": 28200,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ada81a5b-b2c1-4704-8db9-bb4e751bfc18",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 69,
+                "height": 38,
+                "bytes": 10488,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bdb84a6c-eb07-402a-94c8-8eeb2e5d554f",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 286,
+                "height": 26,
+                "bytes": 29744,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "30d6f577-89b2-4071-96e1-d08cf8dd7954",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 370,
+                "height": 34,
+                "bytes": 50320,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "56c25ff3-5253-4443-9e78-1210553e7cdb",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 94,
+                "height": 16,
+                "bytes": 6016,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "58b2eb68-fd08-4cec-867c-dc0ce6c5778f",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 548,
+                "height": 104,
+                "bytes": 227968,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "2526904c-d901-4a7e-9673-e41dd4a9dfbe",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 420,
+                "height": 58,
+                "bytes": 97440,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "051f408f-9fa8-451a-9438-4737fb8b80ef",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 215,
+                "height": 21,
+                "bytes": 18060,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "8d60caf6-9958-4f20-9f7b-51a58c33eb34",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 456,
+                "height": 42,
+                "bytes": 76608,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "5c5ff895-18fa-4a68-a812-d0a11f433f99",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 46,
+                "bytes": 6072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "cb599d72-dad0-4c35-9357-f4b09591ebc7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 46,
+                "bytes": 6072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "5fba763c-b05b-45bd-a45c-be0c87889857",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 233,
+                "height": 26,
+                "bytes": 24232,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "b649db21-3022-45d7-8472-ed6ca9160404",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1122,
+                "height": 40,
+                "bytes": 179520,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7moir",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7lan",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7earth",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 64,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7shield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          }
+        ]
+      },
+      "glPeak": {
+        "label": "0/0/false/false",
+        "stage": 7,
+        "zone": 0,
+        "started": true,
+        "ended": false,
+        "clearShown": false,
+        "rs": 1,
+        "rendererConfig": {
+          "mipmapFilter": "",
+          "mipmapRegeneration": false
+        },
+        "diagnostics": {
+          "gamePaused": false,
+          "paused": false,
+          "pauseReasons": [],
+          "hp": 100,
+          "state": "run",
+          "x": 190.9090149298305,
+          "y": 598.7499999999994,
+          "enemies": [
+            {
+              "type": "grunt",
+              "hp": 32,
+              "state": "down",
+              "x": 40,
+              "y": 633.3324316977514
+            },
+            {
+              "type": "grunt",
+              "hp": 42,
+              "state": "approach",
+              "x": 997.033333333349,
+              "y": 619.1149665140503
+            }
+          ]
+        },
+        "heavy": [],
+        "sourceBytes": 78079076,
+        "colorBytes": 76223020,
+        "glBytes": 81765476,
+        "gl": [
+          {
+            "width": 1,
+            "height": 1,
+            "bytes": 4,
+            "minFilter": 9728,
+            "magFilter": 9728,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1884,
+            "height": 328,
+            "bytes": 2471808,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3792,
+            "height": 852,
+            "bytes": 12923136,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 192,
+            "bytes": 393216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 384,
+            "height": 320,
+            "bytes": 491520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1120,
+            "height": 257,
+            "bytes": 1151360,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4076,
+            "height": 1212,
+            "bytes": 19760448,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4080,
+            "height": 1936,
+            "bytes": 31595520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 16,
+            "height": 16,
+            "bytes": 1024,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 40,
+            "height": 6,
+            "bytes": 960,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 14,
+            "height": 5,
+            "bytes": 280,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 96,
+            "bytes": 98304,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 128,
+            "bytes": 49152,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 8,
+            "bytes": 1024,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 24,
+            "height": 24,
+            "bytes": 2304,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 8,
+            "bytes": 2048,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 256,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 24,
+            "bytes": 12288,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 8,
+            "height": 64,
+            "bytes": 2048,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 47,
+            "height": 21,
+            "bytes": 3948,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 17,
+            "height": 16,
+            "bytes": 1088,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 102,
+            "height": 21,
+            "bytes": 8568,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 7,
+            "height": 60,
+            "bytes": 1680,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 88,
+            "height": 16,
+            "bytes": 5632,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 143,
+            "height": 16,
+            "bytes": 9152,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 153,
+            "height": 16,
+            "bytes": 9792,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 16,
+            "bytes": 2112,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 73,
+            "height": 16,
+            "bytes": 4672,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 58,
+            "height": 16,
+            "bytes": 3712,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 235,
+            "height": 30,
+            "bytes": 28200,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 69,
+            "height": 38,
+            "bytes": 10488,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 286,
+            "height": 26,
+            "bytes": 29744,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 370,
+            "height": 34,
+            "bytes": 50320,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 94,
+            "height": 16,
+            "bytes": 6016,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 548,
+            "height": 104,
+            "bytes": 227968,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 420,
+            "height": 58,
+            "bytes": 97440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 215,
+            "height": 21,
+            "bytes": 18060,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 456,
+            "height": 42,
+            "bytes": 76608,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 46,
+            "bytes": 6072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 33,
+            "height": 46,
+            "bytes": 6072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 233,
+            "height": 26,
+            "bytes": 24232,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1122,
+            "height": 40,
+            "bytes": 179520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1280,
+            "height": 720,
+            "bytes": 3686400,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 64,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          }
+        ],
+        "entries": [
+          {
+            "key": "__NORMAL",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1,
+                "height": 1,
+                "bytes": 4,
+                "canvas": false,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "__DEFAULT",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAABVJREFUeF7NwIEAAAAAgKD9qdeocAMAoAABm3DkcAAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__MISSING",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJ9JREFUeNq01ssOwyAMRFG46v//Mt1ESmgh+DFmE2GPOBARKb2NVjo+17PXLD8a1+pl5+A+wSgFygymWYHBb0FtsKhJDdZlncG2IzJ4ayoMDv20wTmSMzClEgbWYNTAkQ0Z+OJ+A/eWnAaR9+oxCF4Os0H8htsMUp+pwcgBBiMNnAwF8GqIgL2hAzaGFFgZauDPKABmowZ4GL369/0rwACp2yA/ttmvsQAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__WHITE",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABdJREFUeNpi/P//PwMMMDEgAdwcgAADAJZuAwXJYZOzAAAAAElFTkSuQmCC"
+              }
+            ]
+          },
+          {
+            "key": "bossPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c83e3ba3-695f-4951-82cd-45ed44e1a51c"
+              }
+            ]
+          },
+          {
+            "key": "portrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4976afaf-6b9e-407d-9ed4-4b332ef09595"
+              }
+            ]
+          },
+          {
+            "key": "loialPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b92e769d-aa4c-443c-af4c-a02d3d8dd906"
+              }
+            ]
+          },
+          {
+            "key": "byarPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/7a7e81ce-f0f1-42cc-ad19-a190c7b84551"
+              }
+            ]
+          },
+          {
+            "key": "riley-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/31feb9f0-9941-4244-a881-51a461d57967"
+              }
+            ]
+          },
+          {
+            "key": "riley-1",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1884,
+                "height": 328,
+                "bytes": 2471808,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/30204065-d048-428c-93e3-8d456f15f787"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/d86ac4a9-6c3a-4449-bb8c-8dc6b2921475"
+              }
+            ]
+          },
+          {
+            "key": "riley-1_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/e1a737a2-0d4f-49aa-990e-10253ae19a3b"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/292745a5-dc99-4673-ae0a-dd09973432d6"
+              }
+            ]
+          },
+          {
+            "key": "spear-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3792,
+                "height": 852,
+                "bytes": 12923136,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/6f58ff0f-4d83-42b2-993d-7f96fa26626c"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4885b08b-81ed-4e18-b3c6-37fa7af69e17"
+              }
+            ]
+          },
+          {
+            "key": "spear-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/18a0f78d-daf4-4ab2-8c93-0f3aabc7e870"
+              }
+            ]
+          },
+          {
+            "key": "pu_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/7d0dbf14-a36b-4787-a8b2-36e068d8e8f9"
+              }
+            ]
+          },
+          {
+            "key": "pu_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/556e26b4-e388-41a8-bf29-b16046036bdc"
+              }
+            ]
+          },
+          {
+            "key": "pu_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/8ac5dac1-2204-48b7-9e81-4e095bda3961"
+              }
+            ]
+          },
+          {
+            "key": "pu_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/cebbf4a3-afa5-48b0-8dce-71589596d2fd"
+              }
+            ]
+          },
+          {
+            "key": "pu_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/76be6d48-1411-4cb0-8345-22554f318419"
+              }
+            ]
+          },
+          {
+            "key": "hud_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/1b3d9dbe-cc42-4d90-a067-8642a6225ced"
+              }
+            ]
+          },
+          {
+            "key": "hud_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/7a4928ce-6ec9-4f4c-9410-a42c70358820"
+              }
+            ]
+          },
+          {
+            "key": "hud_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/1c26908a-30d1-4a1f-92f6-82391e3f8c03"
+              }
+            ]
+          },
+          {
+            "key": "hud_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/8b9d775e-49a7-408b-91a1-356bfdbf69e9"
+              }
+            ]
+          },
+          {
+            "key": "hud_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/53b72cec-8e5d-4ac1-90ca-7c04213442ca"
+              }
+            ]
+          },
+          {
+            "key": "fx_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 192,
+                "bytes": 393216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/e527631c-5bc8-4928-b1e1-2add79532344"
+              }
+            ]
+          },
+          {
+            "key": "fx_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 384,
+                "height": 320,
+                "bytes": 491520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b57f7afd-037a-4677-92bc-8038fd20f378"
+              }
+            ]
+          },
+          {
+            "key": "fx_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/6411cb7c-82a6-4481-82a9-cdec21a3b70c"
+              }
+            ]
+          },
+          {
+            "key": "s6fade",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1120,
+                "height": 257,
+                "bytes": 1151360,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/0f149362-9bbd-493e-95e7-125c8ced6cbf"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4076,
+                "height": 1212,
+                "bytes": 19760448,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c50439f0-c6cc-4ae3-9ebb-fa6841354ee6"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b2100ed6-9ac7-40ba-a9a7-2d7a3c5d445c"
+              }
+            ]
+          },
+          {
+            "key": "riley-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4080,
+                "height": 1936,
+                "bytes": 31595520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/f37299b2-f0dd-4b76-9add-d59cadc978f8"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/18cfc59d-b089-498c-8195-82e04618d8c5"
+              }
+            ]
+          },
+          {
+            "key": "flake",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 16,
+                "height": 16,
+                "bytes": 1024,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "glow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "core",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ember",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "shadow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dust",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "smoke",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "streak",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 40,
+                "height": 6,
+                "bytes": 960,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dot",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "chip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 14,
+                "height": 5,
+                "bytes": 280,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "px",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7far",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7mid",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7mid2",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7floor",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 96,
+                "bytes": 98304,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7dancer",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7veiled",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "moiPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "lanPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "asmoPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7note",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7portal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 128,
+                "bytes": 49152,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7crate",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7planks",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 8,
+                "bytes": 1024,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7ribbon",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 24,
+                "height": 24,
+                "bytes": 2304,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7arrow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 8,
+                "bytes": 2048,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7veil",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 256,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7streak",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 24,
+                "bytes": 12288,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "beam",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 8,
+                "height": 64,
+                "bytes": 2048,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "9663274c-a115-43c4-9a42-1020ae9ef265",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 47,
+                "height": 21,
+                "bytes": 3948,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "64774f34-68bc-45d7-ac91-23df60b3d5f4",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 17,
+                "height": 16,
+                "bytes": 1088,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "b53e5dcd-8951-4120-b19d-ba9d778f6fc9",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 102,
+                "height": 21,
+                "bytes": 8568,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "c12e8095-6085-4f1d-a9cf-f59327f4dd51",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 7,
+                "height": 60,
+                "bytes": 1680,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "c6c3d31e-6ff3-4214-b220-8c2c827e7ef4",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 88,
+                "height": 16,
+                "bytes": 5632,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "918de8e0-743f-4e2e-9465-28927a892e5e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 143,
+                "height": 16,
+                "bytes": 9152,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "c98f1793-625d-4687-8d6d-5cf7c83ca60e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ebfa5ed7-9922-4b91-8d77-a961bf35bdfb",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "442384d5-87ee-428d-a0fb-be2eb9b959ee",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 153,
+                "height": 16,
+                "bytes": 9792,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "2740dcaf-fe74-4cce-9b91-93e69ed1e3a0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 16,
+                "bytes": 2112,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "d10fc00c-6aa5-4caf-a88d-2bd63de3d30e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 73,
+                "height": 16,
+                "bytes": 4672,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "25d35aa4-400a-4c80-9dff-07dddd5e0bed",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 58,
+                "height": 16,
+                "bytes": 3712,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dd566b78-514d-4835-970e-5cf748760db7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 235,
+                "height": 30,
+                "bytes": 28200,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ada81a5b-b2c1-4704-8db9-bb4e751bfc18",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 69,
+                "height": 38,
+                "bytes": 10488,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bdb84a6c-eb07-402a-94c8-8eeb2e5d554f",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 286,
+                "height": 26,
+                "bytes": 29744,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "30d6f577-89b2-4071-96e1-d08cf8dd7954",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 370,
+                "height": 34,
+                "bytes": 50320,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "56c25ff3-5253-4443-9e78-1210553e7cdb",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 94,
+                "height": 16,
+                "bytes": 6016,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "58b2eb68-fd08-4cec-867c-dc0ce6c5778f",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 548,
+                "height": 104,
+                "bytes": 227968,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "2526904c-d901-4a7e-9673-e41dd4a9dfbe",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 420,
+                "height": 58,
+                "bytes": 97440,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "051f408f-9fa8-451a-9438-4737fb8b80ef",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 215,
+                "height": 21,
+                "bytes": 18060,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "8d60caf6-9958-4f20-9f7b-51a58c33eb34",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 456,
+                "height": 42,
+                "bytes": 76608,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "5c5ff895-18fa-4a68-a812-d0a11f433f99",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 46,
+                "bytes": 6072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "cb599d72-dad0-4c35-9357-f4b09591ebc7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 33,
+                "height": 46,
+                "bytes": 6072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "5fba763c-b05b-45bd-a45c-be0c87889857",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 233,
+                "height": 26,
+                "bytes": 24232,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "b649db21-3022-45d7-8472-ed6ca9160404",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1122,
+                "height": 40,
+                "bytes": 179520,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7moir",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7lan",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7earth",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 64,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7shield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          }
+        ]
+      },
+      "bossPeak": {
+        "label": "3/3/false/true",
+        "stage": 7,
+        "zone": 3,
+        "phase": 3,
+        "state": "bound",
+        "started": true,
+        "ended": true,
+        "clearShown": false,
+        "rs": 1,
+        "rendererConfig": {
+          "mipmapFilter": "",
+          "mipmapRegeneration": false
+        },
+        "diagnostics": {
+          "gamePaused": false,
+          "paused": false,
+          "pauseReasons": [],
+          "hp": 100,
+          "state": "idle",
+          "x": 5159.999999999997,
+          "y": 631.7083333333331,
+          "bossHp": 0,
+          "enemies": [
+            {
+              "type": "asmodean",
+              "hp": 0,
+              "state": "bound",
+              "x": 4649.7333333332235,
+              "y": 612.5416666666664
+            }
+          ]
+        },
+        "heavy": [],
+        "sourceBytes": 77523432,
+        "colorBytes": 75667376,
+        "glBytes": 81209832,
+        "gl": [
+          {
+            "width": 1,
+            "height": 1,
+            "bytes": 4,
+            "minFilter": 9728,
+            "magFilter": 9728,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 256,
+            "bytes": 262144,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1884,
+            "height": 328,
+            "bytes": 2471808,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 314,
+            "height": 55,
+            "bytes": 69080,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3792,
+            "height": 852,
+            "bytes": 12923136,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 632,
+            "height": 142,
+            "bytes": 358976,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 96,
+            "height": 96,
+            "bytes": 36864,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 192,
+            "bytes": 393216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 384,
+            "height": 320,
+            "bytes": 491520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1120,
+            "height": 257,
+            "bytes": 1151360,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4076,
+            "height": 1212,
+            "bytes": 19760448,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 202,
+            "bytes": 549440,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4080,
+            "height": 1936,
+            "bytes": 31595520,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 680,
+            "height": 323,
+            "bytes": 878560,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 16,
+            "height": 16,
+            "bytes": 1024,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 32,
+            "bytes": 4096,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 40,
+            "height": 6,
+            "bytes": 960,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 12,
+            "height": 12,
+            "bytes": 576,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 14,
+            "height": 5,
+            "bytes": 280,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 4,
+            "height": 4,
+            "bytes": 64,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 48,
+            "height": 48,
+            "bytes": 9216,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 32,
+            "height": 8,
+            "bytes": 1024,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 24,
+            "height": 24,
+            "bytes": 2304,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 8,
+            "bytes": 2048,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 256,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 24,
+            "bytes": 12288,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 8,
+            "height": 64,
+            "bytes": 2048,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 47,
+            "height": 21,
+            "bytes": 3948,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 17,
+            "height": 16,
+            "bytes": 1088,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 102,
+            "height": 21,
+            "bytes": 8568,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 143,
+            "height": 60,
+            "bytes": 34320,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 88,
+            "height": 16,
+            "bytes": 5632,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 123,
+            "height": 16,
+            "bytes": 7872,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 103,
+            "height": 16,
+            "bytes": 6592,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 23,
+            "height": 16,
+            "bytes": 1472,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 153,
+            "height": 16,
+            "bytes": 9792,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 23,
+            "height": 16,
+            "bytes": 1472,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 3,
+            "height": 16,
+            "bytes": 192,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 58,
+            "height": 16,
+            "bytes": 3712,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 226,
+            "height": 30,
+            "bytes": 27120,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 69,
+            "height": 38,
+            "bytes": 10488,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 819,
+            "height": 26,
+            "bytes": 85176,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 384,
+            "height": 34,
+            "bytes": 52224,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 94,
+            "height": 16,
+            "bytes": 6016,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 548,
+            "height": 104,
+            "bytes": 227968,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 1280,
+            "height": 720,
+            "bytes": 3686400,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 64,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 128,
+            "height": 128,
+            "bytes": 65536,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 144,
+            "height": 36,
+            "bytes": 20736,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 64,
+            "bytes": 16384,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 640,
+            "height": 280,
+            "bytes": 716800,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 256,
+            "height": 96,
+            "bytes": 98304,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 512,
+            "height": 64,
+            "bytes": 131072,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 64,
+            "height": 224,
+            "bytes": 57344,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 101,
+            "height": 16,
+            "bytes": 6464,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 494,
+            "height": 54,
+            "bytes": 106704,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 329,
+            "height": 100,
+            "bytes": 131600,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 494,
+            "height": 19,
+            "bytes": 37544,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          },
+          {
+            "width": 317,
+            "height": 16,
+            "bytes": 20288,
+            "minFilter": 9729,
+            "magFilter": 9729,
+            "format": 6408
+          }
+        ],
+        "entries": [
+          {
+            "key": "__NORMAL",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1,
+                "height": 1,
+                "bytes": 4,
+                "canvas": false,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "__DEFAULT",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAAA1BMVEX///+nxBvIAAAAAXRSTlMAQObYZgAAABVJREFUeF7NwIEAAAAAgKD9qdeocAMAoAABm3DkcAAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__MISSING",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJ9JREFUeNq01ssOwyAMRFG46v//Mt1ESmgh+DFmE2GPOBARKb2NVjo+17PXLD8a1+pl5+A+wSgFygymWYHBb0FtsKhJDdZlncG2IzJ4ayoMDv20wTmSMzClEgbWYNTAkQ0Z+OJ+A/eWnAaR9+oxCF4Os0H8htsMUp+pwcgBBiMNnAwF8GqIgL2hAzaGFFgZauDPKABmowZ4GL369/0rwACp2yA/ttmvsQAAAABJRU5ErkJggg=="
+              }
+            ]
+          },
+          {
+            "key": "__WHITE",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": false,
+                "gpu": true,
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABdJREFUeNpi/P//PwMMMDEgAdwcgAADAJZuAwXJYZOzAAAAAElFTkSuQmCC"
+              }
+            ]
+          },
+          {
+            "key": "bossPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c83e3ba3-695f-4951-82cd-45ed44e1a51c"
+              }
+            ]
+          },
+          {
+            "key": "portrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4976afaf-6b9e-407d-9ed4-4b332ef09595"
+              }
+            ]
+          },
+          {
+            "key": "loialPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b92e769d-aa4c-443c-af4c-a02d3d8dd906"
+              }
+            ]
+          },
+          {
+            "key": "byarPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 256,
+                "bytes": 262144,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/7a7e81ce-f0f1-42cc-ad19-a190c7b84551"
+              }
+            ]
+          },
+          {
+            "key": "riley-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/31feb9f0-9941-4244-a881-51a461d57967"
+              }
+            ]
+          },
+          {
+            "key": "riley-1",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1884,
+                "height": 328,
+                "bytes": 2471808,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/30204065-d048-428c-93e3-8d456f15f787"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/d86ac4a9-6c3a-4449-bb8c-8dc6b2921475"
+              }
+            ]
+          },
+          {
+            "key": "riley-1_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 314,
+                "height": 55,
+                "bytes": 69080,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/e1a737a2-0d4f-49aa-990e-10253ae19a3b"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/292745a5-dc99-4673-ae0a-dd09973432d6"
+              }
+            ]
+          },
+          {
+            "key": "spear-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3792,
+                "height": 852,
+                "bytes": 12923136,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/6f58ff0f-4d83-42b2-993d-7f96fa26626c"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/4885b08b-81ed-4e18-b3c6-37fa7af69e17"
+              }
+            ]
+          },
+          {
+            "key": "spear-0_nl",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 632,
+                "height": 142,
+                "bytes": 358976,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/18a0f78d-daf4-4ab2-8c93-0f3aabc7e870"
+              }
+            ]
+          },
+          {
+            "key": "pu_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/7d0dbf14-a36b-4787-a8b2-36e068d8e8f9"
+              }
+            ]
+          },
+          {
+            "key": "pu_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/556e26b4-e388-41a8-bf29-b16046036bdc"
+              }
+            ]
+          },
+          {
+            "key": "pu_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/8ac5dac1-2204-48b7-9e81-4e095bda3961"
+              }
+            ]
+          },
+          {
+            "key": "pu_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/cebbf4a3-afa5-48b0-8dce-71589596d2fd"
+              }
+            ]
+          },
+          {
+            "key": "pu_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 96,
+                "height": 96,
+                "bytes": 36864,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/76be6d48-1411-4cb0-8345-22554f318419"
+              }
+            ]
+          },
+          {
+            "key": "hud_angreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/1b3d9dbe-cc42-4d90-a067-8642a6225ced"
+              }
+            ]
+          },
+          {
+            "key": "hud_saangreal",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/7a4928ce-6ec9-4f4c-9410-a42c70358820"
+              }
+            ]
+          },
+          {
+            "key": "hud_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/1c26908a-30d1-4a1f-92f6-82391e3f8c03"
+              }
+            ]
+          },
+          {
+            "key": "hud_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/8b9d775e-49a7-408b-91a1-356bfdbf69e9"
+              }
+            ]
+          },
+          {
+            "key": "hud_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/53b72cec-8e5d-4ac1-90ca-7c04213442ca"
+              }
+            ]
+          },
+          {
+            "key": "fx_lightning",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 192,
+                "bytes": 393216,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/e527631c-5bc8-4928-b1e1-2add79532344"
+              }
+            ]
+          },
+          {
+            "key": "fx_fireshield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 384,
+                "height": 320,
+                "bytes": 491520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b57f7afd-037a-4677-92bc-8038fd20f378"
+              }
+            ]
+          },
+          {
+            "key": "fx_airwhip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/6411cb7c-82a6-4481-82a9-cdec21a3b70c"
+              }
+            ]
+          },
+          {
+            "key": "s6fade",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 1120,
+                "height": 257,
+                "bytes": 1151360,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/0f149362-9bbd-493e-95e7-125c8ced6cbf"
+              }
+            ]
+          },
+          {
+            "key": "grunt-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4076,
+                "height": 1212,
+                "bytes": 19760448,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/c50439f0-c6cc-4ae3-9ebb-fa6841354ee6"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 202,
+                "bytes": 549440,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/b2100ed6-9ac7-40ba-a9a7-2d7a3c5d445c"
+              }
+            ]
+          },
+          {
+            "key": "riley-0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4080,
+                "height": 1936,
+                "bytes": 31595520,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/f37299b2-f0dd-4b76-9add-d59cadc978f8"
+              },
+              {
+                "kind": "dataSource",
+                "index": 0,
+                "width": 680,
+                "height": 323,
+                "bytes": 878560,
+                "canvas": false,
+                "gpu": true,
+                "url": "blob:http://127.0.0.1:8765/18cfc59d-b089-498c-8195-82e04618d8c5"
+              }
+            ]
+          },
+          {
+            "key": "flake",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 16,
+                "height": 16,
+                "bytes": 1024,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "glow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "core",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ember",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "shadow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dust",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 32,
+                "bytes": 4096,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "smoke",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "streak",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 40,
+                "height": 6,
+                "bytes": 960,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dot",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 12,
+                "height": 12,
+                "bytes": 576,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "chip",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 14,
+                "height": 5,
+                "bytes": 280,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "px",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 4,
+                "height": 4,
+                "bytes": 64,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7far",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7dancer",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7veiled",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "moiPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "lanPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "asmoPortrait",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7note",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 48,
+                "height": 48,
+                "bytes": 9216,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7crate",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7planks",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 32,
+                "height": 8,
+                "bytes": 1024,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7ribbon",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 24,
+                "height": 24,
+                "bytes": 2304,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7arrow",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 8,
+                "bytes": 2048,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7veil",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 256,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7streak",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 24,
+                "bytes": 12288,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "beam",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 8,
+                "height": 64,
+                "bytes": 2048,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "9663274c-a115-43c4-9a42-1020ae9ef265",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 47,
+                "height": 21,
+                "bytes": 3948,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "64774f34-68bc-45d7-ac91-23df60b3d5f4",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 17,
+                "height": 16,
+                "bytes": 1088,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "b53e5dcd-8951-4120-b19d-ba9d778f6fc9",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 102,
+                "height": 21,
+                "bytes": 8568,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "c12e8095-6085-4f1d-a9cf-f59327f4dd51",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 143,
+                "height": 60,
+                "bytes": 34320,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "c6c3d31e-6ff3-4214-b220-8c2c827e7ef4",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 88,
+                "height": 16,
+                "bytes": 5632,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "918de8e0-743f-4e2e-9465-28927a892e5e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 123,
+                "height": 16,
+                "bytes": 7872,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "c98f1793-625d-4687-8d6d-5cf7c83ca60e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 103,
+                "height": 16,
+                "bytes": 6592,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ebfa5ed7-9922-4b91-8d77-a961bf35bdfb",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 23,
+                "height": 16,
+                "bytes": 1472,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "442384d5-87ee-428d-a0fb-be2eb9b959ee",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 153,
+                "height": 16,
+                "bytes": 9792,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "2740dcaf-fe74-4cce-9b91-93e69ed1e3a0",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 23,
+                "height": 16,
+                "bytes": 1472,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "d10fc00c-6aa5-4caf-a88d-2bd63de3d30e",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 3,
+                "height": 16,
+                "bytes": 192,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "25d35aa4-400a-4c80-9dff-07dddd5e0bed",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 58,
+                "height": 16,
+                "bytes": 3712,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "dd566b78-514d-4835-970e-5cf748760db7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 226,
+                "height": 30,
+                "bytes": 27120,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "ada81a5b-b2c1-4704-8db9-bb4e751bfc18",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 69,
+                "height": 38,
+                "bytes": 10488,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bdb84a6c-eb07-402a-94c8-8eeb2e5d554f",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 819,
+                "height": 26,
+                "bytes": 85176,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "30d6f577-89b2-4071-96e1-d08cf8dd7954",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 384,
+                "height": 34,
+                "bytes": 52224,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "56c25ff3-5253-4443-9e78-1210553e7cdb",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 94,
+                "height": 16,
+                "bytes": 6016,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "58b2eb68-fd08-4cec-867c-dc0ce6c5778f",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 548,
+                "height": 104,
+                "bytes": 227968,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7moir",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7lan",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7earth",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 64,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7shield",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 128,
+                "height": 128,
+                "bytes": 65536,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7ring",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 144,
+                "height": 36,
+                "bytes": 20736,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7shard",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 64,
+                "bytes": 16384,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7mid4",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 640,
+                "height": 280,
+                "bytes": 716800,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "bg7floor3",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 256,
+                "height": 96,
+                "bytes": 98304,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7asmo",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 512,
+                "height": 64,
+                "bytes": 131072,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "s7column",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 64,
+                "height": 224,
+                "bytes": 57344,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "58ab41f0-7265-44c9-9e40-75eea4748945",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 101,
+                "height": 16,
+                "bytes": 6464,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "2bae10c3-f61a-43e0-8266-a7b31009afc8",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 494,
+                "height": 54,
+                "bytes": 106704,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "b99d5c83-1f3d-4ca5-8163-8eb5253445d7",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 329,
+                "height": 100,
+                "bytes": 131600,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "b0b0c4de-a92a-4661-b6ca-e275bdf4bd48",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 494,
+                "height": 19,
+                "bytes": 37544,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          },
+          {
+            "key": "324204ec-1bd7-4f1b-887f-3f81e111780d",
+            "sources": [
+              {
+                "kind": "source",
+                "index": 0,
+                "width": 317,
+                "height": 16,
+                "bytes": 20288,
+                "canvas": true,
+                "gpu": true,
+                "url": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

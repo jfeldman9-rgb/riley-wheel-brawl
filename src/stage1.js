@@ -9,6 +9,7 @@ import { Bot } from './bot.js';
 import { Loial } from './loial.js';
 import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK, TWIX_DROP_Z, TWIX_ART_KEYS, queuePowerArt, makePowerAnims, iconKey } from './powers.js';
 import { Cutscene, TWIX_SCRIPT } from './twix.js';
+import { startTwix, scheduleTwixDebug } from './twix-video.js';
 import { STAGES, stageEnabled, maxStage, stageFromQuery, resolveStage, STAGE_CHARS, STAGE_TEXTURES } from './stages.js';
 import { WHITECLOAKS } from './whitecloaks.js';
 import { DARKFRIENDS, CUTTHROAT } from './darkfriends.js';
@@ -19,11 +20,12 @@ import { queueStage4, STORY4_SCRIPT, STORY4_PANELS, STAGE4_VOICES } from './stag
 import { STAGE4_ACTORS } from './stage4-actors.js';
 import { cultistHoldsToken } from './cultists.js';
 import { MusicDirector } from './music.js';
+import { installPressOwnership, pressConsumed, consumePress } from './press-ownership.js';
 
 export const ENEMY_CLASSES = Object.freeze({ ...WHITECLOAKS, ...DARKFRIENDS, ...MYRDDRAAL, ...STAGE4_ACTORS });
 
 const BEAM_LIGHT = 1.5, FLARE_SCALE = 0.5;
-// On-demand lines from dropPower (power voices and the Twix script). Freed on stage leave; a later drop preloads them again.
+// Drop-power voices and Twix lines stream on demand; stage leave frees them for the next drop.
 const DROP_VOICES = ['riley_twix_01', ...TWIX_SCRIPT.map(l => l.id), ...Object.values(POWERS).map(p => p.voice).filter(Boolean)];
 
 const MID_SCALE = 0.76, MID_Y = LANE_TOP - 58;
@@ -132,6 +134,7 @@ export class Stage1 extends Phaser.Scene {
     this.runId = (this.runId || 0) + 1;
     const sd = data && Object.keys(data).length ? data : (this.sys && this.sys.settings && this.sys.settings.data) || {};
     this.stageNo = resolveStage(sd, q); this.stageData = sd;
+    this.titleLock = sd.stage7Return ? performance.now() + 500 : 0;
     this.stageDef = STAGES[this.stageNo] || STAGES[1];
     this.zones = this.stageDef.zones; this.drops = this.stageDef.drops; this.bossDrop = this.stageDef.bossDrop;
     this.music = new MusicDirector((id, o) => playTrack(id, o), this.stageNo);
@@ -141,7 +144,7 @@ export class Stage1 extends Phaser.Scene {
     this.clearShown = false; this.victoryPending = false; this.boss = null; this.bot = null;
     this.hudReady = false; this.startRequested = false;
     this.backdropLit = []; this.ambient = undefined; this.fireCap = FIRE_LIGHT_CAP;
-    this.inp = this.game.inp; this.inp.clear();
+    this.inp = this.game.inp; installPressOwnership(this.inp); this.inp.clear();
     const b = document.getElementById('boot'); if (b) b.remove();
     patchFlippedNormals();
     this.metas = makeCharAnims(this, this.stageDef.chars); makePowerAnims(this);
@@ -239,11 +242,16 @@ export class Stage1 extends Phaser.Scene {
   setBackdropLit(on) { for (const o of this.backdropLit || []) o.setLighting(on); this.backdropIsLit = on; const ambient = on ? this.kit?.ambient : this.kit?.ambientUnlit; this.ambient = Number.isFinite(ambient) ? ambient : on ? 0x39425f : 0x5a6482; if (this.lightsOn !== false) this.lights.setAmbientColor(this.ambient); }
   dropVignette() { if (this.vignette) { this.cameras.main.filters.external.remove(this.vignette); this.vignette = null; } }
   toggleLights() { this.lightsOn = !this.lightsOn; this.lights.setAmbientColor(this.lightsOn ? (this.ambient || 0x39425f) : 0xffffff); }
-  // ---------- flow ----------
+  // Flow
   onPress(a) {
+    if (pressConsumed(this.inp, a)) return;
+    if (!this.started && !this.ended && performance.now() < this.titleLock) {
+      this.titleLock = performance.now() + 500; this.inp.clear(); return;
+    }
     const blurOnly = this.pauseReasons.size === 1 && this.pauseReasons.has('window-blur');
     if (this.pauseReasons.has('window-blur')) this.setPauseReason('window-blur', false);
     if (this.cutscene) {
+      consumePress(this.inp, a);
       for (const reason of this.pauseReasons) if (reason !== 'cutscene') {
         if (reason === 'manual' && (a === 'pause' || a === 'start')) this.setPauseReason('manual', false);
         this.inp.clear(); return;
@@ -252,7 +260,7 @@ export class Stage1 extends Phaser.Scene {
     }
     if (a === 'pause' || (a === 'start' && this.started && !this.ended && !this.gameOver)) {
       if (blurOnly) return;
-      if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) this.setPauseReason('manual', !this.pauseReasons.has('manual'));
+      if (this.started && !this.ended && !this.gameOver && !this.pauseReasons.has('report')) { consumePress(this.inp, a); this.setPauseReason('manual', !this.pauseReasons.has('manual')); }
       return;
     }
     if (this.paused) { this.inp.clear(); return; }
@@ -273,9 +281,9 @@ export class Stage1 extends Phaser.Scene {
     if (next) this.scene.pause(); else this.scene.resume();
     if (this.hud && this.hud.pauseLabel) this.hud.pauseLabel.setVisible(this.showPauseLabel());
   }
-  /** PAUSED card: any pause except the cutscene (which draws its own screen) */
+  /** Cutscenes draw their own pause screen. */
   showPauseLabel() { return this.paused && [...this.pauseReasons].some(r => r !== 'cutscene'); }
-  /** title stage select: the HUD shows the choice; starting a different stage reloads the scene with its assets */
+  /** Reload the selected stage and its assets. */
   selectStage(dir) {
     if (this.started || this.ended) return;
     unlock(); this.music?.set('title');
@@ -288,6 +296,7 @@ export class Stage1 extends Phaser.Scene {
     if (this.titleSel && this.titleSel !== this.stageNo) { this.startRequested = false; return this.scene.restart({ stage: this.titleSel, autostart: true }); }
     this.startRequested = false; this.started = true; this.inp.flushPresses?.(); unlock(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
     perf.reset();
+    scheduleTwixDebug(this);
     if (this.stageDef.start) return this.stageDef.start(this);
   }
   startStage2() {
@@ -451,10 +460,10 @@ export class Stage1 extends Phaser.Scene {
     for (let y = 0; y < H; y++) { const d = Math.abs(y - (H - 1) / 2) / (H / 2); const a = Math.max(0, 1 - d * d); g.fillStyle(d < 0.28 ? 0xffffff : d < 0.6 ? 0xd8f0ff : 0x7cc4ff, a); g.fillRect(0, y, 8, 1); }
     g.generateTexture('beam', 8, H); g.destroy();
   }
-  /** is there a foe on screen that a strike could hit right now? Balefire and Loial are refused (nothing spent) without one. */
+  /** Balefire and Loial need a target before spending. */
   hasHittableFoe() { return this.enemies.some(e => e.canBeHit && e.x > this.camX - 60 && e.x < this.camX + VW + 60); }
   canBalefire() { return this.started && !this.gameOver && !this.ended && !this.victoryPending && !this.paused && !this.beam && this.hasHittableFoe(); }
-  /** thrust frame: a white-hot beam to the screen edge in Riley's facing direction; every enemy in front is struck once */
+  /** The thrust beam hits each foe ahead once, out to the screen edge. */
   fireBalefire(R) {
     const dir = R.facing, x0 = R.x + dir * 95, y = R.y - R.z - 138;
     const edge = dir > 0 ? this.camX + VW + 160 : this.camX - 160, len = Math.max(60, Math.abs(edge - x0));
@@ -596,19 +605,9 @@ export class Stage1 extends Phaser.Scene {
   }
   // ---------- the Twix campfire cutscene ----------
   startTwixCutscene() {
-    if (this.cutscene || this.victoryPending || this.ended || this.gameOver) return false;
-    sfx.pickup();
-    const cs = this.cutscene = new Cutscene(TWIX_SCRIPT, {
-      onLine: line => { if (/TROLLOC/.test(line.who)) sfx.grumble(); say(line.id, null); this.hud.cutsceneLine(line); },
-      onEnd: how => this.endTwixCutscene(how),
-    });
-    this.setPauseReason('cutscene', true);
-    this.music?.set('cutscene');
-    this.hud.showCutscene(cs);
-    cs.begin();
-    return true;
+    return startTwix(this);
   }
-  /** a story cutscene on painted panels (Stage 2's opening beat); same pause / skip / HUD path as the Twix scene */
+  /** Painted story panels share the Twix pause and HUD path. */
   startCutscene(script, panels, after) {
     if (this.cutscene) return false;
     this.cutsceneAfter = after;
@@ -622,7 +621,7 @@ export class Stage1 extends Phaser.Scene {
     cs.begin();
     return true;
   }
-  /** ticked by the HUD scene (which keeps running while Stage1 is paused); other pauses freeze it too */
+  /** HUD ticks scenes during gameplay pause; other pauses freeze them. */
   tickCutscene(dt) {
     const cs = this.cutscene; if (!cs) return;
     for (const r of this.pauseReasons) if (r !== 'cutscene') return;
@@ -694,7 +693,7 @@ export class Stage1 extends Phaser.Scene {
     if (fx.slowmo > 0) { fx.slowmo -= dt; dt *= 0.3; this.anims.globalTimeScale = 0.3; } else this.anims.globalTimeScale = this.timeScale;
     dt *= this.timeScale;
     if (this.started && !this.gameOver) R.update(dt, this.inp);
-    if (this.stageNo === 6 && (this.kit?.strike || this.cutscene)) return;
+    if (this.kit?.freezesWorld?.()) return;
     R.physics(dt);
     for (const e of this.enemies) {
       e.update(dt); const wasEntering = e.entering;

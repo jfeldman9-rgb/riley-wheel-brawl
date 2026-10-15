@@ -17,6 +17,7 @@ Current review: draft [PR #13](https://github.com/jfeldman9-rgb/riley-wheel-braw
 - Acceptance target remains fight p95 ≤16.7 ms on both physical iPad and desktop. Software-renderer captures and regression tests are not device acceptance.
 - Checks (Node 24, no npm install): `node --test tests/*.test.mjs`; `node tools/audit-stage1.mjs`. See `docs/stage1/TWO_HOUR_PASS.md` for the current gaps.
 - Flags:
+  - `?stage=1&debug=1&twix=1&autostart=1` opens the Twix video shortly after Stage 1 starts (painted panels if playback fails).
   - `?demo=1` autopilot, `?demo=boss-coverage&skip=boss` input-only boss coverage, `?skip=boss`, `?god=1`, `?hud=0`.
   - `?bloom=0`, `?lit=0`, `?rs=1|2`.
   - `?q=fixed|N` controls the quality governor.

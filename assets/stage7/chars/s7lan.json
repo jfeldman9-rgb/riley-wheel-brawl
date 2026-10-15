@@ -1,0 +1,177 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 164,
+    "w": 133,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 236,
+    "w": 254
+   },
+   "spriteSourceSize": {
+    "h": 164,
+    "w": 133,
+    "x": 60,
+    "y": 63
+   },
+   "state": "run1",
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 161,
+    "w": 137,
+    "x": 135,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 236,
+    "w": 254
+   },
+   "spriteSourceSize": {
+    "h": 161,
+    "w": 137,
+    "x": 58,
+    "y": 66
+   },
+   "state": "run2",
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 180,
+    "w": 149,
+    "x": 274,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 236,
+    "w": 254
+   },
+   "spriteSourceSize": {
+    "h": 180,
+    "w": 149,
+    "x": 52,
+    "y": 47
+   },
+   "state": "run3",
+   "trimmed": true
+  },
+  "3": {
+   "frame": {
+    "h": 204,
+    "w": 123,
+    "x": 425,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 236,
+    "w": 254
+   },
+   "spriteSourceSize": {
+    "h": 204,
+    "w": 123,
+    "x": 65,
+    "y": 23
+   },
+   "state": "draw",
+   "trimmed": true
+  },
+  "4": {
+   "frame": {
+    "h": 187,
+    "w": 246,
+    "x": 550,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 236,
+    "w": 254
+   },
+   "spriteSourceSize": {
+    "h": 187,
+    "w": 246,
+    "x": 4,
+    "y": 40
+   },
+   "state": "slash1_attack",
+   "trimmed": true
+  },
+  "5": {
+   "frame": {
+    "h": 141,
+    "w": 165,
+    "x": 798,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 236,
+    "w": 254
+   },
+   "spriteSourceSize": {
+    "h": 141,
+    "w": 165,
+    "x": 44,
+    "y": 86
+   },
+   "state": "slash2_attack",
+   "trimmed": true
+  },
+  "6": {
+   "frame": {
+    "h": 222,
+    "w": 154,
+    "x": 965,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 236,
+    "w": 254
+   },
+   "spriteSourceSize": {
+    "h": 222,
+    "w": 154,
+    "x": 50,
+    "y": 5
+   },
+   "state": "point",
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "/workspace/stage7-art/build_p345.py (stage6 keyer)",
+  "drawScale": 1.0,
+  "format": "RGBA8888",
+  "frameStates": [
+   "run1",
+   "run2",
+   "run3",
+   "draw",
+   "slash1_attack",
+   "slash2_attack",
+   "point"
+  ],
+  "image": "s7lan.webp",
+  "origin": [
+   0.5,
+   0.96
+  ],
+  "res": 1.0,
+  "scale": "1",
+  "screenH": 164,
+  "size": {
+   "h": 222,
+   "w": 1119
+  }
+ }
+}

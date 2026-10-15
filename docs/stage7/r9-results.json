@@ -1,0 +1,2245 @@
+{
+  "baseline": "6b10a66 on rwb-codex-stage7; unmodified sources",
+  "method": {
+    "damageAudit": "9 seeds x phases 1-3, normal startBoss and phase gates with adds; stand at boss.x-62 for 30 x 100ms, notes active, god=false; capture every HP write and its stack",
+    "campaign": "production logic harness, nine seeds per mode, existing 250ms bot lag option; no tests relaxed",
+    "browser": "Chromium with real Phaser TimeStep.step(now+100ms), SceneManager, animation, HUD and Clock; headlessStep callback omits renderer cost. Real keyboard events through Playwright. rawDelta and deliveredDelta both 100ms."
+  },
+  "damageFinding": {
+    "confirmed": "The channel shockwave requested 16 HP, above the requested 12 HP ceiling; all existing damage entrypoints already shared a 0.5s deadline. Boss source attribution now caps every boss hit at 12.",
+    "unconfirmed": "The reported full life plus 15% loss in about 2s was not reproduced on 6b10a66. Maximum loss was 28 HP over 3s in these 27 baseline probes, 26 HP after. No evidence of a repeating bash or body-contact HP writer.",
+    "beforeTotals": {
+      "asmodean.bash": 324,
+      "grunt.melee": 20,
+      "asmodean.shockwave": 144,
+      "asmodean.note": 154
+    },
+    "afterTotals": {
+      "asmodean.bash": 324,
+      "grunt.melee": 20,
+      "asmodean.shockwave": 108,
+      "asmodean.note": 154
+    },
+    "ownership": "Asmodean.step explicitly labels the channel-created shockwave. The position-only arena.wave helper retains its original standalone damage contract; there is no live standalone wave emitter in Stage 7."
+  },
+  "sourceInventory": [
+    {
+      "source": "asmodean.bash",
+      "path": "src/asmodean.js -> src/stage6-hurt.js -> src/stage5-hurt.js -> Riley.takeHit",
+      "tellSeconds": 0.7,
+      "beforeDamage": 12,
+      "afterDamage": 12
+    },
+    {
+      "source": "body/contact",
+      "path": "src/stage1.js actor separation loop",
+      "damage": 0,
+      "note": "Only x separation; direct takeHit from Asmodean is instrumented and capped too."
+    },
+    {
+      "source": "channel aura/shockwave",
+      "path": "src/stage7-arena.js",
+      "tellSeconds": 1.8,
+      "beforeDamage": 16,
+      "afterDamage": 12,
+      "note": "No periodic aura HP write exists; channel completion creates one expanding shockwave."
+    },
+    {
+      "source": "notes/projectiles",
+      "path": "src/stage7-notes.js",
+      "tellSeconds": 0.625,
+      "damage": 7
+    },
+    {
+      "source": "glass rain",
+      "path": "src/stage7-arena.js",
+      "tellSeconds": 1,
+      "damage": 12
+    },
+    {
+      "source": "Stage 7 fog",
+      "path": "src/stage7-view.js",
+      "damage": 0,
+      "note": "Visual fog only."
+    },
+    {
+      "source": "Stage 7 storm",
+      "path": "src/stage7-storm.js",
+      "damage": 0,
+      "note": "Telegraphed push in zone 1; no HP writes."
+    },
+    {
+      "source": "Stage 7 floor",
+      "path": "src/stage7-street.js",
+      "tellSeconds": 1.1,
+      "damage": 9,
+      "note": "Only active in zone 2; remains under the existing shared damage gates."
+    },
+    {
+      "source": "grunts / spear / Fade / Shaido / arrows",
+      "path": "src/enemies.js, src/fadelt.js, src/shaido.js, src/stage7.js -> strikeRiley or Riley.takeHit",
+      "note": "Each landed hit gets an actor-specific source. Only grunts contributed during these contact probes."
+    },
+    {
+      "source": "ground carts / fire patches",
+      "path": "src/stage1.js updateCarts",
+      "note": "Direct HP writes and environmental knockdowns are observed; Stage 7 does not spawn cart enemies."
+    },
+    {
+      "source": "grabs",
+      "path": "src/riley.js, src/darkfriends.js, src/stage7-fighter.js",
+      "damageDuringProbe": 0,
+      "note": "Asmodean is not grabbable and his releaseHold is empty; Stage 7 does not spawn cutthroats or Draghkar. HP observer catches any direct write."
+    },
+    {
+      "source": "other direct HP writes",
+      "path": "src/riley.js respawn, src/stage1.js pickups, src/stage4*.js, src/draghkar.js, src/cultists.js, src/balthamel.js, src/aginor.js",
+      "note": "Repo-wide hp/strikeRiley/takeHit/damageAllowed audit. Earlier-stage actors and hazards do not run in Stage 7. Debug accessor catches unexpected direct writes; healing and respawn get explicit labels."
+    }
+  ],
+  "veilFinding": {
+    "cause": "Phaser TimeStep.smoothDelta clamps raw elapsed time to the 16.7ms target during its 120-frame startup cooldown (and while unfocused). At 10fps that cooldown lasts 12 wall seconds; movement and caption clocks receive less time. No caption-owned cutscene flag, input clear, held reset, kit lock or scene.paused was found.",
+    "fix": "Stage 7 temporarily sets loop.smoothStep=false and restores it on cleanup. Existing bounded scene catch-up consumes full delta. Veil has a scene-owned 1.2s expiry as well as the HUD expiry.",
+    "browserBaseline": {
+      "rawDeltaMs": 33.4,
+      "deliveredDeltaMs": 16.666666666666664,
+      "smoothStep": true,
+      "heldDWallSeconds": 1.5,
+      "distancePx": 105.916666666662,
+      "remainingCaptionSeconds": 0.6500000000000019
+    }
+  },
+  "campaignSummary": [
+    {
+      "mode": "base",
+      "before": {
+        "clears": 9,
+        "deaths": 10,
+        "meanFinalHp": 36.22222222222222,
+        "finalHpRange": [
+          1,
+          88
+        ],
+        "damage": 2175
+      },
+      "after": {
+        "clears": 9,
+        "deaths": 10,
+        "meanFinalHp": 37.22222222222222,
+        "finalHpRange": [
+          1,
+          93
+        ],
+        "damage": 2166
+      }
+    },
+    {
+      "mode": "assisted",
+      "before": {
+        "clears": 9,
+        "deaths": 8,
+        "meanFinalHp": 24.88888888888889,
+        "finalHpRange": [
+          1,
+          93
+        ],
+        "damage": 2077
+      },
+      "after": {
+        "clears": 9,
+        "deaths": 8,
+        "meanFinalHp": 25.77777777777778,
+        "finalHpRange": [
+          1,
+          93
+        ],
+        "damage": 2069
+      }
+    },
+    {
+      "mode": "lag",
+      "before": {
+        "clears": 9,
+        "deaths": 6,
+        "meanFinalHp": 41.44444444444444,
+        "finalHpRange": [
+          4,
+          100
+        ],
+        "damage": 1440
+      },
+      "after": {
+        "clears": 9,
+        "deaths": 6,
+        "meanFinalHp": 42.333333333333336,
+        "finalHpRange": [
+          4,
+          100
+        ],
+        "damage": 1432
+      }
+    }
+  ],
+  "campaignBefore": [
+    {
+      "name": "base",
+      "seed": 1,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 1,
+      "damage": 272,
+      "minHp": 0,
+      "seconds": 206.61666666664308,
+      "boss": 68.26666666666706
+    },
+    {
+      "name": "base",
+      "seed": 2,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 10,
+      "damage": 287,
+      "minHp": 0,
+      "seconds": 215.66666666663485,
+      "boss": 72.07500000000343
+    },
+    {
+      "name": "base",
+      "seed": 3,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 13,
+      "damage": 177,
+      "minHp": 13,
+      "seconds": 175.4333333333381,
+      "boss": 18.358333333332933
+    },
+    {
+      "name": "base",
+      "seed": 4,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 7,
+      "damage": 237,
+      "minHp": 0,
+      "seconds": 186.03333333332847,
+      "boss": 37.27499999999853
+    },
+    {
+      "name": "base",
+      "seed": 5,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 16,
+      "damage": 239,
+      "minHp": 0,
+      "seconds": 183.62499999999733,
+      "boss": 34.47499999999869
+    },
+    {
+      "name": "base",
+      "seed": 10,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 79,
+      "damage": 221,
+      "minHp": 0,
+      "seconds": 179.26666666666796,
+      "boss": 41.12499999999831
+    },
+    {
+      "name": "base",
+      "seed": 20,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 24,
+      "damage": 211,
+      "minHp": 0,
+      "seconds": 198.88333333331678,
+      "boss": 56.25833333333078
+    },
+    {
+      "name": "base",
+      "seed": 100,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 2,
+      "hp": 88,
+      "damage": 277,
+      "minHp": 0,
+      "seconds": 213.78333333330323,
+      "boss": 68.4416666666672
+    },
+    {
+      "name": "base",
+      "seed": 97,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 2,
+      "hp": 88,
+      "damage": 254,
+      "minHp": 0,
+      "seconds": 211.30833333330548,
+      "boss": 61.41666666666382
+    },
+    {
+      "name": "assisted",
+      "seed": 1,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 8,
+      "damage": 265,
+      "minHp": 0,
+      "seconds": 205.1333333333111,
+      "boss": 66.77499999999921
+    },
+    {
+      "name": "assisted",
+      "seed": 2,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 13,
+      "damage": 284,
+      "minHp": 0,
+      "seconds": 214.69999999996907,
+      "boss": 71.10833333333599
+    },
+    {
+      "name": "assisted",
+      "seed": 3,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 13,
+      "damage": 177,
+      "minHp": 13,
+      "seconds": 174.96666666667187,
+      "boss": 17.88333333333296
+    },
+    {
+      "name": "assisted",
+      "seed": 4,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 7,
+      "damage": 237,
+      "minHp": 0,
+      "seconds": 185.1666666666626,
+      "boss": 36.39999999999858
+    },
+    {
+      "name": "assisted",
+      "seed": 5,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 30,
+      "damage": 225,
+      "minHp": 0,
+      "seconds": 181.07499999999965,
+      "boss": 31.92499999999883
+    },
+    {
+      "name": "assisted",
+      "seed": 10,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 93,
+      "damage": 207,
+      "minHp": 0,
+      "seconds": 179.81666666666746,
+      "boss": 41.67499999999828
+    },
+    {
+      "name": "assisted",
+      "seed": 20,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 40,
+      "damage": 195,
+      "minHp": 0,
+      "seconds": 198.3083333333173,
+      "boss": 55.69166666666415
+    },
+    {
+      "name": "assisted",
+      "seed": 100,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 1,
+      "damage": 264,
+      "minHp": 0,
+      "seconds": 209.0833333333075,
+      "boss": 63.73333333333036
+    },
+    {
+      "name": "assisted",
+      "seed": 97,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 19,
+      "damage": 223,
+      "minHp": 0,
+      "seconds": 204.0333333333121,
+      "boss": 54.141666666664236
+    },
+    {
+      "name": "lag",
+      "seed": 1,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 100,
+      "damage": 149,
+      "minHp": 0,
+      "seconds": 167.80833333334505,
+      "boss": 45.14166666666475
+    },
+    {
+      "name": "lag",
+      "seed": 2,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 55,
+      "damage": 115,
+      "minHp": 55,
+      "seconds": 155.9500000000225,
+      "boss": 21.883333333332732
+    },
+    {
+      "name": "lag",
+      "seed": 3,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 17,
+      "damage": 218,
+      "minHp": 0,
+      "seconds": 181.19999999999953,
+      "boss": 25.43333333333253
+    },
+    {
+      "name": "lag",
+      "seed": 4,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 70,
+      "damage": 140,
+      "minHp": 0,
+      "seconds": 159.10833333335296,
+      "boss": 38.61666666666512
+    },
+    {
+      "name": "lag",
+      "seed": 5,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 18,
+      "damage": 82,
+      "minHp": 18,
+      "seconds": 144.19166666669986,
+      "boss": 20.1249999999995
+    },
+    {
+      "name": "lag",
+      "seed": 10,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 8,
+      "damage": 262,
+      "minHp": 0,
+      "seconds": 187.90833333332677,
+      "boss": 46.299999999998015
+    },
+    {
+      "name": "lag",
+      "seed": 20,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 30,
+      "damage": 176,
+      "minHp": 0,
+      "seconds": 189.4083333333254,
+      "boss": 40.124999999998366
+    },
+    {
+      "name": "lag",
+      "seed": 100,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 4,
+      "damage": 134,
+      "minHp": 4,
+      "seconds": 154.2333333333574,
+      "boss": 22.30833333333271
+    },
+    {
+      "name": "lag",
+      "seed": 97,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 71,
+      "damage": 164,
+      "minHp": 0,
+      "seconds": 156.57500000002193,
+      "boss": 28.791666666665673
+    }
+  ],
+  "campaignAfter": [
+    {
+      "name": "base",
+      "seed": 1,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 1,
+      "damage": 272,
+      "minHp": 0,
+      "seconds": 206.61666666664308,
+      "boss": 68.26666666666706
+    },
+    {
+      "name": "base",
+      "seed": 2,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 14,
+      "damage": 283,
+      "minHp": 0,
+      "seconds": 215.66666666663485,
+      "boss": 72.07500000000343
+    },
+    {
+      "name": "base",
+      "seed": 3,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 13,
+      "damage": 177,
+      "minHp": 13,
+      "seconds": 175.4333333333381,
+      "boss": 18.358333333332933
+    },
+    {
+      "name": "base",
+      "seed": 4,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 7,
+      "damage": 237,
+      "minHp": 0,
+      "seconds": 186.03333333332847,
+      "boss": 37.27499999999853
+    },
+    {
+      "name": "base",
+      "seed": 5,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 16,
+      "damage": 239,
+      "minHp": 0,
+      "seconds": 183.62499999999733,
+      "boss": 34.47499999999869
+    },
+    {
+      "name": "base",
+      "seed": 10,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 79,
+      "damage": 221,
+      "minHp": 0,
+      "seconds": 179.26666666666796,
+      "boss": 41.12499999999831
+    },
+    {
+      "name": "base",
+      "seed": 20,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 24,
+      "damage": 211,
+      "minHp": 0,
+      "seconds": 198.88333333331678,
+      "boss": 56.25833333333078
+    },
+    {
+      "name": "base",
+      "seed": 100,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 2,
+      "hp": 88,
+      "damage": 277,
+      "minHp": 0,
+      "seconds": 213.78333333330323,
+      "boss": 68.4416666666672
+    },
+    {
+      "name": "base",
+      "seed": 97,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 2,
+      "hp": 93,
+      "damage": 249,
+      "minHp": 0,
+      "seconds": 212.1249999999714,
+      "boss": 62.23333333333044
+    },
+    {
+      "name": "assisted",
+      "seed": 1,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 8,
+      "damage": 265,
+      "minHp": 0,
+      "seconds": 205.1333333333111,
+      "boss": 66.77499999999921
+    },
+    {
+      "name": "assisted",
+      "seed": 2,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 21,
+      "damage": 276,
+      "minHp": 0,
+      "seconds": 214.69999999996907,
+      "boss": 71.10833333333599
+    },
+    {
+      "name": "assisted",
+      "seed": 3,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 13,
+      "damage": 177,
+      "minHp": 13,
+      "seconds": 174.96666666667187,
+      "boss": 17.88333333333296
+    },
+    {
+      "name": "assisted",
+      "seed": 4,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 7,
+      "damage": 237,
+      "minHp": 0,
+      "seconds": 185.1666666666626,
+      "boss": 36.39999999999858
+    },
+    {
+      "name": "assisted",
+      "seed": 5,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 30,
+      "damage": 225,
+      "minHp": 0,
+      "seconds": 181.07499999999965,
+      "boss": 31.92499999999883
+    },
+    {
+      "name": "assisted",
+      "seed": 10,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 93,
+      "damage": 207,
+      "minHp": 0,
+      "seconds": 179.81666666666746,
+      "boss": 41.67499999999828
+    },
+    {
+      "name": "assisted",
+      "seed": 20,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 40,
+      "damage": 195,
+      "minHp": 0,
+      "seconds": 198.3083333333173,
+      "boss": 55.69166666666415
+    },
+    {
+      "name": "assisted",
+      "seed": 100,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 1,
+      "damage": 264,
+      "minHp": 0,
+      "seconds": 209.0833333333075,
+      "boss": 63.73333333333036
+    },
+    {
+      "name": "assisted",
+      "seed": 97,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 19,
+      "damage": 223,
+      "minHp": 0,
+      "seconds": 204.0333333333121,
+      "boss": 54.141666666664236
+    },
+    {
+      "name": "lag",
+      "seed": 1,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 100,
+      "damage": 149,
+      "minHp": 0,
+      "seconds": 167.80833333334505,
+      "boss": 45.14166666666475
+    },
+    {
+      "name": "lag",
+      "seed": 2,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 55,
+      "damage": 115,
+      "minHp": 55,
+      "seconds": 155.9500000000225,
+      "boss": 21.883333333332732
+    },
+    {
+      "name": "lag",
+      "seed": 3,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 17,
+      "damage": 218,
+      "minHp": 0,
+      "seconds": 181.19999999999953,
+      "boss": 25.43333333333253
+    },
+    {
+      "name": "lag",
+      "seed": 4,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 74,
+      "damage": 136,
+      "minHp": 0,
+      "seconds": 159.10833333335296,
+      "boss": 38.61666666666512
+    },
+    {
+      "name": "lag",
+      "seed": 5,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 18,
+      "damage": 82,
+      "minHp": 18,
+      "seconds": 144.19166666669986,
+      "boss": 20.1249999999995
+    },
+    {
+      "name": "lag",
+      "seed": 10,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 8,
+      "damage": 262,
+      "minHp": 0,
+      "seconds": 187.90833333332677,
+      "boss": 46.299999999998015
+    },
+    {
+      "name": "lag",
+      "seed": 20,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 30,
+      "damage": 176,
+      "minHp": 0,
+      "seconds": 189.4083333333254,
+      "boss": 40.124999999998366
+    },
+    {
+      "name": "lag",
+      "seed": 100,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 0,
+      "hp": 4,
+      "damage": 134,
+      "minHp": 4,
+      "seconds": 154.2333333333574,
+      "boss": 22.30833333333271
+    },
+    {
+      "name": "lag",
+      "seed": 97,
+      "ended": true,
+      "gameOver": false,
+      "deaths": 1,
+      "hp": 75,
+      "damage": 160,
+      "minHp": 0,
+      "seconds": 156.57500000002193,
+      "boss": 28.791666666665673
+    }
+  ],
+  "auditBefore": [
+    {
+      "seed": 1,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 12,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 22,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.95,
+          "source": "grunt.melee",
+          "amount": 10,
+          "hp": 78
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 28,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 16,
+          "hp": 72
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 28,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 16,
+          "hp": 72
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 28,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 16,
+          "hp": 72
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 28,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 16,
+          "hp": 72
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 22,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.95,
+          "source": "grunt.melee",
+          "amount": 10,
+          "hp": 78
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 28,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 16,
+          "hp": 72
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 28,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 16,
+          "hp": 72
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 28,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 16,
+          "hp": 72
+        }
+      ]
+    },
+    {
+      "seed": 100,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 100,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 100,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 28,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 16,
+          "hp": 72
+        }
+      ]
+    },
+    {
+      "seed": 97,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 97,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 97,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 28,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 16,
+          "hp": 72
+        }
+      ]
+    }
+  ],
+  "auditAfter": [
+    {
+      "seed": 1,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 12,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 22,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.95,
+          "source": "grunt.melee",
+          "amount": 10,
+          "hp": 78
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 24,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 12,
+          "hp": 76
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 24,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 12,
+          "hp": 76
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 24,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 12,
+          "hp": 76
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 24,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 12,
+          "hp": 76
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 22,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.95,
+          "source": "grunt.melee",
+          "amount": 10,
+          "hp": 78
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 24,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 12,
+          "hp": 76
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 24,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 12,
+          "hp": 76
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 24,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 12,
+          "hp": 76
+        }
+      ]
+    },
+    {
+      "seed": 100,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 100,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 19,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        }
+      ]
+    },
+    {
+      "seed": 100,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 24,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 12,
+          "hp": 76
+        }
+      ]
+    },
+    {
+      "seed": 97,
+      "phase": 1,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 97,
+      "phase": 2,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 26,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 1.35,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 81
+        },
+        {
+          "t": 2.65,
+          "source": "asmodean.note",
+          "amount": 7,
+          "hp": 74
+        }
+      ]
+    },
+    {
+      "seed": 97,
+      "phase": 3,
+      "dt": 0.1,
+      "seconds": 3,
+      "god": false,
+      "damage": 24,
+      "events": [
+        {
+          "t": 0.75,
+          "source": "asmodean.bash",
+          "amount": 12,
+          "hp": 88
+        },
+        {
+          "t": 3,
+          "source": "asmodean.shockwave",
+          "amount": 12,
+          "hp": 76
+        }
+      ]
+    }
+  ],
+  "browserAfter": [
+    {
+      "debug": false,
+      "veil": {
+        "distance": 410,
+        "dismissed": 1.2000000000000002,
+        "paused": false,
+        "smoothStep": false,
+        "rawDelta": 100,
+        "deliveredDelta": 100
+      },
+      "intro": {
+        "boss": true,
+        "who": "ASMODEAN",
+        "power": "idle"
+      },
+      "damage": {
+        "amount": 24,
+        "hp": 76,
+        "lives": 3
+      },
+      "errors": [],
+      "logs": []
+    },
+    {
+      "debug": true,
+      "veil": {
+        "distance": 410,
+        "dismissed": 1.2000000000000002,
+        "paused": false,
+        "smoothStep": false,
+        "rawDelta": 100,
+        "deliveredDelta": 100
+      },
+      "intro": {
+        "boss": true,
+        "who": "ASMODEAN",
+        "power": "idle"
+      },
+      "damage": {
+        "amount": 24,
+        "hp": 76,
+        "lives": 3
+      },
+      "errors": [],
+      "logs": [
+        "[s7dbg] dmg src=asmodean.bash amt=12 hp=88",
+        "[s7dbg] channel start t=11.125",
+        "[s7dbg] channel end t=12.933",
+        "[s7dbg] dmg src=asmodean.shockwave amt=12 hp=76",
+        "[s7dbg] channel start t=13.000",
+        "[s7dbg] stagger start t=13.000",
+        "[s7dbg] channel end t=13.000",
+        "[s7dbg] stagger end t=14.408"
+      ]
+    }
+  ],
+  "validation": {
+    "stage7Campaign": {
+      "pass": 1,
+      "fail": 0,
+      "mode": "nine base seeds, nine assisted seeds and nine seeds with 250ms lag"
+    },
+    "newRegressionFile": "tests/stage7-r9.test.mjs",
+    "existingTests": "git diff --exit-code HEAD -- tests returns no output; every tracked test and helper is unchanged. New regressions are in the untracked r9 test file.",
+    "fullSuite": {
+      "command": "node --test tests/*.test.mjs",
+      "tests": 1621,
+      "pass": 1619,
+      "fail": 0,
+      "skipped": 2,
+      "seconds": 195.866520286
+    },
+    "trackedTestsAndProtectedControlsUnchanged": true,
+    "headAfter": "6b10a66",
+    "committed": false,
+    "pushed": false
+  },
+  "sourceTraceExamples": {
+    "auditBefore": {
+      "asmodean.bash": [
+        "    at Riley.takeHit (src/riley.js:225:13)",
+        "    at Riley.<anonymous> (src/stage7-lifecycle.js:498:29)",
+        "    at strikeRiley (src/stage5-hurt.js:16:14)",
+        "    at strikeRiley (src/stage6-hurt.js:6:39)",
+        "    at bashRiley (src/asmodean.js:244:10)"
+      ],
+      "grunt.melee": [
+        "    at Riley.takeHit (src/riley.js:225:13)",
+        "    at Riley.<anonymous> (src/stage7-lifecycle.js:498:29)",
+        "    at Stage1.hitTarget (src/stage1.js:415:12)",
+        "    at Stage1.resolveAttack (src/stage1.js:409:16)",
+        "    at Stage1.resolveAttack (src/stage7-lifecycle.js:477:25)"
+      ],
+      "asmodean.shockwave": [
+        "    at strikeRiley (src/stage5-hurt.js:17:8)",
+        "    at strikeRiley (src/stage6-hurt.js:6:39)",
+        "    at Object.step (src/stage7-arena.js:26:119)",
+        "    at Stage7Kit.step (src/stage7.js:261:18)",
+        "    at src/stage7.js:184:36"
+      ],
+      "asmodean.note": [
+        "    at strikeRiley (src/stage5-hurt.js:17:8)",
+        "    at strikeRiley (src/stage6-hurt.js:6:39)",
+        "    at Object.step (src/stage7-notes.js:103:11)",
+        "    at Stage7Kit.step (src/stage7.js:260:18)",
+        "    at src/stage7.js:184:36"
+      ]
+    },
+    "auditAfter": {
+      "asmodean.bash": [
+        "    at Riley.takeHit (src/riley.js:225:13)",
+        "    at src/stage7-lifecycle.js:517:22",
+        "    at damageSource7 (src/stage7-hurt.js:20:16)",
+        "    at Riley.<anonymous> (src/stage7-lifecycle.js:516:20)",
+        "    at strikeRiley (src/stage5-hurt.js:16:14)"
+      ],
+      "grunt.melee": [
+        "    at Riley.takeHit (src/riley.js:225:13)",
+        "    at src/stage7-lifecycle.js:517:22",
+        "    at damageSource7 (src/stage7-hurt.js:20:16)",
+        "    at Riley.<anonymous> (src/stage7-lifecycle.js:516:20)",
+        "    at Stage1.hitTarget (src/stage1.js:415:12)"
+      ],
+      "asmodean.shockwave": [
+        "    at strikeRiley (src/stage5-hurt.js:17:8)",
+        "    at src/stage6-hurt.js:8:11",
+        "    at damageSource7 (src/stage7-hurt.js:20:16)",
+        "    at strikeRiley (src/stage6-hurt.js:7:39)",
+        "    at Object.step (src/stage7-arena.js:26:119)"
+      ],
+      "asmodean.note": [
+        "    at strikeRiley (src/stage5-hurt.js:17:8)",
+        "    at src/stage6-hurt.js:8:11",
+        "    at damageSource7 (src/stage7-hurt.js:20:16)",
+        "    at strikeRiley (src/stage6-hurt.js:7:39)",
+        "    at Object.step (src/stage7-notes.js:103:11)"
+      ]
+    }
+  },
+  "retest": {
+    "baseUrl": "http://localhost:8088/",
+    "debugUrl": "http://localhost:8088/index.html?stage=7&s7=1&s7debug=1",
+    "key": "Start / skip story, then B for the normal live boss introduction; T retains the earlier force-channel debug hook.",
+    "oldServer": "Port 8077 serves /workspace/playtest-s7, not this modified /workspace/s7esc checkout."
+  }
+}

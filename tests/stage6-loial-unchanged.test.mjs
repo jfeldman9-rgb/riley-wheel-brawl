@@ -8,7 +8,7 @@ import { stage5Simulation } from './helpers/stage5-harness.mjs';
 test('stages 1-5 still call Loial and do not queue Rand', () => {
   for (const n of [1, 2, 3, 4, 5]) assert.equal(callInFor(n), 'loial', n);
   assert.equal(callInFor(6), 'rand');
-  assert.equal(callInFor(7), 'rand');
+  assert.equal(callInFor(7), 'moilan', 'stage 7 calls Moiraine and Lan, not Rand');
   assert.ok(STAGE_CHARS[1].includes('loial'));
   assert.ok(!STAGE_CHARS[5].includes('loial'), 'stage 5 loads Loial on the call');
   assert.ok(!STAGE_CHARS[5].includes('riley3'), 'stage 5 loads the grab atlas in the boss zone');
