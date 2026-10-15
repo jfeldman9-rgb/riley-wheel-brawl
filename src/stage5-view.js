@@ -114,6 +114,7 @@ export function createStage5View(scene) {
       });
     },
     layoutPlates(keep) {
+      if (scene.sys?.isActive?.() === false) return;
       const plates = new Set([...PLATES5, ...FLOORS5]);
       const have = [...keep].filter(k => plates.has(k) && scene.textures?.exists?.(k)).sort().join(',');
       const sig = [...keep].filter(k => k !== 'bg5far').sort().join(',') + '|' + have;

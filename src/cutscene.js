@@ -1,3 +1,4 @@
+import { isMuted, onMuteChange } from './audio.js';
 // Photoreal video cutscenes (Grok Imagine clips in assets/cutscenes/). Nothing is preloaded: one
 // <video playsinline> is put on screen only while a clip plays, then taken out of the page with its
 // src cleared so the decoder and buffers are released (iPhone memory). The same element object is
@@ -70,9 +71,13 @@ export class CutscenePlayer {
   bless() {
     try {
       const v = this.element(), r = this.run;
-      if (r && r.muted && !r.userMuted) { v.muted = false; r.muted = false; this.log.push('unmuted'); return; }
+      if (r && r.muted && !r.userMuted) {
+        r.muted = false; v.muted = isMuted();
+        if (r.hint) r.hint.textContent = r.touch ? 'TAP TO SKIP ▶▶' : 'PRESS ANY BUTTON TO SKIP ▶▶';
+        this.log.push('unmuted'); return;
+      }
       if (r || this.blessed) return;
-      this.blessed = true;
+      this.blessed = true; v.muted = isMuted();
       const p = v.play(); p?.catch?.(() => { });
     } catch (e) { }
   }
@@ -100,13 +105,32 @@ export class CutscenePlayer {
       letterSpacing: '0.04em', pointerEvents: 'none', opacity: '0.9' });
     hint.id = 'rwb-cutscene-hint'; hint.textContent = touch ? 'TAP TO SKIP ▶▶' : 'PRESS ANY BUTTON TO SKIP ▶▶';
     overlay.appendChild(v); overlay.appendChild(hint);
-    const r = this.run = { ids: [...ids], i: -1, done, progress, overlay, hint, muted, userMuted: muted, ended: false, ticks: 0, t0: this.now(), how: null, timer: null };
+    const r = this.run = { ids: [...ids], i: -1, done, progress, overlay, hint, touch: !!touch, muted, userMuted: muted, ended: false, ticks: 0, t0: this.now(), how: null, timer: null, swallowClickUntil: 0 };
     r.padHeld = this.padDown(); r.frame = frame;
     const relayout = () => this.layout(r);
+    const visibility = () => {
+      const now = this.now();
+      if (doc.hidden) { if (r.hiddenAt == null) r.hiddenAt = now; return; }
+      if (r.hiddenAt == null) return;
+      const hiddenMs = now - r.hiddenAt; r.hiddenAt = null;
+      for (const clock of ['clipT0', 'lastT', 'visT', 'nudged']) if (r[clock] != null) r[clock] += hiddenMs;
+    };
+    r.visibility = visibility;
+    const unmute = onMuteChange(() => { v.muted = isMuted() || r.muted; });
+    doc.addEventListener?.('visibilitychange', visibility);
     this.layout(r);
-    const tap = e => { if (e?.type === 'touchend') e.preventDefault?.(); this.skip(r, 'tap'); };
+    const tap = e => {
+      if (e?.type === 'touchend') e.preventDefault?.();
+      // iOS plays the intro muted when sound was not allowed. The first tap
+      // blesses the element. Skipping here would throw away the clip that can
+      // now be heard. The click that follows that touchend is the same gesture.
+      if (r.muted && !r.userMuted) { this.bless(); r.swallowClickUntil = this.now() + 700; return; }
+      if (e?.type === 'click' && this.now() < (r.swallowClickUntil || 0)) return;
+      this.skip(r, 'tap');
+    };
     const onEnded = () => this.next(r, 'ended'), onError = () => this.next(r, 'error');
     r.unbind = () => {
+      unmute(); doc.removeEventListener?.('visibilitychange', visibility);
       overlay.removeEventListener('touchend', tap); overlay.removeEventListener('click', tap);
       v.removeEventListener('ended', onEnded); v.removeEventListener('error', onError);
       this.root.removeEventListener?.('resize', relayout);
@@ -139,11 +163,11 @@ export class CutscenePlayer {
     if (r.i >= 0) this.log.push(`${r.ids[r.i]}:${why}`);
     if (++r.i >= r.ids.length) return this.finish(r, why === 'skipped' ? 'skip' : 'end');
     const v = this.video, id = r.ids[r.i], over = (this.srcOf || this.srcFor)?.(id);
-    r.clipT0 = r.lastT = r.visT = this.now(); r.lastTime = 0; r.started = false; r.visMs = 0;
+    r.clipT0 = r.lastT = r.visT = this.now(); r.hiddenAt = this.root.document?.hidden ? this.now() : null; r.lastTime = 0; r.started = false; r.visMs = 0;
     try {
       v.poster = over?.poster || (this.base + id + '.jpg');
       v.src = over?.src || (this.base + id + '.mp4');
-      v.muted = r.muted; v.volume = this.volume;
+      v.muted = isMuted() || r.muted; v.volume = this.volume;
       this.start(r, v, id);
     } catch (e) { this.next(r, 'error'); }
   }
@@ -155,7 +179,7 @@ export class CutscenePlayer {
   refused(r, v, id, e) {
     if (r.ended || r.ids[r.i] !== id) return;
     if (e?.name === 'NotAllowedError' && !v.muted) {   // autoplay with sound blocked: play muted instead
-      r.muted = true; v.muted = true; this.log.push(`${id}:muted`);
+      r.muted = true; v.muted = true; if (r.hint) r.hint.textContent = 'TAP FOR SOUND'; this.log.push(`${id}:muted`);
       return this.start(r, v, id);
     }
     if (e?.name !== 'AbortError') this.next(r, 'refused');
@@ -172,7 +196,8 @@ export class CutscenePlayer {
     if (pad && !r.padHeld && this.skip(r, 'pad')) return;
     r.padHeld = pad;
     const v = this.video, now = this.now();
-    if (this.root.document?.hidden) { r.lastT = r.visT = now; return; }
+    r.visibility();
+    if (this.root.document?.hidden) return;
     if (this.capMs !== null) {
       r.visMs += now - (r.visT ?? now); r.visT = now;
       if (r.visMs > this.capMs) return this.next(r, 'timeout');

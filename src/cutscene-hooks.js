@@ -43,7 +43,13 @@ export function installCutscenes({ root = globalThis, stages = STAGES, Scene = S
     // Same ownership rule as graphics-lifecycle: only undo a game pause this clip made.
     const game = scene.game, ownsPause = !!game && !game.isPaused && typeof game.pause === 'function';
     const unpause = () => { if (ownsPause && game.isPaused && !game.pendingDestroy) game.resume?.(); };
-    const off = () => { if (!stub.done) { stub.done = true; h?.abort(); unpause(); } };
+    let disposed = false;
+    const off = stub.abort = () => {
+      if (disposed) return;
+      disposed = true; stub.done = true;
+      scene.events?.off?.('shutdown', off);
+      h?.abort(); unpause();
+    };
     scene.cutscene = stub; scene.setPauseReason('cutscene', true); silence(scene.music);
     if (ownsPause) game.pause();
     scene.events?.once?.('shutdown', off);

@@ -19,7 +19,7 @@ function audio() {
   const nodes = [], contexts = [], gestures = new EventEmitter(), pending = new Map(), timers = [];
   const node = kind => {
     const o = { kind, starts: 0, stops: 0, disconnects: 0,
-      connect() {}, disconnect() { this.disconnects++; }, start() { this.starts++; }, stop() { this.stops++; },
+      connect() {}, disconnect() { this.disconnects++; }, start(...args) { this.starts++; this.args = args; }, stop() { this.stops++; },
       gain: audioParam(1, () => contexts[0].currentTime), frequency: audioParam(1, () => contexts[0].currentTime),
       Q: { value: 0 }, threshold: {}, knee: {}, ratio: {}, attack: {}, release: {} };
     nodes.push(o); return o;
@@ -46,7 +46,7 @@ function audio() {
 function hooks(h) {
   const { quietStage6 } = vm.runInNewContext(source('stage6-audio') + '\n({ quietStage6 })', { stopSceneAudio: h.a.stopSceneAudio });
   return vm.runInNewContext(source('stage6-lifecycle') + '\n({ installStage6SceneHooks, restoreStage6Hooks })', {
-    quietStage6,
+    quietStage6, stopSceneAudio: h.a.stopSceneAudio,
     abortRandCall() {}, dropBlob() {}, warmRand() {}, linkTrollocs() {}, noteRileyKo() {},
   });
 }
@@ -74,8 +74,24 @@ test('death, game over, then Continue restarts exactly one fight loop', async ()
   k.s.rileyDied(); assert.equal(h.started().filter(n => n.loop).length, 0);
   k.s.music.set('gameover'); h.flush();
   // Base Stage1.continueGame calls music.resumeFight(); the hook's early deathAudio clear does not block it.
-  k.s.continueGame(); await settle(); k.s.update(); await settle();
+  k.s.continueGame(); await h.decode('music-stage6');
   assert.equal(k.s.music.state, 'stage'); assert.equal(h.started().filter(n => n.loop).length, 1);
+});
+
+test('continuing the Be\'lal fight resumes the boss loop past its intro', async () => {
+  const h = audio(), k = kit(h); h.a.unlock();
+  k.s.music.set('boss'); await h.decode('music-boss6');
+  h.contexts[0].currentTime = 10;
+  k.s.rileyDied();
+  k.s.music.set('gameover');
+  k.s.continueGame();
+  const resume = k.s.music.log.find(e => e.from === 'gameover' && e.to === 'boss');
+  assert.ok(resume, 'continue resumes from game over');
+  assert.equal(resume.restart, false);
+  await h.decode('music-boss6');
+  const loop = h.started().filter(n => n.loop);
+  assert.equal(loop.length, 1);
+  assert.ok(loop[0].args[1] > 1, 'playback resumes after the intro, not at loopStart');
 });
 
 // Kimi review 2, finding 3 (not reproduced): aborting a Rand video mid-play (death, quit) restores the duck.

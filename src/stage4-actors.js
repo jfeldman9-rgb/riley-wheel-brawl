@@ -1,3 +1,4 @@
+import { actorId } from './actor-id.js';
 // Scene actors for the pure Cultist and Draghkar cores. Sprites are optional.
 import { LANE_TOP, LANE_BOT, clamp } from './config.js';
 import { Cultist } from './cultists.js';
@@ -21,7 +22,7 @@ function body(e, scene, key, shadowW) {
   e.z = e.z || 0; e.vx = e.vx || 0; e.vy = 0; e.team = 1;
   if (e.gone == null) e.gone = false;
   e.def = { shadowW, team: 1 };
-  if (!e.id) { scene.koCount = (scene.koCount || 0) + 1; e.id = scene.koCount; }
+  if (!e.id) { scene.koCount = (scene.koCount || 0) + 1; e.id = actorId(); }
   const add = scene.add;
   e.shadow = add?.image ? add.image(e.x, e.y, 'shadow') : stub();
   e.sprite = add?.sprite ? add.sprite(e.x, e.y, key) : stub();
@@ -59,7 +60,7 @@ function swing(R) { return !!(R && R.atk && ATK.has(R.state)); }
 
 export class CultistActor extends Cultist {
   constructor(scene, x, y) {
-    super(scene, x, y, { summonVent: (at, c) => scene.kit?.summonVent?.(at, c) });
+    super(scene, x, y, { actorId, summonVent: (at, c) => scene.kit?.summonVent?.(at, c) });
     this.T = { speed: 108, score: 400, boss: false, name: 'CULTIST' };
     body(this, scene, 's4cult', 120);
   }

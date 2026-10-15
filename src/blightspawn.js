@@ -1,5 +1,6 @@
+import { actorId } from './actor-id.js';
 import { launchSpore } from './stage5-spores.js';
-// Stalker and sporepod. Pure cores; sprites live on the actors.
+// Stalker/sporepod; actors own sprites.
 import { clamp } from './config.js';
 import { stage4Delta } from './stage4-time.js';
 import { strikeRiley } from './stage5-hurt.js';
@@ -14,7 +15,7 @@ export const sporeCount = s => (s.spores || []).filter(p => p.alive !== false).l
 export const pounceTells = s => live(s, 'stalker').filter(e => e.state === 'attack' && !e.leaping).length;
 
 function join(scene, e, cap, n) {
-  scene.koCount = (scene.koCount || 0) + 1; e.id = scene.koCount;
+  scene.koCount = (scene.koCount || 0) + 1; e.id = actorId();
   if (n >= cap) { e.alive = false; e.gone = true; e.state = 'gone'; }
   if (scene.enemies && !scene.enemies.includes(e)) scene.enemies.push(e);
 }

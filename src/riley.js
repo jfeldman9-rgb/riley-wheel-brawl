@@ -151,6 +151,14 @@ export class Riley extends Fighter {
     if (!this.fired && this.fi >= fireAt) { this.fired = true; this.scene.fireBalefire(this); }
     if (this.done) { this.scene.endBalefire?.(); this.setState('idle', 'idle'); }
   }
+  releaseHeld() {
+    const e = this.held; this.held = null;
+    if (e) { e.release?.(); if (e.heldBy === this) e.heldBy = null; }
+  }
+  setState(state, anim, ts) {
+    if (state === 'down' || state === 'hurt' || state === 'getup') this.releaseHeld();
+    return super.setState(state, anim, ts);
+  }
   startGrab(e) { this.held = e; e.grabbed(this); this.setState('grab', 'grab'); this.knees = 0; this.holdT = 0; if (Math.random() < 0.4) say('riley_grab_01', this.scene.caption, false); }
   grab(dt, inp) { this.placeHeld(); if (this.st > 0.12) this.setState('hold', 'hold'); }
   placeHeld() { const e = this.held; if (!e) return; e.x = this.x + this.facing * 92; e.y = this.y + 1; e.z = 0; e.face(-this.facing); }
@@ -232,7 +240,7 @@ export class Riley extends Fighter {
   }
   down(dir, h) { this.grabbedBy?.releaseHold('break'); this.lastGrabber = null; this.setState('down', 'knockdown'); this.vx = dir * 360; this.scene.dustLater(this, 0.32); sfx.hurt(); }
   sync() { super.sync(); if (this.grabbedBy && this.state === 'grabbed') this.sprite.setDepth(1000 + this.y + 1); }
-  respawn() { this.grabbedBy?.releaseHold('break'); this.lastGrabber = null; this.alive = true; this.hp = this.maxHp; this.saidin = Math.max(this.saidin, 60); this.setState('getup', 'getup'); this.inv = 2.5; say('riley_respawn_01', this.scene.caption, false); }
+  respawn() { this.releaseHeld(); this.grabbedBy?.releaseHold('break'); this.lastGrabber = null; this.alive = true; this.hp = this.maxHp; this.saidin = Math.max(this.saidin, 60); this.setState('getup', 'getup'); this.inv = 2.5; say('riley_respawn_01', this.scene.caption, false); }
   // noMeter: balefire hits build no saidin (it just spent the full meter)
   landedHit(dmg, noMeter = false) { this.combo++; this.comboT = 1.6; this.maxCombo = Math.max(this.maxCombo, this.combo); if (!noMeter) this.saidin = Math.min(100, this.saidin + 3 * (this.scene.powers ? this.scene.powers.meterMul() : 1)); this.score += dmg * 10 * (1 + Math.floor(this.combo / 5)); }
 }

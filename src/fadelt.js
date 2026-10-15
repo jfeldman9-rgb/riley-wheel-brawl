@@ -1,3 +1,4 @@
+import { actorId } from './actor-id.js';
 // Myrddraal lieutenant. Stage 3 shadow-blink only: no fear, no split. Linked Trollocs reel when it dies.
 import { clamp, LANE_TOP, LANE_BOT } from './config.js';
 import { s6Scale, isPainted } from './stage6-paint.js';
@@ -42,7 +43,7 @@ export class Fadelt {
     this.hitI = 0; this.struck = false; this.counterUsed = false; this.blinkCd = 2.2; this.links = 0;
     this.def = { shadowW: 150, team: 1 };
     this.T = { speed: FADELT.speed, score: FADELT.score, boss: false, name: 'MYRDDRAAL LIEUTENANT' };
-    scene.koCount = (scene.koCount || 0) + 1; this.id = scene.koCount;
+    scene.koCount = (scene.koCount || 0) + 1; this.id = actorId();
     const add = scene.add;
     this.shadow = add?.image ? add.image(x, y, 'shadow') : stub();
     this.sprite = add?.sprite ? add.sprite(x, y, 's6fade', 0) : stub();

@@ -46,7 +46,7 @@ function audio() {
 function hooks(h) {
   const { quietStage6 } = vm.runInNewContext(source('stage6-audio') + '\n({ quietStage6 })', { stopSceneAudio: h.a.stopSceneAudio });
   return vm.runInNewContext(source('stage6-lifecycle') + '\n({ installStage6SceneHooks, restoreStage6Hooks })', {
-    quietStage6,
+    quietStage6, stopSceneAudio: h.a.stopSceneAudio,
     abortRandCall() {}, dropBlob() {}, warmRand() {}, linkTrollocs() {}, noteRileyKo() {},
   });
 }
@@ -86,7 +86,7 @@ test('Riley death stops active speech and fight music; respawn resumes one boss 
   const h = audio(), k = kit(h); h.a.unlock(); k.s.music.set('boss'); await h.decode('music-boss6');
   h.a.say('belal_intro_01'); await h.decode('belal_intro_01'); const voice = h.started().find(n => n.buffer.id === 'belal_intro_01');
   k.s.rileyDied(); assert.equal(voice.stops, 1); h.flush(); assert.equal(h.started().length, 0);
-  k.s.riley.alive = true; k.s.update(); await settle();
+  k.s.riley.alive = true; k.s.update(); await h.decode('music-boss6');
   assert.equal(h.started().filter(n => n.loop).length, 1); assert.equal(k.s.music.state, 'boss');
 });
 
@@ -102,7 +102,7 @@ test('Rand video silences the actual backend and speech, then restores exactly o
   try {
     assert.equal(r.playCall(e.scene, () => {}), true); assert.ok(e.scene.cutscene);
     h.flush(); assert.equal(h.started().length, 0, 'gainMul alone never reaches audio.js');
-    e.videos[0].fire('ended'); await settle();
+    e.videos[0].fire('ended'); await h.decode('music-boss6');
     assert.equal(e.scene.music.state, 'boss'); assert.equal(h.started().filter(n => n.loop).length, 1);
     r.abortRandCall(e.scene);
   } finally { q.delete('cutscenes'); }

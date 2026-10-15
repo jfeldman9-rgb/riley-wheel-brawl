@@ -9,7 +9,8 @@ import { createStage5View, sunAmbient } from './stage5-view.js';
 import { updateSpores } from './stage5-spores.js';
 import { armStory5, freeStory5 } from './stage5-art.js';
 import { bootStage5Memory } from './stage5-lifecycle.js';
-import { preloadClips, releaseClips, sfx } from './audio.js';
+import { resetStage5Visit } from './stage5-demand.js';
+import { preloadClips, releaseClips, sfx, MUSIC } from './audio.js';
 import { STAGE5_VOICES, VOICE_FILES, stage5Say, bark, drainHum, sfxCue } from './stage5-voice.js';
 import { clearStage5Hazards, clearStage5Zone, installStage5SceneHooks, installStage5RileyHook, restoreStage5Hooks } from './stage5-lifecycle.js';
 import { stage4Delta } from './stage4-time.js';
@@ -56,6 +57,7 @@ export class Stage5Kit {
   }
   build() {
     const s = this.s;
+    resetStage5Visit(s);
     installStage5SceneHooks(this);
     this.view = createStage5View(s);
     this.view.buildBackdrop();
@@ -191,7 +193,7 @@ export class Stage5Kit {
     if (i === 2 && !this.stats.glimpses) { this.bump('glimpses'); this.view?.glimpse?.(); this.s.hud?.flashText('THERE, ON THE RIDGE'); }
   }
   clearHazards() { clearStage5Hazards(this); }
-  destroy() { drainHum(false); this.clearHazards(); this.view?.destroy(); restoreStage5Hooks(this); if (this.s.riley) this.s.riley.fogSlow = 0; }
+  destroy() { this.backdrops?.destroy?.(); drainHum(false); this.clearHazards(); this.view?.destroy(); restoreStage5Hooks(this); if (this.s.riley) this.s.riley.fogSlow = 0; }
   threats() {
     const z = this.s.zoneI < 0 ? 0 : this.s.zoneI, b = this.blight, a = this.arena;
     return {

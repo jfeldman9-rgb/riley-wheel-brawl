@@ -33,7 +33,7 @@ for (const n of [1, 2, 3, 4, 5, 6]) test(`Stage ${n} through the boss draws no p
   } finally { h.destroy(); }
 }));
 for (const to of [1, 2, 3, 4, 5, 6]) test(`6 → ${to}: variant restoration invalidates stale animation frames and queues one page per key`, () => {
-  const compact = to >= 5, keys = new Set(['riley-0', 'riley-0_nl']), deleted = [], atlas = [], images = [], removedAnims = [];
+  const compact = to >= 4, keys = new Set(['riley-0', 'riley-0_nl']), deleted = [], atlas = [], images = [], removedAnims = [];
   const scene = { loadedStage: to, cache: { json: { get: () => ({ pages: ['riley-0'], anims: [{ name: 'riley_walk' }] }) } },
     textures: { exists: k => keys.has(k), get: () => ({ dataSource: [{ image: { src: 'http://localhost/assets/stage5/normals/riley-0_n.webp' } }] }), remove(k) { keys.delete(k); deleted.push(k); } },
     anims: { exists: () => true, get: k => ({ destroy() { removedAnims.push(k); } }), remove: k => removedAnims.push(k) }, load: { atlas: row => atlas.push(row), image: (...a) => images.push(a) } };
@@ -41,10 +41,14 @@ for (const to of [1, 2, 3, 4, 5, 6]) test(`6 → ${to}: variant restoration inva
   if (compact) { assert.deepEqual(deleted, []); assert.deepEqual(atlas, []); assert.deepEqual(images, []); assert.deepEqual(removedAnims, []); }
   else { assert.deepEqual(deleted, ['riley-0', 'riley-0_nl']); assert.deepEqual(removedAnims, ['riley_walk']); assert.equal(atlas.length, 1); assert.equal(images.length, 1); assert.equal(atlas[0].normalMap, 'assets/chars/riley-0_n.webp'); assert.equal(images[0][1], 'assets/chars/riley-0_nl.webp'); }
 });
-test('C3 audit includes all Stage 6 sibling modules and excludes them from the pre-fight budget', () => {
+test('C3 audit caps Stage 6 source on its own line and also counts it in the pre-fight sum', () => {
   const a = audit(); assert.ok(a.preFight.inventoryUpperBoundBytes < 25_000_000);
   const siblings = readdirSync('src').filter(f => /^(stage6|rand-call|belal|grayman|fadelt|bot-stage6).*\.js$/.test(f));
-  for (const f of siblings) { assert.ok(a.stage6.source.files.includes('src/' + f), f); assert.ok(!a.preFight.files.includes('src/' + f), f); }
+  for (const f of siblings) {
+    assert.ok(a.stage6.source.files.includes('src/' + f), f);
+    assert.ok(a.preFight.files.includes('src/' + f), f);
+    assert.ok(!a.preFight.files.some(p => p.startsWith('assets/stage6/') || p.startsWith('assets/bg6/')), f);
+  }
   assert.equal(a.stage6.source.status, 'PASS');
 });
 test('the production Stage 6 bot clears without powers', () => withSeed(1, () => {
@@ -66,6 +70,6 @@ for (const to of [1, 2, 3, 4, 5, 6]) test(`C4 blob-backed Phaser normals preserv
     anims: { exists: () => true, remove() {} }, load: { atlas: row => atlas.push(row), image: (...a) => images.push(a) } };
   queueCharPages(s, ['riley']); keys.add('riley-0'); keys.add('riley-0_nl'); atlas.length = images.length = 0; s.loadedStage = to;
   queueCharPages(s, ['riley']);
-  if (to >= 5) { assert.equal(atlas.length, 0); assert.equal(images.length, 0); assert.deepEqual(removed, []); }
+  if (to >= 4) { assert.equal(atlas.length, 0); assert.equal(images.length, 0); assert.deepEqual(removed, []); }
   else { assert.deepEqual(removed, ['riley-0', 'riley-0_nl']); assert.equal(atlas.length, 1); assert.equal(atlas[0].normalMap, 'assets/chars/riley-0_n.webp'); }
 });

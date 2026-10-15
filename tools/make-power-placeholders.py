@@ -9,6 +9,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 OUT = Path(__file__).resolve().parent.parent / 'assets' / 'powers'
+# The lightning sheet is a reference grid. The game plays riley-1, and assets/powers is what the pre-fight audit ships.
+REF = Path(__file__).resolve().parent.parent / 'art-in' / 'powers'
 FONT = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 font = lambda n: ImageFont.truetype(FONT, n)
 
@@ -59,7 +61,8 @@ def main():
     def riley_guides(d, x0, y0, fw, fh):   # feet baseline y=610 and the 0.45 anchor, as in assets/chars/riley.anims.json
         d.line([(x0, y0 + 610), (x0 + fw, y0 + 610)], fill=(255, 90, 90), width=2)
         d.line([(x0 + int(fw * 0.45), y0), (x0 + int(fw * 0.45), y0 + fh)], fill=(255, 90, 90), width=1)
-    card(OUT / 'riley_lightning.png', 2880, 1280, blue, ['PLACEHOLDER riley_lightning', '960x640 per frame, 3x2 grid', 'feet on red baseline y=610, anchor x=432'], [40, 30, 26], frames=6, cols=3, guides=riley_guides)
+    REF.mkdir(parents=True, exist_ok=True)
+    card(REF / 'riley_lightning.png', 2880, 1280, blue, ['PLACEHOLDER riley_lightning', '960x640 per frame, 3x2 grid', 'feet on red baseline y=610, anchor x=432'], [40, 30, 26], frames=6, cols=3, guides=riley_guides)
 
 if __name__ == '__main__':
     main()

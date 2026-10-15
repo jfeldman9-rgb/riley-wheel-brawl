@@ -1,5 +1,5 @@
 // Freeze-guard recovery (restart fix). The Reload card reopens the stage the player was on instead of the title.
-// Kept out of the Stage 1 pre-fight sum; tools/audit-stage1.mjs counts it under restartHotfix.
+// In the Stage 1 pre-fight sum (main.js imports it) and capped again under restartHotfix.
 
 /** The current URL with ?stage=N&autostart=1&resume=1; every other parameter is kept. */
 export function resumeUrl(href, stage) {
