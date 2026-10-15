@@ -4,7 +4,8 @@ import './helpers/install-location.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, statSync, existsSync } from 'node:fs';
-import { CutscenePlayer, STAGE_CLIPS, SKIP_ACTIONS, cutscenesEnabled, createSeen, START_MS, STALL_MS, GUARD_MS, SEEN_KEY } from '../src/cutscene.js';
+import { createHash } from 'node:crypto';
+import { CutscenePlayer, STAGE_CLIPS, EVENT_CLIPS, SKIP_ACTIONS, cutscenesEnabled, createSeen, START_MS, STALL_MS, GUARD_MS, SEEN_KEY } from '../src/cutscene.js';
 import { cutsceneWatchdog } from '../src/guard.js';
 import { audit } from '../tools/audit-stage1.mjs';
 
@@ -303,30 +304,38 @@ test('silence() fades the director out once and leaves fightState for the stage 
 
 test('shipped clips: every clip the game can play exists, H.264/AAC MP4 with faststart, posters small, provenance complete', () => {
   const status = JSON.parse(readFileSync('assets/cutscenes/ART_STATUS.json', 'utf8'));
-  const ids = [...new Set(Object.values(STAGE_CLIPS).flat())].sort();
+  const ids = [...new Set([...Object.values(STAGE_CLIPS), ...Object.values(EVENT_CLIPS)].flat())].sort();
   assert.deepEqual(status.entries.map(x => x.id).sort(), ids);
   let total = 0;
   for (const id of ids) {
     const mp4 = `assets/cutscenes/${id}.mp4`, jpg = `assets/cutscenes/${id}.jpg`;
     assert.ok(existsSync(mp4) && existsSync(jpg), id);
     const b = readFileSync(mp4), size = b.length; total += size + statSync(jpg).size;
-    // ~1.5-3 MB each; the 18 s battle edit at CRF 27 is the one exception (~4.4 MB)
-    assert.ok(size >= 1_000_000 && size <= (id === 'intro_battle' ? 4_700_000 : 3_200_000), `${id} ${size} bytes`);
+    // Keep existing per-clip limits; the supplied 32 s T-Rex has its own 4.4 MB cap.
+    const cap = id === 'intro_battle' ? 4_700_000 : id === 'trex' ? 4_400_000 : 3_200_000;
+    assert.ok(size >= 1_000_000 && size <= cap, `${id} ${size} bytes`);
     assert.ok(statSync(jpg).size < 60_000, `${id} poster`);
     assert.equal(b.toString('ascii', 4, 8), 'ftyp');
     assert.ok(b.indexOf('moov') < b.indexOf('mdat'), `${id}: moov before mdat (+faststart) so it streams`);
     assert.ok(b.indexOf('avc1') > 0 && b.indexOf('mp4a') > 0, `${id}: H.264 + AAC`);
     const e = status.entries.find(x => x.id === id);
-    assert.equal(e.source, 'grok-imagine'); assert.equal(e.placeholder, false);
-    assert.match(e.art.approvedBy, id === 'stage6' ? /Jason.*Grok Bot.*2026-10-10/ : /Jason.*Grok Bot.*2026-10-07/);
-    assert.match(e.art.sourceSha256, /^[0-9a-f]{64}$/);
+    assert.equal(e.placeholder, false);
+    if (id === 'trex' || id === 'twix') {
+      assert.equal(e.source, 'user-supplied');
+      assert.equal(e.durationSeconds, id === 'trex' ? 32 : 24);
+      for (const file of [mp4, jpg]) assert.equal(e.sha256[file], createHash('sha256').update(readFileSync(file)).digest('hex'));
+    } else {
+      assert.equal(e.source, 'grok-imagine');
+      assert.match(e.art.approvedBy, id === 'stage6' ? /Jason.*Grok Bot.*2026-10-10/ : /Jason.*Grok Bot.*2026-10-07/);
+      assert.match(e.art.sourceSha256, /^[0-9a-f]{64}$/);
+    }
     assert.equal(e.bytes[mp4], size);
   }
-  assert.ok(total < 25_000_000, `total ${total}`);   // the audit's cutscenes.clips budget; Stage 6's clip took it past the old 22 MB margin
+  assert.ok(total < 32_400_000, `total ${total}`); // Original 25 MB allowance + 7.4 MB for the two supplied clips/posters.
   assert.equal(existsSync('assets/cutscenes/stage5.mp4'), false, 'Stage 5 is not live: its clip does not ship yet');
   const a = audit();
   assert.equal(a.preFight.inventoryStatus, 'PASS');
-  assert.equal(a.cutscenes.source.status, 'PASS'); assert.deepEqual(a.cutscenes.source.files.sort(), ['src/cutscene-hooks.js', 'src/cutscene.js']);
+  assert.equal(a.cutscenes.source.status, 'PASS'); assert.deepEqual(a.cutscenes.source.files.sort(), ['src/cutscene-hooks.js', 'src/cutscene-scene.js', 'src/cutscene.js', 'src/twix-video.js']);
   assert.equal(a.cutscenes.clips.status, 'PASS'); assert.equal(a.cutscenes.clips.bytes, total);
   const main = readFileSync('src/main.js', 'utf8');
   assert.match(main, /installCutscenes\(\);/);

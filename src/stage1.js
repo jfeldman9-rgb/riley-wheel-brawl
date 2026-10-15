@@ -9,6 +9,7 @@ import { Bot } from './bot.js';
 import { Loial } from './loial.js';
 import { Powers, POWERS, TER_POWERS, DROPS, BOSS_DROP, PICKUP_LIFE, PICKUP_BLINK, TWIX_DROP_Z, TWIX_ART_KEYS, queuePowerArt, makePowerAnims, iconKey } from './powers.js';
 import { Cutscene, TWIX_SCRIPT } from './twix.js';
+import { startTwix, scheduleTwixDebug } from './twix-video.js';
 import { STAGES, stageEnabled, maxStage, stageFromQuery, resolveStage, STAGE_CHARS, STAGE_TEXTURES } from './stages.js';
 import { WHITECLOAKS } from './whitecloaks.js';
 import { DARKFRIENDS, CUTTHROAT } from './darkfriends.js';
@@ -295,6 +296,7 @@ export class Stage1 extends Phaser.Scene {
     if (this.titleSel && this.titleSel !== this.stageNo) { this.startRequested = false; return this.scene.restart({ stage: this.titleSel, autostart: true }); }
     this.startRequested = false; this.started = true; this.inp.flushPresses?.(); unlock(); preloadVoices(); this.hud.hideTitle(); this.time0 = this.time.now;
     perf.reset();
+    scheduleTwixDebug(this);
     if (this.stageDef.start) return this.stageDef.start(this);
   }
   startStage2() {
@@ -603,17 +605,7 @@ export class Stage1 extends Phaser.Scene {
   }
   // ---------- the Twix campfire cutscene ----------
   startTwixCutscene() {
-    if (this.cutscene || this.victoryPending || this.ended || this.gameOver) return false;
-    sfx.pickup();
-    const cs = this.cutscene = new Cutscene(TWIX_SCRIPT, {
-      onLine: line => { if (/TROLLOC/.test(line.who)) sfx.grumble(); say(line.id, null); this.hud.cutsceneLine(line); },
-      onEnd: how => this.endTwixCutscene(how),
-    });
-    this.setPauseReason('cutscene', true);
-    this.music?.set('cutscene');
-    this.hud.showCutscene(cs);
-    cs.begin();
-    return true;
+    return startTwix(this);
   }
   /** Painted story panels share the Twix pause and HUD path. */
   startCutscene(script, panels, after) {

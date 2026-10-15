@@ -1,5 +1,6 @@
 import { sfx } from './audio.js';
 import { stage7Say } from './stage7-voice.js';
+import { playSceneVideo } from './cutscene-scene.js';
 export const STAGE7_CHARS = Object.freeze(['riley', 'grunt', 'spear']);
 export const STAGE7_TEXTURES = Object.freeze([
   'bg7far', 'bg7mid', 'bg7mid2', 'bg7mid3', 'bg7mid4', 'bg7floor', 'bg7floor2', 'bg7floor3',
@@ -32,6 +33,9 @@ export const STAGE7 = {
     s.kit?.beginOutro();
     const lines = ['st7_clear_01','st7_clear_02','st7_clear_03','riley_st7_victory_01'];
     [0.7,5.8,9.0,11.4].forEach((t,i) => s.kit?.later(t, () => stage7Say(lines[i], s.caption)));
-    s.kit?.later(13.4, () => { s.ended = true; sfx.levelClear(); s.hud?.stageClear(s.stats()); s.music?.set('clear'); s.kit?.later(0.9, () => { s.clearShown = true; }); });
+    s.kit?.later(13.4, () => {
+      const clear = () => { s.ended = true; sfx.levelClear(); s.hud?.stageClear(s.stats()); s.music?.set('clear'); s.kit?.later(0.9, () => { s.clearShown = true; }); };
+      if (!playSceneVideo(s, 'trex', clear)) clear();
+    });
   },
 };

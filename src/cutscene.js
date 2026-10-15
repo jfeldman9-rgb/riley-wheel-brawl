@@ -16,6 +16,8 @@ export const STAGE_CLIPS = Object.freeze({
   6: Object.freeze(['stage6']),
   7: Object.freeze([]), // Optional stage7/S7 clip awaits the rear-view review.
 });
+/** In-fight snack break and post-victory bonus; neither is a stage-entry clip. */
+export const EVENT_CLIPS = Object.freeze({ twix: Object.freeze(['twix']), trex: Object.freeze(['trex']) });
 /** Game actions that skip the current clip. Stick directions and run do not. Start/pause (Enter, Esc) skip the whole sequence. */
 export const SKIP_ACTIONS = Object.freeze(new Set(['attack', 'jump', 'special', 'power', 'assist', 'start', 'pause']));
 export const START_MS = 4000, STALL_MS = 3000, MAX_CLIP_MS = 30000, TICK_MS = 250, GUARD_MS = 450, VOLUME = 0.85;
@@ -68,7 +70,7 @@ export class CutscenePlayer {
   bless() {
     try {
       const v = this.element(), r = this.run;
-      if (r && r.muted) { v.muted = false; r.muted = false; this.log.push('unmuted'); return; }
+      if (r && r.muted && !r.userMuted) { v.muted = false; r.muted = false; this.log.push('unmuted'); return; }
       if (r || this.blessed) return;
       this.blessed = true;
       const p = v.play(); p?.catch?.(() => { });
@@ -87,7 +89,7 @@ export class CutscenePlayer {
       css(r.hint, { right: 'max(14px, env(safe-area-inset-right))', bottom: 'max(12px, env(safe-area-inset-bottom))' });
     }
   }
-  play(ids, { done = () => { }, progress = () => { }, touch = false, frame = null } = {}) {
+  play(ids, { done = () => { }, progress = () => { }, touch = false, frame = null, muted = false } = {}) {
     if (this.run) this.finish(this.run, null);
     const doc = this.root.document, v = this.element();
     const overlay = css(doc.createElement('div'), { position: 'fixed', inset: '0', left: '0', top: '0', right: '0', bottom: '0', zIndex: '80',
@@ -98,7 +100,7 @@ export class CutscenePlayer {
       letterSpacing: '0.04em', pointerEvents: 'none', opacity: '0.9' });
     hint.id = 'rwb-cutscene-hint'; hint.textContent = touch ? 'TAP TO SKIP ▶▶' : 'PRESS ANY BUTTON TO SKIP ▶▶';
     overlay.appendChild(v); overlay.appendChild(hint);
-    const r = this.run = { ids: [...ids], i: -1, done, progress, overlay, hint, muted: false, ended: false, ticks: 0, t0: this.now(), how: null, timer: null };
+    const r = this.run = { ids: [...ids], i: -1, done, progress, overlay, hint, muted, userMuted: muted, ended: false, ticks: 0, t0: this.now(), how: null, timer: null };
     r.padHeld = this.padDown(); r.frame = frame;
     const relayout = () => this.layout(r);
     this.layout(r);

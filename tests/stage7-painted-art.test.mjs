@@ -62,7 +62,8 @@ test('all 33 painted keys ship, atlases have state fields, and assets fit their 
     key: 's7earth', url: 'assets/stage7/props/s7earth.webp', frameWidth: 128, frameHeight: 128, present: true,
   });
   const a = audit();
-  assert.equal(a.preFight.inventoryUpperBoundBytes, 24_948_791);
+  // Twix video/fallback wiring is explicitly counted under cutscenes.source.
+  assert.equal(a.preFight.inventoryUpperBoundBytes, 24_948_472);
   assert.equal(a.stage7.art.status, 'PASS');
 });
 

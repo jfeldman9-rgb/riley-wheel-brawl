@@ -424,6 +424,7 @@ export function toggleMusic() {
   else if (!musicOn) for (const k in tracks) { const T = tracks[k]; T.pos = trackPos(T); if (T.el) T.el.pause(); if (T.src) { try { T.src.stop(); } catch (e) { } T.src.disconnect(); T.src = null; } T.playing = false; }
   return musicOn;
 }
+export function isMuted() { return muted; }
 export function toggleMute() {
   muted = !muted; if (master) master.gain.value = muted ? 0 : 0.8;
   for (const k in tracks) if (tracks[k].el) tracks[k].el.muted = muted;

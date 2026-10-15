@@ -66,7 +66,7 @@ export function audit() {
   const RESTART_SRC = new Set(['quality-governor.js', 'recovery.js']);
   // Video cutscenes: the controller and its hooks load with main.js but the clips stream on demand, never before
   // the first fight. Their own budget line, same split as restartHotfix (the clips are under cutscenes.clips).
-  const CUTSCENE_SRC = new Set(['cutscene.js', 'cutscene-hooks.js']);
+  const CUTSCENE_SRC = new Set(['cutscene.js', 'cutscene-hooks.js', 'cutscene-scene.js', 'twix-video.js']);
   const cutsceneSourceFiles = [];
   // Stage 3 FX stand-ins (painted over the labelled prop/FX cards at Stage 3 entry): their own line under stage3.
   const STAGE3_SRC = new Set(['stage3-fx-art.js']);
@@ -123,12 +123,14 @@ export function audit() {
   const restartSourceBytes = restartSourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const restartSourceBudget = 16 * 1024;
   const cutsceneSourceBytes = cutsceneSourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
-  const cutsceneSourceBudget = 20 * 1024;
+  // Shared event-video lifecycle and Twix fallback/debug wiring join the original player/hooks.
+  const cutsceneSourceBudget = 24 * 1024;
   const stage3SourceBytes = stage3SourceFiles.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
   const stage3SourceBudget = 8 * 1024;
   const cutsceneClips = existsSync(resolve(ROOT, 'assets/cutscenes')) ? readdirSync(resolve(ROOT, 'assets/cutscenes')).filter(n => /\.(mp4|jpg)$/.test(n)).sort().map(n => `assets/cutscenes/${n}`) : [];
   const cutsceneClipBytes = cutsceneClips.reduce((n, p) => n + statSync(resolve(ROOT, p)).size, 0);
-  const cutsceneClipBudget = 25_000_000;
+  // Existing 25 MB allowance plus the supplied T-Rex (4.36 MB) and Twix (3.03 MB) files.
+  const cutsceneClipBudget = 32_400_000;
   const stage4SourceBudget = 192 * 1024;
   const stage5SourceBudget = 192 * 1024;
   const stage3VoiceBudget = 18 * 200 * 1024, stage3MusicBudget = 2 * 1_200_000;

@@ -281,6 +281,52 @@
     "likeness": "Riley and Rand appear only from behind; no real person's face is depicted.",
     "approvedBy": "Jason F (owner) via Grok Bot, 2026-10-10"
    }
+  },
+  {
+   "id": "trex",
+   "files": [
+    "assets/cutscenes/trex.mp4",
+    "assets/cutscenes/trex.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/trex.mp4": "7c6420033798b18035e1bd136c31456fe33c803e2bfe23b5d3cbd3a8143807c0",
+    "assets/cutscenes/trex.jpg": "c821c85d5abb814ff4bb28365762331f654dec1a37d58cf6f8074e2aef10c65f"
+   },
+   "bytes": {
+    "assets/cutscenes/trex.mp4": 4314854,
+    "assets/cutscenes/trex.jpg": 39992
+   },
+   "durationSeconds": 32,
+   "placeholder": false,
+   "source": "user-supplied",
+   "plays": "After Stage 7 outro/dialogue, before the clear card",
+   "art": {
+    "status": "Supplied web-encoded video and poster; original generation provenance not provided",
+    "encode": "Supplied unchanged: H.264 960x540 + AAC, faststart; not re-encoded in this change"
+   }
+  },
+  {
+   "id": "twix",
+   "files": [
+    "assets/cutscenes/twix.mp4",
+    "assets/cutscenes/twix.jpg"
+   ],
+   "sha256": {
+    "assets/cutscenes/twix.mp4": "f418b06ea049bd92e390e5e51c6fdd7270f3f07befa4812504a0744c6221cab3",
+    "assets/cutscenes/twix.jpg": "6553bd16997e0ae6b43fa4747bed54ee15032b76ea063f818b0863b0ab53dc55"
+   },
+   "bytes": {
+    "assets/cutscenes/twix.mp4": 2983893,
+    "assets/cutscenes/twix.jpg": 39890
+   },
+   "durationSeconds": 24,
+   "placeholder": false,
+   "source": "user-supplied",
+   "plays": "Stage 1 Twix pickup snack break; painted panels on video failure",
+   "art": {
+    "status": "Supplied web-encoded video and poster; original generation provenance not provided",
+    "encode": "Supplied unchanged: H.264 960x540 + AAC, faststart; not re-encoded in this change"
+   }
   }
  ]
 }

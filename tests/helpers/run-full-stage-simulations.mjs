@@ -25,7 +25,7 @@ for (const mode of FULL_STAGE_MODES) for (const seed of FULL_STAGE_SEEDS) withSe
   } finally { h.destroy(); }
 });
 const sourceFiles = [
-  ...['stage1', 'riley', 'loial', 'enemies', 'fighter', 'bot', 'input', 'fx', 'assets', 'config', 'audio', 'powers', 'twix'].map(name => `src/${name}.js`),
+  ...['stage1', 'riley', 'loial', 'enemies', 'fighter', 'bot', 'input', 'fx', 'assets', 'config', 'audio', 'powers', 'twix', 'twix-video', 'cutscene-scene', 'cutscene'].map(name => `src/${name}.js`),
   ...['riley', 'grunt', 'spear', 'hound', 'chief', 'loial'].map(name => `assets/chars/${name}.anims.json`),
   'assets/bg/plates.json', 'assets/props/staves.json', 'lib/phaser.min.js',
   'tests/helpers/animation-clock.mjs', 'tests/animation-clock.test.mjs', 'tests/helpers/stage1-simulation.mjs',
@@ -36,7 +36,8 @@ const sourceSha256 = Object.fromEntries(sourceFiles.map(path => [path, createHas
 const report = {
   schemaVersion: 1,
   evidenceKind: 'deterministic combat-logic simulation',
-  baseGitCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).trim(),
+  // Sandboxes without synchronous subprocess support can supply the checked revision.
+  baseGitCommit: process.env.RWB_BASE_GIT_COMMIT || execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).trim(),
   sourceSha256,
   reproduction: 'node tests/helpers/run-full-stage-simulations.mjs > docs/stage1/evidence/full-stage-simulation.json',
   parameters: { seeds: FULL_STAGE_SEEDS, modes: FULL_STAGE_MODES, updateSeconds: 1 / 60, deadlineSeconds: 600, settleSeconds: 15,
