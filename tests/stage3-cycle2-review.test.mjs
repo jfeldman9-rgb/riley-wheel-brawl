@@ -12,6 +12,7 @@ import { STAGE6_VOICES } from '../src/stage6-voice.js';
 import { VH, VW } from '../src/config.js';
 import { audit } from '../tools/audit-stage1.mjs';
 
+const STAGE2_VOICE = /^(st2_|byar_|zealot_|archer_|riley_st2|riley_ribbon|riley_mud)/;
 const STAGE3_VOICE = /^(st3_|cutthroat_|fade_|riley_st3_|riley_escape_|riley_counter_)/;
 const STAGE4_VOICE = /^(st4_|draghkar_|cultist_|riley_fog_|riley_tower_|riley_bridge_|riley_light_|riley_st4_)/;
 
@@ -100,28 +101,31 @@ test('PLACEHOLDER ART clears the perf readout and is not recomputed every frame'
   } finally { q.delete('debug'); }
 });
 
-test('Stage 1 pre-fight budget keeps Stage 2 voices and Stage 3 has its own cap', () => {
+test('Stage 1 pre-fight budget omits Stage 2 voices and keeps Stage 3 on its own line', () => {
   const voices = readdirSync('assets/audio/voice').filter(name => name.endsWith('.mp3'));
+  const stage2Names = voices.filter(name => STAGE2_VOICE.test(name));
   const stage3Names = voices.filter(name => STAGE3_VOICE.test(name));
   const stage4Names = voices.filter(name => STAGE4_VOICE.test(name));
   const stage5Set = new Set(STAGE5_VOICES.map(id => `${id}.mp3`));
   const stage6Set = new Set(STAGE6_VOICES.map(id => `${id}.mp3`));
-  const earlier = voices.filter(name => !STAGE3_VOICE.test(name) && !STAGE4_VOICE.test(name) && !stage5Set.has(name) && !stage6Set.has(name));
+  const earlier = voices.filter(name => !STAGE2_VOICE.test(name) && !STAGE3_VOICE.test(name) && !STAGE4_VOICE.test(name) && !stage5Set.has(name) && !stage6Set.has(name));
   const sum = names => names.reduce((n, name) => n + statSync(`assets/audio/voice/${name}`).size, 0);
   assert.deepEqual(stage3Names.map(name => name.replace(/\.mp3$/, '')).sort(), [...STAGE3_VOICES].sort());
-  assert.ok(earlier.some(name => name.startsWith('byar_')), 'Stage 2 voices are still in the tree');
+  assert.ok(stage2Names.some(name => name.startsWith('byar_')), 'Stage 2 voices are still in the tree');
 
   const data = audit();
   assert.equal(data.preFight.inventoryStatus, 'PASS');
   assert.ok(data.preFight.inventoryUpperBoundBytes <= data.preFight.budgetBytes);
   assert.equal(data.preFight.countedVoiceBytes, sum(earlier));
+  assert.ok(stage2Names.every(name => data.preFight.notFetched.files.includes(`assets/audio/voice/${name}`)));
+  assert.ok(stage2Names.every(name => !data.preFight.files.includes(`assets/audio/voice/${name}`)));
   assert.equal(data.stage3.voices.count, STAGE3_VOICES.length);
   assert.equal(data.stage3.voices.bytes, sum(stage3Names));
   assert.equal(data.stage3.voices.status, 'PASS');
   assert.equal(data.stage3.music.status, 'PASS');
   assert.ok(data.stage3.music.bytes > 0);
-  assert.ok(data.preFight.inventoryUpperBoundBytes + data.stage3.voices.bytes > data.preFight.budgetBytes,
-    'Stage 3 voices do not fit the Stage 1 gate; they must not be hidden inside it');
+  assert.ok(!stage3Names.some(name => data.preFight.files.includes(`assets/audio/voice/${name}`)),
+    'Stage 3 voices stay on their own line, outside the Stage 1 gate');
   assert.deepEqual(stage4Names.map(name => name.replace(/\.mp3$/, '')).sort(), [...STAGE4_VOICES].sort());
   assert.equal(data.stage4.voices.count, STAGE4_VOICES.length);
   assert.equal(data.stage4.voices.bytes, sum(stage4Names));
@@ -129,6 +133,6 @@ test('Stage 1 pre-fight budget keeps Stage 2 voices and Stage 3 has its own cap'
   assert.equal(data.stage4.music.status, 'PASS');
   assert.ok(data.stage4.music.bytes > 0);
   assert.equal(data.stage4.source.status, 'PASS');
-  assert.ok(data.preFight.inventoryUpperBoundBytes + data.stage4.voices.bytes > data.preFight.budgetBytes,
-    'Stage 4 voices do not fit the Stage 1 gate; they must not be hidden inside it');
+  assert.ok(!stage4Names.some(name => data.preFight.files.includes(`assets/audio/voice/${name}`)),
+    'Stage 4 voices stay on their own line, outside the Stage 1 gate');
 });

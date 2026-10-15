@@ -1,3 +1,4 @@
+import { actorId } from './actor-id.js';
 // Gray Man. A plain assassin the eye slides off. One live. No grab.
 import { clamp, LANE_TOP, LANE_BOT } from './config.js';
 import { s6Scale, isPainted } from './stage6-paint.js';
@@ -43,7 +44,7 @@ export class GrayMan {
     this.def = { shadowW: 110, team: 1 };
     this.T = { speed: GRAY.speed, score: GRAY.score, boss: false, name: 'GRAY MAN' };
     const live = (scene.enemies || []).filter(o => o !== this && o.alive && o.type === 'grayman').length;
-    scene.koCount = (scene.koCount || 0) + 1; this.id = scene.koCount;
+    scene.koCount = (scene.koCount || 0) + 1; this.id = actorId();
     if (live >= GRAY.cap) { this.alive = false; this.gone = true; this.capped = true; }
     body(this, scene);
     if (scene.enemies && !scene.enemies.includes(this)) scene.enemies.push(this);

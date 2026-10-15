@@ -80,7 +80,7 @@ export function createStage5View(scene) {
           green.setFlipX?.(face < 0);
           green.setFrame?.(greenFrame(beat.green.state));
           green.setScale?.(s5Scale(scene, 's5green', 2.75));
-          green.setDepth?.(1000 + LANE_BOT + 24);
+          green.setDepth?.(1000 + 630);
         }
       }
       const q = kit?.s?.fx?.quality ?? 5;
@@ -114,6 +114,7 @@ export function createStage5View(scene) {
       });
     },
     layoutPlates(keep) {
+      if (scene.sys?.isActive?.() === false) return;
       const plates = new Set([...PLATES5, ...FLOORS5]);
       const have = [...keep].filter(k => plates.has(k) && scene.textures?.exists?.(k)).sort().join(',');
       const sig = [...keep].filter(k => k !== 'bg5far').sort().join(',') + '|' + have;

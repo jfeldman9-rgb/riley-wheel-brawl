@@ -1,3 +1,4 @@
+import { actorId } from './actor-id.js';
 // Be'lal, the Netweaver. Three phases. He never takes Callandor. Rand cannot skip a gate or kill him.
 import { clamp, LANE_TOP, LANE_BOT } from './config.js';
 import { s6Scale, isPainted } from './stage6-paint.js';
@@ -46,7 +47,7 @@ export class Belal {
     this.hasCallandor = false; this.cool = 0.4; this.erasing = false;
     this.def = { shadowW: 170, team: 1 };
     this.T = { speed: BELAL.speed, score: BELAL.score, boss: true, name: "BE'LAL" };
-    scene.koCount = (scene.koCount || 0) + 1; this.id = scene.koCount;
+    scene.koCount = (scene.koCount || 0) + 1; this.id = actorId();
     const add = scene.add;
     this.shadow = add?.image ? add.image(x, y, 'shadow') : stub();
     this.sprite = add?.sprite ? add.sprite(x, y, 's6belal', 0) : stub();

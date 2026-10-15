@@ -36,7 +36,7 @@ export function drawStage4Meters(s, g) {
   const hint = kissHint(s);
   const hud = s.hud;
   if (hint && hud?.add?.text) {
-    if (!hud.kissHintT) hud.kissHintT = hud.add.text(640, 86, hint, { fontFamily: 'sans-serif', fontSize: '16px', color: '#d8ff6a', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5).setScrollFactor(0).setDepth(5000);
+    if (!hud.kissHintT) hud.kissHintT = hud.add.text(640, 86, hint, { fontFamily: 'sans-serif', fontSize: '16px', color: '#d8ff6a', stroke: '#000', strokeThickness: 4 }).setOrigin(0.5).setScrollFactor(0).setDepth(90);
     hud.kissHintT.setText(hint).setVisible(true);
   } else if (hud?.kissHintT?.setVisible) hud.kissHintT.setVisible(false);
 }

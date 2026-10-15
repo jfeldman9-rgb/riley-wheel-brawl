@@ -1,8 +1,21 @@
+import { onRunLoad } from './run-load.js';
 // Aginor, Balthamel, Loial and the grab atlas stay out of the zone 0 peak.
 import { queueCharPages, makeCharAnims } from './assets.js';
 import { canPaint, queuePainted, paintBossFallback } from './stage5-art.js';
 
 const BOSS_KEYS = ['s5agin', 's5balt', 'aginorPortrait'];
+
+/** The Stage 1 scene is reused. A later visit must load painted bosses and the grab atlas again. */
+export function resetStage5Visit(scene) {
+  if (!scene) return;
+  scene._s5freeStory = null;
+  scene._s5bossArt = 0;
+  scene._s5grab = 0;
+  scene._s5grabWait = 0;
+  scene._s5loial = 0;
+  scene._loialWanted = false;
+  scene._s5miss = new Set();
+}
 
 export function paintBossIfIdle(scene) {
   if (!canPaint(scene) || !BOSS_KEYS.some(k => !scene.textures.exists(k))) return;
@@ -13,13 +26,7 @@ export function paintBossIfIdle(scene) {
 function pump(scene, after) {
   const L = scene?.load;
   if (!L) return;
-  const finish = () => {
-    L.off?.('complete', finish);
-    scene.events?.off?.('shutdown', finish);
-    after?.();
-  };
-  L.once?.('complete', finish);
-  scene.events?.once?.('shutdown', finish);
+  onRunLoad(scene, 'complete', after);
   if (typeof L.isLoading !== 'function' || !L.isLoading()) L.start?.();
 }
 
@@ -48,8 +55,7 @@ export function queueGrab(scene) {
   if (scene.cache?.json?.get?.('riley3.A')) { arm(); return; }
   scene.load.json('riley3.A', 'assets/stage3/chars/riley3.anims.json');
   const ev = 'filecomplete-json-riley3.A';
-  const ready = () => { scene.load.off?.(ev, ready); arm(); };
-  scene.load.once?.(ev, ready);
+  onRunLoad(scene, ev, arm);
   pump(scene);
 }
 
@@ -73,8 +79,7 @@ export function queueLoial(scene) {
   if (scene.cache?.json?.get?.('loial.A')) { arm(); return; }
   scene.load.json('loial.A', 'assets/chars/loial.anims.json');
   const ev = 'filecomplete-json-loial.A';
-  const ready = () => { scene.load.off?.(ev, ready); arm(); };
-  scene.load.once?.(ev, ready);
+  onRunLoad(scene, ev, arm);
   pump(scene);
 }
 

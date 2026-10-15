@@ -3,6 +3,7 @@ import { freezeStrike, thawStrike } from './stage6-freeze.js';
 import { stage4Delta } from './stage4-time.js';
 import { VW, LANE_TOP } from './config.js';
 import { s6Scale } from './stage6-paint.js';
+import { stopSceneAudio } from './audio.js';
 import { quietStage6 } from './stage6-audio.js';
 import { refuseReason, trySpend, eligibleTargets, allocateStrikes, randEffect, noteRileyKo, tickRand, RAND } from './rand-call.js';
 import { playCall, abortRandCall, dropBlob, warmRand } from './rand-call-cutscene.js';
@@ -39,13 +40,20 @@ function hatch(kit, type) {
   };
   h.sprite = s.add?.sprite?.(x, y, 's6hatch', 0); h.sprite?.setOrigin?.(0.5, 0.96); h.sprite?.setScale?.(s6Scale(s, 's6hatch', 1)); h.sprite?.setDepth?.(1000 + y);
   s.enemies.push(h); sfxCue('craneCreak');
+  let fade = null;
+  const teardown = () => { timer?.remove?.(); fade?.remove?.(); h.destroy(); };
   const timer = s.time?.delayedCall?.(1000, () => {
     if (!h.alive && h.gone) return;
     h.alive = false; h.gone = true; h.sprite?.setFrame?.(1);
     const e = kit._spawn?.(type, 'R');
     if (e) { e.x = x; e.y = y; e.entering = false; }
+    fade = s.time?.delayedCall?.(600, () => {
+      h.sprite?.destroy?.(); h.sprite = null;
+      const hooks = kit.hooks, i = hooks?.indexOf(teardown) ?? -1;
+      if (i >= 0) hooks.splice(i, 1);
+    });
   });
-  (kit.hooks || (kit.hooks = [])).push(() => { timer?.remove?.(); h.destroy(); });
+  (kit.hooks || (kit.hooks = [])).push(teardown);
   return h;
 }
 
@@ -85,7 +93,9 @@ export function installStage6SceneHooks(kit) {
     return original.call(this);
   });
   hook(kit, s, 'continueGame', original => function() {
-    quietStage6(this); kit.deathAudio = false;
+    // Speech stops. The director stays on gameover so resumeFight keeps the boss loop's place
+    // instead of treating a silent state as a fresh boss intro.
+    stopSceneAudio(); kit.deathAudio = false;
     return original.call(this);
   });
   hook(kit, s, 'spawnFireball', original => function(R) {

@@ -38,6 +38,30 @@ test('a hatch pending at kit teardown cannot spawn into the next stage', () => {
   for (const t of timers) if (!t.removed) t.fn();
   assert.equal(spawns, 0); assert.equal(h.gone, true);
 });
+test('a finished hatch drops its teardown hook, and teardown cancels the fade', () => {
+  const { s, k, timers } = strikeScene();
+  const before = k.hooks.length;
+  const h = s.spawn('grunt', 'B');
+  assert.equal(k.hooks.length, before + 1);
+  const open = timers.find(t => !t.removed);
+  open.fn();
+  const fade = timers.find(t => !t.removed && t !== open);
+  assert.ok(fade, 'the hatch sprite waits out its fade');
+  fade.fn();
+  assert.equal(k.hooks.length, before, 'the hook leaves once the sprite is gone');
+  assert.equal(h.sprite, null);
+  const again = strikeScene(); let spawns = 0;
+  again.k._spawn = () => { spawns++; };
+  again.s.spawn('grunt', 'B');
+  const open2 = again.timers.find(t => !t.removed);
+  open2.fn();
+  assert.equal(spawns, 1);
+  const fade2 = again.timers.find(t => !t.removed && t !== open2);
+  restoreStage6Hooks(again.k);
+  assert.equal(fade2.removed, true, 'teardown cancels the fade timer');
+  fade2.fn();
+  assert.equal(spawns, 1);
+});
 test('a skip edge is flushed again before the first resumed game update; double CALL spends once', () => {
   const e = videoEnv(), { s, k } = strikeScene(); q.set('cutscenes', '1');
   Object.assign(s, { cutRoot: e.root, events: e.scene.events, music: e.scene.music, scene: e.scene.scene, setPauseReason: e.scene.setPauseReason, pauseReasons: new Set() });

@@ -1,3 +1,4 @@
+import { actorId } from './actor-id.js';
 // Aginor. Three phases. Tether is not a hold. Ring, hands, oak and the Green Man live in the arena.
 import { clamp, rand } from './config.js';
 import { substeps } from './stage5-clock.js';
@@ -21,7 +22,7 @@ export class Aginor {
     this.tetherCd = 1.4; this.locked = false; this.lockT = 0; this.tickT = 0; this.healed = 0;
     this.counterUsed = false; this.staffI = 0; this.stepCool = 0; this.recent = [];
     this.beatDone = false; this.p2t = 0; this.overdrawn = false;
-    scene.koCount = (scene.koCount || 0) + 1; this.id = scene.koCount;
+    scene.koCount = (scene.koCount || 0) + 1; this.id = actorId();
     if (scene.enemies && !scene.enemies.includes(this)) scene.enemies.push(this);
   }
   get target() { return this.scene.riley; }

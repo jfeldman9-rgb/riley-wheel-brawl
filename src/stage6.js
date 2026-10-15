@@ -8,7 +8,7 @@ import { createStage6View, stage6LightBudget } from './stage6-view.js';
 import { freeStory6 } from './stage6-art.js';
 import { queueStage6Painted, queuePlate, PAINTED6_ROWS } from './stage6-paint.js';
 import { STREAMS, deferredPlateKeys, createPlateStream } from './zone-stream.js';
-import { preloadClips, releaseClips, MUSIC } from './audio.js';
+import { preloadClips, releaseClips, MUSIC, sfx } from './audio.js';
 import { makeCharAnims, releaseChars } from './assets.js';
 import { ensureStage4Anims } from './stage4-art-thug.js';
 import { STAGE6_VOICES, VOICE_FILES, stage6Say, sfxCue } from './stage6-voice.js';
@@ -103,6 +103,7 @@ export class Stage6Kit {
     const s = this.s, R = s.riley;
     if (s.hud && !s.hud._randBind) this._unbindRand = bindRandLabel(s.hud);
     if (R) syncRandReady(s);
+    this.releaseCutthroats();
     dt = stage4Delta(dt);
     if (!dt || s.paused || s.cutscene || this.strike) return;
     if (!R) return;
@@ -163,13 +164,22 @@ export class Stage6Kit {
     const s = this.s, R = s.riley, x = (R?.x || 1800) + 30, y = R?.y || 630;
     const g = s.add.image(x, y - 30, 'glow'), c = s.add.image(x, y - 30, s.textures.exists('s6ribbon') ? 's6ribbon' : 'core');
     const L = s.lights?.addLight?.(x, y - 40, 140, 0xffd0e0, 0.7, 30) || { x, y };
-    (s.pickups = s.pickups || []).push({ x, y, kind: 'ribbon', g, c, L, t: 0 });
+    (s.pickups = s.pickups || []).push({ x, y, kind: 'ribbon', g, c, L, t: 0 }); sfx.fall();
   }
-  collectRibbon() { this.ribbons++; this.stats.ribbon++; this.s.riley.score += 1000; this.s.hud?.flashText("TWINKLE TOES' RIBBON!"); }
+  collectRibbon() { this.ribbons++; this.stats.ribbon++; this.s.riley.score += 1000; sfx.pickup(); this.s.hud?.flashText("TWINKLE TOES' RIBBON!"); }
   clearHazards() { this.stone?.dispose(); if (this.s.riley) this.s.riley.fogSlow = 0; }
   threats() { return threatsOf(this.stone || { nets: [], lamps: [], pools: [], lines: [], rays: [] }, this.s.zoneI < 0 ? 0 : this.s.zoneI); }
   applyLightBudget() { stage6LightBudget(this); }
+  releaseCutthroats() {
+    if (this._cutthroatFreed || (this.s?.zoneI | 0) < 2) return;
+    const s = this.s;
+    if ((s.enemies || []).some(e => e?.type === 'cutthroat' && !e.gone)) return;
+    if ((s.pending || []).some(p => p?.type === 'cutthroat')) return;
+    this._cutthroatFreed = true;
+    releaseChars(s, ['cutthroat']);
+  }
   destroy() {
+    this.backdrops?.destroy?.();
     this.clearHazards(); this.view?.destroy(); restoreStage6Hooks(this); removeRandBless(); this._unbindRand?.();
     if (this.s.riley) { this.s.riley.fogSlow = 0; this.s.riley.loialReady = true; }
   }

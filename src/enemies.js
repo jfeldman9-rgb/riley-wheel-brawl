@@ -1,3 +1,4 @@
+import { actorId } from './actor-id.js';
 // Trolloc grunt / spear / hound and the Trolloc Chieftain boss. Enemies face LEFT natively (as drawn).
 import { Fighter } from './fighter.js';
 import { clamp, rand, pick } from './config.js';
@@ -13,11 +14,10 @@ export const TYPES = {
   chief: { def: D('chief', 0.56, 0.52, 360, 230), name: 'TROLLOC CHIEFTAIN', speed: 92, pref: 215, cool: [1.2, 2.0], score: 5000, boss: true,
     atk: { anim: 'chop', active: [2, 3], x0: 20, x1: 300, z0: 0, z1: 260, dmg: 16, kind: 'heavy', kb: 380, down: true, sfx: 'blade' } },
 };
-let NEXT_ID = 1;
 export class Enemy extends Fighter {
   constructor(scene, type, x, y) {
     const T = TYPES[type]; super(scene, T.def, x, y);
-    this.T = T; this.type = type; this.id = NEXT_ID++; this.name = T.name; this.cool = rand(0.6, 1.4); this.juggle = 0; this.hitsTaken = 0; this.slotOff = rand(-14, 14);
+    this.T = T; this.type = type; this.id = actorId(); this.name = T.name; this.cool = rand(0.6, 1.4); this.juggle = 0; this.hitsTaken = 0; this.slotOff = rand(-14, 14);
     this.setState('approach', 'walk'); this.face(-1);
   }
   get target() { return this.scene.riley; }
@@ -84,7 +84,7 @@ export class Enemy extends Fighter {
     this.setState('down', 'knockdown'); this.vx = dir * Math.max(260, Math.abs(h.kb || 300)) * (this.T.boss ? 0.5 : 1); this.vz = (h.launch || 260) * (this.T.boss ? 0.5 : 1); this.z = 1;
     this.scene.dustLater(this, 0.35); sfx.hurt();
   }
-  die(dir, h) { this.heldBy = null; this.alive = false; this.knockdown(dir, h); this.scene.onEnemyDie(this); }
+  die(dir, h) { this.heldBy = null; this.alive = false; this.unflash(); this.knockdown(dir, h); this.scene.onEnemyDie(this); }
   downed(dt) {
     if (this.z <= 0 && this.st > 0.15 && !this.landed) { this.landed = true; }
     const lieT = this.T.boss ? 1.1 : 0.85;
@@ -116,7 +116,8 @@ export class Enemy extends Fighter {
       this.hitIds.add(e.id); this.scene.hitTarget(this.thrownBy, e, { dmg: 10, kind: 'heavy', kb: Math.sign(this.vx) * 420, launch: 380, down: true }, this);
     }
   }
-  flashArmor() { this.sprite.setTint(0xffb0a0); this.scene.time.delayedCall(70, () => this.sprite.clearTint()); }
+  unflash() { this._fN = (this._fN | 0) + 1; this.sprite.clearTint?.(); }
+  flashArmor() { const n = this._fN = (this._fN | 0) + 1; this.sprite.setTint(0xffb0a0); this.scene.time.delayedCall(70, () => { if (this._fN === n) this.sprite.clearTint(); }); }
 }
 
 // ---------------- Trolloc Chieftain ----------------

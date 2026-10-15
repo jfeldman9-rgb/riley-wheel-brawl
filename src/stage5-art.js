@@ -1,3 +1,4 @@
+import { onRunLoad } from './run-load.js';
 // Boot art for the Blight. Painted sheets in assets/stage5/ win when present.
 import { canPaint, tex, sheet } from './stage4-art.js';
 import { paintBackdrop } from './stage5-art-bg.js';
@@ -68,10 +69,9 @@ function showStory(scene, n) {
     const wanted = queueStage5Painted(scene, [row]);
     if (wanted?.size) {
       const fin = () => {
-        scene.load.off?.('complete', fin);
         if (scene.textures?.exists?.(key)) drop(); else paintStoryPanel(scene, n);
       };
-      scene.load.once?.('complete', fin);
+      onRunLoad(scene, 'complete', fin);
       if (typeof scene.load.isLoading !== 'function' || !scene.load.isLoading()) scene.load.start?.();
       return;
     }
@@ -90,7 +90,7 @@ export function armStory5(scene) {
   hud._s5story = 1;
   hud._s5line = prev;
 }
-// The three 640x360 story canvases (2.6 MiB) are only read by the HUD cutscene. STAGE5.start frees them once it is
+// The story jpgs are 1280x720 (about 3.52 MiB each). Stage 5 shows one at a time. STAGE5.start frees them once the cutscene is
 // over, or at once when the story is skipped. A call that lands while a cutscene is still up retries from the
 // scene update once that cutscene is gone. The next build() repaints them (tex() fills missing keys) if needed.
 export function freeStory5(scene) {

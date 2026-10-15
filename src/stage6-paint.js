@@ -1,3 +1,4 @@
+import { normalizeCrate } from './crate-texture.js';
 // Painted Stone of Tear art (docs/stage6/ART.md). Rows come from src/stage6-painted.js, written by
 // tools/stage6/process_art.py: present rows are queued, failed or absent ones stay code-drawn (src/stage6-art.js
 // fills any key that is still missing when the backdrop is built).
@@ -18,6 +19,7 @@ export const SCALE6 = Object.freeze({
 // Same contract as Stage 5's queuePainted: optional keys, and a failed file drops its key so the painter fills it.
 function failedKey(file) { return file?.multiFile?.key || file?.key; }
 export function queueStage6Painted(scene, rows = PAINTED6_ROWS) {
+  if (rows.some(r => r.key === 'crate')) normalizeCrate(scene, false);
   const L = scene.load, wanted = new Set();
   for (const row of rows) {
     if (!row?.present || !row.key || !row.url || scene.textures.exists(row.key)) continue;
@@ -45,13 +47,25 @@ export function queuePlate(scene, key, done) {
   const wanted = queueStage6Painted(scene, [row]);
   if (!wanted?.size) return false;
   const L = scene.load;
+  let settled = false;
   const fin = () => {
+    if (settled) return;
+    settled = true;
     L.off?.('complete', fin);
-    scene.events?.off?.('shutdown', fin);
+    scene.events?.off?.('shutdown', detach);
     done?.(!!scene.textures?.exists?.(key));
   };
+  // Shutdown is not a failed load. The loader has already reset, so calling
+  // done(false) paints a canvas stand-in under the real key and a restart
+  // then keeps that stand-in forever.
+  const detach = () => {
+    if (settled) return;
+    settled = true;
+    L.off?.('complete', fin);
+    scene.events?.off?.('shutdown', detach);
+  };
   L.once?.('complete', fin);
-  scene.events?.once?.('shutdown', fin);
+  scene.events?.once?.('shutdown', detach);
   if (typeof L.isLoading !== 'function' || !L.isLoading()) L.start?.();
   return true;
 }

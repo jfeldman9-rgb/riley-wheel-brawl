@@ -44,9 +44,10 @@ export const ART = Object.freeze({
     airwhip: { key: 'fx_airwhip', url: 'assets/powers/fx_airwhip.png', frameWidth: 512, frameHeight: 64, frames: 1, ready: true },
   },
   // Riley's lightning cast: the registered 3x2 grid (960x640 frames, feet y=610, sprite anchor x=432) is
-  // riley_lightning.png; the game plays the same 6 frames packed into Riley's own atlas page riley-1 (with normal maps,
-  // anim 'riley_lightning' in riley.anims.json) so they are lit and scaled exactly like his other frames.
-  rileyLightning: { anim: 'riley_lightning', page: 'riley-1', url: 'assets/powers/riley_lightning.png', frameWidth: 960, frameHeight: 640, frames: 6, holds: [80, 90, 110, 160, 130, 90], ready: true },
+  // art-in/powers/riley_lightning.png (not shipped; the pre-fight audit scans assets/powers). The game plays the
+  // same 6 frames packed into Riley's own atlas page riley-1 (with normal maps, anim 'riley_lightning' in
+  // riley.anims.json) so they are lit and scaled exactly like his other frames.
+  rileyLightning: { anim: 'riley_lightning', page: 'riley-1', url: 'art-in/powers/riley_lightning.png', frameWidth: 960, frameHeight: 640, frames: 6, holds: [80, 90, 110, 160, 130, 90], ready: true },
 });
 /** the Twix joke's art (Stage 1 only): Stage 2 neither loads it nor keeps it resident */
 export const TWIX_ART_KEYS = Object.freeze([ART.pickups.twix.key, ...ART.panels.map(a => a.key)]);

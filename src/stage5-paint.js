@@ -11,6 +11,8 @@ const SHEET5 = [
 ];
 const BOOT_PLATES = ['bg5far', 'bg5mid', 'bg5mid2', 'bg5floor'];
 
+const pendingSheets = new WeakMap();
+
 function failedKey(file) { return file?.multiFile?.key || file?.key; }
 
 export function sheetKeys(zoneI) {
@@ -29,9 +31,11 @@ export function bootPaintRows() {
 
 export function queueStage5Painted(scene, rows = bootPaintRows()) {
   const L = scene.load, wanted = new Set();
+  let pending = pendingSheets.get(scene);
+  if (!pending) { pending = new Set(); pendingSheets.set(scene, pending); }
   for (const row of rows) {
-    if (!row?.present || !row.key || !row.url || scene.textures.exists(row.key)) continue;
-    wanted.add(row.key);
+    if (!row?.present || !row.key || !row.url || scene.textures.exists(row.key) || pending.has(row.key)) continue;
+    wanted.add(row.key); pending.add(row.key);
     if (row.atlas) L.atlas(row.key, row.url, row.atlas);
     else if (row.frameWidth) L.spritesheet(row.key, row.url, { frameWidth: row.frameWidth, frameHeight: row.frameHeight });
     else L.image(row.key, row.url);
@@ -46,7 +50,7 @@ export function queueStage5Painted(scene, rows = bootPaintRows()) {
     if (wanted.has(key) && scene.textures?.exists?.(key)) scene.textures.remove(key);
   };
   const cleanup = () => {
-    for (const key of wanted) optional.delete(key);
+    for (const key of wanted) { optional.delete(key); pending.delete(key); }
     L.off?.('loaderror', drop); L.off?.('complete', cleanup); scene.events?.off?.('shutdown', cleanup);
   };
   L.on('loaderror', drop); L.once?.('complete', cleanup); scene.events?.once?.('shutdown', cleanup);
@@ -59,13 +63,25 @@ export function queuePlate(scene, key, done) {
   const wanted = queueStage5Painted(scene, [row]);
   if (!wanted?.size) return false;
   const L = scene.load;
+  let settled = false;
   const fin = () => {
+    if (settled) return;
+    settled = true;
     L.off?.('complete', fin);
-    scene.events?.off?.('shutdown', fin);
+    scene.events?.off?.('shutdown', detach);
     done?.(!!scene.textures?.exists?.(key));
   };
+  // Shutdown is not a failed load. The loader has already reset, so calling
+  // done(false) paints a canvas stand-in under the real key and a restart
+  // then keeps that stand-in forever.
+  const detach = () => {
+    if (settled) return;
+    settled = true;
+    L.off?.('complete', fin);
+    scene.events?.off?.('shutdown', detach);
+  };
   L.once?.('complete', fin);
-  scene.events?.once?.('shutdown', fin);
+  scene.events?.once?.('shutdown', detach);
   if (typeof L.isLoading !== 'function' || !L.isLoading()) L.start?.();
   return true;
 }

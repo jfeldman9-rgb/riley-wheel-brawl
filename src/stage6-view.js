@@ -78,7 +78,7 @@ export function createStage6View(scene) {
       }
       for (let i = 0; i < 4; i++) {
         const d = scene.add?.sprite?.(1500 + i * 70, 640, 's6def', i % 3);
-        d?.setOrigin?.(0.5, 0.96); d?.setScale?.(s6Scale(scene, 's6def', 3.2)); d?.setDepth?.(980); d?.setAlpha?.(0.85);
+        d?.setOrigin?.(0.5, 0.96); d?.setScale?.(s6Scale(scene, 's6def', 3.2)); d?.setDepth?.(1000 + 640 - 2); d?.setAlpha?.(0.85);
         if (d) { defs.push(d); owned.push(d); }
       }
       call = scene.add?.sprite?.(4560, 620, 's6call', 0);
@@ -108,6 +108,7 @@ export function createStage6View(scene) {
       paintStage6Art(scene, skip);
     },
     showBackdrop(key) {
+      if (scene.sys?.isActive?.() === false) return;
       if (!scene.textures?.exists?.(key) || owned.some(o => keyOf(o) === key)) return;
       const zones = STAGE6.zones;
       const lit = o => { if (o) { o.setLighting?.(scene.backdropIsLit !== false); scene.backdropLit = scene.backdropLit || []; scene.backdropLit.push(o); owned.push(o); } };

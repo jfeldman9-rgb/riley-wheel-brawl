@@ -154,6 +154,7 @@ test('decoded music drops its compressed fetch and can be decoded again after ev
 
   playTrack('stage2', { fade: 0 });
   await flush(); takeWait('music-stage2').ok(); await flush();
+  assert.deepEqual(musicState().decoded, ['stage2'], 'the stopped track buffer is freed once its source has stopped');
   playTrack('boss2', { fade: 0 });
   await flush(); takeWait('music-boss2').ok(); await flush();
   assert.ok(!musicState().decoded.includes('title'), 'oldest decoded track was evicted');

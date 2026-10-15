@@ -37,6 +37,8 @@ export function installGraphicsLifecycle({ game, getStage = () => game?.scene?.g
     ownsGamePause = !game?.isPaused && typeof game?.pause === 'function';
     if (ownsGamePause) game.pause();
     syncStage();
+    // Remember the floor now. A jetsam reload never sees restorewebgl, and GL is dead so we do not resize yet.
+    try { game?.keepLoweredQuality?.(false); } catch (e) { /* the governor is optional in tests */ }
     notify(onLost);
   };
   const restore = () => {
@@ -44,6 +46,8 @@ export function installGraphicsLifecycle({ game, getStage = () => game?.scene?.g
     if (typeof renderer?.gl?.isContextLost === 'function' && renderer.gl.isContextLost()) return;
     // restorewebgl is emitted after Phaser rebuilds its resource wrappers.
     lost = false;
+    // Come back with bloom off and a lower render scale instead of the size that lost the context.
+    try { game?.keepLoweredQuality?.(true); } catch (e) { /* same */ }
     const stage = getStage();
     if (initialized(stage) && stage.pauseReasons.has(GRAPHICS_CONTEXT_REASON)) stage.setPauseReason(GRAPHICS_CONTEXT_REASON, false);
     meter.setSuspended(GRAPHICS_CONTEXT_REASON, false);

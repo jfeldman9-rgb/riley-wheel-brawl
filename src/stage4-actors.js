@@ -1,3 +1,4 @@
+import { actorId } from './actor-id.js';
 // Scene actors for the pure Cultist and Draghkar cores. Sprites are optional.
 import { LANE_TOP, LANE_BOT, clamp } from './config.js';
 import { Cultist } from './cultists.js';
@@ -21,7 +22,7 @@ function body(e, scene, key, shadowW) {
   e.z = e.z || 0; e.vx = e.vx || 0; e.vy = 0; e.team = 1;
   if (e.gone == null) e.gone = false;
   e.def = { shadowW, team: 1 };
-  if (!e.id) { scene.koCount = (scene.koCount || 0) + 1; e.id = scene.koCount; }
+  if (!e.id) { scene.koCount = (scene.koCount || 0) + 1; e.id = actorId(); }
   const add = scene.add;
   e.shadow = add?.image ? add.image(e.x, e.y, 'shadow') : stub();
   e.sprite = add?.sprite ? add.sprite(e.x, e.y, key) : stub();
@@ -40,10 +41,13 @@ function paint(e, frameOf, scale, baseH) {
   e.sprite.setScale?.(fh > baseH ? scale * baseH / fh : scale);
   e.sprite.setLighting?.(true);
   const ash = e.state === 'defeated' || e.state === 'ash';
-  e.sprite.setAlpha?.(ash ? Math.max(0, 1 - (e.st || 0) * 0.65) : 1);
+  // Cultist KO/flee exits fade on the Whitecloak schedule (dead 1.3/0.6, flee 1.6/0.6) instead of vanishing at gone.
+  const fade = e.state === 'ko' ? ((e.st || 0) > 1.3 ? Math.max(0, 1 - ((e.st || 0) - 1.3) / 0.6) : 1)
+    : e.state === 'flee' ? ((e.st || 0) > 1.6 ? Math.max(0, 1 - ((e.st || 0) - 1.6) / 0.6) : 1) : null;
+  e.sprite.setAlpha?.(ash ? Math.max(0, 1 - (e.st || 0) * 0.65) : fade ?? 1);
   e.shadow?.setPosition?.(e.x, e.y + 2);
   e.shadow?.setScale?.(e.type === 'draghkar' ? 1.4 : 0.8, 0.35);
-  e.shadow?.setAlpha?.(ash ? 0 : 0.55);
+  e.shadow?.setAlpha?.(ash ? 0 : fade !== null ? fade * 0.8 : 0.55);
 }
 function slide(e, dt, freeX) {
   dt = stage4Delta(dt);
@@ -56,7 +60,7 @@ function swing(R) { return !!(R && R.atk && ATK.has(R.state)); }
 
 export class CultistActor extends Cultist {
   constructor(scene, x, y) {
-    super(scene, x, y, { summonVent: (at, c) => scene.kit?.summonVent?.(at, c) });
+    super(scene, x, y, { actorId, summonVent: (at, c) => scene.kit?.summonVent?.(at, c) });
     this.T = { speed: 108, score: 400, boss: false, name: 'CULTIST' };
     body(this, scene, 's4cult', 120);
   }
