@@ -1,7 +1,7 @@
 import { Stage7Fighter } from "./stage7-fighter.js";
 import { substeps } from "./stage5-clock.js";
 import { stage4Delta } from "./stage4-time.js";
-import { clamp, LANE_TOP, LANE_BOT, q } from "./config.js";
+import { clamp, LANE_TOP, LANE_BOT, VH, q } from "./config.js";
 import { strikeRiley } from "./stage6-hurt.js";
 export const ASMODEAN = Object.freeze({
   hp: 600,
@@ -28,6 +28,8 @@ export const CHANNEL_BANNER = "BREAK THE CHANNEL — THREE HITS OR A THROW OR A 
 // hit, then holds solid gold for the parry window; stagger reads cool/dazed.
 export const ASMO_FX = Object.freeze({
   hitFlash: 0.12,
+  floorAlpha: 0.42,
+  floorInset: 8,
   breakFlash: 0.22,
   flinch: 7,
   tell: 0xff8a5c,
@@ -47,13 +49,18 @@ export function calm7() {
   }
   return q.get("flash") === "0" || !!reducedMotion?.matches;
 }
-// Shared world-space footprint: both the visible rectangle and damage use it.
+// Shared footprint. Trim only unreachable margins beyond Riley's floor/bounds,
+// leaving an inset even at the edges of a letterboxed phone canvas.
 export function bashLane(boss) {
+  const y = Math.max(0, boss.y - ASMODEAN.bashHalfHeight),
+    rawX = boss.x - (boss.facing < 0 ? ASMODEAN.reach : ASMODEAN.bashBack),
+    bounds = boss.scene?.bounds,
+    x = Math.max(rawX, bounds ? bounds.l + ASMO_FX.floorInset : -Infinity),
+    right = Math.min(rawX + ASMODEAN.reach + ASMODEAN.bashBack,
+      bounds ? bounds.r - ASMO_FX.floorInset : Infinity);
   return {
-    x: boss.x - (boss.facing < 0 ? ASMODEAN.reach : ASMODEAN.bashBack),
-    y: boss.y - ASMODEAN.bashHalfHeight,
-    w: ASMODEAN.reach + ASMODEAN.bashBack,
-    h: ASMODEAN.bashHalfHeight * 2,
+    x, y, w: right - x,
+    h: Math.min(VH - ASMO_FX.floorInset, boss.y + ASMODEAN.bashHalfHeight) - y,
   };
 }
 export function bashFront(boss, target) {
@@ -81,8 +88,7 @@ export class Asmodean extends Stage7Fighter {
     this.hitFlash = 0;
     this.breakFlash = 0;
     this.flinchDir = 0;
-    this.parryCue = 0;
-    this.parryCueSeen = false;
+    this.bashStrikeFlash = 0;
   }
   get canBeHit() {
     return this.alive && !this.entering && !this.invuln && !this.beat;
@@ -101,17 +107,15 @@ export class Asmodean extends Stage7Fighter {
         dur: this.staggerFor,
       });
     super.setState(state);
-    if (state === "attack") {
-      this.parryCue = 0;
-      this.parryCueSeen = false;
-    }
+    this.scene.kit?.debug?.parry(this, bashParryOpen(this));
   }
   // Visual flashes keep moving through a helper strike. Gameplay clocks do not.
   decayFlash(dt) {
     const d = stage4Delta(dt);
     this.hitFlash = Math.max(0, (this.hitFlash || 0) - d);
     this.breakFlash = Math.max(0, (this.breakFlash || 0) - d);
-    if (this.parryCue === 1 && this.parryCueSeen) this.parryCue = 2;
+    const remaining = (this.bashStrikeFlash || 0) - d;
+    this.bashStrikeFlash = remaining > 1e-9 ? remaining : 0;
   }
   physics(dt) {
     if (this.staggerFrame || this.clock < this.staggerUntil) {
@@ -173,16 +177,11 @@ export class Asmodean extends Stage7Fighter {
     const R = this.scene.riley;
     if (!R?.alive) return;
     if (this.state === "attack") {
-      // A skipped window must never advertise a parry after impact.
-      if (
-        bashParryOpen(this) &&
-        !this.parryCueSeen &&
-        this.parryCue !== 2
-      )
-        this.parryCue = 1;
+      this.scene.kit?.debug?.parry(this, bashParryOpen(this));
       if (!this.counterUsed && this.st >= ASMODEAN.bashTell) {
         this.counterUsed = true;
-        this.parryCue = 2;
+        this.bashStrikeFlash = ASMODEAN.bashFlash;
+        this.bashImpact = { x: this.x + this.facing * 55, y: this.y - 140 };
         const lane = bashLane(this);
         if (
           bashFront(this, R) &&
@@ -269,13 +268,18 @@ export class Asmodean extends Stage7Fighter {
     this.hitFlash = ASMO_FX.hitFlash;
     this.flinchDir = Math.sign(this.x - (from?.x ?? this.x + (this.facing || 1))) || 1;
     this.guard();
-    if (counter && this.alive && !this.beat) this.stagger(0.8);
+    if (counter && this.alive && !this.beat) {
+      this.scene.kit?.debug?.parry(this, true);
+      this.scene.kit?.debug?.parry(this, false, "parried");
+      this.stagger(0.8);
+    }
     if (channel && this.alive && !this.beat) {
       const thrown = h.throw || h.kind === "throw" || h.thrown || from?.state === "thrown";
       // A helper strike on a live channel is a break, not one more hit toward three.
       if (h.assist) this.channelHits = ASMODEAN.hits;
       else this.channelHits++;
       if (h.assist || this.channelHits >= ASMODEAN.hits || thrown) {
+        this.scene.kit?.debug?.event(`channel break src=${h.assist ? "call" : thrown ? "throw" : "hits"}`, this.clock);
         // Every channel break grants the same full punish window.
         this.stagger(ASMODEAN.stun);
         this.channelStaggerUntil = this.staggerUntil;
@@ -286,7 +290,7 @@ export class Asmodean extends Stage7Fighter {
         this.scene.hud?.flashText?.("CHANNEL BROKEN");
       }
     }
-    if (this.hp <= this.maxHp * 0.1 && this.scene.fx)
+    if (this.hp <= this.maxHp * 0.1 && this.scene.fx && !calm7())
       this.scene.fx.trauma = Math.max(this.scene.fx.trauma || 0, 0.3);
     return true;
   }
@@ -320,17 +324,26 @@ export class Asmodean extends Stage7Fighter {
     try { super.sync(); } finally { this.state = state; }
     const sp = this.sprite;
     if (!sp) return;
+    // Phaser 4 setTint() preserves tintMode; reset it before ordinary tints.
+    const modes = globalThis.Phaser?.TintModes;
+    sp.setTintMode?.(modes?.MULTIPLY ?? 0);
     const tell = this.alive && state === "attack" && this.st < ASMODEAN.bashTell;
     const parry = bashParryOpen(this);
-    const goldHold = this.alive && parry && this.parryCue === 1;
     // The tell and the parry gold stay readable; a hit during them is only a flinch.
-    if (tell || goldHold) {
+    if (tell) {
       const k = Math.min(1, this.st / ASMODEAN.bashTell);
       const on = calm7() || Math.floor(k * k * 12) % 2 === 0;
-      sp.setTint?.((parry || goldHold) ? ASMO_FX.parry : on ? ASMO_FX.tell : 0xffffff);
-      if (goldHold) this.parryCueSeen = true;
+      sp.setTint?.(parry ? ASMO_FX.parry : on ? ASMO_FX.tell : 0xffffff);
+    } else if (this.alive && this.bashStrikeFlash > 0) {
+      // Fill the actor silhouette; the floor stays a warm, translucent wash.
+      if (calm7()) sp.setTint?.(ASMO_FX.parry);
+      else {
+        sp.setTint?.(ASMO_FX.hit);
+        sp.setTintMode?.(modes?.FILL ?? 1);
+      }
     } else if (this.alive && (this.hitFlash > 0 || this.breakFlash > 0)) {
-      sp.setTintFill?.(ASMO_FX.hit);
+      sp.setTint?.(ASMO_FX.hit);
+      sp.setTintMode?.(modes?.FILL ?? 1);
     } else if (this.alive && state === "stagger") {
       sp.setTint?.(ASMO_FX.stagger);
     } else sp.clearTint?.();

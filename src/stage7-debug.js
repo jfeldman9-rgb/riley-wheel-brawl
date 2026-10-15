@@ -1,9 +1,10 @@
 import { q } from "./config.js";
 
-export function installDebug7(k) {
+export function installDebug7(k, fireCall) {
   if (q.get("s7debug") !== "1") return;
   const s = k.s;
   let debugTrolloc = null;
+  const parries = new WeakSet();
   const fmt = (n) => (Number.isFinite(+n) ? +n : 0).toFixed(3);
   const event = (name, time, extra) => {
     const parts = [
@@ -13,6 +14,7 @@ export function installDebug7(k) {
       `staggerUntil=${fmt(extra?.until ?? s.boss?.staggerUntil)}`,
     ];
     if (extra && extra.dur != null) parts.push(`dur=${fmt(extra.dur)}`);
+    if (extra?.result) parts.push(`(${extra.result})`);
     console.log(parts.join(" "));
   };
   const watchHp = () => {
@@ -86,8 +88,33 @@ export function installDebug7(k) {
     s.inp.clear();
     return trolloc;
   };
-  k.debug = { forceChannel, jumpBossIntro, event, watchHp };
+  const parry = (boss, open, result = "missed") => {
+    if (open && !parries.has(boss)) {
+      parries.add(boss);
+      event("parry open", boss.clock);
+    } else if (!open && parries.delete(boss)) {
+      event("parry close", boss.clock, { result });
+    }
+  };
+  const callChannel = () => {
+    if (s.boss?.state !== "channel" || k.destroyed) {
+      event(`call no-op state=${s.boss?.state || "none"}`, s.boss?.clock);
+      return false;
+    }
+    const accepted = !!fireCall?.();
+    event(accepted ? "call fired" : "call no-op blocked", s.boss.clock);
+    return accepted;
+  };
+  k.debug = { forceChannel, jumpBossIntro, callChannel, event, parry, watchHp };
   const off = s.inp?.on?.("key", (code) => {
+    if (code === "KeyU") {
+      // Input also binds U to assist. Consume its buffer before Riley polls it,
+      // so a no-op outside channel cannot turn into a charged normal call.
+      delete s.inp.buf.assist;
+      delete s.inp.held.assist;
+      s.inp.keysDown?.delete("KeyU");
+      callChannel();
+    }
     if (code === "KeyT") forceChannel();
     if (code === "KeyB") jumpBossIntro();
     if (code === "KeyY" && forceChannel() && s.boss?.state === "channel")

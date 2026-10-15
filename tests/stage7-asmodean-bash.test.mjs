@@ -7,6 +7,9 @@ import { callEffect, CALL7 } from '../src/moilan-call.js';
 
 function setup() {
   const h = stage7Simulation(), s = h.s;
+  // Boss geometry is clipped to the arena: use the real boss-zone bounds.
+  s.zoneI = s.kit._zone = 3; s.zone = s.zones[3];
+  s.camX = s.camMax = 3920; s.bounds = { l: 3920, r: 5200 };
   const b = new Asmodean(s, 4800, 630); s.boss = b; s.enemies.push(b);
   if (s.kit?.notes) s.kit.notes.pending.length = 0;
   const R = s.riley; R.x = b.x - 120; R.y = b.y; R.z = 0; R.inv = 0;
@@ -180,7 +183,7 @@ for (const dt of [0.05, 0.1, 0.35]) {
       } finally { h.destroy(); }
     });
   }
-  test(`the solid lane footprint and actual bash agree at edges and corners, dt=${dt}`, () => {
+  test(`the painted lane footprint and actual bash agree at edges and corners, dt=${dt}`, () => {
     const { h, s, b, R } = setup();
     try {
       for (const facing of [-1, 1]) {
@@ -195,7 +198,8 @@ for (const dt of [0.05, 0.1, 0.35]) {
             R.setState('idle', 'idle'); s.kit.damageUntil = 0;
             b.update(dt);
             assert.equal(b.counterUsed, true);
-            assert.notEqual(b.parryCue, 1, 'landed or missed, impact cannot leave a gold cue');
+            assert.equal(b.parryCue, undefined, 'vestigial cue state is removed');
+            assert.ok(b.bashStrikeFlash > 0, 'impact starts a visible actor flash');
             const inside = x > lane.x && x < lane.x + lane.w && y > lane.y && y < lane.y + lane.h;
             assert.equal(R.hp, inside ? 100 - ASMODEAN.bashDmg : 100, JSON.stringify({facing,x,y,lane}));
           }

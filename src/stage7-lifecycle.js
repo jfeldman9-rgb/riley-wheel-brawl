@@ -115,10 +115,10 @@ export function releaseHolds7(s) {
   s.riley?.grabbedBy?.releaseHold?.("break");
   for (const e of s.enemies || []) e.releaseHold?.("break");
 }
-export function callMoilan(k) {
+export function callMoilan(k, options) {
   const s = k.s;
   if (!s.started) return false;
-  const spent = takeCall(k.call, call7Context(k));
+  const spent = takeCall(k.call, call7Context(k), options);
   if (!spent.ok) return false;
   releaseHolds7(s);
   const helper = spent.helper;
@@ -256,7 +256,7 @@ export function installStage7Hooks(k) {
     if (code === "KeyO") cycleHelper7(k);
   });
   if (keyOff) k.cleanups.push(keyOff);
-  installDebug7(k);
+  installDebug7(k, () => callMoilan(k, { ignoreCharge: true }));
   hook7(
     k,
     s,

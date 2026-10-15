@@ -199,3 +199,54 @@ test('channel banner cancels a previous fade, stays visible for the full cast, a
   assert.equal(flash.text, 'CHANNEL BROKEN');
   unbind(); assert.equal(hud.flashText, original);
 }));
+
+for (const debug of [false, true])
+  test(`physical KeyU uses the channel debug call only with s7debug=${+debug}`, () => {
+    const savedLog = console.log, logs = [];
+    console.log = (...args) => logs.push(args.join(" "));
+    try {
+      scene(7, (s, h, events) => {
+        s.zoneI = s.kit._zone = 3; s.zone = s.zones[3];
+        s.camX = s.camMax = 3920; s.bounds = { l: 3920, r: 5200 };
+        const b = new Asmodean(s, 4800, 630);
+        s.boss = b; s.enemies.push(b);
+        s.riley.x = 4400; s.riley.y = 630;
+        s.kit.notes.next = Infinity;
+        // A fully charged U outside channel is a debug no-op. Without debug it
+        // retains its normal assist binding and spends the charge.
+        b.bashAt = b.channelAt = Infinity;
+        events.dispatch('keydown', 'KeyU'); events.dispatch('keyup', 'KeyU');
+        h.step(0.1);
+        if (!debug) {
+          assert.ok(s.kit.strike); assert.equal(s.kit.stats.calls, 1);
+          assert.deepEqual(logs, []); return;
+        }
+        assert.equal(s.kit.strike, undefined);
+        assert.equal(s.kit.call.charges, 1);
+        assert.equal(s.kit.stats.calls, 0);
+        assert.ok(logs.some(line => line.startsWith('[s7dbg] call no-op state=idle ')));
+        b.phase = 3; b.hp = 190; b.startChannel();
+        s.kit.call.charges = 0; s.kit.call.calls = 3; s.kit.call.phaseCalls[3] = 1;
+        const clock = b.clock, hp = b.hp;
+        events.dispatch('keydown', 'KeyU'); events.dispatch('keyup', 'KeyU');
+        assert.ok(s.kit.strike, 'fires immediately through the regular call loader');
+        assert.equal(s.kit.strike.helper, 'duo');
+        assert.equal(s.kit.call.on, true);
+        assert.equal(s.kit.stats.calls, 1);
+        assert.equal(s.inp.peek('assist'), false, 'U cannot replay through Riley');
+        // Busy calls retain the normal safety checks even with the debug bypass.
+        events.dispatch('keydown', 'KeyU'); events.dispatch('keyup', 'KeyU');
+        assert.equal(s.kit.stats.calls, 1);
+        h.step(0.7);
+        assert.equal(b.clock, clock, 'normal helper freeze, not a direct debug hit');
+        assert.equal(b.hp, hp - 36);
+        assert.equal(b.state, 'stagger');
+        assert.equal(b.staggerFor, ASMODEAN.stun);
+        assert.ok(logs.some(line => line.startsWith('[s7dbg] channel break src=call t=')));
+        const calls = s.kit.stats.calls;
+        events.dispatch('keydown', 'KeyU'); events.dispatch('keyup', 'KeyU');
+        assert.equal(s.kit.stats.calls, calls);
+        assert.ok(logs.some(line => line.startsWith('[s7dbg] call no-op state=stagger ')));
+      }, debug);
+    } finally { console.log = savedLog; }
+  });

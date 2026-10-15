@@ -18,7 +18,51 @@ const CELL = {
 };
 // Asmodean's painted idle is ~145px tall at 1.8x; overlays sit above his head.
 const BOSS_TOP = 280;
+// Small white masks, tinted by the view. TextureManager owns these across scene
+// restarts: never generate a second texture under an existing key.
+export const BASH_TEXTURES = Object.freeze({ lane: "s7bashFloorSoft", impact: "s7bashImpact" });
+function bashTextures(s) {
+  if (!s.textures?.exists?.(BASH_TEXTURES.lane)) {
+    const tex = s.textures?.createCanvas?.(BASH_TEXTURES.lane, 128, 48);
+    if (tex) {
+      const ctx = tex.getContext(), pixels = ctx.createImageData(128, 48);
+      for (let y = 0; y < 48; y++) for (let x = 0; x < 128; x++) {
+        const edge = Math.min(1, (x + 0.5) / 12, (127.5 - x) / 12,
+          (y + 0.5) / 8, (47.5 - y) / 8);
+        const feather = Math.sin(edge * Math.PI / 2) ** 2;
+        const pigment = 0.84 + 0.1 * Math.cos(y / 47 * Math.PI * 2) +
+          0.06 * Math.sin(x * 0.31 + y * 0.7);
+        const i = (y * 128 + x) * 4;
+        pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = 255;
+        pixels.data[i + 3] = Math.max(1, Math.round(255 * feather * pigment));
+      }
+      ctx.putImageData(pixels, 0, 0);
+      tex.refresh();
+    }
+  }
+  if (!s.textures?.exists?.(BASH_TEXTURES.impact)) {
+    const tex = s.textures?.createCanvas?.(BASH_TEXTURES.impact, 128, 128);
+    if (tex) {
+      const ctx = tex.getContext(), glow = ctx.createRadialGradient(64, 64, 0, 64, 64, 62);
+      glow.addColorStop(0, "rgba(255,255,255,1)");
+      glow.addColorStop(0.2, "rgba(255,255,255,0.8)");
+      glow.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, 128, 128);
+      ctx.strokeStyle = "rgba(255,255,255,0.95)"; ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      for (let i = 0; i < 12; i++) {
+        const a = i * Math.PI / 6, end = i % 2 ? 44 : 60;
+        ctx.beginPath();
+        ctx.moveTo(64 + Math.cos(a) * 23, 64 + Math.sin(a) * 23);
+        ctx.lineTo(64 + Math.cos(a) * end, 64 + Math.sin(a) * end);
+        ctx.stroke();
+      }
+      tex.refresh();
+    }
+  }
+}
 export function createStage7View(s) {
+  bashTextures(s);
   const nodes = new Map(),
     fx = new Map();
   let portalLight = null,
@@ -225,40 +269,19 @@ export function createStage7View(s) {
               960,
             );
           else if (e.type === "asmodean") {
-            // The solid base fills the exact damage footprint; the streak is decoration.
             const tell = ASMODEAN.bashTell,
               k = clamp(e.st / tell, 0, 1),
               struck = e.st >= tell || e.counterUsed,
               parry = bashParryOpen(e),
               lane = bashLane(e),
-              laneX = lane.x,
-              laneW = lane.w,
-              alpha = struck ? clamp(1 - (e.st - tell) / ASMODEAN.bashFlash, 0, 1) : 0.25 + 0.55 * k,
-              tint = struck ? ASMO_FX.hit : parry ? ASMO_FX.parry : ASMO_FX.tell;
-            show("tellBase" + e.id, "__WHITE", lane.x, lane.y, lane.w, lane.h, alpha, 960, tint);
+              alpha = struck ? ASMO_FX.floorAlpha * clamp(1 - (e.st - tell) / ASMODEAN.bashFlash, 0, 1)
+                : 0.15 + (ASMO_FX.floorAlpha - 0.15) * k,
+              tint = struck || parry ? ASMO_FX.parry : ASMO_FX.tell;
+            // The feathered mask has exactly the shared hit rectangle's extent.
+            show("tellBase" + e.id, BASH_TEXTURES.lane, lane.x, lane.y, lane.w, lane.h, alpha, 960, tint);
             if (!struck && e.st >= tell - ASMODEAN.parry - ASMODEAN.bashReadyLead && !parry)
-              show(
-                "tellReady" + e.id,
-                "s7streak",
-                laneX - 6,
-                e.y - 46,
-                laneW + 12,
-                92,
-                0.9,
-                959,
-                ASMO_FX.tell,
-              );
-            show(
-              "tellLane" + e.id,
-              "s7streak",
-              laneX,
-              lane.y,
-              laneW,
-              lane.h,
-              alpha,
-              961,
-              tint,
-            );
+              show("tellReady" + e.id, BASH_TEXTURES.lane,
+                lane.x, lane.y, lane.w, lane.h, 0.1, 961, ASMO_FX.tell);
             if (!struck) {
               const size = 40 + 16 * k;
               show(
@@ -270,7 +293,7 @@ export function createStage7View(s) {
                 size,
                 parry ? 1 : 0.6 + 0.4 * k,
                 1760,
-                parry ? 0xffd27a : 0xff8a5c,
+                parry ? ASMO_FX.parry : ASMO_FX.tell,
                 "native",
               );
             }
@@ -286,6 +309,15 @@ export function createStage7View(s) {
             );
         }
       const sb = s.boss;
+      if (sb?.alive && sb.bashStrikeFlash > 0 && sb.bashImpact) {
+        const calm = calm7(),
+          progress = 1 - sb.bashStrikeFlash / ASMODEAN.bashFlash,
+          size = calm ? 86 : 110 + 35 * progress;
+        show("bashImpact", BASH_TEXTURES.impact,
+          sb.bashImpact.x - size / 2, sb.bashImpact.y - size / 2,
+          size, size, calm ? 0.32 : 0.95, 1001 + sb.y, ASMO_FX.parry)
+          ?.setBlendMode?.(calm ? "NORMAL" : "ADD");
+      }
       if (sb?.alive && sb.state === "stagger" && s.textures?.exists?.("flake")) {
         // Stun stars: four glints orbiting above his head for the whole stagger.
         const calm = calm7();

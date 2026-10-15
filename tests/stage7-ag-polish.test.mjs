@@ -4,7 +4,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { stage7Simulation, withSeed, FULL_STAGE_SEEDS } from "./helpers/stage7-harness.mjs";
 import { Asmodean, ASMODEAN, ASMO_FX, bashLane } from "../src/asmodean.js";
-import { createStage7View } from "../src/stage7-view.js";
+import { createStage7View, BASH_TEXTURES } from "../src/stage7-view.js";
 import { Stage7Kit } from "../src/stage7.js";
 import { q } from "../src/config.js";
 
@@ -23,8 +23,10 @@ function spriteFixture() {
           if (p === "setDepth") t.depth = a[0];
           if (p === "setAlpha") t.alpha = a[0];
           if (p === "setAngle") t.angle = a[0];
-          if (p === "setTint") { t.tint = a[0]; t.fill = false; }
-          if (p === "setTintFill") { t.tint = a[0]; t.fill = true; }
+          if (p === "setBlendMode") t.blend = a[0];
+          if (p === "setTint") t.tint = a[0];
+          if (p === "setTintMode") t.fill = a[0] === 1;
+          if (p === "setTintFill") assert.fail("Phaser 4 removed setTintFill; use setTintMode(FILL)");
           if (p === "clearTint") { t.tint = null; t.fill = false; }
           if (p === "destroy") t.dead = true;
           return api;
@@ -120,7 +122,7 @@ test("view: bash shows a danger lane over the real reach and a marker above his 
   s.enemies = [b];
   s.boss = b;
   view.sync(s.kit);
-  const lane = live(made, "s7streak").find((o) => o.h === 80);
+  const lane = live(made, BASH_TEXTURES.lane)[0];
   assert.ok(lane, "lane drawn");
   assert.equal(lane.x, b.x - ASMODEAN.reach, "lane covers the facing side");
   assert.equal(lane.w, ASMODEAN.reach + 40, "lane includes the 40px slack behind him");
@@ -129,24 +131,24 @@ test("view: bash shows a danger lane over the real reach and a marker above his 
   assert.ok(marker.y + marker.h < b.y - 280, `marker above head (${marker.y})`);
   b.st = 0.42;
   view.sync(s.kit);
-  const ready = live(made, "s7streak").find((o) => o.h === 92);
-  assert.ok(ready, "get-ready outline before the parry window");
+  const ready = live(made, BASH_TEXTURES.lane).find((o) => o.depth === 961);
+  assert.ok(ready, "warm get-ready glow before the parry window");
   assert.equal(ready.tint, ASMO_FX.tell);
   b.st = ASMODEAN.bashTell + 0.05;
   view.sync(s.kit);
   assert.equal(live(made, "s7note").length, 0, "marker gone once the bash resolves");
-  assert.equal(lane.tint, 0xffffff, "strike flash");
+  assert.equal(lane.tint, ASMO_FX.parry, "warm floor at impact; white flash belongs on the actor");
   assert.ok(lane.alpha > 0, "flash is still up just after the hit");
   b.st = ASMODEAN.bashTell + 0.1;
   view.sync(s.kit);
-  assert.ok(lane.alpha >= 0.49, "white flash remains clear at 10 fps");
+  assert.ok(lane.alpha > 0 && lane.alpha <= ASMO_FX.floorAlpha, "floor wash stays translucent at 10 fps");
   b.st = ASMODEAN.bashTell + ASMODEAN.bashFlash + 0.01;
   view.sync(s.kit);
-  assert.equal(lane.alpha, 0, "white flash ends after its configured duration");
+  assert.equal(lane.alpha, 0, "floor glow ends after its configured duration");
   b.facing = 1;
   b.st = 0.3;
   view.sync(s.kit);
-  const right = live(made, "s7streak").find((o) => o.h === 80);
+  const right = live(made, BASH_TEXTURES.lane)[0];
   assert.equal(right.x, b.x - 40, "facing right starts at x0-40*facing");
   assert.equal(right.w, ASMODEAN.reach + 40);
   view.destroy();
@@ -185,48 +187,42 @@ for (const dt of [0.05, 0.1, 0.35])
     b.update(dt);
     assert.ok(b.st >= ASMODEAN.bashTell);
     assert.equal(b.counterUsed, true);
-    assert.notEqual(b.parryCue, 1);
     b.sync(); view.sync(s.kit);
-    assert.notEqual(b.sprite.tint, ASMO_FX.parry);
-    assert.equal(b.parryCueSeen, false, "no rendered gold frame after impact");
-    const lane = live(made, "__WHITE")[0];
-    assert.equal(lane.tint, ASMO_FX.hit);
-    assert.ok(lane.alpha > 0.25, `visible strike flash: ${lane.alpha}`);
-    assert.equal(live(made, "s7note").length, 0);
-    // Even a stale cue cannot override the strike flash in either renderer.
-    b.parryCue = 1;
-    b.hitFlash = ASMO_FX.hitFlash;
-    b.sync(); view.sync(s.kit);
+    assert.equal(b.parryCue, undefined);
+    assert.equal(b.parryCueSeen, undefined, "vestigial renderer handshake removed");
     assert.equal(b.sprite.tint, ASMO_FX.hit);
-    assert.equal(b.sprite.fill, true);
-    assert.equal(lane.tint, ASMO_FX.hit);
-    assert.equal(b.parryCueSeen, false);
+    assert.equal(b.sprite.fill, true, "white flash fills the actor silhouette");
+    const lane = live(made, BASH_TEXTURES.lane)[0];
+    assert.equal(lane.tint, ASMO_FX.parry);
+    assert.ok(lane.alpha >= 0 && lane.alpha <= ASMO_FX.floorAlpha);
+    const burst = live(made, BASH_TEXTURES.impact)[0];
+    assert.ok(burst.alpha > 0.4, `visible impact burst: ${burst.alpha}`);
+    assert.equal(burst.blend, "ADD");
+    assert.equal(live(made, "s7note").length, 0);
     view.destroy(); b.destroy();
   });
 
-test("only boss sync acknowledges a visible parry, and the solid lane uses shared geometry", () => {
+test("parry uses only the live window, and the soft lane uses shared geometry", () => {
   const { s, made } = spriteFixture();
   const view = createStage7View(s);
   const b = new Asmodean(s, 4800, 630);
   s.enemies = [b]; s.boss = b;
   b.setState("attack"); b.st = ASMODEAN.bashTell - ASMODEAN.parry / 2;
-  b.parryCue = 1;
   for (const facing of [-1, 1]) {
     b.face(facing); view.sync(s.kit);
-    const lane = live(made, "__WHITE")[0], rect = bashLane(b);
+    const lane = live(made, BASH_TEXTURES.lane)[0], rect = bashLane(b);
     assert.deepEqual({x:lane.x,y:lane.y,w:lane.w,h:lane.h}, rect);
     assert.equal(lane.tint, ASMO_FX.parry);
-    const decoration = live(made, "s7streak").find(o => o.h === rect.h);
-    assert.ok(decoration.depth > lane.depth);
+    assert.ok(lane.alpha > 0 && lane.alpha <= ASMO_FX.floorAlpha);
   }
-  assert.equal(b.parryCueSeen, false, "view must not mutate gameplay cue state");
+  assert.equal(b.parryCueSeen, undefined, "view has no gameplay cue state");
   b.sync();
-  assert.equal(b.parryCueSeen, true);
+  assert.equal(b.parryCueSeen, undefined);
   assert.equal(b.sprite.tint, ASMO_FX.parry);
   b.counterUsed = true;
   b.sync(); view.sync(s.kit);
   assert.notEqual(b.sprite.tint, ASMO_FX.parry);
-  assert.notEqual(live(made, "__WHITE")[0].tint, ASMO_FX.parry);
+  assert.equal(live(made, "s7note").length, 0, "consumed counter cannot show a parry marker");
   view.destroy(); b.destroy();
 });
 
@@ -239,12 +235,16 @@ test("10 fps: impact flash survives the next 100 ms rendered frame", () => {
   b.setState("attack"); b.st = ASMODEAN.bashTell - 0.09;
   for (let i = 0; i < 2; i++) {
     b.update(0.1); b.sync(); view.sync(s.kit);
-    const lane = live(made, "__WHITE")[0];
-    assert.equal(lane.tint, ASMO_FX.hit);
-    assert.ok(lane.alpha > 0.4);
+    assert.equal(b.sprite.tint, ASMO_FX.hit);
+    assert.equal(b.sprite.fill, true);
+    const burst = live(made, BASH_TEXTURES.impact)[0];
+    assert.ok(burst.alpha > 0.4);
+    assert.equal(burst.blend, "ADD");
   }
-  b.update(0.1); view.sync(s.kit);
-  assert.equal(live(made, "__WHITE")[0].alpha, 0);
+  b.update(0.1); b.sync(); view.sync(s.kit);
+  assert.equal(live(made, BASH_TEXTURES.impact).length, 0);
+  assert.equal(b.sprite.fill, false);
+  assert.equal(live(made, BASH_TEXTURES.lane)[0].alpha, 0);
   view.destroy(); b.destroy();
 });
 
@@ -376,3 +376,159 @@ for (const mode of ['normal', 'media', 'flash=0'])
       savedFlash === null ? q.delete('flash') : q.set('flash', savedFlash);
     }
   });
+
+// The phone scales the same 1280x720 play area. Clipping the unreachable
+// underside must neither enlarge nor shrink the damage set on Riley's floor.
+test("phone and desktop: soft lane stays inside canvas and equals damage everywhere Riley can stand", () =>
+  liveBoss(1, (s, h, b) => {
+    const { made, s: renderScene } = spriteFixture();
+    renderScene.enemies = [b]; renderScene.boss = b;
+    const view = createStage7View(renderScene), r = s.riley;
+    Object.assign(r, { x: s.bounds.l - 100, y: 0 }); r.physics(0);
+    assert.equal(r.x, s.bounds.l + 40); assert.equal(r.y, 572);
+    Object.assign(r, { x: s.bounds.r + 100, y: 1000 }); r.physics(0);
+    assert.equal(r.x, s.bounds.r - 40); assert.equal(r.y, 690);
+    for (const bossY of [572, 600, 630, 680, 690]) for (const facing of [-1, 1]) {
+      b.y = bossY; b.face(facing); b.setState("attack");
+      const rect = bashLane(b);
+      view.sync(renderScene.kit);
+      const lane = live(made, BASH_TEXTURES.lane)[0];
+      assert.deepEqual({ x: lane.x, y: lane.y, w: lane.w, h: lane.h }, rect);
+      for (const width of [390, 1280]) {
+        const scale = width / 1280;
+        assert.ok(lane.y * scale >= 0);
+        assert.ok((lane.y + lane.h) * scale <= (720 - ASMO_FX.floorInset) * scale);
+      }
+      for (let y = 572; y <= 690; y++) {
+        for (const x of [rect.x - 1, rect.x, rect.x + 1, b.x,
+          rect.x + rect.w - 1, rect.x + rect.w, rect.x + rect.w + 1]) {
+          b.setState("attack"); b.counterUsed = false;
+          Object.assign(r, { x, y, z: 0, inv: 0, hp: 100 });
+          r.setState("idle", "idle"); s.kit.damageUntil = 0;
+          b.step(ASMODEAN.bashTell);
+          const inOriginal = x > rect.x && x < rect.x + rect.w && Math.abs(y - bossY) < 40;
+          const inDrawn = x > lane.x && x < lane.x + lane.w && y > lane.y && y < lane.y + lane.h;
+          assert.equal(inDrawn, inOriginal, `reachable footprint ${JSON.stringify({ bossY, facing, x, y })}`);
+          assert.equal(r.hp, inDrawn ? 100 - ASMODEAN.bashDmg : 100);
+        }
+      }
+    }
+    view.destroy();
+  }));
+
+test("floor and burst masks are generated once, feathered inside their full extents, and reused on restart", () => {
+  const { s } = spriteFixture(), textures = new Map();
+  let rays = 0, stops = 0;
+  s.textures = {
+    exists: key => textures.has(key),
+    createCanvas(key, w, h) {
+      assert.equal(textures.has(key), false, "never reuse an occupied texture key");
+      const ctx = {
+        createImageData: (width, height) => ({ data: new Uint8ClampedArray(width * height * 4) }),
+        putImageData(pixels) { this.pixels = pixels; },
+        createRadialGradient: () => ({ addColorStop() { stops++; } }),
+        fillRect() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() { rays++; },
+      };
+      const tex = { w, h, ctx, refreshes: 0, getContext: () => ctx, refresh() { this.refreshes++; } };
+      textures.set(key, tex); return tex;
+    },
+  };
+  const first = createStage7View(s);
+  assert.equal(textures.size, 2);
+  const floor = textures.get(BASH_TEXTURES.lane), pixels = floor.ctx.pixels.data;
+  const alpha = (x, y) => pixels[(y * 128 + x) * 4 + 3];
+  assert.ok(alpha(64, 24) > 150);
+  for (const [x, y] of [[0, 24], [127, 24], [64, 0], [64, 47], [0, 0], [127, 47]]) {
+    assert.ok(alpha(x, y) > 0, "mask covers the full rectangle");
+    assert.ok(alpha(x, y) < alpha(64, 24) / 4, "feathered edges and corners");
+  }
+  assert.equal(rays, 12); assert.equal(stops, 3);
+  first.destroy();
+  const second = createStage7View(s);
+  assert.equal(textures.size, 2);
+  assert.equal(textures.get(BASH_TEXTURES.lane), floor);
+  assert.equal(floor.refreshes, 1); assert.equal(rays, 12);
+  second.destroy();
+});
+
+for (const mode of ["normal", "media", "flash=0"])
+  test(`10 fps: bash actor flash and impact last two frames; low HP shake respects ${mode}`, () => {
+    const { s, made } = spriteFixture(), savedMedia = globalThis.matchMedia, savedFlash = q.get("flash");
+    globalThis.matchMedia = () => ({ matches: mode === "media" });
+    q.set("flash", mode === "flash=0" ? "0" : "1");
+    const b = new Asmodean(s, 4800, 690), view = createStage7View(s), calm = mode !== "normal";
+    s.enemies = [b]; s.boss = b; s.riley.alive = true; s.riley.x = b.x - 400;
+    try {
+      b.setState("attack"); b.st = ASMODEAN.bashTell - 0.09;
+      const positions = [];
+      for (let i = 0; i < 2; i++) {
+        b.update(0.1); b.sync(); view.sync(s.kit);
+        assert.equal(b.sprite.fill, !calm);
+        assert.equal(b.sprite.tint, calm ? ASMO_FX.parry : ASMO_FX.hit);
+        const burst = live(made, BASH_TEXTURES.impact)[0];
+        assert.ok(burst.alpha > 0 && burst.alpha <= (calm ? 0.35 : 1));
+        assert.equal(burst.blend, calm ? "NORMAL" : "ADD");
+        assert.equal(burst.x + burst.w / 2, b.bashImpact.x);
+        assert.equal(burst.y + burst.h / 2, b.bashImpact.y);
+        positions.push([burst.x, burst.y, burst.w]);
+      }
+      if (calm) assert.deepEqual(positions[0], positions[1], "calm burst stays static");
+      b.update(0.1); b.sync(); view.sync(s.kit);
+      assert.equal(live(made, BASH_TEXTURES.impact).length, 0);
+      assert.equal(b.sprite.fill, false);
+      s.fx = { trauma: 0 }; b.phase = 3; b.hp = 60; b.setState("idle");
+      b.takeHit({ dmg: 1 });
+      assert.equal(s.fx.trauma, calm ? 0 : 0.3, "low HP shake is also gated");
+    } finally {
+      view.destroy(); b.destroy(); globalThis.matchMedia = savedMedia;
+      savedFlash === null ? q.delete("flash") : q.set("flash", savedFlash);
+    }
+  });
+
+for (const lead of [0.025, 0.075])
+  test(`10 fps scene update: impact across either 50ms slice lasts two rendered frames, lead=${lead}`, () =>
+    liveBoss(1, (s, h, b) => {
+      const { s: renderScene, made } = spriteFixture(), originalSprite = b.sprite;
+      b.sprite = renderScene.add.sprite(b.x, b.y, 's7asmo');
+      renderScene.enemies = [b]; renderScene.boss = b;
+      const view = createStage7View(renderScene);
+      try {
+        s.riley.x = 4300; s.kit.notes.next = Infinity;
+        b.setState('attack'); b.counterUsed = false; b.st = ASMODEAN.bashTell - lead;
+        for (let frame = 0; frame < 2; frame++) {
+          h.step(0.1); view.sync(renderScene.kit);
+          assert.ok(b.bashStrikeFlash > 0);
+          assert.equal(b.sprite.tint, ASMO_FX.hit);
+          assert.equal(b.sprite.fill, true);
+          assert.ok(live(made, BASH_TEXTURES.impact)[0].alpha > 0.4);
+        }
+        h.step(0.1); view.sync(renderScene.kit);
+        assert.equal(b.bashStrikeFlash, 0);
+        assert.equal(b.sprite.fill, false);
+        assert.equal(live(made, BASH_TEXTURES.impact).length, 0);
+      } finally { view.destroy(); b.sprite.destroy(); b.sprite = originalSprite; }
+    }));
+
+test("lane also stays inside either arena edge without changing any reachable horizontal hit", () =>
+  liveBoss(1, (s, h, b) => {
+    const { s: renderScene, made } = spriteFixture(), r = s.riley;
+    renderScene.enemies = [b]; renderScene.boss = b;
+    const view = createStage7View(renderScene);
+    for (const bossX of [s.bounds.l + 60, s.bounds.r - 60]) for (const facing of [-1, 1]) {
+      b.x = bossX; b.face(facing); b.setState('attack');
+      view.sync(renderScene.kit);
+      const lane = live(made, BASH_TEXTURES.lane)[0];
+      assert.deepEqual({ x: lane.x, y: lane.y, w: lane.w, h: lane.h }, bashLane(b));
+      assert.ok(lane.x >= s.camX + ASMO_FX.floorInset);
+      assert.ok(lane.x + lane.w <= s.camX + 1280 - ASMO_FX.floorInset);
+      for (let x = s.bounds.l + 40; x <= s.bounds.r - 40; x++) {
+        b.setState('attack'); b.counterUsed = false;
+        Object.assign(r, { x, y: b.y, z: 0, inv: 0, hp: 100 });
+        r.setState('idle', 'idle'); s.kit.damageUntil = 0;
+        b.step(ASMODEAN.bashTell);
+        const dx = (x - bossX) * facing;
+        assert.equal(r.hp, dx > -ASMODEAN.bashBack && dx < ASMODEAN.reach ? 100 - ASMODEAN.bashDmg : 100);
+      }
+    }
+    view.destroy();
+  }));

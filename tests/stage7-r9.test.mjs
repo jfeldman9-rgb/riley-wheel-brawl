@@ -335,3 +335,42 @@ test('debug clocks have the same explicit meaning on damage and state events', (
     }, true);
   } finally { console.log = savedLog; }
 });
+
+for (const debug of [false, true])
+  test(`100ms: parry windows and all channel break sources log only with s7debug=${+debug}`, () => {
+    const savedLog = console.log, logs = [];
+    console.log = (...args) => logs.push(args.join(" "));
+    try {
+      fixture((s, h) => {
+        const b = liveBoss(s, h);
+        s.riley.x = b.x - 100; b.face(-1);
+        s.kit.notes.clear(); s.kit.notes.next = Infinity;
+        b.setState("attack"); b.counterUsed = false; b.st = 0.45;
+        b.update(0.1); b.sync();
+        b.takeHit({ dmg: 1 }, s.riley);
+        b.staggerUntil = 0; b.setState("attack"); b.counterUsed = false; b.st = 0.45;
+        b.update(0.1); b.sync();
+        b.update(0.1); b.sync();
+        b.update(0.1); b.sync();
+        for (const src of ["hits", "throw", "call"]) {
+          b.staggerUntil = b.channelStaggerUntil = 0;
+          b.phase = 3; b.hp = 190; b.startChannel();
+          if (src === "hits") for (let i = 0; i < ASMODEAN.hits; i++) b.takeHit({ dmg: 1 });
+          if (src === "throw") b.takeHit({ dmg: 1, throw: true });
+          if (src === "call") b.takeHit({ dmg: 1, assist: true });
+          assert.equal(b.state, "stagger");
+        }
+        if (!debug) { assert.deepEqual(logs, []); return; }
+        const opens = logs.filter(line => line.startsWith("[s7dbg] parry open "));
+        const closes = logs.filter(line => line.startsWith("[s7dbg] parry close "));
+        assert.equal(opens.length, 2); assert.equal(closes.length, 2);
+        for (const line of [...opens, ...closes]) assert.match(line, /t=\d+\.\d{3} bc=\d+\.\d{3}/);
+        assert.match(closes[0], /\(parried\)$/); assert.match(closes[1], /\(missed\)$/);
+        for (const src of ["hits", "throw", "call"]) {
+          const breaks = logs.filter(line => line.startsWith(`[s7dbg] channel break src=${src} `));
+          assert.equal(breaks.length, 1);
+          assert.match(breaks[0], /t=\d+\.\d{3} bc=\d+\.\d{3}/);
+        }
+      }, debug);
+    } finally { console.log = savedLog; }
+  });

@@ -57,7 +57,7 @@ export function tickCall7(st, dt) {
   }
   return st;
 }
-export function refuseReason(st, c = {}) {
+export function refuseReason(st, c = {}, { ignoreCharge = false } = {}) {
   if (!st) return "nostate";
   if (c.paused || c.cutscene) return "paused";
   if (c.victory || c.dead) return "victory";
@@ -65,14 +65,15 @@ export function refuseReason(st, c = {}) {
   if (c.balefire) return "balefire";
   if (!c.hittable) return "empty";
   if (c.bossInvuln || c.bossBeat) return "boss";
-  if (st.charges < 1 || st.calls >= CALL7.maxCalls) return "spent";
-  if (c.bossPhase && (st.phaseCalls[c.bossPhase] || 0) >= CALL7.perPhase)
+  // Debug calls bypass the resource budget; all play-state gates still apply.
+  if (!ignoreCharge && (st.charges < 1 || st.calls >= CALL7.maxCalls)) return "spent";
+  if (!ignoreCharge && c.bossPhase && (st.phaseCalls[c.bossPhase] || 0) >= CALL7.perPhase)
     return "phase";
   return "";
 }
 export const canCall = (st, c) => refuseReason(st, c) === "";
-export function takeCall(st, c) {
-  const why = refuseReason(st, c);
+export function takeCall(st, c, options) {
+  const why = refuseReason(st, c, options);
   if (why) return { ok: false, why };
   st.charges = 0;
   st.calls++;
