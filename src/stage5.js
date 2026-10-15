@@ -9,7 +9,7 @@ import { createStage5View, sunAmbient } from './stage5-view.js';
 import { updateSpores } from './stage5-spores.js';
 import { armStory5, freeStory5 } from './stage5-art.js';
 import { bootStage5Memory } from './stage5-lifecycle.js';
-import { preloadClips, releaseClips, MUSIC } from './audio.js';
+import { preloadClips, releaseClips, sfx } from './audio.js';
 import { STAGE5_VOICES, VOICE_FILES, stage5Say, bark, drainHum, sfxCue } from './stage5-voice.js';
 import { clearStage5Hazards, clearStage5Zone, installStage5SceneHooks, installStage5RileyHook, restoreStage5Hooks } from './stage5-lifecycle.js';
 import { stage4Delta } from './stage4-time.js';
@@ -25,9 +25,6 @@ export const STORY5_SCRIPT = Object.freeze([
   { who: 'RILEY', text: "Good. I'm in a mood.", panel: 2, id: 'st5_story_05' },
 ]);
 export { STAGE5_VOICES };
-
-MUSIC.stage5 = { url: 'assets/audio/music-stage5.mp3', loopStart: 0.25, loopEnd: 40.25, gain: 1 };
-MUSIC.boss5 = { url: 'assets/audio/music-boss5.mp3', loopStart: 0.25, loopEnd: 32, gain: 0.94 };
 
 const STATS = ['hints', 'stalkers', 'pounces', 'pounceCounters', 'flushes', 'pods', 'spores', 'lashes', 'thornTicks', 'gouts', 'tethers', 'tetherCounters', 'rings', 'hands', 'staffs', 'shortSteps', 'flails', 'parries', 'steps', 'stepCounters', 'embraces', 'escapes', 'greenman', 'surges', 'surgeCounters', 'oak', 'ribbon', 'glimpses'];
 
@@ -92,7 +89,7 @@ export class Stage5Kit {
       zone: s.zoneI < 0 ? 0 : s.zoneI, bands: VOLLEY_BANDS, frozen: !!k.arena?.frozen,
       aginor: s.boss, balthamel: s.enemies?.find(e => e.type === 'balthamel' && e.alive),
       onLash() { k.bump('lashes'); k.cue('treeCreak'); k.sayOnce('tree', 'riley_st5_tree_01'); },
-      onThorn() { k.bump('thornTicks'); },
+      onThorn() { k.bump('thornTicks'); k.cue('thornPulse'); },
       onGout(seep) { k.bump('gouts'); k.cue('tarHiss'); },
       onBurst() { k.cue('goutBurst'); },
       onSnare() { k.cue('lashCrack'); },
@@ -186,9 +183,9 @@ export class Stage5Kit {
     const s = this.s, R = s.riley, x = (R?.x || 1680) + 40, y = R?.y || 630;
     const g = s.add.image(x, y - 34, 'glow'), c = s.add.image(x, y - 34, s.textures.exists('ribbon') ? 'ribbon' : 's5flare');
     const L = s.lights.addLight(x, y - 40, 160, 0xd8ff6a, 1.1, 70);
-    (s.pickups = s.pickups || []).push({ x, y, kind: 'ribbon', g, c, L, t: 0 });
+    (s.pickups = s.pickups || []).push({ x, y, kind: 'ribbon', g, c, L, t: 0 }); sfx.fall();
   }
-  collectRibbon() { this.ribbons++; this.bump('ribbon'); this.s.riley.score += 1000; this.s.hud?.flashText("TWINKLE TOES' RIBBON!"); this.s.hud?.ribbon?.(this.ribbons); }
+  collectRibbon() { this.ribbons++; this.bump('ribbon'); this.s.riley.score += 1000; sfx.pickup(); this.s.hud?.flashText("TWINKLE TOES' RIBBON!"); this.s.hud?.ribbon?.(this.ribbons); }
   onZoneClear(i) {
     clearStage5Zone(this, i);
     if (i === 2 && !this.stats.glimpses) { this.bump('glimpses'); this.view?.glimpse?.(); this.s.hud?.flashText('THERE, ON THE RIDGE'); }

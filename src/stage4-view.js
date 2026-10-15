@@ -60,7 +60,7 @@ export function createStage4View(scene) {
       t.setDepth?.(2500);
       texts.set(text, t);
     }
-    t.setPosition?.(x, y); t._on = true;
+    t.setPosition?.(x, y); t._on = true; return t;
   }
   function placeWall(x, y, flip, now) {
     const s = take('wall', 's4wall');
@@ -263,14 +263,14 @@ export function createStage4View(scene) {
         g.strokeCircle?.(boss.x, boss.y - 170, 46);
       }
       for (const pool of poolList) for (const s of pool) if (!s._on && s.setVisible) s.setVisible(false);
-      for (const t of texts.values()) if (!t._on) t.setVisible?.(false); else t.setVisible?.(true);
+      for (const t of texts.values()) if (!t._on && t !== this._glimpseLabel) t.setVisible?.(false); else t.setVisible?.(true);
       for (const t of texts.values()) t._on = false;
     },
     glimpse() {
       const g = scene.add.image(3600, LANE_TOP - 40, scene.textures.exists('fade_far') ? 'fade_far' : 's4fog');
       g.setScrollFactor?.(0.2).setDepth?.(-20).setAlpha?.(0.85);
       this._glimpse = g;
-      label(3400, 500, 'THERE, ON THE BRIDGE');
+      this._glimpseLabel = label(3400, 500, 'THERE, ON THE BRIDGE');
     },
     moveMoon(camX) { if (this.moon) this.moon.x = camX + (this.moonAt?.[0] ?? VW * 0.85); },
     destroy() {

@@ -55,6 +55,7 @@ export function updateFogBolts(scene, dt) {
     const grabbed = R && (R.state === 'grabbed' || R.grabbed);
     if (!grabbed && R && R.alive !== false && R.state !== 'down' && Math.abs(R.x - b.x) < 28 && Math.abs((R.y ?? b.y) - b.y) < 24) {
       R.hp -= b.dmg;
+      scene.fx?.impact?.('medium', R.x, (R.y ?? b.y) - 150, Math.sign(R.x - b.x) || 1);
       b.alive = false;
       b.hit = true;
       continue;
@@ -144,6 +145,7 @@ export class Cultist {
     this.shoveCool = CULTIST.shoveCool;
     R.hp -= CULTIST.shoveDmg;
     R.vx = dir * CULTIST.shoveKb;
+    this.scene.fx?.impact?.('light', R.x, (R.y ?? this.y) - 150, dir);
     return true;
   }
   takeHit(h, from) {

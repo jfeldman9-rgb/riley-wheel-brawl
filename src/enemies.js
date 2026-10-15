@@ -84,7 +84,7 @@ export class Enemy extends Fighter {
     this.setState('down', 'knockdown'); this.vx = dir * Math.max(260, Math.abs(h.kb || 300)) * (this.T.boss ? 0.5 : 1); this.vz = (h.launch || 260) * (this.T.boss ? 0.5 : 1); this.z = 1;
     this.scene.dustLater(this, 0.35); sfx.hurt();
   }
-  die(dir, h) { this.heldBy = null; this.alive = false; this.knockdown(dir, h); this.scene.onEnemyDie(this); }
+  die(dir, h) { this.heldBy = null; this.alive = false; this.unflash(); this.knockdown(dir, h); this.scene.onEnemyDie(this); }
   downed(dt) {
     if (this.z <= 0 && this.st > 0.15 && !this.landed) { this.landed = true; }
     const lieT = this.T.boss ? 1.1 : 0.85;
@@ -116,7 +116,8 @@ export class Enemy extends Fighter {
       this.hitIds.add(e.id); this.scene.hitTarget(this.thrownBy, e, { dmg: 10, kind: 'heavy', kb: Math.sign(this.vx) * 420, launch: 380, down: true }, this);
     }
   }
-  flashArmor() { this.sprite.setTint(0xffb0a0); this.scene.time.delayedCall(70, () => this.sprite.clearTint()); }
+  unflash() { this._fN = (this._fN | 0) + 1; this.sprite.clearTint?.(); }
+  flashArmor() { const n = this._fN = (this._fN | 0) + 1; this.sprite.setTint(0xffb0a0); this.scene.time.delayedCall(70, () => { if (this._fN === n) this.sprite.clearTint(); }); }
 }
 
 // ---------------- Trolloc Chieftain ----------------

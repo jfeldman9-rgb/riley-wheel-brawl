@@ -16,7 +16,9 @@ export function finishDraghkarStrike(boss, hit) {
   const R = hit.riley, damage = hit.hp - R.hp, down = R.state === 'down';
   const pushedX = R.x, pushedVx = R.vx;
   R.hp = hit.hp; R.state = hit.state; R.x = hit.x; R.vx = hit.vx;
-  if (R.takeHit({ dmg: damage, down, kb: hit.buffet ? Math.abs(pushedVx) : undefined }, boss) && hit.buffet) {
+  const landed = R.takeHit({ dmg: damage, down, kb: hit.buffet ? Math.abs(pushedVx) : undefined }, boss);
+  if (landed) boss.scene?.fx?.impact?.(down ? 'heavy' : 'medium', R.x, (R.y || 0) - 170, Math.sign(R.x - boss.x) || 1);
+  if (landed && hit.buffet) {
     R.x = pushedX; R.vx = pushedVx;
   }
 }

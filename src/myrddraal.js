@@ -220,7 +220,7 @@ export class Myrddraal extends Enemy {
   }
 
   die(dir, h) {
-    this.heldBy = null; this.alive = false; this.hitsTaken = 0; this.vx = (dir || 1) * 60;
+    this.heldBy = null; this.alive = false; this.hitsTaken = 0; this.unflash(); this.vx = (dir || 1) * 60;
     this.clearAbilities(); this.setState('defeated', 'defeated'); this.scene.onEnemyDie(this);
   }
 
