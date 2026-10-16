@@ -1,0 +1,11 @@
+You are the PLANNER (Claude Opus 5.5) for Riley Wheel Brawl 2.0, a Phaser 4 Wheel of Time side-scrolling beat-'em-up for Jason's 16-year-old son Riley. This workspace is the repo jfeldman9-rgb/riley-wheel-brawl, checked out on a new branch `rwb-2-stage3-ag` (based on rwb-2-stage2, the Stage 2 first pass).
+
+Read first: plan/LEVELS.md (the 10-stage plan), plan/PLAN.md if present, docs/stage2/README.md, docs/stage2/YETTI_HANDOFF.md, and skim src/ and tests/ to learn the structure (stage1.js, the Stage 2 code, enemies, bosses, lights.json, audio state machine, atlases).
+
+TASK: write a concrete, build-ready plan for STAGE 3: CAEMLYN (per LEVELS.md: royal city walls, Queen's Blessing inn, rooftop chase, palace garden; new enemy Darkfriend cutthroat (grabber); boss MYRDDRAAL in 3 phases: shadow blink, then a fear aura that dims the screen edges, then splitting into 2 shadow copies where you parry the real one; golden afternoon turning to torchlit night). Reuse the Stage 2 architecture. Kid-safe: no gore, enemies are knocked out or dissolve into ash.
+
+Save the plan as docs/stage3/PLAN.md, split into numbered tasks, each tagged either FRONTEND (HUD, cutscene and story UI, title/stage-select, touch controls, CSS; done by Sonnet 5.5) or ENGINE (stage flow, enemy AI, boss phases, lighting, audio, tests; done by Gemini 3.8 Flash). For each task give files, acceptance tests, and order. Include an ART LIST with exact filenames, sizes, frame counts and ready-to-paste image prompts. Art will be painted separately in ChatGPT, so builders must wire in clearly labelled placeholder files and never generate or fake art (no recolouring, blurring or mirroring of existing sprites; flipping to face the other way is fine). Riley must stay on-model: 16, very muscular, short dark hair, thin blue-framed glasses, sleeveless black Asha'man coat.
+
+Rules for all builders, to write into the plan: never touch `main`; never push to rwb-w2; commit only on rwb-2-stage3-ag; don't loosen existing tests; Stage 1 and Stage 2 behaviour must stay identical (existing tests must pass); add tests for every new system; run `node --test tests/*.test.mjs`.
+
+Only write the plan in this step. Don't write game code yet. When done, commit docs/stage3/PLAN.md and summarise it in 10 lines.

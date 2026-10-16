@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "status": "recordings pending; captions shipped",
+  "profiles": {
+    "RILEY": "DYLO - Dark Anime Hero / eleven_v4",
+    "NARRATOR": "consented Jason reference / CosyVoice 3",
+    "MOIRAINE": "Kokoro bf_emma",
+    "LAN": "new voice design pending",
+    "ASMODEAN": "new voice design pending"
+  },
+  "pronunciation": {
+    "Rhuidean": "Rye-DEE-an",
+    "Chaendaer": "Shan-DARE",
+    "Aiel": "Eye-EEL",
+    "Shaido": "SHY-doh",
+    "Asmodean": "Az-MOH-dee-an",
+    "Avendesora": "Ah-ven-deh-SOR-ah",
+    "Imre": "IM-ray"
+  },
+  "lines": [
+    {
+      "id": "st7_story_01",
+      "speaker": "NARRATOR",
+      "script": "The Portal Stone took them in a heartbeat — and spat them out on a mountain at the edge of the world.",
+      "present": false
+    },
+    {
+      "id": "st7_story_02",
+      "speaker": "NARRATOR",
+      "script": "Below Chaendaer lay the Three-fold Land. And under a dome of fog, a city no outsider was meant to see.",
+      "present": false
+    },
+    {
+      "id": "riley_st7_story_01",
+      "speaker": "RILEY",
+      "script": "She came through here. I can feel it.",
+      "present": false
+    },
+    {
+      "id": "st7_story_03",
+      "speaker": "MOIRAINE",
+      "script": "Rhuidean. Step carefully. Something in that city is awake.",
+      "present": false
+    },
+    {
+      "id": "st7_story_04",
+      "speaker": "LAN",
+      "script": "Shadowspawn tracks. Fresh. Stay on my left.",
+      "present": false
+    },
+    {
+      "id": "st7_storm_01",
+      "speaker": "LAN",
+      "script": "Down! Brace against it!",
+      "present": false
+    },
+    {
+      "id": "riley_st7_storm_01",
+      "speaker": "RILEY",
+      "script": "Can't see a thing in this!",
+      "present": false
+    },
+    {
+      "id": "st7_veil_01",
+      "speaker": "MOIRAINE",
+      "script": "The veil. Whatever you see in there, keep moving.",
+      "present": false
+    },
+    {
+      "id": "riley_st7_street_01",
+      "speaker": "RILEY",
+      "script": "The ground's moving!",
+      "present": false
+    },
+    {
+      "id": "st7_asmo_intro_01",
+      "speaker": "ASMODEAN",
+      "script": "A boy with a borrowed sword, chasing a girl he'll never find. Shall I play you a dirge?",
+      "present": false
+    },
+    {
+      "id": "st7_asmo_p2_01",
+      "speaker": "ASMODEAN",
+      "script": "Listen — even the glass sings for me.",
+      "present": false
+    },
+    {
+      "id": "st7_asmo_p3_01",
+      "speaker": "ASMODEAN",
+      "script": "Do you know what this is? Of course you don't.",
+      "present": false
+    },
+    {
+      "id": "st7_asmo_hurt_01",
+      "speaker": "ASMODEAN",
+      "script": "You — you dare?!",
+      "present": false
+    },
+    {
+      "id": "riley_st7_reflect_01",
+      "speaker": "RILEY",
+      "script": "Off-key.",
+      "present": false
+    },
+    {
+      "id": "riley_st7_call_01",
+      "speaker": "RILEY",
+      "script": "Moiraine!",
+      "present": false
+    },
+    {
+      "id": "riley_st7_call_02",
+      "speaker": "RILEY",
+      "script": "Lan — now!",
+      "present": false
+    },
+    {
+      "id": "riley_st7_call_03",
+      "speaker": "RILEY",
+      "script": "I need you!",
+      "present": false
+    },
+    {
+      "id": "st7_moi_call_01",
+      "speaker": "MOIRAINE",
+      "script": "Stand aside.",
+      "present": false
+    },
+    {
+      "id": "st7_moi_call_02",
+      "speaker": "MOIRAINE",
+      "script": "The Light shield you.",
+      "present": false
+    },
+    {
+      "id": "st7_lan_call_01",
+      "speaker": "LAN",
+      "script": "Behind me.",
+      "present": false
+    },
+    {
+      "id": "st7_lan_call_02",
+      "speaker": "LAN",
+      "script": "Now, sheepherder— now!",
+      "present": false
+    },
+    {
+      "id": "st7_duo_call_01",
+      "speaker": "MOIRAINE",
+      "script": "Lan!",
+      "present": false
+    },
+    {
+      "id": "st7_clear_01",
+      "speaker": "ASMODEAN",
+      "script": "Enough! Enough… I yield. The Fades sold the girl to women in shawls — a Tower embassy, riding for Cairhien.",
+      "present": false
+    },
+    {
+      "id": "st7_clear_02",
+      "speaker": "MOIRAINE",
+      "script": "He will keep. A shielded Forsaken is still worth more than a dead one.",
+      "present": false
+    },
+    {
+      "id": "st7_clear_03",
+      "speaker": "LAN",
+      "script": "Cairhien, then. We ride at dawn.",
+      "present": false
+    },
+    {
+      "id": "riley_st7_victory_01",
+      "speaker": "RILEY",
+      "script": "Hold on. I'm coming.",
+      "present": false
+    }
+  ]
+}

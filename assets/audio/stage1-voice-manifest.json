@@ -1,0 +1,19 @@
+{
+  "note": "Stage 1 narrator preview. The other Stage 1 lines stay in their existing manifests. This file records st1_narrator_01 only.",
+  "jason_narrator": {
+    "st1_narrator_01": {
+      "id": "st1_narrator_01",
+      "who": "narrator",
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+      "text": "Emond's Field, on Winternight. The Two Rivers sleeps, but the Shadow is on the road.",
+      "asset_path": "assets/audio/voice/st1_narrator_01.mp3",
+      "duration_s": 5.712,
+      "bytes": 68876,
+      "sha256": "9c8a888da86457ae2ce32e2802c6fe7b46ea25340afc4ed1fa1fef3e6a457713",
+      "source": "cosyvoice",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps",
+      "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) zero-shot."
+    }
+  }
+}

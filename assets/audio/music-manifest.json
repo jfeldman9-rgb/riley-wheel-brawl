@@ -1,0 +1,26 @@
+{
+ "stage4": {
+  "file": "music-stage4.mp3",
+  "bpm": 96,
+  "bars": 16,
+  "loopStart": 0.25,
+  "loopEnd": 40.25,
+  "loopSeconds": 40.0,
+  "lufs": -16.0,
+  "peakDbfs": -5.6,
+  "bytes": 567997,
+  "doc": "\"Shadar Logoth\" - Stage 4. E phrygian, hollow and slow. 16 bars @ 96 bpm."
+ },
+ "boss4": {
+  "file": "music-boss4.mp3",
+  "bpm": 126,
+  "bars": 16,
+  "loopStart": 0.25,
+  "loopEnd": 30.726190476190474,
+  "loopSeconds": 30.476190476190474,
+  "lufs": -15.2,
+  "peakDbfs": -2.0,
+  "bytes": 434512,
+  "doc": "\"The Draghkar's Croon\" - Stage 4 boss. A minor pulse under a high line. 16 bars @ 126 bpm."
+ }
+}

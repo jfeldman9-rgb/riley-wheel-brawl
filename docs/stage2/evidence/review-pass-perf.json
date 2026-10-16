@@ -1,0 +1,54 @@
+{
+  "baselineCommit": "0ef2dbdf005979c3aa0530609ea05d45d77033bf",
+  "passBaseCommit": "ae700b1ab3f5ac86ed30df04135c63a978585a94",
+  "status": "UNMEASURED",
+  "hardware": null,
+  "repetitionsRequested": 3,
+  "reason": "No authorized working renderer available for matched runs; Chromium socket boundary preserved. No physical-device run.",
+  "scenarios": [
+    {
+      "stage": 1,
+      "scenario": "start",
+      "baseline": null,
+      "current": null,
+      "avgFps": null,
+      "fightFps": null,
+      "fightP95Ms": null,
+      "fightFramesOver33Ms": null,
+      "fightFramesOver33Percent": null
+    },
+    {
+      "stage": 1,
+      "scenario": "boss",
+      "baseline": null,
+      "current": null,
+      "avgFps": null,
+      "fightFps": null,
+      "fightP95Ms": null,
+      "fightFramesOver33Ms": null,
+      "fightFramesOver33Percent": null
+    },
+    {
+      "stage": 2,
+      "scenario": "start",
+      "baseline": null,
+      "current": null,
+      "avgFps": null,
+      "fightFps": null,
+      "fightP95Ms": null,
+      "fightFramesOver33Ms": null,
+      "fightFramesOver33Percent": null
+    },
+    {
+      "stage": 2,
+      "scenario": "boss",
+      "baseline": null,
+      "current": null,
+      "avgFps": null,
+      "fightFps": null,
+      "fightP95Ms": null,
+      "fightFramesOver33Ms": null,
+      "fightFramesOver33Percent": null
+    }
+  ]
+}

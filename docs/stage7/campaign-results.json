@@ -1,0 +1,234 @@
+{
+  "base": [
+    {
+      "seed": 1,
+      "calls": 0,
+      "boss": 55.566666666664155,
+      "seconds": 212.97499999997063,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 2,
+      "calls": 0,
+      "boss": 56.77499999999742,
+      "seconds": 200.7999999999817,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 3,
+      "calls": 0,
+      "boss": 23.65833333333263,
+      "seconds": 167.78333333334507,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 4,
+      "calls": 0,
+      "boss": 32.4999999999988,
+      "seconds": 180.9583333333331,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 5,
+      "calls": 0,
+      "boss": 24.58333333333258,
+      "seconds": 163.79166666668203,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 10,
+      "calls": 0,
+      "boss": 29.724999999998953,
+      "seconds": 183.39999999999753,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 20,
+      "calls": 0,
+      "boss": 22.36666666666604,
+      "seconds": 168.87500000001074,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 100,
+      "calls": 0,
+      "boss": 58.57499999999732,
+      "seconds": 200.39999999998207,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 97,
+      "calls": 0,
+      "boss": 59.93333333333057,
+      "seconds": 202.79166666664656,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    }
+  ],
+  "assisted": [
+    {
+      "seed": 1,
+      "calls": 1,
+      "boss": 51.52499999999772,
+      "seconds": 208.94166666664097,
+      "stormDeaths": 0,
+      "z1Deaths": 0,
+      "ratio": 0.9272645470905827
+    },
+    {
+      "seed": 2,
+      "calls": 1,
+      "boss": 54.1333333333309,
+      "seconds": 198.16666666665077,
+      "stormDeaths": 0,
+      "z1Deaths": 0,
+      "ratio": 0.9534713048583595
+    },
+    {
+      "seed": 3,
+      "calls": 1,
+      "boss": 23.6249999999993,
+      "seconds": 167.75000000001177,
+      "stormDeaths": 0,
+      "z1Deaths": 0,
+      "ratio": 0.9985910531877422
+    },
+    {
+      "seed": 4,
+      "calls": 1,
+      "boss": 33.02499999999877,
+      "seconds": 181.4833333333326,
+      "stormDeaths": 0,
+      "z1Deaths": 0,
+      "ratio": 1.0161538461538457
+    },
+    {
+      "seed": 5,
+      "calls": 1,
+      "boss": 23.899999999999284,
+      "seconds": 163.10833333334932,
+      "stormDeaths": 0,
+      "z1Deaths": 0,
+      "ratio": 0.9722033898305092
+    },
+    {
+      "seed": 10,
+      "calls": 1,
+      "boss": 24.316666666665927,
+      "seconds": 177.99166666666912,
+      "stormDeaths": 0,
+      "z1Deaths": 0,
+      "ratio": 0.81805438744043
+    },
+    {
+      "seed": 20,
+      "calls": 1,
+      "boss": 17.79999999999963,
+      "seconds": 164.31666666668156,
+      "stormDeaths": 0,
+      "z1Deaths": 0,
+      "ratio": 0.7958271236959821
+    },
+    {
+      "seed": 100,
+      "calls": 1,
+      "boss": 54.55833333333088,
+      "seconds": 196.37499999998573,
+      "stormDeaths": 0,
+      "z1Deaths": 0,
+      "ratio": 0.9314269455114533
+    },
+    {
+      "seed": 97,
+      "calls": 1,
+      "boss": 57.33333333333072,
+      "seconds": 200.1833333333156,
+      "stormDeaths": 0,
+      "z1Deaths": 0,
+      "ratio": 0.9566184649610683
+    }
+  ],
+  "lag": [
+    {
+      "seed": 1,
+      "calls": 0,
+      "boss": 29.866666666665612,
+      "seconds": 163.57500000001556,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 2,
+      "calls": 0,
+      "boss": 54.99166666666419,
+      "seconds": 200.51666666664863,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 3,
+      "calls": 0,
+      "boss": 24.591666666665912,
+      "seconds": 167.50833333334532,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 4,
+      "calls": 0,
+      "boss": 16.499999999999705,
+      "seconds": 141.25000000003587,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 5,
+      "calls": 0,
+      "boss": 39.741666666665054,
+      "seconds": 179.70833333333422,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 10,
+      "calls": 0,
+      "boss": 28.183333333332374,
+      "seconds": 163.36666666668242,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 20,
+      "calls": 0,
+      "boss": 28.40833333333236,
+      "seconds": 144.400000000033,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 100,
+      "calls": 0,
+      "boss": 22.999999999999336,
+      "seconds": 144.95833333336583,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    },
+    {
+      "seed": 97,
+      "calls": 0,
+      "boss": 36.96666666666521,
+      "seconds": 159.03333333335303,
+      "stormDeaths": 0,
+      "z1Deaths": 0
+    }
+  ],
+  "fail": []
+}

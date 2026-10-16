@@ -1,0 +1,81 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 203,
+    "w": 119,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 152
+   },
+   "spriteSourceSize": {
+    "h": 203,
+    "w": 119,
+    "x": 26,
+    "y": 6
+   },
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 203,
+    "w": 119,
+    "x": 121,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 152
+   },
+   "spriteSourceSize": {
+    "h": 203,
+    "w": 119,
+    "x": 25,
+    "y": 6
+   },
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 203,
+    "w": 119,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 152
+   },
+   "spriteSourceSize": {
+    "h": 203,
+    "w": 119,
+    "x": 26,
+    "y": 6
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage6/process_art.py",
+  "drawScale": 1.0,
+  "format": "RGBA8888",
+  "image": "s6def.webp",
+  "origin": [
+   0.5,
+   0.96
+  ],
+  "res": 1.0,
+  "scale": "1",
+  "screenH": 200,
+  "size": {
+   "h": 203,
+   "w": 240
+  }
+ }
+}

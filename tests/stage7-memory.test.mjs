@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync,readdirSync} from 'node:fs';
+import {memory7} from '../tools/stage7/memory.mjs';
+import {audit} from '../tools/audit-stage1.mjs';
+test('conservative all-resident Stage 7 estimate is below 105 MiB and painted cap',()=>{const m=memory7();assert.ok(m.totalBytes<m.sourceGateBytes,JSON.stringify(m));assert.ok(m.paintedBytes<m.paintedGateBytes);});
+test('every Stage 7 module and asset is outside the pre-fight gate and explicitly budgeted',()=>{const a=audit();assert.equal(a.preFight.inventoryStatus,'PASS');assert.ok(a.preFight.inventoryUpperBoundBytes<=24948657+400);for(const row of Object.values(a.stage7))assert.equal(row.status,'PASS');for(const f of readdirSync('src').filter(n=>/^(stage7|moilan-call|call7-cutscene|shaido|asmodean|bot-stage7)/.test(n)))assert.ok(a.stage7.source.files.includes('src/'+f));assert.ok(!a.preFight.files.some(f=>/stage7|bg7|st7_/.test(f)&&!a.preFight.bootModules.files.includes(f)));assert.equal(a.cutscenes.callIns7.status,'PASS');assert.equal(a.cutscenes.stage7.status,'PASS');});
+test('all Stage 7 captions avoid placeholder labels; painting marks only in debug; no direct randomness',()=>{const names=readdirSync('src').filter(n=>/^(stage7|moilan-call|call7-cutscene|shaido|asmodean|bot-stage7)/.test(n));for(const n of names){const src=readFileSync('src/'+n,'utf8');assert.doesNotMatch(src,/Math\.random\s*\(|Date\.now\s*\(/,n);}const p=readFileSync('src/stage7-paint.js','utf8');assert.match(p,/if\(queryFlag\(q,'debug'\)\).*strokeStyle/);assert.doesNotMatch(p,/fillText|PLACEHOLDER/);assert.doesNotMatch(readFileSync('src/stage7-voice.js','utf8'),/PLACEHOLDER/);});

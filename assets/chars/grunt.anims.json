@@ -1,0 +1,133 @@
+{
+ "key": "grunt",
+ "canvas": [
+  1200,
+  820
+ ],
+ "baseline": 790,
+ "scale": 0.75,
+ "pages": [
+  "grunt-0"
+ ],
+ "anims": [
+  {
+   "name": "grunt_walk",
+   "frames": [
+    "grunt_walk_00",
+    "grunt_walk_01",
+    "grunt_walk_02",
+    "grunt_walk_03",
+    "grunt_walk_04",
+    "grunt_walk_05",
+    "grunt_walk_06",
+    "grunt_walk_07"
+   ],
+   "holds": [
+    110,
+    110,
+    110,
+    110,
+    110,
+    110,
+    110,
+    110
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "grunt_hurt",
+   "frames": [
+    "grunt_hurt_00",
+    "grunt_hurt_01"
+   ],
+   "holds": [
+    90,
+    160
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "grunt_knockdown",
+   "frames": [
+    "grunt_knockdown_00",
+    "grunt_knockdown_01",
+    "grunt_knockdown_02",
+    "grunt_knockdown_03",
+    "grunt_knockdown_04"
+   ],
+   "holds": [
+    90,
+    140,
+    120,
+    900,
+    300
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "grunt_attack",
+   "frames": [
+    "grunt_attack_00",
+    "grunt_attack_01",
+    "grunt_attack_02",
+    "grunt_attack_03",
+    "grunt_attack_04",
+    "grunt_attack_05"
+   ],
+   "holds": [
+    120,
+    140,
+    220,
+    70,
+    170,
+    210
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "grunt_getup",
+   "frames": [
+    "grunt_getup_00",
+    "grunt_getup_01"
+   ],
+   "holds": [
+    180,
+    160
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  }
+ ]
+}

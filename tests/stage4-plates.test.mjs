@@ -1,0 +1,156 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import './helpers/stage4-harness.mjs';
+
+const { queueStage4 } = await import('../src/stage4.js');
+const { createStage4View, painted, stage4Placeholder, PLATES } = await import('../src/stage4-view.js');
+const { STAGE4_TEXTURES } = await import('../src/stage4-def.js');
+
+const PLATE_FILES = {
+  bg4far: 'assets/bg4/bg4-far.jpg', bg4mid: 'assets/bg4/bg4-mid.webp', bg4mid2: 'assets/bg4/bg4-mid2.webp',
+  bg4floor: 'assets/bg4/bg4-floor.jpg', bg4floor2: 'assets/bg4/bg4-floor2.jpg', bg4floor3: 'assets/bg4/bg4-floor3.jpg',
+  story4p1: 'assets/story/story4_panel_1.jpg', story4p2: 'assets/story/story4_panel_2.jpg', story4p3: 'assets/story/story4_panel_3.jpg',
+};
+const CULT_FILE = 'assets/bg4/s4cult.webp';
+const DRAG_FILES = { s4drag: 'assets/bg4/s4drag.webp', draghkarPortrait: 'assets/bg4/draghkar-portrait.webp' };
+const SIZES = { bg4far: [1280, 602], bg4mid: [1280, 502], bg4mid2: [1280, 588], bg4floor: [1080, 360], bg4floor2: [1080, 360], bg4floor3: [1080, 360] };
+
+function loaderScene(existing = new Set()) {
+  const images = new Map();
+  const rec = (k, u) => images.set(k, u);
+  return {
+    images,
+    textures: { exists: k => existing.has(k) },
+    cache: { json: { get: () => null } },
+    load: { image: rec, atlas: rec, json: rec, spritesheet: rec, audio: rec, on() {}, once() {} },
+  };
+}
+
+test('queueStage4 loads the painted plates and panels under the procedural keys, and they are released with stage 4', () => {
+  const s = loaderScene();
+  queueStage4(s);
+  for (const [k, file] of Object.entries(PLATE_FILES)) {
+    assert.equal(s.images.get(k), file, k);
+    assert.ok(existsSync(new URL('../' + file, import.meta.url)), file);
+    assert.ok(STAGE4_TEXTURES.includes(k), `${k} is released on leaving stage 4`);
+  }
+  const again = loaderScene(new Set(Object.keys(PLATE_FILES)));
+  queueStage4(again);
+  for (const k of Object.keys(PLATE_FILES)) assert.equal(again.images.has(k), false, `${k} is not reloaded`);
+});
+
+function viewScene(kind) {
+  const made = [], added = [];
+  const texture = key => {
+    if (!key) return null;
+    const real = kind === 'painted' || (kind === 'farOnly' && key === 'bg4far');
+    const [width, height] = SIZES[key] || [64, 64];
+    return { source: [real ? { width, height, isCanvas: false } : { width: 32, height: 32, isCanvas: true }] };
+  };
+  const add = (type) => (x, y, ...rest) => {
+    const key = type === 'tileSprite' ? rest[2] : rest[0];
+    const o = { type, x, y, key, w: rest[0], h: rest[1], calls: {} };
+    const t = texture(key); o.width = t?.source[0].width; o.height = t?.source[0].height;
+    const p = new Proxy(o, { get: (tg, prop) => prop in tg ? tg[prop] : (...args) => { tg.calls[prop] = args; return p; } });
+    made.push(o); return p;
+  };
+  return {
+    made, added,
+    textures: { exists: () => true, get: texture },
+    add: { image: add('image'), tileSprite: add('tileSprite') },
+    lights: { addLight: (x, y, r) => { const L = { x, y, r }; added.push(L); return L; } },
+  };
+}
+
+test('painted plates lay out at native size with the moon light on the painted moon; code-drawn ones keep the old layout', () => {
+  const s = viewScene('painted');
+  const v = createStage4View(s);
+  v.buildBackdrop();
+  const mids = s.made.filter(o => o.key === 'bg4mid' || o.key === 'bg4mid2');
+  assert.deepEqual(mids.map(o => [o.key, o.x, o.y]), [['bg4mid', 0, PLATES.midY], ['bg4mid2', 1280 - PLATES.overlap, PLATES.midY]]);
+  assert.equal(mids[0].calls.setScrollFactor[0], PLATES.par);
+  // the mid run covers the camera's whole travel at its parallax
+  assert.ok(2 * 1280 - PLATES.overlap >= (5200 - 1280) * PLATES.par + 1280);
+  const floors = s.made.filter(o => o.type === 'tileSprite');
+  assert.ok(floors.every(f => Math.abs(f.calls.setTileScale[0] - 188 / 360) < 1e-9));
+  assert.ok(floors.some(f => f.key === 'bg4floor2' && f.x === 1800 - PLATES.feather), 'feathered hand-off into floor2');
+  assert.deepEqual([s.added[0].x, s.added[0].y], PLATES.moon);
+  v.moveMoon(1000);
+  assert.equal(s.added[0].x, 1000 + PLATES.moon[0]);
+
+  const f = viewScene('canvas');
+  const fv = createStage4View(f);
+  fv.buildBackdrop();
+  assert.ok(f.made.filter(o => o.key === 'bg4mid' || o.key === 'bg4mid2').length > 4, 'fallback repeats the painted-at-boot silhouettes');
+  assert.deepEqual(f.made.filter(o => o.type === 'tileSprite').map(o => o.x), [0, 1800, 3600]);
+  assert.deepEqual([f.added[0].x, f.added[0].y], [1280 * 0.85, 90]);
+});
+
+test('the placeholder check reports code-drawn art only', () => {
+  assert.equal(painted(viewScene('painted'), 'bg4far'), true);
+  assert.equal(painted(viewScene('canvas'), 'bg4far'), false);
+  assert.equal(painted({}, 'bg4far'), false);
+  // the Draghkar sheet and portrait are still drawn by code (and a cultist sheet that fell back to the painter)
+  const s = viewScene('painted');
+  const get = s.textures.get;
+  s.textures.get = k => k === 's4cult' ? { source: [{ width: 8, height: 8, isCanvas: true }] } : get(k);
+  assert.equal(stage4Placeholder(s), true);
+  s.textures.exists = k => !['s4cult', 's4drag', 'draghkarPortrait'].includes(k);
+  assert.equal(stage4Placeholder(s), false);
+});
+
+test('ART_STATUS records every painted Stage 4 file with a matching hash and its provenance', () => {
+  const status = JSON.parse(readFileSync(new URL('../assets/bg4/ART_STATUS.json', import.meta.url)));
+  const painted = status.entries.filter(e => !e.placeholder);
+  assert.deepEqual(painted.map(e => e.files[0]).sort(), [...Object.values(PLATE_FILES), CULT_FILE, ...Object.values(DRAG_FILES)].sort());
+  for (const e of painted) {
+    const file = e.files[0];
+    assert.equal(createHash('sha256').update(readFileSync(new URL('../' + file, import.meta.url))).digest('hex'), e.sha256[file], file);
+    // plates and panels are Grok Bot stills; the cultist sheet is a reskin of a painted atlas (tools/stage4/reskin_cultist.py);
+    // the Draghkar sheet and portrait are ChatGPT stills (tools/stage4/process_draghkar.py)
+    assert.equal(e.source, e.key === 's4cult' ? 'reskin' : e.key in DRAG_FILES ? 'chatgpt-image' : 'grokbot-image');
+    assert.ok(existsSync(new URL('../' + e.art.sourceFile, import.meta.url)), e.art.sourceFile);
+    if (e.key === 's4cult' || e.key in DRAG_FILES) {
+      assert.equal(createHash('sha256').update(readFileSync(new URL('../' + e.art.sourceFile, import.meta.url))).digest('hex'), e.art.sourceSha256);
+      assert.ok(existsSync(new URL('../' + e.art.tool, import.meta.url)), e.art.tool);
+    }
+  }
+  assert.deepEqual(status.entries.filter(e => e.placeholder).map(e => e.key), []);
+});
+
+test('the painted cultist sheet keeps the painter\'s 8 poses and footprint', async () => {
+  const s = loaderScene();
+  queueStage4(s);
+  assert.equal(s.images.get('s4cult'), CULT_FILE);
+  assert.ok(STAGE4_TEXTURES.includes('s4cult'));
+  const b = readFileSync(new URL('../' + CULT_FILE, import.meta.url));
+  // WebP VP8X canvas size (24-bit little-endian, minus one)
+  assert.equal(b.toString('ascii', 12, 16), 'VP8X');
+  const w = 1 + b.readUIntLE(24, 3), h = 1 + b.readUIntLE(27, 3);
+  assert.deepEqual([w, h], [8 * 340, 338]);
+  // already loaded: not queued again
+  const again = loaderScene(new Set(['s4cult']));
+  queueStage4(again);
+  assert.equal(again.images.has('s4cult'), false);
+});
+
+test('actors scale a taller painted cell to the painter\'s footprint and leave the painter cell alone', async () => {
+  const { CultistActor, DraghkarActor } = await import('../src/stage4-actors.js');
+  const mk = (fh) => {
+    const sp = { frame: { height: fh }, scale: 0, setOrigin() {}, setDepth() {}, setScale(v) { sp.scale = v; }, setFrame() {}, setLighting() {}, setAlpha() {}, flipX: false };
+    return sp;
+  };
+  const fake = { state: 'approach', st: 0, x: 100, y: 600, z: 0, type: 'cultist' };
+  for (const [fh, want] of [[190, 1.2], [338, 1.2 * 190 / 338]]) {
+    const e = { ...fake, sprite: mk(fh) };
+    CultistActor.prototype.sync.call(e);
+    assert.ok(Math.abs(e.sprite.scale - want) < 1e-9, `cultist ${fh}`);
+    // feet stay on the same pixel: displayed cell height is the painter's 190 * 1.2
+    assert.ok(Math.abs(fh * e.sprite.scale - 228) < 1e-9);
+  }
+  const d = { ...fake, type: 'draghkar', state: 'perch', sprite: mk(250) };
+  DraghkarActor.prototype.sync.call(d);
+  assert.equal(d.sprite.scale, 1.62);
+});

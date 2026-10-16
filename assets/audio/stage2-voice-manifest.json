@@ -1,0 +1,340 @@
+{
+  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0; Riley: ElevenLabs eleven_v4 DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot); Narrator story line: VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) clone of Jason F, own voice, consented",
+  "model_revision_requested": "f3ff3571791e39611d31c381e3a41a3af07b4987",
+  "cast": {
+    "riley": {
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    "narrator": {
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+      "engine": "cosyvoice",
+      "model": "Fun-CosyVoice3-0.5B",
+      "license": "Apache-2.0",
+      "note": "real-person clone of the owner's own voice with consent; VoiceStudio CosyVoice 3 zero-shot; -18 LUFS mono 24 kHz 96k; Whisper medium.en checked"
+    },
+    "byar": {
+      "lang": "b",
+      "blend": {
+        "bm_daniel": 0.7,
+        "bm_lewis": 0.3
+      },
+      "speed": 0.94,
+      "pitch": 0.9
+    },
+    "zealot": {
+      "lang": "a",
+      "blend": {
+        "am_eric": 0.7,
+        "am_liam": 0.3
+      },
+      "speed": 1.02,
+      "pitch": 0.93
+    }
+  },
+  "pronunciation": {
+    "saidin": "sIˈdin",
+    "Myrddraal": "mˈɜɹdɹɑl",
+    "Baerlon": "bˈɛɹlɑn",
+    "Darkfriend": "dˈɑɹkfɹɛnd"
+  },
+  "lines": [
+    {
+      "id": "st2_story_01",
+      "who": "narrator",
+      "speaker": "NARRATOR (Jason F, CosyVoice 3 clone, own voice, consented)",
+      "text": "The Fade's trail led north, through the rain, to the walled town of Baerlon.",
+      "asset_path": "assets/audio/voice/st2_story_01.mp3",
+      "duration_s": 5.208,
+      "bytes": 62828,
+      "sha256": "a1e604c801f408e8457aeec42f00d5171219bf9308659d77a88b2379f7612b51",
+      "source": "cosyvoice",
+      "engine": "Fun-CosyVoice3-0.5B",
+      "processing": "-18 LUFS mono 24 kHz 96 kbps",
+      "note": "Jason narrator preview. Real-person clone of the owner's own voice with consent. VoiceStudio CosyVoice 3 (Fun-CosyVoice3-0.5B, Apache-2.0) zero-shot."
+    },
+    {
+      "id": "st2_story_02",
+      "who": "riley",
+      "text": "These hoofprints... a Myrddraal came this way. Hang on, Twinkle Toes.",
+      "asset_path": "assets/audio/voice/st2_story_02.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[serious] These hoofprints... a Murr-drahl came this way. Hang on, Twinkle Toes.",
+      "bitrate": "56k",
+      "generation_id": "N6vLmcbxhtnnTh8yFhFO",
+      "duration_s": 5.016,
+      "bytes": 35348,
+      "sha256": "907ca03a2c0556afdd31bc2085d784342d91d50704920176cf3b5275b9d3dc43",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "st2_story_03",
+      "who": "riley",
+      "text": "That's her ribbon! She was here!",
+      "asset_path": "assets/audio/voice/st2_story_03.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[excited] That's her ribbon! She was here!",
+      "bitrate": "64k",
+      "generation_id": "30yEOjKSQQNq0prAYqsp",
+      "duration_s": 2.352,
+      "bytes": 19052,
+      "sha256": "f50c0da4bbf69c721e2aa3263a8d515b1e4e84678b861eacb43bb63e5a172818",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "st2_story_04",
+      "who": "byar",
+      "text": "A boy who channels? Darkfriend! Children of the Light, seize him!",
+      "speech_input": "A boy who channels? [Darkfriend](/dˈɑɹkfɹɛnd/)! Children of the Light, seize him!",
+      "phonemes": [
+        "ɐ bˈY hˌuː ʧˈanᵊlz? dˈɑɹkfɹɛnd! ʧˈɪldɹᵊn ɒv ðə lˈIt, sˈiːz hˌɪm!"
+      ],
+      "duration_s": 3.384,
+      "sha256": "dcd08f473e18fc44c489189a78d9f271356f3498e6b5a42b56b2812216846eb2",
+      "asset_path": "assets/audio/voice/st2_story_04.mp3"
+    },
+    {
+      "id": "st2_story_05",
+      "who": "riley",
+      "text": "Darkfriend? I'm sixteen! I'm just looking for my friend!",
+      "asset_path": "assets/audio/voice/st2_story_05.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[frustrated] Darkfriend? I'm sixteen! I'm just looking for my friend!",
+      "bitrate": "56k",
+      "generation_id": "QVywTynhV4rdjqccSnio",
+      "duration_s": 4.32,
+      "bytes": 30476,
+      "sha256": "ec694ced7a7ce704410f4c97b8dce0c5a515d2219ea7bd3a74405193c29c5fe9",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "st2_story_06",
+      "who": "zealot",
+      "text": "That's exactly what a Darkfriend would say!",
+      "speech_input": "That's exactly what a [Darkfriend](/dˈɑɹkfɹɛnd/) would say!",
+      "phonemes": [
+        "ðˈæts ɪɡzˈæktli wˌʌt ɐ dˈɑɹkfɹɛnd wʊd sˈA!"
+      ],
+      "duration_s": 2.16,
+      "sha256": "86681e4a85d485aef07182f61536fd44656b996e5514bf94671435b905b13be5",
+      "asset_path": "assets/audio/voice/st2_story_06.mp3"
+    },
+    {
+      "id": "zealot_intro_01",
+      "who": "zealot",
+      "text": "Halt, Darkfriend! In the name of the Light!",
+      "speech_input": "Halt, [Darkfriend](/dˈɑɹkfɹɛnd/)! In the name of the Light!",
+      "phonemes": [
+        "hˈɔlt, dˈɑɹkfɹɛnd! ɪn ðə nˈAm ʌv ðə lˈIt!"
+      ],
+      "duration_s": 1.896,
+      "sha256": "c78f56a1bbf289ab147fef499b455046749e53ea04e65f3a852d87c487eb1197",
+      "asset_path": "assets/audio/voice/zealot_intro_01.mp3"
+    },
+    {
+      "id": "riley_st2_stable_01",
+      "who": "riley",
+      "text": "Hound Trollocs? The Fade left guards behind!",
+      "asset_path": "assets/audio/voice/riley_st2_stable_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[surprised] Hound Trollocs? The Fade left guards behind!",
+      "bitrate": "56k",
+      "generation_id": "LS3pY9VWjsnF6uQHOVMZ",
+      "duration_s": 3.384,
+      "bytes": 23924,
+      "sha256": "825cf57fc29af08e1fa37459c1c44297926ed3c488b97f015ccc884f09311293",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "riley_ribbon_01",
+      "who": "riley",
+      "text": "Twinkle Toes' ribbon! I'm getting closer.",
+      "asset_path": "assets/audio/voice/riley_ribbon_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[excited] Twinkle Toes' ribbon! I'm getting closer.",
+      "bitrate": "56k",
+      "generation_id": "mZa9iB1d20fEX6RTG3oR",
+      "duration_s": 3.024,
+      "bytes": 21404,
+      "sha256": "ef393d6e4adca2d43a32f390c3aa1fbf7dd8095e97d627e38d85b0ad9e1354b4",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "zealot_mud_01",
+      "who": "zealot",
+      "text": "My cloak! Do you know how hard it is to get mud out of white wool?!",
+      "speech_input": "My cloak! Do you know how hard it is to get mud out of white wool?!",
+      "phonemes": [
+        "mˌI klˈOk! dˈu ju nˈO hˌW hˈɑɹd ɪt ɪz tə ɡɛt mˈʌd ˈWt ʌv wˈIt wˈʊl?!"
+      ],
+      "duration_s": 2.832,
+      "sha256": "c2de8f9d873f5bf0b98889326bb9e89d927f1da66d396dafc23fa7f585626cce",
+      "asset_path": "assets/audio/voice/zealot_mud_01.mp3"
+    },
+    {
+      "id": "riley_mud_01",
+      "who": "riley",
+      "text": "Try cold water!",
+      "asset_path": "assets/audio/voice/riley_mud_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[sarcastic] Try cold water!",
+      "bitrate": "64k",
+      "generation_id": "bnlbgpolJpbAZxRThRUj",
+      "duration_s": 1.776,
+      "bytes": 14444,
+      "sha256": "61bf1df0aed48eafd6c6f98bd662be83bf8406714e13d21c5f2c76dbcf4089b0",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "byar_intro_01",
+      "who": "byar",
+      "text": "I am Jaret Byar, Child of the Light. Kneel, Darkfriend!",
+      "speech_input": "I am Jaret Byar, Child of the Light. Kneel, [Darkfriend](/dˈɑɹkfɹɛnd/)!",
+      "phonemes": [
+        "ˌI ɐm ʤˈaɹət bˈIɑː, ʧˈIld ɒv ðə lˈIt. nˈiːl, dˈɑɹkfɹɛnd!"
+      ],
+      "duration_s": 3.36,
+      "sha256": "325db8f3556d89d758143a05741962b744515b3616d0540a3729e5481f0464da",
+      "asset_path": "assets/audio/voice/byar_intro_01.mp3"
+    },
+    {
+      "id": "byar_parry_01",
+      "who": "byar",
+      "text": "Too slow, Darkfriend!",
+      "speech_input": "Too slow, [Darkfriend](/dˈɑɹkfɹɛnd/)!",
+      "phonemes": [
+        "tˈuː slˈQ, dˈɑɹkfɹɛnd!"
+      ],
+      "duration_s": 1.584,
+      "sha256": "bd718895ebd1da072063d5b91ebdd645b265d65b063f0c123947cedc93da27e2",
+      "asset_path": "assets/audio/voice/byar_parry_01.mp3"
+    },
+    {
+      "id": "byar_mid_01",
+      "who": "byar",
+      "text": "Archers! Cover the yard!",
+      "speech_input": "Archers! Cover the yard!",
+      "phonemes": [
+        "ˈɑːʧəz! kˈʌvə ðə jˈɑːd!"
+      ],
+      "duration_s": 1.632,
+      "sha256": "c544b67d73aac45c5a7c38031cc5ba3a5ee1a6afbf047052bb3d9a4c87c0a9a7",
+      "asset_path": "assets/audio/voice/byar_mid_01.mp3"
+    },
+    {
+      "id": "byar_volley_01",
+      "who": "byar",
+      "text": "Loose!",
+      "speech_input": "Loose!",
+      "phonemes": [
+        "lˈuːs!"
+      ],
+      "duration_s": 0.768,
+      "sha256": "fddf0332302f2743a825cea3fb7c061df341e0444efa178cabbbe12b45450d8e",
+      "asset_path": "assets/audio/voice/byar_volley_01.mp3"
+    },
+    {
+      "id": "byar_rage_01",
+      "who": "byar",
+      "text": "Burn the barn! Smoke the Darkfriend out!",
+      "speech_input": "Burn the barn! Smoke the [Darkfriend](/dˈɑɹkfɹɛnd/) out!",
+      "phonemes": [
+        "bˈɜːn ðə bˈɑːn! smˈQk ðə dˈɑɹkfɹɛnd ˈWt!"
+      ],
+      "duration_s": 2.256,
+      "sha256": "fcf74f4e9eb8f38f2a9754a58c7f75bd22736c548b366c1d2ca7a79e2bcde29d",
+      "asset_path": "assets/audio/voice/byar_rage_01.mp3"
+    },
+    {
+      "id": "byar_defeat_01",
+      "who": "byar",
+      "text": "This is not over, Darkfriend! The Light will find you!",
+      "speech_input": "This is not over, [Darkfriend](/dˈɑɹkfɹɛnd/)! The Light will find you!",
+      "phonemes": [
+        "ðˌɪs ɪz nˌɒt ˈQvə, dˈɑɹkfɹɛnd! ðə lˈIt wɪl fˈInd juː!"
+      ],
+      "duration_s": 2.976,
+      "sha256": "bda1e8a5f3377cfd7608664e88c84981ead400c5421011fe63698b68d81827b4",
+      "asset_path": "assets/audio/voice/byar_defeat_01.mp3"
+    },
+    {
+      "id": "riley_st2_victory_01",
+      "who": "riley",
+      "text": "I'm NOT a Darkfriend! ...And your barn is on fire!",
+      "asset_path": "assets/audio/voice/riley_st2_victory_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[sarcastic] I'm NOT a Darkfriend! ...And your barn is on fire!",
+      "bitrate": "56k",
+      "generation_id": "hb7Pgy8mwI0SN1CfFo5w",
+      "duration_s": 4.008,
+      "bytes": 28292,
+      "sha256": "9a54abd207b85863a7301ebfa2ead55880600a2505db28bf6f51342773033d1e",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "riley_st2_clear_01",
+      "who": "riley",
+      "text": "The trail keeps going. Hang on, Twinkle Toes. I am coming.",
+      "asset_path": "assets/audio/voice/riley_st2_clear_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[determined] The trail keeps going. Hang on, Twinkle Toes. I am coming.",
+      "bitrate": "56k",
+      "generation_id": "UVWwifqCoX6gUv4NTwS8",
+      "duration_s": 4.176,
+      "bytes": 29468,
+      "sha256": "ed5d28c6f2df54d0a0580f00f282e60fe09bc774ccad488b900bbdeb0570337b",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    }
+  ]
+}

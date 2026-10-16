@@ -1,0 +1,24 @@
+{
+  "note": "World-locked torches sampled from the painted plates. The view keeps three of them inside the ten-light cap. Plate 1 does not overlap plate 2.",
+  "color": "0xffb45e",
+  "capOnScreen": 3,
+  "ambient": "0x6a7a90",
+  "ambientBoss": "0x6a5840",
+  "ambientUnlit": "0x242830",
+  "lights": [
+    { "plate": 0, "x": 41, "y": 326, "i": 1.25, "r": 260 },
+    { "plate": 0, "x": 220, "y": 323, "i": 1.25, "r": 260 },
+    { "plate": 0, "x": 1034, "y": 337, "i": 1.25, "r": 260 },
+    { "plate": 1, "x": 1403, "y": 448, "i": 1.25, "r": 260 },
+    { "plate": 1, "x": 1665, "y": 418, "i": 1.25, "r": 260 },
+    { "plate": 1, "x": 2079, "y": 418, "i": 1.25, "r": 260 },
+    { "plate": 1, "x": 2346, "y": 448, "i": 1.25, "r": 260 },
+    { "plate": 2, "x": 3014, "y": 456, "i": 1.4, "r": 300 },
+    { "plate": 2, "x": 3187, "y": 398, "i": 1.4, "r": 300 },
+    { "plate": 2, "x": 3473, "y": 445, "i": 1.4, "r": 300 },
+    { "plate": 2, "x": 3674, "y": 489, "i": 1.4, "r": 300 },
+    { "plate": 3, "x": 3991, "y": 407, "i": 1.45, "r": 320 },
+    { "plate": 3, "x": 4188, "y": 478, "i": 1.45, "r": 320 },
+    { "plate": 3, "x": 5007, "y": 472, "i": 1.45, "r": 320 }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+ "key": "spear",
+ "canvas": [
+  1200,
+  820
+ ],
+ "baseline": 790,
+ "scale": 0.75,
+ "pages": [
+  "spear-0"
+ ],
+ "anims": [
+  {
+   "name": "spear_walk",
+   "frames": [
+    "spear_walk_00",
+    "spear_walk_01",
+    "spear_walk_02",
+    "spear_walk_03"
+   ],
+   "holds": [
+    150,
+    150,
+    150,
+    150
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "spear_attack",
+   "frames": [
+    "spear_attack_00",
+    "spear_attack_01",
+    "spear_attack_02",
+    "spear_attack_03"
+   ],
+   "holds": [
+    140,
+    280,
+    220,
+    220
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "spear_hurt",
+   "frames": [
+    "spear_hurt_00",
+    "spear_hurt_01"
+   ],
+   "holds": [
+    100,
+    190
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "spear_knockdown",
+   "frames": [
+    "spear_knockdown_00",
+    "spear_knockdown_01",
+    "spear_knockdown_02"
+   ],
+   "holds": [
+    90,
+    160,
+    900
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "spear_getup",
+   "frames": [
+    "spear_getup_00",
+    "spear_getup_01",
+    "spear_getup_02"
+   ],
+   "holds": [
+    170,
+    150,
+    140
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  }
+ ]
+}

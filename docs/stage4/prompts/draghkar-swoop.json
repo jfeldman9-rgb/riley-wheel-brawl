@@ -1,0 +1,21 @@
+{
+  "id": "draghkar-swoop",
+  "file": "draghkar-swoop.png",
+  "tool": "image-generation",
+  "backupTool": "gemini",
+  "size": [
+    1536,
+    1024
+  ],
+  "frames": 8,
+  "cols": 4,
+  "rows": 2,
+  "opaque": false,
+  "riley": false,
+  "normal": false,
+  "houseStyle": "spike-art/HOUSE_STYLE.txt",
+  "attach": [
+    "spike-art/HOUSE_STYLE.txt"
+  ],
+  "prompt": "Use case: stylized-concept. Production art for Riley Wheel Brawl 2.0, Stage 4, Shadar Logoth. Asset draghkar-swoop.png. Canvas exactly 1536\u00d71024. Exactly 8 frames in a 4\u00d72 grid. Each cell is 384\u00d7512. Clear gaps, no overlap, no borders. Frames, in reading order: 1. swoop bank 2. swoop level 3. swoop opposite 4. swoop recover 5. dive start 6. dive 7. dive low 8. dive exit. Genuinely transparent background, real alpha. No painted backdrop, floor shadow, or checkerboard. Native facing is LEFT, matching Stage 2 enemies; the game mirrors the sprite to turn. HOUSE STYLE, identical to spike-art/HOUSE_STYLE.txt: HOUSE STYLE (Riley Wheel Brawl 2.0), identical for every image:\n- Hand-drawn HD 2D fighting-game sprite art in the spirit of Streets of Rage 4: confident dark-brown/near-black ink outlines (thicker on the outer silhouette, thinner inside), clean cel shading with 2-3 tone steps plus subtle painterly gradients. NOT pixel art, NOT 3D render, NOT photo-real, NOT chibi.\n- Lighting baked lightly: soft key light from the upper LEFT, gentle cool rim on the right edge. Keep shading moderate (the game adds real-time light on top).\n- Rich but grounded colors. Strong readable silhouette.\n- Side view (profile / slight 3/4), character faces RIGHT, full body head to boots, whole figure inside the frame with margin.\n- Genuinely TRANSPARENT background (real alpha). No ground shadow, no floor, no text, no labels, no borders, no frame numbers. Swoop and dive. Top row the shadow-swoop pose in the air. Bottom row the dive across a lane. Wings readable, no motion-blur smear. No text, letters, numbers, watermarks, frame labels, or borders in the finished image. No gore: Shadowspawn become ash; human cultists are knocked out or flee."
+}

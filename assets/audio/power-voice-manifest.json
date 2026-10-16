@@ -1,0 +1,284 @@
+{
+  "engine": "Kokoro 0.9.4 / Kokoro-82M v1.0; Riley: ElevenLabs eleven_v4 DYLO (re-recorded 2026-10-09, approved by Jason F via Grok Bot)",
+  "model_revision_requested": "f3ff3571791e39611d31c381e3a41a3af07b4987",
+  "cast": {
+    "riley": {
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    "grunt": {
+      "lang": "a",
+      "blend": {
+        "am_onyx": 0.7,
+        "am_fenrir": 0.3
+      },
+      "speed": 0.92,
+      "pitch": 0.74
+    },
+    "spear": {
+      "lang": "b",
+      "blend": {
+        "bm_lewis": 1.0
+      },
+      "speed": 0.98,
+      "pitch": 0.8
+    },
+    "hound": {
+      "lang": "a",
+      "blend": {
+        "am_fenrir": 0.6,
+        "am_echo": 0.4
+      },
+      "speed": 1.06,
+      "pitch": 0.84,
+      "rasp": true
+    }
+  },
+  "pronunciation": {
+    "saidin": "sIˈdin",
+    "Ishamael": "ɪʃˈAmAɛl",
+    "Lanfear": "lˈænfɪɹ",
+    "Aginor": "ˈæɡɪnɔɹ",
+    "Myrddraal": "mˈɜɹdɹɑl",
+    "Twix": "twˈɪks",
+    "Forsaken": "fɔɹsˈAkən",
+    "Trollocs": "tɹˈɑlɑks"
+  },
+  "lines": [
+    {
+      "id": "riley_saangreal_01",
+      "who": "riley",
+      "text": "Whoa. That is a LOT of saidin!",
+      "asset_path": "assets/audio/voice/riley_saangreal_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[excited] Whoa. That is a LOT of sah-EEN!",
+      "bitrate": "56k",
+      "generation_id": "9ANd1mJzunIZGEODC9WG",
+      "duration_s": 3.36,
+      "bytes": 23756,
+      "sha256": "c01b02e18fd3aeead7db52a1ca54bb4270a0bacabfb24d07e7f3d8c3b50b54d5",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "riley_lightning_01",
+      "who": "riley",
+      "text": "Lightning, on my call!",
+      "asset_path": "assets/audio/voice/riley_lightning_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[shouting] Lightning, on my call!",
+      "bitrate": "64k",
+      "generation_id": "P3MzJgYWUzGdNm2HB8Vj",
+      "duration_s": 2.136,
+      "bytes": 17324,
+      "sha256": "09d6135e25880a39b644e79191bf38aa3ee0e820c929e91379119aeb98782741",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "riley_fireshield_01",
+      "who": "riley",
+      "text": "Try touching me now!",
+      "asset_path": "assets/audio/voice/riley_fireshield_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[cocky] Try touching me now!",
+      "bitrate": "64k",
+      "generation_id": "VdERxNY0d22dlBBibMWv",
+      "duration_s": 1.968,
+      "bytes": 15980,
+      "sha256": "13586d8c58334663cf5a2b5abfefaaf3b14276f8dfdb49b341a94024c749d20f",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "riley_airwhip_01",
+      "who": "riley",
+      "text": "Come here, you!",
+      "asset_path": "assets/audio/voice/riley_airwhip_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[cocky] Come here, you!",
+      "bitrate": "64k",
+      "generation_id": "ZFuCvGYI8E18yokC06iC",
+      "duration_s": 1.224,
+      "bytes": 10028,
+      "sha256": "31bfa5eb91d8852a5d91780ec53094166a6c1924362c06b34ce0f4ebb82d3f08",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "riley_twix_01",
+      "who": "riley",
+      "text": "Wait... is that a Twix?",
+      "asset_path": "assets/audio/voice/riley_twix_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[surprised] Wait... is that a Twix?",
+      "bitrate": "64k",
+      "generation_id": "6yYug8Enbi1OxIw05LkM",
+      "duration_s": 2.256,
+      "bytes": 18284,
+      "sha256": "cf65afbcd4d52d46b37ae9742a1d22d227d4dbfc3ac4e0b51c28bac3e9a8a093",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "twix_01",
+      "who": "riley",
+      "text": "Snack truce. One Twix each, and nobody bites anybody.",
+      "asset_path": "assets/audio/voice/twix_01.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[casual] Snack truce. One Twix each, and nobody bites anybody.",
+      "bitrate": "56k",
+      "generation_id": "bOkR5DGwmXEEEH08FFlu",
+      "duration_s": 4.2,
+      "bytes": 29636,
+      "sha256": "40923ff432745c5446748c95963b2e1e0dd7654d0b60222eb254f452da04e125",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "twix_02",
+      "who": "grunt",
+      "text": "Mmf. Crunchy. Way better than Ishamael's stew. His stew bites back.",
+      "speech_input": "Mmf. Crunchy. Way better than [Ishamael](/ɪʃˈAmAɛl/)'s stew. His stew bites back.",
+      "phonemes": [
+        "ˌɛmˌɛmˈɛf. kɹˈʌnʧi. wˈA bˈɛTəɹ ðən ɪʃˈAmAɛls stˈu. hˌɪz stˈu bˈIts bˈæk."
+      ],
+      "duration_s": 3.984,
+      "sha256": "00f4095cf3124f2c2a5020f56c182cc0ec530bc976d6e5e2d937cefb5a7cd06f",
+      "asset_path": "assets/audio/voice/twix_02.mp3"
+    },
+    {
+      "id": "twix_03",
+      "who": "spear",
+      "text": "Lanfear calls us smelly. Every day! I took a bath once. Last spring!",
+      "speech_input": "[Lanfear](/lˈænfɪɹ/) calls us smelly. Every day! I took a bath once. Last spring!",
+      "phonemes": [
+        "lˈænfɪɹ kˈɔːlz ˌʌs smˈɛli. ˈɛvəɹi dˈA! ˌI tˈʊk ɐ bˈɑːθ wˈʌns. lˈɑːst spɹˈɪŋ!"
+      ],
+      "duration_s": 4.728,
+      "sha256": "cd0e2f07302c29f5791ca6ef16752005e2502a06b953eab7f2e1e33d25e749ca",
+      "asset_path": "assets/audio/voice/twix_03.mp3"
+    },
+    {
+      "id": "twix_04",
+      "who": "hound",
+      "text": "Aginor made my snout. Then he laughed at my snout.",
+      "speech_input": "[Aginor](/ˈæɡɪnɔɹ/) made my snout. Then he laughed at my snout.",
+      "phonemes": [
+        "ˈæɡɪnɔɹ mˌAd mI snˈWt. ðˈɛn hi lˈæft æt mI snˈWt."
+      ],
+      "duration_s": 2.544,
+      "sha256": "45fa3af4e4e0bf4a3cee76da0b5553c29a4759e67c536538d128dc205b8b7134",
+      "asset_path": "assets/audio/voice/twix_04.mp3"
+    },
+    {
+      "id": "twix_05",
+      "who": "grunt",
+      "text": "And the Myrddraal stare at you with no eyes. How do they stare with NO EYES?",
+      "speech_input": "And the [Myrddraal](/mˈɜɹdɹɑl/) stare at you with no eyes. How do they stare with no eyes?",
+      "phonemes": [
+        "ˌænd ðə mˈɜɹdɹɑl stˈɛɹ æt ju wɪð nˈO ˈIz. hˌW dˈu ðA stˈɛɹ wɪð nˈO ˈIz?"
+      ],
+      "duration_s": 4.152,
+      "sha256": "4f28f020c321d3674727a67841089358e63e2ac6041229c7fd473b65a906e6e6",
+      "asset_path": "assets/audio/voice/twix_05.mp3"
+    },
+    {
+      "id": "twix_06",
+      "who": "spear",
+      "text": "No Forsaken ever says thank you. Not one time. Not even on Winternight.",
+      "speech_input": "No [Forsaken](/fɔɹsˈAkən/) ever says thank you. Not one time. Not even on Winternight.",
+      "phonemes": [
+        "nˈQ fɔɹsˈAkən ˈɛvə sˈɛz θˈaŋk juː. nˌɒt wˈʌn tˈIm. nˌɒt ˈiːvᵊn ˌɒn wˈɪntənˌIt."
+      ],
+      "duration_s": 4.944,
+      "sha256": "727a7c0755543b5d0682abcea5db11bd31551a1256a8c5acb7164dee6eb6c9af",
+      "asset_path": "assets/audio/voice/twix_06.mp3"
+    },
+    {
+      "id": "twix_07",
+      "who": "riley",
+      "text": "Have you guys ever thought about... not working for the Dark One?",
+      "asset_path": "assets/audio/voice/twix_07.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[curious] Have you guys ever thought about... not working for the Dark One?",
+      "bitrate": "56k",
+      "generation_id": "x94A4PFwpw84906PWmgd",
+      "duration_s": 3.768,
+      "bytes": 26612,
+      "sha256": "afae05e25bc59b8c7875c09c13fa649847d5b74eb4b27897a0d979800c2af3ef",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    },
+    {
+      "id": "twix_08",
+      "who": "all",
+      "text": "...Does the Light have more Twix?",
+      "speech_input": "...Does the Light have more [Twix](/twˈɪks/)?",
+      "phonemes": [
+        "(3-voice chorus: grunt + spear + hound)"
+      ],
+      "duration_s": 2.16,
+      "sha256": "81fe33a2091e32e45e6436aba5cf43ebafe5a6f0dcf8bdbb2921132cb238e81a",
+      "asset_path": "assets/audio/voice/twix_08.mp3"
+    },
+    {
+      "id": "twix_09",
+      "who": "riley",
+      "text": "Ask me after I win. Break's over!",
+      "asset_path": "assets/audio/voice/twix_09.mp3",
+      "source": "elevenlabs",
+      "engine": "eleven_v4",
+      "model": "eleven_v4",
+      "voice": "DYLO - Dark Anime Hero",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[cocky] Ask me after I win. Break's over!",
+      "bitrate": "56k",
+      "generation_id": "y416H0aJvORrv722WUk8",
+      "duration_s": 3.0,
+      "bytes": 21236,
+      "sha256": "46a7193c4c3f8ff5abcde290d681df1d0e8cde1951fa5391235e87ff4366fc1f",
+      "processing": "ElevenLabs take (mono 44.1 kHz 128 kbps) -> trim start/end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75 -> mono 24 kHz 64 kbps; the 10 longest Stage 1/2 lines use 56 kbps so the 25 MB pre-fight budget still passes (median about -18 LUFS, matching the old Riley lines)",
+      "note": "re-recorded 2026-10-09, approved by Jason F via Grok Bot"
+    }
+  ]
+}

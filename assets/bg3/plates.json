@@ -1,0 +1,26 @@
+{
+ "note": "Stage 3 plates. floors: contiguous [from,to) world-x segments. overlap: mid3b sits 80 plate px under mid3a's corner (tools/stage3/process_bg3_plates.py OVERLAP).",
+ "placeholder": false,
+ "overlap": 80,
+ "midScale": 0.76,
+ "midParallax": 0.5,
+ "midX0": -60,
+ "farScroll": 0.12,
+ "floors": [
+  {
+   "key": "floor3a",
+   "from": 0,
+   "to": 2540
+  },
+  {
+   "key": "floor3b",
+   "from": 2540,
+   "to": 3880
+  },
+  {
+   "key": "floor3c",
+   "from": 3880,
+   "to": 5200
+  }
+ ]
+}

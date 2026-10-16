@@ -1,0 +1,22 @@
+{
+  "id": "bg4-mid2_n",
+  "file": "bg4-mid2_n.png",
+  "tool": "image-generation",
+  "backupTool": "gemini",
+  "size": [
+    2172,
+    724
+  ],
+  "frames": 1,
+  "cols": 1,
+  "rows": 1,
+  "opaque": true,
+  "riley": false,
+  "normal": true,
+  "houseStyle": "spike-art/HOUSE_STYLE.txt",
+  "attach": [
+    "spike-art/tools/nmap.py",
+    "bg4-mid2.png"
+  ],
+  "prompt": "Do not paint bg4-mid2_n.png. Build the normal map by running spike-art/tools/nmap.py on the colour plate bg4-mid2.png and save bg4-mid2_n.png at 2172\u00d7724. Normal map of bg4-mid2.png. Do not paint this. Build it with spike-art/tools/nmap.py from the colour plate."
+}

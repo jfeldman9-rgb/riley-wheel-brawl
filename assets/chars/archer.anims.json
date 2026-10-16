@@ -1,0 +1,178 @@
+{
+ "key": "archer",
+ "canvas": [
+  900,
+  560
+ ],
+ "baseline": 530,
+ "scale": 0.62,
+ "pages": [
+  "archer-0"
+ ],
+ "anims": [
+  {
+   "name": "archer_walk",
+   "frames": [
+    "archer_walk_00",
+    "archer_walk_01",
+    "archer_walk_02",
+    "archer_walk_03"
+   ],
+   "holds": [
+    150,
+    150,
+    150,
+    150
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "archer_shoot",
+   "frames": [
+    "archer_shoot_00",
+    "archer_shoot_01",
+    "archer_shoot_02",
+    "archer_shoot_03",
+    "archer_shoot_04",
+    "archer_shoot_05"
+   ],
+   "holds": [
+    160,
+    200,
+    260,
+    320,
+    120,
+    220
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "archer_skyshot",
+   "frames": [
+    "archer_skyshot_00",
+    "archer_skyshot_01",
+    "archer_skyshot_02",
+    "archer_skyshot_03",
+    "archer_skyshot_04"
+   ],
+   "holds": [
+    160,
+    200,
+    300,
+    140,
+    220
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "archer_backstep",
+   "frames": [
+    "archer_backstep_00",
+    "archer_backstep_01"
+   ],
+   "holds": [
+    140,
+    200
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "archer_hurt",
+   "frames": [
+    "archer_hurt_00",
+    "archer_hurt_01"
+   ],
+   "holds": [
+    100,
+    190
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "archer_knockdown",
+   "frames": [
+    "archer_knockdown_00",
+    "archer_knockdown_01",
+    "archer_knockdown_02"
+   ],
+   "holds": [
+    100,
+    180,
+    1100
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "archer_getup",
+   "frames": [
+    "archer_getup_00",
+    "archer_getup_01"
+   ],
+   "holds": [
+    300,
+    200
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "archer_flee",
+   "frames": [
+    "archer_flee_00",
+    "archer_flee_01",
+    "archer_flee_02",
+    "archer_flee_03"
+   ],
+   "holds": [
+    110,
+    110,
+    110,
+    110
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ ]
+}

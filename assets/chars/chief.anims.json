@@ -1,0 +1,196 @@
+{
+ "key": "chief",
+ "canvas": [
+  1600,
+  1040
+ ],
+ "baseline": 1000,
+ "scale": 0.7,
+ "pages": [
+  "chief-0"
+ ],
+ "anims": [
+  {
+   "name": "chief_walk",
+   "frames": [
+    "chief_walk_00",
+    "chief_walk_01",
+    "chief_walk_02",
+    "chief_walk_03"
+   ],
+   "holds": [
+    180,
+    180,
+    180,
+    180
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "chief_chop",
+   "frames": [
+    "chief_chop_00",
+    "chief_chop_01",
+    "chief_chop_02",
+    "chief_chop_03"
+   ],
+   "holds": [
+    260,
+    320,
+    110,
+    420
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "chief_sweep",
+   "frames": [
+    "chief_sweep_00",
+    "chief_sweep_01"
+   ],
+   "holds": [
+    340,
+    420
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "chief_charge",
+   "frames": [
+    "chief_charge_00",
+    "chief_charge_01"
+   ],
+   "holds": [
+    110,
+    110
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "chief_roar",
+   "frames": [
+    "chief_roar_00"
+   ],
+   "holds": [
+    1100
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "chief_lift",
+   "frames": [
+    "chief_lift_00"
+   ],
+   "holds": [
+    600
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "chief_hurl",
+   "frames": [
+    "chief_hurl_00"
+   ],
+   "holds": [
+    500
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "chief_stunned",
+   "frames": [
+    "chief_stunned_00"
+   ],
+   "holds": [
+    2300
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "chief_hurt",
+   "frames": [
+    "chief_hurt_00",
+    "chief_hurt_01"
+   ],
+   "holds": [
+    110,
+    230
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "chief_knockdown",
+   "frames": [
+    "chief_knockdown_00",
+    "chief_knockdown_01",
+    "chief_knockdown_02"
+   ],
+   "holds": [
+    100,
+    180,
+    1100
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "chief_getup",
+   "frames": [
+    "chief_getup_00",
+    "chief_getup_01",
+    "chief_getup_02"
+   ],
+   "holds": [
+    230,
+    210,
+    190
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  }
+ ]
+}

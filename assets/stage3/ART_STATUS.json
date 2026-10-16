@@ -1,0 +1,905 @@
+{
+ "version": 1,
+ "facingFlips": [],
+ "entries": [
+  {
+   "id": "cutthroat-master",
+   "files": [],
+   "sha256": {},
+   "sourceOnly": true,
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/cutthroat-master.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-cutthroat-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/zealot.anims.json",
+    "sourcePage": "assets/chars/zealot-0.webp",
+    "sourceSha256": "cbca8e15d57710cce1ce4b8d111dc7561ed1e97a9e7d250777e0dc49dd68d2d7",
+    "method": "palette/region recolour of the Whitecloak zealot sheet: charcoal hood and cloak, oxblood shirt (was mail), brown leather, copper fittings",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "cutthroat-a",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "c92cb02afef40e6a3315642d6fb20aac91d38ec4ebe4a0a1ead9aa9ec6e6d136",
+    "assets/stage3/chars/cutthroat-0_n.webp": "5a6abaabd8a832175f55e3f22ece1641f9e4b4eaec26c777eaeeef7a373c9168",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "aa5831a2f6f4e8bef56c36c6556c03683a061091f6f10d926b9f1d9abf82ecae",
+    "assets/stage3/chars/cutthroat-0.json": "58e97deb4f7e28591f6c653956522f95571eeaecec13a99c05427ef39c324c44",
+    "assets/stage3/chars/cutthroat.anims.json": "9c9046c844b43ad4792c7ae257f635dbba723917c2f5e044a1baf68c4c15b309"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/cutthroat-a.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-cutthroat-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/zealot.anims.json",
+    "sourcePage": "assets/chars/zealot-0.webp",
+    "sourceSha256": "cbca8e15d57710cce1ce4b8d111dc7561ed1e97a9e7d250777e0dc49dd68d2d7",
+    "method": "palette/region recolour of the Whitecloak zealot sheet: charcoal hood and cloak, oxblood shirt (was mail), brown leather, copper fittings",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "cutthroat-b",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "c92cb02afef40e6a3315642d6fb20aac91d38ec4ebe4a0a1ead9aa9ec6e6d136",
+    "assets/stage3/chars/cutthroat-0_n.webp": "5a6abaabd8a832175f55e3f22ece1641f9e4b4eaec26c777eaeeef7a373c9168",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "aa5831a2f6f4e8bef56c36c6556c03683a061091f6f10d926b9f1d9abf82ecae",
+    "assets/stage3/chars/cutthroat-0.json": "58e97deb4f7e28591f6c653956522f95571eeaecec13a99c05427ef39c324c44",
+    "assets/stage3/chars/cutthroat.anims.json": "9c9046c844b43ad4792c7ae257f635dbba723917c2f5e044a1baf68c4c15b309"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/cutthroat-b.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-cutthroat-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/zealot.anims.json",
+    "sourcePage": "assets/chars/zealot-0.webp",
+    "sourceSha256": "cbca8e15d57710cce1ce4b8d111dc7561ed1e97a9e7d250777e0dc49dd68d2d7",
+    "method": "palette/region recolour of the Whitecloak zealot sheet: charcoal hood and cloak, oxblood shirt (was mail), brown leather, copper fittings",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "cutthroat-c",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "c92cb02afef40e6a3315642d6fb20aac91d38ec4ebe4a0a1ead9aa9ec6e6d136",
+    "assets/stage3/chars/cutthroat-0_n.webp": "5a6abaabd8a832175f55e3f22ece1641f9e4b4eaec26c777eaeeef7a373c9168",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "aa5831a2f6f4e8bef56c36c6556c03683a061091f6f10d926b9f1d9abf82ecae",
+    "assets/stage3/chars/cutthroat-0.json": "58e97deb4f7e28591f6c653956522f95571eeaecec13a99c05427ef39c324c44",
+    "assets/stage3/chars/cutthroat.anims.json": "9c9046c844b43ad4792c7ae257f635dbba723917c2f5e044a1baf68c4c15b309"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/cutthroat-c.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-cutthroat-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/zealot.anims.json",
+    "sourcePage": "assets/chars/zealot-0.webp",
+    "sourceSha256": "cbca8e15d57710cce1ce4b8d111dc7561ed1e97a9e7d250777e0dc49dd68d2d7",
+    "method": "palette/region recolour of the Whitecloak zealot sheet: charcoal hood and cloak, oxblood shirt (was mail), brown leather, copper fittings",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "cutthroat-d",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "c92cb02afef40e6a3315642d6fb20aac91d38ec4ebe4a0a1ead9aa9ec6e6d136",
+    "assets/stage3/chars/cutthroat-0_n.webp": "5a6abaabd8a832175f55e3f22ece1641f9e4b4eaec26c777eaeeef7a373c9168",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "aa5831a2f6f4e8bef56c36c6556c03683a061091f6f10d926b9f1d9abf82ecae",
+    "assets/stage3/chars/cutthroat-0.json": "58e97deb4f7e28591f6c653956522f95571eeaecec13a99c05427ef39c324c44",
+    "assets/stage3/chars/cutthroat.anims.json": "9c9046c844b43ad4792c7ae257f635dbba723917c2f5e044a1baf68c4c15b309"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/cutthroat-d.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-cutthroat-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/zealot.anims.json",
+    "sourcePage": "assets/chars/zealot-0.webp",
+    "sourceSha256": "cbca8e15d57710cce1ce4b8d111dc7561ed1e97a9e7d250777e0dc49dd68d2d7",
+    "method": "palette/region recolour of the Whitecloak zealot sheet: charcoal hood and cloak, oxblood shirt (was mail), brown leather, copper fittings",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "cutthroat-e",
+   "char": "cutthroat",
+   "files": [
+    "assets/stage3/chars/cutthroat-0.webp",
+    "assets/stage3/chars/cutthroat-0_n.webp",
+    "assets/stage3/chars/cutthroat-0_nl.webp",
+    "assets/stage3/chars/cutthroat-0.json",
+    "assets/stage3/chars/cutthroat.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/cutthroat-0.webp": "c92cb02afef40e6a3315642d6fb20aac91d38ec4ebe4a0a1ead9aa9ec6e6d136",
+    "assets/stage3/chars/cutthroat-0_n.webp": "5a6abaabd8a832175f55e3f22ece1641f9e4b4eaec26c777eaeeef7a373c9168",
+    "assets/stage3/chars/cutthroat-0_nl.webp": "aa5831a2f6f4e8bef56c36c6556c03683a061091f6f10d926b9f1d9abf82ecae",
+    "assets/stage3/chars/cutthroat-0.json": "58e97deb4f7e28591f6c653956522f95571eeaecec13a99c05427ef39c324c44",
+    "assets/stage3/chars/cutthroat.anims.json": "9c9046c844b43ad4792c7ae257f635dbba723917c2f5e044a1baf68c4c15b309"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/cutthroat-e.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-cutthroat-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/zealot.anims.json",
+    "sourcePage": "assets/chars/zealot-0.webp",
+    "sourceSha256": "cbca8e15d57710cce1ce4b8d111dc7561ed1e97a9e7d250777e0dc49dd68d2d7",
+    "method": "palette/region recolour of the Whitecloak zealot sheet: charcoal hood and cloak, oxblood shirt (was mail), brown leather, copper fittings",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "riley-s3a",
+   "char": "riley3",
+   "files": [
+    "assets/stage3/chars/riley3-0.webp",
+    "assets/stage3/chars/riley3-0_n.webp",
+    "assets/stage3/chars/riley3-0_nl.webp",
+    "assets/stage3/chars/riley3-0.json",
+    "assets/stage3/chars/riley3.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/riley3-0.webp": "0df0d72f87ce4b22c36019da8d6378702febd71d625e94cf7afa89f9221273ca",
+    "assets/stage3/chars/riley3-0_n.webp": "9eeef2c653399a8d6c9c3152d62cfe009df21f57d943a69d25fb34012fcfd522",
+    "assets/stage3/chars/riley3-0_nl.webp": "4d0c262c6e916d69fbc94f9ce5d240356832c524bddc72284d5271d742de1a01",
+    "assets/stage3/chars/riley3-0.json": "520a03b7be6175057c3b239979e89ea1bcbf1521ddb79ff57d9b1a924ef00a15",
+    "assets/stage3/chars/riley3.anims.json": "b012fbde79ab91a61a2bb676c4b2214eccdf5c7807869884b8d86826a99248e4"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/riley-s3a.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-riley3.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/riley.anims.json",
+    "sourcePage": "assets/chars/riley-0.webp",
+    "sourceSha256": "9b7cd5b6f3e281abc06d0b2b7b02e0806c1782410f3581ecb595fb256cf81d62",
+    "method": "Riley's own painted frames, unchanged: grabbed = hurt struggle loop, escape = back kick",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "fade-master",
+   "files": [],
+   "sha256": {},
+   "sourceOnly": true,
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fade-master.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-fade-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/byar.anims.json",
+    "sourcePage": "assets/chars/byar-0.webp",
+    "sourceSha256": "cf74d0c8b31eee048929612cbc0e63f825e3320d2611ddd71d2c826a43854160",
+    "method": "palette/region recolour of the Jaret Byar sheet: black cloak and armour, pale grey eyeless face (eyes and brows smoothed); blink frames sink into shadow",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "fade-a",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-0.webp",
+    "assets/stage3/chars/fade-0_n.webp",
+    "assets/stage3/chars/fade-0_nl.webp",
+    "assets/stage3/chars/fade-0.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-0.webp": "cbc6abc1642065533aa289bed775afb588a212037c3f10221d730894fd4aa712",
+    "assets/stage3/chars/fade-0_n.webp": "9f36a2fa9b68dd8e34edf566da711477125b0e7243e602c0b90e2d0571c0c482",
+    "assets/stage3/chars/fade-0_nl.webp": "f0185edf8026f07994cd77d5b315d71618ab417450da432cef4dc14ffd6a534d",
+    "assets/stage3/chars/fade-0.json": "5ed09c0bfe7c62ad6a9f7e258f2fa873f360a452ed697367d0e71a4b6fc1502a",
+    "assets/stage3/chars/fade.anims.json": "ec6d9b62f5eb544716381e5cb9b31cf8c8811e784422f67bcb3d37203639a32d"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fade-a.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-fade-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/byar.anims.json",
+    "sourcePage": "assets/chars/byar-0.webp",
+    "sourceSha256": "cf74d0c8b31eee048929612cbc0e63f825e3320d2611ddd71d2c826a43854160",
+    "method": "palette/region recolour of the Jaret Byar sheet: black cloak and armour, pale grey eyeless face (eyes and brows smoothed); blink frames sink into shadow",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "fade-b",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-0.webp",
+    "assets/stage3/chars/fade-0_n.webp",
+    "assets/stage3/chars/fade-0_nl.webp",
+    "assets/stage3/chars/fade-0.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-0.webp": "cbc6abc1642065533aa289bed775afb588a212037c3f10221d730894fd4aa712",
+    "assets/stage3/chars/fade-0_n.webp": "9f36a2fa9b68dd8e34edf566da711477125b0e7243e602c0b90e2d0571c0c482",
+    "assets/stage3/chars/fade-0_nl.webp": "f0185edf8026f07994cd77d5b315d71618ab417450da432cef4dc14ffd6a534d",
+    "assets/stage3/chars/fade-0.json": "5ed09c0bfe7c62ad6a9f7e258f2fa873f360a452ed697367d0e71a4b6fc1502a",
+    "assets/stage3/chars/fade.anims.json": "ec6d9b62f5eb544716381e5cb9b31cf8c8811e784422f67bcb3d37203639a32d"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fade-b.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-fade-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/byar.anims.json",
+    "sourcePage": "assets/chars/byar-0.webp",
+    "sourceSha256": "cf74d0c8b31eee048929612cbc0e63f825e3320d2611ddd71d2c826a43854160",
+    "method": "palette/region recolour of the Jaret Byar sheet: black cloak and armour, pale grey eyeless face (eyes and brows smoothed); blink frames sink into shadow",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "fade-c",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-0.webp",
+    "assets/stage3/chars/fade-0_n.webp",
+    "assets/stage3/chars/fade-0_nl.webp",
+    "assets/stage3/chars/fade-0.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-0.webp": "cbc6abc1642065533aa289bed775afb588a212037c3f10221d730894fd4aa712",
+    "assets/stage3/chars/fade-0_n.webp": "9f36a2fa9b68dd8e34edf566da711477125b0e7243e602c0b90e2d0571c0c482",
+    "assets/stage3/chars/fade-0_nl.webp": "f0185edf8026f07994cd77d5b315d71618ab417450da432cef4dc14ffd6a534d",
+    "assets/stage3/chars/fade-0.json": "5ed09c0bfe7c62ad6a9f7e258f2fa873f360a452ed697367d0e71a4b6fc1502a",
+    "assets/stage3/chars/fade.anims.json": "ec6d9b62f5eb544716381e5cb9b31cf8c8811e784422f67bcb3d37203639a32d"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fade-c.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-fade-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/byar.anims.json",
+    "sourcePage": "assets/chars/byar-0.webp",
+    "sourceSha256": "cf74d0c8b31eee048929612cbc0e63f825e3320d2611ddd71d2c826a43854160",
+    "method": "palette/region recolour of the Jaret Byar sheet: black cloak and armour, pale grey eyeless face (eyes and brows smoothed); blink frames sink into shadow",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "fade-d",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-0.webp",
+    "assets/stage3/chars/fade-0_n.webp",
+    "assets/stage3/chars/fade-0_nl.webp",
+    "assets/stage3/chars/fade-0.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-0.webp": "cbc6abc1642065533aa289bed775afb588a212037c3f10221d730894fd4aa712",
+    "assets/stage3/chars/fade-0_n.webp": "9f36a2fa9b68dd8e34edf566da711477125b0e7243e602c0b90e2d0571c0c482",
+    "assets/stage3/chars/fade-0_nl.webp": "f0185edf8026f07994cd77d5b315d71618ab417450da432cef4dc14ffd6a534d",
+    "assets/stage3/chars/fade-0.json": "5ed09c0bfe7c62ad6a9f7e258f2fa873f360a452ed697367d0e71a4b6fc1502a",
+    "assets/stage3/chars/fade.anims.json": "ec6d9b62f5eb544716381e5cb9b31cf8c8811e784422f67bcb3d37203639a32d"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fade-d.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-fade-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/byar.anims.json",
+    "sourcePage": "assets/chars/byar-0.webp",
+    "sourceSha256": "cf74d0c8b31eee048929612cbc0e63f825e3320d2611ddd71d2c826a43854160",
+    "method": "palette/region recolour of the Jaret Byar sheet: black cloak and armour, pale grey eyeless face (eyes and brows smoothed); blink frames sink into shadow",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "fade-e",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-1.webp",
+    "assets/stage3/chars/fade-1_n.webp",
+    "assets/stage3/chars/fade-1_nl.webp",
+    "assets/stage3/chars/fade-1.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-1.webp": "2ace4396b2490e8786af71face8936404ee32c5b12da2ffcd551f754ee669b08",
+    "assets/stage3/chars/fade-1_n.webp": "d147e1ef04365358d45b77cae813ceeb2251c483509f455026f48047c65a77a8",
+    "assets/stage3/chars/fade-1_nl.webp": "2f77e53906f3bacb7e7473dd6a062c87cfeeee6957f0608c00082836bb41cb32",
+    "assets/stage3/chars/fade-1.json": "37e1df2e0275cd5a8d7d58bdf6016dc8c0e6ea2ef98b929e945a10087022ba97",
+    "assets/stage3/chars/fade.anims.json": "ec6d9b62f5eb544716381e5cb9b31cf8c8811e784422f67bcb3d37203639a32d"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fade-e.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-fade-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/byar.anims.json",
+    "sourcePage": "assets/chars/byar-0.webp",
+    "sourceSha256": "cf74d0c8b31eee048929612cbc0e63f825e3320d2611ddd71d2c826a43854160",
+    "method": "palette/region recolour of the Jaret Byar sheet: black cloak and armour, pale grey eyeless face (eyes and brows smoothed); blink frames sink into shadow",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "fade-f",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-1.webp",
+    "assets/stage3/chars/fade-1_n.webp",
+    "assets/stage3/chars/fade-1_nl.webp",
+    "assets/stage3/chars/fade-1.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-1.webp": "2ace4396b2490e8786af71face8936404ee32c5b12da2ffcd551f754ee669b08",
+    "assets/stage3/chars/fade-1_n.webp": "d147e1ef04365358d45b77cae813ceeb2251c483509f455026f48047c65a77a8",
+    "assets/stage3/chars/fade-1_nl.webp": "2f77e53906f3bacb7e7473dd6a062c87cfeeee6957f0608c00082836bb41cb32",
+    "assets/stage3/chars/fade-1.json": "37e1df2e0275cd5a8d7d58bdf6016dc8c0e6ea2ef98b929e945a10087022ba97",
+    "assets/stage3/chars/fade.anims.json": "ec6d9b62f5eb544716381e5cb9b31cf8c8811e784422f67bcb3d37203639a32d"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fade-f.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-fade-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/byar.anims.json",
+    "sourcePage": "assets/chars/byar-0.webp",
+    "sourceSha256": "cf74d0c8b31eee048929612cbc0e63f825e3320d2611ddd71d2c826a43854160",
+    "method": "palette/region recolour of the Jaret Byar sheet: black cloak and armour, pale grey eyeless face (eyes and brows smoothed); blink frames sink into shadow",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "fade-g",
+   "char": "fade",
+   "files": [
+    "assets/stage3/chars/fade-1.webp",
+    "assets/stage3/chars/fade-1_n.webp",
+    "assets/stage3/chars/fade-1_nl.webp",
+    "assets/stage3/chars/fade-1.json",
+    "assets/stage3/chars/fade.anims.json"
+   ],
+   "sha256": {
+    "assets/stage3/chars/fade-1.webp": "2ace4396b2490e8786af71face8936404ee32c5b12da2ffcd551f754ee669b08",
+    "assets/stage3/chars/fade-1_n.webp": "d147e1ef04365358d45b77cae813ceeb2251c483509f455026f48047c65a77a8",
+    "assets/stage3/chars/fade-1_nl.webp": "2f77e53906f3bacb7e7473dd6a062c87cfeeee6957f0608c00082836bb41cb32",
+    "assets/stage3/chars/fade-1.json": "37e1df2e0275cd5a8d7d58bdf6016dc8c0e6ea2ef98b929e945a10087022ba97",
+    "assets/stage3/chars/fade.anims.json": "ec6d9b62f5eb544716381e5cb9b31cf8c8811e784422f67bcb3d37203639a32d"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fade-g.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-fade-reskin.jpg",
+   "art": {
+    "status": "real painted frames (reskin of an existing sheet)",
+    "source": "assets/chars/byar.anims.json",
+    "sourcePage": "assets/chars/byar-0.webp",
+    "sourceSha256": "cf74d0c8b31eee048929612cbc0e63f825e3320d2611ddd71d2c826a43854160",
+    "method": "palette/region recolour of the Jaret Byar sheet: black cloak and armour, pale grey eyeless face (eyes and brows smoothed); blink frames sink into shadow",
+    "tool": "tools/stage3/reskin_chars.py (frames copied 1:1 at the source pack scale, re-registered on the Stage 3 canvas, normals cut from the source _n/_nl at half resolution)",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "fade-portrait",
+   "files": [
+    "assets/stage3/ui/fade-portrait.webp"
+   ],
+   "sha256": {
+    "assets/stage3/ui/fade-portrait.webp": "2abadbec20ffc7255a74fdf21a5ba417770495684c8425e63f8e7bc485b5e4f6"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fade-portrait.json",
+   "source": "reskin",
+   "contactSheet": "docs/stage3/shots/contact-fade-reskin.jpg",
+   "art": {
+    "status": "real painted portrait (reskin of an existing portrait)",
+    "source": "assets/ui/byar-portrait.webp",
+    "sourcePage": "assets/ui/byar-portrait.webp",
+    "sourceSha256": "920770e630e01f6c8db6411db1b6eb574ac0e2aa8d24a35560207391e6b30a6b",
+    "method": "the Jaret Byar HUD portrait with the same recolour; eyes and brows inpainted from the pale skin",
+    "tool": "tools/stage3/reskin_chars.py portrait",
+    "approvedBy": "Grok Bot for Jason F (owner), 2026-10-07"
+   }
+  },
+  {
+   "id": "bg3-far-day",
+   "files": [
+    "assets/bg3/bg3-far-day.jpg"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-far-day.jpg": "f8a3997cdfa62965502592aa4d17177759f16493bb43e7580a17f6db39b48ce8"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-far-day.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-far-day.src.jpg",
+    "sourceSha256": "0ea363582347bb467cb99362bf42def5166034956d306543c9d8f5c900e99f41",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     427
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: 3:1 band (rows 90-517) of the source at native resolution, re-encoded JPEG q92",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
+  },
+  {
+   "id": "bg3-far-night",
+   "files": [
+    "assets/bg3/bg3-far-night.jpg"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-far-night.jpg": "5092faaba275c0edce055242df74c14ea284ce96c7b29344735c0f927285c0c7"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-far-night.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-far-night.src.jpg",
+    "sourceSha256": "3a52aacf1303927e0c61ed5fde5623067ae6c3296aca43b29868320da0dd3241",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     427
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: 3:1 band (rows 90-517) of the source at native resolution, re-encoded JPEG q92",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
+  },
+  {
+   "id": "bg3-mid",
+   "files": [
+    "assets/bg3/bg3-mid.webp",
+    "assets/bg3/bg3-mid_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-mid.webp": "88810fcda40a70b1e23a39926936e1c41f3a7d4d4669cb7eb98bc71dc4f2ed61",
+    "assets/bg3/bg3-mid_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-mid.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-mid.src.jpg",
+    "sourceSha256": "918c0d08b26de8dba06abed042d1eb0fc7cd76a7dc5c1b5ca7b537159c30017f",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     2172,
+     724
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: 3:1 band with the ground on the bottom edge; flat magenta sky keyed to alpha (soft 4 px edge, colour unmix, despill); premultiplied Lanczos to 2172x724; WebP",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
+  },
+  {
+   "id": "bg3-mid2",
+   "files": [
+    "assets/bg3/bg3-mid2.webp",
+    "assets/bg3/bg3-mid2_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-mid2.webp": "025a70cd14688e8ac501ddf00f2cbe5d2f265c413c60926c98acf877852c783f",
+    "assets/bg3/bg3-mid2_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-mid2.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-mid2.src.jpg",
+    "sourceSha256": "d8b2fb5be09883836115697d849ef7c8863a0cdbf69440aaa42b2384cbd89516",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     2172,
+     724
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: 3:1 band with the ground on the bottom edge; flat magenta sky keyed to alpha (soft 4 px edge, colour unmix, despill); premultiplied Lanczos to 2172x724; WebP; left 240 px eased into a cool shadow so the cut from mid3a reads as a gap",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
+  },
+  {
+   "id": "bg3-floor",
+   "files": [
+    "assets/bg3/bg3-floor.jpg",
+    "assets/bg3/bg3-floor_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-floor.jpg": "745ac0650246c4095be4ff1212ae8825045b471d0d1f0473e8c69050a2c05186",
+    "assets/bg3/bg3-floor_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-floor.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-floor.src.jpg",
+    "sourceSha256": "25f6b69063dd0c3d15b2f89a955d339a25a9e386af60be23e3d3d577ea02677b",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1080,
+     360
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: vertical centre gutter cut out with a min-error seam; horizontal light flattening, min-error-seam horizontal wrap (seamless when tiled), periodic Lanczos to 1080x360, JPEG q92",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
+  },
+  {
+   "id": "bg3-floor2",
+   "files": [
+    "assets/bg3/bg3-floor2.jpg",
+    "assets/bg3/bg3-floor2_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-floor2.jpg": "dd28b54706f3398376fe44cb0c33d505d61cd4c929a3e7ca2586e63a2698f1de",
+    "assets/bg3/bg3-floor2_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-floor2.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-floor2.src.jpg",
+    "sourceSha256": "c7214ebbbf1437fddbe00120d7e285ac6443f28d88053141042f34cd31226de4",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1080,
+     360
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: horizontal light flattening, min-error-seam horizontal wrap (seamless when tiled), periodic Lanczos to 1080x360, JPEG q92",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
+  },
+  {
+   "id": "bg3-floor3",
+   "files": [
+    "assets/bg3/bg3-floor3.jpg",
+    "assets/bg3/bg3-floor3_n.webp"
+   ],
+   "sha256": {
+    "assets/bg3/bg3-floor3.jpg": "3f69316ac9392f5a71f2ff6ff3dc4fbade7824ada32178086e116b66e6f4c849",
+    "assets/bg3/bg3-floor3_n.webp": "59ac78bc2d20d30942dedc617787e3d68952cec4d8c8ccab72bfe44a113a35a1"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-bg3-plates.jpg",
+   "prompt": "docs/stage3/prompts/bg3-floor3.json",
+   "art": {
+    "status": "real painted plate",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "source": "art-in/bg3/bg3-floor3.src.jpg",
+    "sourceSha256": "74dd36d4710e87fcf7f4589efc728faa330ac99f9a7ad3fbd2899e13014e5e4a",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1080,
+     360
+    ],
+    "postProcess": "tools/stage3/process_bg3_plates.py: horizontal light flattening, min-error-seam horizontal wrap (seamless when tiled), periodic Lanczos to 1080x360, JPEG q92",
+    "normalMap": "unchanged flat placeholder card",
+    "approvedBy": "Jason F (owner), 2026-10-07, PR #30"
+   }
+  },
+  {
+   "id": "prop-rooftiles",
+   "files": [
+    "assets/stage3/props/prop-rooftiles.webp"
+   ],
+   "sha256": {
+    "assets/stage3/props/prop-rooftiles.webp": "878518d2b9f961d98c34700fbd406cf72a7b9ea8ba5e9d3b81f8a9e42132bc21"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/prop-rooftiles.json",
+   "source": "chatgpt-image",
+   "contactSheet": "docs/stage3/shots/contact-stage3-fx.jpg",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, tile re-roll (v2) of collage A row 1, requested by Jason after PR #40",
+    "generator": "ChatGPT image generation",
+    "generated": "2026-10-08",
+    "sourceFile": "art-in/stage3fx/fx-tiles-v2.src.png",
+    "sourceSha256": "72174dbb9c306732725361eabee6e2af99d909eb526a6522ed8cd3a997e40fcd",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "sourceSlot": "the single row of 4 three-tile clusters",
+    "method": "textured magenta keyed against a smooth local key field (normalised Gaussian of clean backdrop pixels); alpha solved only in a 3 px band around the paint, colour unmixed from the local key and despilled with no cap (no visible pixel has min(R,B) > G); blobs under 50 px dropped; frames split by slot, played in painted order 1, 2, 3, 4 (anticlockwise; see docs/stage3/FX-ART.md); one scale 0.76; alpha centroid on the cell centre (128, 128); lossless WebP",
+    "tool": "tools/stage3/process_fx.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-08",
+    "supersedes": {
+     "sourceFile": "art-in/stage3fx/fx-collage-a.src.png",
+     "sourceSlot": "collage A row 1",
+     "sha256": "67e66d745958eab4d6d911e8895dd9731571c7ae819fffa81d11d9663d428209",
+     "why": "the v1 spin read as a back-and-forth rattle (slot 4 nearly repeated slot 1)"
+    }
+   }
+  },
+  {
+   "id": "fx-shadowpool",
+   "files": [
+    "assets/stage3/props/fx-shadowpool.webp"
+   ],
+   "sha256": {
+    "assets/stage3/props/fx-shadowpool.webp": "ca787c0d61dd6b937d75a1ec4d0ee7abf4f94cde3ac1d09c66c1214c07439c8a"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fx-shadowpool.json",
+   "source": "chatgpt-image",
+   "contactSheet": "docs/stage3/shots/contact-stage3-fx.jpg",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one collage per pair of effects in the approved style",
+    "generator": "ChatGPT image generation",
+    "generated": "2026-10-08",
+    "sourceFile": "art-in/stage3fx/fx-collage-b.src.png",
+    "sourceSha256": "8018389c1905e34baa6def028367541a15b820d43474d2ef1f558d08e56b0019",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "sourceSlot": "collage B row 1 (4 shadow pools)",
+    "method": "green (~#04F902) keyed (background = key-hue region connected to the flat key plus a 3 px edge band; alpha from the key excess, colour unmixed from the key, see-through paint fully despilled), frames split by slot, 4 frames in collage order; one scale 0.72; ellipse centred on the cell (128, 128), the foot spot; lossless WebP",
+    "tool": "tools/stage3/process_fx.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-08"
+   }
+  },
+  {
+   "id": "fx-shadowburst",
+   "files": [
+    "assets/stage3/props/fx-shadowburst.webp"
+   ],
+   "sha256": {
+    "assets/stage3/props/fx-shadowburst.webp": "9fc10529badafc32aad308c562c54fad8788e64ce5c18ce58dd907870b7c4d35"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fx-shadowburst.json",
+   "source": "chatgpt-image",
+   "contactSheet": "docs/stage3/shots/contact-stage3-fx.jpg",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one collage per pair of effects in the approved style",
+    "generator": "ChatGPT image generation",
+    "generated": "2026-10-08",
+    "sourceFile": "art-in/stage3fx/fx-collage-b.src.png",
+    "sourceSha256": "8018389c1905e34baa6def028367541a15b820d43474d2ef1f558d08e56b0019",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "sourceSlot": "collage B rows 2-3 (6 shadow-burst frames, reading order)",
+    "method": "green (~#04F902) keyed (background = key-hue region connected to the flat key plus a 3 px edge band; alpha from the key excess, colour unmixed from the key, see-through paint fully despilled), frames split by slot, 6 frames in collage order; one scale 0.54; alpha centroid at (128, 128); lossless WebP",
+    "tool": "tools/stage3/process_fx.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-08"
+   }
+  },
+  {
+   "id": "fx-fade-far",
+   "files": [
+    "assets/stage3/props/fx-fade-far.webp"
+   ],
+   "sha256": {
+    "assets/stage3/props/fx-fade-far.webp": "2caf6eb2045451d1552fd882f77819491dacf654a6f57af9f923528b9d48cbb9"
+   },
+   "placeholder": false,
+   "prompt": "docs/stage3/prompts/fx-fade-far.json",
+   "source": "chatgpt-image",
+   "contactSheet": "docs/stage3/shots/contact-stage3-fx.jpg",
+   "art": {
+    "status": "real painted art: ChatGPT image generation, one collage per pair of effects in the approved style",
+    "generator": "ChatGPT image generation",
+    "generated": "2026-10-08",
+    "sourceFile": "art-in/stage3fx/fx-collage-a.src.png",
+    "sourceSha256": "51f40ed6cb23bc89484a06f59fc9b7fd6a074faf3fe8634744b3c34b8bbf90e0",
+    "sourceSize": [
+     1536,
+     1024
+    ],
+    "sourceSlot": "collage A row 2 (4 far-Fade run frames)",
+    "method": "magenta (~#FC03FB) keyed (background = bright key-hue region connected to the flat key plus a 3 px edge band; alpha from the key excess, colour unmixed from the key, see-through paint fully despilled), frames split by slot, 4 frames in collage order, facing right; one scale 0.45 (body about 130 px); torso x locked at 150, feet on 196 for the grounded frames, the painted leap height kept; lossless WebP",
+    "tool": "tools/stage3/process_fx.py",
+    "approvedBy": "Jason F via Grok Bot, 2026-10-08"
+   }
+  },
+  {
+   "id": "story3-1",
+   "files": [
+    "assets/story/story3_panel_1.jpg"
+   ],
+   "sha256": {
+    "assets/story/story3_panel_1.jpg": "a72a6a7822e8173190c0775c077f230261ba8a615248fcac050f0fad7737daef"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-story3-panels.jpg",
+   "prompt": "docs/stage3/prompts/story3-1.json",
+   "art": {
+    "status": "real painted story panel",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "subject": "Riley from behind at the gates of Caemlyn",
+    "source": "art-in/story3/story3_panel_1.src.jpg",
+    "sourceSha256": "e27fd5c2e346edad189dc845772159990d6ebfac72ab68b835d32c902e5e946b",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     720
+    ],
+    "postProcess": "tools/stage3/process_story3_panels.py: native size, re-encoded JPEG with story_panel_1.jpg's quantisation tables (about q86), 4:2:0",
+    "approvedBy": "Jason F (owner), 2026-10-07, rwb-w2-s3-story"
+   }
+  },
+  {
+   "id": "story3-2",
+   "files": [
+    "assets/story/story3_panel_2.jpg"
+   ],
+   "sha256": {
+    "assets/story/story3_panel_2.jpg": "1ff2f410f430f36e407783a3727b0002da86badafe5df482708be1698db06df8"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-story3-panels.jpg",
+   "prompt": "docs/stage3/prompts/story3-2.json",
+   "art": {
+    "status": "real painted story panel",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "subject": "Basel Gill at the Queen's Blessing; Riley holds the blue ribbon",
+    "source": "art-in/story3/story3_panel_2.src.jpg",
+    "sourceSha256": "3b234dcc976812b23d0d4b600faf7465d047c91a40607f9daa379ea06b09f7eb",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     720
+    ],
+    "postProcess": "tools/stage3/process_story3_panels.py: native size, re-encoded JPEG with story_panel_1.jpg's quantisation tables (about q86), 4:2:0",
+    "approvedBy": "Jason F (owner), 2026-10-07, rwb-w2-s3-story"
+   }
+  },
+  {
+   "id": "story3-3",
+   "files": [
+    "assets/story/story3_panel_3.jpg"
+   ],
+   "sha256": {
+    "assets/story/story3_panel_3.jpg": "feed9abc6d41fac7e4d1f8d43b344c160121cca7c1402592f77552f030dbed25"
+   },
+   "placeholder": false,
+   "source": "grokbot-image",
+   "contactSheet": "docs/stage3/shots/contact-story3-panels.jpg",
+   "prompt": "docs/stage3/prompts/story3-3.json",
+   "art": {
+    "status": "real painted story panel",
+    "generator": "Grok Bot image generation",
+    "generated": "2026-10-07",
+    "subject": "Sunset rooftops; the cloaked figure flees with the bundle",
+    "source": "art-in/story3/story3_panel_3.src.jpg",
+    "sourceSha256": "0f5556cca6c3d1295bfe085a3f05fbdaefa543e22af6e06644dc89034d30adb4",
+    "sourceSize": [
+     1280,
+     720
+    ],
+    "shippedSize": [
+     1280,
+     720
+    ],
+    "postProcess": "tools/stage3/process_story3_panels.py: native size, re-encoded JPEG with story_panel_1.jpg's quantisation tables (about q86), 4:2:0",
+    "approvedBy": "Jason F (owner), 2026-10-07, rwb-w2-s3-story"
+   }
+  }
+ ]
+}

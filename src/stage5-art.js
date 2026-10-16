@@ -1,0 +1,112 @@
+import { onRunLoad } from './run-load.js';
+// Boot art for the Blight. Painted sheets in assets/stage5/ win when present.
+import { canPaint, tex, sheet } from './stage4-art.js';
+import { paintBackdrop } from './stage5-art-bg.js';
+import { paintFx } from './stage5-art-fx.js';
+import { paintCast, paintStoryPanel } from './stage5-art-cast.js';
+import { PAINTED5, queueStage5Painted } from './stage5-paint.js';
+export { paintBossFallback, paintStoryPanel } from './stage5-art-cast.js';
+export { canPaint, tex, sheet };
+export { stalkFrame, podFrame, aginFrame, baltFrame, greenFrame } from './stage5-art-cast.js';
+
+// Painted sheets, hard-coded like Stage 4's queue (a JSON manifest queued in the same pass was still empty when it
+// was read, so painted rows never loaded). Built by tools/stage5/process_bosses.py: trimmed atlases, frames "0".."n"
+// in aginFrame/baltFrame order, sourceSize = the cell, feet at 0.96. baseH is the painted cell height in code-drawn
+// pixels (cell height / PX, the tool prints it); a painted cell is drawn at scale * baseH / its height (scaleFor).
+// Failed painted files drop their keys so the painter fills them, including on cold startup.
+export const PAINTED = Object.freeze([
+  Object.freeze({ key: 's5agin', url: 'assets/stage5/s5agin.webp', atlas: 'assets/stage5/s5agin.json', baseH: 224, present: true }),
+  Object.freeze({ key: 's5balt', url: 'assets/stage5/s5balt.webp', atlas: 'assets/stage5/s5balt.json', baseH: 176, present: true }),
+  Object.freeze({ key: 'aginorPortrait', url: 'assets/stage5/aginor-portrait.webp', present: true }),
+]);
+
+function failedKey(file) { return file?.multiFile?.key || file?.key; }
+export function queuePainted(scene, rows = PAINTED) {
+  const L = scene.load;
+  const wanted = new Set();
+  for (const row of rows) {
+    if (!row?.present || !row.key || !row.url || scene.textures.exists(row.key)) continue;
+    wanted.add(row.key);
+    if (row.atlas) L.atlas(row.key, row.url, row.atlas);
+    else if (row.frameWidth) L.spritesheet(row.key, row.url, { frameWidth: row.frameWidth, frameHeight: row.frameHeight });
+    else L.image(row.key, row.url);
+  }
+  if (!wanted.size || typeof L.on !== 'function') return;
+  const optional = L.optionalAssetKeys || (L.optionalAssetKeys = new Set());
+  for (const key of wanted) optional.add(key);
+  const drop = file => {
+    const key = failedKey(file);
+    if (wanted.has(key) && scene.textures?.exists?.(key)) scene.textures.remove(key);
+  };
+  const cleanup = () => {
+    for (const key of wanted) optional.delete(key);
+    L.off?.('loaderror', drop); L.off?.('complete', cleanup);
+    scene.events?.off?.('shutdown', cleanup);
+  };
+  L.on('loaderror', drop);
+  L.once?.('complete', cleanup);
+  scene.events?.once?.('shutdown', cleanup);
+}
+// Stage 4's rule (paint() in stage4-actors.js): a cell taller than the painter's is drawn at scale * baseH / height,
+// so a painted figure keeps the procedural figure's world size and the hitboxes never move. Trimmed atlas frames
+// report the untrimmed cell as realHeight.
+export function scaleFor(frame, scale, baseH) {
+  const fh = frame?.realHeight || frame?.height || 0;
+  return baseH && fh > baseH ? scale * baseH / fh : scale;
+}
+export function paintStage5Art(scene, only) {
+  if (!canPaint(scene)) return;
+  paintBackdrop(scene, only); paintFx(scene); paintCast(scene);
+}
+// Panel 0 is ready before the HUD opens the cutscene. Later lines swap to that panel and free the rest.
+function showStory(scene, n) {
+  const key = 'story5p' + n;
+  const row = PAINTED5.find(r => r.key === key);
+  const T = scene.textures;
+  const drop = () => { for (let i = 1; i <= 3; i++) if (i !== n && T?.exists?.('story5p' + i)) T.remove('story5p' + i); };
+  if (T?.exists?.(key)) { drop(); return; }
+  if (row?.present && scene.load?.image) {
+    const wanted = queueStage5Painted(scene, [row]);
+    if (wanted?.size) {
+      const fin = () => {
+        if (scene.textures?.exists?.(key)) drop(); else paintStoryPanel(scene, n);
+      };
+      onRunLoad(scene, 'complete', fin);
+      if (typeof scene.load.isLoading !== 'function' || !scene.load.isLoading()) scene.load.start?.();
+      return;
+    }
+  }
+  paintStoryPanel(scene, n);
+}
+export function armStory5(scene) {
+  showStory(scene, 1);
+  const hud = scene?.hud;
+  if (!hud || hud._s5story) return;
+  const prev = hud.cutsceneLine;
+  hud.cutsceneLine = function (line) {
+    showStory(scene, (line?.panel | 0) + 1);
+    return prev?.apply(this, arguments);
+  };
+  hud._s5story = 1;
+  hud._s5line = prev;
+}
+// The story jpgs are 1280x720 (about 3.52 MiB each). Stage 5 shows one at a time. STAGE5.start frees them once the cutscene is
+// over, or at once when the story is skipped. A call that lands while a cutscene is still up retries from the
+// scene update once that cutscene is gone. The next build() repaints them (tex() fills missing keys) if needed.
+export function freeStory5(scene) {
+  const T = scene?.textures;
+  if (!T?.exists || !T.remove) return 0;
+  if (scene.cutscene) {
+    scene._s5freeStory = () => { scene._s5freeStory = null; freeStory5(scene); };
+    return 0;
+  }
+  scene._s5freeStory = null;
+  const hud = scene.hud;
+  if (hud?._s5story) {
+    if (hud._s5line) hud.cutsceneLine = hud._s5line; else delete hud.cutsceneLine;
+    hud._s5story = 0; hud._s5line = null;
+  }
+  let n = 0;
+  for (const key of ['story5p1', 'story5p2', 'story5p3']) if (T.exists(key)) { T.remove(key); n++; }
+  return n;
+}

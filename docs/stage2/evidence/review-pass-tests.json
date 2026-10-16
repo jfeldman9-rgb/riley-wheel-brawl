@@ -1,0 +1,126 @@
+{
+  "comparisonBaseline": "0ef2dbdf005979c3aa0530609ea05d45d77033bf",
+  "passBaseCommit": "ae700b1ab3f5ac86ed30df04135c63a978585a94",
+  "testCommand": "node --test tests/*.test.mjs",
+  "tests": {
+    "pass": 407,
+    "fail": 0,
+    "skipped": 0,
+    "todo": 0,
+    "existingTestsWeakened": false
+  },
+  "stage1": {
+    "recordsIdentical": true,
+    "aggregateIdentical": true,
+    "runs": 18,
+    "changedSourceHashes": [
+      "src/stage1.js",
+      "src/audio.js",
+      "src/powers.js"
+    ]
+  },
+  "archerPressure": {
+    "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      20,
+      100,
+      97
+    ],
+    "hits": [
+      0,
+      0,
+      1,
+      2,
+      0,
+      1,
+      1,
+      1,
+      1
+    ],
+    "target": [
+      4,
+      8
+    ],
+    "status": "NOT_MET"
+  },
+  "audit": {
+    "preFight": {
+      "inventoryUpperBoundBytes": 24914957,
+      "budgetBytes": 25000000,
+      "inventoryStatus": "PASS",
+      "note": "Conservative static inventory, including complete music and all voices. Actual transfer/cold-load timing requires browser resource evidence."
+    },
+    "characterDensity": [
+      {
+        "key": "riley",
+        "frames": 104,
+        "target": 150,
+        "densityStatus": "FAIL"
+      },
+      {
+        "key": "grunt",
+        "frames": 23,
+        "target": 40,
+        "densityStatus": "FAIL"
+      },
+      {
+        "key": "spear",
+        "frames": 16,
+        "target": 40,
+        "densityStatus": "FAIL"
+      },
+      {
+        "key": "hound",
+        "frames": 16,
+        "target": 40,
+        "densityStatus": "FAIL"
+      },
+      {
+        "key": "chief",
+        "frames": 24,
+        "target": null,
+        "densityStatus": "NO_SLICE_COUNT_SPECIFIED"
+      },
+      {
+        "key": "loial",
+        "frames": 7,
+        "target": null,
+        "densityStatus": "NO_SLICE_COUNT_SPECIFIED"
+      }
+    ],
+    "attackDensity": "PASS",
+    "rgbaInventoryBytes": 329762776,
+    "physicalDeviceGate": "UNMEASURED",
+    "blindReview": "PENDING",
+    "freezeFrameReview": "PENDING",
+    "likenessReview": "PENDING"
+  },
+  "sourceSha256": {
+    ".github/workflows/stage1-regression.yml": "2c5b922235008a1081fb2ff0a4e2a4138380b79a5653f50ddc4f66f8ea57082a",
+    "assets/bg2/barn-burning-overlay.png": "a70137383fde14dcc44d90cc1f7e3dd8f5b142be9ab9df931d780b45a1f108e0",
+    "assets/bg2/barn-fire.json": "4ade8f3d05ee68b4dc19046d77db501aec1a9c08e0873e0738066622b13b9283",
+    "assets/bg2/barn-flame-door.png": "969b2f418f807a187efaf161223ea8e8a7a2d6264e62061cd27264842c519de2",
+    "assets/bg2/barn-flame-eave.png": "3181723e4dfe11ba66923ca00a2e228e8bd7f4c97be3dddbb72e17f93f917148",
+    "assets/bg2/barn-flame-roof.png": "cb6b933fd126467cf5fd2e68a34e3b9ce1f7225293661c39baec2cd6263d3f76",
+    "src/audio.js": "096a6c40ad8e24697fda205b56522f88a880f2c1dbdf0ccad25d83eef5839e35",
+    "src/hud.js": "d4a02e97dce99b03ad9f44fc325ae9671758608cab293a8f47a73be976c9b7b1",
+    "src/main.js": "9ac6bf19fcf09dfb70043f4569c6e9165d9631484ba704773c494b5c9649afd3",
+    "src/powers.js": "3903ac14369c46f44493dc409bf5155866c0936b1d7fba1548f68587e7ffd35b",
+    "src/stage1.js": "f5f0e8243e1e902df40ddf10c73ba57f59320615fcae2e1305964f1e7012949a",
+    "src/stage2.js": "a6dfc16b726fb44c59fde7cec796d314d9e71a97f509a04b71eceda4d559fe1f",
+    "src/stages.js": "56d17d022e077621866b75b3fcb7e76eddcb5df0a73ab92935dc1fbadbc611c5",
+    "src/whitecloaks.js": "9f563e94122b957dff8de593d9b47dd03d6473525925dd87ef6037e933416f10",
+    "tests/audio-lifecycle.test.mjs": "92d942756c5887bb7d323fe3191610ac392ae02ddae14c035d3f73ec7195823d",
+    "tests/helpers/audio-param.mjs": "2e0033acb41c0c55322fe96b80750871279ebf2e0579dfb2039bee97fd1fed31",
+    "tests/stage2-campaign.test.mjs": "35d2b99a18b91f0453a20506240c424805e9e4de119cbb8e0218c1630268a8be",
+    "tests/stage2-flow.test.mjs": "f7d177e3084f0b64ce499b783c65d0d64b6a10d2a35bf2b1c94fdaf703bdee67",
+    "tests/stage2-power-bypass.test.mjs": "bce11f17d8b6f395e04083896585a48ae17ca9f030c021690fcdb4312ba56b4c",
+    "tests/stage2-safety.test.mjs": "5414caff37c0ff31a2f64fdc02c48f8bd041a0d802a4c57281b8e2564e036b9a",
+    "tests/stage2-whitecloaks.test.mjs": "391bae4c4064432b4f73faffea1a0c8f1af52aecf67bc984ae0ffe002f43875f"
+  }
+}

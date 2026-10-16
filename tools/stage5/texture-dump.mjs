@@ -1,0 +1,192 @@
+// Serve the worktree, then: NODE_PATH=$(npm root -g) node tools/stage5/texture-dump.mjs
+// Stage 6 needs the flag: RWB_STAGES=6 (the URL adds s6=1). Boss peak is the largest
+// sample whose boss phase is set. Uses the actual Phaser renderer/scene, including
+// attached normal sources and GL render targets.
+import { createRequire } from 'node:module';
+import { writeFileSync } from 'node:fs';
+const { webkit, chromium } = createRequire(import.meta.url)('playwright');
+const base = process.env.RWB_URL || 'http://127.0.0.1:8765/';
+const output = process.env.RWB_TEXTURE_OUTPUT || 'docs/stage5/texture-dump.json';
+const scale = Number(process.env.RWB_RS || 1);
+// Extra query flags, for example RWB_EXTRA=touch=1 (iPhone path: bloom off, vignette overlay).
+const extra = (process.env.RWB_EXTRA || '').replace(/^[?&]+/, '').replace(/^&+|&+$/g, '');
+const stages = (process.env.RWB_STAGES || '4,5').split(',').map(Number);
+const engines = (process.env.RWB_ENGINES || 'webkit,chromium').split(',');
+const result = { method: 'RGBA base levels: all Texture.source + Texture.dataSource; renderer glTextureWrappers separately (includes render targets). No process-RSS claim.', viewport: [1280, 720], deviceScaleFactor: scale, renderScale: scale, runs: [] };
+
+function snapshot(label) {
+  const game = window.__game, scene = window.__stage;
+  const entries = Object.entries(game.textures.list).map(([key, t]) => ({ key,
+    sources: ['source', 'dataSource'].flatMap(kind => t[kind].map((s, index) => ({ kind, index, width: s.width, height: s.height,
+      bytes: s.width * s.height * 4, canvas: s.isCanvas, gpu: !!s.glTexture, url: s.image?.src || null }))) }));
+  const gl = game.renderer.glTextureWrappers.filter(t => t.webGLTexture).map(t => ({ width: t.width, height: t.height,
+    bytes: t.width * t.height * 4, minFilter: t.minFilter, magFilter: t.magFilter, format: t.format, type: t.type }));
+  return { label, stage: scene.stageNo, zone: scene.zoneI, phase: scene.boss?.phase, state: scene.boss?.state,
+    started: scene.started, ended: scene.ended, clearShown: scene.clearShown, rs: game.rs,
+    bloom: !!scene.bloom, vignetteOverlay: !!scene.vignette?.overlay,
+    rendererConfig: { mipmapFilter: game.config.mipmapFilter, mipmapRegeneration: game.config.mipmapRegeneration },
+    diagnostics: { gamePaused: game.isPaused, paused: scene.paused, pauseReasons: Array.from(scene.pauseReasons || []),
+      hp: scene.riley.hp, state: scene.riley.state, x: scene.riley.x, y: scene.riley.y, bossHp: scene.boss?.hp,
+      p2t: scene.boss?.p2t, beat: scene.kit?.arena?.beat, enemies: scene.enemies.map(e => ({ type: e.type, hp: e.hp, state: e.state, x: e.x, y: e.y })) },
+    heavy: entries.filter(e => /^(bg[56]|story[56]|s5|aginorPortrait|loial-|riley3|crate)/.test(e.key)).map(e => ({
+      key: e.key, bytes: e.sources.reduce((n, s) => n + s.bytes, 0), canvas: e.sources.some(s => s.canvas) })),
+    sourceBytes: entries.reduce((n, e) => n + e.sources.reduce((n, s) => n + s.bytes, 0), 0),
+    colorBytes: entries.reduce((n, e) => n + e.sources.filter(s => s.kind === 'source').reduce((n, s) => n + s.bytes, 0), 0),
+    glBytes: gl.reduce((n, s) => n + s.bytes, 0), gl, entries };
+}
+
+for (const [engine, launcher] of [['webkit', webkit], ['chromium', chromium]]) {
+  if (!engines.includes(engine)) continue;
+  const browser = await launcher.launch({ headless: true,
+    ...(engine === 'chromium' && process.env.RWB_CHROMIUM ? { executablePath: process.env.RWB_CHROMIUM } : {}) });
+  try {
+    for (const stage of stages) {
+      const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: scale });
+      const errors = []; page.on('pageerror', e => errors.push(e.message));
+      const flag = stage === 7 ? 's7=1&' : stage >= 6 ? 's6=1&' : '';
+      const extraQ = extra ? `&${extra}` : '';
+      await page.goto(`${base}?${flag}stage=${stage}&demo=1&story=0&debug=1&rs=${scale}${extraQ}`, { waitUntil: 'load' });
+      await page.waitForFunction(() => window.__stage?.riley, null, { timeout: 60000 });
+      const samples = [await page.evaluate(snapshot, 'title')];
+      // story=0 keeps the fight path from holding panels, but a real run shows them at the title.
+      // Stage 5 keeps one panel (the cutscene swaps and drops the others). Stage 6 queues all three,
+      // then frees them when the cutscene ends. Sample that residency, then remove it so it does not
+      // stack into the fight peak.
+      if (stage === 5 || stage === 6) {
+        const storyKeys = await page.evaluate(async (stageNo) => {
+          const s = window.__stage, L = s.load;
+          const rows = stageNo >= 6
+            ? [1, 2, 3].map(n => ({ key: 'story6p' + n, url: 'assets/stage6/story/story6p' + n + '.jpg' }))
+            : [{ key: 'story5p1', url: 'assets/stage5/story/story5p1.jpg' }];
+          const queued = [];
+          for (const row of rows) if (!s.textures.exists(row.key)) { L.image(row.key, row.url); queued.push(row.key); }
+          if (queued.length) {
+            await new Promise(resolve => {
+              L.once('complete', resolve);
+              setTimeout(resolve, 15000);
+              if (typeof L.isLoading !== 'function' || !L.isLoading()) L.start();
+            });
+          }
+          window.__game.step(window.__game.loop.now, 0);
+          return rows.map(r => r.key);
+        }, stage);
+        samples.push(await page.evaluate(snapshot, 'story'));
+        await page.evaluate(keys => {
+          const s = window.__stage;
+          for (const key of keys) if (s.textures.exists(key)) s.textures.remove(key);
+        }, storyKeys);
+      }
+      await page.waitForFunction(() => window.__stage?.started, null, { timeout: 60000 });
+      // Advance real game ticks with full pre/post update; render at each sample.
+      // God mode avoids a random failed campaign masking later texture allocations; it changes no assets.
+      await page.evaluate(() => { window.__game.loop.stop(); window.__stage.god = true; window.__dumpTime = window.__game.loop.now; });
+      const seen = new Set();
+      let loialDone = false;
+      for (let batch = 0; batch < 100; batch++) {
+        const state = await page.evaluate(() => {
+          const g = window.__game;
+          for (let i = 0; i < 300 && !window.__stage.clearShown; i++) { window.__dumpTime += 1000 / 60; g.headlessStep(window.__dumpTime, 1000 / 60); }
+          // Render at each sample so lazy textures / current filter render targets are allocated.
+          g.step(window.__dumpTime, 0);
+          const s = window.__stage;
+          return { tag: `${s.zoneI}/${s.boss?.phase || 0}/${!!s.kit?.arena?.frozen}/${!!s.ended}`, done: s.clearShown, phase: s.boss?.phase || 0 };
+        });
+        if (!seen.has(state.tag) || state.done) {
+          seen.add(state.tag);
+          // The zone index moves after the kit streams. Let that sync, and any plate
+          // fetch it started, finish before the sample so the residency is settled.
+          await page.evaluate(async () => {
+            const s = window.__stage, L = s?.load;
+            const sync = () => {
+              s?.kit?.backdrops?.sync?.();
+              // Stage 5 drops the previous zone's character sheets in kit.update, which a
+              // zero dt still reaches. The transition frame would otherwise keep them.
+              if (s?.stageNo === 5) s.kit?.update?.(0);
+            };
+            sync();
+            if (L?.isLoading?.()) await new Promise(resolve => { L.once('complete', resolve); setTimeout(resolve, 8000); });
+            sync();
+          });
+          samples.push(await page.evaluate(snapshot, state.tag));
+        }
+        // Loial's atlas is demand-loaded at the Stage 5 boss and overlaps that peak only while he is summoned.
+        // The loader advances on a scene step. A zero dt still ticks it and does not move the fight.
+        if (stage === 5 && state.phase >= 1 && !loialDone) {
+          loialDone = true;
+          await page.evaluate(async () => {
+            const s = window.__stage, g = window.__game;
+            const deadline = Date.now() + 15000;
+            while (s.load?.isLoading?.() && Date.now() < deadline) {
+              g.headlessStep(window.__dumpTime, 0);
+              await new Promise(resolve => setTimeout(resolve, 20));
+            }
+            g.step(window.__dumpTime, 0);
+          });
+          const base = await page.evaluate(snapshot, 'boss-art');
+          samples.push(base);
+          const loaded = await page.evaluate(async () => {
+            const s = window.__stage, g = window.__game;
+            if (!s.textures.exists('loial-0')) {
+              s.riley.loialReady = true;
+              s.callLoial();
+              // The load callback summons him when this stays true. Measure the atlas without changing the fight.
+              s.riley.loialReady = false;
+              const deadline = Date.now() + 20000;
+              while (!s.textures.exists('loial-0') && Date.now() < deadline) {
+                g.headlessStep(window.__dumpTime, 0);
+                await new Promise(resolve => setTimeout(resolve, 20));
+              }
+            }
+            s._loialWanted = false;
+            s.riley.loialReady = true;
+            g.step(window.__dumpTime, 0);
+            return !!s.textures.exists('loial-0');
+          });
+          if (loaded) {
+            const loial = await page.evaluate(snapshot, 'loial');
+            loial.loialAddedBytes = loial.sourceBytes - base.sourceBytes;
+            samples.push(loial);
+            await page.evaluate(() => {
+              const s = window.__stage;
+              for (const key of Object.keys(s.textures.list)) if (key.startsWith('loial-')) s.textures.remove(key);
+            });
+          }
+        }
+        if (state.done) break;
+      }
+      samples.push(await page.evaluate(snapshot, 'final'));
+      // Keep a complete dump at the largest source and GL sample, plus compact progression.
+      const peak = samples.reduce((a, b) => b.sourceBytes > a.sourceBytes ? b : a);
+      const glPeak = samples.reduce((a, b) => b.glBytes > a.glBytes ? b : a);
+      const bossSamples = samples.filter(s => (s.phase || 0) >= 1);
+      const bossPeak = bossSamples.reduce((a, b) => b.sourceBytes > a.sourceBytes ? b : a, bossSamples[0] || null);
+      const storySample = samples.find(s => s.label === 'story');
+      const loialSample = samples.find(s => s.label === 'loial');
+      const titleSample = samples.find(s => s.label === 'title');
+      const run = { engine, stage, errors, progression: samples.map(({ entries, gl, ...s }) => s), peak, glPeak, bossPeak,
+        storyBytes: storySample?.sourceBytes ?? null,
+        storyAddedBytes: storySample && titleSample ? storySample.sourceBytes - titleSample.sourceBytes : null,
+        loialBytes: loialSample?.sourceBytes ?? null,
+        loialAddedBytes: loialSample?.loialAddedBytes ?? null };
+      result.runs.push(run);
+      const zones = samples.map(s => ({ label: s.label, sourceMiB: +(s.sourceBytes / 2 ** 20).toFixed(3),
+        glMiB: +(s.glBytes / 2 ** 20).toFixed(3),
+        heavyMiB: +((s.heavy || []).reduce((n, h) => n + h.bytes, 0) / 2 ** 20).toFixed(3),
+        keys: (s.heavy || []).map(h => h.key + (h.canvas ? '*' : '')).sort() }));
+      console.log(JSON.stringify({ engine, stage, sourceMiB: peak.sourceBytes / 2 ** 20, colorMiB: peak.colorBytes / 2 ** 20,
+        glMiB: glPeak.glBytes / 2 ** 20, bossSourceMiB: bossPeak ? bossPeak.sourceBytes / 2 ** 20 : null,
+        bossLabel: bossPeak?.label || null,
+        storyAddedMiB: run.storyAddedBytes == null ? null : run.storyAddedBytes / 2 ** 20,
+        loialAddedMiB: run.loialAddedBytes == null ? null : run.loialAddedBytes / 2 ** 20,
+        reachedClear: samples.some(s => s.clearShown), errors, zones }));
+      // Check restart residency in the same TextureManager rather than a fresh browser.
+      if (stage === 4) {
+        await page.evaluate(() => { window.__stage.scene.restart({ stage: 5, autostart: true, story: false }); window.__game.loop.start(window.__game.step.bind(window.__game)); });
+        await page.waitForFunction(() => window.__stage?.stageNo === 5 && window.__stage?.started, null, { timeout: 60000 });
+        run.transitionTo5 = await page.evaluate(snapshot, 'stage4-to-stage5');
+      }
+      await page.close();
+    }
+  } finally { await browser.close(); }
+}
+writeFileSync(output, JSON.stringify(result, null, 2) + '\n');

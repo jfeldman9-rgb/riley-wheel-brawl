@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+globalThis.location = { search: '' };
+globalThis.window = { devicePixelRatio: 1 };
+globalThis.Phaser = { Scene: class {} };
+const { HUD } = await import('../src/hud.js');
+test('the LOIAL label and portrait are only redrawn when the Loial state changes', () => {
+  const hud = Object.create(HUD.prototype), log = [];
+  hud.loialState = 'ready';
+  hud.loialT = { setText(t) { log.push(['text', t]); return this; }, setColor(c) { log.push(['color', c]); return this; } };
+  hud.loialPic = { setAlpha(a) { log.push(['alpha', a]); return this; } };
+  const s = { loial: null }, R = { loialReady: true };
+  for (let f = 0; f < 120; f++) hud.updateLoialLabel(s, R);
+  assert.deepEqual(log, [], 'ready for two seconds: no redraws');
+  R.loialReady = false; s.loial = {};
+  for (let f = 0; f < 60; f++) hud.updateLoialLabel(s, R);
+  assert.deepEqual(log, [['text', 'LOIAL!'], ['color', '#8cf0ae'], ['alpha', 1]]);
+  s.loial = null; log.length = 0;
+  for (let f = 0; f < 60; f++) hud.updateLoialLabel(s, R);
+  assert.deepEqual(log, [['text', 'LOIAL SPENT'], ['color', '#87909a'], ['alpha', 0.35]]);
+});

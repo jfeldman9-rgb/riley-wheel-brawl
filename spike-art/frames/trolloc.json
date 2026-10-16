@@ -1,0 +1,107 @@
+{
+ "out": "built/trolloc",
+ "loops": "../loops",
+ "canvas": [
+  900,
+  760
+ ],
+ "baseline": 730,
+ "anchor_x": 0.55,
+ "target_height": 560,
+ "anims": [
+  {
+   "name": "trolloc_walk",
+   "slices": "raw/trolloc_walk2",
+   "order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "holds": [
+    110,
+    110,
+    110,
+    110,
+    110,
+    110,
+    110,
+    110
+   ],
+   "anchor": "torso",
+   "ref_height": 400
+  },
+  {
+   "name": "trolloc_attack",
+   "slices": "raw/trolloc_attack",
+   "order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "holds": [
+    120,
+    140,
+    220,
+    70,
+    160,
+    200
+   ],
+   "ref": 0,
+   "ref_height": 308,
+   "loop": true,
+   "scale_mul": 0.97
+  },
+  {
+   "name": "trolloc_hurt",
+   "slices": "raw/trolloc_attack",
+   "order": [
+    6,
+    7
+   ],
+   "holds": [
+    90,
+    160
+   ],
+   "ref": 0,
+   "ref_height": 308,
+   "loop": false,
+   "scale_mul": 0.97
+  },
+  {
+   "name": "trolloc_knockdown",
+   "slices": "raw/trolloc_attack",
+   "order": [
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "holds": [
+    90,
+    140,
+    120,
+    900,
+    300
+   ],
+   "ref": 0,
+   "ref_height": 308,
+   "loop": false,
+   "scale_mul": 0.97,
+   "anchor_override": {
+    "0": "center",
+    "1": "center",
+    "2": "center",
+    "3": "center"
+   }
+  }
+ ]
+}

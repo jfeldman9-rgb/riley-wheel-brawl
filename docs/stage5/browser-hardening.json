@@ -1,0 +1,177 @@
+[
+  {
+    "fail": null,
+    "start": {
+      "phase": 2,
+      "hp": 198,
+      "beatDone": false,
+      "frozen": true,
+      "cachedUpdate": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "update": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "clocks": {
+        "timePaused": true,
+        "animScale": 0
+      }
+    },
+    "end": {
+      "phase": 3,
+      "hp": 198,
+      "beatDone": true,
+      "frozen": false,
+      "t": 2.2,
+      "clocks": {
+        "timePaused": false,
+        "animScale": 1
+      },
+      "riley": {
+        "state": "run",
+        "hp": 100
+      },
+      "afterHit": {
+        "hp": 0,
+        "state": "burn"
+      }
+    },
+    "errors": []
+  },
+  {
+    "fail": "s5agin.webp",
+    "start": {
+      "phase": 2,
+      "hp": 198,
+      "beatDone": false,
+      "frozen": true,
+      "cachedUpdate": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "update": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "clocks": {
+        "timePaused": true,
+        "animScale": 0
+      }
+    },
+    "end": {
+      "phase": 3,
+      "hp": 198,
+      "beatDone": true,
+      "frozen": false,
+      "t": 2.2,
+      "clocks": {
+        "timePaused": false,
+        "animScale": 1
+      },
+      "riley": {
+        "state": "run",
+        "hp": 100
+      },
+      "afterHit": {
+        "hp": 0,
+        "state": "burn"
+      }
+    },
+    "errors": []
+  },
+  {
+    "fail": "s5balt.json",
+    "start": {
+      "phase": 2,
+      "hp": 198,
+      "beatDone": false,
+      "frozen": true,
+      "cachedUpdate": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "update": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "clocks": {
+        "timePaused": true,
+        "animScale": 0
+      }
+    },
+    "end": {
+      "phase": 3,
+      "hp": 198,
+      "beatDone": true,
+      "frozen": false,
+      "t": 2.215700000000001,
+      "clocks": {
+        "timePaused": false,
+        "animScale": 1
+      },
+      "riley": {
+        "state": "run",
+        "hp": 100
+      },
+      "afterHit": {
+        "hp": 0,
+        "state": "burn"
+      }
+    },
+    "errors": []
+  },
+  {
+    "fail": "aginor-portrait.webp",
+    "start": {
+      "phase": 2,
+      "hp": 198,
+      "beatDone": false,
+      "frozen": true,
+      "cachedUpdate": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "update": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "clocks": {
+        "timePaused": true,
+        "animScale": 0
+      }
+    },
+    "end": {
+      "phase": 3,
+      "hp": 198,
+      "beatDone": true,
+      "frozen": false,
+      "t": 2.2,
+      "clocks": {
+        "timePaused": false,
+        "animScale": 1
+      },
+      "riley": {
+        "state": "run",
+        "hp": 100
+      },
+      "afterHit": {
+        "hp": 0,
+        "state": "burn"
+      }
+    },
+    "errors": []
+  },
+  {
+    "fail": "audio",
+    "start": {
+      "phase": 2,
+      "hp": 198,
+      "beatDone": false,
+      "frozen": true,
+      "cachedUpdate": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "update": "function(time, deltaMs) {\n    if (this._s5freeStory && !this.cutscene) this._s5freeStory();\n    if (!Number.isFinite(deltaMs) || deltaMs <= 0 || this.paused || this.cutscene) return;\n    if (!kit.arena?.frozen) return original.call(this, time, deltaMs);\n    kit.update(Math.min(deltaMs, 50) / 1000);\n    this.riley?.sync?.();\n    for (const e of this.enemies || []) e.sync?.();\n  }",
+      "clocks": {
+        "timePaused": true,
+        "animScale": 0
+      }
+    },
+    "end": {
+      "phase": 3,
+      "hp": 198,
+      "beatDone": true,
+      "frozen": false,
+      "t": 2.2,
+      "clocks": {
+        "timePaused": false,
+        "animScale": 1
+      },
+      "riley": {
+        "state": "run",
+        "hp": 100
+      },
+      "afterHit": {
+        "hp": 0,
+        "state": "burn"
+      }
+    },
+    "errors": []
+  }
+]

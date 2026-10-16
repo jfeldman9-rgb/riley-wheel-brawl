@@ -1,0 +1,325 @@
+{
+ "key": "byar",
+ "canvas": [
+  1100,
+  680
+ ],
+ "baseline": 650,
+ "scale": 0.6,
+ "pages": [
+  "byar-0"
+ ],
+ "anims": [
+  {
+   "name": "byar_walk",
+   "frames": [
+    "byar_walk_00",
+    "byar_walk_01",
+    "byar_walk_02",
+    "byar_walk_03"
+   ],
+   "holds": [
+    170,
+    170,
+    170,
+    170
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_combo",
+   "frames": [
+    "byar_combo_00",
+    "byar_combo_01",
+    "byar_combo_02",
+    "byar_combo_03",
+    "byar_combo_04",
+    "byar_combo_05"
+   ],
+   "holds": [
+    120,
+    280,
+    110,
+    200,
+    140,
+    280
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_parry",
+   "frames": [
+    "byar_parry_00"
+   ],
+   "holds": [
+    400
+   ],
+   "loop": true,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "byar_riposte",
+   "frames": [
+    "byar_riposte_00",
+    "byar_riposte_01",
+    "byar_riposte_02",
+    "byar_riposte_03",
+    "byar_riposte_04"
+   ],
+   "holds": [
+    120,
+    120,
+    120,
+    260,
+    200
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_accuse",
+   "frames": [
+    "byar_accuse_00"
+   ],
+   "holds": [
+    900
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "byar_volley",
+   "frames": [
+    "byar_volley_00",
+    "byar_volley_01",
+    "byar_volley_02",
+    "byar_volley_03",
+    "byar_volley_04"
+   ],
+   "holds": [
+    200,
+    380,
+    420,
+    320,
+    260
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_rage",
+   "frames": [
+    "byar_rage_00",
+    "byar_rage_01",
+    "byar_rage_02",
+    "byar_rage_03"
+   ],
+   "holds": [
+    300,
+    320,
+    620,
+    480
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_rushup",
+   "frames": [
+    "byar_rushup_00"
+   ],
+   "holds": [
+    220
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "byar_rush",
+   "frames": [
+    "byar_rush_00",
+    "byar_rush_01",
+    "byar_rush_02"
+   ],
+   "holds": [
+    110,
+    120,
+    120
+   ],
+   "loop": true,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_rushend",
+   "frames": [
+    "byar_rushend_00",
+    "byar_rushend_01"
+   ],
+   "holds": [
+    200,
+    300
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_hurt",
+   "frames": [
+    "byar_hurt_00",
+    "byar_hurt_01"
+   ],
+   "holds": [
+    110,
+    230
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_knockdown",
+   "frames": [
+    "byar_knockdown_00",
+    "byar_knockdown_01",
+    "byar_knockdown_02"
+   ],
+   "holds": [
+    100,
+    180,
+    1100
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_getup",
+   "frames": [
+    "byar_getup_00",
+    "byar_getup_01"
+   ],
+   "holds": [
+    300,
+    260
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_defeated",
+   "frames": [
+    "byar_defeated_00"
+   ],
+   "holds": [
+    2000
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "byar_retreat",
+   "frames": [
+    "byar_retreat_00"
+   ],
+   "holds": [
+    300
+   ],
+   "loop": true,
+   "pages": [
+    0
+   ]
+  },
+  {
+   "name": "byar_torch",
+   "frames": [
+    "byar_torch_00",
+    "byar_torch_01",
+    "byar_torch_02",
+    "byar_torch_03",
+    "byar_torch_04"
+   ],
+   "holds": [
+    220,
+    300,
+    240,
+    160,
+    300
+   ],
+   "loop": false,
+   "pages": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "byar_command",
+   "frames": [
+    "byar_command_00"
+   ],
+   "holds": [
+    700
+   ],
+   "loop": false,
+   "pages": [
+    0
+   ]
+  }
+ ]
+}

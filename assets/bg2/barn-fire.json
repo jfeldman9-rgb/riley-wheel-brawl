@@ -1,0 +1,333 @@
+{
+  "source": "ChatGPT built-in image_gen, 2026-10-03",
+  "postprocessing": "Crop, uniform downscale and anchor registration/packing only; generated alpha preserved.",
+  "overlay": {
+    "file": "assets/bg2/barn-burning-overlay.png",
+    "width": 1024,
+    "height": 768,
+    "plate": "bg2-mid2",
+    "plateIndex": 1,
+    "plateOrigin": {
+      "x": 1148,
+      "y": 0
+    },
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "sourceCrop": [
+      1148,
+      0,
+      2172,
+      724
+    ],
+    "sourcePaddingBottom": 44,
+    "uniformScaleFromGenerated": 0.7071823204419889,
+    "blendMode": "NORMAL",
+    "fadeInMilliseconds": 1500,
+    "sourceSHA256": "e71d098311c5768d6a070ff468086207bcb587555dc19d519416b09a92ea6231"
+  },
+  "strips": [
+    {
+      "name": "roof",
+      "file": "assets/bg2/barn-flame-roof.png",
+      "frameWidth": 256,
+      "frameHeight": 384,
+      "frameCount": 4,
+      "anchor": {
+        "x": 128,
+        "y": 350
+      },
+      "origin": {
+        "x": 0.5,
+        "y": 0.9114583333333334
+      },
+      "frameRate": 8,
+      "repeat": -1,
+      "blendMode": "NORMAL",
+      "sourceSHA256": "d79e9b7c2aadb0ee8e6ad3f451d535a3b736eae39bd55e9107f5b9f6e3f901e7",
+      "frames": [
+        {
+          "index": 0,
+          "sourceCell": 1,
+          "sourceVisibleBoundsAlpha128": [
+            55,
+            371,
+            350,
+            809
+          ],
+          "sourceFoot": {
+            "x": 207.597,
+            "y": 808
+          },
+          "packedOffset": {
+            "x": 24,
+            "y": 10
+          },
+          "frameSHA256": "8d8a8271d938c4bf693e8542912d5c024950b85fb69457022a82a179753a4a90"
+        },
+        {
+          "index": 1,
+          "sourceCell": 2,
+          "sourceVisibleBoundsAlpha128": [
+            73,
+            285,
+            337,
+            809
+          ],
+          "sourceFoot": {
+            "x": 199.065,
+            "y": 808
+          },
+          "packedOffset": {
+            "x": 28,
+            "y": 10
+          },
+          "frameSHA256": "66412ecfa898fabc99d2f776a925d66c288f1ab179ad00eba0f72f34163121f4"
+        },
+        {
+          "index": 2,
+          "sourceCell": 3,
+          "sourceVisibleBoundsAlpha128": [
+            51,
+            332,
+            329,
+            809
+          ],
+          "sourceFoot": {
+            "x": 188.864,
+            "y": 808
+          },
+          "packedOffset": {
+            "x": 34,
+            "y": 10
+          },
+          "frameSHA256": "74e80a29d0d1f71721f0ea1f071ea896793ac16c2a32fdf27694badd37fe830f"
+        },
+        {
+          "index": 3,
+          "sourceCell": 4,
+          "sourceVisibleBoundsAlpha128": [
+            46,
+            384,
+            331,
+            809
+          ],
+          "sourceFoot": {
+            "x": 191.411,
+            "y": 808
+          },
+          "packedOffset": {
+            "x": 32,
+            "y": 10
+          },
+          "frameSHA256": "f5c9e8042caa7c90a4d102f13fd970f1977da78d33c39f471ca21a46b5b01be2"
+        }
+      ],
+      "rejectedSourceCells": [],
+      "rejectionReason": null
+    },
+    {
+      "name": "eave",
+      "file": "assets/bg2/barn-flame-eave.png",
+      "frameWidth": 256,
+      "frameHeight": 384,
+      "frameCount": 3,
+      "anchor": {
+        "x": 128,
+        "y": 350
+      },
+      "origin": {
+        "x": 0.5,
+        "y": 0.9114583333333334
+      },
+      "frameRate": 7,
+      "repeat": -1,
+      "blendMode": "NORMAL",
+      "sourceSHA256": "bccd16d9b75a1bfba18faac06351bffb3cb5e84ff81bdc55d48e783dbaeef0d6",
+      "frames": [
+        {
+          "index": 0,
+          "sourceCell": 1,
+          "sourceVisibleBoundsAlpha128": [
+            26,
+            300,
+            368,
+            673
+          ],
+          "sourceFoot": {
+            "x": 208.656,
+            "y": 672
+          },
+          "packedOffset": {
+            "x": 24,
+            "y": 78
+          },
+          "frameSHA256": "6ccfcaa002af765f9212622b0b59934fff9231c5e7ebaf86eaafefe81eb64546"
+        },
+        {
+          "index": 1,
+          "sourceCell": 2,
+          "sourceVisibleBoundsAlpha128": [
+            32,
+            339,
+            352,
+            673
+          ],
+          "sourceFoot": {
+            "x": 205.51,
+            "y": 672
+          },
+          "packedOffset": {
+            "x": 25,
+            "y": 78
+          },
+          "frameSHA256": "4f3f1b12f08bfb6b811a916088b7093633164257dbdd39c9244beb28f27ec49f"
+        },
+        {
+          "index": 2,
+          "sourceCell": 3,
+          "sourceVisibleBoundsAlpha128": [
+            27,
+            328,
+            364,
+            674
+          ],
+          "sourceFoot": {
+            "x": 197.442,
+            "y": 673
+          },
+          "packedOffset": {
+            "x": 29,
+            "y": 78
+          },
+          "frameSHA256": "4c7beee60765d8a63d7434c4251516f4a8b21a41d0ab3950869d5d28b760a4f9"
+        }
+      ],
+      "rejectedSourceCells": [
+        4
+      ],
+      "rejectionReason": "Source cell 4 too similar to cell 1; excluded rather than counting it as a new frame."
+    },
+    {
+      "name": "door",
+      "file": "assets/bg2/barn-flame-door.png",
+      "frameWidth": 256,
+      "frameHeight": 384,
+      "frameCount": 4,
+      "anchor": {
+        "x": 128,
+        "y": 350
+      },
+      "origin": {
+        "x": 0.5,
+        "y": 0.9114583333333334
+      },
+      "frameRate": 9,
+      "repeat": -1,
+      "blendMode": "NORMAL",
+      "sourceSHA256": "62ace46e77fbfa93e9c61d43a7e1d4506e081e6c845d20ace50ede7b0ee792de",
+      "frames": [
+        {
+          "index": 0,
+          "sourceCell": 1,
+          "sourceVisibleBoundsAlpha128": [
+            60,
+            301,
+            381,
+            764
+          ],
+          "sourceFoot": {
+            "x": 222.0,
+            "y": 763
+          },
+          "packedOffset": {
+            "x": 17,
+            "y": 32
+          },
+          "frameSHA256": "d3f4aae20b290405d43df0c51a4e9802ca3d260faa350d969f3fb4180eae9dea"
+        },
+        {
+          "index": 1,
+          "sourceCell": 2,
+          "sourceVisibleBoundsAlpha128": [
+            88,
+            315,
+            360,
+            771
+          ],
+          "sourceFoot": {
+            "x": 214.333,
+            "y": 770
+          },
+          "packedOffset": {
+            "x": 21,
+            "y": 29
+          },
+          "frameSHA256": "626b34b2b419df25bc99d5781bf26a377877f8dcf4385b4eff6d61058bc3be80"
+        },
+        {
+          "index": 2,
+          "sourceCell": 3,
+          "sourceVisibleBoundsAlpha128": [
+            91,
+            240,
+            315,
+            769
+          ],
+          "sourceFoot": {
+            "x": 212.265,
+            "y": 768
+          },
+          "packedOffset": {
+            "x": 22,
+            "y": 30
+          },
+          "frameSHA256": "b4bd0fa3e9c4d6ad8e43f04006fb9e4b38a57e7a0c93530e8a7115d0956bec50"
+        },
+        {
+          "index": 3,
+          "sourceCell": 4,
+          "sourceVisibleBoundsAlpha128": [
+            79,
+            264,
+            333,
+            769
+          ],
+          "sourceFoot": {
+            "x": 187.491,
+            "y": 768
+          },
+          "packedOffset": {
+            "x": 34,
+            "y": 30
+          },
+          "frameSHA256": "ec4fc1acb3417a5f6e80f7700b9900390bccb4c094f79de4ba88361b45661825"
+        }
+      ],
+      "rejectedSourceCells": [],
+      "rejectionReason": null
+    }
+  ],
+  "suggestedPlacementsPlatePixels": [
+    {
+      "strip": "roof",
+      "x": 1510,
+      "y": 266,
+      "scale": 0.43
+    },
+    {
+      "strip": "eave",
+      "x": 1885,
+      "y": 356,
+      "scale": 0.5
+    },
+    {
+      "strip": "door",
+      "x": 1675,
+      "y": 402,
+      "scale": 0.4
+    }
+  ],
+  "placementNote": "Coordinates/scales are in plate pixels; multiply positions and strip scale by the mid plate scale. Same parallax as mid2b; NORMAL blend. Confirm final placement in game."
+}
