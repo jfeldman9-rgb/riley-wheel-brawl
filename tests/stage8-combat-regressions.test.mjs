@@ -1,0 +1,8 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {stage8Simulation,withSeed} from './helpers/stage8-harness.mjs';
+import {STAGE8} from '../src/stage8-def.js';
+import {volleyBlocked8} from '../src/stage8-volley.js';
+import {perceive8} from '../src/bot-stage8.js';
+test('Z2 roster and rooted anchors stay reachable after melee knockback',()=>withSeed(1,()=>{const h=stage8Simulation();try{const s=h.s,k=s.kit;assert.deepEqual(STAGE8.zones[2].waves[1].map(r=>r[0]),['stonedog','sister','wiseone','dancer']);k.circle.start();s.bounds={l:2560,r:3840};const e=k.circle.sisters[0];e.popGuard();e.takeHit({dmg:5,kb:520});e.physics(.2);assert.equal(e.x,3480);assert.equal(e.y,590);assert.ok(e.x<3570);assert.equal(k.circle.sisters.filter(e=>e.ringX===3480).length,3);}finally{h.destroy();}}));
+test('volley waits for committed attackers and suppresses new attacks throughout its window',()=>withSeed(1,()=>{const h=stage8Simulation();try{const s=h.s,k=s.kit;for(let i=0;i<180;i++)h.step();s.enemies.forEach(e=>e.destroy());s.enemies=[];const e=s.spawn('stonedog','R');e.entering=false;e.silhouette=0;e.setState('attack');assert.ok(volleyBlocked8(k));e.setState('idle');k.volley.start();e.x=s.riley.x+150;e.y=s.riley.y;e.cool=0;e.update(.1);assert.notEqual(e.state,'attack');}finally{h.destroy();}}));
+test('250 ms perception contains past actor and hazard state without altering the scene',()=>withSeed(1,()=>{const h=stage8Simulation();try{const b=h.s.bot;b.lag=250;b.t=1;const e={alive:true,x:10,canBeHit:true};h.s.enemies=[e];assert.equal(perceive8(b).enemies.length,0);e.x=99;b.t=1.25;assert.equal(perceive8(b).enemies[0].x,10);assert.equal(h.s.enemies[0].x,99);h.s.enemies=[];}finally{h.destroy();}}));

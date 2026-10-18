@@ -21,7 +21,7 @@ export function createCircle8(k){const s=k.s;return {active:false,done:false,cou
   if(this.phase==='anchors'){
    if(!k.volley.active&&this.t>=this.nextWhip){this.nextWhip=this.t+4.5;this.whip={band:band8(s.riley.y),t:0,counterUsed:false};k.hazardUntil=k.clock+2;}
    if(this.whip){this.whip.t+=dt;if(this.whip.t>=1&&!this.whip.counterUsed){this.whip.counterUsed=true;if(band8(s.riley.y)===this.whip.band&&s.riley.z<70)strikeRiley(s,8,{source:'circle.whip',fromX:3620});}if(this.whip.t>=1.4)this.whip=null;}
-   if(this.t>=this.nextAdd){this.nextAdd=this.t+12;if(!s.enemies.some(e=>e.alive&&!e.circleMember))s.spawn('dancer','L');}
+   if(this.t>=this.nextAdd){this.nextAdd=this.t+12;if(s.zone&&!s.enemies.some(e=>e.alive&&!e.circleMember))s.spawn('dancer','L');}
    s.riley.x=Math.min(s.riley.x,3570);if(this.t>=75){while(this.count<3){this.count++;crackPip8(k,'anchor'+this.count);}this.prompt();}}
   if(this.phase==='prompt'){this.wait+=dt;if(this.wait>=2||Math.abs(s.riley.x-3360)<70)this.breakCircle();}
  },
