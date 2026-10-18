@@ -10,7 +10,7 @@ export function crackPip8(k,beat){const i=PIPS8.indexOf(beat);if(i<0||k.pips.has
 export function createCircle8(k){const s=k.s;return {active:false,done:false,count:0,t:0,nextWhip:4.5,nextAdd:12,whip:null,phase:'idle',sisters:[],
  start(){if(this.active||this.done)return;this.active=true;this.phase='anchors';this.t=0;
   demand8(k,['s8sister','s8twink','s8dome','s8callfx','s8chest','s8weave','s6call','s6rand']);
-  for(let i=0;i<6;i++){const e=new Sister(s,3440+(i%2)*120,590+Math.floor(i/2)*35);e.circleMember=true;e.anchor=i===0;e.hp=e.maxHp=40;this.sisters.push(e);s.enemies.push(e);}
+  for(let i=0;i<6;i++){const e=new Sister(s,3480+Math.floor(i/3)*240,590+(i%3)*40);e.circleMember=true;e.ringX=e.x;e.ringY=e.y;e.anchor=i===0;e.hp=e.maxHp=40;this.sisters.push(e);s.enemies.push(e);}
   k.story.say('st8_sister_01');k.later(3,()=>k.story.say('st8_tt_circle_01'));k.later(6,()=>k.story.say('riley_st8_circle_01'));
  },
  broken(e){if(this.phase!=='anchors'||!e.anchor)return;e.anchor=false;this.count++;crackPip8(k,'anchor'+this.count);

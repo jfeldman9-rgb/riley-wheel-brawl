@@ -40,7 +40,8 @@ export class Stage8Kit {
  setQuality(n){this.quality=n|0;if(this.view)this.view.quality=n;}
  build(){const s=this.s;s.fires=[];installStage8Hud();paintStage8Art(s,earlyKeys8());
   hook8(this,s.music,'trackFor',old=>function(state){if(state==='stage')return 'stage8';if(state==='boss')return 'boss8';return old.call(this,state);});
-  hook8(this,s,'spawn',old=>function(type,side){const e=old.call(this,type,side);if(this.zoneI===0&&e){e.silhouette=.6;}return e;});
+  hook8(this,s,'spawn',old=>function(type,side){const e=old.call(this,type,side);if(this.zoneI===0&&e){e.silhouette=.6;}
+   if(e&&!e.T?.boss)hook8(s.kit,e,'update',update=>function(dt){if(s.kit.volley.active)this.cool=Math.max(1,this.cool||0);return update.call(this,dt);});return e;});
   hook8(this,s,'updateZones',old=>function(dt){if(this.zoneI===2&&!s.kit.circle.done&&this.wave>=1&&!this.pending.length&&!this.enemies.some(e=>e.alive)){s.kit.circle.start();}if(s.kit.circle.active)return;return old.call(this,dt);});
   installLifecycle8(this);this.video=createCall8Video(s);
   hook8(this,s,'startBoss',old=>function(){demand8(s.kit,['s8lanfear','lanfearPortrait'],()=>{if(!s.kit.destroyed)old.call(this);});});

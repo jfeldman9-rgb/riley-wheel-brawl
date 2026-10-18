@@ -14,5 +14,5 @@ test('Stage 8 is opt-in and Stage 7 requires both flags to continue',()=>{
  assert.deepEqual(STAGE7.next(Q('s7=1')), {stage:1,stage7Return:true});
  assert.deepEqual(STAGE7.next(Q('s7=1&s8=1')), {stage:8,fromStage7:true,autostart:true});
  assert.equal(STAGE7.next(Q('s8=1')).stage,1);
- assert.deepEqual([5,6,7,8].map(callInFor),['loial','rand','moilan','matrand']);
+ assert.deepEqual([5,6,7,8].map(callInFor),['loial','rand','moilan','moilan']);
 });

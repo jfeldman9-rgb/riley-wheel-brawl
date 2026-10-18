@@ -12,10 +12,11 @@ export function stage8Bot(bot){
  if(!r.alive||['down','getup'].includes(r.state))return go(0,0);
  if(bot.lag&&bot.t<(bot.s8Perceive||0))return true;bot.s8Perceive=bot.t+(bot.lag||0)/1000;
  const dyTo=y=>Math.abs(y-r.y)>5?Math.sign(y-r.y):0;
- const escape=y=>{const lane=band8(y),safe=lane===0?1:lane===2?1:r.y<y?0:2;return go(0,dyTo(bandY8(safe)),true);};
+ const escape=(y,until=.9)=>{const lane=band8(y),safe=lane===0?2:lane===2?0:r.y<y?0:2;bot.s8Dodge={y:bandY8(safe),until:bot.t+until};return go(0,dyTo(bot.s8Dodge.y),true);};
  const v=k.volley.active;if(v){const y=bandY8(v.safe);if(band8(r.y)!==v.safe||Math.abs(y-r.y)>8)return go(0,dyTo(y),true);if(v.phase!=='tell')return go(0,0);}
+ if(bot.s8Dodge&&bot.t<bot.s8Dodge.until)return go(0,dyTo(bot.s8Dodge.y),true);
  const b=s.boss;
- if(b?.alive&&['grab_tell','lunge'].includes(b.state)&&Math.abs(r.y-b.grabY)<42)return escape(b.grabY);
+ if(b?.alive&&['grab_tell','lunge'].includes(b.state)&&Math.abs(r.y-b.grabY)<42)return escape(b.grabY,1.4);
  const whip=k.circle.whip;if(whip&&band8(r.y)===whip.band)return escape(bandY8(whip.band));
  const burst=k.bursts.find(b=>Math.abs(r.x-b.x)<95&&Math.abs(r.y-b.y)<36);if(burst)return escape(burst.y);
  const star=k.arena.stars.find(b=>Math.abs(r.x-b.x)<100&&Math.abs(r.y-b.y)<40);if(star)return go(r.x<=star.x?-1:1,dyTo(bandY8((band8(star.y)+1)%3)),true);
@@ -23,10 +24,12 @@ export function stage8Bot(bot){
  const incoming=k.arena.balls.find(a=>Math.abs(a.x-r.x)<260&&Math.abs(a.y-r.y)<32);if(incoming)return escape(incoming.y);
  const bands=k.arena.tells.map(t=>t.band);if(bands.includes(band8(r.y))){const safe=[0,1,2].find(i=>!bands.includes(i));if(safe!==undefined)return go(0,dyTo(bandY8(safe)),true);}
  const arrow=k.arrows.find(a=>(r.x-a.x)*a.dir>=0&&Math.abs(r.x-a.x)<190&&Math.abs(r.y-a.y)<30);if(arrow)return escape(arrow.y);
- const danger=s.enemies.find(e=>e.alive&&!e.entering&&!e.T?.boss&&['attack','lunge'].includes(e.state)&&Math.abs(e.y-r.y)<36&&Math.abs(e.x-r.x)<(e.type==='dancer'?360:500));if(danger)return escape(danger.aimY||danger.y);
+ const danger=s.enemies.find(e=>e.alive&&!e.entering&&!e.T?.boss&&['attack','lunge'].includes(e.state)&&Math.abs(e.y-r.y)<36&&Math.abs(e.x-r.x)<(e.type==='dancer'?360:500));if(danger)return escape(danger.aimY||danger.y,1.5);
  if(q.get('call8')==='1'&&!r.busy&&canCall8(k.call,call8Context(k))){press('assist',1);return go(0,0);}
  const gifts=s.pickups.filter(p=>p.x>s.bounds.l+45&&p.x<s.bounds.r-45&&Math.abs(p.x-r.x)<450&&(p.kind==='heal'&&r.hp<80||p.kind==='saidin'&&r.saidin<70||p.kind==='ribbon'||p.power));
  if(gifts.length&&!r.busy){const p=gifts[0];return go(Math.abs(p.x-r.x)>12?Math.sign(p.x-r.x):0,dyTo(p.y),true);}
+ if(!r.busy&&r.hp<75){const crate=(s.barrels||[]).find(p=>!p.broken&&p.x>s.bounds.l+40&&p.x<s.bounds.r-40&&Math.abs(p.x-r.x)<900);if(crate){const dx=crate.x-r.x,dy=crate.y-r.y,side=Math.sign(dx)||1;if(Math.abs(dx)>65||Math.abs(dy)>20)return go(Math.abs(dx)>65?side:0,dyTo(crate.y),true);if(r.facing!==side)return go(side,0);press('attack',.2);return go(0,0);}}
+ if(b?.canBeHit&&r.saidin>=100&&!r.busy&&Math.abs(b.x-r.x)<740){const side=Math.sign(b.x-r.x)||1;if(r.facing!==side)return go(side,0);press('power',4);return go(0,0);}
  const live=s.enemies.filter(e=>e.alive&&!e.entering&&e.canBeHit!==false&&!e.isCopy);
  if(!live.length)return go(k.circle.active?Math.sign(3360-r.x):1,0,!s.locked);
  live.sort((a,b)=>(a.anchor?-1:0)-(b.anchor?-1:0)||Math.abs(a.x-r.x)-Math.abs(b.x-r.x));const e=live[0],dx=e.x-r.x,dy=e.y-r.y,side=Math.sign(dx)||1;
@@ -36,6 +39,7 @@ export function stage8Bot(bot){
  if(Math.abs(dy)>30)return go(0,Math.sign(dy));
  if(r.facing!==side)return go(side,0);
  // Stay at the outer edge of melee depth, inside Riley's reach but clear of bolts.
+ if(e.T?.boss){if(!r.busy){press('jump',.2);return go(0,0);}if(r.state==='air'&&r.z>80)press('attack',.2);return go(0,0);}
  const goal=e.y+(e.y>631?-30:30),offset=Math.abs(r.y-goal)>5?Math.sign(goal-r.y):0;
  press('attack',.14);return go(0,offset);
 }

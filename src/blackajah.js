@@ -2,6 +2,9 @@ import {Fighter8} from './stage8-fighter.js';
 import {clamp,LANE_TOP,LANE_BOT} from './config.js';
 export class Sister extends Fighter8 {
  constructor(s,x,y){super(s,'s8sister',70,x,y,600,'BLACK AJAH',90);this.type='sister';this.bubble=true;this.bubbleHits=0;this.openUntil=0;this.bindAt=0;this.mashes=0;}
+ // The shield anchors are rooted to the ring; hit reactions must not move them
+ // behind the dome boundary where melee cannot reach them.
+ physics(dt){super.physics(dt);if(this.circleMember&&this.alive){this.x=this.ringX;this.y=this.ringY;this.vx=0;this.vy=0;}}
  get canBeHit(){return super.canBeHit&&(!this.circleMember||this.anchor);}
  popGuard(){this.bubble=false;this.bubbleHits=0;this.openUntil=(this.scene.kit?.clock||0)+3;}
  takeHit(h={},from){if(!this.canBeHit)return false;if(this.bubble){if(['fire','fireball','lightning','power'].includes(h.kind)||(from&&from.team===undefined&&h.launch&&h.down))return true;if(++this.bubbleHits>=3)this.popGuard();return true;}
