@@ -14,7 +14,7 @@ export function call8(k){const s=k.s;if(!s.started)return false;const result=tak
 export function endCall8(k){k.video?.abort();k.strike=null;k.call.on=false;thawStrike(k);}
 export function stepCall8(k,dt){const st=k.strike;if(!st)return;st.t+=dt;
  if(!st.resolved&&st.t>=.45){st.resolved=true;for(const e of allocate8(eligible8(k.s.enemies,k.s.camX||0),st.provider,k.s.riley.y))callEffect8(e,st.provider,st.presentation);stage8Say(st.provider==='mat'?'st8_mat_call_0'+(1+k.call.calls%2):'rand_call_01',k.s.caption);}
- k.view?.sync(k);if(st.t>=st.duration){k.s.riley.inv=Math.max(k.s.riley.inv||0,2);endCall8(k);}
+ k.view?.sync(k);if(st.t>=st.duration&&(!k.video?.active||st.t>=11)){k.s.riley.inv=Math.max(k.s.riley.inv||0,2);endCall8(k);}
 }
 export function installLifecycle8(k){const s=k.s;
  hook8(k,s,'onPress',old=>function(action){if(k.credits.press(action)){this.inp?.flushPresses?.();return;}if(k.clash&&action==='special')return;return old.call(this,action);});

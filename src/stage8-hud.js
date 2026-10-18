@@ -1,8 +1,9 @@
+import {syncPhone8} from './stage8-phone.js';
 import {hook8} from './stage8-hooks.js';
 import {provider8,canCall8} from './mat-call.js';
 import {call8Context} from './stage8-lifecycle.js';
 export const SPEAKER8=Object.freeze({'LEWS THERIN':'#d8b25a',TAIM:'#e07a5f',LANFEAR:'#ef997e','BLACK AJAH':'#ef997e',SHAIDO:'#ef997e'});
-export function paintStage8Hud(h,s){if((s?.titleSel||s?.stageNo)===8)h.titleStageT?.setText?.("DUMAI'S WELLS — THE FINAL BATTLE");}
+export function paintStage8Hud(h,s){if(s?.stageNo===8)syncPhone8(s);if((s?.titleSel||s?.stageNo)===8)h.titleStageT?.setText?.("DUMAI'S WELLS — THE FINAL BATTLE");}
 export function installStage8Hud(){if(typeof globalThis.Phaser==='undefined')return;
  return import('./hud.js').then(({HUD})=>{const p=HUD?.prototype;if(!p||p._s8hud)return;
  for(const key of ['update','titleCard','titleSelect']){const old=p[key];p[key]=function(){const out=old.apply(this,arguments);paintStage8Hud(this,this.stage);return out;};}

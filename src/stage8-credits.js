@@ -1,3 +1,4 @@
+import {q} from './config.js';
 import {SKIP_ACTIONS} from './cutscene.js';
 import {demand8,releaseKeys8} from './stage8-load.js';
 export const CREDITS8=Object.freeze(['RILEY WHEEL BRAWL','RILEY & TWINKLE TOES','A Wheel of Time adventure','Created for Riley by Jason','Thank you for playing']);
@@ -8,7 +9,7 @@ export function createCredits8(k){const s=k.s;let nodes=[];return {active:false,
  },
  press(a){if(!this.active||!SKIP_ACTIONS.has(a))return false;this.finish();return true;},
  step(dt){if(!this.active)return;this.t+=dt;for(const n of nodes)if(n._creditRow!==undefined)n.setPosition?.(640,760+n._creditRow*100-this.t*50);if(this.t>=28)this.finish();},
- finish(){if(this.done)return;this.done=true;this.active=false;for(const n of nodes)n.destroy?.();nodes=[];releaseKeys8(k,['s8credits']);s.ended=true;s.hud?.stageClear?.(s.stats());k.hint('CAMPAIGN COMPLETE');s.clearShown=true;k.later(3,()=>s.scene?.restart?.({stage:1,campaignComplete:true}));},
+ finish(){if(this.done)return;this.done=true;this.active=false;for(const n of nodes)n.destroy?.();nodes=[];releaseKeys8(k,['s8credits']);q.delete('demo');q.delete('autostart');s.inp?.flushPresses?.();s.ended=true;s.hud?.stageClear?.(s.stats());k.hint('CAMPAIGN COMPLETE');s.clearShown=true;k.later(3,()=>s.scene?.restart?.({stage:1,campaignComplete:true}));},
  destroy(){this.active=false;for(const n of nodes)n.destroy?.();nodes=[];}
 };}
 export function outroWalkDone8(x,t){return x>=4900||t>=20;}

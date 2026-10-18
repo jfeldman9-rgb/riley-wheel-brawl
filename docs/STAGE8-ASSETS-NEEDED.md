@@ -91,3 +91,9 @@ All delivered images are used unchanged. Human audio/video production remains op
 - `assets/cutscenes/call8/M3.mp4`: absent; Mat’s in-engine strike and captions.
 
 Register clips only after Jason signs off on likeness and depiction, with a 4 fps review log. Flow order: V5.3, V3.1, V5.2, V1.2, V5.4.
+
+Implementation update: all 58 delivered images and 14 atlas files are wired unchanged, with Taim idle 0 (alias 5), arrival 3, and native drawScale 1. No additional art is requested by this code pass. The updated foreground can use its rounded cap directly; a soft alpha fade remains.
+
+Music fallback now selects the shipped `stage5` / `boss6` tracks without requesting absent files. After the two new music files are delivered and their loops validated, set the corresponding `MUSIC8_PRESENT` flags in `src/stage8-audio.js`. The reserved MUSIC URLs remain `assets/audio/music-stage8.mp3` and `assets/audio/music-boss8.mp3`.
+
+The full finale video would repeat the scream already delivered by the playable P4 clash. That path stays on panels after P4 until a reviewed continuation cut is supplied. Finale fallback lines 4–5 play during the playable sassy walk, once. All other missing video beats use panels or in-engine captions; voices remain caption-only via the empty voice-file manifest. No audio or video was generated.

@@ -22,7 +22,7 @@ export function createStory8(k,player=playStage8Video){
   play(name,done,live=false){if(dead||seen.has(name))return false;if(active||s.cutscene){queue.push([name,done,live]);return true;}
    const b=BEATS8[name];if(!b)return false;seen.add(name);active=name;
    const keys=b.panels||CLIPS8[b.clip]?.panels||[];
-   const finish=()=>{if(dead)return;release(keys);active=null;done?.();const next=queue.shift();if(next)api.play(...next);};
+   const finish=()=>{if(dead)return;release(keys);active=null;if(s.music?.state==='cutscene')s.music.resumeFight?.();done?.();const next=queue.shift();if(next)api.play(...next);};
    const fallback=()=>{const ids=b.ids.filter(id=>!heard.has(id)&&!(name==='C8'&&['st8_tt_final_01','riley_st8_final_01'].includes(id)));
     if(!ids.length)return finish();
     if(!keys.length||live||s.bot||typeof s.startCutscene!=='function'){
