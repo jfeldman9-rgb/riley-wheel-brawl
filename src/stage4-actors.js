@@ -9,6 +9,7 @@ import { lightNear } from './myrddraal.js';
 import { croon } from './stage4-voice.js';
 import { beginDraghkarStrike, finishDraghkarStrike, finishDraghkarKiss } from './draghkar-impact.js';
 import { STAGE5_ACTORS } from './stage5-actors.js';
+import { STAGE8_ACTORS } from './stage8-actors.js';
 import { STAGE7_ACTORS } from './stage7-actors.js';
 import { STAGE6_ACTORS } from './stage6-actors.js';
 
@@ -169,4 +170,4 @@ export class DraghkarActor extends Draghkar {
   die() { if (this.alive) this.defeat(); this.gone = true; }
 }
 
-export const STAGE4_ACTORS = Object.freeze({ cultist: CultistActor, draghkar: DraghkarActor, ...STAGE5_ACTORS, ...STAGE6_ACTORS, ...STAGE7_ACTORS });
+export const STAGE4_ACTORS = Object.freeze({ cultist: CultistActor, draghkar: DraghkarActor, ...STAGE5_ACTORS, ...STAGE6_ACTORS, ...STAGE7_ACTORS, ...STAGE8_ACTORS });

@@ -1,0 +1,591 @@
+{
+  "status": "awaiting human recordings",
+  "lines": [
+    {
+      "id": "st8_story_01",
+      "speaker": "NARRATOR",
+      "text": "Cairhien was empty when Riley got there. The Tower embassy had taken the Dragon Reborn — shielded, folded into a wooden chest — and ridden hard for Tar Valon.",
+      "file": "assets/audio/voice/st8_story_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_story_02",
+      "speaker": "NARRATOR",
+      "text": "They caught up at Dumai's Wells: three stone wells in a sea of grass, a ring of wagons, and the Shaido coming over every hill.",
+      "file": "assets/audio/voice/st8_story_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_story_03",
+      "speaker": "NARRATOR",
+      "text": "And somewhere between Cairhien and here, Moiraine had fallen through a twisted redstone doorway with Lanfear. Only one of them came back.",
+      "file": "assets/audio/voice/st8_story_03.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_rand_box_01",
+      "speaker": "RAND",
+      "text": "Six of them. Always six, holding the shield. I can feel every one.",
+      "file": "assets/audio/voice/st8_rand_box_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lews_01",
+      "speaker": "LEWS THERIN",
+      "text": "Every shield has a seam. Feel for where the women tire.",
+      "file": "assets/audio/voice/st8_lews_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_rand_box_02",
+      "speaker": "RAND",
+      "text": "Get out of my head!",
+      "file": "assets/audio/voice/st8_rand_box_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lews_02",
+      "speaker": "LEWS THERIN",
+      "text": "It is my head too. Push. There — where the weave thins.",
+      "file": "assets/audio/voice/st8_lews_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_rand_box_03",
+      "speaker": "RAND",
+      "text": "I can't… reach it!",
+      "file": "assets/audio/voice/st8_rand_box_03.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lews_03",
+      "speaker": "LEWS THERIN",
+      "text": "Then wait. Someone is coming. A boy who channels… and a girl who dances.",
+      "file": "assets/audio/voice/st8_lews_03.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_story_01",
+      "speaker": "RILEY",
+      "text": "Rand's in that box. And Twinkle Toes is down there with them.",
+      "file": "assets/audio/voice/riley_st8_story_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_story_02",
+      "speaker": "RILEY",
+      "text": "Okay. Final round.",
+      "file": "assets/audio/voice/riley_st8_story_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_perrin_01",
+      "speaker": "PERRIN",
+      "text": "Two Rivers! Loose!",
+      "file": "assets/audio/voice/st8_perrin_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_perrin_02",
+      "speaker": "PERRIN",
+      "text": "Riley. Go — we'll hold the hill.",
+      "file": "assets/audio/voice/st8_perrin_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_loial_01",
+      "speaker": "LOIAL",
+      "text": "Riley! This is far too hasty — but I will hold this side!",
+      "file": "assets/audio/voice/st8_loial_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_perrin_wolves_01",
+      "speaker": "PERRIN",
+      "text": "Wolves — with me!",
+      "file": "assets/audio/voice/st8_perrin_wolves_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_mat_join_01",
+      "speaker": "MAT",
+      "text": "Dice have been rattling in my head for three days. Something lucky's about to happen — probably to me.",
+      "file": "assets/audio/voice/st8_mat_join_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_mat_01",
+      "speaker": "RILEY",
+      "text": "Mat?! What are you —",
+      "file": "assets/audio/voice/riley_st8_mat_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_mat_join_02",
+      "speaker": "MAT",
+      "text": "Rescuing Rand. Again. Call me when it gets thick.",
+      "file": "assets/audio/voice/st8_mat_join_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_taim_intro_01",
+      "speaker": "TAIM",
+      "text": "The Black Tower answers the Dragon Reborn.",
+      "file": "assets/audio/voice/st8_taim_intro_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_taim_kill_01",
+      "speaker": "TAIM",
+      "text": "Asha'man, kill!",
+      "file": "assets/audio/voice/st8_taim_kill_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_taim_01",
+      "speaker": "RILEY",
+      "text": "Wait — which side are they killing?!",
+      "file": "assets/audio/voice/riley_st8_taim_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_volley_01",
+      "speaker": "RILEY",
+      "text": "Jump the dirt. Dodge the fire. Got it.",
+      "file": "assets/audio/voice/riley_st8_volley_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_sister_01",
+      "speaker": "BLACK AJAH",
+      "text": "Hold the circle!",
+      "file": "assets/audio/voice/st8_sister_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_sister_02",
+      "speaker": "BLACK AJAH",
+      "text": "The Lady wants the girl unharmed. The boy, she did not mention.",
+      "file": "assets/audio/voice/st8_sister_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_lady_01",
+      "speaker": "RILEY",
+      "text": "Who's 'the Lady'?",
+      "file": "assets/audio/voice/riley_st8_lady_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_tt_circle_01",
+      "speaker": "TWINKLE TOES",
+      "text": "Bubby! They won't let me out!",
+      "file": "assets/audio/voice/st8_tt_circle_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "Jason by ear"
+    },
+    {
+      "id": "riley_st8_circle_01",
+      "speaker": "RILEY",
+      "text": "Hang on, Twinkle Toes!",
+      "file": "assets/audio/voice/riley_st8_circle_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_rand_callandor_01",
+      "speaker": "RAND",
+      "text": "Riley! Callandor — in the wagon. Take it!",
+      "file": "assets/audio/voice/st8_rand_callandor_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_callandor_01",
+      "speaker": "RILEY",
+      "text": "Okay, glass sword. Show me what you've got.",
+      "file": "assets/audio/voice/riley_st8_callandor_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_circle_02",
+      "speaker": "RILEY",
+      "text": "Circle's broken!",
+      "file": "assets/audio/voice/riley_st8_circle_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_rand_free_01",
+      "speaker": "RAND",
+      "text": "Free. Light, I'm free. Riley — call, and I'll come.",
+      "file": "assets/audio/voice/st8_rand_free_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_mat_handover_01",
+      "speaker": "MAT",
+      "text": "And that's my luck spent. Rand's turn. Try to need less rescuing!",
+      "file": "assets/audio/voice/st8_mat_handover_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_tt_link_01",
+      "speaker": "TWINKLE TOES",
+      "text": "Bubby, I can channel too! I've been practicing!",
+      "file": "assets/audio/voice/st8_tt_link_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "Jason by ear"
+    },
+    {
+      "id": "riley_st8_link_01",
+      "speaker": "RILEY",
+      "text": "Since when?!",
+      "file": "assets/audio/voice/riley_st8_link_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_tt_link_02",
+      "speaker": "TWINKLE TOES",
+      "text": "Only a girl can start a link. Hold my hand!",
+      "file": "assets/audio/voice/st8_tt_link_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "Jason by ear"
+    },
+    {
+      "id": "riley_st8_link_02",
+      "speaker": "RILEY",
+      "text": "Okay. Together.",
+      "file": "assets/audio/voice/riley_st8_link_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lanfear_intro_01",
+      "speaker": "LANFEAR",
+      "text": "So this is the little queen.",
+      "file": "assets/audio/voice/st8_lanfear_intro_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_tt_lanfear_01",
+      "speaker": "TWINKLE TOES",
+      "text": "Who are YOU?",
+      "file": "assets/audio/voice/st8_tt_lanfear_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "Jason by ear"
+    },
+    {
+      "id": "st8_lanfear_motive_01",
+      "speaker": "LANFEAR",
+      "text": "A hall of painted knights, roast chicken and a paper crown — and they named YOU the Queen of Love and Beauty. At Medieval Times!",
+      "file": "assets/audio/voice/st8_lanfear_motive_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lanfear_motive_02",
+      "speaker": "LANFEAR",
+      "text": "I have been the most beautiful woman in the world for three thousand years. That title is MINE.",
+      "file": "assets/audio/voice/st8_lanfear_motive_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_tt_lanfear_02",
+      "speaker": "TWINKLE TOES",
+      "text": "It's a paper crown, lady.",
+      "file": "assets/audio/voice/st8_tt_lanfear_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "Jason by ear"
+    },
+    {
+      "id": "riley_st8_lanfear_01",
+      "speaker": "RILEY",
+      "text": "You're jealous of a dinner show?",
+      "file": "assets/audio/voice/riley_st8_lanfear_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lanfear_intro_02",
+      "speaker": "LANFEAR",
+      "text": "I will have that crown. And I will have her.",
+      "file": "assets/audio/voice/st8_lanfear_intro_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lanfear_final_01",
+      "speaker": "LANFEAR",
+      "text": "I am the queen of love and beauty!",
+      "file": "assets/audio/voice/st8_lanfear_final_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lanfear_final_02",
+      "speaker": "LANFEAR",
+      "text": "Not again! Not the snake people! Ahhhhhhh!",
+      "file": "assets/audio/voice/st8_lanfear_final_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_tt_final_01",
+      "speaker": "TWINKLE TOES",
+      "text": "Bubby you saved me! But what took you so long?",
+      "file": "assets/audio/voice/st8_tt_final_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "Jason by ear"
+    },
+    {
+      "id": "riley_st8_final_01",
+      "speaker": "RILEY",
+      "text": "Too many snack breaks.",
+      "file": "assets/audio/voice/riley_st8_final_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_rand_clear_01",
+      "speaker": "RAND",
+      "text": "The Shaido are breaking. Riley — Twinkle Toes — thank you.",
+      "file": "assets/audio/voice/st8_rand_clear_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_perrin_clear_01",
+      "speaker": "PERRIN",
+      "text": "Let's get you two home.",
+      "file": "assets/audio/voice/st8_perrin_clear_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_story_end_01",
+      "speaker": "NARRATOR",
+      "text": "The Wheel turns, and Riley brought his sister home. One day it will turn toward the Last Battle. But not today.",
+      "file": "assets/audio/voice/st8_story_end_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_taim_kill_02",
+      "speaker": "TAIM",
+      "text": "Asha'man, kill!",
+      "file": "assets/audio/voice/st8_taim_kill_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_taim_kill_03",
+      "speaker": "TAIM",
+      "text": "Asha'man, kill!",
+      "file": "assets/audio/voice/st8_taim_kill_03.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_tt_mirror_01",
+      "speaker": "TWINKLE TOES",
+      "text": "Silver crown's the real one!",
+      "file": "assets/audio/voice/st8_tt_mirror_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "Jason by ear"
+    },
+    {
+      "id": "st8_lanfear_p2_01",
+      "speaker": "LANFEAR",
+      "text": "A carnation from a knight on a horse?! I ruled the Age of Legends!",
+      "file": "assets/audio/voice/st8_lanfear_p2_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lanfear_p3_01",
+      "speaker": "LANFEAR",
+      "text": "Enough games. Burn, both of you!",
+      "file": "assets/audio/voice/st8_lanfear_p3_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lanfear_hurt_01",
+      "speaker": "LANFEAR",
+      "text": "You dare?!",
+      "file": "assets/audio/voice/st8_lanfear_hurt_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_lanfear_clash_01",
+      "speaker": "LANFEAR",
+      "text": "You push against ME?",
+      "file": "assets/audio/voice/st8_lanfear_clash_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_clash_01",
+      "speaker": "RILEY",
+      "text": "Twinkle Toes — push!",
+      "file": "assets/audio/voice/riley_st8_clash_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_tt_clash_01",
+      "speaker": "TWINKLE TOES",
+      "text": "I'm pushing!",
+      "file": "assets/audio/voice/st8_tt_clash_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "Jason by ear"
+    },
+    {
+      "id": "riley_st8_linkfire_01",
+      "speaker": "RILEY",
+      "text": "Together — fire!",
+      "file": "assets/audio/voice/riley_st8_linkfire_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_call_01",
+      "speaker": "RILEY",
+      "text": "Mat! Your luck!",
+      "file": "assets/audio/voice/riley_st8_call_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_call_02",
+      "speaker": "RILEY",
+      "text": "Rand, now!",
+      "file": "assets/audio/voice/riley_st8_call_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "riley_st8_wait_01",
+      "speaker": "RILEY",
+      "text": "Not yet — give it a breath.",
+      "file": "assets/audio/voice/riley_st8_wait_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_mat_call_01",
+      "speaker": "MAT",
+      "text": "Time to roll the dice!",
+      "file": "assets/audio/voice/st8_mat_call_01.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    },
+    {
+      "id": "st8_mat_call_02",
+      "speaker": "MAT",
+      "text": "Snake eyes for them!",
+      "file": "assets/audio/voice/st8_mat_call_02.mp3",
+      "status": "missing",
+      "fallback": "caption",
+      "approval": "pending"
+    }
+  ],
+  "lewsProcessing": "highpass 120 Hz; lowpass 6.5 kHz; aecho=0.6:0.5:35|70:0.22|0.12; -19 LUFS"
+}

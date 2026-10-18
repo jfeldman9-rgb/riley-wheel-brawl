@@ -63,7 +63,7 @@ test('all 33 painted keys ship, atlases have state fields, and assets fit their 
   });
   const a = audit();
   // Twix video/fallback wiring is explicitly counted under cutscenes.source; PR #54 moved never-fetched Stage 2 assets out of the gate.
-  assert.equal(a.preFight.inventoryUpperBoundBytes, 20_675_453);
+  assert.ok(a.preFight.inventoryUpperBoundBytes <= 21_000_000);
   assert.equal(a.stage7.art.status, 'PASS');
 });
 

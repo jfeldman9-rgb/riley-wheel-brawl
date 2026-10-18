@@ -6,7 +6,7 @@ export function strikeRiley(scene, dmg, opts = {}) {
   const source = opts.source || (opts.from?.type === 'asmodean' ? 'asmodean.bash' : 'hazard');
   const hit = damageAllowed(scene) && damageSource7(scene, source,
     () => strike(scene, capDamage7(scene, dmg, source), opts));
-  if (hit && scene.stageNo === 7)
+  if (hit && scene.stageNo >= 7)
     recordDamage7(scene);
   return hit;
 }
