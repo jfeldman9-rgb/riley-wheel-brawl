@@ -7,16 +7,19 @@ export function safeLane8(lane,history=[],blocked=[]){const choices=[0,1,2].filt
 export function volleyBlocked8(k){const s=k.s,r=s.riley,b=s.boss;return !!(!r?.alive||r.grabbedBy||r.held||['grabbed','down','getup','held'].includes(r.state)||s.paused||s.cutscene||k.strike||k.call?.on||k.clash||k.story.active||b?.beat||(s.enemies||[]).some(e=>e.alive&&['attack','lunge','grab_tell','holding'].includes(e.state))||k.arrows.length||k.bursts.length||k.clock<(k.hazardUntil||0));}
 export function volleyDamage8(kind,z,shield,used=0){if(kind==='earth'&&z>=70||kind==='fire'&&(z>0||shield))return 0;return Math.max(0,Math.min(kind==='earth'?10:4,14-used));}
 export function hazardHuman8(e,damage){if(!e?.alive)return false;if(e.bubble){e.popGuard?.();return true;}if(e.T?.boss){e.takeHit?.({dmg:damage,kind:'hazard'});return true;}e.assistKill=true;e.T={...e.T,score:e.hazardScore?e.T.score:Math.floor((e.T?.score||0)/2)};e.hazardScore=true;e.hp=Math.max(1,e.hp-damage);e.assistDown=.8;e.setState?.('down');if(e.hp===1)e.yield?.();return true;}
-export function createVolley8(k){const s=k.s;return {
+export function createVolley8(k,inBoss=VOLLEY8.inBoss){const s=k.s;return {
  active:null,clock:0,next:Infinity,history:[],count:0,skips:0,wait:0,armed:false,
- arm(){if(this.armed)return;this.armed=true;this.next=this.clock+VOLLEY8.first;demand8(k,['s8earth','s8fire','s8tell','s8banner']);},
+ // Reserve the last two seconds before a Z3 volley is due. Committed attacks
+ // finish normally, but new wind-ups cannot starve every scheduled volley.
+ get preparing(){return inBoss&&s.zoneI===3&&this.armed&&!this.active&&this.clock>=this.next-2;},
+ arm(delay=VOLLEY8.first){if(this.armed)return;this.armed=true;this.next=this.clock+delay;demand8(k,['s8earth','s8fire','s8tell','s8banner']);},
  start(){const occupied=(k.arena?.tells||[]).map(t=>t.band);const safe=safeLane8(band8(s.riley.y),this.history,occupied);if(safe===null)return false;
   this.history.push(safe);this.count++;this.wait=0;this.active={safe,t:0,phase:'tell',damage:0,earthUsed:false,fireTicks:0,lastFire:-1,hits:new Map(),dir:s.zoneI%2?-1:1,origin:(s.camX||0)+(s.zoneI%2?1400:-120)};
   if(s.boss?.alive){s.boss.volleyHold=true;s.boss.setState?.('shield');k.arena?.clear();}
   k.arrows.length=0;k.bursts.length=0;k.allies.volley=this.active;
   k.sayVolley?.(this.count);k.hint("ASHA'MAN, KILL! — FIND THE CLEAR LANE");return true;
  },
- step(dt){if(!VOLLEY8.inBoss&&s.zoneI===3)return;this.clock+=dt;
+ step(dt){if(!inBoss&&s.zoneI===3){if(this.active)this.clear();return;}this.clock+=dt;
   if(!this.active){if(this.clock<this.next)return;if(volleyBlocked8(k)||!this.start()){this.wait+=dt;if(this.wait>=4){this.skips++;this.wait=0;this.next=this.clock+60;}return;}this.next=this.clock+60;}
   const a=this.active;a.t+=dt;const earth=a.t-3;a.phase=a.t<3?'tell':a.t<5?'strike':'fade';a.x=a.origin+a.dir*Math.max(0,earth)*1100;
   const r=s.riley,doomed=band8(r.y)!==a.safe;

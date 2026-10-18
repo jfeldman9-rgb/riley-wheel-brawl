@@ -1,23 +1,36 @@
 {
+  "baselineCommit": "0cc69ec",
+  "outsideBaseline": {
+    "passed": 1817,
+    "failed": 0,
+    "skipped": 2,
+    "source": "User/supervisor report; prior to this follow-up"
+  },
   "command": "NODE_OPTIONS=--require=/tmp/s8-file-capture.cjs node --test tests/*.test.mjs",
-  "testFiles": 243,
-  "passedFiles": 240,
+  "testFiles": 244,
+  "passedFiles": 241,
   "failedFiles": 3,
-  "durationMs": 173538.240518,
-  "stage8AndMatFiles": 20,
+  "durationMs": 164480.47927,
+  "stage8AndMatFiles": 21,
   "stage8AndMatFailures": 0,
+  "newFollowupAssertions": 8,
+  "newFollowupFailures": 0,
   "failures": [
     {
       "file": "tests/stage6-protected.test.mjs",
-      "reason": "Working-tree guard sees the updated Stage 8 byte fixture and renamed-module import in the Stage 8 actor test. Protected controls/HUD/entrypoint remain unchanged; the approved Stage 7 ceiling edit is committed. Git writes are read-only."
+      "reason": "Working-tree guard sees updated tests/fixtures/stage8-bytes.json awaiting the outside commit. Direct guard run: protected file identity and Safari compatibility pass; only the uncommitted-tests assertion fails."
     },
     {
       "file": "tests/stage7-final.test.mjs",
-      "reason": "Chromium launch fails with setsockopt EPERM."
+      "reason": "Chromium launch fails with setsockopt EPERM inside the sandbox."
     },
     {
       "file": "tests/stage7-polish.test.mjs",
-      "reason": "Chromium launch fails with setsockopt EPERM."
+      "reason": "Chromium launch fails with setsockopt EPERM inside the sandbox."
     }
-  ]
+  ],
+  "preFightBytes": 20776756,
+  "projectedPeakMiB": 95.86,
+  "browserRecheck": "Blocked locally by setsockopt EPERM; supervisor reviewed original four captures; updated rendered captures still needed",
+  "perSeedFairness": "Open; cohort Mat 96.70%, Rand 98.29%; thresholds unchanged"
 }

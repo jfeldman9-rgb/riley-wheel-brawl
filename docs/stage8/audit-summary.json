@@ -1,12 +1,12 @@
 {
   "preFight": {
-    "inventoryUpperBoundBytes": 20774865,
+    "inventoryUpperBoundBytes": 20776756,
     "budgetBytes": 25000000,
     "inventoryStatus": "PASS"
   },
   "stage8": {
     "source": {
-      "bytes": 98918,
+      "bytes": 100809,
       "budgetBytes": 229376,
       "status": "PASS"
     },

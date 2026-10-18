@@ -14,7 +14,7 @@ export const BEATS8=Object.freeze({
  C9:{ids:['st8_rand_clear_01','st8_perrin_clear_01','st8_story_end_01']},
 });
 export function createStory8(k,player=playStage8Video){
- const s=k.s,seen=new Set(),heard=new Set(),queue=[];let active=null,dead=false;
+ const s=k.s,seen=new Set(),heard=new Set(),queue=[];let active=null,dead=false,loading=false;
  function release(keys){releaseKeys8(k,keys);}
  const api={seen,heard,get active(){return active;},
   mark(id){heard.add(id);},
@@ -25,13 +25,18 @@ export function createStory8(k,player=playStage8Video){
    const finish=()=>{if(dead)return;release(keys);active=null;if(s.music?.state==='cutscene')s.music.resumeFight?.();done?.();const next=queue.shift();if(next)api.play(...next);};
    const fallback=()=>{const ids=b.ids.filter(id=>!heard.has(id)&&!(name==='C8'&&['st8_tt_final_01','riley_st8_final_01'].includes(id)));
     if(!ids.length)return finish();
-    if(!keys.length||live||s.bot||typeof s.startCutscene!=='function'){
+    if(!keys.length||live||s.bot&&name!=='C1'||typeof s.startCutscene!=='function'){
      ids.forEach((id,i)=>k.later(i*3.8,()=>api.say(id)));k.later(ids.length*3.8,finish);return;
     }
+    // C1 is a held opening even in demo mode. Hold during its asynchronous art
+    // demand too; startCutscene takes ownership of the same pause reason.
+    if(name==='C1'){loading=true;s.setPauseReason?.('cutscene',true);}
     demand8(k,keys,()=>{if(dead)return;
-     const script=ids.map((id,i)=>({id,who:LINES[id][0],text:LINES[id][1],panel:Math.min(keys.length-1,Math.floor(i*keys.length/ids.length))}));
+     const script=ids.map((id,i)=>({id,who:LINES[id][0],text:LINES[id][1],panel:name==='C1'?(id.startsWith('riley_')?3:1):Math.min(keys.length-1,Math.floor(i*keys.length/ids.length))}));
      const ended=()=>{for(const id of ids)heard.add(id);finish();};
-     if(s.startCutscene(script,keys.map(key=>({key})),ended)===false) {ids.forEach(id=>api.say(id));finish();}
+     const started=s.startCutscene(script,keys.map(key=>({key})),ended);
+     if(loading){loading=false;if(started===false&&!s.cutscene)s.setPauseReason?.('cutscene',false);}
+     if(started===false) {ids.forEach(id=>api.say(id));finish();}
     });
    };
    // A full finale clip repeats the P4 scream. Until a reviewed continuation
@@ -39,6 +44,6 @@ export function createStory8(k,player=playStage8Video){
    if(!b.clip||name==='C8'&&heard.has('st8_lanfear_final_01')||!player(s,b.clip,(how,failed)=>{if(failed)fallback();else{for(const id of b.ids)heard.add(id);finish();}}))fallback();
    return true;
   },
-  destroy(){dead=true;queue.length=0;for(const b of Object.values(BEATS8))release(b.panels||CLIPS8[b.clip]?.panels||[]);active=null;}
+  destroy(){dead=true;if(loading){loading=false;s.setPauseReason?.('cutscene',false);}queue.length=0;for(const b of Object.values(BEATS8))release(b.panels||CLIPS8[b.clip]?.panels||[]);active=null;}
  };return api;
 }

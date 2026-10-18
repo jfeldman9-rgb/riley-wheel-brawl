@@ -5,32 +5,10 @@
       "calls": false,
       "lag": 0,
       "clear": true,
-      "seconds": 407.0833333333333,
+      "seconds": 406.2,
       "mat": 150.11666666667827,
-      "boss": 118.54999999999455,
+      "boss": 117.66666666666127,
       "deaths": 0,
-      "volleyDeaths": 0,
-      "clashes": [
-        {
-          "final": true,
-          "t": 2.199999999999997,
-          "push": 2,
-          "done": true,
-          "won": true,
-          "presses": 8
-        }
-      ],
-      "callsUsed": 0
-    },
-    {
-      "seed": 2,
-      "calls": false,
-      "lag": 0,
-      "clear": true,
-      "seconds": 379.06666666666666,
-      "mat": 116.29999999999468,
-      "boss": 110.54999999999501,
-      "deaths": 1,
       "volleyDeaths": 0,
       "clashes": [
         {
@@ -45,13 +23,13 @@
       "callsUsed": 0
     },
     {
-      "seed": 3,
+      "seed": 2,
       "calls": false,
       "lag": 0,
       "clear": true,
-      "seconds": 430.5,
-      "mat": 157.45000000001744,
-      "boss": 127.06666666666074,
+      "seconds": 381.03333333333336,
+      "mat": 116.29999999999468,
+      "boss": 112.51666666666156,
       "deaths": 1,
       "volleyDeaths": 0,
       "clashes": [
@@ -67,13 +45,35 @@
       "callsUsed": 0
     },
     {
+      "seed": 3,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 432,
+      "mat": 157.45000000001744,
+      "boss": 128.56666666666112,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 2.1833333333333305,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
       "seed": 4,
       "calls": false,
       "lag": 0,
       "clear": true,
-      "seconds": 426.18333333333334,
+      "seconds": 429.2,
       "mat": 155.4166666666825,
-      "boss": 119.61666666666116,
+      "boss": 122.63333333332766,
       "deaths": 1,
       "volleyDeaths": 0,
       "clashes": [
@@ -93,20 +93,12 @@
       "calls": false,
       "lag": 0,
       "clear": true,
-      "seconds": 417.05,
+      "seconds": 398.43333333333334,
       "mat": 146.3500000000086,
-      "boss": 128.96666666666144,
-      "deaths": 1,
+      "boss": 110.34999999999502,
+      "deaths": 0,
       "volleyDeaths": 0,
       "clashes": [
-        {
-          "final": false,
-          "t": 1.8833333333333315,
-          "push": 2,
-          "done": true,
-          "won": true,
-          "presses": 8
-        },
         {
           "final": true,
           "t": 1.8833333333333315,
@@ -145,10 +137,10 @@
       "calls": false,
       "lag": 0,
       "clear": true,
-      "seconds": 424.03333333333336,
+      "seconds": 417.48333333333335,
       "mat": 155.8333333333495,
-      "boss": 127.1333333333274,
-      "deaths": 1,
+      "boss": 120.58333333332777,
+      "deaths": 0,
       "volleyDeaths": 0,
       "clashes": [
         {
@@ -167,10 +159,10 @@
       "calls": false,
       "lag": 0,
       "clear": true,
-      "seconds": 418.4166666666667,
+      "seconds": 451.31666666666666,
       "mat": 160.58333333335327,
-      "boss": 111.59999999999495,
-      "deaths": 0,
+      "boss": 144.50000000000713,
+      "deaths": 1,
       "volleyDeaths": 0,
       "clashes": [
         {
@@ -189,10 +181,10 @@
       "calls": false,
       "lag": 0,
       "clear": true,
-      "seconds": 404.5,
+      "seconds": 385.96666666666664,
       "mat": 120.7166666666611,
-      "boss": 140.01666666667023,
-      "deaths": 1,
+      "boss": 121.48333333332772,
+      "deaths": 0,
       "volleyDeaths": 0,
       "clashes": [
         {
@@ -235,20 +227,12 @@
       "calls": true,
       "lag": 0,
       "clear": true,
-      "seconds": 419.21666666666664,
+      "seconds": 409.35,
       "mat": 131.6666666666636,
-      "boss": 135.44999999999993,
-      "deaths": 1,
+      "boss": 125.58333333332749,
+      "deaths": 0,
       "volleyDeaths": 0,
       "clashes": [
-        {
-          "final": false,
-          "t": 2.2666666666666635,
-          "push": 2,
-          "done": true,
-          "won": true,
-          "presses": 8
-        },
         {
           "final": true,
           "t": 1.8833333333333315,
@@ -265,9 +249,9 @@
       "calls": true,
       "lag": 0,
       "clear": true,
-      "seconds": 380.51666666666665,
+      "seconds": 377.15,
       "mat": 120.53333333332777,
-      "boss": 110.09999999999503,
+      "boss": 106.73333333332856,
       "deaths": 1,
       "volleyDeaths": 0,
       "clashes": [
@@ -287,15 +271,15 @@
       "calls": true,
       "lag": 0,
       "clear": true,
-      "seconds": 453.21666666666664,
+      "seconds": 459.71666666666664,
       "mat": 173.65000000003033,
-      "boss": 128.64999999999452,
+      "boss": 135.1499999999997,
       "deaths": 2,
       "volleyDeaths": 0,
       "clashes": [
         {
           "final": true,
-          "t": 2.1833333333333305,
+          "t": 1.8833333333333315,
           "push": 2,
           "done": true,
           "won": true,
@@ -309,10 +293,10 @@
       "calls": true,
       "lag": 0,
       "clear": true,
-      "seconds": 416.8,
+      "seconds": 419.78333333333336,
       "mat": 130.7333333333295,
-      "boss": 136.91666666666777,
-      "deaths": 2,
+      "boss": 139.90000000000347,
+      "deaths": 1,
       "volleyDeaths": 0,
       "clashes": [
         {
@@ -353,12 +337,20 @@
       "calls": true,
       "lag": 0,
       "clear": true,
-      "seconds": 383.23333333333335,
+      "seconds": 379.03333333333336,
       "mat": 136.60000000000085,
-      "boss": 105.23333333332864,
+      "boss": 101.03333333332888,
       "deaths": 0,
       "volleyDeaths": 0,
       "clashes": [
+        {
+          "final": false,
+          "t": 2.2333333333333303,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        },
         {
           "final": true,
           "t": 1.8833333333333315,
@@ -429,23 +421,15 @@
       "calls": false,
       "lag": 250,
       "clear": true,
-      "seconds": 416.1166666666667,
+      "seconds": 394.3333333333333,
       "mat": 141.5333333333381,
-      "boss": 122.21666666666101,
+      "boss": 100.43333333332892,
       "deaths": 1,
       "volleyDeaths": 0,
       "clashes": [
         {
-          "final": false,
-          "t": 2.3833333333333298,
-          "push": 2,
-          "done": true,
-          "won": true,
-          "presses": 8
-        },
-        {
           "final": true,
-          "t": 2.116666666666664,
+          "t": 1.8833333333333315,
           "push": 2,
           "done": true,
           "won": true,
@@ -459,10 +443,10 @@
       "calls": false,
       "lag": 250,
       "clear": true,
-      "seconds": 427.1,
+      "seconds": 432.4,
       "mat": 129.0833333333282,
-      "boss": 134.58333333333258,
-      "deaths": 1,
+      "boss": 139.8833333333368,
+      "deaths": 2,
       "volleyDeaths": 0,
       "clashes": [
         {
@@ -481,9 +465,9 @@
       "calls": false,
       "lag": 250,
       "clear": true,
-      "seconds": 429.9166666666667,
+      "seconds": 408.3,
       "mat": 130.6499999999961,
-      "boss": 130.1666666666624,
+      "boss": 108.54999999999512,
       "deaths": 2,
       "volleyDeaths": 0,
       "clashes": [
@@ -503,10 +487,10 @@
       "calls": false,
       "lag": 250,
       "clear": true,
-      "seconds": 431.25,
+      "seconds": 446.21666666666664,
       "mat": 147.0166666666758,
-      "boss": 125.03333333332752,
-      "deaths": 1,
+      "boss": 140.00000000000355,
+      "deaths": 2,
       "volleyDeaths": 0,
       "clashes": [
         {
@@ -525,9 +509,9 @@
       "calls": false,
       "lag": 250,
       "clear": true,
-      "seconds": 403.6166666666667,
+      "seconds": 409.28333333333336,
       "mat": 156.33333333334988,
-      "boss": 100.29999999999559,
+      "boss": 105.96666666666194,
       "deaths": 1,
       "volleyDeaths": 0,
       "clashes": [
@@ -569,15 +553,15 @@
       "calls": false,
       "lag": 250,
       "clear": true,
-      "seconds": 444.6,
+      "seconds": 454.76666666666665,
       "mat": 174.78333333336457,
-      "boss": 125.93333333332747,
-      "deaths": 2,
+      "boss": 136.10000000000045,
+      "deaths": 1,
       "volleyDeaths": 0,
       "clashes": [
         {
           "final": true,
-          "t": 2.1833333333333305,
+          "t": 1.8833333333333315,
           "push": 2,
           "done": true,
           "won": true,
@@ -591,20 +575,12 @@
       "calls": false,
       "lag": 250,
       "clear": true,
-      "seconds": 418.26666666666665,
+      "seconds": 424.45,
       "mat": 112.53333333332823,
-      "boss": 136.43333333333405,
+      "boss": 142.6166666666723,
       "deaths": 2,
       "volleyDeaths": 0,
       "clashes": [
-        {
-          "final": false,
-          "t": 2.0499999999999976,
-          "push": 2,
-          "done": true,
-          "won": true,
-          "presses": 8
-        },
         {
           "final": true,
           "t": 1.8833333333333315,
@@ -621,9 +597,9 @@
       "calls": false,
       "lag": 250,
       "clear": false,
-      "seconds": 379.65,
+      "seconds": 382.25,
       "mat": 165.18333333335693,
-      "boss": 116.64999999999466,
+      "boss": 119.24999999999451,
       "deaths": 3,
       "volleyDeaths": 0,
       "clashes": [],
@@ -632,33 +608,33 @@
   ],
   "fairness": {
     "mat": 0.9669881305637698,
-    "rand": 0.9855453752848952
+    "rand": 0.9829401367862982
   },
   "individual": [
     {
       "seed": 1,
       "mat": 1.0945930942600879,
-      "rand": 0.8962463095740205
+      "rand": 0.9029745042492928
     },
     {
       "seed": 2,
       "mat": 1.132129550014356,
-      "rand": 1.2252374491181008
+      "rand": 1.116130943563915
     },
     {
       "seed": 3,
       "mat": 0.7655340319677004,
-      "rand": 0.8664742917103896
+      "rand": 0.8301788955146474
     },
     {
       "seed": 4,
       "mat": 1.1173190348526283,
-      "rand": 1.0755190190887594
+      "rand": 1.1020657787442725
     },
     {
       "seed": 5,
       "mat": 0.8932923357247818,
-      "rand": 1.06164383561649
+      "rand": 1.2677843226099663
     },
     {
       "seed": 10,
@@ -668,17 +644,17 @@
     {
       "seed": 20,
       "mat": 0.8765775401068664,
-      "rand": 0.8277399056109089
+      "rand": 0.837871458189359
     },
     {
       "seed": 100,
       "mat": 0.9416709911779577,
-      "rand": 1.2126642771804597
+      "rand": 0.9365628604382457
     },
     {
       "seed": 97,
       "mat": 1.0637857241474549,
-      "rand": 0.6968218069276986
+      "rand": 0.8031280010975463
     }
   ]
 }

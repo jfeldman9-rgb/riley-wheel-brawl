@@ -2,11 +2,22 @@ import {syncPhone8} from './stage8-phone.js';
 import {hook8} from './stage8-hooks.js';
 import {provider8,canCall8} from './mat-call.js';
 import {call8Context} from './stage8-lifecycle.js';
+import {isPainted} from './stage6-paint.js';
 export const SPEAKER8=Object.freeze({'LEWS THERIN':'#d8b25a',TAIM:'#e07a5f',LANFEAR:'#ef997e','BLACK AJAH':'#ef997e',SHAIDO:'#ef997e'});
-export function paintStage8Hud(h,s){if(s?.stageNo===8)syncPhone8(s);if((s?.titleSel||s?.stageNo)===8)h.titleStageT?.setText?.("DUMAI'S WELLS — THE FINAL BATTLE");}
+export function paintStage8Hud(h,s){if(s?.stageNo===8){syncPhone8(s);
+ if(h.bossName&&h._s8boss!==h.bossName){h._s8boss=h.bossName;h.bossName.setText?.('LANFEAR');h.bossPic?.setTexture?.('lanfearPortrait')?.setDisplaySize?.(68,68);}
+ }if((s?.titleSel||s?.stageNo)===8)h.titleStageT?.setText?.("DUMAI'S WELLS — THE FINAL BATTLE");}
+// A missing delivered panel keeps the paused caption deck, without presenting
+// the generic procedural stand-in as the Rand-in-the-box scene.
+export function paintStory8Line(h,s,line){if(s?.stageNo!==8||!h.cut)return;
+ const panels=h.cut.panels||[],i=Math.max(0,Math.min(panels.length-1,line?.panel|0));
+ h.cut.panel?.setVisible?.(isPainted(s,panels[i]?.key));
+ if(SPEAKER8[line?.who])h.cut.who?.setColor?.(SPEAKER8[line.who]);
+}
 export function installStage8Hud(){if(typeof globalThis.Phaser==='undefined')return;
  return import('./hud.js').then(({HUD})=>{const p=HUD?.prototype;if(!p||p._s8hud)return;
  for(const key of ['update','titleCard','titleSelect']){const old=p[key];p[key]=function(){const out=old.apply(this,arguments);paintStage8Hud(this,this.stage);return out;};}
+ const line=p.cutsceneLine;p.cutsceneLine=function(l){const out=line.apply(this,arguments);paintStory8Line(this,this.stage,l);return out;};
  const clear=p.stageClear;p.stageClear=function(stats){const out=clear.call(this,stats);if(stats.stage===8)for(const n of this.card?.list||[]){if(typeof n.text!=='string')continue;if(n.text.includes('CLEAR'))n.setText?.('CAMPAIGN COMPLETE');if(/^(PRESS ATTACK|TAP KICK)/.test(n.text))n.setText?.('RETURNING TO THE TITLE');}return out;};
  const cap=p.caption;p.caption=function(who,text){const out=cap.apply(this,arguments);if(this.stage?.stageNo===8&&SPEAKER8[who])this.capWho?.setColor?.(SPEAKER8[who]);return out;};p._s8hud=true;
  });

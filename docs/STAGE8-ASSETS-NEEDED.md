@@ -1,6 +1,6 @@
 # Stage 8 assets still needed
 
-All delivered images are used unchanged. Human audio/video production remains open.
+All delivered images are used unchanged. Human audio/video production remains open. The absent opening clip now falls back to a paused Rand-in-box panel (`story8p2`) with the registered Rand/Lews captions, including demo mode; if the panel cannot load, the held caption deck remains.
 
 ## Voices
 

@@ -3,7 +3,7 @@ import {musicTrack8} from './stage8-audio.js';
 import {releasePhone8} from './stage8-phone.js';
 import {createStory8} from './stage8-story.js';
 import {createAllies8} from './stage8-allies.js';
-import {createVolley8} from './stage8-volley.js';
+import {createVolley8,VOLLEY8} from './stage8-volley.js';
 import {stage8Say} from './stage8-voice.js';
 import {createCircle8,crackPip8} from './stage8-circle.js';
 import {createCall8,tickCall8,switchCall8,provider8,canCall8} from './mat-call.js';
@@ -46,7 +46,7 @@ export class Stage8Kit {
  build(){registerMusic8();const s=this.s;s.fires=[];installStage8Hud();paintStage8Art(s,earlyKeys8());
   hook8(this,s.music,'trackFor',old=>function(state){const track=musicTrack8(state);if(track)return track;return old.call(this,state);});
   hook8(this,s,'spawn',old=>function(type,side){const e=old.call(this,type,side);if(this.zoneI===0&&e){e.silhouette=.6;}
-   if(e&&!e.T?.boss)hook8(s.kit,e,'update',update=>function(dt){if(s.kit.volley.active)this.cool=Math.max(1,this.cool||0);return update.call(this,dt);});return e;});
+   if(e&&!e.T?.boss)hook8(s.kit,e,'update',update=>function(dt){if(s.kit.volley.active||s.kit.volley.preparing)this.cool=Math.max(1,this.cool||0);return update.call(this,dt);});return e;});
   hook8(this,s,'updateZones',old=>function(dt){if(this.zoneI===2&&!s.kit.circle.done&&this.wave>=1&&!this.pending.length&&!this.enemies.some(e=>e.alive)){s.kit.circle.start();}if(s.kit.circle.active)return;return old.call(this,dt);});
   hook8(this,s,'attackTokens',old=>function(){return old.call(this)+this.enemies.filter(e=>e.alive&&['grab_tell','great'].includes(e.state)).length;});
   installLifecycle8(this);this.video=createCall8Video(s);
@@ -56,7 +56,7 @@ export class Stage8Kit {
   this.view=createStage8View(s);this.view.build();
   this.backdrops=createPlateStream(s,8,{layoutPlates:()=>this.view.layout()},()=>false);
  }
- start(){const s=this.s;if(q.get('skip')==='boss'){this.randFree=true;this.linked=true;this.circle.done=true;this.link.enable();this.switchProvider();for(let i=0;i<6;i++)this.pips.add(i);}hook8(this,s.riley,'takeHit',old=>function(h,from){if(!damageAllowed(s)||s.kit.clock<(s.kit.graceUntil||0))return false;const ok=old.call(this,h,from);if(ok)recordDamage7(s);return ok;});s.music?.set('stage');}
+ start(){const s=this.s;if(q.get('skip')==='boss'){this.randFree=true;this.linked=true;this.circle.done=true;this.link.enable();this.switchProvider();this.taimArrived=true;this.volley.arm(VOLLEY8.every);for(let i=0;i<6;i++)this.pips.add(i);}hook8(this,s.riley,'takeHit',old=>function(h,from){if(!damageAllowed(s)||s.kit.clock<(s.kit.graceUntil||0))return false;const ok=old.call(this,h,from);if(ok)recordDamage7(s);return ok;});s.music?.set('stage');}
  later(delay,fn){this.tasks.push({at:this.clock+delay,fn});}
  update(dt){if(this.destroyed||this.s.paused||this.s.cutscene||!this.s.started||this.s.gameOver)return;substeps(this,stage4Delta(dt),d=>this.step(d));syncArt8(this);this.backdrops?.sync();this.view?.sync(this);}
  step(dt){this.clock+=dt;this.combatClock+=dt;tickCall8(this.call,dt);if(this.s.hud&&!this.hudBound){this.hudBound=true;bindStage8Hud(this.s.hud,this);}if(this.s.riley)this.s.riley.loialReady=canCall8(this.call,call8Context(this));if(this.call.charges)this.video?.warm(provider8(this.randFree));if(this.zone!==this.s.zoneI){this.zone=this.s.zoneI;this.allies.enter(this.zone);if(this.zone>=1)demand8(this,['s8wise','s8bolt']);if(this.zone===2){demand8(this,['s8sister','s8weave','s8twink','s8chest','s8dome']);this.story.say('st8_sister_02');this.later(4,()=>this.story.say('riley_st8_lady_01'));}}for(const t of this.tasks.slice())if(t.at<=this.clock){this.tasks.splice(this.tasks.indexOf(t),1);t.fn();}

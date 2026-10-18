@@ -15,7 +15,10 @@ export function createStage8View(s){const nodes=new Map(),fx=new Map();let crown
  if(key==='bg8far'){n.setScrollFactor?.(.15);n.setDisplaySize?.(1920,580);n.setDepth?.(-30);}
  else{const i=STREAMS[8].zones.findIndex(z=>z.plate===key||z.floor===key),r=plateRect(i,STAGE8.zones,STREAMS[8].bleed);const floor=key.includes('floor');let w=r.w;
  if(key==='bg8floor2')w=STAGE8.zones[3].l-r.x+48;
- n.setPosition?.(r.x,floor?540:220);n.setDisplaySize?.(w,floor?360:360);n.setDepth?.(floor?-10:-20);}
+ // The Z2 canopy is cropped by the plate's top edge. Keep that edge above
+ // the viewport, with the foot of the plate still tucked behind the floor.
+ const canopy=key==='bg8mid3';
+ n.setPosition?.(r.x,floor?540:canopy?-24:220);n.setDisplaySize?.(w,canopy?604:360);n.setDepth?.(floor?-10:-20);}
  }
  },sync(k){this.layout();for(const n of fx.values())n.setAlpha?.(0);
  const z=Math.max(0,s.zoneI),cam=s.camX||0,t=k.clock;
