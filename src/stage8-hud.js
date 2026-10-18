@@ -14,12 +14,15 @@ export function paintStory8Line(h,s,line){if(s?.stageNo!==8||!h.cut)return;
  h.cut.panel?.setVisible?.(isPainted(s,panels[i]?.key));
  if(SPEAKER8[line?.who])h.cut.who?.setColor?.(SPEAKER8[line.who]);
 }
-export function installStage8Hud(){if(typeof globalThis.Phaser==='undefined')return;
- return import('./hud.js').then(({HUD})=>{const p=HUD?.prototype;if(!p||p._s8hud)return;
+export function installStage8Hud(stage){if(typeof globalThis.Phaser==='undefined')return;
+ // Phaser copies scene.update into sys.sceneUpdate when a scene is created, so a HUD that booted
+ // before this async patch keeps the unpatched update; rebind the live instance after patching.
+ const rebind=p=>{const h=stage?.hud||stage?.scene?.get?.('hud');if(h?.sys&&h.update===p.update&&h.sys.sceneUpdate!==h.update)h.sys.sceneUpdate=h.update;};
+ return import('./hud.js').then(({HUD})=>{const p=HUD?.prototype;if(!p)return;if(p._s8hud)return rebind(p);
  for(const key of ['update','titleCard','titleSelect']){const old=p[key];p[key]=function(){const out=old.apply(this,arguments);paintStage8Hud(this,this.stage);return out;};}
  const line=p.cutsceneLine;p.cutsceneLine=function(l){const out=line.apply(this,arguments);paintStory8Line(this,this.stage,l);return out;};
  const clear=p.stageClear;p.stageClear=function(stats){const out=clear.call(this,stats);if(stats.stage===8)for(const n of this.card?.list||[]){if(typeof n.text!=='string')continue;if(n.text.includes('CLEAR'))n.setText?.('CAMPAIGN COMPLETE');if(/^(PRESS ATTACK|TAP KICK)/.test(n.text))n.setText?.('RETURNING TO THE TITLE');}return out;};
- const cap=p.caption;p.caption=function(who,text){const out=cap.apply(this,arguments);if(this.stage?.stageNo===8&&SPEAKER8[who])this.capWho?.setColor?.(SPEAKER8[who]);return out;};p._s8hud=true;
+ const cap=p.caption;p.caption=function(who,text){const out=cap.apply(this,arguments);if(this.stage?.stageNo===8&&SPEAKER8[who])this.capWho?.setColor?.(SPEAKER8[who]);return out;};p._s8hud=true;rebind(p);
  });
 }
 

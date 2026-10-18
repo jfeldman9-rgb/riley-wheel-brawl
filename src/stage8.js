@@ -43,7 +43,7 @@ export class Stage8Kit {
  freezesWorld(){return !!(this.strike||this.clash||this.s.cutscene);}
  freezesRiley(){return this.freezesWorld()||!!this.scripted||this.credits.active;}
  setQuality(n){this.quality=n|0;if(this.view)this.view.quality=n;}
- build(){registerMusic8();const s=this.s;s.fires=[];installStage8Hud();paintStage8Art(s,earlyKeys8());
+ build(){registerMusic8();const s=this.s;s.fires=[];installStage8Hud(s);paintStage8Art(s,earlyKeys8());
   hook8(this,s.music,'trackFor',old=>function(state){const track=musicTrack8(state);if(track)return track;return old.call(this,state);});
   hook8(this,s,'spawn',old=>function(type,side){const e=old.call(this,type,side);if(this.zoneI===0&&e){e.silhouette=.6;}
    if(e&&!e.T?.boss)hook8(s.kit,e,'update',update=>function(dt){if(s.kit.volley.active||s.kit.volley.preparing)this.cool=Math.max(1,this.cool||0);return update.call(this,dt);});return e;});
