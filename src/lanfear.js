@@ -27,6 +27,7 @@ export class Lanfear extends Fighter8 {
   if(this.state==='lunge'){this.x+=this.grabDir*520*dt;if(!this.counterUsed&&Math.abs(r.x-this.x)<85&&Math.abs(r.y-this.grabY)<28&&r.z<70){this.counterUsed=true;strikeRiley(s,12,{source:'lanfear.grab',fromX:this.x,down:true});}if(this.st>=.75||this.x<=s.bounds.l+70||this.x>=s.bounds.r-70){this.setState(this.counterUsed?'idle':'tantrum');this.cool=1;}return;}
   if(this.state==='gateway'){if(this.st>=.6){this.x=this.destination;this.setState('idle');this.cool=.6;}return;}
   if(this.state==='attack'||this.state==='great'){if(this.st>=(this.state==='great'?1.6:1.1)){this.setState('idle');this.cool=2.4;}return;}
+  if(s.attackTokens()>=2)return;
   if(this.phase===1&&this.time>=this.nextMirror){this.nextMirror=this.time+12;for(const off of [-180,180])s.enemies.push(new Mirror8(s,clamp(this.x+off,s.bounds.l+100,s.bounds.r-100),this.y));k.story.say('st8_tt_mirror_01');}
   if(this.phase===3&&this.time>=this.nextGreat){this.nextGreat=this.time+8;k.arena.great(this);this.setState('great');k.story.say('st8_lanfear_clash_01');return;}
   if(this.phase===2&&this.time>=this.nextGrab){this.nextGrab=this.time+7;this.grabY=r.y;this.grabDir=Math.sign(r.x-this.x)||-1;this.y=this.grabY;this.setState('grab_tell');k.hazardUntil=k.clock+2;return;}

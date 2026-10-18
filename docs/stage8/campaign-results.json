@@ -1,0 +1,677 @@
+{
+  "base": [
+    {
+      "seed": 1,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 390.1666666666667,
+      "mat": 138.86666666666932,
+      "boss": 113.31666666666152,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 2,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 418.45,
+      "mat": 126.29999999999411,
+      "boss": 127.83333333332736,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 3,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 435.75,
+      "mat": 152.38333333334674,
+      "boss": 136.68333333333425,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 4,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 391.0833333333333,
+      "mat": 118.99999999999453,
+      "boss": 125.14999999999418,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 5,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 405.45,
+      "mat": 137.85000000000184,
+      "boss": 115.16666666666141,
+      "deaths": 0,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 10,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 399.05,
+      "mat": 153.45000000001426,
+      "boss": 104.08333333332871,
+      "deaths": 0,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 20,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 388.45,
+      "mat": 135.26666666666645,
+      "boss": 109.44999999999507,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 100,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 419.93333333333334,
+      "mat": 160.58333333335327,
+      "boss": 111.59999999999495,
+      "deaths": 0,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 97,
+      "calls": false,
+      "lag": 0,
+      "clear": true,
+      "seconds": 404.8333333333333,
+      "mat": 120.7166666666611,
+      "boss": 140.01666666667023,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    }
+  ],
+  "assisted": [
+    {
+      "seed": 1,
+      "calls": true,
+      "lag": 0,
+      "clear": true,
+      "seconds": 419.55,
+      "mat": 164.31666666668957,
+      "boss": 106.24999999999525,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 3
+    },
+    {
+      "seed": 2,
+      "calls": true,
+      "lag": 0,
+      "clear": true,
+      "seconds": 396.8333333333333,
+      "mat": 126.43333333332744,
+      "boss": 115.26666666666141,
+      "deaths": 0,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 3
+    },
+    {
+      "seed": 3,
+      "calls": true,
+      "lag": 0,
+      "clear": true,
+      "seconds": 383.8666666666667,
+      "mat": 120.53333333332777,
+      "boss": 110.09999999999503,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 3
+    },
+    {
+      "seed": 4,
+      "calls": true,
+      "lag": 0,
+      "clear": true,
+      "seconds": 419.93333333333334,
+      "mat": 148.06666666667664,
+      "boss": 124.43333333332755,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 2.199999999999997,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 3
+    },
+    {
+      "seed": 5,
+      "calls": true,
+      "lag": 0,
+      "clear": true,
+      "seconds": 417.8,
+      "mat": 130.7333333333295,
+      "boss": 136.91666666666777,
+      "deaths": 2,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 3
+    },
+    {
+      "seed": 10,
+      "calls": true,
+      "lag": 0,
+      "clear": true,
+      "seconds": 390.6,
+      "mat": 122.91666666666097,
+      "boss": 118.36666666666123,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 2.1833333333333305,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 3
+    },
+    {
+      "seed": 20,
+      "calls": true,
+      "lag": 0,
+      "clear": true,
+      "seconds": 395.3833333333333,
+      "mat": 137.75000000000176,
+      "boss": 116.0999999999947,
+      "deaths": 0,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 3
+    },
+    {
+      "seed": 100,
+      "calls": true,
+      "lag": 0,
+      "clear": true,
+      "seconds": 422.15,
+      "mat": 131.4833333333301,
+      "boss": 135.75000000000017,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 3
+    },
+    {
+      "seed": 97,
+      "calls": true,
+      "lag": 0,
+      "clear": true,
+      "seconds": 377.6333333333333,
+      "mat": 128.416666666661,
+      "boss": 97.56666666666241,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": false,
+          "t": 2.28333333333333,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        },
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 3
+    }
+  ],
+  "lag": [
+    {
+      "seed": 1,
+      "calls": false,
+      "lag": 250,
+      "clear": true,
+      "seconds": 419.76666666666665,
+      "mat": 141.5333333333381,
+      "boss": 122.21666666666101,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": false,
+          "t": 2.3833333333333298,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        },
+        {
+          "final": true,
+          "t": 2.116666666666664,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 2,
+      "calls": false,
+      "lag": 250,
+      "clear": true,
+      "seconds": 429.96666666666664,
+      "mat": 129.0833333333282,
+      "boss": 134.58333333333258,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 3,
+      "calls": false,
+      "lag": 250,
+      "clear": true,
+      "seconds": 430.68333333333334,
+      "mat": 130.6499999999961,
+      "boss": 130.1666666666624,
+      "deaths": 2,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 4,
+      "calls": false,
+      "lag": 250,
+      "clear": true,
+      "seconds": 433.78333333333336,
+      "mat": 147.0166666666758,
+      "boss": 125.03333333332752,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 5,
+      "calls": false,
+      "lag": 250,
+      "clear": true,
+      "seconds": 406.48333333333335,
+      "mat": 156.33333333334988,
+      "boss": 100.29999999999559,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 10,
+      "calls": false,
+      "lag": 250,
+      "clear": true,
+      "seconds": 440.8833333333333,
+      "mat": 164.90000000002337,
+      "boss": 126.68333333332743,
+      "deaths": 1,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 20,
+      "calls": false,
+      "lag": 250,
+      "clear": true,
+      "seconds": 446.6,
+      "mat": 174.78333333336457,
+      "boss": 125.93333333332747,
+      "deaths": 2,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 2.1833333333333305,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 100,
+      "calls": false,
+      "lag": 250,
+      "clear": true,
+      "seconds": 420.93333333333334,
+      "mat": 112.53333333332823,
+      "boss": 136.43333333333405,
+      "deaths": 2,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": false,
+          "t": 2.0499999999999976,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        },
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    },
+    {
+      "seed": 97,
+      "calls": false,
+      "lag": 250,
+      "clear": true,
+      "seconds": 443.3666666666667,
+      "mat": 175.21666666669825,
+      "boss": 123.49999999999427,
+      "deaths": 2,
+      "volleyDeaths": 0,
+      "clashes": [
+        {
+          "final": true,
+          "t": 1.8833333333333315,
+          "push": 2,
+          "done": true,
+          "won": true,
+          "presses": 8
+        }
+      ],
+      "callsUsed": 0
+    }
+  ],
+  "fairness": {
+    "mat": 0.97286546574698,
+    "rand": 0.9791839748915324
+  },
+  "individual": [
+    {
+      "seed": 1,
+      "mat": 1.183269323091837,
+      "rand": 0.9376378879246955
+    },
+    {
+      "seed": 2,
+      "mat": 1.001055687516495,
+      "rand": 0.9016949152542383
+    },
+    {
+      "seed": 3,
+      "mat": 0.7909876408180061,
+      "rand": 0.8055115229849601
+    },
+    {
+      "seed": 4,
+      "mat": 1.2442577030813735,
+      "rand": 0.9942735384205621
+    },
+    {
+      "seed": 5,
+      "mat": 0.9483738362954499,
+      "rand": 1.1888567293777772
+    },
+    {
+      "seed": 10,
+      "mat": 0.8010209623111734,
+      "rand": 1.13722978382706
+    },
+    {
+      "seed": 20,
+      "mat": 1.0183587974371757,
+      "rand": 1.060758337140246
+    },
+    {
+      "seed": 100,
+      "mat": 0.8187856772183526,
+      "rand": 1.2163978494624221
+    },
+    {
+      "seed": 97,
+      "mat": 1.0637857241474549,
+      "rand": 0.6968218069276986
+    }
+  ]
+}

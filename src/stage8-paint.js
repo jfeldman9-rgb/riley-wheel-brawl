@@ -1,8 +1,10 @@
 import {tex,sheet,canPaint} from './stage4-art.js';
+import {paintStage6Art,STAGE6_CANVASES} from './stage6-art.js';
 import {paintStage7Art} from './stage7-paint.js';
 // Rear-view silhouettes for every story fallback; no new face composition.
 export function paintStage8Art(s,keys){
  if(!canPaint(s))return;
+ paintStage6Art(s,new Set(STAGE6_CANVASES.map(r=>r[0]).filter(k=>!keys.includes(k))));
  paintStage7Art(s,keys.filter(k=>k.startsWith('s7')));
  for(const key of keys){
   if(s.textures.exists(key))continue;

@@ -2,6 +2,7 @@ import {strikeRiley} from './stage6-hurt.js';
 import {band8,bandY8} from './stage8-allies.js';
 import {Sister} from './blackajah.js';
 import {releaseHolds8} from './stage8-hooks.js';
+import {syncArt8} from './stage8-residency.js';
 import {demand8} from './stage8-load.js';
 export const CIRCLE8=Object.freeze({sisters:6,anchors:3,anchorHits:3,anchorOpen:3,anchorHp:40,timeout:75,callandorWait:2,whipEvery:4.5,whipTell:1,whipDmg:8,addEvery:12});
 export const PIPS8=Object.freeze(['z0','volley','z1','anchor1','anchor2','anchor3']);
@@ -29,7 +30,7 @@ export function createCircle8(k){const s=k.s;return {active:false,done:false,cou
   for(const e of this.sisters){e.anchor=false;if(e.alive){e.assistKill=true;e.yield();}}
   k.story.play('C4',()=>{this.phase='free';k.story.play('C5',()=>{
    if(!k.randFree){k.randFree=true;k.switchProvider?.();}
-   this.phase='link';demand8(k,['s8duo','s8link','s8linkaura']);k.story.play('C6',()=>{k.link?.enable();k.linked=true;this.done=true;this.active=false;this.phase='done';k.scripted=false;k.graceUntil=k.clock+2;});
+   this.phase='link';syncArt8(k);demand8(k,['s8duo','s8link','s8linkaura']);k.story.play('C6',()=>{k.link?.enable();k.linked=true;this.done=true;this.active=false;this.phase='done';syncArt8(k);k.scripted=false;k.graceUntil=k.clock+2;});
   });});
  },
  destroy(){releaseHolds8(s);this.active=false;this.sisters.length=0;}

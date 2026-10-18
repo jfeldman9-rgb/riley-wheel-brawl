@@ -2,7 +2,8 @@ import { PAINTED8 } from './stage8-painted.js';
 import { paintStage8Art } from './stage8-paint.js';
 import { queueStage6Painted } from './stage6-paint.js';
 export function queueStage8Painted(s, keys, rows = PAINTED8) {
-  s._s8q ||= new Set();
+  s._s8q ||= new Set();s._s8generation ||= new Map();
+  const versions=new Map(keys.map(key=>[key,s._s8generation.get(key)||0]));
   // Guard at the cache boundary as well as queue time: a timeout fallback or
   // restarted scene may populate the key while the file is still processing.
   const guardFile = file => {
@@ -11,7 +12,7 @@ export function queueStage8Painted(s, keys, rows = PAINTED8) {
     target._s8cacheGuard = true;
     const add = target.addToCache;
     target.addToCache = function (...args) {
-      if (s.textures?.exists?.(this.key || file.key)) {
+      if ((s._s8generation.get(file.key)||0)!==versions.get(file.key)||s.textures?.exists?.(this.key || file.key)) {
         this.complete = true;
         return;
       }
@@ -67,6 +68,7 @@ export function silenceLoader(load, key) {
 export function demand8(kit, keys, done) {
   if (!kit || kit.destroyed) return;
   const pending = (kit.pendingArt ||= new Map());
+  const versions=new Map(keys.map(key=>[key,kit.s._s8generation?.get(key)||0]));
   const s = kit.s,
     root = kit.artRoot || globalThis;
   const missing = keys.filter(
@@ -99,7 +101,7 @@ export function demand8(kit, keys, done) {
       if (!kit.destroyed)
         paintStage8Art(
           s,
-          [...wanted].filter((key) => !s.textures?.exists?.(key)),
+          [...wanted].filter((key) => (s._s8generation?.get(key)||0)===versions.get(key)&&!s.textures?.exists?.(key)),
         );
       settle();
     };
@@ -120,4 +122,9 @@ export function demand8(kit, keys, done) {
       if (!kit.destroyed) done?.();
     });
   else done?.();
+}
+
+// Drop display references before the GPU texture and invalidate late loader work.
+export function releaseKeys8(k,keys){const s=k.s;s._s8generation ||= new Map();
+ for(const key of keys){k.view?.dropKey?.(key);s._s8generation.set(key,(s._s8generation.get(key)||0)+1);silenceLoader(s.load,key);s._s8q?.delete(key);k.pendingArt?.delete(key);if(s.textures?.exists?.(key))s.textures.remove?.(key);}
 }
