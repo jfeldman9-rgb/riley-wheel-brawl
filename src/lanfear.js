@@ -11,7 +11,7 @@ export class Mirror8 extends Fighter8 {
  sync(){super.sync();this.shadow?.setAlpha?.(0);this.sprite?.setAlpha?.(.42);this.sprite?.setTint?.(0xeac260);}
 }
 export class Lanfear extends Fighter8 {
- constructor(s,x,y){super(s,'s8lanfear',760,x,y,15000,'LANFEAR',96,true);this.type='lanfear';this.phase=1;this.cool=2;this.nextMirror=12;this.nextGrab=7;this.nextStar=5;this.nextGreat=8;this.nextStep=10;this.time=0;this.beat=0;this.anchorX=4660;}
+ constructor(s,x,y){super(s,'s8lanfear',760,x,y,15000,'LANFEAR',96,true);this.type='lanfear';this.volleyHold=!!s.kit?.volley.active;this.phase=1;this.cool=2;this.nextMirror=12;this.nextGrab=7;this.nextStar=5;this.nextGreat=8;this.nextStep=10;this.time=0;this.beat=0;this.anchorX=4660;}
  sync(){super.sync();const k=this.scene.kit;if(k?.outro){const t=k.outroT||0;this.sprite.setFrame?.(frame8(this.scene,'s8lanfear',t<1?'pushed':'fall',t));this.sprite.setPosition?.(this.x+(4880-this.x)*Math.min(1,t/1.5),this.y-Math.max(0,t-1)*100);this.sprite.setAlpha?.(Math.max(0,1-t/2));}}
  get canBeHit(){return super.canBeHit&&!this.beat&&!this.volleyHold&&!this.scene.kit?.scripted&&this.scene.kit?.story.active!=='C7'&&this.phase!==4;}
  takeHit(h={}){if(!this.canBeHit)return false;this.hp=Math.max(floor8(this),this.hp-Math.max(0,h.dmg||0));if(!['attack','grab_tell','lunge','great'].includes(this.state)){this.setState('hurt');this.cool=Math.max(this.cool,.9);}return true;}

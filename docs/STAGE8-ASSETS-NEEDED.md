@@ -74,8 +74,8 @@ All delivered images are used unchanged. Human audio/video production remains op
 
 ## Music
 
-- `assets/audio/music-stage8.mp3`: new 120 BPM, 60-second loop; silent fallback.
-- `assets/audio/music-boss8.mp3`: new 140 BPM, 68.571-second loop; silent fallback.
+- `assets/audio/music-stage8.mp3`: new 120 BPM, 60-second loop; shipped stage5 music fallback.
+- `assets/audio/music-boss8.mp3`: new 140 BPM, 68.571-second loop; shipped boss6 music fallback.
 - Credits reuse `assets/audio/music-main.mp3`.
 
 ## Clips

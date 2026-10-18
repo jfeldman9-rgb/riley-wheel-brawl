@@ -7,4 +7,4 @@ export const FRAMES8=Object.freeze({
  s8taim:{idle:[0],watch:[0],alias:[5],arrival:[3],attack:[1],channel:[2],point:[4]},
 });
 export function frame8(s,key,state,t=0,fallback=0){if(!isPainted(s,key))return fallback;const a=FRAMES8[key]?.[state]||[0];return a[['walk','channel'].includes(state)?Math.floor(t*8)%a.length:Math.min(a.length-1,Math.floor(t*8))];}
-export function safeFrame8(s,key,frame){const texture=s.textures?.get?.(key);return texture?.has&&!texture.has(frame)?0:frame;}
+export function safeFrame8(s,key,frame){const texture=s.textures?.get?.(key);return texture?.has&&!texture.has(frame)?(texture.firstFrame||'__BASE'):frame;}

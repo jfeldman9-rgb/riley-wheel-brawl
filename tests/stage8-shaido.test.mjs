@@ -1,6 +1,6 @@
 import {stage8Simulation,withSeed} from './helpers/stage8-harness.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';
-import {StoneDog,WiseOne} from '../src/shaido8.js';
+import {StoneDog,WiseOne} from '../src/stage8-shaido.js';
 function fixture(fn){return withSeed(2,()=>{const h=stage8Simulation();try{h.s.zone=h.s.zones[0];return fn(h.s);}finally{h.destroy();}});}
 test('buckler blocks three frontal hits and opens at 1.3x; back, throw, runkick and fireball break it',()=>fixture(s=>{
  for(const kind of ['light','throw','runkick','fireball']){const e=new StoneDog(s,500,630);e.facing=-1;

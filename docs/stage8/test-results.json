@@ -1,0 +1,23 @@
+{
+  "command": "NODE_OPTIONS=--require=/tmp/s8-file-capture.cjs node --test tests/*.test.mjs",
+  "testFiles": 243,
+  "passedFiles": 240,
+  "failedFiles": 3,
+  "durationMs": 173538.240518,
+  "stage8AndMatFiles": 20,
+  "stage8AndMatFailures": 0,
+  "failures": [
+    {
+      "file": "tests/stage6-protected.test.mjs",
+      "reason": "Working-tree guard sees the updated Stage 8 byte fixture and renamed-module import in the Stage 8 actor test. Protected controls/HUD/entrypoint remain unchanged; the approved Stage 7 ceiling edit is committed. Git writes are read-only."
+    },
+    {
+      "file": "tests/stage7-final.test.mjs",
+      "reason": "Chromium launch fails with setsockopt EPERM."
+    },
+    {
+      "file": "tests/stage7-polish.test.mjs",
+      "reason": "Chromium launch fails with setsockopt EPERM."
+    }
+  ]
+}
