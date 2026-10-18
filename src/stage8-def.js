@@ -17,7 +17,7 @@ export const STAGE8 = {
  zones:Object.freeze([
  {at:260,l:0,r:1280,waves:[[['dancer','R',0],['dancer','L',1.4]],[['stonedog','R',0],['veiled','L',1.2],['dancer','R',2.4]]]},
  {at:1500,l:1240,r:2520,waves:[[['wiseone','R',0],['dancer','L',.8],['stonedog','R',1.6]],[['veiled','R',0],['dancer','L',.6],['wiseone','R',1.6],['stonedog','L',2.4]]]},
- {at:2800,l:2560,r:3840,waves:[[['veiled','R',0],['dancer','L',.8],['veiled','R',1.6]],[['dancer','L',0],['veiled','R',.6],['wiseone','R',1.6],['stonedog','L',2.4]]]},
+ {at:2800,l:2560,r:3840,waves:[[['sister','R',0],['dancer','L',.8],['veiled','R',1.6]],[['stonedog','L',0],['sister','R',.6],['wiseone','R',1.6],['stonedog','L',2.4]]]},
  {at:4140,l:3920,r:5200,boss:true},].map(Object.freeze)),
  drops:Object.freeze(['lightning','fireshield','airwhip','angreal','ter?','lightning'].map((kind,i)=>Object.freeze({zone:i>>1,wave:i%2,kind,delay:1.2}))),
  bossDrop:Object.freeze({phase:2,kind:'saangreal'}),ribbon:Object.freeze({zone:1,wave:0,delay:1.4}),

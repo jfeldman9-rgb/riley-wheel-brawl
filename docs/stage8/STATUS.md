@@ -17,3 +17,19 @@ T3 implemented: separate CLIPS8 registry and empty review manifests, shared gest
 T3 correction: story tests are 5 passed (not 6), 0 failed.
 
 T4 implemented: Stone Dog frontal buckler and rush, one-chanter Wise Ones with interruptible bolts/earth tells, human yielding, grass silhouettes and ranged-shot cap. Actor tests 2/2; nine-seed production-loop campaign checked separately. Pre-fight 20,712,307 bytes. T5–T12 and T15/T17 code remain; earlier full-suite limitations unchanged.
+
+T4 campaign: 8/9, seed 10 dies in Z2 with the basic skeleton bot; tactics remain T12 work, so the campaign acceptance is not yet complete.
+
+T5 implemented: decorative allied loops/vignettes, quality culling, foreground top-edge alpha fade, Mat entrance, wolf charge and lead wolf. Allies never enter combat lists; wolf hits preserve positive human HP and never hurt Riley. New ally test 1/1. Runtime texture measurement remains pending; T6–T12 and T15/T17 code remain.
+
+T6 implemented: early Taim arrival, 60-second live cadence, adjacent safe lane, earth/fire sequence with a 14-damage cap, Fire Shield/fire-only rule, postponement/skip, ally response and human hazard scoring. Boss holds through the far-edge fire fade; `VOLLEY8.inBoss` is the single Z3 switch. Volley tests 2/2 including 10,000-cycle fuzz. Campaign/tell visual evidence remains for T12/T17. T7–T12 and T15/T17 code remain.
+
+T7 implemented: Black Ajah bubbles and breakable air binds, six-sister circle/three anchors, single whip lane, capped adds, 75-second timeout, Callandor prompt/automatic trigger, C4–C6 fallback sequence, six one-shot shield pips and post-cutscene grace. Circle tests 2/2; bot campaign acceptance deferred to T12. Pre-fight remains below both gates. T8–T12 and T15/T17 code remain.
+
+T8 implemented: shared four-call charge pool, Mat/Rand provider switch only at C5, fresh switch charge, per-phase cap, matching sweep/dice effects, guard pops, human yield threshold, reused Rand clamp, instance lifecycle hooks and provider HUD/help. Separate provider bags and one-blob video plumbing; Mat clips remain absent. Call tests 5/5. Call fairness and full campaign remain T12 measurements. Pre-fight 20,739,644 bytes. T9–T12 and T15/T17 code remain.
+
+T9 implemented: untargetable Twinkle Toes companion, tether/aura, same-input link hooks (28 cost, 1.3x fireballs, 1.5x hit meter and +2/s), finisher spark, LINKED HUD and boss-skip link. Link tests 2/2 verify effects, unchanged Riley update/definition and hook restoration identities. Pre-fight remains below the ceiling; texture targets unchanged. T10–T12 and T15/T17 code remain.
+
+T10 implemented: Lanfear phase gates, free-band fans, harmless mirror copies, gateway steps, falling stars, crown grab/tantrum and P2 adds/wolves. Boss attacks hold during volleys. Boss tests 3/3 include 1,000-hit gate fuzz, tell durations and hold/mirror invariants. Pre-fight 20,749,578 bytes. T11–T12 and T15/T17 code remain; browser/playtest gates remain open.
+
+T11 implemented: great fireballs, press/hold-equivalent clashes, 1 HP final gate and six-second accessible completion, doorway finale, bounded playable outro walk, credits, CAMPAIGN COMPLETE and return-to-title data. Clash/finale tests 2/2 and boss tests 3/3. Pre-fight 20,754,357 bytes. T12 campaign tuning and T15/T17 code remain; absent media keeps the story on captions/panels.
