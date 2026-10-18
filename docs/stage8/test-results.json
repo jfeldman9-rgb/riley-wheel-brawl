@@ -8,18 +8,14 @@
   },
   "command": "NODE_OPTIONS=--require=/tmp/s8-file-capture.cjs node --test tests/*.test.mjs",
   "testFiles": 244,
-  "passedFiles": 241,
-  "failedFiles": 3,
-  "durationMs": 164480.47927,
+  "passedFiles": 242,
+  "failedFiles": 2,
+  "durationMs": 154020.125629,
   "stage8AndMatFiles": 21,
   "stage8AndMatFailures": 0,
   "newFollowupAssertions": 8,
   "newFollowupFailures": 0,
   "failures": [
-    {
-      "file": "tests/stage6-protected.test.mjs",
-      "reason": "Working-tree guard sees updated tests/fixtures/stage8-bytes.json awaiting the outside commit. Direct guard run: protected file identity and Safari compatibility pass; only the uncommitted-tests assertion fails."
-    },
     {
       "file": "tests/stage7-final.test.mjs",
       "reason": "Chromium launch fails with setsockopt EPERM inside the sandbox."
@@ -32,5 +28,12 @@
   "preFightBytes": 20776756,
   "projectedPeakMiB": 95.86,
   "browserRecheck": "Blocked locally by setsockopt EPERM; supervisor reviewed original four captures; updated rendered captures still needed",
-  "perSeedFairness": "Open; cohort Mat 96.70%, Rand 98.29%; thresholds unchanged"
+  "perSeedFairness": "Open; cohort Mat 96.70%, Rand 98.29%; thresholds unchanged",
+  "testedCheckpoint": "bc16986",
+  "protectedGuard": "All three assertions pass after outside checkpoint bc16986 committed the Stage 8 byte fixture; protected files also unchanged relative to 0cc69ec.",
+  "priorRun": {
+    "passedFiles": 241,
+    "failedFiles": 3,
+    "reason": "Before the outside checkpoint, the working-tree guard additionally detected the uncommitted Stage 8 byte fixture."
+  }
 }
