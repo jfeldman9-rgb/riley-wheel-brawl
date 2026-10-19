@@ -4,7 +4,7 @@ set -euo pipefail
 src=${1:?Usage: encode_callins.sh SOURCE_FOLDER OUTPUT_FOLDER}
 out=${2:?Usage: encode_callins.sh SOURCE_FOLDER OUTPUT_FOLDER}
 mkdir -p "$out"
-for id in M1 M2 L1 L2 D1 D2 S7; do
+for id in M1 M2 M3 L1 L2 D1 D2 S7; do
   input="$src/$id.mp4"
   test -f "$input" || continue
   ffmpeg -nostdin -hide_banner -loglevel error -y -i "$input" -t 10 \

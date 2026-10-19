@@ -1,7 +1,7 @@
 import {CutscenePlayer,cutscenesEnabled} from './cutscene.js';
 import {q,rand} from './config.js';
-export const CALL_CLIPS8=Object.freeze({mat:Object.freeze([]),rand:Object.freeze(['R1','R2','R3'])});
-export const CALL_PENDING8=Object.freeze(['M1','M2','M3']);
+export const CALL_CLIPS8=Object.freeze({mat:Object.freeze(['M1','M2','M3']),rand:Object.freeze(['R1','R2','R3'])});
+export const CALL_PENDING8=Object.freeze([]);
 export function bag8(storage,key,ids,rng=()=>rand(0,1)){
  let rest=[],last='';try{const v=JSON.parse(storage?.getItem?.(key)||'{}');rest=(v.rest||[]).filter(x=>ids.includes(x));last=v.last||'';}catch{}
  function fill(){if(rest.length||!ids.length)return;rest=ids.slice();for(let i=rest.length-1;i>0;i--){const j=Math.floor(rng()*(i+1)),v=rest[i];rest[i]=rest[j];rest[j]=v;}if(rest.length>1&&rest[0]===last){const v=rest[0];rest[0]=rest[1];rest[1]=v;}}

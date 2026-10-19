@@ -1,19 +1,69 @@
 {
-  "entries": [],
-  "pending": [
-    "intro",
-    "taim",
-    "circle",
-    "link",
-    "finale",
-    "wolves"
+  "entries": [
+    {
+      "id": "intro",
+      "shots": [
+        "V1.1 grok",
+        "V1.2 flow g2",
+        "V1.3 grok",
+        "V1.4 gemini"
+      ],
+      "reviewer": "Grok Bot (4 fps frame review)",
+      "timestamp": "2026-10-19T13:40:00-07:00",
+      "likeness": "no TV-actor likeness; Twinkle Toes back-only in every frame; no text/gore",
+      "riley": "face allowed per Jason F 2026-10-19"
+    },
+    {
+      "id": "taim",
+      "shots": [
+        "V2.1 grok",
+        "V2.2 grok"
+      ],
+      "reviewer": "Grok Bot (4 fps frame review)",
+      "timestamp": "2026-10-19T13:40:00-07:00",
+      "likeness": "no TV-actor likeness; Twinkle Toes back-only in every frame; no text/gore",
+      "riley": "face allowed per Jason F 2026-10-19"
+    },
+    {
+      "id": "circle",
+      "shots": [
+        "V3.1 flow g1",
+        "V3.2 grok"
+      ],
+      "reviewer": "Grok Bot (4 fps frame review)",
+      "timestamp": "2026-10-19T13:40:00-07:00",
+      "likeness": "no TV-actor likeness; Twinkle Toes back-only in every frame; no text/gore",
+      "riley": "face allowed per Jason F 2026-10-19"
+    },
+    {
+      "id": "link",
+      "shots": [
+        "V4a gemini",
+        "V4b gemini"
+      ],
+      "reviewer": "Grok Bot (4 fps frame review)",
+      "timestamp": "2026-10-19T13:40:00-07:00",
+      "likeness": "no TV-actor likeness; Twinkle Toes back-only in every frame; no text/gore",
+      "riley": "face allowed per Jason F 2026-10-19"
+    },
+    {
+      "id": "finale",
+      "shots": [
+        "V5.1 gemini",
+        "V5.2 flow g1",
+        "V5.3 flow g2",
+        "V5.4 flow g3",
+        "V5.5 grok"
+      ],
+      "reviewer": "Grok Bot (4 fps frame review)",
+      "timestamp": "2026-10-19T13:40:00-07:00",
+      "likeness": "no TV-actor likeness; Twinkle Toes back-only in every frame; no text/gore",
+      "riley": "face allowed per Jason F 2026-10-19"
+    }
   ],
-  "flowPriority": [
-    "V5.3",
-    "V3.1",
-    "V5.2",
-    "V1.2",
-    "V5.4"
-  ],
-  "status": "No approved clips; panels and captions only"
+  "pending": [],
+  "optional": {
+    "wolves": "made and approved (Drive only), not wired; in-engine charge stays default"
+  },
+  "status": "Approved clips with baked voices (-16 LUFS) and DOM captions"
 }

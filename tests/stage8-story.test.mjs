@@ -6,7 +6,7 @@ import {CLIPS8,FLOW_PRIORITY8} from '../src/stage8-video.js';
 test('all 65 voice ids and exact finale lines are registered without recordings',()=>{
  assert.equal(Object.keys(LINES).length,65);
  assert.deepEqual(BEATS8.C8.ids.map(id=>LINES[id][1]),['I am the queen of love and beauty!','Not again! Not the snake people! Ahhhhhhh!','Bubby you saved me! But what took you so long?','Too many snack breaks.']);
- assert.ok(Object.values(CLIPS8).every(c=>!c.present));assert.equal(FLOW_PRIORITY8[0],'V5.3');
+ assert.deepEqual(Object.entries(CLIPS8).filter(([,c])=>c.present).map(([k])=>k),['intro','taim','circle','link','finale']);assert.equal(FLOW_PRIORITY8[0],'V5.3');
 });
 for(const path of ['missing','played','stalled','skipped'])test('all story beats finish once, release panels and preserve lines: '+path,()=>{
  const tasks=[],removed=[],said=[];const k={s:{bot:true,caption:(w,t)=>said.push(t),textures:{exists:()=>true,remove:k=>removed.push(k)}},later:(t,f)=>tasks.push(f)};
