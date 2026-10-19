@@ -268,14 +268,23 @@ export const LINES=Object.freeze({
 });
 export const STAGE8_VOICES=Object.freeze(Object.keys(LINES));
 registerLines(LINES);setVoiceFiles(STAGE8_VOICES,VOICE_FILES);
-export function stage8Say(id,caption,interrupt=true){return say(id,caption,interrupt);}
+export function stage8Say(id,caption,interrupt=true,options=null){const cap=caption?(w,t)=>{caption(w,t);caption.hold8?.((DUR8[id]||0)+.3);}:null;return say(id,cap,interrupt,false,options);}
+/** Queue both halves at the press. A reply may run only if this particular call played. */
+export function stage8CallPair(call,reply,caption){const ticket={started:false};
+ stage8Say(call,caption,true,{ticket});
+ if(voiceBusy(call))stage8Say(reply,caption,true,{wait:WAIT8.reply,requires:ticket});
+}
 const ST8=id=>/^(st8_|riley_st8_)/.test(id);
-// Quick replies to a call: only worth hearing if they land close to the press.
 const BARK8=new Set(['riley_st8_wait_01','riley_st8_call_01','riley_st8_call_02','st8_mat_call_01','st8_mat_call_02']);
-/** Seconds a line may wait for the one sounding: story lines wait long, barks (shared or call replies) barely. */
-export const WAIT8=Object.freeze({line:10,bark:2});
-/** Stage 8 voice rule: nothing cuts a sounding line. The new line waits its turn, and is dropped if it waits too long. */
-export function policy8(next){return ST8(next)&&!BARK8.has(next)?WAIT8.line:WAIT8.bark;}
+export const REACT8=new Set(['st8_taim_kill_01','st8_taim_kill_02','st8_taim_kill_03','st8_tt_mirror_01','st8_lanfear_clash_01','st8_lanfear_hurt_01','riley_st8_clash_01','st8_tt_clash_01','riley_st8_linkfire_01','st8_perrin_wolves_01']);
+export const WAIT8=Object.freeze({line:10,bark:2,react:1,super:.35,reply:3});
+/** Telegraphs outrank barks; reactions expire quickly while story lines can wait. */
+export function policy8(next,current){
+ if(/^st8_taim_kill_0[123]$/.test(next)&&(!ST8(current)||BARK8.has(current)))return 'interrupt';
+ if(next==='riley_super_01')return WAIT8.super;
+ if(REACT8.has(next))return WAIT8.react;
+ return ST8(next)&&!BARK8.has(next)?WAIT8.line:WAIT8.bark;
+}
 export function installVoicePolicy8(on){setVoicePolicy(on?policy8:null);}
 /** Seconds a line needs on screen: its recording plus a pad. */
 export function lineHold8(id,pad=.4){return (DUR8[id]||0)+pad;}

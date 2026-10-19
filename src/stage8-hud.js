@@ -36,10 +36,21 @@ export function installStage8Hud(stage){if(typeof globalThis.Phaser==='undefined
  });
 }
 
-export function bindStage8Hud(h,k){let at=-1;hook8(k,h,'updateLoialLabel',()=>function(s,r){const context=cachedCall8Context(k),ready=canCall8(k.call,context);r.loialReady=ready;if(k.clock<at)return;at=k.clock+.25;const p=provider8(k.randFree),name=p.toUpperCase();const label=k.call.on?name+'!':!context.joined?name+' LOCKED':k.call.calls>=4||context.bossPhase&&k.call.phaseCalls[context.bossPhase]?'CALL SPENT':!k.call.charges?name+' '+Math.min(10,k.call.kos)+'/10':ready?name+' READY':!context.hittable?name+(p==='mat'?' — ALIGN':' — TARGET'):name+' WAIT';text8(this.loialT,label);texture8(this.loialPic,p==='mat'?'matPortrait':'randPortrait',44,s);if(live8(this.loialPic))this.loialPic.setAlpha?.(ready?1:.4);});
+export function bindStage8Hud(h,k){let at=-1,pipHold=0;const deferred=[];
+ // Pip text has no recording to protect its reading time. Keep the story clock
+ // unchanged and defer incoming captions while the pip is visible.
+ hook8(k,k.s,'caption',old=>{const cap=(w,t)=>{if(pipHold>0){deferred.push({w,t,hold:0});return;}return old(w,t);};
+  cap.hold8=seconds=>{const last=deferred[deferred.length-1];if(last)last.hold=Math.max(last.hold,seconds);else h.capT=Math.max(h.capT||0,seconds);};
+  cap.pip8=seconds=>{const last=deferred[deferred.length-1];if(last)last.pip=seconds;else pipHold=seconds;cap.hold8(seconds);};return cap;});hook8(k,h,'updateLoialLabel',()=>function(s,r){const context=cachedCall8Context(k),ready=canCall8(k.call,context);r.loialReady=ready;if(k.clock<at)return;at=k.clock+.25;const p=provider8(k.randFree),name=p.toUpperCase();const label=k.call.on?name+'!':!context.joined?name+' LOCKED':k.call.calls>=4||context.bossPhase&&k.call.phaseCalls[context.bossPhase]?'CALL SPENT':!k.call.charges?name+' '+Math.min(10,k.call.kos)+'/10':ready?name+' READY':!context.hittable?name+(p==='mat'?' — ALIGN':' — TARGET'):name+' WAIT';text8(this.loialT,label);texture8(this.loialPic,p==='mat'?'matPortrait':'randPortrait',44,s);if(live8(this.loialPic))this.loialPic.setAlpha?.(ready?1:.4);});
  hook8(k,h,'caption',old=>function(w,t){const out=old.call(this,w,t);if(SPEAKER8[w])this.capWho?.setColor?.(SPEAKER8[w]);return out;});
  const oldPic=h.loialPic?.texture?.key;k.cleanups.push(()=>texture8(h.loialPic,oldPic||'loialPortrait',44,k.s));
  const linked=h.add?.text?.(230,127,'',{fontSize:'12px',color:'#ffe3a0'});k.cleanups.push(()=>linked?.destroy?.());
  const pips=h.add?.text?.(105,127,'',{fontSize:'14px',color:'#d8b25a'});pips?.setDepth?.(100);k.cleanups.push(()=>pips?.destroy?.());
- hook8(k,h,'update',old=>function(){const out=old.apply(this,arguments);text8(linked,k.linked?'LINKED':'');text8(pips,k.randFree?'':Array.from({length:6},(_,i)=>k.pips.has(i)?'◇':'◆').join(' '));for(const n of this.card?.list||[])if(typeof n.text==='string'&&n.text.includes('Loial'))n.setText?.(n.text.replace(/Loial/g,provider8(k.randFree)==='mat'?'Mat':'Rand'));return out;});
+ hook8(k,h,'update',old=>function(time,delta){const out=old.apply(this,arguments);
+  pipHold=Math.max(0,pipHold-Math.max(0,delta||0)/1000);
+  while(!pipHold&&deferred.length){const next=deferred.shift();this.caption(next.w,next.t);this.capT=Math.max(this.capT||0,next.hold);pipHold=next.pip||0;}
+  text8(linked,k.linked?'LINKED':'');text8(pips,k.randFree?'':Array.from({length:6},(_,i)=>k.pips.has(i)?'◇':'◆').join(' '));for(const n of this.card?.list||[])if(typeof n.text==='string'&&n.text.includes('Loial'))n.setText?.(n.text.replace(/Loial/g,provider8(k.randFree)==='mat'?'Mat':'Rand'));return out;});
+ // Phaser caches the update callback when the HUD boots. Route that callback
+ // through the instance hook too, and restore it with the rest of this kit.
+ hook8(k,h.sys,'sceneUpdate',()=>h.update);
 }

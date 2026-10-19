@@ -2,7 +2,7 @@ let ctx = null, master, music, sfxBus, voiceBus, duckG, comp, noiseBuf;
 let muted = false, musicOn = true, musicEl = null, musicSrc = null;
 const clips = Object.create(null), gates = Object.create(null), oneShots = new Map();
 const clipDrop = new Set();
-let voiceSrc = null, voiceRequest = 0, voicePending = false, voiceId = null;
+let voiceSrc = null, voiceRequest = 0, voicePending = false, voicePendingAt = 0, voiceId = null;
 // Optional per-stage voice policy (Stage 8 only). null keeps the Stage 1-7 rule: every new line interrupts.
 let voicePolicy = null; const voiceQueue = [];
 let loopSrc = null, loopToken = 0, loopId = null;
@@ -506,41 +506,57 @@ export function residentClipIds() { return Object.keys(clips); }
  */
 export function setVoicePolicy(fn) { voicePolicy = typeof fn === 'function' ? fn : null; voiceQueue.length = 0; }
 const audioNow = () => ctx ? ctx.currentTime : 0, audioLive = () => !!ctx && ctx.state === 'running';
+const pendingStale = () => voicePending && audioNow() - voicePendingAt > 3;
+// Only opted-in speech gets a deadline; the audio clock pauses in background tabs.
+function timedVoiceLoad(id) {
+  const load = loadClip(id);
+  if (!voicePolicy || !ctx) return load;
+  let timer;
+  const timeout = new Promise(resolve => { timer = afterAudioTime(4, () => {
+    if (clips[id] === load) delete clips[id];
+    resolve(null);
+  }); });
+  return Promise.race([load, timeout]).then(buf => { timer.cancel(); return buf; });
+}
 /** Start the next queued line that has not waited past its limit. */
 function playQueued() {
   while (voicePolicy && voiceQueue.length) {
     const q = voiceQueue.shift();
-    if (audioNow() <= q.until) { say(q.id, q.onCaption, true, true); return; }
+    if (audioNow() <= q.until && (!q.options?.requires || q.options.requires.started)) { say(q.id, q.onCaption, true, true, q.options); return; }
   }
 }
 /** True while a line (or the given line) is loading or sounding, or queued behind one. A stopped audio clock never counts as busy. */
 export function voiceBusy(id) {
   if (!audioLive()) return false;
-  if (id === undefined) return !!(voicePending || voiceSrc || voiceQueue.length);
-  return (voiceId === id && !!(voicePending || voiceSrc)) || voiceQueue.some(q => q.id === id);
+  const pending = voicePending && !(voicePolicy && pendingStale());
+  const queued = q => audioNow() <= q.until;
+  if (id === undefined) return !!(pending || voiceSrc || voiceQueue.some(queued));
+  return (voiceId === id && !!(pending || voiceSrc)) || voiceQueue.some(q => q.id === id && queued(q));
 }
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
-export function say(id, onCaption, interrupt = true, fromQueue = false) {
+export function say(id, onCaption, interrupt = true, fromQueue = false, options = null) {
   const cap = Object.prototype.hasOwnProperty.call(VOICE, id) ? VOICE[id] : Object.prototype.hasOwnProperty.call(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : moreVoice[id] || null;
   if (!cap) return;
-  if (!interrupt && (voiceSrc || voicePending)) return cap;
+  if (!interrupt && (voiceSrc || voicePending && !(voicePolicy && pendingStale()))) return cap;
   // A stopped audio clock (autoplay lock, hidden tab) cannot finish a line, so the default rule applies.
-  if (voicePolicy && !fromQueue && (voiceSrc || voicePending) && voiceId && audioLive()) {
+  if (voicePolicy && !fromQueue && (voiceSrc || voicePending && !pendingStale()) && voiceId && audioLive()) {
     // A line already sounding or waiting is not restarted or queued twice.
-    const rule = voiceId === id || voiceQueue.some(q => q.id === id) ? 0 : voicePolicy(id, voiceId);
-    if (rule !== 'interrupt') { if (rule > 0) voiceQueue.push({ id, onCaption, until: audioNow() + rule }); return cap; }
+    const rule = voiceId === id || voiceQueue.some(q => q.id === id) ? 0 : options?.wait ?? voicePolicy(id, voiceId);
+    if (rule !== 'interrupt') { if (rule > 0) voiceQueue.push({ id, onCaption, until: audioNow() + rule, options }); return cap; }
   }
+  if (options?.requires && !options.requires.started) return cap;
   const request = ++voiceRequest, shouldPlay = !muted;
-  voicePending = shouldPlay;
+  voicePending = shouldPlay; voicePendingAt = audioNow();
   voiceId = shouldPlay ? id : null;
   if (voiceSrc) { stopSource(voiceSrc); resetDuck(); }
   if (onCaption) onCaption(cap[0], cap[1]);
   if (!shouldPlay || muted || request !== voiceRequest) return cap;
-  loadClip(id).then(buf => {
+  timedVoiceLoad(id).then(buf => {
     if (request !== voiceRequest) { settleClip(id); return; }
     voicePending = false;
     if (!buf || muted || !ctx) { if (voiceId === id) voiceId = null; settleClip(id); playQueued(); return; }
     const s = ctx.createBufferSource(); s.buffer = buf; s.clipId = id; s.connect(voiceBus); trackSource(s); voiceSrc = s; s.start();
+    if (options?.ticket) options.ticket.started = true;
     duck(0.45, buf.duration, 0.4);
   });
   return cap;

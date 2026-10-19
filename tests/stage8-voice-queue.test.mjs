@@ -24,11 +24,11 @@ function audio(state='running'){
  return {api,sources,playing,end,get ctx(){return ctx;}};
 }
 const story=id=>id.startsWith('story')||id.startsWith('bad')?10:id.startsWith('bark')?2:0;
-test('Stage 8 policy: story lines wait long, call replies and shared barks barely; nothing interrupts',()=>{
+test('Stage 8 policy: story lines wait long, shared barks briefly, supers expire quickly',()=>{
  assert.equal(policy8('st8_lews_01','st8_rand_box_01'),WAIT8.line);assert.equal(policy8('riley_st8_link_01','riley_combo_01'),WAIT8.line);
- assert.equal(policy8('riley_super_01','st8_story_01'),WAIT8.bark);assert.equal(policy8('rand_call_01','riley_st8_call_02'),WAIT8.bark);
+ assert.equal(policy8('riley_super_01','st8_story_01'),WAIT8.super);assert.equal(policy8('rand_call_01','riley_st8_call_02'),WAIT8.bark);
  assert.equal(policy8('st8_mat_call_01','riley_st8_call_01'),WAIT8.bark);
- for(const id of Object.keys(LINES))assert.ok(policy8(id,'x')>0,id);
+ for(const id of Object.keys(LINES))assert.ok(policy8(id,'st8_story_01')>0,id);
  setVoicePolicy(null);assert.equal(voiceBusy(),false);
 });
 test('audio queue: a queued line plays (and captions) only after the sounding one ends; nothing is cut',async()=>{

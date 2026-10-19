@@ -2,6 +2,7 @@
 import '../../tests/helpers/install-location.mjs';
 import {readFileSync} from 'node:fs';
 import {dimensions} from '../audit-stage1.mjs';
+import {DUR8} from '../../src/stage8-voice-durations.js';
 import {PAINTED8} from '../../src/stage8-painted.js';
 import {ZONE_ART8,VOLLEY_KEYS8} from '../../src/stage8-residency.js';
 import {STREAMS,residentKeys} from '../../src/zone-stream.js';
@@ -20,6 +21,11 @@ export function memory8(){
  // Conservative: four transient panels on top of the largest residency, even
  // though C6 releases the circle before its two panels and C1 is at Z0.
  const projectedPeak=gameplayPeak+storyBytes;
- return {kind:'static source RGBA; final art unchanged; cast drawScale 1',atlasBytes,sharedAllowance,zones,streamOverlap,storyBytes,gameplayPeak,projectedPeak,paintedGate:26*1024*1024,sourceGate:105*1024*1024,handoffSpritesMiB:{Z0:6.84,Z1:16.27,Z2:24.92,C6:13.48,Z3:21.56},handoffMiB:{Z0:61.5,Z1:69.3,Z2:79.6,C6:68.2,Z3:72.6},physicalDevice:'UNMEASURED',art,pages};
+ // decodeAudioData resamples mono recordings to the device context rate. This
+ // conservative full-cache estimate is separate from the existing texture gate.
+ const decodedVoice={sampleRate:48000,channels:1,bytesPerSample:4,seconds:Object.values(DUR8).reduce((n,d)=>n+d,0)};
+ decodedVoice.bytes=Math.ceil(decodedVoice.seconds*decodedVoice.sampleRate*decodedVoice.channels*decodedVoice.bytesPerSample);
+ const projectedWithVoice=projectedPeak+decodedVoice.bytes;
+ return {decodedVoice,projectedWithVoice,kind:'static source RGBA; final art unchanged; cast drawScale 1',atlasBytes,sharedAllowance,zones,streamOverlap,storyBytes,gameplayPeak,projectedPeak,paintedGate:26*1024*1024,sourceGate:105*1024*1024,handoffSpritesMiB:{Z0:6.84,Z1:16.27,Z2:24.92,C6:13.48,Z3:21.56},handoffMiB:{Z0:61.5,Z1:69.3,Z2:79.6,C6:68.2,Z3:72.6},physicalDevice:'UNMEASURED',art,pages};
 }
 if(process.argv[1]?.endsWith('/memory.mjs'))console.log(JSON.stringify(memory8(),null,2));

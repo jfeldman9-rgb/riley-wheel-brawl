@@ -9,7 +9,7 @@ export const CALLANDOR_HOLD8=3.8;
 export const CIRCLE8=Object.freeze({sisters:6,anchors:3,anchorHits:3,anchorOpen:3,anchorHp:40,timeout:75,whipEvery:4.5,whipTell:1,whipDmg:8,addEvery:12});
 export const PIPS8=Object.freeze(['z0','volley','z1','anchor1','anchor2','anchor3']);
 export function crackPip8(k,beat){const i=PIPS8.indexOf(beat);if(i<0||k.pips.has(i))return false;k.pips.add(i);
- const text={z0:['LEWS THERIN','One knot. Feel how she tires? Again.'],volley:['RAND',"That's Taim. Hold on. Just… hold on."],z1:['LEWS THERIN','Three left, and they are not ours to untie. The boy must cut them.']}[beat];if(text)k.s.caption?.(...text);return true;}
+ const text={z0:['LEWS THERIN','One knot. Feel how she tires? Again.'],volley:['RAND',"That's Taim. Hold on. Just… hold on."],z1:['LEWS THERIN','Three left, and they are not ours to untie. The boy must cut them.']}[beat];if(text){k.s.caption?.(...text);k.s.caption?.pip8?.(2.8);}return true;}
 export function createCircle8(k){const s=k.s;return {active:false,done:false,count:0,t:0,nextWhip:4.5,nextAdd:12,whip:null,phase:'idle',sisters:[],
  start(){if(this.active||this.done)return;this.active=true;this.phase='anchors';this.t=0;
   demand8(k,['s8sister','s8twink','s8dome','s8callfx','s8chest','s8weave','s6call','s6rand']);

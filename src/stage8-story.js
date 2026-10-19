@@ -18,7 +18,7 @@ export function createStory8(k,player=playStage8Video){
  function release(keys){releaseKeys8(k,keys);}
  const api={seen,heard,get active(){return active;},
   mark(id){heard.add(id);},
-  say(id){if(heard.has(id))return false;heard.add(id);stage8Say(id,s.caption);return true;},
+  say(id,options=null){if(heard.has(id))return false;heard.add(id);stage8Say(id,s.caption,true,options);return true;},
   play(name,done,live=false){if(dead||seen.has(name))return false;if(active||s.cutscene){queue.push([name,done,live]);return true;}
    const b=BEATS8[name];if(!b)return false;seen.add(name);active=name;
    const keys=b.panels||CLIPS8[b.clip]?.panels||[];

@@ -4,7 +4,7 @@ import {stage4Delta} from './stage4-time.js';
 import {freezeStrike,thawStrike} from './stage7-freeze.js';
 import {eligible8,allocate8,takeCall8,callEffect8,noteRileyKo8,provider8} from './mat-call.js';
 import {rand} from './config.js';
-import {stage8Say} from './stage8-voice.js';
+import {stage8Say,stage8CallPair} from './stage8-voice.js';
 export function call8Context(k){const s=k.s,b=s.boss;return {joined:!!(k.matJoined||k.randFree),randFree:k.randFree,paused:!!s.paused,cutscene:!!(s.cutscene||k.scripted),victory:!!(s.victoryPending||s.ended||s.gameOver),dead:s.riley?.alive===false,strike:!!k.strike,balefire:!!s.beam,clash:!!k.clash,bossBeat:!!(b?.beat||b?.volleyHold),bossInvuln:!!b?.invuln,bossPhase:b?.alive?b.phase:0,hittable:allocate8(eligible8(s.enemies,s.camX||0),provider8(k.randFree),s.riley?.y||0).length>0};}
 // HUD/readiness may be a quarter-second old; an actual press always uses the
 // uncached context above. Important state transitions invalidate immediately.
@@ -16,11 +16,11 @@ export function cachedCall8Context(k){const s=k.s,b=s.boss,c=k.call,r=s.riley;
 export function call8(k){const s=k.s;if(!s.started)return false;const result=takeCall8(k.call,call8Context(k));if(!result.ok){if(k.clock>=(k.refuseAt||0)){stage8Say('riley_st8_wait_01',s.caption);k.refuseAt=k.clock+2.5;}return false;}
  releaseHolds8(s);s.riley.inv=Math.max(s.riley.inv||0,2);const p=result.provider;
  k.strike={provider:p,t:0,duration:1.1,resolved:false,presentation:rand(0,1)<.5?'dice':'sweep'};freezeStrike(k);k.video?.play(p);k.stats.calls++;
- stage8Say(p==='mat'?'riley_st8_call_01':'riley_st8_call_02',s.caption);return true;
+ stage8CallPair(p==='mat'?'riley_st8_call_01':'riley_st8_call_02',p==='mat'?'st8_mat_call_0'+(1+k.call.calls%2):'rand_call_01',s.caption);return true;
 }
 export function endCall8(k){k.video?.abort();k.strike=null;k.call.on=false;thawStrike(k);}
 export function stepCall8(k,dt){const st=k.strike;if(!st)return;st.t+=dt;
- if(!st.resolved&&st.t>=.45){st.resolved=true;for(const e of allocate8(eligible8(k.s.enemies,k.s.camX||0),st.provider,k.s.riley.y))callEffect8(e,st.provider,st.presentation);stage8Say(st.provider==='mat'?'st8_mat_call_0'+(1+k.call.calls%2):'rand_call_01',k.s.caption);}
+ if(!st.resolved&&st.t>=.45){st.resolved=true;for(const e of allocate8(eligible8(k.s.enemies,k.s.camX||0),st.provider,k.s.riley.y))callEffect8(e,st.provider,st.presentation);}
  k.view?.sync(k);if(st.t>=st.duration&&(!k.video?.active||st.t>=11)){k.s.riley.inv=Math.max(k.s.riley.inv||0,2);endCall8(k);}
 }
 export function installLifecycle8(k){const s=k.s;
