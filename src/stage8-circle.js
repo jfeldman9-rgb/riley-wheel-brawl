@@ -26,7 +26,7 @@ export function createCircle8(k){const s=k.s;return {active:false,done:false,cou
    s.riley.x=Math.min(s.riley.x,3570);if(this.t>=75){while(this.count<3){this.count++;crackPip8(k,'anchor'+this.count);}this.prompt();}}
   if(this.phase==='prompt'){this.wait+=dt;if(this.wait>=2||Math.abs(s.riley.x-3360)<70)this.breakCircle();}
  },
- breakCircle(){if(this.phase!=='prompt')return;this.phase='break';releaseHolds8(s);k.clearHazards();k.scripted=true;k.graceUntil=Infinity;
+ breakCircle(){if(this.phase!=='prompt')return;this.phase='break';releaseHolds8(s);k.yieldAdds();k.clearHazards();k.scripted=true;k.graceUntil=Infinity;
   for(const e of this.sisters){e.anchor=false;if(e.alive){e.assistKill=true;e.yield();}}
   k.story.play('C4',()=>{this.phase='free';k.story.play('C5',()=>{
    if(!k.randFree){k.randFree=true;k.switchProvider?.();}

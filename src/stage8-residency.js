@@ -22,7 +22,11 @@ export function desiredArt8(k){const phase=phase8(k),keys=new Set(ZONE_ART8[phas
  if(k.quality<3)keys.add(k.s.zoneI<2?'bg8fg':'bg8fg2');
  if(k.quality<2)keys.add('bg8smoke');return keys;
 }
-export function syncArt8(k){const next=desiredArt8(k),old=k.residentArt||new Set();
+export function syncArt8(k){
+ const phase=k.linked||k.s.zoneI===3?4:k.circle?.phase==='link'?3:Math.max(0,k.s.zoneI);
+ const signature=phase+8*(k.s.zoneI+1)+64*k.quality+512*(!!k.taimArrived)+1024*(!!k.matJoined)+2048*(!!k.randFree)+4096*(!!k.allies?.wolf);
+ if(k.artSignature===signature&&k.residentArt)return;
+ const next=desiredArt8(k),old=k.residentArt||new Set(),added=[...next].filter(key=>!old.has(key));
  releaseKeys8(k,[...old].filter(key=>!next.has(key)));
- k.residentArt=next;demand8(k,[...next]);
+ k.residentArt=next;k.artSignature=signature;if(added.length)demand8(k,added);
 }

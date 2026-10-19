@@ -13,8 +13,8 @@ for(const skip of [false,true])test('Lanfear HUD identity on '+(skip?'skip=boss'
   assert.equal(s.boss.type,'lanfear');
   const hud={};paintStage8Hud(hud,s); // No bar until the HUD first observes the boss.
   for(let i=0;i<2;i++){
-   hud.bossName={text:'TROLLOC CHIEFTAIN',setText(t){this.text=t;return this;}};
-   hud.bossPic={key:'chiefPortrait',setTexture(k){this.key=k;return this;},setDisplaySize(w,h){this.size=[w,h];return this;}};
+   hud.bossName={active:true,scene:s,text:'TROLLOC CHIEFTAIN',setText(t){this.text=t;return this;}};
+   hud.bossPic={active:true,scene:s,key:'chiefPortrait',setTexture(k){this.key=k;return this;},setDisplaySize(w,h){this.size=[w,h];return this;}};
    paintStage8Hud(hud,{stageNo:1});assert.equal(hud.bossName.text,'TROLLOC CHIEFTAIN');
    paintStage8Hud(hud,s);assert.equal(hud.bossName.text,'LANFEAR');assert.equal(hud.bossPic.key,'lanfearPortrait');assert.deepEqual(hud.bossPic.size,[68,68]);
   }

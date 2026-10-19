@@ -67,6 +67,7 @@ export function silenceLoader(load, key) {
 // Coalesce requests by key. The deadline uses wall time because strikes pause Phaser's clock.
 export function demand8(kit, keys, done) {
   if (!kit || kit.destroyed) return;
+  if(keys.every(key=>kit.s.textures?.exists?.(key)&&!kit.pendingArt?.has(key))){done?.();return;}
   const pending = (kit.pendingArt ||= new Map());
   const versions=new Map(keys.map(key=>[key,kit.s._s8generation?.get(key)||0]));
   const s = kit.s,
@@ -75,7 +76,7 @@ export function demand8(kit, keys, done) {
     (key) => !s.textures?.exists?.(key) && !pending.has(key),
   );
   const waiting = keys.map((key) => pending.get(key)).filter(Boolean);
-  const wanted = s.load
+  const wanted = s.load && missing.length
     ? queueStage8Painted(s, missing, kit.artRows)
     : new Set();
   paintStage8Art(
@@ -126,5 +127,5 @@ export function demand8(kit, keys, done) {
 
 // Drop display references before the GPU texture and invalidate late loader work.
 export function releaseKeys8(k,keys){const s=k.s;s._s8generation ||= new Map();
- for(const key of keys){k.view?.dropKey?.(key);s._s8generation.set(key,(s._s8generation.get(key)||0)+1);silenceLoader(s.load,key);s._s8q?.delete(key);k.pendingArt?.delete(key);if(s.textures?.exists?.(key))s.textures.remove?.(key);}
+ for(const key of keys){if(k.residentArt?.delete(key))k.artSignature=null;k.view?.dropKey?.(key);s._s8generation.set(key,(s._s8generation.get(key)||0)+1);silenceLoader(s.load,key);s._s8q?.delete(key);k.pendingArt?.delete(key);if(s.textures?.exists?.(key))s.textures.remove?.(key);}
 }

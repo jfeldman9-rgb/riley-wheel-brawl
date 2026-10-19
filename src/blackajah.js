@@ -7,7 +7,7 @@ export class Sister extends Fighter8 {
  physics(dt){super.physics(dt);if(this.circleMember&&this.alive){this.x=this.ringX;this.y=this.ringY;this.vx=0;this.vy=0;}}
  get canBeHit(){return super.canBeHit&&(!this.circleMember||this.anchor);}
  popGuard(){this.bubble=false;this.bubbleHits=0;this.openUntil=(this.scene.kit?.clock||0)+3;}
- takeHit(h={},from){if(!this.canBeHit)return false;if(this.bubble){if(['fire','fireball','lightning','power'].includes(h.kind)||(from&&from.team===undefined&&h.launch&&h.down))return true;if(++this.bubbleHits>=3)this.popGuard();return true;}
+ takeHit(h={},from){if(!this.canBeHit)return false;if(this.bubble){if(h.power||['fire','fireball','lightning','power'].includes(h.kind)||(from&&from.team===undefined&&h.launch&&h.down))return true;if(++this.bubbleHits>=3)this.popGuard();return true;}
   const ok=super.takeHit(h,from);if(ok)this.releaseHold('break');return ok;
  }
  yield(){this.releaseHold('break');const was=this.alive;super.yield();if(was&&this.anchor)this.scene.kit?.circle.broken(this);}

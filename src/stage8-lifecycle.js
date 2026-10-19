@@ -6,6 +6,13 @@ import {eligible8,allocate8,takeCall8,callEffect8,noteRileyKo8,provider8} from '
 import {rand} from './config.js';
 import {stage8Say} from './stage8-voice.js';
 export function call8Context(k){const s=k.s,b=s.boss;return {joined:!!(k.matJoined||k.randFree),randFree:k.randFree,paused:!!s.paused,cutscene:!!(s.cutscene||k.scripted),victory:!!(s.victoryPending||s.ended||s.gameOver),dead:s.riley?.alive===false,strike:!!k.strike,balefire:!!s.beam,clash:!!k.clash,bossBeat:!!(b?.beat||b?.volleyHold),bossInvuln:!!b?.invuln,bossPhase:b?.alive?b.phase:0,hittable:allocate8(eligible8(s.enemies,s.camX||0),provider8(k.randFree),s.riley?.y||0).length>0};}
+// HUD/readiness may be a quarter-second old; an actual press always uses the
+// uncached context above. Important state transitions invalidate immediately.
+export function cachedCall8Context(k){const s=k.s,b=s.boss,c=k.call,r=s.riley;
+ const flags=(!!k.matJoined)+2*(!!k.randFree)+4*(!!s.paused)+8*(!!(s.cutscene||k.scripted))+16*(!!(s.victoryPending||s.ended||s.gameOver))+32*(r?.alive===false)+64*(!!k.strike)+128*(!!s.beam)+256*(!!k.clash)+512*(!!(b?.beat||b?.volleyHold))+1024*(!!b?.invuln)+2048*(b?.alive?b.phase:0)+16384*(!!c.on)+32768*c.charges+65536*c.calls;
+ if(!k.callContext||k.clock>=k.callContextAt||flags!==k.callContextFlags||k.callContextZone!==s.zoneI){k.callContext=call8Context(k);k.callContextAt=k.clock+.25;k.callContextFlags=flags;k.callContextZone=s.zoneI;}
+ return k.callContext;
+}
 export function call8(k){const s=k.s;if(!s.started)return false;const result=takeCall8(k.call,call8Context(k));if(!result.ok){if(k.clock>=(k.refuseAt||0)){stage8Say('riley_st8_wait_01',s.caption);k.refuseAt=k.clock+2.5;}return false;}
  releaseHolds8(s);s.riley.inv=Math.max(s.riley.inv||0,2);const p=result.provider;
  k.strike={provider:p,t:0,duration:1.1,resolved:false,presentation:rand(0,1)<.5?'dice':'sweep'};freezeStrike(k);k.video?.play(p);k.stats.calls++;
