@@ -3,6 +3,8 @@ let muted = false, musicOn = true, musicEl = null, musicSrc = null;
 const clips = Object.create(null), gates = Object.create(null), oneShots = new Map();
 const clipDrop = new Set();
 let voiceSrc = null, voiceRequest = 0, voicePending = false, voiceId = null;
+// Optional per-stage voice policy (Stage 8 only). null keeps the Stage 1-7 rule: every new line interrupts.
+let voicePolicy = null; const voiceQueue = [];
 let loopSrc = null, loopToken = 0, loopId = null;
 const moreVoice = Object.create(null);
 // Stage lines with no mp3 yet. say() still captions; loadClip does not fetch.
@@ -170,12 +172,14 @@ function trackSource(source, ...nodes) {
       voiceSrc = null;
       // A replacement line may already own voiceId. Only a natural end clears it.
       if (!voicePending && voiceId === source.clipId) voiceId = null;
+      if (!source.stopped && !voicePending) playQueued();
     }
     settleClip(source.clipId);
   };
   oneShots.set(source, cleanup); source.onended = cleanup;
 }
 function stopSource(source) {
+  source.stopped = true;
   try { source.stop(); } catch (e) { }
   const cleanup = oneShots.get(source); if (cleanup) cleanup();
 }
@@ -185,7 +189,7 @@ function resetDuck() {
 }
 /** Cancel scene-owned speech and one-shots; keep cached clips, music and user preferences. */
 export function stopSceneAudio() {
-  voiceRequest++; voicePending = false; voiceId = null; stopLoop();
+  voiceRequest++; voicePending = false; voiceId = null; voiceQueue.length = 0; stopLoop();
   for (const source of oneShots.keys()) stopSource(source);
   for (const name of Object.keys(gates)) delete gates[name];
   resetDuck();
@@ -496,11 +500,36 @@ function dropClip(id) {
 /** Drop decoded lines the next stage does not play. A line that is sounding or queued stays until it ends. Shared VOICE clips stay cached. */
 export function releaseClips(ids) { if (ids) for (const id of ids) dropClip(id); }
 export function residentClipIds() { return Object.keys(clips); }
+/**
+ * Stage-owned policy, asked only while another line is loading or sounding: fn(newId, currentId) returns
+ * 'interrupt', or the seconds the new line may wait for its turn (0 or 'skip' drops it). null restores the default.
+ */
+export function setVoicePolicy(fn) { voicePolicy = typeof fn === 'function' ? fn : null; voiceQueue.length = 0; }
+const audioNow = () => ctx ? ctx.currentTime : 0, audioLive = () => !!ctx && ctx.state === 'running';
+/** Start the next queued line that has not waited past its limit. */
+function playQueued() {
+  while (voicePolicy && voiceQueue.length) {
+    const q = voiceQueue.shift();
+    if (audioNow() <= q.until) { say(q.id, q.onCaption, true, true); return; }
+  }
+}
+/** True while a line (or the given line) is loading or sounding, or queued behind one. A stopped audio clock never counts as busy. */
+export function voiceBusy(id) {
+  if (!audioLive()) return false;
+  if (id === undefined) return !!(voicePending || voiceSrc || voiceQueue.length);
+  return (voiceId === id && !!(voicePending || voiceSrc)) || voiceQueue.some(q => q.id === id);
+}
 /** Returns [speaker, text]; only accepted lines caption. Muted lines still caption without queued playback. */
-export function say(id, onCaption, interrupt = true) {
+export function say(id, onCaption, interrupt = true, fromQueue = false) {
   const cap = Object.prototype.hasOwnProperty.call(VOICE, id) ? VOICE[id] : Object.prototype.hasOwnProperty.call(EXTRA_VOICE, id) ? EXTRA_VOICE[id] : moreVoice[id] || null;
   if (!cap) return;
   if (!interrupt && (voiceSrc || voicePending)) return cap;
+  // A stopped audio clock (autoplay lock, hidden tab) cannot finish a line, so the default rule applies.
+  if (voicePolicy && !fromQueue && (voiceSrc || voicePending) && voiceId && audioLive()) {
+    // A line already sounding or waiting is not restarted or queued twice.
+    const rule = voiceId === id || voiceQueue.some(q => q.id === id) ? 0 : voicePolicy(id, voiceId);
+    if (rule !== 'interrupt') { if (rule > 0) voiceQueue.push({ id, onCaption, until: audioNow() + rule }); return cap; }
+  }
   const request = ++voiceRequest, shouldPlay = !muted;
   voicePending = shouldPlay;
   voiceId = shouldPlay ? id : null;
@@ -510,7 +539,7 @@ export function say(id, onCaption, interrupt = true) {
   loadClip(id).then(buf => {
     if (request !== voiceRequest) { settleClip(id); return; }
     voicePending = false;
-    if (!buf || muted || !ctx) { if (voiceId === id) voiceId = null; settleClip(id); return; }
+    if (!buf || muted || !ctx) { if (voiceId === id) voiceId = null; settleClip(id); playQueued(); return; }
     const s = ctx.createBufferSource(); s.buffer = buf; s.clipId = id; s.connect(voiceBus); trackSource(s); voiceSrc = s; s.start();
     duck(0.45, buf.duration, 0.4);
   });

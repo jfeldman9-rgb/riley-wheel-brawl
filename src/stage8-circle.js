@@ -6,7 +6,7 @@ import {syncArt8} from './stage8-residency.js';
 import {demand8} from './stage8-load.js';
 // st8_rand_callandor_01 runs 3.53 s; the break (and Riley's C4 reply) waits for it so neither line cuts the other.
 export const CALLANDOR_HOLD8=3.8;
-export const CIRCLE8=Object.freeze({sisters:6,anchors:3,anchorHits:3,anchorOpen:3,anchorHp:40,timeout:75,callandorWait:2,whipEvery:4.5,whipTell:1,whipDmg:8,addEvery:12});
+export const CIRCLE8=Object.freeze({sisters:6,anchors:3,anchorHits:3,anchorOpen:3,anchorHp:40,timeout:75,whipEvery:4.5,whipTell:1,whipDmg:8,addEvery:12});
 export const PIPS8=Object.freeze(['z0','volley','z1','anchor1','anchor2','anchor3']);
 export function crackPip8(k,beat){const i=PIPS8.indexOf(beat);if(i<0||k.pips.has(i))return false;k.pips.add(i);
  const text={z0:['LEWS THERIN','One knot. Feel how she tires? Again.'],volley:['RAND',"That's Taim. Hold on. Just… hold on."],z1:['LEWS THERIN','Three left, and they are not ours to untie. The boy must cut them.']}[beat];if(text)k.s.caption?.(...text);return true;}
@@ -17,7 +17,7 @@ export function createCircle8(k){const s=k.s;return {active:false,done:false,cou
   k.story.say('st8_sister_01');k.later(3,()=>k.story.say('st8_tt_circle_01'));k.later(6,()=>k.story.say('riley_st8_circle_01'));
  },
  broken(e){if(this.phase!=='anchors'||!e.anchor)return;e.anchor=false;this.count++;crackPip8(k,'anchor'+this.count);
-  if(this.count>=3)this.prompt();else{const next=this.sisters.find(o=>o.alive&&!o.anchor);if(next){next.anchor=true;next.hp=40;next.bubble=true;next.bubbleHits=0;}}
+  if(this.count>=3)this.prompt();else{const next=this.sisters.find(o=>o.alive&&!o.anchor);if(next){next.anchor=true;next.hp=40;next.bubble=true;next.bubbleHits=0;}else{while(this.count<3){this.count++;crackPip8(k,'anchor'+this.count);}this.prompt();}}
  },
  prompt(){if(this.phase!=='anchors')return;this.phase='prompt';this.wait=0;k.story.say('st8_rand_callandor_01');k.hint('CALLANDOR — TAKE IT!');},
  step(dt){if(!this.active)return;this.t+=dt;

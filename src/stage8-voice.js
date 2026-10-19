@@ -1,5 +1,7 @@
 // Caption-only until reviewed recordings are added to VOICE_FILES.
-import {registerLines,setVoiceFiles,say} from './audio.js';
+import {registerLines,setVoiceFiles,say,setVoicePolicy,voiceBusy} from './audio.js';
+import {DUR8} from './stage8-voice-durations.js';
+export {DUR8,voiceBusy};
 import {VOICE_FILES} from './stage8-voice-files.js';
 export {VOICE_FILES};
 export const LINES=Object.freeze({
@@ -267,3 +269,29 @@ export const LINES=Object.freeze({
 export const STAGE8_VOICES=Object.freeze(Object.keys(LINES));
 registerLines(LINES);setVoiceFiles(STAGE8_VOICES,VOICE_FILES);
 export function stage8Say(id,caption,interrupt=true){return say(id,caption,interrupt);}
+const ST8=id=>/^(st8_|riley_st8_)/.test(id);
+// Quick replies to a call: only worth hearing if they land close to the press.
+const BARK8=new Set(['riley_st8_wait_01','riley_st8_call_01','riley_st8_call_02','st8_mat_call_01','st8_mat_call_02']);
+/** Seconds a line may wait for the one sounding: story lines wait long, barks (shared or call replies) barely. */
+export const WAIT8=Object.freeze({line:10,bark:2});
+/** Stage 8 voice rule: nothing cuts a sounding line. The new line waits its turn, and is dropped if it waits too long. */
+export function policy8(next){return ST8(next)&&!BARK8.has(next)?WAIT8.line:WAIT8.bark;}
+export function installVoicePolicy8(on){setVoicePolicy(on?policy8:null);}
+/** Seconds a line needs on screen: its recording plus a pad. */
+export function lineHold8(id,pad=.4){return (DUR8[id]||0)+pad;}
+/** A panel waits at most this long past its recording for the line to load and finish; then it moves on anyway. */
+export const LOAD_GRACE8=4,PAD8=.5;
+/**
+ * Cutscene panels hold while their line is loading, queued or sounding, then PAD8 more (and never less than
+ * twix.js holdFor, which covers muted play); a press cannot cut it
+ * (skip still can). cs.holding/holdGrace let the wall-clock watchdog (guard.js) wait out the same capped hold.
+ */
+export function holdCutscene8(cs,isBusy=voiceBusy){if(!cs||cs.held8)return cs;cs.held8=true;const up=cs.update.bind(cs),press=cs.press.bind(cs);
+ cs.holdGrace=LOAD_GRACE8+PAD8;
+ cs.holding=()=>!cs.done&&!!cs.line&&cs.t<(cs.line.voice||0)+LOAD_GRACE8&&isBusy(cs.line.id);
+ cs.update=dt=>{if(cs.done)return;
+  if(cs.holding()){cs.t+=dt;cs.elapsed+=dt;cs.padI=cs.i;cs.pad=PAD8;return;}
+  if(cs.padI===cs.i&&cs.pad>0){cs.pad-=dt;cs.t+=dt;cs.elapsed+=dt;return;}
+  up(dt);};
+ cs.press=a=>{if((a==='attack'||a==='jump'||a==='special')&&(cs.holding()||cs.padI===cs.i&&cs.pad>0))return;press(a);};return cs;}
+

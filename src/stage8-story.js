@@ -1,4 +1,4 @@
-import {LINES,stage8Say} from './stage8-voice.js';
+import {LINES,stage8Say,lineHold8,holdCutscene8} from './stage8-voice.js';
 import {playStage8Video,CLIPS8} from './stage8-video.js';
 import {demand8,releaseKeys8} from './stage8-load.js';
 export const BEATS8=Object.freeze({
@@ -25,18 +25,18 @@ export function createStory8(k,player=playStage8Video){
    const finish=()=>{if(dead)return;release(keys);active=null;if(s.music?.state==='cutscene')s.music.resumeFight?.();done?.();const next=queue.shift();if(next)api.play(...next);};
    const fallback=()=>{const ids=b.ids.filter(id=>!heard.has(id)&&!(name==='C8'&&['st8_tt_final_01','riley_st8_final_01'].includes(id)));
     if(!ids.length)return finish();
-    if(!keys.length||live||s.bot&&name!=='C1'||typeof s.startCutscene!=='function'){
-     ids.forEach((id,i)=>k.later(i*3.8,()=>api.say(id)));k.later(ids.length*3.8,finish);return;
-    }
+    // Caption deck: each line gets its own recording length, so none is cut by the next.
+    const deck=()=>{let at=0;for(const id of ids){k.later(at,()=>api.say(id));at+=Math.max(3.8,lineHold8(id,.6));}k.later(at,finish);};
+    if(!keys.length||live||s.bot&&name!=='C1'||typeof s.startCutscene!=='function')return deck();
     // C1 is a held opening even in demo mode. Hold during its asynchronous art
     // demand too; startCutscene takes ownership of the same pause reason.
     if(name==='C1'){loading=true;s.setPauseReason?.('cutscene',true);}
     demand8(k,keys,()=>{if(dead)return;
-     const script=ids.map((id,i)=>({id,who:LINES[id][0],text:LINES[id][1],panel:name==='C1'?(id.startsWith('riley_')?3:1):Math.min(keys.length-1,Math.floor(i*keys.length/ids.length))}));
+     const script=ids.map((id,i)=>({id,who:LINES[id][0],text:LINES[id][1],panel:name==='C1'?(id.startsWith('riley_')?3:1):Math.min(keys.length-1,Math.floor(i*keys.length/ids.length)),voice:lineHold8(id)}));
      const ended=()=>{for(const id of ids)heard.add(id);finish();};
-     const started=s.startCutscene(script,keys.map(key=>({key})),ended);
+     const started=s.startCutscene(script,keys.map(key=>({key})),ended);if(started!==false)holdCutscene8(s.cutscene);
      if(loading){loading=false;if(started===false&&!s.cutscene)s.setPauseReason?.('cutscene',false);}
-     if(started===false) {ids.forEach(id=>api.say(id));finish();}
+     if(started===false)deck();
     });
    };
    // A full finale clip repeats the P4 scream. Until a reviewed continuation

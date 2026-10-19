@@ -490,7 +490,7 @@ export const CIRCLE8 = Object.freeze({
   bindEvery: 9, maxBinders: 1,
   addEvery: 12, addMax: 1,         // one Shaido add at a time (dancer or veiled), so the circle stays readable
   timeout: 75,                     // anti-softlock: after 75 s the circle staggers anyway
-  callandorWait: 2.0,              // after the 3rd anchor: CALLANDOR prompt; walking to the wagon or 2 s idle triggers C4
+  // (callandorWait removed) after the 3rd anchor: CALLANDOR prompt; C4 waits CALLANDOR_HOLD8 (3.8 s) so Rand's line ends, then walking to the wagon or 0.4 s more triggers it
 });
 ```
 

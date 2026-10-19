@@ -4,7 +4,7 @@ import {releasePhone8} from './stage8-phone.js';
 import {createStory8} from './stage8-story.js';
 import {createAllies8} from './stage8-allies.js';
 import {createVolley8,VOLLEY8} from './stage8-volley.js';
-import {stage8Say} from './stage8-voice.js';
+import {stage8Say,installVoicePolicy8,VOICE_FILES} from './stage8-voice.js';
 import {createCircle8,crackPip8} from './stage8-circle.js';
 import {createCall8,tickCall8,switchCall8,provider8,canCall8} from './mat-call.js';
 import {createCall8Video} from './call8-cutscene.js';
@@ -19,7 +19,7 @@ import {q} from './config.js';
 import {STAGE8,STAGE8_TEXTURES} from './stage8-def.js';
 import {STAGE_TEXTURES} from './stages.js';
 import {queuePowerArt} from './powers.js';
-import {MUSIC,releaseClips} from './audio.js';
+import {MUSIC,releaseClips,preloadClips} from './audio.js';
 import {stage4Delta} from './stage4-time.js';
 import {substeps} from './stage5-clock.js';
 import {strikeRiley,damageAllowed} from './stage6-hurt.js';
@@ -42,7 +42,7 @@ for(const id in LOOP8)MUSIC[id].validateLoop=(m,d)=>guardLoop8(id,m,d);
 export function earlyKeys8(){return [...residentKeys({zoneI:0},STREAMS[8]),...ZONE_ART8.Z0,'bg8fg','bg8smoke'];}
 export function queueStage8(s){registerMusic8();queuePowerArt(s,{twix:false});queueStage8Painted(s,earlyKeys8());}
 export class Stage8Kit {
- constructor(s){this.s=s;this.clock=0;this.combatClock=0;this.quality=0;this.accum=0;this.tasks=[];this.cleanups=[];this.cleared=new Set();this.arrows=[];this.bursts=[];this.arrowAt=0;this.ribbons=0;this.stats={calls:0,ribbon:0};this.destroyed=false;this.story=createStory8(this);this.allies=createAllies8(this);this.volley=createVolley8(this);this.pips=new Set();this.circle=createCircle8(this);this.call=createCall8();this.link=createLink8(this);this.arena=createArena8(this);this.credits=createCredits8(this);}
+ constructor(s){installVoicePolicy8(true);preloadClips(VOICE_FILES);this.s=s;this.clock=0;this.combatClock=0;this.quality=0;this.accum=0;this.tasks=[];this.cleanups=[];this.cleared=new Set();this.arrows=[];this.bursts=[];this.arrowAt=0;this.ribbons=0;this.stats={calls:0,ribbon:0};this.destroyed=false;this.story=createStory8(this);this.allies=createAllies8(this);this.volley=createVolley8(this);this.pips=new Set();this.circle=createCircle8(this);this.call=createCall8();this.link=createLink8(this);this.arena=createArena8(this);this.credits=createCredits8(this);}
  blocksDamage(){return !!(this.outro||this.scripted||this.clock<(this.graceUntil||0));}
  strikeDamage(dmg,source){return /^(lanfear|volley)\./.test(source||'')?Math.min(dmg,LANFEAR.damageCap):dmg;}
  yieldAdds(){for(const e of this.s.enemies||[])if(e.alive&&!e.T?.boss&&!e.circleMember){e.assistKill=true;if(e.yield)e.yield();else{e.alive=false;e.gone=true;}}}
@@ -92,7 +92,7 @@ export class Stage8Kit {
  dropRibbon(){if(this.ribbonDropped)return;this.ribbonDropped=true;const s=this.s,x=s.riley.x+30,y=s.riley.y;const c=s.add.image(x,y-30,'s7ribbon'),g=s.add.image(x,y-30,'glow');const L=s.lights.addLight(x,y,100,0xef81a2,.5);s.pickups.push({x,y,kind:'ribbon',c,g,L,t:0});}
  collectRibbon(){this.ribbons++;this.stats.ribbon++;this.s.riley.score+=1000;this.hint("TWINKLE TOES' RIBBON — SHE'S CLOSE!");}
  hint(t){this.s.hud?.flashText?.(t);}koStars(){}telegraph(){}glint(){}onPause(){}
- destroy(){if(this.destroyed)return;this.destroyed=true;releasePhone8();this.video?.destroy();endCall8(this);releaseHolds8(this.s);this.tasks.length=0;releaseKeys8(this,STAGE8_TEXTURES);this.clearHazards();this.clash=null;this.credits.destroy();this.circle.destroy();this.allies.destroy();this.story.destroy();this.backdrops?.destroy();this.view?.destroy();for(const f of this.cleanups.splice(0).reverse())f();releaseStage8(this.s,0);}
+ destroy(){if(this.destroyed)return;this.destroyed=true;installVoicePolicy8(false);releasePhone8();this.video?.destroy();endCall8(this);releaseHolds8(this.s);this.tasks.length=0;releaseKeys8(this,STAGE8_TEXTURES);this.clearHazards();this.clash=null;this.credits.destroy();this.circle.destroy();this.allies.destroy();this.story.destroy();this.backdrops?.destroy();this.view?.destroy();for(const f of this.cleanups.splice(0).reverse())f();releaseStage8(this.s,0);}
 }
 STAGE8.kit=Stage8Kit;STAGE8.queue=queueStage8;STAGE8.start=s=>{s.kit.start();if(q.get('story')!=='0'&&s.stageData?.story!==false)s.kit.story.play('C1');};
 export function releaseStage8(s,to){const keep=new Set(STAGE_TEXTURES[to]||[]);for(const key of STAGE8_TEXTURES){if(keep.has(key))continue;silenceLoader(s.load,key);if(s.textures?.exists?.(key))s.textures.remove?.(key);}releaseClips(STAGE8_VOICES);}
