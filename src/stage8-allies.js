@@ -11,7 +11,7 @@ export function createAllies8(k){const s=k.s;return {
   this.vignettes=zone<3?[{key:'s8perrin',x:s.zones[zone].l+150,y:LANE_TOP+6},{key:zone?'s8loial':'s8allies',x:s.zones[zone].r-100,y:LANE_TOP+6}]:[];
   if(zone===0)k.story.play('C2',null,true);if(zone===1)k.story.say('st8_loial_01');
  },
- charge(id){if(this.charges.has(id))return false;this.charges.add(id);const lane=pick([0,1,2].filter(i=>i!==band8(s.riley.y)));this.wolf={lane,t:0,x:(s.camX||0)-140,hits:new Set()};demand8(k,['s8wolfpack','s8wolflead']);k.story.say('st8_perrin_wolves_01');return true;},
+ charge(id){if(this.charges.has(id))return false;this.charges.add(id);const lane=pick([0,1,2].filter(i=>i!==band8(s.riley.y)));this.wolf={lane,t:0,x:(s.camX||0)-140,hits:new Set()};demand8(k,['s8wolfpack','s8wolflead']);if(!k.story.play?.('W'))k.story.say('st8_perrin_wolves_01');return true;},
  step(dt){const w=this.wolf;if(w){w.t+=dt;if(w.t>=1.2){w.x+=700*dt;
   for(const e of s.enemies||[])if(!w.hits.has(e)&&band8(e.y)===w.lane&&Math.abs(e.x-w.x)<100){w.hits.add(e);wolfHit8(e,(s.bounds.l+s.bounds.r)/2);}
   if(band8(s.riley.y)===w.lane&&Math.abs(s.riley.x-w.x)<55)s.riley.x=clamp(s.riley.x+40*dt,s.bounds.l+40,s.bounds.r-40);

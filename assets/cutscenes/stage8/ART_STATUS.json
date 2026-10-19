@@ -62,8 +62,6 @@
     }
   ],
   "pending": [],
-  "optional": {
-    "wolves": "made and approved (Drive only), not wired; in-engine charge stays default"
-  },
+  "optional": {"wolves": "approved by Jason F 2026-10-19; plays once on the first wolf charge with st8_perrin_wolves_01 baked in"},
   "status": "Approved clips with baked voices (-16 LUFS) and DOM captions"
 }

@@ -11,6 +11,7 @@ export const BEATS8=Object.freeze({
  C7:{panels:['story8m1'],ids:['st8_lanfear_intro_01','st8_tt_lanfear_01','st8_lanfear_motive_01','st8_lanfear_motive_02','st8_tt_lanfear_02','riley_st8_lanfear_01','st8_lanfear_intro_02']},
  C8:{clip:'finale',ids:['st8_lanfear_final_01','st8_lanfear_final_02','st8_tt_final_01','riley_st8_final_01']},
  C8walk:{ids:['st8_tt_final_01','riley_st8_final_01']},
+ W:{clip:'wolves',ids:['st8_perrin_wolves_01']},
  C9:{ids:['st8_rand_clear_01','st8_perrin_clear_01','st8_story_end_01']},
 });
 export function createStory8(k,player=playStage8Video){
