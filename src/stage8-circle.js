@@ -4,6 +4,8 @@ import {Sister} from './blackajah.js';
 import {releaseHolds8} from './stage8-hooks.js';
 import {syncArt8} from './stage8-residency.js';
 import {demand8} from './stage8-load.js';
+// st8_rand_callandor_01 runs 3.53 s; the break (and Riley's C4 reply) waits for it so neither line cuts the other.
+export const CALLANDOR_HOLD8=3.8;
 export const CIRCLE8=Object.freeze({sisters:6,anchors:3,anchorHits:3,anchorOpen:3,anchorHp:40,timeout:75,callandorWait:2,whipEvery:4.5,whipTell:1,whipDmg:8,addEvery:12});
 export const PIPS8=Object.freeze(['z0','volley','z1','anchor1','anchor2','anchor3']);
 export function crackPip8(k,beat){const i=PIPS8.indexOf(beat);if(i<0||k.pips.has(i))return false;k.pips.add(i);
@@ -24,7 +26,7 @@ export function createCircle8(k){const s=k.s;return {active:false,done:false,cou
    if(this.whip){this.whip.t+=dt;if(this.whip.t>=1&&!this.whip.counterUsed){this.whip.counterUsed=true;if(band8(s.riley.y)===this.whip.band&&s.riley.z<70)strikeRiley(s,8,{source:'circle.whip',fromX:3620});}if(this.whip.t>=1.4)this.whip=null;}
    if(this.t>=this.nextAdd){this.nextAdd=this.t+12;if(s.zone&&!s.enemies.some(e=>e.alive&&!e.circleMember))s.spawn('dancer','L');}
    s.riley.x=Math.min(s.riley.x,3570);if(this.t>=75){while(this.count<3){this.count++;crackPip8(k,'anchor'+this.count);}this.prompt();}}
-  if(this.phase==='prompt'){this.wait+=dt;if(this.wait>=2||Math.abs(s.riley.x-3360)<70)this.breakCircle();}
+  if(this.phase==='prompt'){this.wait+=dt;if(this.wait>=CALLANDOR_HOLD8&&(this.wait>=CALLANDOR_HOLD8+.4||Math.abs(s.riley.x-3360)<70))this.breakCircle();}
  },
  breakCircle(){if(this.phase!=='prompt')return;this.phase='break';releaseHolds8(s);k.yieldAdds();k.clearHazards();k.scripted=true;k.graceUntil=Infinity;
   for(const e of this.sisters){e.anchor=false;if(e.alive){e.assistKill=true;e.yield();}}
