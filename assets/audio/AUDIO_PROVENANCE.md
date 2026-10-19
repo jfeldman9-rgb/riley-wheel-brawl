@@ -100,3 +100,44 @@ to Suno or used as a Cover, Persona, Inspo or remix source, and no other recordi
 The same loop points are on `MUSIC.stage8` and `MUSIC.boss8` in `src/stage8.js` (not `src/audio.js`, so the
 pre-fight gate does not grow). The prompt/lyric archive, measured tempos and loop-window choice are in
 `tools/stage8/music-brief.md`; render results are in `tools/stage8/music-manifest.json`.
+
+## Stage 8 voices: Dumai's Wells (T13)
+
+Rendered 2026-10-19 by Grok Bot for Jason F. 65 lines: 61 ElevenLabs (eleven_v4 with inline direction tags) and 4 narrator lines (IndexTTS 2.5). Per-line prompt, generation id, credits, sha256, bytes, duration and Whisper result are in `tools/stage8/voice-render.json` (source: `manifest.json`). Status: Jason F approved all 65 lines by ear on 2026-10-19, including every Twinkle Toes and Lanfear take. The files are in `assets/audio/voice/` and listed in `src/stage8-voice-files.js`; a line missing from that list stays caption-only.
+
+### Cast
+| Character | Engine / voice | Voice id | Source |
+|---|---|---|---|
+| Riley | ElevenLabs, DYLO - Dark Anime Hero | JjsQrIrIBD6TZ656NQfi | existing Riley voice (Stages 1 to 7) |
+| Rand | ElevenLabs, Rand al'Thor (RWB) | 4KhtxLynQ7oUlA9AtWmc | existing workspace voice |
+| Lanfear | ElevenLabs, Lanfear (RWB) | RxWrQBZTo88tuXk76YNu | Voice Design (eleven_ttv_v3), preview 1; discarded u411U9RUKZg67oE4ltKB, Y2aODAuAuvkHvFAJBFpz |
+| Perrin | ElevenLabs, Perrin Aybara (RWB) | zbjNmxRpvMNZQvdRdKvd | Voice Design, preview 0 |
+| Mat | ElevenLabs, Mat Cauthon (RWB) | pEHnUCP5HTNHlMckih1X | Voice Design, preview 0 |
+| Black Ajah sister | ElevenLabs, Black Ajah Sister (RWB) | 4R9xNOWxwIqck0J9240Y | Voice Design, preview 2 |
+| Lews Therin | ElevenLabs, Lews Therin (RWB) | LvZZKJRUGbNFdl231RO7 | Voice Design, preview 2; in-head echo chain |
+| Loial | ElevenLabs, Loial (RWB) | iU63JZ6Vg6mpJMIhW8lN | Voice Design, preview 2. Recast from Kokoro (earlier stages) to ElevenLabs |
+| Taim | ElevenLabs library, Alaric - Intense and Measured | gUU37agQvEpxeWrZUIMk | Library voice. Two Voice Design rounds were rejected (mostly unvoiced and gravelly) and not saved |
+| Twinkle Toes | ElevenLabs library, Candy - Girly and Sweet | Nggzl2QAXh3OijoXD116 | Library voice by an adult performer, not a clone of a real child. Picked over Tilly, Lulu and Cherry in auditions. Recast from Kokoro to ElevenLabs |
+| Shaido | none (SFX only, per plan) | | |
+| Narrator | IndexTTS 2.5 (VoiceStudio), Jason F's own voice | ref `jason_ref_nodenoise.wav` | Real-person clone of the owner's own voice, with consent. emo_vector [0,0,0,0,0,0.05,0,0.15], seed 7, plain text |
+
+### Processing
+- ElevenLabs lines use the `riley-voice-manifest` chain: trim start and end silence, highpass 70 Hz, loudnorm I=-17.5 TP=-2 LRA=7, alimiter 0.75, then mono 24 kHz 64 kbps.
+- Lews Therin uses the in-head chain: highpass 120, lowpass 6500, aecho 0.6:0.5:35|70:0.22|0.12, loudnorm I=-19.
+- Narrator: trim, highpass 60, loudnorm I=-18 TP=-2, alimiter 0.79, then mono 24 kHz 96 kbps.
+- Size: total 1,961,644 bytes against the 13,312,000 budget. The largest line is 106,892 bytes, under the 200 KiB cap.
+
+### Pronunciation respellings sent to TTS (captions keep the canon spelling)
+- Asha'man is sent as "Ah-shah-mahn" (Taim).
+- Callandor is sent as "Kal-an-dor" (Rand).
+- Shaido is sent as "Shy-doh" (Rand).
+- Narrator lines use the plain spellings. A respelled pass was rejected because it garbled "Riley" and "Moiraine".
+
+### Credits
+- TTS: 3,659.6 credits over 66 generations, including 5 auditions and 1 retake.
+- Voice Design: about 1,420 credits.
+- Total: about 5,080 credits on the Creator plan, against a 15,000-credit ceiling.
+
+### Exclusions
+- Jason's original song "Asha'man Kill" was **not** used in any form. Only Taim's spoken line "Asha'man, kill!" was synthesized.
+- No Kokoro or other local TTS was used for any character line.

@@ -1,590 +1,2123 @@
 {
-  "status": "awaiting human recordings",
+  "status": "rendered 2026-10-19; all 65 lines approved by Jason F by ear 2026-10-19",
+  "rendered_by": "Grok Bot",
+  "total_bytes": 1961644,
+  "budget_bytes": 13312000,
+  "max_line_bytes": 106892,
+  "credits": {
+    "tts_all_generations_incl_auditions_and_retakes": 3659.6,
+    "voice_design": 1420,
+    "generations": 66
+  },
   "lines": [
     {
       "id": "st8_story_01",
       "speaker": "NARRATOR",
       "text": "Cairhien was empty when Riley got there. The Tower embassy had taken the Dragon Reborn — shielded, folded into a wooden chest — and ridden hard for Tar Valon.",
       "file": "assets/audio/voice/st8_story_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 106892,
+      "duration_s": 8.88,
+      "sha256": "c7454ace8f6ff8412f81ccc4148958bfa1ee7a496563990c815e9f48d7ef0434",
+      "whisper_medium_en": {
+        "prompted": {
+          "heard": "Cairhien was empty when Riley got there. The Tower Embassy had taken the dragon reborn, shielded, folded into a wooden chest, and ridden hard for Tar Valon.",
+          "match": 1
+        },
+        "unprompted": {
+          "heard": "Kerhian was empty when Riley got there. The Tower Embassy had taken the dragon reborn, shielded, folded into a wooden chest, and ridden hard for Tar Valon.",
+          "match": 0.963
+        }
+      },
+      "engine": "indextts",
+      "model": "IndexTTS 2.5 (VoiceStudio)",
+      "reference": "jasonvoice/ref/jason_ref_nodenoise.wav",
+      "emo_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.05,
+        0,
+        0.15
+      ],
+      "seed": 7,
+      "variant": "plain text (respelled variant rejected on STT)",
+      "processing": "trim, highpass 60, loudnorm I=-18 TP=-2 LRA=7, alimiter 0.79 -> mono 24 kHz 96 kbps",
+      "speaker_detail": "NARRATOR (Jason F, IndexTTS 2.5 clone, own voice, consented)"
     },
     {
       "id": "st8_story_02",
       "speaker": "NARRATOR",
       "text": "They caught up at Dumai's Wells: three stone wells in a sea of grass, a ring of wagons, and the Shaido coming over every hill.",
       "file": "assets/audio/voice/st8_story_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 88748,
+      "duration_s": 7.368,
+      "sha256": "b6b000b9a0f3dda44c589478572e47d3227f37975526e97be532ef0542212ae6",
+      "whisper_medium_en": {
+        "prompted": {
+          "heard": "They caught up at Dumai's Wells, three stone wells in a sea of grass, a ring of wagons, and the Shaido coming over every hill.",
+          "match": 1
+        },
+        "unprompted": {
+          "heard": "They caught up at Dumai's Wells, three stone wells in a the sea of grass, a ring of wagons, and the Shido coming over every hill.",
+          "match": 0.96
+        }
+      },
+      "engine": "indextts",
+      "model": "IndexTTS 2.5 (VoiceStudio)",
+      "reference": "jasonvoice/ref/jason_ref_nodenoise.wav",
+      "emo_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.05,
+        0,
+        0.15
+      ],
+      "seed": 7,
+      "variant": "plain text (respelled variant rejected on STT)",
+      "processing": "trim, highpass 60, loudnorm I=-18 TP=-2 LRA=7, alimiter 0.79 -> mono 24 kHz 96 kbps",
+      "speaker_detail": "NARRATOR (Jason F, IndexTTS 2.5 clone, own voice, consented)"
     },
     {
       "id": "st8_story_03",
       "speaker": "NARRATOR",
       "text": "And somewhere between Cairhien and here, Moiraine had fallen through a twisted redstone doorway with Lanfear. Only one of them came back.",
       "file": "assets/audio/voice/st8_story_03.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 93356,
+      "duration_s": 7.752,
+      "sha256": "947b32eef4120b7d28890626f6fcc9e35c05674678749ca540212c47de250bf3",
+      "whisper_medium_en": {
+        "prompted": {
+          "heard": "And somewhere between Cairhien and here, Moiraine had fallen through a twisted redstone doorway with Lanfear. Only one of them came back.",
+          "match": 1
+        },
+        "unprompted": {
+          "heard": "And somewhere between Kerhien and here, Morraine had fallen through a twisted redstone doorway with Lanfear. Only one of them came back.",
+          "match": 0.909
+        }
+      },
+      "engine": "indextts",
+      "model": "IndexTTS 2.5 (VoiceStudio)",
+      "reference": "jasonvoice/ref/jason_ref_nodenoise.wav",
+      "emo_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.05,
+        0,
+        0.15
+      ],
+      "seed": 7,
+      "variant": "plain text (respelled variant rejected on STT)",
+      "processing": "trim, highpass 60, loudnorm I=-18 TP=-2 LRA=7, alimiter 0.79 -> mono 24 kHz 96 kbps",
+      "speaker_detail": "NARRATOR (Jason F, IndexTTS 2.5 clone, own voice, consented)"
     },
     {
       "id": "st8_rand_box_01",
       "speaker": "RAND",
       "text": "Six of them. Always six, holding the shield. I can feel every one.",
       "file": "assets/audio/voice/st8_rand_box_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 53420,
+      "duration_s": 6.648,
+      "sha256": "e9cefe25dae1ee6b397d0c6090cf5c079116b8bac3ec082897742289efa3672b",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Six of them. Always six, holding the shield. I can feel every one.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Six of them. Always six, holding the shield. I can feel every one.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+      "voice_name": "Rand al'Thor (RWB)",
+      "prompt": "[strained whisper, exhausted] Six of them. Always six, holding the shield. I can feel every one.",
+      "generation_id": "JuJ4fT1orOUyAFWbiQE2",
+      "session_id": null,
+      "credits": 96,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RAND"
     },
     {
       "id": "st8_lews_01",
       "speaker": "LEWS THERIN",
       "text": "Every shield has a seam. Feel for where the women tire.",
       "file": "assets/audio/voice/st8_lews_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 36332,
+      "duration_s": 4.512,
+      "sha256": "ed409080380d85b81d781d011423b6586cdfa0b1506bd0620b0388c7f67faf41",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Every shield has a seam. Feel for where the women tire.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Every shield has a seam. Feel for where the women tire.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "LvZZKJRUGbNFdl231RO7",
+      "voice_name": "Lews Therin (RWB)",
+      "prompt": "[calm, courtly, whispering close] Every shield has a seam. Feel for where the women tire.",
+      "generation_id": "QEui5JB4lfsdsG56y8mx",
+      "session_id": null,
+      "credits": 89,
+      "processing": "Lews in-head chain: highpass 120, lowpass 6500, aecho 0.6:0.5:35|70:0.22|0.12, loudnorm I=-19",
+      "speaker_detail": "LEWS THERIN"
     },
     {
       "id": "st8_rand_box_02",
       "speaker": "RAND",
       "text": "Get out of my head!",
       "file": "assets/audio/voice/st8_rand_box_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 14828,
+      "duration_s": 1.824,
+      "sha256": "ea8fa8323603b370bb1e2745c51556983c3fd8a136095322c271d48f7c38a462",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Get out of my head!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Get out of my head!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+      "voice_name": "Rand al'Thor (RWB)",
+      "prompt": "[through gritted teeth, angry] Get out of my head!",
+      "generation_id": "0CmeN9zMIjbMGGvPAv6Z",
+      "session_id": null,
+      "credits": 50,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RAND"
     },
     {
       "id": "st8_lews_02",
       "speaker": "LEWS THERIN",
       "text": "It is my head too. Push. There — where the weave thins.",
       "file": "assets/audio/voice/st8_lews_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 55148,
+      "duration_s": 6.864,
+      "sha256": "93545ccb3f84597d56f9272cc8d38b52577ce9c479ce9b16c646b6d784b1c4ef",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "It is my head to push there where the weave thins.",
+          "match": 0.909
+        },
+        "prompted": {
+          "heard": "It is my head to push there where the weave thins.",
+          "match": 0.909
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "LvZZKJRUGbNFdl231RO7",
+      "voice_name": "Lews Therin (RWB)",
+      "prompt": "[patient, almost tender] It is my head... [unhinged laugh] too. [whispering] Push. There — where the weave thins.",
+      "generation_id": "bm0eJ1tIvJFZjPuZKiJw",
+      "session_id": null,
+      "credits": 113,
+      "processing": "Lews in-head chain: highpass 120, lowpass 6500, aecho 0.6:0.5:35|70:0.22|0.12, loudnorm I=-19",
+      "speaker_detail": "LEWS THERIN"
     },
     {
       "id": "st8_rand_box_03",
       "speaker": "RAND",
       "text": "I can't… reach it!",
       "file": "assets/audio/voice/st8_rand_box_03.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 16748,
+      "duration_s": 2.064,
+      "sha256": "89e3e7a786cded2ecb1cdc1fc7d99ab9642d10d7e7d35639a044be21bc4c91d9",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "I can't reach it!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "I can't reach it!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+      "voice_name": "Rand al'Thor (RWB)",
+      "prompt": "[straining hard] I can't… reach it!",
+      "generation_id": "5JX8XTAREmQ94o9N7ZJz",
+      "session_id": null,
+      "credits": 35,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RAND"
     },
     {
       "id": "st8_lews_03",
       "speaker": "LEWS THERIN",
       "text": "Then wait. Someone is coming. A boy who channels… and a girl who dances.",
       "file": "assets/audio/voice/st8_lews_03.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 54764,
+      "duration_s": 6.816,
+      "sha256": "47506cbb2f25d9bc8ed1674ead52a6bc26c7bf2922255a05ffab64366a74b095",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Then wait, someone is coming, a boy who channels and a girl who dances.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Then wait, someone is coming. A boy who channels and a girl who dances.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "LvZZKJRUGbNFdl231RO7",
+      "voice_name": "Lews Therin (RWB)",
+      "prompt": "[soft, nearly laughing] Then wait. Someone is coming. A boy who channels… and a girl who dances.",
+      "generation_id": "REjMepVE3Qg6PNatCMGV",
+      "session_id": null,
+      "credits": 96,
+      "processing": "Lews in-head chain: highpass 120, lowpass 6500, aecho 0.6:0.5:35|70:0.22|0.12, loudnorm I=-19",
+      "speaker_detail": "LEWS THERIN"
     },
     {
       "id": "riley_st8_story_01",
       "speaker": "RILEY",
       "text": "Rand's in that box. And Twinkle Toes is down there with them.",
       "file": "assets/audio/voice/riley_st8_story_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 30188,
+      "duration_s": 3.744,
+      "sha256": "b74fd80b2a7d3fd63c296ec7e727053bf714b43b79e5f57d1b7228de87bc6b35",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Rans in that box, and Twinkle Toes is down there with them.",
+          "match": 0.917
+        },
+        "prompted": {
+          "heard": "Rand's in that box, and Twinkle Toes is down there with them.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[flat, certain] Rand's in that box. And Twinkle Toes is down there with them.",
+      "generation_id": "5rK3GbvztQ5kWbY4gxEG",
+      "session_id": null,
+      "credits": 77,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "riley_st8_story_02",
       "speaker": "RILEY",
       "text": "Okay. Final round.",
       "file": "assets/audio/voice/riley_st8_story_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 17132,
+      "duration_s": 2.112,
+      "sha256": "92bf924395ab3579ce91459131d45920562a29a265b0c9c8508130ca5ffe5a1d",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Okay, final round.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Okay, final round.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[determined] Okay. Final round.",
+      "generation_id": "5DOE1xmZkWAs7sDRwGDJ",
+      "session_id": "USFJYoefcZtffs1iEwif",
+      "credits": 31,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_perrin_01",
       "speaker": "PERRIN",
       "text": "Two Rivers! Loose!",
       "file": "assets/audio/voice/st8_perrin_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 15212,
+      "duration_s": 1.872,
+      "sha256": "9573ef2db56f48a9c9bd84139344c2e57b9c8fc7eb35db8c57077e26ec45f128",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "TWO RIBBERS! LOOSE!",
+          "match": 0.667
+        },
+        "prompted": {
+          "heard": "Two Rivers, Loose!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "zbjNmxRpvMNZQvdRdKvd",
+      "voice_name": "Perrin Aybara (RWB)",
+      "prompt": "[shouting across the field] Two Rivers! Loose!",
+      "generation_id": "uG4DO68Hz9KCkJJg7zUv",
+      "session_id": null,
+      "credits": 46,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "PERRIN"
     },
     {
       "id": "st8_perrin_02",
       "speaker": "PERRIN",
       "text": "Riley. Go — we'll hold the hill.",
       "file": "assets/audio/voice/st8_perrin_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 23276,
+      "duration_s": 2.88,
+      "sha256": "65c5e6708f09bf9c2e35eac26f05f96a2d71b60fcc80525880dfbbfc88b3d585",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Riley, go. We'll hold the hill.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Riley, go. We'll hold the hill.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "zbjNmxRpvMNZQvdRdKvd",
+      "voice_name": "Perrin Aybara (RWB)",
+      "prompt": "[quiet, steady] Riley. Go — we'll hold the hill.",
+      "generation_id": "yO3xTVobYl37KzNZgU3E",
+      "session_id": null,
+      "credits": 48,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "PERRIN"
     },
     {
       "id": "st8_loial_01",
       "speaker": "LOIAL",
       "text": "Riley! This is far too hasty — but I will hold this side!",
       "file": "assets/audio/voice/st8_loial_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 37292,
+      "duration_s": 4.632,
+      "sha256": "5dec5f994638e0e67c5fea7e52710a7a69b1377129f5f0882f5ebc9e8b7950a6",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Riley, this is far too hasty, but I will hold this side.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Riley, this is far too hasty, but I will hold this side.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "iU63JZ6Vg6mpJMIhW8lN",
+      "voice_name": "Loial (RWB)",
+      "prompt": "[flustered] Riley! This is far too hasty — [brave] but I will hold this side!",
+      "generation_id": "ZIbVXLGOWI2y95y1LcHk",
+      "session_id": null,
+      "credits": 77,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LOIAL"
     },
     {
       "id": "st8_perrin_wolves_01",
       "speaker": "PERRIN",
       "text": "Wolves — with me!",
       "file": "assets/audio/voice/st8_perrin_wolves_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 15020,
+      "duration_s": 1.848,
+      "sha256": "c81c0a098aea6f4050ff24404f5473d6d0fa5c0aa21444f7c36636e2720c2991",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Wolves, with me!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Wolves, with me!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "zbjNmxRpvMNZQvdRdKvd",
+      "voice_name": "Perrin Aybara (RWB)",
+      "prompt": "[deep, calm, commanding] Wolves — with me!",
+      "generation_id": "bQ0V4bBoAGQu5FeeLqO2",
+      "session_id": null,
+      "credits": 42,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "PERRIN"
     },
     {
       "id": "st8_mat_join_01",
       "speaker": "MAT",
       "text": "Dice have been rattling in my head for three days. Something lucky's about to happen — probably to me.",
       "file": "assets/audio/voice/st8_mat_join_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 63404,
+      "duration_s": 7.896,
+      "sha256": "28d35538d817e9eeb4605c142efde42c6e53bcf2f961e4370bbab51f8ea6c5df",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Heh, dice have been rattling in my head for three days. Something lucky's about to happen. Probably to me.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Dice have been rattling in my head for three days. Something lucky is about to happen. Probably to me.",
+          "match": 0.944
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "pEHnUCP5HTNHlMckih1X",
+      "voice_name": "Mat Cauthon (RWB)",
+      "prompt": "[grinning, complaining] Dice have been rattling in my head for three days. [chuckles] Something lucky's about to happen — probably to me.",
+      "generation_id": "Yu9Wmz96KCBHWmTkn5x6",
+      "session_id": null,
+      "credits": 137,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "MAT"
     },
     {
       "id": "riley_st8_mat_01",
       "speaker": "RILEY",
       "text": "Mat?! What are you —",
       "file": "assets/audio/voice/riley_st8_mat_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 13484,
+      "duration_s": 1.656,
+      "sha256": "5fa3908e96f75e6ddd663992bcaa9c8702e08581459d8a5eb66ab0cf410bc137",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Matt, what are you...",
+          "match": 0.75
+        },
+        "prompted": {
+          "heard": "Mat? What are you-",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[startled] Mat?! What are you —",
+      "generation_id": "1MdVxqo1Rt1wZr0qAek0",
+      "session_id": null,
+      "credits": 31,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_mat_join_02",
       "speaker": "MAT",
       "text": "Rescuing Rand. Again. Call me when it gets thick.",
       "file": "assets/audio/voice/st8_mat_join_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 33260,
+      "duration_s": 4.128,
+      "sha256": "e5cc0876b5b6000da31bd182fcc297aa5d971edaabed31ee52ee11dc7458293e",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Rescuing Rand. Again. Call me when it gets thick.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Rescuing Rand, again. Call me when it gets thick.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "pEHnUCP5HTNHlMckih1X",
+      "voice_name": "Mat Cauthon (RWB)",
+      "prompt": "[cheeky] Rescuing Rand. Again. Call me when it gets thick.",
+      "generation_id": "VXMXw7MX2PM3cB2SfdIG",
+      "session_id": null,
+      "credits": 58,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "MAT"
     },
     {
       "id": "st8_taim_intro_01",
       "speaker": "TAIM",
       "text": "The Black Tower answers the Dragon Reborn.",
       "file": "assets/audio/voice/st8_taim_intro_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 28652,
+      "duration_s": 3.552,
+      "sha256": "53f859eee86be667f4c7e99ece7e9be0fae3611af3da3a7d8165d2c0c0b1498b",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "The Black Tower answers the Dragon Reborn.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "The Black Tower answers the Dragon Reborn.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "gUU37agQvEpxeWrZUIMk",
+      "voice_name": "Alaric - Intense and Measured (ElevenLabs library)",
+      "prompt": "[sardonic, enjoying the entrance] The Black Tower answers the Dragon Reborn.",
+      "generation_id": "f78JCqkXvg0xQqcOoxPs",
+      "session_id": null,
+      "credits": 76,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TAIM"
     },
     {
       "id": "st8_taim_kill_01",
       "speaker": "TAIM",
       "text": "Asha'man, kill!",
       "file": "assets/audio/voice/st8_taim_kill_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 22508,
+      "duration_s": 2.784,
+      "sha256": "2aee74512c5967838848ef8c5ae8a76cbd84e8924e5af48ebb89eb97b58aec53",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Ashaman, kill!",
+          "match": 0.5
+        },
+        "prompted": {
+          "heard": "Asha'man, Kill!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "gUU37agQvEpxeWrZUIMk",
+      "voice_name": "Alaric - Intense and Measured (ElevenLabs library)",
+      "prompt": "[battlefield roar] Ah-shah-mahn, KILL!",
+      "generation_id": "3PW5TgxIzHStACtTs0cO",
+      "session_id": null,
+      "credits": 38,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TAIM"
     },
     {
       "id": "riley_st8_taim_01",
       "speaker": "RILEY",
       "text": "Wait — which side are they killing?!",
       "file": "assets/audio/voice/riley_st8_taim_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 19628,
+      "duration_s": 2.424,
+      "sha256": "1b10595c0b80e5929a43a8d3b548596321d0824d50db5007acbaa15484c409a9",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Wait, which side are they killing?",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Wait, which side are they killing?",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[alarmed, half joking] Wait — which side are they killing?!",
+      "generation_id": "zr4jHUfwittoPD2zvLam",
+      "session_id": null,
+      "credits": 59,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "riley_st8_volley_01",
       "speaker": "RILEY",
       "text": "Jump the dirt. Dodge the fire. Got it.",
       "file": "assets/audio/voice/riley_st8_volley_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 24428,
+      "duration_s": 3.024,
+      "sha256": "ff7ebaf1eb8b5c703f50858ae62c8536b8574d9710e6f4183241866b32609c56",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Jump the dirt. Dodge the fire. Got it.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Jump the dirt. Dodge the fire. Got it.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[coaching himself] Jump the dirt. Dodge the fire. Got it.",
+      "generation_id": "13SWqmM0yQqJv5wjMulG",
+      "session_id": null,
+      "credits": 57,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_sister_01",
       "speaker": "BLACK AJAH",
       "text": "Hold the circle!",
       "file": "assets/audio/voice/st8_sister_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 10988,
+      "duration_s": 1.344,
+      "sha256": "6cd88abe4a064983b7f767798841b31be666b5fdd3728ecfa31c7e55186aad0a",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Hold the circle.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Hold the circle!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "4R9xNOWxwIqck0J9240Y",
+      "voice_name": "Black Ajah Sister (RWB)",
+      "prompt": "[cold command] Hold the circle!",
+      "generation_id": "eFf6OVy6rxJSZM8lydHa",
+      "session_id": null,
+      "credits": 31,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "BLACK AJAH"
     },
     {
       "id": "st8_sister_02",
       "speaker": "BLACK AJAH",
       "text": "The Lady wants the girl unharmed. The boy, she did not mention.",
       "file": "assets/audio/voice/st8_sister_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 39596,
+      "duration_s": 4.92,
+      "sha256": "adba5f03148025b70fbc916249b685b516cd9ddc13a08d6ff904e69486cb8633",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "The lady wants the girl unharmed, the boy she did not mention.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "The lady wants the girl unharmed, the boy she did not mention.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "4R9xNOWxwIqck0J9240Y",
+      "voice_name": "Black Ajah Sister (RWB)",
+      "prompt": "[precise, icy calm] The Lady wants the girl unharmed. The boy, she did not mention.",
+      "generation_id": "bnMwX1SHogmKC9vubQwq",
+      "session_id": null,
+      "credits": 83,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "BLACK AJAH"
     },
     {
       "id": "riley_st8_lady_01",
       "speaker": "RILEY",
       "text": "Who's 'the Lady'?",
       "file": "assets/audio/voice/riley_st8_lady_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 15596,
+      "duration_s": 1.92,
+      "sha256": "f246250aa2d86bfe15d51624da18df5ffbaa50438a422e9a39278d94a3da28e2",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Who's the lady?",
+          "match": 0.333
+        },
+        "prompted": {
+          "heard": "Who's the lady?",
+          "match": 0.333
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[suspicious] Who's \"the Lady\"?",
+      "generation_id": "ecQhKzVFwhrfLyIQ6KhV",
+      "session_id": null,
+      "credits": 30,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_tt_circle_01",
       "speaker": "TWINKLE TOES",
       "text": "Bubby! They won't let me out!",
       "file": "assets/audio/voice/st8_tt_circle_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "Jason by ear"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 17132,
+      "duration_s": 2.112,
+      "sha256": "675afde94040b300d1d673cf13c9c6142174c4d58902387f1ecfe1fc93be3aa9",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Bubby, they won't let me out!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Bubby, they won't let me out!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "Nggzl2QAXh3OijoXD116",
+      "voice_name": "Candy - Girly and Sweet (ElevenLabs library)",
+      "prompt": "[scared but cross] Bubby! They won't let me out!",
+      "generation_id": "iJDFJQS3GFnvhrFHLPCc",
+      "session_id": null,
+      "credits": 48,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TWINKLE TOES"
     },
     {
       "id": "riley_st8_circle_01",
       "speaker": "RILEY",
       "text": "Hang on, Twinkle Toes!",
       "file": "assets/audio/voice/riley_st8_circle_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 12716,
+      "duration_s": 1.56,
+      "sha256": "78c52132a5132ed048f4056713f1bc401b9d9f784443beb17ac4c1a053845f31",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Hang on, Twinkle-toes!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "j Hang on, Twinkle Toes!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[urgent shout] Hang on, Twinkle Toes!",
+      "generation_id": "LBJ0sue0rBDhSHud3DMF",
+      "session_id": null,
+      "credits": 37,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_rand_callandor_01",
       "speaker": "RAND",
       "text": "Riley! Callandor — in the wagon. Take it!",
       "file": "assets/audio/voice/st8_rand_callandor_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 28460,
+      "duration_s": 3.528,
+      "sha256": "3cb264015e6c61be109b5dfa15dfca8014498f209f6422aa9cd9de03f78c179e",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Riley! Calendore! In the wagon! Take it!",
+          "match": 0.857
+        },
+        "prompted": {
+          "heard": "Riley! Callandor. In the wagon. Take it!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+      "voice_name": "Rand al'Thor (RWB)",
+      "prompt": "[strained, commanding] Riley! Kal-an-dor — in the wagon. Take it!",
+      "generation_id": "hjn365b9qix00cbnc7ed",
+      "session_id": null,
+      "credits": 65,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RAND"
     },
     {
       "id": "riley_st8_callandor_01",
       "speaker": "RILEY",
       "text": "Okay, glass sword. Show me what you've got.",
       "file": "assets/audio/voice/riley_st8_callandor_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 27692,
+      "duration_s": 3.432,
+      "sha256": "87c21a10bebf695d4f07efc86e5e277781420132a4fa51d9de3b954f4b3292c9",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Okay, Glass Sword, show me what you've got!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Ok",
+          "match": 0
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[cocky, nervous] Okay, glass sword. Show me what you've got.",
+      "generation_id": "563gOuAFf0vQJzhHrx3R",
+      "session_id": null,
+      "credits": 60,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "riley_st8_circle_02",
       "speaker": "RILEY",
       "text": "Circle's broken!",
       "file": "assets/audio/voice/riley_st8_circle_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 14060,
+      "duration_s": 1.728,
+      "sha256": "f574da91f99d8ed6afcbf51850962fffebc7f1a6b81bd1ba786348d0f2bfbceb",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "CIRCLE'S BROKEN!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "CIRCLE'S BROK",
+          "match": 0.5
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[triumphant shout] Circle's broken!",
+      "generation_id": "wRpe0WoKXvBOFsZXDPX9",
+      "session_id": null,
+      "credits": 35,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_rand_free_01",
       "speaker": "RAND",
       "text": "Free. Light, I'm free. Riley — call, and I'll come.",
       "file": "assets/audio/voice/st8_rand_free_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 48428,
+      "duration_s": 6.024,
+      "sha256": "8569443fa7aa2fd4eb3aca0df203b07aaf4ffb3aa8557a9ffe51dd89bc5e870f",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Free. Light. I'm free. Riley, call and I'll come.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Free. Light. I'm free. Riley. Call and I'll come.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+      "voice_name": "Rand al'Thor (RWB)",
+      "prompt": "[weak, breathless] Free. Light, I'm free. [resolute] Riley — call, and I'll come.",
+      "generation_id": "xWwHAQvMyLyIt1gyP3Mc",
+      "session_id": null,
+      "credits": 81,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RAND"
     },
     {
       "id": "st8_mat_handover_01",
       "speaker": "MAT",
       "text": "And that's my luck spent. Rand's turn. Try to need less rescuing!",
       "file": "assets/audio/voice/st8_mat_handover_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 43628,
+      "duration_s": 5.424,
+      "sha256": "6165cd48e9664128cf6e9014643347090425358cfb2f2342fb973d0b725ec5d1",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "And that's my luck spent! Ran's turn! Try to need less rescuing!",
+          "match": 0.917
+        },
+        "prompted": {
+          "heard": "And that's my luck spent! Rand's turn! Try to need less rescuing!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "pEHnUCP5HTNHlMckih1X",
+      "voice_name": "Mat Cauthon (RWB)",
+      "prompt": "[cheerful] And that's my luck spent. Rand's turn. [laughing] Try to need less rescuing!",
+      "generation_id": "NJZp9LPm3bZF3SlKYnFz",
+      "session_id": null,
+      "credits": 87,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "MAT"
     },
     {
       "id": "st8_tt_link_01",
       "speaker": "TWINKLE TOES",
       "text": "Bubby, I can channel too! I've been practicing!",
       "file": "assets/audio/voice/st8_tt_link_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "Jason by ear"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 23660,
+      "duration_s": 2.928,
+      "sha256": "e12459cbc81a47035e1ad93d9716fd660efd47c2443b405f16aa8e8b9ee11aa4",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Bobby, I can channel too! I've been practicing!",
+          "match": 0.875
+        },
+        "prompted": {
+          "heard": "Bubby, I can channel too! I've been practicing.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "Nggzl2QAXh3OijoXD116",
+      "voice_name": "Candy - Girly and Sweet (ElevenLabs library)",
+      "prompt": "[proud, fast, excited] Bubby, I can channel too! I've been practicing!",
+      "generation_id": "gD6MOv8yVJwlFOD1ehnc",
+      "session_id": null,
+      "credits": 70,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TWINKLE TOES"
     },
     {
       "id": "riley_st8_link_01",
       "speaker": "RILEY",
       "text": "Since when?!",
       "file": "assets/audio/voice/riley_st8_link_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 10988,
+      "duration_s": 1.344,
+      "sha256": "c65e1b8329d6348aebd1e87423795726d5e704ea02fa97faab97d4caad228217",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Since when?",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Since when?",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[shocked] Since when?!",
+      "generation_id": "VBbngPV7wuVZrEUsuE3u",
+      "session_id": null,
+      "credits": 22,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_tt_link_02",
       "speaker": "TWINKLE TOES",
       "text": "Only a girl can start a link. Hold my hand!",
       "file": "assets/audio/voice/st8_tt_link_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "Jason by ear"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 25388,
+      "duration_s": 3.144,
+      "sha256": "10504cceb816b60c8222b3bf5c842682c923bf1ae1731bfb97a4f3978db91897",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Only a girl can start a link. Hold my hand!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Only a girl can start a link. Hold my hand!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "Nggzl2QAXh3OijoXD116",
+      "voice_name": "Candy - Girly and Sweet (ElevenLabs library)",
+      "prompt": "[bossy, very sure] Only a girl can start a link. Hold my hand!",
+      "generation_id": "rjjKN1eHkIy3x2PCudKE",
+      "session_id": null,
+      "credits": 62,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TWINKLE TOES"
     },
     {
       "id": "riley_st8_link_02",
       "speaker": "RILEY",
       "text": "Okay. Together.",
       "file": "assets/audio/voice/riley_st8_link_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 15212,
+      "duration_s": 1.872,
+      "sha256": "37597375f8007cf4cd1bee94edaa1f898a5bf28faa60ff3f6d078cb859e07696",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Okay. Together.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Okay. Together.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[quiet, warm] Okay. Together.",
+      "generation_id": "wUiJ5g3qamWaajGzfy0h",
+      "session_id": null,
+      "credits": 29,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_lanfear_intro_01",
       "speaker": "LANFEAR",
       "text": "So this is the little queen.",
       "file": "assets/audio/voice/st8_lanfear_intro_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 24044,
+      "duration_s": 2.976,
+      "sha256": "21fd8883873d455b3dfc91ee510e1942d839a64e6389312d7883ab7e47fd9c35",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "So this is the little queen.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "So this is the little queen.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[silky contempt] So this is the little queen.",
+      "generation_id": "T2WQ5LNMkYstTLVRBSwA",
+      "session_id": null,
+      "credits": 45,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "st8_tt_lanfear_01",
       "speaker": "TWINKLE TOES",
       "text": "Who are YOU?",
       "file": "assets/audio/voice/st8_tt_lanfear_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "Jason by ear"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 11180,
+      "duration_s": 1.368,
+      "sha256": "28c192ea775e0e6b85e42ffc32465052cdae582728d056f6078de34b7c9fcaa4",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Who are you?",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Who are you?",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "Nggzl2QAXh3OijoXD116",
+      "voice_name": "Candy - Girly and Sweet (ElevenLabs library)",
+      "prompt": "[sassy, unimpressed] Who are YOU?",
+      "generation_id": "mp5A8uYORgActYgVW2Hn",
+      "session_id": null,
+      "credits": 33,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TWINKLE TOES"
     },
     {
       "id": "st8_lanfear_motive_01",
       "speaker": "LANFEAR",
       "text": "A hall of painted knights, roast chicken and a paper crown — and they named YOU the Queen of Love and Beauty. At Medieval Times!",
       "file": "assets/audio/voice/st8_lanfear_motive_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 77804,
+      "duration_s": 9.696,
+      "sha256": "3d41c4c15666e64dea071e2c3eb6a46e1e3f1825319712173d1c4daa3884759e",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "A hall of painted knights, roast chicken, and a paper crown. And they named you the Queen of Love and Beauty. At medieval times.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "A haul of painted knights, roast chicken, and a paper crown, and they named you the Queen of Love and Beauty, at medieval times.",
+          "match": 0.958
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[building outrage] A hall of painted knights, roast chicken and a paper crown — and they named YOU the Queen of Love and Beauty. [spitting it out] At Medieval Times!",
+      "generation_id": "rwYpSSmaiI9pIQk3mbxC",
+      "session_id": null,
+      "credits": 165,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "st8_lanfear_motive_02",
       "speaker": "LANFEAR",
       "text": "I have been the most beautiful woman in the world for three thousand years. That title is MINE.",
       "file": "assets/audio/voice/st8_lanfear_motive_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 58220,
+      "duration_s": 7.248,
+      "sha256": "43f31c914587aec21d2707f21393e7c050742989c60b13d1a2d414a5eb7dda94",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "I have been the most beautiful woman in the world for three thousand years. That title is mine!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "I have been the most beautiful woman in the world for three thousand years. That title is mine!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[wounded vanity] I have been the most beautiful woman in the world for three thousand years. [furious] That title is MINE.",
+      "generation_id": "Po5lFy2BhmETxODqqifd",
+      "session_id": null,
+      "credits": 122,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "st8_tt_lanfear_02",
       "speaker": "TWINKLE TOES",
       "text": "It's a paper crown, lady.",
       "file": "assets/audio/voice/st8_tt_lanfear_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "Jason by ear"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 19436,
+      "duration_s": 2.4,
+      "sha256": "aec21ca64767c42b83bb13593a339239e5d8991b72dd9c607dbdeaebbf410390",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "It's a paper crown, lady.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "It's a paper crown, lady.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "Nggzl2QAXh3OijoXD116",
+      "voice_name": "Candy - Girly and Sweet (ElevenLabs library)",
+      "prompt": "[sassy, unimpressed] It's a paper crown, lady.",
+      "generation_id": "5uJwE8UnNLQ1mfPdR4WS",
+      "session_id": null,
+      "credits": 46,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "note": "audition take (identical prompt) reused as the line",
+      "speaker_detail": "TWINKLE TOES"
     },
     {
       "id": "riley_st8_lanfear_01",
       "speaker": "RILEY",
       "text": "You're jealous of a dinner show?",
       "file": "assets/audio/voice/riley_st8_lanfear_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 18860,
+      "duration_s": 2.328,
+      "sha256": "756c9e15a281bbf0df13594dcf1f82bd29faaed38b5d761eb5da50355fe0d954",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "You're jealous of a dinner show?",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "You're jealous of a dinner show?",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[disbelief] You're jealous of a dinner show?",
+      "generation_id": "FTao5euWVvk5BWBCo1b9",
+      "session_id": null,
+      "credits": 44,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_lanfear_intro_02",
       "speaker": "LANFEAR",
       "text": "I will have that crown. And I will have her.",
       "file": "assets/audio/voice/st8_lanfear_intro_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 34988,
+      "duration_s": 4.344,
+      "sha256": "5a2226532e10e312f6b4ad20559513214b529134dabbb43be8a76e7d89c6a3b8",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "I will have that crown, and I will have her.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "I will have that crown, and I will have her.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[cold, menacing] I will have that crown. And I will have her.",
+      "generation_id": "D3pUk8gms61Cx3wiK0Zy",
+      "session_id": null,
+      "credits": 61,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "st8_lanfear_final_01",
       "speaker": "LANFEAR",
       "text": "I am the queen of love and beauty!",
       "file": "assets/audio/voice/st8_lanfear_final_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 24620,
+      "duration_s": 3.048,
+      "sha256": "30977686b7150151d30c10756222eedca3638c844ad06d050bb24df940d200e7",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "I am the queen of love and beauty!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "I am the Queen of Love and Beauty!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[screaming in rage] I am the queen of love and beauty!",
+      "generation_id": "onQwMan0geeZfNdy3mkw",
+      "session_id": null,
+      "credits": 54,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "st8_lanfear_final_02",
       "speaker": "LANFEAR",
       "text": "Not again! Not the snake people! Ahhhhhhh!",
       "file": "assets/audio/voice/st8_lanfear_final_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 42284,
+      "duration_s": 5.256,
+      "sha256": "7ed27e0c181e8c2d2b3a2f44f6c0b85dae8bd5348c2ef8dd1c460fb23c9d55ef",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "not again not the snake people",
+          "match": 0.857
+        },
+        "prompted": {
+          "heard": "Not again! Not the snake people!",
+          "match": 0.857
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[panicked] Not again! [horrified] Not the snake people! [screams] Ahhhhhhh!",
+      "generation_id": "3HHNuOcH5YCERxyy0TF1",
+      "session_id": null,
+      "credits": 75,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "st8_tt_final_01",
       "speaker": "TWINKLE TOES",
       "text": "Bubby you saved me! But what took you so long?",
       "file": "assets/audio/voice/st8_tt_final_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "Jason by ear"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 29420,
+      "duration_s": 3.648,
+      "sha256": "5fbb730914c550c4119294d3ed7adb659ab47d866bc63f269494df97edf99705",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Bubby, you saved me! But what took you so long?",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Bubby, you saved me! But what took you so long?",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "Nggzl2QAXh3OijoXD116",
+      "voice_name": "Candy - Girly and Sweet (ElevenLabs library)",
+      "prompt": "[delighted] Bubby you saved me! [teasing] But what took you so long?",
+      "generation_id": "4pGjGyeiABDZKW5dodN8",
+      "session_id": null,
+      "credits": 68,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TWINKLE TOES"
     },
     {
       "id": "riley_st8_final_01",
       "speaker": "RILEY",
       "text": "Too many snack breaks.",
       "file": "assets/audio/voice/riley_st8_final_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 17708,
+      "duration_s": 2.184,
+      "sha256": "7be37466b40ece9fccd289e12c1d5431760821bf658c4add46f2f37c45c63bfd",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Too many snack breaks.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Too many snack breaks...",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[dry, shrugging] Too many snack breaks.",
+      "generation_id": "NMmGCIKa5noAdBmD1jPe",
+      "session_id": null,
+      "credits": 39,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_rand_clear_01",
       "speaker": "RAND",
       "text": "The Shaido are breaking. Riley — Twinkle Toes — thank you.",
       "file": "assets/audio/voice/st8_rand_clear_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 41516,
+      "duration_s": 5.16,
+      "sha256": "a8769f329ce10c7e19e99b708f950fd178bcd30733e43f9b7cf3ef469f896ae6",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "The Shida are breaking. Riley? Twinkletoes? Thank you.",
+          "match": 0.667
+        },
+        "prompted": {
+          "heard": "The Shaido are breaking. Riley, Twinkle Toes, thank you.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "4KhtxLynQ7oUlA9AtWmc",
+      "voice_name": "Rand al'Thor (RWB)",
+      "prompt": "[tired, warm] The Shy-doh are breaking. Riley — Twinkle Toes — thank you.",
+      "generation_id": "sB4N3rOvo2sxESJb3aua",
+      "session_id": null,
+      "credits": 73,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RAND"
     },
     {
       "id": "st8_perrin_clear_01",
       "speaker": "PERRIN",
       "text": "Let's get you two home.",
       "file": "assets/audio/voice/st8_perrin_clear_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 12140,
+      "duration_s": 1.488,
+      "sha256": "93ed76f9f644a65678c995367d7a19980ccf562fae9caa3babf4aafba7d73d9f",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Let's get you two home.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Let's get you two home.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "zbjNmxRpvMNZQvdRdKvd",
+      "voice_name": "Perrin Aybara (RWB)",
+      "prompt": "[gentle] Let's get you two home.",
+      "generation_id": "CILfFGxNGgescGIjkCnM",
+      "session_id": null,
+      "credits": 32,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "PERRIN"
     },
     {
       "id": "st8_story_end_01",
       "speaker": "NARRATOR",
       "text": "The Wheel turns, and Riley brought his sister home. One day it will turn toward the Last Battle. But not today.",
       "file": "assets/audio/voice/st8_story_end_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 83276,
+      "duration_s": 6.912,
+      "sha256": "ac54fb5e93af56ede7632ff9515cebb77134eb3c069c1c04f53ccfa61d2a3ce6",
+      "whisper_medium_en": {
+        "prompted": {
+          "heard": "The wheel turns, and Riley brought his sister home. One day it will turn toward the last battle, but not today.",
+          "match": 1
+        },
+        "unprompted": {
+          "heard": "The wheel turns, and Riley brought his sister home. One day it will turn toward the last battle, but not today.",
+          "match": 1
+        }
+      },
+      "engine": "indextts",
+      "model": "IndexTTS 2.5 (VoiceStudio)",
+      "reference": "jasonvoice/ref/jason_ref_nodenoise.wav",
+      "emo_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.05,
+        0,
+        0.15
+      ],
+      "seed": 7,
+      "variant": "plain text (respelled variant rejected on STT)",
+      "processing": "trim, highpass 60, loudnorm I=-18 TP=-2 LRA=7, alimiter 0.79 -> mono 24 kHz 96 kbps",
+      "speaker_detail": "NARRATOR (Jason F, IndexTTS 2.5 clone, own voice, consented)"
     },
     {
       "id": "st8_taim_kill_02",
       "speaker": "TAIM",
       "text": "Asha'man, kill!",
       "file": "assets/audio/voice/st8_taim_kill_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 14252,
+      "duration_s": 1.752,
+      "sha256": "461e302e0449f5be2734d2676730ba4084c676f49aa1c1c2b9ab451c2be14ad0",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Asaman, kill!",
+          "match": 0.5
+        },
+        "prompted": {
+          "heard": "Asha'man, Kill!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "gUU37agQvEpxeWrZUIMk",
+      "voice_name": "Alaric - Intense and Measured (ElevenLabs library)",
+      "prompt": "[clipped bark] AH-shah-mahn, kill!",
+      "generation_id": "KMVR8qyTHvGSeRz7uFKq",
+      "session_id": "1OuidaXjvwx0Kha2JaPC",
+      "credits": 34,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TAIM"
     },
     {
       "id": "st8_taim_kill_03",
       "speaker": "TAIM",
       "text": "Asha'man, kill!",
       "file": "assets/audio/voice/st8_taim_kill_03.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 16940,
+      "duration_s": 2.088,
+      "sha256": "04222a4bd18ab4b7507938bafd93026e16939024f0bd16cd13313b29709b39d8",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Ashaman, kill.",
+          "match": 0.5
+        },
+        "prompted": {
+          "heard": "Asha'man, Kill",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "gUU37agQvEpxeWrZUIMk",
+      "voice_name": "Alaric - Intense and Measured (ElevenLabs library)",
+      "prompt": "[cold, bored] Ah-shah-mahn, kill.",
+      "generation_id": "Fs2F0GGat0idSaZlGchz",
+      "session_id": null,
+      "credits": 33,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TAIM"
     },
     {
       "id": "st8_tt_mirror_01",
       "speaker": "TWINKLE TOES",
       "text": "Silver crown's the real one!",
       "file": "assets/audio/voice/st8_tt_mirror_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "Jason by ear"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 12908,
+      "duration_s": 1.584,
+      "sha256": "d6174201974d4d545a052c173a640e1d584a84f14fc4a0ba48125fd835f59529",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Silver Crown's the real one.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Silvercrown's the real one.",
+          "match": 0.6
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "Nggzl2QAXh3OijoXD116",
+      "voice_name": "Candy - Girly and Sweet (ElevenLabs library)",
+      "prompt": "[bossy, pointing] Silver crown's the real one!",
+      "generation_id": "2VuY7FxXu2UHJazgrf7j",
+      "session_id": null,
+      "credits": 46,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TWINKLE TOES"
     },
     {
       "id": "st8_lanfear_p2_01",
       "speaker": "LANFEAR",
       "text": "A carnation from a knight on a horse?! I ruled the Age of Legends!",
       "file": "assets/audio/voice/st8_lanfear_p2_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 45548,
+      "duration_s": 5.664,
+      "sha256": "8772b169986e15b1f31e51f190ecd1c728151deaf35bfd0301596f022f4b1674",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "A carnation from a knight on a horse? I ruled the Age of Legends!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "A carnation from a knight on a horse? I ruled the Age of Legends!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[outraged] A carnation from a knight on a horse?! [shouting] I ruled the Age of Legends!",
+      "generation_id": "nsVybI9QHD00ngrrW7Xq",
+      "session_id": null,
+      "credits": 88,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "st8_lanfear_p3_01",
       "speaker": "LANFEAR",
       "text": "Enough games. Burn, both of you!",
       "file": "assets/audio/voice/st8_lanfear_p3_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 27884,
+      "duration_s": 3.456,
+      "sha256": "fb2cae794d545c08e52c1ed2203d549d027e918474996bd0dd5bd2d478e1c209",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Enough games! Burn both of you!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Enough games! Burn both of you!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[cold fury] Enough games. [shouting] Burn, both of you!",
+      "generation_id": "6X2bCQjoQnBThwixO5Og",
+      "session_id": null,
+      "credits": 55,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "st8_lanfear_hurt_01",
       "speaker": "LANFEAR",
       "text": "You dare?!",
       "file": "assets/audio/voice/st8_lanfear_hurt_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 11564,
+      "duration_s": 1.416,
+      "sha256": "96ebb0762718cdf7f5a5105e766180cec08911ead07d3d472aade4b2a1265351",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "You dare?",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "You dare?",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[shocked, furious] You dare?!",
+      "generation_id": "QQB9L9tlMfaasG7xXOaJ",
+      "session_id": null,
+      "credits": 29,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "st8_lanfear_clash_01",
       "speaker": "LANFEAR",
       "text": "You push against ME?",
       "file": "assets/audio/voice/st8_lanfear_clash_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 17900,
+      "duration_s": 2.208,
+      "sha256": "14df9b096b4f31e189c1939f2c51f6f01ba1a245f9e04fcfb9eca0021928c0f5",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "You push against me?",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "You push against me?!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "RxWrQBZTo88tuXk76YNu",
+      "voice_name": "Lanfear (RWB)",
+      "prompt": "[straining, indignant] You push against ME?",
+      "generation_id": "qfNQWo1Y38cdnkQcxNZO",
+      "session_id": null,
+      "credits": 43,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "LANFEAR"
     },
     {
       "id": "riley_st8_clash_01",
       "speaker": "RILEY",
       "text": "Twinkle Toes — push!",
       "file": "assets/audio/voice/riley_st8_clash_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 14444,
+      "duration_s": 1.776,
+      "sha256": "bd74b91feb1603346d99007ef1778f4d674cf24ef3323bd884bf54825b8d0bdb",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Twinkle-Twos. Push.",
+          "match": 0.667
+        },
+        "prompted": {
+          "heard": "Twinkle Toes, Push!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[urgent] Twinkle Toes — push!",
+      "generation_id": "rtvB7CK61wnHMuGUVUMd",
+      "session_id": null,
+      "credits": 29,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_tt_clash_01",
       "speaker": "TWINKLE TOES",
       "text": "I'm pushing!",
       "file": "assets/audio/voice/st8_tt_clash_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "Jason by ear"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 12716,
+      "duration_s": 1.56,
+      "sha256": "358f8845f7c92b4e7fae50d3fa13c7bc2a6118393907e8fa5bf0e00d6f894899",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "I'm pushing!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "I'm pushing!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "Nggzl2QAXh3OijoXD116",
+      "voice_name": "Candy - Girly and Sweet (ElevenLabs library)",
+      "prompt": "[strained, determined] I'm pushing!",
+      "generation_id": "agSMuwoetQfzrt1YOOSp",
+      "session_id": null,
+      "credits": 35,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "TWINKLE TOES"
     },
     {
       "id": "riley_st8_linkfire_01",
       "speaker": "RILEY",
       "text": "Together — fire!",
       "file": "assets/audio/voice/riley_st8_linkfire_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 15596,
+      "duration_s": 1.92,
+      "sha256": "a87e3ae39a7bd288c77c02a60f8e63c85fcc3bcb198f06dd7202db819df4831c",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Together, Fire!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Together! Fire!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[shouting] Together — fire!",
+      "generation_id": "zCPCWSvZKCxTmWpa0mOd",
+      "session_id": null,
+      "credits": 27,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "riley_st8_call_01",
       "speaker": "RILEY",
       "text": "Mat! Your luck!",
       "file": "assets/audio/voice/riley_st8_call_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 16748,
+      "duration_s": 2.064,
+      "sha256": "772044c02211717041266f2f735ac233f45e98e5d56c4def7b7593f72886c190",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Your luck!",
+          "match": 0.667
+        },
+        "prompted": {
+          "heard": "Mat! Your Luck!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[shouting] Mat! Your luck!",
+      "generation_id": "RUlVZKj8FuNklUFKukE7",
+      "session_id": null,
+      "credits": 26,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "riley_st8_call_02",
       "speaker": "RILEY",
       "text": "Rand, now!",
       "file": "assets/audio/voice/riley_st8_call_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 13484,
+      "duration_s": 1.656,
+      "sha256": "e84492e67355b76ab34ccc0e9f9cb7c92e1290a85bf2eadaf5a8be54f68f5c8a",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "rant now",
+          "match": 0.5
+        },
+        "prompted": {
+          "heard": "Rand, now!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[shouting] Rand, now!",
+      "generation_id": "zpsOA8zO0ckU0ZDQDOsm",
+      "session_id": null,
+      "credits": 21,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "riley_st8_wait_01",
       "speaker": "RILEY",
       "text": "Not yet — give it a breath.",
       "file": "assets/audio/voice/riley_st8_wait_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 18668,
+      "duration_s": 2.304,
+      "sha256": "c4418f0053e6019e6f703bbadc26c105171fbc1753b7e3e0961804f903583e9f",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Not yet. Give it a breath.",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Not yet. Give it a breath.",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "JjsQrIrIBD6TZ656NQfi",
+      "voice_name": "DYLO - Dark Anime Hero",
+      "prompt": "[calm, holding back] Not yet — give it a breath.",
+      "generation_id": "hlFX5Dj8NJKAFjlJUEJV",
+      "session_id": null,
+      "credits": 48,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "RILEY"
     },
     {
       "id": "st8_mat_call_01",
       "speaker": "MAT",
       "text": "Time to roll the dice!",
       "file": "assets/audio/voice/st8_mat_call_01.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 15212,
+      "duration_s": 1.872,
+      "sha256": "1178c1745d693fc84b78d5b4e94a5bbfee18c461c05ba960ede8398a83273740",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Time to roll the dice!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Time to roll the dice!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "pEHnUCP5HTNHlMckih1X",
+      "voice_name": "Mat Cauthon (RWB)",
+      "prompt": "[gleeful] Time to roll the dice!",
+      "generation_id": "aYrbn9JNTqBE9I3P0zUz",
+      "session_id": null,
+      "credits": 32,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "MAT"
     },
     {
       "id": "st8_mat_call_02",
       "speaker": "MAT",
       "text": "Snake eyes for them!",
       "file": "assets/audio/voice/st8_mat_call_02.mp3",
-      "status": "missing",
+      "status": "present",
       "fallback": "caption",
-      "approval": "pending"
+      "approval": "approved by Jason F by ear, 2026-10-19",
+      "bytes": 15020,
+      "duration_s": 1.848,
+      "sha256": "15e445a8110d71f906bb76c87dcadf8ab9fec51491318a1b2e3da1facfe1fd0f",
+      "whisper_medium_en": {
+        "unprompted": {
+          "heard": "Snake eyes for them!",
+          "match": 1
+        },
+        "prompted": {
+          "heard": "Snake Eyes for them!",
+          "match": 1
+        }
+      },
+      "engine": "elevenlabs",
+      "model": "eleven_v4",
+      "voice_id": "pEHnUCP5HTNHlMckih1X",
+      "voice_name": "Mat Cauthon (RWB)",
+      "prompt": "[cocky] Snake eyes for them!",
+      "generation_id": "BpPfFlJI3aT0Z5A9sCsS",
+      "session_id": null,
+      "credits": 28,
+      "processing": "riley-voice-manifest chain, mono 24 kHz 64k",
+      "speaker_detail": "MAT"
     }
   ],
   "lewsProcessing": "highpass 120 Hz; lowpass 6.5 kHz; aecho=0.6:0.5:35|70:0.22|0.12; -19 LUFS"
