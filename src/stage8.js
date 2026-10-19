@@ -30,10 +30,13 @@ import {createStage8View} from './stage8-view.js';
 import {hook8,releaseHolds8} from './stage8-hooks.js';
 import {installStage8Hud} from './stage8-hud.js';
 import {STAGE8_VOICES} from './stage8-voice.js';
-// Reserved commissioned paths; presence flags select shipped fallback loops without a failed request.
+// Loop points: tools/stage8/music-manifest.json.
+export const LOOP8={stage8:61.742245,boss8:66.767029};
+export function guardLoop8(id,m=MUSIC[id],d=Infinity){const e=LOOP8[id];if(!e||!m)return;if(!(m.loopStart>=0))m.loopStart=.25;if(!(m.loopEnd>m.loopStart))m.loopEnd=e;if(d>0&&d<m.loopEnd)m.loopEnd=d;if(m.loopStart>=m.loopEnd)m.loopStart=Math.min(.25,m.loopEnd/2);}
 export function registerMusic8(){
-MUSIC.stage8={url:'assets/audio/music-stage8.mp3',loopStart:.25,loopEnd:60.25,gain:.90};
-MUSIC.boss8={url:'assets/audio/music-boss8.mp3',loopStart:.25,loopEnd:68.821429,gain:.94};
+MUSIC.stage8={url:'assets/audio/music-stage8.mp3',loopStart:.25,loopEnd:LOOP8.stage8,gain:.90};
+MUSIC.boss8={url:'assets/audio/music-boss8.mp3',loopStart:.25,loopEnd:LOOP8.boss8,gain:.94};
+for(const id in LOOP8)MUSIC[id].validateLoop=(m,d)=>guardLoop8(id,m,d);
 }
 export function earlyKeys8(){return [...residentKeys({zoneI:0},STREAMS[8]),...ZONE_ART8.Z0,'bg8fg','bg8smoke'];}
 export function queueStage8(s){registerMusic8();queuePowerArt(s,{twix:false});queueStage8Painted(s,earlyKeys8());}

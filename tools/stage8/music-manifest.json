@@ -1,0 +1,75 @@
+{
+ "stage8": {
+  "file": "music-stage8.mp3",
+  "title": "Asha'man, Kill! (Dumai's Wells)",
+  "target": "assets/audio/music-stage8.mp3",
+  "loopStart": 0.25,
+  "loopEnd": 61.742245,
+  "gain": 0.9,
+  "doc": "Stage 8 Dumai's Wells. Nordic folk metal war chant: deep male choir, gang shouts, frame drums and taiko, hurdy-gurdy drone. The loop runs verse -> pre-chorus -> 'Asha'man, kill!' chorus (about 12 s in) -> kulning post-chorus -> bridge -> chorus (39 s) -> bridge -> final chorus (60 s), then the last 'kill!' falls back into the verse.",
+  "bpm": 124.9,
+  "bars": 32,
+  "beatsPerBar": 4,
+  "loopSeconds": 61.492245,
+  "cutStart": 33.07,
+  "seamMatch": 0.059,
+  "lufs": -16.0,
+  "peakDbfs": -4.5,
+  "bytes": 868980,
+  "source": {
+   "engine": "suno",
+   "model": "v6 Pro",
+   "plan": "Suno Pro",
+   "account": "jfeldman9497",
+   "take": "A1",
+   "song_id": "e99b6b16-7d6d-4847-9fe5-ad50535eeaea",
+   "url": "https://suno.com/song/e99b6b16-7d6d-4847-9fe5-ad50535eeaea",
+   "created": "2026-10-19T07:50:18Z",
+   "duration_s": 120.0,
+   "instrumental": false,
+   "raw": "stage8_raw.mp3 (not shipped)",
+   "measured": {
+    "bpm": 124.9,
+    "meter": "4/4",
+    "note": "Requested 120 BPM; onset autocorrelation and the beat grid put the take at ~122-125.5 BPM (it settles near 125 after the intro). The loop is 128 tracked beats (32 bars), 33.07 s -> 94.56 s, snapped to whole MP3 frames."
+   },
+   "vocals": "Chorus 'Asha'man, kill!' (Whisper word times in the take: 45.2 s, 72.1 s, 93.1 s) all sit inside the loop window."
+  }
+ },
+ "boss8": {
+  "file": "music-boss8.mp3",
+  "title": "Queen of Love and Beauty",
+  "target": "assets/audio/music-boss8.mp3",
+  "loopStart": 0.25,
+  "loopEnd": 66.767029,
+  "gain": 0.94,
+  "doc": "Stage 8 boss duel with Lanfear. Instrumental dark symphonic folk metal in 3/4: soaring wordless soprano, nordic male choir, ostinato, war drums and brass. No lyrics, so nothing fights Lanfear's lines.",
+  "bpm": 184,
+  "bars": 68,
+  "beatsPerBar": 3,
+  "loopSeconds": 66.517029,
+  "cutStart": 20.7,
+  "seamMatch": 0.172,
+  "lufs": -15.2,
+  "peakDbfs": -3.7,
+  "bytes": 939197,
+  "source": {
+   "engine": "suno",
+   "model": "v6 Pro",
+   "plan": "Suno Pro",
+   "account": "jfeldman9497",
+   "take": "B1",
+   "song_id": "46be44f1-186c-40a6-aad2-1c98c5f51292",
+   "url": "https://suno.com/song/46be44f1-186c-40a6-aad2-1c98c5f51292",
+   "created": "2026-10-19T07:51:00Z",
+   "duration_s": 139.32,
+   "instrumental": true,
+   "raw": "boss8_raw.mp3 (not shipped)",
+   "measured": {
+    "bpm": 184,
+    "meter": "3/4",
+    "note": "Requested 140 BPM; the take holds a steady 184 BPM (every 10 s window 183.9-184.2) in triple meter (bass onsets on every third beat). The loop is 204 beats (68 bars of 3/4) from the downbeat at 20.70 s."
+   }
+  }
+ }
+}
