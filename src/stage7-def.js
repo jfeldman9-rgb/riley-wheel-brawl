@@ -22,7 +22,7 @@ export const STAGE7 = {
   skipBoss: Object.freeze({ zoneI: 2, x: 3990, camX: 3500 }),
   boss: Object.freeze({ type: 'asmodean', name: 'ASMODEAN', portrait: 'asmoPortrait', introVoice: 'st7_asmo_intro_01' }),
   music: Object.freeze({ stage: 'stage7', boss: 'boss7' }), chars: STAGE7_CHARS, textures: STAGE7_TEXTURES, kit: null,
-  next: q => q?.get?.('s7') === '1' && q?.get?.('s8') === '1' ? { stage: 8, fromStage7: true, autostart: true } : { stage: 1, stage7Return: true },
+  next: q => q?.get?.('s7') !== '0' && q?.get?.('s8') !== '0' ? { stage: 8, fromStage7: true, autostart: true } : { stage: 1, stage7Return: true },
   onBossPhase(s, boss, phase) {
     stage7Say('st7_asmo_p' + phase + '_01', s.caption);
     s.hud?.flashText(phase === 2 ? 'THE GLASS SINGS — LEAVE THE WHITE COLUMN' : 'THE KEY — THREE HITS OR A THROW');
