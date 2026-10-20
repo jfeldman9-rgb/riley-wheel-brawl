@@ -9,9 +9,9 @@ import { callInFor } from '../src/rand-call.js';
 import { usesCompactNormals } from '../src/texture-pages.js';
 import { plateRect,STREAMS } from '../src/zone-stream.js';
 import { freeStory7 } from '../src/stage7-paint.js';
-test('gated registry, Stage 6 onward wiring, providers and exact Stage 6 plate geometry',()=>{
-  assert.equal(stageFromQuery(new URLSearchParams('stage=7')),1);assert.equal(stageFromQuery(new URLSearchParams('stage=7&s7=1')),7);assert.equal(maxStage(new URLSearchParams('s7=1')),7);
-  assert.deepEqual(STAGES[6].next(new URLSearchParams('s7=1')),{stage:7});assert.deepEqual(STAGES[6].next(),{stage:1});assert.deepEqual(STAGE7.chars,['riley','grunt','spear']);assert.equal(usesCompactNormals(7),true);
+test('live registry, Stage 6 onward wiring, providers and exact Stage 6 plate geometry',()=>{
+  assert.equal(stageFromQuery(new URLSearchParams('stage=7')),7);assert.equal(stageFromQuery(new URLSearchParams('stage=7&s7=1')),7);assert.equal(maxStage(new URLSearchParams('s7=1')),8);assert.equal(stageFromQuery(new URLSearchParams('stage=7&s7=0')),1);assert.equal(maxStage(new URLSearchParams('s7=0')),6);
+  assert.deepEqual(STAGES[6].next(new URLSearchParams('s7=1')),{stage:7});assert.deepEqual(STAGES[6].next(),{stage:7});assert.deepEqual(STAGE7.chars,['riley','grunt','spear']);assert.equal(usesCompactNormals(7),true);
   for(let i=1;i<=9;i++)assert.equal(callInFor(i),i<6?'loial':i===6?'rand':'moilan');
   for(let i=0;i<4;i++){const z=STAGES[6].zones,l=z[i].l,r=i===3?5200:z[i+1].l,bl=i===0?128:i===2?0:48,br=i===3?128:i+1===2?0:48,x=(i?l:0)-bl;assert.deepEqual(plateRect(i,z),{x,w:r+br-x});}
   assert.deepEqual(STREAMS[7].bleed,[128,48,48,48,128]);

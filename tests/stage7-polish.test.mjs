@@ -378,7 +378,7 @@ test("outro holds Riley inside the clear composition while held directions and a
   for (let i = 0; i < 60 && !s.clearShown; i++) h.step();
   assert.equal(s.clearShown, true);
   s.onPress("attack");
-  assert.deepEqual(h.observations.restartData.at(-1), { stage: 1, stage7Return: true });
+  assert.deepEqual(h.observations.restartData.at(-1), { stage: 8, fromStage7: true, autostart: true });
 }));
 
 test("Stage 7 and its return title hide gameplay HUD nodes, restore on Start, and leave other titles alone", () => {

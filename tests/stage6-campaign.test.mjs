@@ -33,7 +33,7 @@ function run(seed, rand, lag) {
     for (let frame = 0; frame < 60 * 15; frame++) h.step();
     s.inp.press('attack');
     h.step();
-    assert.deepEqual(h.observations.restartData, [{ stage: 1 }]);
+    assert.deepEqual(h.observations.restartData, [{ stage: 7 }]);
     return { bossT, calls };
   } finally { h.destroy(); }
 }

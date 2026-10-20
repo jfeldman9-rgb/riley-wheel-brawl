@@ -83,7 +83,7 @@ test('stageFromQuery opens stages 2–6 with or without s3/s4, and a bare flag s
   assert.equal(stageFromQuery(Q('s4=1')), 1);
   assert.equal(stageFromQuery(Q('stage=6')), 6);
   assert.equal(stageFromQuery(Q('stage=6&s6=0')), 1);
-  for (const bad of ['stage=0', 'stage=7', 'stage=abc', 'stage=-2', 'stage=2.5']) assert.equal(stageFromQuery(Q(bad)), 1, bad);
+  for (const bad of ['stage=0', 'stage=9', 'stage=abc', 'stage=-2', 'stage=2.5']) assert.equal(stageFromQuery(Q(bad)), 1, bad);
 });
 
 test('resolveStage accepts stages 1–4 from scene data, and s3/s4 do not change that', () => {
@@ -96,10 +96,10 @@ test('resolveStage accepts stages 1–4 from scene data, and s3/s4 do not change
   assert.equal(resolveStage({ stage: 4 }, Q('s4=1')), 4);
   assert.equal(resolveStage({ stage: 5 }, Q('')), 5);
   assert.equal(resolveStage({ stage: 5 }, Q('stage=1')), 5);
-  assert.equal(resolveStage({ stage: 7 }, Q('s4=1')), 1);
+  assert.equal(resolveStage({ stage: 7 }, Q('s4=1')), 7);
 });
 
-test('maxStage is 6 with no flags, with s3=1, and with s4=1; 5 under s6=0', () => {
+test('maxStage is 8 by default; stage opt-outs restore earlier limits', () => {
   const Q = s => new URLSearchParams(s);
   for (const n of [1, 2, 3, 4]) {
     assert.equal(stageEnabled(n, Q('')), true, n);
@@ -111,11 +111,12 @@ test('maxStage is 6 with no flags, with s3=1, and with s4=1; 5 under s6=0', () =
   assert.equal(stageEnabled(0, Q('')), false);
   assert.equal(stageEnabled(6, Q('s4=1')), true);
   assert.equal(stageEnabled(6, Q('s6=0')), false);
-  assert.equal(stageEnabled(7, Q('')), false);
-  assert.equal(maxStage(Q('')), 6);
-  assert.equal(maxStage(Q('s3=1')), 6);
-  assert.equal(maxStage(Q('s4=1')), 6);
-  assert.equal(maxStage(Q('s6=0')), 5);
+  assert.equal(stageEnabled(7, Q('')), true);
+  assert.equal(maxStage(Q('')), 8);
+  assert.equal(maxStage(Q('s3=1')), 8);
+  assert.equal(maxStage(Q('s4=1')), 8);
+  assert.equal(maxStage(Q('s6=0')), 8);
+  assert.equal(maxStage(Q('s6=0&s7=0')), 5);
 });
 
 test('releasing: loading 3 after 2 releases only non-shared keys, loading 1 after 3 releases every Stage 3 key', () => {
@@ -190,7 +191,7 @@ test('releasing: loading 3 after 2 releases only non-shared keys, loading 1 afte
   }
 });
 
-test('no-flag campaign next() is 1→2→3→4→5→6→title, and s3/s4 do not change it', () => {
+test('no-flag campaign next() is 1→2→3→4→5→6→7→8→title, and s3/s4 do not change it', () => {
   const Q = s => new URLSearchParams(s);
   const stage3 = { stage: 3, fromStage2: true, autostart: true };
   const stage4 = { stage: 4, fromStage3: true, autostart: true };
@@ -201,7 +202,13 @@ test('no-flag campaign next() is 1→2→3→4→5→6→title, and s3/s4 do not
   const stage5 = { stage: 5, fromStage4: true, autostart: true };
   for (const q of ['', 's3=1', 's4=1']) assert.deepEqual(STAGES[4].next(Q(q)), stage5, q);
   for (const q of ['', 's3=1', 's4=1']) assert.deepEqual(STAGES[5].next(Q(q)), { stage: 6, fromStage5: true, autostart: true }, q);
-  for (const q of ['', 's3=1', 's4=1']) assert.deepEqual(STAGES[6].next(Q(q)), { stage: 1 }, q);
+  for (const q of ['', 's3=1', 's4=1']) assert.deepEqual(STAGES[6].next(Q(q)), { stage: 7 }, q);
+  assert.deepEqual(STAGES[6].next(Q('s7=0')), { stage: 1 });
+  assert.deepEqual(STAGES[7].next(Q('')), { stage: 8, fromStage7: true, autostart: true });
+  assert.deepEqual(STAGES[7].next(Q('s8=0')), { stage: 1, stage7Return: true });
+  assert.deepEqual(STAGES[8].next(Q('')), { stage: 1, campaignComplete: true });
+  assert.equal(maxStage(Q('s7=0')), 6);
+  assert.equal(maxStage(Q('s8=0')), 7);
   assert.deepEqual(STAGES[5].next(Q('s6=0')), { stage: 1 });
   assert.equal(STAGES[4].next(Q('')).score, undefined);
   assert.equal(STAGES[4].next(Q('')).lives, undefined);
