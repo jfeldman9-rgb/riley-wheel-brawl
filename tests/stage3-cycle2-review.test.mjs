@@ -15,6 +15,8 @@ import { audit } from '../tools/audit-stage1.mjs';
 const STAGE2_VOICE = /^(st2_|byar_|zealot_|archer_|riley_st2|riley_ribbon|riley_mud)/;
 const STAGE3_VOICE = /^(st3_|cutthroat_|fade_|riley_st3_|riley_escape_|riley_counter_)/;
 const STAGE4_VOICE = /^(st4_|draghkar_|cultist_|riley_fog_|riley_tower_|riley_bridge_|riley_light_|riley_st4_)/;
+// Stage 7 and 8 lines have their own audit caps (stage7.voices, stage8.voices) and stay out of the Stage 1 gate.
+const LATER_VOICE = /^(st7_|riley_st7_|st8_|riley_st8_)/;
 
 function watchLighting(s) {
   const orig = s.add.image.bind(s.add);
@@ -108,7 +110,7 @@ test('Stage 1 pre-fight budget omits Stage 2 voices and keeps Stage 3 on its own
   const stage4Names = voices.filter(name => STAGE4_VOICE.test(name));
   const stage5Set = new Set(STAGE5_VOICES.map(id => `${id}.mp3`));
   const stage6Set = new Set(STAGE6_VOICES.map(id => `${id}.mp3`));
-  const earlier = voices.filter(name => !STAGE2_VOICE.test(name) && !STAGE3_VOICE.test(name) && !STAGE4_VOICE.test(name) && !stage5Set.has(name) && !stage6Set.has(name));
+  const earlier = voices.filter(name => !STAGE2_VOICE.test(name) && !STAGE3_VOICE.test(name) && !STAGE4_VOICE.test(name) && !stage5Set.has(name) && !stage6Set.has(name) && !LATER_VOICE.test(name));
   const sum = names => names.reduce((n, name) => n + statSync(`assets/audio/voice/${name}`).size, 0);
   assert.deepEqual(stage3Names.map(name => name.replace(/\.mp3$/, '')).sort(), [...STAGE3_VOICES].sort());
   assert.ok(stage2Names.some(name => name.startsWith('byar_')), 'Stage 2 voices are still in the tree');

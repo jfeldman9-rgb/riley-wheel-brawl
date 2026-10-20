@@ -1,0 +1,181 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 179,
+    "w": 151,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 232,
+    "w": 296
+   },
+   "spriteSourceSize": {
+    "h": 179,
+    "w": 151,
+    "x": 81,
+    "y": 45
+   },
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 154,
+    "w": 148,
+    "x": 153,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 232,
+    "w": 296
+   },
+   "spriteSourceSize": {
+    "h": 154,
+    "w": 148,
+    "x": 46,
+    "y": 70
+   },
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 152,
+    "w": 163,
+    "x": 303,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 232,
+    "w": 296
+   },
+   "spriteSourceSize": {
+    "h": 152,
+    "w": 163,
+    "x": 6,
+    "y": 73
+   },
+   "trimmed": true
+  },
+  "3": {
+   "frame": {
+    "h": 201,
+    "w": 141,
+    "x": 468,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 232,
+    "w": 296
+   },
+   "spriteSourceSize": {
+    "h": 201,
+    "w": 141,
+    "x": 65,
+    "y": 23
+   },
+   "trimmed": true
+  },
+  "4": {
+   "frame": {
+    "h": 148,
+    "w": 190,
+    "x": 611,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 232,
+    "w": 296
+   },
+   "spriteSourceSize": {
+    "h": 148,
+    "w": 190,
+    "x": 32,
+    "y": 76
+   },
+   "trimmed": true
+  },
+  "5": {
+   "frame": {
+    "h": 173,
+    "w": 133,
+    "x": 803,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 232,
+    "w": 296
+   },
+   "spriteSourceSize": {
+    "h": 173,
+    "w": 133,
+    "x": 75,
+    "y": 51
+   },
+   "trimmed": true
+  },
+  "6": {
+   "frame": {
+    "h": 214,
+    "w": 121,
+    "x": 938,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 232,
+    "w": 296
+   },
+   "spriteSourceSize": {
+    "h": 214,
+    "w": 121,
+    "x": 77,
+    "y": 10
+   },
+   "trimmed": true
+  },
+  "7": {
+   "frame": {
+    "h": 146,
+    "w": 160,
+    "x": 1061,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 232,
+    "w": 296
+   },
+   "spriteSourceSize": {
+    "h": 146,
+    "w": 160,
+    "x": 32,
+    "y": 78
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage6/process_art.py",
+  "drawScale": 1.0,
+  "format": "RGBA8888",
+  "image": "s8loial.webp",
+  "origin": [
+   0.5,
+   0.96
+  ],
+  "res": 1.0,
+  "scale": "1",
+  "screenH": 178,
+  "size": {
+   "h": 214,
+   "w": 1221
+  }
+ }
+}

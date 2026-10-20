@@ -1,6 +1,7 @@
 // Stage 4 autopilot. Owns the controls whenever it runs so Stage 2/3 branches stay idle.
 import { LANE_TOP, LANE_BOT } from './config.js';
 import { stage5Bot } from './bot-stage5.js';
+import { stage8Bot } from './bot-stage8.js';
 import { stage7Bot } from './bot-stage7.js';
 import { stage6Bot } from './bot-stage6.js';
 
@@ -11,6 +12,7 @@ const press = (bot, key, gap) => {
 
 export function stage4Bot(bot) {
   const s = bot.s, R = s.riley, k = s.kit;
+  if (s.stageNo === 8) return stage8Bot(bot);
   if (s.stageNo === 7) return stage7Bot(bot);
   if (s.stageNo === 6) return stage6Bot(bot);
   if (s.stageNo === 5) return stage5Bot(bot);

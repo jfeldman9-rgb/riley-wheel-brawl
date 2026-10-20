@@ -116,7 +116,7 @@ export function fixClear7(hud, stats) {
   if (!((stats.stage === 6 && next === 7) || stats.stage === 7)) return;
   const verb = hud.game?.inp?.isTouch ? "TAP KICK" : "PRESS ATTACK";
   const line =
-    stats.stage === 7
+    stats.stage === 7 && next !== 8
       ? verb + " TO RETURN TO THE TITLE"
       : verb + " TO CONTINUE TO STAGE " + next;
   for (const node of hud.card?.list || [])

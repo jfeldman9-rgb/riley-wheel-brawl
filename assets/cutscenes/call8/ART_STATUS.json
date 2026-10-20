@@ -1,0 +1,32 @@
+{
+  "entries": [
+    {
+      "id": "M1",
+      "reviewer": "Grok Bot (4 fps frame review)",
+      "timestamp": "2026-10-19T13:40:00-07:00",
+      "likeness": "no TV-actor likeness; no text/gore",
+      "audio": "generated audio stripped"
+    },
+    {
+      "id": "M2",
+      "reviewer": "Grok Bot (4 fps frame review)",
+      "timestamp": "2026-10-19T13:40:00-07:00",
+      "likeness": "no TV-actor likeness; no text/gore",
+      "audio": "generated audio stripped"
+    },
+    {
+      "id": "M3",
+      "reviewer": "Grok Bot (4 fps frame review)",
+      "timestamp": "2026-10-19T13:40:00-07:00",
+      "likeness": "no TV-actor likeness; no text/gore",
+      "audio": "generated audio stripped"
+    }
+  ],
+  "pending": [],
+  "redo": {
+    "M1": "redo t2 0-4s",
+    "M2": "redo t1 6-10s",
+    "M3": "redo t2 1.5-5.5s",
+    "timestamp": "2026-10-19T16:55:00-07:00"
+  }
+}

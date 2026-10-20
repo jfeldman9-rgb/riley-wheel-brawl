@@ -1,0 +1,9 @@
+{
+  "engine": "webkit",
+  "status": "blocked",
+  "runs": [],
+  "soak": [],
+  "errors": [
+    "browserType.launch: Executable doesn't exist at /home/box/.cache/ms-playwright/webkit-2359/pw_run.sh\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝\n    at /workspace/rwb-s8/tools/stage8/browser-hardening.mjs:14:35"
+  ]
+}

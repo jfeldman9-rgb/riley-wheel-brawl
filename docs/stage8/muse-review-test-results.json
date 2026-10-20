@@ -1,0 +1,48 @@
+{
+  "checkpoint": "a8eeedd (outside-process checkpoint of code/tests)",
+  "baseline": "6126a66",
+  "countUnit": "test files, as reported by this sandbox node --test runner",
+  "stage8AndMat": {
+    "tests": 26,
+    "pass": 26,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 58951.530589,
+    "failures": []
+  },
+  "fullSuite": {
+    "tests": 249,
+    "pass": 247,
+    "fail": 2,
+    "skipped": 0,
+    "durationMs": 179321.660468,
+    "failures": [
+      "tests/stage7-final.test.mjs",
+      "tests/stage7-polish.test.mjs"
+    ]
+  },
+  "commands": [
+    "node --require /tmp/s8-file-capture.cjs --test tests/stage8*.test.mjs tests/mat-call.test.mjs",
+    "node --require /tmp/s8-file-capture.cjs --test tests/*.test.mjs",
+    "node --require /tmp/s8-file-capture.cjs tests/stage8-campaign.test.mjs",
+    "node tools/stage8/pin-bytes.mjs",
+    "node tools/stage8/memory.mjs"
+  ],
+  "boot": {
+    "baseline": 20675453,
+    "delta": 106898,
+    "bytes": 20782351
+  },
+  "memory": {
+    "projectedPeak": 100515408,
+    "sourceGate": 110100480,
+    "paintedGate": 27262976,
+    "physicalDevice": "UNMEASURED",
+    "maxPaintedBytes": 25434976
+  },
+  "notes": [
+    "The two Chromium failures are the known sandbox EPERM restriction; no browser test was changed or skipped.",
+    "The Stage 1\u20137 golden fixture and protected-file checks pass.",
+    "A file-capture preload redirects child-process pipe captures to temporary files to work around sandbox EPERM; it does not alter test assertions."
+  ]
+}

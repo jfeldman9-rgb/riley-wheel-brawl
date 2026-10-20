@@ -1,0 +1,141 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 67,
+    "w": 105,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 80,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 67,
+    "w": 105,
+    "x": 16,
+    "y": 12
+   },
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 70,
+    "w": 103,
+    "x": 107,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 80,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 70,
+    "w": 103,
+    "x": 6,
+    "y": 8
+   },
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 66,
+    "w": 103,
+    "x": 212,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 80,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 66,
+    "w": 103,
+    "x": 4,
+    "y": 12
+   },
+   "trimmed": true
+  },
+  "3": {
+   "frame": {
+    "h": 67,
+    "w": 98,
+    "x": 317,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 80,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 67,
+    "w": 98,
+    "x": 21,
+    "y": 11
+   },
+   "trimmed": true
+  },
+  "4": {
+   "frame": {
+    "h": 65,
+    "w": 98,
+    "x": 417,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 80,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 65,
+    "w": 98,
+    "x": 20,
+    "y": 13
+   },
+   "trimmed": true
+  },
+  "5": {
+   "frame": {
+    "h": 66,
+    "w": 108,
+    "x": 517,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 80,
+    "w": 128
+   },
+   "spriteSourceSize": {
+    "h": 66,
+    "w": 108,
+    "x": 7,
+    "y": 12
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage6/process_art.py",
+  "drawScale": 1.0,
+  "format": "RGBA8888",
+  "image": "s8wolfpack.webp",
+  "origin": [
+   0.5,
+   0.96
+  ],
+  "res": 1.0,
+  "scale": "1",
+  "screenH": 66,
+  "size": {
+   "h": 70,
+   "w": 625
+  }
+ }
+}

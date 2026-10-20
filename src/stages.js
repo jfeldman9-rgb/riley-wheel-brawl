@@ -9,11 +9,14 @@ import './stage5.js';
 import './stage6.js';
 import { STAGE7, STAGE7_CHARS, STAGE7_TEXTURES } from './stage7-def.js';
 import './stage7.js';
-export const MAX_STAGE = 7;
+import {STAGE8,STAGE8_CHARS,STAGE8_TEXTURES} from './stage8-def.js';
+import './stage8.js';
+export const MAX_STAGE = 8;
 export const STAGE_COUNT = 2;
 
 /** Stage 7 is opt-in pending playtest signoff. */
 export function stageEnabled(n, q) {
+  if (n === 8) return q?.get?.('s8') === '1';
   if (n === 7) return q?.get?.('s7') === '1';
   if (n === 6) return q?.get?.('s6') !== '0';
   return n === 1 || n === 2 || n === 3 || n === 4 || n === 5;
@@ -21,7 +24,7 @@ export function stageEnabled(n, q) {
 
 /** Title stage limit. */
 export function maxStage(q) {
-  return stageEnabled(7, q) ? 7 : stageEnabled(6, q) ? 6 : 5;
+  return stageEnabled(8, q) ? 8 : stageEnabled(7, q) ? 7 : stageEnabled(6, q) ? 6 : 5;
 }
 
 /** Resolve enabled URL stage. */
@@ -47,6 +50,7 @@ export const STAGE_CHARS = Object.freeze({
   5: STAGE5_CHARS,
   6: STAGE6_CHARS,
   7: STAGE7_CHARS,
+  8: STAGE8_CHARS,
 });
 
 // Textures that each stage owns, plus textures shared between stages.
@@ -59,6 +63,7 @@ export const STAGE_TEXTURES = Object.freeze({
   5: STAGE5_TEXTURES,
   6: STAGE6_TEXTURES,
   7: STAGE7_TEXTURES,
+  8: STAGE8_TEXTURES,
   shared: SHARED_TEXTURES,
 });
 
@@ -247,5 +252,6 @@ export const STAGES = Object.freeze({
   5: STAGE5,
   6: STAGE6,
   7: STAGE7,
+  8: STAGE8,
 });
 

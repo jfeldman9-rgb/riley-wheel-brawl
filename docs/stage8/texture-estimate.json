@@ -1,0 +1,860 @@
+{
+  "kind": "static source RGBA; final art unchanged; cast drawScale 1",
+  "atlasBytes": 35962608,
+  "sharedAllowance": 8388608,
+  "zones": [
+    {
+      "phase": "Z0",
+      "spriteKeys": [
+        "s7dancer",
+        "s7veiled",
+        "s7crate",
+        "s7planks",
+        "s7ribbon",
+        "s7arrow",
+        "lanfearPortrait",
+        "matPortrait",
+        "perrinPortrait",
+        "taimPortrait",
+        "twinkPortrait",
+        "s8banner",
+        "s8stonedog",
+        "s8allies",
+        "s8perrin",
+        "s8ashaman",
+        "s8taim",
+        "s8earth",
+        "s8fire",
+        "s8tell",
+        "s8mat"
+      ],
+      "plateKeys": [
+        "bg8far",
+        "bg8mid",
+        "bg8floor",
+        "bg8mid2",
+        "bg8floor2",
+        "bg8fg",
+        "bg8smoke"
+      ],
+      "spriteBytes": 12465500,
+      "plateBytes": 12112896,
+      "totalBytes": 68929612
+    },
+    {
+      "phase": "Z1",
+      "spriteKeys": [
+        "s7dancer",
+        "s7veiled",
+        "s7crate",
+        "s7planks",
+        "s7ribbon",
+        "s7arrow",
+        "lanfearPortrait",
+        "matPortrait",
+        "perrinPortrait",
+        "taimPortrait",
+        "twinkPortrait",
+        "s8banner",
+        "s8stonedog",
+        "s8allies",
+        "s8perrin",
+        "s8ashaman",
+        "s8taim",
+        "s8earth",
+        "s8fire",
+        "s8tell",
+        "s8loial",
+        "s8mat",
+        "s8wise",
+        "s8bolt",
+        "s8wolfpack",
+        "s8wolflead"
+      ],
+      "plateKeys": [
+        "bg8far",
+        "bg8mid2",
+        "bg8floor2",
+        "bg8mid3",
+        "bg8fg",
+        "bg8smoke"
+      ],
+      "spriteBytes": 15445260,
+      "plateBytes": 10479616,
+      "totalBytes": 70276092
+    },
+    {
+      "phase": "Z2",
+      "spriteKeys": [
+        "s7dancer",
+        "s7veiled",
+        "s7crate",
+        "s7planks",
+        "s7ribbon",
+        "s7arrow",
+        "lanfearPortrait",
+        "matPortrait",
+        "perrinPortrait",
+        "taimPortrait",
+        "twinkPortrait",
+        "s8banner",
+        "s8stonedog",
+        "s8allies",
+        "s8perrin",
+        "s8ashaman",
+        "s8taim",
+        "s8earth",
+        "s8fire",
+        "s8tell",
+        "s8loial",
+        "s8mat",
+        "s8wise",
+        "s8bolt",
+        "s8sister",
+        "s8weave",
+        "s8twink",
+        "s8dome",
+        "s8callfx",
+        "s8chest",
+        "s6rand",
+        "s6call",
+        "randPortrait"
+      ],
+      "plateKeys": [
+        "bg8far",
+        "bg8mid3",
+        "bg8floor2",
+        "bg8mid4",
+        "bg8floor3",
+        "bg8fg2",
+        "bg8smoke"
+      ],
+      "spriteBytes": 25434976,
+      "plateBytes": 12158976,
+      "totalBytes": 81945168
+    },
+    {
+      "phase": "C6",
+      "spriteKeys": [
+        "s7dancer",
+        "s7veiled",
+        "s7crate",
+        "s7planks",
+        "s7ribbon",
+        "s7arrow",
+        "lanfearPortrait",
+        "matPortrait",
+        "perrinPortrait",
+        "taimPortrait",
+        "twinkPortrait",
+        "s8banner",
+        "s8ashaman",
+        "s8taim",
+        "s8earth",
+        "s8fire",
+        "s8tell",
+        "s8stonedog",
+        "s8allies",
+        "s8twink",
+        "s8duo",
+        "s8link",
+        "s8linkaura",
+        "s6rand",
+        "randPortrait"
+      ],
+      "plateKeys": [
+        "bg8far",
+        "bg8mid3",
+        "bg8floor2",
+        "bg8mid4",
+        "bg8floor3",
+        "bg8fg2",
+        "bg8smoke"
+      ],
+      "spriteBytes": 13017408,
+      "plateBytes": 12158976,
+      "totalBytes": 69527600
+    },
+    {
+      "phase": "Z3",
+      "spriteKeys": [
+        "s7dancer",
+        "s7veiled",
+        "s7crate",
+        "s7planks",
+        "s7ribbon",
+        "s7arrow",
+        "lanfearPortrait",
+        "matPortrait",
+        "perrinPortrait",
+        "taimPortrait",
+        "twinkPortrait",
+        "s8banner",
+        "s8ashaman",
+        "s8taim",
+        "s8earth",
+        "s8fire",
+        "s8tell",
+        "s8stonedog",
+        "s8allies",
+        "s8twink",
+        "s8duo",
+        "s8link",
+        "s8linkaura",
+        "s6rand",
+        "randPortrait",
+        "s8lanfear",
+        "s8door",
+        "s8fireball",
+        "s8clash",
+        "s8star",
+        "s8wolfpack",
+        "s8wolflead"
+      ],
+      "plateKeys": [
+        "bg8far",
+        "bg8mid4",
+        "bg8floor3",
+        "bg8fg2",
+        "bg8smoke"
+      ],
+      "spriteBytes": 21925496,
+      "plateBytes": 8334336,
+      "totalBytes": 74611048
+    }
+  ],
+  "streamOverlap": 3824640,
+  "storyBytes": 14745600,
+  "gameplayPeak": 85769808,
+  "projectedPeak": 100515408,
+  "paintedGate": 27262976,
+  "sourceGate": 110100480,
+  "handoffSpritesMiB": {
+    "Z0": 6.84,
+    "Z1": 16.27,
+    "Z2": 24.92,
+    "C6": 13.48,
+    "Z3": 21.56
+  },
+  "handoffMiB": {
+    "Z0": 61.5,
+    "Z1": 69.3,
+    "Z2": 79.6,
+    "C6": 68.2,
+    "Z3": 72.6
+  },
+  "physicalDevice": "UNMEASURED",
+  "art": [
+    {
+      "key": "s8allies",
+      "url": "assets/stage8/chars/s8allies.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8allies.json",
+      "w": 1672,
+      "h": 170,
+      "bytes": 1136960
+    },
+    {
+      "key": "s8ashaman",
+      "url": "assets/stage8/chars/s8ashaman.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8ashaman.json",
+      "w": 1654,
+      "h": 220,
+      "bytes": 1455520
+    },
+    {
+      "key": "s8duo",
+      "url": "assets/stage8/chars/s8duo.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8duo.json",
+      "w": 725,
+      "h": 159,
+      "bytes": 461100
+    },
+    {
+      "key": "s8lanfear",
+      "url": "assets/stage8/chars/s8lanfear.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8lanfear.json",
+      "w": 2488,
+      "h": 443,
+      "bytes": 4408736
+    },
+    {
+      "key": "s8lews",
+      "url": "assets/stage8/chars/s8lews.webp",
+      "present": true,
+      "w": 512,
+      "h": 640,
+      "bytes": 1310720
+    },
+    {
+      "key": "s8loial",
+      "url": "assets/stage8/chars/s8loial.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8loial.json",
+      "w": 1221,
+      "h": 214,
+      "bytes": 1045176
+    },
+    {
+      "key": "s8mat",
+      "url": "assets/stage8/chars/s8mat.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8mat.json",
+      "w": 2112,
+      "h": 213,
+      "bytes": 1799424
+    },
+    {
+      "key": "s8perrin",
+      "url": "assets/stage8/chars/s8perrin.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8perrin.json",
+      "w": 1291,
+      "h": 157,
+      "bytes": 810748
+    },
+    {
+      "key": "s8sister",
+      "url": "assets/stage8/chars/s8sister.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8sister.json",
+      "w": 1999,
+      "h": 210,
+      "bytes": 1679160
+    },
+    {
+      "key": "s8stonedog",
+      "url": "assets/stage8/chars/s8stonedog.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8stonedog.json",
+      "w": 1826,
+      "h": 197,
+      "bytes": 1438888
+    },
+    {
+      "key": "s8taim",
+      "url": "assets/stage8/chars/s8taim.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8taim.json",
+      "w": 957,
+      "h": 271,
+      "bytes": 1037388
+    },
+    {
+      "key": "s8twink",
+      "url": "assets/stage8/chars/s8twink.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8twink.json",
+      "w": 1971,
+      "h": 159,
+      "bytes": 1253556
+    },
+    {
+      "key": "s8wise",
+      "url": "assets/stage8/chars/s8wise.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8wise.json",
+      "w": 1368,
+      "h": 193,
+      "bytes": 1056096
+    },
+    {
+      "key": "s8wolflead",
+      "url": "assets/stage8/chars/s8wolflead.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8wolflead.json",
+      "w": 680,
+      "h": 96,
+      "bytes": 261120
+    },
+    {
+      "key": "s8wolfpack",
+      "url": "assets/stage8/chars/s8wolfpack.webp",
+      "present": true,
+      "atlas": "assets/stage8/chars/s8wolfpack.json",
+      "w": 625,
+      "h": 70,
+      "bytes": 175000
+    },
+    {
+      "key": "s8banner",
+      "url": "assets/stage8/props/s8banner.webp",
+      "present": true,
+      "w": 256,
+      "h": 128,
+      "bytes": 131072
+    },
+    {
+      "key": "s8bolt",
+      "url": "assets/stage8/props/s8bolt.webp",
+      "present": true,
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "w": 576,
+      "h": 192,
+      "bytes": 442368
+    },
+    {
+      "key": "s8callfx",
+      "url": "assets/stage8/props/s8callfx.webp",
+      "present": true,
+      "frameWidth": 384,
+      "frameHeight": 384,
+      "w": 1152,
+      "h": 384,
+      "bytes": 1769472
+    },
+    {
+      "key": "s8chest",
+      "url": "assets/stage8/props/s8chest.webp",
+      "present": true,
+      "frameWidth": 256,
+      "frameHeight": 192,
+      "w": 768,
+      "h": 192,
+      "bytes": 589824
+    },
+    {
+      "key": "s8clash",
+      "url": "assets/stage8/props/s8clash.webp",
+      "present": true,
+      "frameWidth": 1024,
+      "frameHeight": 128,
+      "w": 1024,
+      "h": 128,
+      "bytes": 524288
+    },
+    {
+      "key": "s8dome",
+      "url": "assets/stage8/props/s8dome.webp",
+      "present": true,
+      "frameWidth": 512,
+      "frameHeight": 384,
+      "w": 2048,
+      "h": 384,
+      "bytes": 3145728
+    },
+    {
+      "key": "s8door",
+      "url": "assets/stage8/props/s8door.webp",
+      "present": true,
+      "frameWidth": 288,
+      "frameHeight": 512,
+      "w": 1152,
+      "h": 512,
+      "bytes": 2359296
+    },
+    {
+      "key": "s8earth",
+      "url": "assets/stage8/props/s8earth.webp",
+      "present": true,
+      "frameWidth": 256,
+      "frameHeight": 192,
+      "w": 1536,
+      "h": 192,
+      "bytes": 1179648
+    },
+    {
+      "key": "s8fire",
+      "url": "assets/stage8/props/s8fire.webp",
+      "present": true,
+      "frameWidth": 256,
+      "frameHeight": 128,
+      "w": 1024,
+      "h": 128,
+      "bytes": 524288
+    },
+    {
+      "key": "s8fireball",
+      "url": "assets/stage8/props/s8fireball.webp",
+      "present": true,
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "w": 1152,
+      "h": 192,
+      "bytes": 884736
+    },
+    {
+      "key": "s8link",
+      "url": "assets/stage8/props/s8link.webp",
+      "present": true,
+      "frameWidth": 1024,
+      "frameHeight": 96,
+      "w": 1024,
+      "h": 96,
+      "bytes": 393216
+    },
+    {
+      "key": "s8linkaura",
+      "url": "assets/stage8/props/s8linkaura.webp",
+      "present": true,
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "w": 256,
+      "h": 256,
+      "bytes": 262144
+    },
+    {
+      "key": "s8star",
+      "url": "assets/stage8/props/s8star.webp",
+      "present": true,
+      "frameWidth": 192,
+      "frameHeight": 192,
+      "w": 384,
+      "h": 192,
+      "bytes": 294912
+    },
+    {
+      "key": "s8tell",
+      "url": "assets/stage8/props/s8tell.webp",
+      "present": true,
+      "frameWidth": 512,
+      "frameHeight": 64,
+      "w": 1024,
+      "h": 64,
+      "bytes": 262144
+    },
+    {
+      "key": "s8weave",
+      "url": "assets/stage8/props/s8weave.webp",
+      "present": true,
+      "frameWidth": 256,
+      "frameHeight": 256,
+      "w": 768,
+      "h": 256,
+      "bytes": 786432
+    },
+    {
+      "key": "s8credits",
+      "url": "assets/stage8/story/s8credits.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8c1",
+      "url": "assets/stage8/story/story8c1.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8c2",
+      "url": "assets/stage8/story/story8c2.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8f1",
+      "url": "assets/stage8/story/story8f1.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8f2",
+      "url": "assets/stage8/story/story8f2.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8f3",
+      "url": "assets/stage8/story/story8f3.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8f4",
+      "url": "assets/stage8/story/story8f4.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8m1",
+      "url": "assets/stage8/story/story8m1.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8p1",
+      "url": "assets/stage8/story/story8p1.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8p2",
+      "url": "assets/stage8/story/story8p2.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8p3",
+      "url": "assets/stage8/story/story8p3.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "story8p4",
+      "url": "assets/stage8/story/story8p4.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 720,
+      "bytes": 3686400
+    },
+    {
+      "key": "lanfearPortrait",
+      "url": "assets/stage8/ui/lanfearPortrait.webp",
+      "present": true,
+      "w": 136,
+      "h": 136,
+      "bytes": 73984
+    },
+    {
+      "key": "matPortrait",
+      "url": "assets/stage8/ui/matPortrait.webp",
+      "present": true,
+      "w": 136,
+      "h": 136,
+      "bytes": 73984
+    },
+    {
+      "key": "perrinPortrait",
+      "url": "assets/stage8/ui/perrinPortrait.webp",
+      "present": true,
+      "w": 136,
+      "h": 136,
+      "bytes": 73984
+    },
+    {
+      "key": "taimPortrait",
+      "url": "assets/stage8/ui/taimPortrait.webp",
+      "present": true,
+      "w": 136,
+      "h": 136,
+      "bytes": 73984
+    },
+    {
+      "key": "twinkPortrait",
+      "url": "assets/stage8/ui/twinkPortrait.webp",
+      "present": true,
+      "w": 136,
+      "h": 136,
+      "bytes": 73984
+    },
+    {
+      "key": "bg8far",
+      "url": "assets/bg8/bg8far.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 580,
+      "bytes": 2969600
+    },
+    {
+      "key": "bg8fg",
+      "url": "assets/bg8/bg8fg.webp",
+      "present": true,
+      "w": 1280,
+      "h": 160,
+      "bytes": 819200
+    },
+    {
+      "key": "bg8fg2",
+      "url": "assets/bg8/bg8fg2.webp",
+      "present": true,
+      "w": 1280,
+      "h": 160,
+      "bytes": 819200
+    },
+    {
+      "key": "bg8floor",
+      "url": "assets/bg8/bg8floor.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 360,
+      "bytes": 1843200
+    },
+    {
+      "key": "bg8floor2",
+      "url": "assets/bg8/bg8floor2.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 360,
+      "bytes": 1843200
+    },
+    {
+      "key": "bg8floor3",
+      "url": "assets/bg8/bg8floor3.jpg",
+      "present": true,
+      "w": 1280,
+      "h": 360,
+      "bytes": 1843200
+    },
+    {
+      "key": "bg8mid",
+      "url": "assets/bg8/bg8mid.webp",
+      "present": true,
+      "w": 1280,
+      "h": 346,
+      "bytes": 1771520
+    },
+    {
+      "key": "bg8mid2",
+      "url": "assets/bg8/bg8mid2.webp",
+      "present": true,
+      "w": 1280,
+      "h": 355,
+      "bytes": 1817600
+    },
+    {
+      "key": "bg8mid3",
+      "url": "assets/bg8/bg8mid3.webp",
+      "present": true,
+      "w": 1280,
+      "h": 387,
+      "bytes": 1981440
+    },
+    {
+      "key": "bg8mid4",
+      "url": "assets/bg8/bg8mid4.webp",
+      "present": true,
+      "w": 1280,
+      "h": 323,
+      "bytes": 1653760
+    },
+    {
+      "key": "bg8smoke",
+      "url": "assets/bg8/bg8smoke.webp",
+      "present": true,
+      "w": 1024,
+      "h": 256,
+      "bytes": 1048576
+    },
+    {
+      "key": "s7dancer",
+      "url": "assets/stage7/chars/s7dancer.webp",
+      "atlas": "assets/stage7/chars/s7dancer.json",
+      "present": true,
+      "w": 1575,
+      "h": 165,
+      "bytes": 1039500
+    },
+    {
+      "key": "s7veiled",
+      "url": "assets/stage7/chars/s7veiled.webp",
+      "atlas": "assets/stage7/chars/s7veiled.json",
+      "present": true,
+      "w": 1408,
+      "h": 202,
+      "bytes": 1137664
+    },
+    {
+      "key": "s7crate",
+      "url": "assets/stage7/props/s7crate.webp",
+      "present": true,
+      "w": 128,
+      "h": 128,
+      "bytes": 65536
+    },
+    {
+      "key": "s7planks",
+      "url": "assets/stage7/props/s7planks.webp",
+      "frameWidth": 32,
+      "frameHeight": 64,
+      "present": true,
+      "w": 256,
+      "h": 64,
+      "bytes": 65536
+    },
+    {
+      "key": "s7ribbon",
+      "url": "assets/stage7/props/s7ribbon.webp",
+      "present": true,
+      "w": 48,
+      "h": 48,
+      "bytes": 9216
+    },
+    {
+      "key": "s7arrow",
+      "url": "assets/stage7/props/s7arrow.webp",
+      "present": true,
+      "w": 64,
+      "h": 8,
+      "bytes": 2048
+    },
+    {
+      "key": "s6rand",
+      "url": "assets/stage6/chars/s6rand.webp",
+      "atlas": "assets/stage6/chars/s6rand.json",
+      "present": true,
+      "w": 680,
+      "h": 264,
+      "bytes": 718080
+    },
+    {
+      "key": "randPortrait",
+      "url": "assets/stage6/ui/randPortrait.webp",
+      "present": true,
+      "w": 136,
+      "h": 136,
+      "bytes": 73984
+    },
+    {
+      "key": "s6call",
+      "url": "assets/stage6/props/s6call.webp",
+      "frameWidth": 160,
+      "frameHeight": 320,
+      "present": true,
+      "w": 320,
+      "h": 320,
+      "bytes": 409600
+    }
+  ],
+  "pages": [
+    {
+      "path": "assets/chars/riley-0.webp",
+      "bytes": 31595520
+    },
+    {
+      "path": "assets/stage5/normals/riley-0_n.webp",
+      "bytes": 878560
+    },
+    {
+      "path": "assets/stage5/normals/riley-0_nl.webp",
+      "bytes": 878560
+    },
+    {
+      "path": "assets/chars/riley-1.webp",
+      "bytes": 2471808
+    },
+    {
+      "path": "assets/stage5/normals/riley-1_n.webp",
+      "bytes": 69080
+    },
+    {
+      "path": "assets/stage5/normals/riley-1_nl.webp",
+      "bytes": 69080
+    }
+  ]
+}

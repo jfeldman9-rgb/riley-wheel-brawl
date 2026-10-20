@@ -1,0 +1,141 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 150,
+    "w": 100,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 176,
+    "w": 208
+   },
+   "spriteSourceSize": {
+    "h": 150,
+    "w": 100,
+    "x": 61,
+    "y": 20
+   },
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 159,
+    "w": 97,
+    "x": 102,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 176,
+    "w": 208
+   },
+   "spriteSourceSize": {
+    "h": 159,
+    "w": 97,
+    "x": 59,
+    "y": 11
+   },
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 135,
+    "w": 125,
+    "x": 201,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 176,
+    "w": 208
+   },
+   "spriteSourceSize": {
+    "h": 135,
+    "w": 125,
+    "x": 62,
+    "y": 35
+   },
+   "trimmed": true
+  },
+  "3": {
+   "frame": {
+    "h": 134,
+    "w": 149,
+    "x": 328,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 176,
+    "w": 208
+   },
+   "spriteSourceSize": {
+    "h": 134,
+    "w": 149,
+    "x": 52,
+    "y": 36
+   },
+   "trimmed": true
+  },
+  "4": {
+   "frame": {
+    "h": 149,
+    "w": 107,
+    "x": 479,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 176,
+    "w": 208
+   },
+   "spriteSourceSize": {
+    "h": 149,
+    "w": 107,
+    "x": 43,
+    "y": 21
+   },
+   "trimmed": true
+  },
+  "5": {
+   "frame": {
+    "h": 152,
+    "w": 137,
+    "x": 588,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 176,
+    "w": 208
+   },
+   "spriteSourceSize": {
+    "h": 152,
+    "w": 137,
+    "x": 26,
+    "y": 18
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage6/process_art.py",
+  "drawScale": 1.0,
+  "format": "RGBA8888",
+  "image": "s8duo.webp",
+  "origin": [
+   0.5,
+   0.96
+  ],
+  "res": 1.0,
+  "scale": "1",
+  "screenH": 150,
+  "size": {
+   "h": 159,
+   "w": 725
+  }
+ }
+}

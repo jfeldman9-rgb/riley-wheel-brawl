@@ -2,7 +2,7 @@
 // A page is swapped only when that stage uses the small set AND the page has a
 // file under assets/stage5/normals. Stage 4's cutthroat stays on its own normals.
 // Any other stage reloads the originals, so leaving 4, 5, 6 or 7 drops the small pages.
-const COMPACT_STAGES = new Set([4, 5, 6, 7]);
+const COMPACT_STAGES = new Set([4, 5, 6, 7, 8]);
 export const COMPACT_PAGES = new Set(['riley-0', 'riley-1', 'riley3-0', 'grunt-0', 'hound-0', 'spear-0', 'loial-0']);
 // Phaser decodes its XHR images through blob URLs, which hide the asset directory.
 const variants = new WeakMap();

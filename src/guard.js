@@ -21,7 +21,9 @@ export function cutsceneWatchdog(stage, now, w = {}) {
   if (!cs || cs.done) { w.cs = null; return false; }
   if (w.cs !== cs || w.i !== cs.i) { w.cs = cs; w.i = cs.i; w.since = now; return false; }
   for (const r of stage.pauseReasons || []) if (r !== 'cutscene') { w.since = now; return false; }
-  if ((now - w.since) / 1000 < watchdogFor(cs.line)) return false;
+  // A cutscene holding for its voice line (Stage 8) gets its capped extra time before the watchdog steps in.
+  const grace = cs.holding?.() ? cs.holdGrace || 0 : 0;
+  if ((now - w.since) / 1000 < watchdogFor(cs.line) + grace) return false;
   w.since = now; cs.next(); w.i = cs.i;
   return true;
 }

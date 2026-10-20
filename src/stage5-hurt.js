@@ -3,12 +3,14 @@
 // by the kit, which clears it when no snare, cloud or seep is active.
 export function damageAllowed(scene, opts = {}) {
   const R = scene?.riley;
+  if (scene?.stageNo === 8 && scene.kit?.blocksDamage?.()) return false;
   return !!(R && R.alive !== false && R.hp > 0 && !scene.paused && !scene.cutscene && !scene.kit?.arena?.frozen && !scene.god && !(R.inv > 0 && !opts.throughInv));
 }
 
 export function strikeRiley(scene, dmg, opts = {}) {
   const R = scene?.riley;
   if (!damageAllowed(scene, opts)) return false;
+  if (scene.stageNo === 8 && scene.kit?.strikeDamage) dmg = scene.kit.strikeDamage(dmg, opts.source);
   R.grabbedBy?.releaseHold?.('break');
   if (!opts.throughVuln && R.vulnerable === false && !opts.dot) return false;
   // Opt-in melee reaction, with the same gates as direct hazard damage.

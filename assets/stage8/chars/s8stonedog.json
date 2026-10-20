@@ -1,0 +1,261 @@
+{
+ "frames": {
+  "0": {
+   "frame": {
+    "h": 196,
+    "w": 140,
+    "x": 0,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 196,
+    "w": 140,
+    "x": 56,
+    "y": 13
+   },
+   "trimmed": true
+  },
+  "1": {
+   "frame": {
+    "h": 172,
+    "w": 137,
+    "x": 142,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 172,
+    "w": 137,
+    "x": 59,
+    "y": 36
+   },
+   "trimmed": true
+  },
+  "10": {
+   "frame": {
+    "h": 147,
+    "w": 170,
+    "x": 1463,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 147,
+    "w": 170,
+    "x": 41,
+    "y": 62
+   },
+   "trimmed": true
+  },
+  "11": {
+   "frame": {
+    "h": 70,
+    "w": 191,
+    "x": 1635,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 70,
+    "w": 191,
+    "x": 44,
+    "y": 138
+   },
+   "trimmed": true
+  },
+  "2": {
+   "frame": {
+    "h": 172,
+    "w": 125,
+    "x": 281,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 172,
+    "w": 125,
+    "x": 61,
+    "y": 36
+   },
+   "trimmed": true
+  },
+  "3": {
+   "frame": {
+    "h": 172,
+    "w": 137,
+    "x": 408,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 172,
+    "w": 137,
+    "x": 64,
+    "y": 36
+   },
+   "trimmed": true
+  },
+  "4": {
+   "frame": {
+    "h": 172,
+    "w": 146,
+    "x": 547,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 172,
+    "w": 146,
+    "x": 65,
+    "y": 36
+   },
+   "trimmed": true
+  },
+  "5": {
+   "frame": {
+    "h": 197,
+    "w": 180,
+    "x": 695,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 197,
+    "w": 180,
+    "x": 22,
+    "y": 11
+   },
+   "trimmed": true
+  },
+  "6": {
+   "frame": {
+    "h": 162,
+    "w": 246,
+    "x": 877,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 162,
+    "w": 246,
+    "x": 29,
+    "y": 46
+   },
+   "trimmed": true
+  },
+  "7": {
+   "frame": {
+    "h": 163,
+    "w": 187,
+    "x": 1125,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 163,
+    "w": 187,
+    "x": 55,
+    "y": 45
+   },
+   "trimmed": true
+  },
+  "8": {
+   "frame": {
+    "h": 164,
+    "w": 147,
+    "x": 1314,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 164,
+    "w": 147,
+    "x": 52,
+    "y": 45
+   },
+   "trimmed": true
+  },
+  "9": {
+   "frame": {
+    "h": 164,
+    "w": 147,
+    "x": 1314,
+    "y": 0
+   },
+   "rotated": false,
+   "sourceSize": {
+    "h": 216,
+    "w": 280
+   },
+   "spriteSourceSize": {
+    "h": 164,
+    "w": 147,
+    "x": 52,
+    "y": 45
+   },
+   "trimmed": true
+  }
+ },
+ "meta": {
+  "app": "tools/stage6/process_art.py",
+  "drawScale": 1.0,
+  "format": "RGBA8888",
+  "image": "s8stonedog.webp",
+  "origin": [
+   0.5,
+   0.96
+  ],
+  "res": 1.0,
+  "scale": "1",
+  "screenH": 195,
+  "size": {
+   "h": 197,
+   "w": 1826
+  }
+ }
+}
