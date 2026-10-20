@@ -14,10 +14,10 @@ import './stage8.js';
 export const MAX_STAGE = 8;
 export const STAGE_COUNT = 2;
 
-/** Stage 7 is opt-in pending playtest signoff. */
+/** Stages 6-8 are live; ?sN=0 hides one for testing. */
 export function stageEnabled(n, q) {
-  if (n === 8) return q?.get?.('s8') === '1';
-  if (n === 7) return q?.get?.('s7') === '1';
+  if (n === 8) return q?.get?.('s8') !== '0' && stageEnabled(7, q);
+  if (n === 7) return q?.get?.('s7') !== '0';
   if (n === 6) return q?.get?.('s6') !== '0';
   return n === 1 || n === 2 || n === 3 || n === 4 || n === 5;
 }

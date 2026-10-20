@@ -16,9 +16,10 @@ test('stage 6 is on by default; ?s6=1 stays valid and ?s6=0 hides it', () => {
   assert.equal(stageEnabled(6, Q('s5=1')), true);
   assert.equal(stageEnabled(6, Q('s6=1')), true);
   assert.equal(stageEnabled(6, Q('s6=0')), false);
-  assert.equal(maxStage(Q('')), 6);
-  assert.equal(maxStage(Q('s6=0')), 5);
-  assert.equal(maxStage(Q('s6=1')), 6);
+  assert.equal(maxStage(Q('')), 8);
+  assert.equal(maxStage(Q('s6=0')), 8);
+  assert.equal(maxStage(Q('s6=0&s7=0')), 5);
+  assert.equal(maxStage(Q('s6=1')), 8);
   assert.equal(stageFromQuery(Q('stage=6')), 6);
   assert.equal(stageFromQuery(Q('stage=6&s6=1')), 6);
   assert.equal(stageFromQuery(Q('stage=6&s6=0')), 1);
@@ -28,15 +29,16 @@ test('stage 6 is on by default; ?s6=1 stays valid and ?s6=0 hides it', () => {
   for (const n of [1, 2, 3, 4, 5]) { assert.equal(stageEnabled(n, Q('')), true); assert.equal(stageEnabled(n, Q('s6=0')), true); }
 });
 
-test('stage 5 continues to stage 6 unless s6=0, and stage 6 always returns to the title', () => {
+test('stage 5 continues to stage 6 unless s6=0, and stage 6 continues to stage 7 unless s7=0', () => {
   const to6 = { stage: 6, fromStage5: true, autostart: true };
   assert.deepEqual(STAGES[5].next(), to6);
   assert.deepEqual(STAGES[5].next(Q('')), to6);
   assert.deepEqual(STAGES[5].next(Q('s3=1')), to6);
   assert.deepEqual(STAGES[5].next(Q('s6=1')), to6);
   assert.deepEqual(STAGES[5].next(Q('s6=0')), { stage: 1 });
-  assert.deepEqual(STAGES[6].next(), { stage: 1 });
-  assert.deepEqual(STAGES[6].next(Q('s6=1')), { stage: 1 });
+  assert.deepEqual(STAGES[6].next(), { stage: 7 });
+  assert.deepEqual(STAGES[6].next(Q('s7=0')), { stage: 1 });
+  assert.deepEqual(STAGES[6].next(Q('s6=1')), { stage: 7 });
   assert.equal(STAGES[6].boss.type, 'belal');
   assert.equal(STAGES[6].zones.length, 4);
   assert.deepEqual(STAGE_MUSIC[6], { stage: 'stage6', boss: 'boss6' });

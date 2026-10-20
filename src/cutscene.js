@@ -206,7 +206,7 @@ export class CutscenePlayer {
     if (v.paused && !v.ended && r.i >= 0 && now - (r.nudged || 0) > 1000) { r.nudged = now; this.start(r, v, r.ids[r.i]); }
     const t = +v.currentTime || 0;
     if (t > r.lastTime + 0.01) { r.lastTime = t; r.lastT = now; if (t > 0) r.started = true; r.ticks++; try { r.progress(r.ticks); } catch (e) { } return; }
-    if (now - r.lastT > (r.started ? this.stallMs : this.startMs) || now - r.clipT0 > this.maxMs) this.next(r, r.started ? 'stall' : 'timeout');
+    if (now - r.lastT > (r.started ? this.stallMs : this.startMs) || now - r.clipT0 > Math.max(this.maxMs, this.capMs === null && +v.duration > 0 ? v.duration * 1000 + 5000 : 0)) this.next(r, r.started ? 'stall' : 'timeout');
   }
   /** take the video out of the page and free it; how === null means aborted (no callback) */
   finish(r, how) {

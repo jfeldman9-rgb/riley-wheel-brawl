@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "evidenceKind": "deterministic combat-logic simulation",
-  "baseGitCommit": "96befdd83b08ef8d703c9450773ea32aeab6dcf4",
+  "baseGitCommit": "2762f228d50773ef53efeb40d3f10ed3cb3cd887",
   "sourceSha256": {
     "src/stage1.js": "a9d674b4c09bf0ebcb5067df257a9d5a67a9388f2df30a076685a42eface907a",
     "src/riley.js": "c69cf18a2cbafdd9dfd1afc4b455f1538797bdb28c35ee59382627f7fe4b1e23",
@@ -18,7 +18,7 @@
     "src/twix.js": "93f6835b7e31edc0b9ea4a386879377b78b327fb2ab2871775b5a5b8800a435a",
     "src/twix-video.js": "c6fa1756a2c7ff8de3ca4cb432b2d0dc3247e5dd0174c18c1082b59ab6be1d94",
     "src/cutscene-scene.js": "cb50b92cf21333d8e40d1ecf301026324b26585e3a2e93f62fbfb16153b5f34e",
-    "src/cutscene.js": "307b573af833b7344e0f12b6af0f386b388257d2502de761214680344de4b34d",
+    "src/cutscene.js": "1e971285303f7cdcb2b342bea552fe574cbe31c2c7d45dc45132dfa44faa1ab5",
     "assets/chars/riley.anims.json": "7ac00fcc0c9b9d9bd694f6b305c71649b30e646771de517935c4d5016f8f65d9",
     "assets/chars/grunt.anims.json": "a21a67d311422dea2445dd5be01679abb8711e400f3e1a8ef0f0b503b225318f",
     "assets/chars/spear.anims.json": "877d81c18a10fa19adb6a10eec0297a506c8860fe2f50ecb9ce4f549d5698f5e",

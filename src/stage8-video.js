@@ -44,7 +44,7 @@ export function playStage8Video(scene, key, done, query = q) {
       progress: n => { stub.i = n; },
       done(how) {
         uncap();
-        const failed = how === 'skip' || player.log[player.log.length - 2] !== `${ids[0]}:ended`;
+        const failed = how !== 'skip' && player.log[player.log.length - 2] !== `${ids[0]}:ended`;
         if (cleanup()) done(how, failed);
       },
     });

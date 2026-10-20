@@ -82,7 +82,7 @@ for (const how of ['end', 'attack', 'pause', 'tap', 'error', 'timeout']) {
       assert.equal(h.observations.hud.filter(x => x.method === 'stageClear').length, 1);
       assert.equal(s.clearShown, false); steps(h, 60);
       assert.equal(s.clearShown, true);
-      assert.deepEqual(s.stageDef.next(q), { stage: 1, stage7Return: true });
+      assert.deepEqual(s.stageDef.next(q), { stage: 8, fromStage7: true, autostart: true });
       e.player.video.fire('ended');
       assert.equal(h.observations.hud.filter(x => x.method === 'stageClear').length, 1);
     } finally { h.destroy(); }

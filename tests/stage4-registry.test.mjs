@@ -15,7 +15,7 @@ test('stages 1–6 stay enabled with no flags; s3 and s4 do not change stage 4, 
   for (const query of ['', 's3=1', 's4=1', 's3=1&s4=1']) {
     for (const n of [1, 2, 3, 4, 5]) assert.equal(stageEnabled(n, Q(query)), true, `${n} ${query}`);
     assert.equal(stageEnabled(6, Q(query)), true, query);
-    assert.equal(maxStage(Q(query)), 6, query);
+    assert.equal(maxStage(Q(query)), 8, query);
   }
   assert.equal(stageFromQuery(Q('')), 1);
   assert.equal(stageFromQuery(Q('s4=1')), 1);
