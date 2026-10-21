@@ -28,5 +28,12 @@
     "M2": "redo t1 6-10s",
     "M3": "redo t2 1.5-5.5s",
     "timestamp": "2026-10-19T16:55:00-07:00"
+  },
+  "redo2": {
+    "M1": "Gemini redo2 M1_spear 2.5-6.5s",
+    "M3": "Gemini redo2 M3_medallion 1.5-5.5s",
+    "reviewer": "Grok Bot (4 fps frame review)",
+    "timestamp": "2026-10-20T19:15:00-07:00",
+    "notes": "no text/gore/extra limbs; audio stripped"
   }
 }
